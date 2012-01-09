@@ -1,6 +1,6 @@
 # Octopus Command Line Tools
 
-[Octopus][1] is an automated release management server for professional .NET developers.  *Octo.exe* is a command line tool for managing your Octpus installation and triggering releases. 
+[Octopus][1] is an automated release management server for professional .NET developers.  *Octo.exe* is a command line tool for managing your Octpus installation and triggering releases. The tool can be [downloaded from the GitHub downloads page][2].
 
 ## General usage
 
@@ -37,3 +37,4 @@ If your IIS server is set up to require Windows Authentication, the tool will au
     octo ... --user=fred --password=secret
 
 [1]: http://octopusdeploy.com 
+[2]: https://github.com/OctopusDeploy/Octopus-Tools/downloads
