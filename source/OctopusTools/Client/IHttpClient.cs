@@ -6,7 +6,7 @@ namespace OctopusTools.Client
 {
     public interface IHttpClient
     {
-        void SetAuthentication(ICredentials credentials, string apiKey);
+        void SetAuthentication(ICredentials credentials);
         Task<TResource> Put<TResource>(Uri uri, TResource resource);
         Task<TResource> Post<TResource>(Uri uri, TResource resource);
         Task<TResource> Get<TResource>(Uri uri);

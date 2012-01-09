@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -11,17 +12,16 @@ namespace OctopusTools.Client
     public class HttpClientWrapper : IHttpClient
     {
         readonly ILog log;
-        readonly HttpClient client;
+        ICredentials credentials;
 
         public HttpClientWrapper(ILog log)
         {
             this.log = log;
-            client = new HttpClient();
         }
 
-        public void SetAuthentication(ICredentials credentials, string apiKey)
+        public void SetAuthentication(ICredentials newCredentials)
         {
-            
+            credentials = newCredentials;
         }
 
         public Task<TResult> Get<TResult>(Uri uri)
@@ -29,52 +29,97 @@ namespace OctopusTools.Client
             return new Task<TResult>(
                 delegate
                 {
-                    var response = client.Get(uri);
-                    response.EnsureSuccessStatusCode();
-                    var content = response.Content.ReadAsString();
-                    return JsonConvert.DeserializeObject<TResult>(content);
+                    var request = CreateWebRequest("GET", uri);
+
+                    var response = request.GetResponse();
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        var content = reader.ReadToEnd();
+                        return JsonConvert.DeserializeObject<TResult>(content);
+                    }
                 });
         }
 
         public Task<TResource> Post<TResource>(Uri uri, TResource resource)
         {
             return new Task<TResource>(
-            delegate
-            {
-                var request = JsonConvert.SerializeObject(resource, Formatting.Indented);
-
-                var response = client.Post(uri, new StringContent(request, Encoding.UTF8, "application/json"));
-                if (response.StatusCode == HttpStatusCode.BadRequest)
+                delegate
                 {
-                    var content = response.Content.ReadAsString();
+                    var postData = JsonConvert.SerializeObject(resource, Formatting.Indented);
 
-                    throw new Exception("The server rejected the POST request: " + content);
-                }
+                    var request = CreateWebRequest("POST", uri);
+                    request.ContentType = "application/json";
+                    AppendBody(request, postData);
 
-                response.EnsureSuccessStatusCode();
-                var location = response.Headers.Location;
-                return Get<TResource>(new Uri(uri, location)).Execute();
-            });
+                    var response = ReadResponse(request);
+                    var location = response.Headers.Get("Location");
+                    return Get<TResource>(new Uri(uri, location)).Execute();
+                });
         }
 
         public Task<TResource> Put<TResource>(Uri uri, TResource resource)
         {
             return new Task<TResource>(
-            delegate
-            {
-                var request = JsonConvert.SerializeObject(resource, Formatting.Indented);
-
-                var response = client.Put(uri, new StringContent(request, Encoding.UTF8, "application/json"));
-                if (response.StatusCode == HttpStatusCode.BadRequest)
+                delegate
                 {
-                    var content = response.Content.ReadAsString();
+                    var postData = JsonConvert.SerializeObject(resource, Formatting.Indented);
 
-                    throw new Exception("The server rejected the PUT request: " + content);
+                    var request = CreateWebRequest("POST", uri);
+                    request.ContentType = "application/json";
+                    request.Headers["X-HTTP-Method-Override"] = "PUT";
+                    AppendBody(request, postData);
+
+                    ReadResponse(request);
+
+                    return Get<TResource>(uri).Execute();
+                });
+        }
+
+        WebRequest CreateWebRequest(string method, Uri uri)
+        {
+            log.Debug(method + " " + uri);
+
+            var request = WebRequest.Create(uri);
+            request.Credentials = credentials;
+            request.Method = method;
+
+            return request;
+        }
+
+        void AppendBody(WebRequest request, string body)
+        {
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                using (var requestStream = new StreamWriter(request.GetRequestStream()))
+                {
+                    requestStream.WriteLine(body);
+                }
+            }
+        }
+
+        static WebResponse ReadResponse(WebRequest request)
+        {
+            try
+            {
+                return request.GetResponse();
+            }
+            catch (WebException wex)
+            {
+                if (wex.Response != null)
+                {
+                    using (var reader = new StreamReader(wex.Response.GetResponseStream()))
+                    {
+                        var details = reader.ReadToEnd();
+
+                        if (!string.IsNullOrWhiteSpace(details))
+                        {
+                            throw new Exception(wex.Message + " " + details);
+                        }
+                    }
                 }
 
-                response.EnsureSuccessStatusCode();
-                return Get<TResource>(uri).Execute();
-            });
+                throw;
+            }
         }
     }
 }

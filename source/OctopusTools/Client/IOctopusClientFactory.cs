@@ -5,6 +5,6 @@ namespace OctopusTools.Client
 {
     public interface IOctopusClientFactory
     {
-        IOctopusClient Create(string apiKey, Uri serverBaseUrl, ICredentials credentials);
+        IOctopusClient Create(Uri serverBaseUrl, ICredentials credentials);
     }
 }

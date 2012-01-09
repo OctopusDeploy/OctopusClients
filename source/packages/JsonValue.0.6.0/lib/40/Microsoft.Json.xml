@@ -4,6 +4,239 @@
         <name>Microsoft.Json</name>
     </assembly>
     <members>
+        <member name="M:System.Json.SR.CannotCastJsonValue(System.Object,System.Object)">
+            <summary>Gets localized string like: Unable to cast object of type '{0}' to type '{1}'.</summary>
+            <param name="param0">Parameter 0 for string: Unable to cast object of type '{0}' to type '{1}'.</param>
+            <param name="param1">Parameter 1 for string: Unable to cast object of type '{0}' to type '{1}'.</param>
+        </member>
+        <member name="M:System.Json.SR.CannotReadAsType(System.Object,System.Object)">
+            <summary>Gets localized string like: CannotReadAsType=Cannot read '{0}' as '{1}' type.</summary>
+            <param name="param0">Parameter 0 for string: CannotReadAsType=Cannot read '{0}' as '{1}' type.</param>
+            <param name="param1">Parameter 1 for string: CannotReadAsType=Cannot read '{0}' as '{1}' type.</param>
+        </member>
+        <member name="M:System.Json.SR.CannotReadPrimitiveAsType(System.Object,System.Object)">
+            <summary>Gets localized string like: Cannot read JsonPrimitive value '{0}' as '{1}'.</summary>
+            <param name="param0">Parameter 0 for string: Cannot read JsonPrimitive value '{0}' as '{1}'.</param>
+            <param name="param1">Parameter 1 for string: Cannot read JsonPrimitive value '{0}' as '{1}'.</param>
+        </member>
+        <member name="M:System.Json.SR.DynamicPropertyNotDefined(System.Object,System.Object)">
+            <summary>Gets localized string like: '{0}' does not contain a definition for property '{1}'.</summary>
+            <param name="param0">Parameter 0 for string: '{0}' does not contain a definition for property '{1}'.</param>
+            <param name="param1">Parameter 1 for string: '{0}' does not contain a definition for property '{1}'.</param>
+        </member>
+        <member name="M:System.Json.SR.FormUrlEncodedMismatchingTypes(System.Object)">
+            <summary>Gets localized string like: Mismatched types at node '{0}'.</summary>
+            <param name="param0">Parameter 0 for string: Mismatched types at node '{0}'.</param>
+        </member>
+        <member name="M:System.Json.SR.IndexerNotSupportedOnJsonType(System.Object,System.Object)">
+            <summary>Gets localized string like: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</summary>
+            <param name="param0">Parameter 0 for string: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</param>
+            <param name="param1">Parameter 1 for string: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidArrayInsert(System.Object)">
+            <summary>Gets localized string like: Invalid array at node '{0}'.</summary>
+            <param name="param0">Parameter 0 for string: Invalid array at node '{0}'.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidCastNonNullable(System.Object)">
+            <summary>Gets localized string like: Cannot convert null to '{0}' because it is a non-nullable value type.</summary>
+            <param name="param0">Parameter 0 for string: Cannot convert null to '{0}' because it is a non-nullable value type.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidDateFormat(System.Object,System.Object)">
+            <summary>Gets localized string like: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</summary>
+            <param name="param0">Parameter 0 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</param>
+            <param name="param1">Parameter 1 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidIndexType(System.Object)">
+            <summary>Gets localized string like: Invalid '{0}' index type; only 'System.String' and non-negative 'System.Int32' types are supported.</summary>
+            <param name="param0">Parameter 0 for string: Invalid '{0}' index type; only 'System.String' and non-negative 'System.Int32' types are supported.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidJsonPrimitive(System.Object)">
+            <summary>Gets localized string like: Invalid JSON primitive: {0}.</summary>
+            <param name="param0">Parameter 0 for string: Invalid JSON primitive: {0}.</param>
+        </member>
+        <member name="M:System.Json.SR.InvalidUriFormat(System.Object,System.Object,System.Object,System.Object)">
+            <summary>Gets localized string like: Cannot cast '{0}' value '{1}.{2}' as a type of '{3}'. The provided string is not a valid relative or absolute '{3}'.</summary>
+            <param name="param0">Parameter 0 for string: Cannot cast '{0}' value '{1}.{2}' as a type of '{3}'. The provided string is not a valid relative or absolute '{3}'.</param>
+            <param name="param1">Parameter 1 for string: Cannot cast '{0}' value '{1}.{2}' as a type of '{3}'. The provided string is not a valid relative or absolute '{3}'.</param>
+            <param name="param2">Parameter 2 for string: Cannot cast '{0}' value '{1}.{2}' as a type of '{3}'. The provided string is not a valid relative or absolute '{3}'.</param>
+            <param name="param3">Parameter 3 for string: Cannot cast '{0}' value '{1}.{2}' as a type of '{3}'. The provided string is not a valid relative or absolute '{3}'.</param>
+        </member>
+        <member name="M:System.Json.SR.JQuery13CompatModeNotSupportNestedJson(System.Object)">
+            <summary>Gets localized string like: Traditional style array without '[]' is not supported with nested object at location {0}.</summary>
+            <param name="param0">Parameter 0 for string: Traditional style array without '[]' is not supported with nested object at location {0}.</param>
+        </member>
+        <member name="M:System.Json.SR.MaxDepthExceeded(System.Object)">
+            <summary>Gets localized string like: The maximum read depth ({0}) has been exceeded because the form url-encoded data being read has more levels of nesting than is allowed.</summary>
+            <param name="param0">Parameter 0 for string: The maximum read depth ({0}) has been exceeded because the form url-encoded data being read has more levels of nesting than is allowed.</param>
+        </member>
+        <member name="M:System.Json.SR.MinParameterSize(System.Object)">
+            <summary>Gets localized string like: The parameter must be greater than {0}.</summary>
+            <param name="param0">Parameter 0 for string: The parameter must be greater than {0}.</param>
+        </member>
+        <member name="M:System.Json.SR.NestedBracketNotValid(System.Object,System.Object)">
+            <summary>Gets localized string like: Nested bracket is not valid for '{0}' data at position {1}.</summary>
+            <param name="param0">Parameter 0 for string: Nested bracket is not valid for '{0}' data at position {1}.</param>
+            <param name="param1">Parameter 1 for string: Nested bracket is not valid for '{0}' data at position {1}.</param>
+        </member>
+        <member name="M:System.Json.SR.OperationNotSupportedOnJsonType(System.Object)">
+            <summary>Gets localized string like: Operation not supported on JsonValue instance of 'JsonType.{0}' type.</summary>
+            <param name="param0">Parameter 0 for string: Operation not supported on JsonValue instance of 'JsonType.{0}' type.</param>
+        </member>
+        <member name="M:System.Json.SR.OperatorNotAllowedOnOperands(System.Object,System.Object,System.Object)">
+            <summary>Gets localized string like: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</summary>
+            <param name="param0">Parameter 0 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
+            <param name="param1">Parameter 1 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
+            <param name="param2">Parameter 2 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
+        </member>
+        <member name="M:System.Json.SR.OperatorNotDefinedForJsonType(System.Object,System.Object)">
+            <summary>Gets localized string like: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</summary>
+            <param name="param0">Parameter 0 for string: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</param>
+            <param name="param1">Parameter 1 for string: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</param>
+        </member>
+        <member name="M:System.Json.SR.OverflowReadAs(System.Object,System.Object)">
+            <summary>Gets localized string like: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</summary>
+            <param name="param0">Parameter 0 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</param>
+            <param name="param1">Parameter 1 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</param>
+        </member>
+        <member name="M:System.Json.SR.UnMatchedBracketNotValid(System.Object,System.Object)">
+            <summary>Gets localized string like: There is an unmatched opened bracket for the '{0}' at position {1}.</summary>
+            <param name="param0">Parameter 0 for string: There is an unmatched opened bracket for the '{0}' at position {1}.</param>
+            <param name="param1">Parameter 1 for string: There is an unmatched opened bracket for the '{0}' at position {1}.</param>
+        </member>
+        <member name="P:System.Json.SR.IncorrectJsonFormat">
+            <summary>Gets localized string like: The input source is not correctly formatted.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonStringCannotBeEmpty">
+            <summary>Gets localized string like: An empty string cannot be parsed as JSON.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_AlgorithmHeaderIsRequired">
+            <summary>Gets localized string like: The algorithm header (alg) is required. If the JSON web token is not signed, the algorithm header should be set to "none".</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_InvalidAlgorithm">
+            <summary>Gets localized string like: The cryptographic algorithm is not defined or is invalid. Use the value "none" to leave the JSON web token unsigned.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_InvalidKeyOrCertificateForAuthentication">
+            <summary>Gets localized string like: The provided key or certificate cannot be used to verify the signature of the JSON web token.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_InvalidKeyOrCertificateForSigning">
+            <summary>Gets localized string like: The provided key or certificate cannot be used to sign the JSON web token.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_InvalidSignature">
+            <summary>Gets localized string like: The JSON Web Token failed authentication. The signature in the token has a different value than the signature computed with the authenticating key.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_InvalidTokenFormat">
+            <summary>Gets localized string like: Cannot parse the JSON Web Token. The format is invalid.</summary>
+        </member>
+        <member name="P:System.Json.SR.JsonWebToken_SignatureRequired">
+            <summary>Gets localized string like: The JSON web token needs to be signed. To leave the token unsigned, set the Algorithm property to "none". Otherwise, call the Sign method to sign the token.</summary>
+        </member>
+        <member name="P:System.Json.SR.NonSingleNonNullIndexNotSupported">
+            <summary>Gets localized string like: Null index or multidimensional indexing is not supported by this indexer; use 'System.Int32' or 'System.String' for array and object indexing respectively.</summary>
+        </member>
+        <member name="P:System.Json.SR.QueryStringNameShouldNotNull">
+            <summary>Gets localized string like: Query string name cannot be null.</summary>
+        </member>
+        <member name="P:System.Json.SR.TypeNotSupported">
+            <summary>Gets localized string like: Object type not supported.</summary>
+        </member>
+        <member name="P:System.Json.SR.UseOfDefaultNotAllowed">
+            <summary>Gets localized string like: Operation not supported on JsonValue instances of 'JsonType.Default' type.</summary>
+        </member>
+        <member name="T:System.Json.FormUrlEncodedJson">
+            <summary>
+            This class provides a low-level API for parsing HTML form URL-encoded data, also known as <c>application/x-www-form-urlencoded</c> 
+            data. The output of the parser is a <see cref="T:System.Json.JsonObject"/> instance. 
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            </summary>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.Parse(System.Collections.Generic.IEnumerable{System.Tuple{System.String,System.String}})">
+            <summary>
+            Parses a collection of query string values as a <see cref="T:System.Json.JsonObject"/>.
+            </summary>
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            <param name="nameValuePairs">The collection of query string name-value pairs parsed in lexical order. Both names
+            and values must be un-escaped so that they don't contain any <see cref="T:System.Uri"/> encoding.</param>
+            <returns>The <see cref="T:System.Json.JsonObject"/> corresponding to the given query string values.</returns>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.Parse(System.Collections.Generic.IEnumerable{System.Tuple{System.String,System.String}},System.Int32)">
+            <summary>
+            Parses a collection of query string values as a <see cref="T:System.Json.JsonObject"/>.
+            </summary>
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            <param name="nameValuePairs">The collection of query string name-value pairs parsed in lexical order. Both names
+            and values must be un-escaped so that they don't contain any <see cref="T:System.Uri"/> encoding.</param>
+            <param name="maxDepth">The maximum depth of object graph encoded as <c>x-www-form-urlencoded</c>.</param>
+            <returns>The <see cref="T:System.Json.JsonObject"/> corresponding to the given query string values.</returns>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.TryParse(System.Collections.Generic.IEnumerable{System.Tuple{System.String,System.String}},System.Json.JsonObject@)">
+            <summary>
+            Parses a collection of query string values as a <see cref="T:System.Json.JsonObject"/>.
+            </summary>
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            <param name="nameValuePairs">The collection of query string name-value pairs parsed in lexical order. Both names
+            and values must be un-escaped so that they don't contain any <see cref="T:System.Uri"/> encoding.</param>
+            <param name="value">The parsed result or null if parsing failed.</param>
+            <returns><c>true</c> if <paramref name="nameValuePairs"/> was parsed successfully; otherwise false.</returns>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.TryParse(System.Collections.Generic.IEnumerable{System.Tuple{System.String,System.String}},System.Int32,System.Json.JsonObject@)">
+            <summary>
+            Parses a collection of query string values as a <see cref="T:System.Json.JsonObject"/>.
+            </summary>
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            <param name="nameValuePairs">The collection of query string name-value pairs parsed in lexical order. Both names
+            and values must be un-escaped so that they don't contain any <see cref="T:System.Uri"/> encoding.</param>
+            <param name="maxDepth">The maximum depth of object graph encoded as <c>x-www-form-urlencoded</c>.</param>
+            <param name="value">The parsed result or null if parsing failed.</param>
+            <returns><c>true</c> if <paramref name="nameValuePairs"/> was parsed successfully; otherwise false.</returns>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.ParseInternal(System.Collections.Generic.IEnumerable{System.Tuple{System.String,System.String}},System.Int32,System.Boolean)">
+            <summary>
+            Parses a collection of query string values as a <see cref="T:System.Json.JsonObject"/>.
+            </summary>
+            <remarks>This is a low-level API intended for use by other APIs. It has been optimized for performance and 
+            is not intended to be called directly from user code.</remarks>
+            <param name="nameValuePairs">The collection of query string name-value pairs parsed in lexical order. Both names
+            and values must be un-escaped so that they don't contain any <see cref="T:System.Uri"/> encoding.</param>
+            <param name="maxDepth">The maximum depth of object graph encoded as <c>x-www-form-urlencoded</c>.</param>
+            <param name="throwOnError">Indicates whether to throw an exception on error or return false</param>
+            <returns>The <see cref="T:System.Json.JsonObject"/> corresponding to the given query string values.</returns>
+        </member>
+        <member name="T:System.Json.FormUrlEncodedJson.ArrayCandidate">
+            <summary>
+            Class that wraps key-value pairs.
+            </summary>
+            <remarks>
+            This use of this class avoids a FxCop warning CA908 which happens if using various generic types.
+            </remarks>
+        </member>
+        <member name="M:System.Json.FormUrlEncodedJson.ArrayCandidate.#ctor(System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> class.
+            </summary>
+            <param name="key">The key of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.</param>
+            <param name="value">The value of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.</param>
+        </member>
+        <member name="P:System.Json.FormUrlEncodedJson.ArrayCandidate.Key">
+            <summary>
+            Gets or sets the key of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.
+            </summary>
+            <value>
+            The key of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.
+            </value>
+        </member>
+        <member name="P:System.Json.FormUrlEncodedJson.ArrayCandidate.Value">
+            <summary>
+            Gets or sets the value of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.
+            </summary>
+            <value>
+            The value of this <see cref="T:System.Json.FormUrlEncodedJson.ArrayCandidate"/> instance.
+            </value>
+        </member>
         <member name="T:System.Json.JsonArray">
             <summary>
             A JsonArray is an ordered sequence of zero or more <see cref="T:System.Json.JsonValue"/> objects.
@@ -1284,6 +1517,29 @@
             Includes indentation when formatting the JSON while serializing.
             </summary>
         </member>
+        <member name="T:System.Json.JsonSaveOptionsHelper">
+            <summary>
+            Helper class for validating <see cref="T:System.Json.JsonSaveOptions"/> values.
+            </summary>
+        </member>
+        <member name="M:System.Json.JsonSaveOptionsHelper.IsDefined(System.Json.JsonSaveOptions)">
+            <summary>
+            Determines whether the specified <paramref name="value"/> is defined by the <see cref="T:System.Json.JsonSaveOptions"/>
+            enumeration.
+            </summary>
+            <param name="value">The value to verify.</param>
+            <returns>
+            <c>true</c> if the specified options is defined; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:System.Json.JsonSaveOptionsHelper.Validate(System.Json.JsonSaveOptions,System.String)">
+            <summary>
+            Validates the specified <paramref name="value"/> and throws an <see cref="T:System.ComponentModel.InvalidEnumArgumentException"/>
+            exception if not valid.
+            </summary>
+            <param name="value">The value to validate.</param>
+            <param name="parameterName">Name of the parameter to use if throwing exception.</param>
+        </member>
         <member name="T:System.Json.JsonType">
             <summary>
             An enumeration that specifies primitive and structured JavaScript Object 
@@ -1688,6 +1944,288 @@
             <param name="items">The enumerable instance.</param>
             <returns>A <see cref="T:System.Json.JsonValue"/> created from the specified items.</returns>
         </member>
+        <member name="T:System.Json.JsonWebToken">
+            <summary>
+            Represents a JSON Web Token (JWT) as defined by the spec http://self-issued.info/docs/draft-jones-json-web-token.html.
+            </summary>
+        </member>
+        <member name="M:System.Json.JsonWebToken.#ctor">
+            <summary>
+            Creates a JSON Web Token (JWT) without any headers, claims or signature.
+            </summary>
+        </member>
+        <member name="M:System.Json.JsonWebToken.Parse(System.String)">
+            <summary>
+            Creates a JsonWebToken from the specified string representation. No signature verification is performed.
+            </summary>
+            <param name="rawToken">The JSON Web Token</param>
+            <returns>The <see cref="T:System.Json.JsonWebToken"/>.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.TryParse(System.String,System.Json.JsonWebToken@)">
+            <summary>
+            Try to parse a JsonWebToken from the specified string representation. No signature verification is performed. 
+            </summary>
+            <param name="rawToken">The raw token string to be parsed</param>
+            <param name="token">The JSON Web Token object parsed from the input</param>
+            <returns>Boolean result to indicate whether the parsing has succeeded.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.ParseAndAuthenticate(System.String,System.String)">
+            <summary>
+            Creates a JsonWebToken from the specified string representation and validates the signature.
+            </summary>
+            <param name="rawToken">The JSON Web Token</param>
+            <param name="key">The base64 encoded key used by the cryptographic algorithm to validate the signature.</param>
+            <remarks>The JSON web token is expected to be signed with an HMAC with SHA-256 cryptographic algorithm. An exception is thrown otherwise.</remarks>
+            <returns>The validated <see cref="T:System.Json.JsonWebToken"/>.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.ParseAndAuthenticate(System.String,System.Byte[])">
+            <summary>
+            Creates a JsonWebToken from the specified string representation and validates the signature.
+            </summary>
+            <param name="rawToken">The JSON Web Token</param>
+            <param name="key">The key used by the cryptographic algorithm to validate the signature.</param>
+            <remarks>The JSON web token is expected to be signed with an HMAC with SHA-256 cryptographic algorithm. An exception is thrown otherwise.</remarks>
+            <returns>The validated <see cref="T:System.Json.JsonWebToken"/>.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.ParseAndAuthenticate(System.String,System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Creates a JsonWebToken from the specified string representation and validates the signature.
+            </summary>
+            <param name="rawToken">The JSON Web Token</param>
+            <param name="certificate">The X.509 certificate used by the cryptographic algorithm to validate the signature.</param>
+            <remarks>The JSON web token is expected to be signed with a RSA with SHA-256 cryptographic algorithm. An exception is thrown otherwise.</remarks>
+            <returns>The validated <see cref="T:System.Json.JsonWebToken"/>.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.VerifySignature(System.Byte[])">
+            <summary>
+            Verify the signature of the JSON web token given a key blob
+            </summary>
+            <param name="key">The key used by the cryptographic algorithm to validate the signature.</param>
+        </member>
+        <member name="M:System.Json.JsonWebToken.VerifySignature(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Verify the signature of the JSON web token given a certificate
+            </summary>
+            <param name="certificate">The X.509 certificate used by the cryptographic algorithm to validate the signature.</param>
+        </member>
+        <member name="M:System.Json.JsonWebToken.Serialize">
+            <summary>
+            Provides the string representation of the JSON Web Token.
+            </summary>
+            <returns>The encoded JSON web token.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.Sign(System.String)">
+            <summary>
+            Signs the JSON web token using the specified symmetric key and the HMAC cryptographic algorithm specified by the Algorithm property.
+            </summary>
+            <param name="key">Base 64 encoded symmetric key value.</param>
+            <returns>The encoded JSON web token.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.Sign(System.Byte[])">
+            <summary>
+            Signs the JSON web token using the specified symmetric key and the HMAC cryptographic algorithm specified by the Algorithm property.
+            </summary>
+            <param name="key">The symmetric key value.</param>
+            <returns>The encoded JSON web token.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.Sign(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            Signs the JSON web token using the key from the specified certificate and the RSA cryptographic algorithm specified by the Algorithm property.
+            </summary>
+            <param name="certificate">The X.509 certificate used to sign the token.</param>
+            <returns>The encoded JSON web token.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents an un-encoded representation of the JSON web token.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents an un-encoded representation of the JSON web token.
+            </returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.StringToByteArray(System.String)">
+            <summary>
+            Converts a string-encoded hex value (e.g. an X.509 Certificate thumbprint) into a byte array.
+            </summary>
+            <param name="str">The string to be converted to a byte array.</param>
+            <returns>Return the byte array corresponding to the input string.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.EncodeBase64UrlWithNoPadding(System.Byte[])">
+            <summary>
+            Encodes the specified bytes as a base64url string (as defined in RFC4648), with no padding characters ('=').
+            </summary>
+            <param name="arg">The bytes to encode as a base64url string with no padding.</param>
+            <returns>Returns the encoded base64url string, with no padding.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.DecodeBase64UrlWithNoPadding(System.String)">
+            <summary>
+            Decodes the specified base64url string (as defined in RFC4648) that has no padding characters ('=').
+            </summary>
+            <param name="arg">The base64url string that has no padding.</param>
+            <returns>Returns the bytes decoded from the base64url string with no padding.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.TryParseInternal(System.String,System.Json.JsonWebToken@,System.String@)">
+            <summary>
+            TryParseInternal parses the rawToken.
+            </summary>
+            <param name="rawToken">The rawToken to be parsed</param>
+            <param name="token">The returned JsonWebToken</param>
+            <param name="errorMessage">The error message due to bad argument of the rawToken</param>
+            <returns>Boolean result to indicate whether the parsing has succeeded.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.GetHeaderSegment">
+            <summary>
+            Returns the JWT Header Segment.
+            </summary>
+            <remarks>
+            A JWT Token Segment containing a base64url encoded JSON object that describes the cryptographic operations applied to the JWT Header Segment and 
+            the JWT Claim Segment. The JWT Header Segment is the JWS Header Input for creating a JSON Web Signature for the JWT.
+            </remarks>
+            <returns>The JWT header segment.</returns>
+        </member>
+        <member name="M:System.Json.JsonWebToken.GetClaimSegment">
+            <summary>
+            Returns the JWT Claim Segment.
+            </summary>
+            <remarks>
+            A JWT Token Segment containing a base64url encoded JSON object that encodes the claims contained in the JWT. The JWT Claim Segment is the JWS Payload Input 
+            for creating a JSON Web Signature for the JWT. 
+            </remarks>
+            <returns>The JWT Claims Segment.</returns>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Headers">
+            <summary>
+            Gets all the headers within the token, including the Algorithm.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Claims">
+            <summary>
+            Gets all the claims within the token, including the ExpirationTime, NotBefore, IssuedAt, Issuer and Audience.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Algorithm">
+            <summary>
+            Gets or sets the alg (algorithm) header parameter identifies the cryptographic algorithm used to secure the JWT token.
+            </summary>
+            <value>
+            The algorithm.
+            </value>
+        </member>
+        <member name="P:System.Json.JsonWebToken.ExpirationTime">
+            <summary>
+            Gets or sets the exp (expiration time) claim identifying the time on or after which the token MUST NOT be accepted for processing.
+            The processing of the exp claim requires that the current date/time MUST be before the expiration date/time listed in the exp claim.
+            Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew. This claim is OPTIONAL.
+            </summary>
+            <remarks>The JWT header stores the number of seconds from 1970-01-01T0:0:0Z as measured in UTC until the desired date/time.</remarks>
+            <value>
+            The expiration time.
+            </value>
+        </member>
+        <member name="P:System.Json.JsonWebToken.NotBefore">
+            <summary>
+            Gets or sets the nbf (not before) claim identifying the time before which the token MUST NOT be accepted for processing.
+            The processing of the nbf claim requires that the current date/time MUST be after or equal to the not-before date/time listed in the nbf claim.
+            Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew. This claim is OPTIONAL.
+            </summary>
+            <remarks>The JWT header stores the number of seconds from 1970-01-01T0:0:0Z as measured in UTC until the desired date/time.</remarks>
+        </member>
+        <member name="P:System.Json.JsonWebToken.IssuedAt">
+            <summary>
+            Gets or sets the iat (issued at) claim identifying the time at which the JWT was issued. This claim can be used to determine the age of the token.
+            This claim is OPTIONAL.
+            </summary>
+            <remarks>The JWT header stores the number of seconds from 1970-01-01T0:0:0Z as measured in UTC until the desired date/time.</remarks>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Issuer">
+            <summary>
+            Gets or sets the iss (issuer) claim identifying the principal that issued the JWT. The processing of this claim is generally application specific.
+            The iss value is case sensitive. This claim is OPTIONAL. 
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Audience">
+            <summary>
+            Gets or sets the aud (audience) claim identifying the audience that the JWT is intended for. The principal intended to process the JWT MUST be identified 
+            by the value of the audience claim. If the principal processing the claim does not identify itself with the identifier in the aud claim value 
+            then the JWT MUST be rejected. The interpretation of the contents of the audience value is generally application specific. 
+            The value is case sensitive. This claim is OPTIONAL.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.NameIdentifier">
+            <summary>
+            Gets or sets the name identifier claim.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.Actor">
+            <summary>
+            Gets or sets the actor claim.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.IdentityProvider">
+            <summary>
+            Gets or sets the identity provider claim.
+            </summary>
+        </member>
+        <member name="P:System.Json.JsonWebToken.IsSigned">
+            <summary>
+            Gets a value indicating whether the token is signed or not.
+            </summary>
+        </member>
+        <member name="T:System.Json.JsonWebToken.JsonWebTokenAlgorithms">
+            <summary>
+            Defines algorithms used to sign the contents of the JSON Web Token (JWT) Header and Claim Segments, to produce the Crypto Segment value.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.None">
+            <summary>
+            The JSON Web Token (JWT) is not signed.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.HmacSha256">
+            <summary>
+            HMAC using SHA-256 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.HmacSha384">
+            <summary>
+            HMAC using SHA-384 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.HmacSha512">
+            <summary>
+            HMAC using SHA-512 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.RsaSha256">
+            <summary>
+            RSA using SHA-256 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.RsaSha384">
+            <summary>
+            RSA using SHA-384 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.RsaSha512">
+            <summary>
+            RSA using SHA-512 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.EcdsaP256Sha256">
+            <summary>
+            ECDSA using P-256 curve and SHA-256 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.EcdsaP384Sha384">
+            <summary>
+            ECDSA using P-384 curve and SHA-384 hash algorithm.
+            </summary>
+        </member>
+        <member name="F:System.Json.JsonWebToken.JsonWebTokenAlgorithms.EcdsaP512Sha512">
+            <summary>
+            ECDSA using P-512 curve and SHA-512 hash algorithm.
+            </summary>
+        </member>
         <member name="T:System.Json.NGenWrapper`1">
             <summary>
             Struct that wraps values which cause JIT compilation at runtime.
@@ -1836,87 +2374,6 @@
             <summary>
             Gets of sets
             </summary>
-        </member>
-        <member name="M:System.Json.SR.CannotCastJsonValue(System.Object,System.Object)">
-            <summary>Gets localized string like: Unable to cast object of type '{0}' to type '{1}'.</summary>
-            <param name="param0">Parameter 0 for string: Unable to cast object of type '{0}' to type '{1}'.</param>
-            <param name="param1">Parameter 1 for string: Unable to cast object of type '{0}' to type '{1}'.</param>
-        </member>
-        <member name="M:System.Json.SR.CannotReadAsType(System.Object,System.Object)">
-            <summary>Gets localized string like: CannotReadAsType=Cannot read '{0}' as '{1}' type.</summary>
-            <param name="param0">Parameter 0 for string: CannotReadAsType=Cannot read '{0}' as '{1}' type.</param>
-            <param name="param1">Parameter 1 for string: CannotReadAsType=Cannot read '{0}' as '{1}' type.</param>
-        </member>
-        <member name="M:System.Json.SR.CannotReadPrimitiveAsType(System.Object,System.Object)">
-            <summary>Gets localized string like: Cannot read JsonPrimitive value '{0}' as '{1}'.</summary>
-            <param name="param0">Parameter 0 for string: Cannot read JsonPrimitive value '{0}' as '{1}'.</param>
-            <param name="param1">Parameter 1 for string: Cannot read JsonPrimitive value '{0}' as '{1}'.</param>
-        </member>
-        <member name="M:System.Json.SR.DynamicPropertyNotDefined(System.Object,System.Object)">
-            <summary>Gets localized string like: '{0}' does not contain a definition for property '{1}'.</summary>
-            <param name="param0">Parameter 0 for string: '{0}' does not contain a definition for property '{1}'.</param>
-            <param name="param1">Parameter 1 for string: '{0}' does not contain a definition for property '{1}'.</param>
-        </member>
-        <member name="M:System.Json.SR.IndexerNotSupportedOnJsonType(System.Object,System.Object)">
-            <summary>Gets localized string like: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</summary>
-            <param name="param0">Parameter 0 for string: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</param>
-            <param name="param1">Parameter 1 for string: '{0}' type indexer is not supported on JsonValue of 'JsonType.{1}' type.</param>
-        </member>
-        <member name="M:System.Json.SR.InvalidCastNonNullable(System.Object)">
-            <summary>Gets localized string like: Cannot convert null to '{0}' because it is a non-nullable value type.</summary>
-            <param name="param0">Parameter 0 for string: Cannot convert null to '{0}' because it is a non-nullable value type.</param>
-        </member>
-        <member name="M:System.Json.SR.InvalidDateFormat(System.Object,System.Object)">
-            <summary>Gets localized string like: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</summary>
-            <param name="param0">Parameter 0 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</param>
-            <param name="param1">Parameter 1 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. It is not in a valid date format.</param>
-        </member>
-        <member name="M:System.Json.SR.InvalidIndexType(System.Object)">
-            <summary>Gets localized string like: Invalid '{0}' index type; only 'System.String' and non-negative 'System.Int32' types are supported.</summary>
-            <param name="param0">Parameter 0 for string: Invalid '{0}' index type; only 'System.String' and non-negative 'System.Int32' types are supported.</param>
-        </member>
-        <member name="M:System.Json.SR.InvalidJsonPrimitive(System.Object)">
-            <summary>Gets localized string like: Invalid JSON primitive: {0}.</summary>
-            <param name="param0">Parameter 0 for string: Invalid JSON primitive: {0}.</param>
-        </member>
-        <member name="M:System.Json.SR.InvalidUriFormat(System.Object)">
-            <summary>Gets localized string like: Cannot cast JsonPrimitive value '{0}' as a type of 'Uri'. The provided string is not in a valid relative or absolute URI format.</summary>
-            <param name="param0">Parameter 0 for string: Cannot cast JsonPrimitive value '{0}' as a type of 'Uri'. The provided string is not in a valid relative or absolute URI format.</param>
-        </member>
-        <member name="M:System.Json.SR.OperationNotSupportedOnJsonType(System.Object)">
-            <summary>Gets localized string like: Operation not supported on JsonValue instance of 'JsonType.{0}' type.</summary>
-            <param name="param0">Parameter 0 for string: Operation not supported on JsonValue instance of 'JsonType.{0}' type.</param>
-        </member>
-        <member name="M:System.Json.SR.OperatorNotAllowedOnOperands(System.Object,System.Object,System.Object)">
-            <summary>Gets localized string like: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</summary>
-            <param name="param0">Parameter 0 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
-            <param name="param1">Parameter 1 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
-            <param name="param2">Parameter 2 for string: Operation '{0}' cannot be applied on operands of type '{1}' and '{2}'.</param>
-        </member>
-        <member name="M:System.Json.SR.OperatorNotDefinedForJsonType(System.Object,System.Object)">
-            <summary>Gets localized string like: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</summary>
-            <param name="param0">Parameter 0 for string: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</param>
-            <param name="param1">Parameter 1 for string: Operation '{0}' is not defined for JsonValue instances of JsonType '{1}'.</param>
-        </member>
-        <member name="M:System.Json.SR.OverflowReadAs(System.Object,System.Object)">
-            <summary>Gets localized string like: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</summary>
-            <param name="param0">Parameter 0 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</param>
-            <param name="param1">Parameter 1 for string: Cannot cast JsonPrimitive value '{0}' as '{1}'. The value is either too large or too small for the specified CLR type.</param>
-        </member>
-        <member name="P:System.Json.SR.IncorrectJsonFormat">
-            <summary>Gets localized string like: The input source is not correctly formatted.</summary>
-        </member>
-        <member name="P:System.Json.SR.JsonStringCannotBeEmpty">
-            <summary>Gets localized string like: An empty string cannot be parsed as JSON.</summary>
-        </member>
-        <member name="P:System.Json.SR.NonSingleNonNullIndexNotSupported">
-            <summary>Gets localized string like: Null index or multidimensional indexing is not supported by this indexer; use 'System.Int32' or 'System.String' for array and object indexing respectively.</summary>
-        </member>
-        <member name="P:System.Json.SR.TypeNotSupported">
-            <summary>Gets localized string like: Object type not supported.</summary>
-        </member>
-        <member name="P:System.Json.SR.UseOfDefaultNotAllowed">
-            <summary>Gets localized string like: Operation not supported on JsonValue instances of 'JsonType.Default' type.</summary>
         </member>
     </members>
 </doc>

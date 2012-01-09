@@ -11,8 +11,9 @@ namespace OctopusTools.Commands
         readonly IOctopusClientFactory clientFactory;
         readonly Lazy<IOctopusClient> client;
         readonly ILog log;
-        string apiKey;
         string serverBaseUrl;
+        string user;
+        string pass;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, ILog log)
         {
@@ -27,8 +28,9 @@ namespace OctopusTools.Commands
             get 
             {
                 var options = new OptionSet();
-                options.Add("apiKey=", "The API Key from the Settings->API page in your Octopus server.", v => apiKey = v);
                 options.Add("server=", "The base URL for your Octopus server - e.g., http://myserver/", v => serverBaseUrl = v);
+                options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
+                options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
                 return options;
             }
         }
@@ -47,17 +49,19 @@ namespace OctopusTools.Commands
 
         IOctopusClient CreateAndInitializeClient()
         {
-            // TODO: Enable this when the feature is implemented in Octopus
-            //if (string.IsNullOrWhiteSpace(apiKey))
-            //    throw new CommandException("Please specify an API key using the parameter: --apiKey=XYZ");
-
             if (string.IsNullOrWhiteSpace(serverBaseUrl))
                 throw new CommandException("Please specify a server using the parameter: --server=http://myserver");
 
             var uri = new Uri(serverBaseUrl);
             uri = uri.EnsureEndsWith("/api");
 
-            return clientFactory.Create(apiKey, uri, CredentialCache.DefaultNetworkCredentials);
+            var credentials = CredentialCache.DefaultNetworkCredentials;
+            if (!string.IsNullOrWhiteSpace(user))
+            {
+                credentials = new NetworkCredential(user, pass);
+            }
+
+            return clientFactory.Create(uri, credentials);
         }
     }
 }

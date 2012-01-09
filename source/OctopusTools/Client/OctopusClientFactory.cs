@@ -16,8 +16,9 @@ namespace OctopusTools.Client
             this.log = log;
         }
 
-        public IOctopusClient Create(string apiKey, Uri serverBaseUrl, ICredentials credentials)
+        public IOctopusClient Create(Uri serverBaseUrl, ICredentials credentials)
         {
+            httpClient.SetAuthentication(credentials);
             return new OctopusClient(httpClient, serverBaseUrl, log);
         }
     }
