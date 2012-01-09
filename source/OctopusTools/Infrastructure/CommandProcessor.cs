@@ -41,36 +41,45 @@ namespace OctopusTools.Infrastructure
 
                 command.Execute();
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                foreach (var inner in ex.InnerExceptions)
+                PrintError(ex);
+            }
+        }
+
+        void PrintError(Exception ex)
+        {
+            var agg = ex as AggregateException;
+            if (agg != null)
+            {
+                var errors = new HashSet<Exception>(agg.InnerExceptions);
+                errors.Add(ex.InnerException);
+                foreach (var inner in errors)
                 {
-                    log.Error("Error: " + inner.Message);
+                    PrintError(inner);
                 }
 
-                if (args.Any(a => a.TrimStart("/-".ToCharArray()).ToLowerInvariant() == "--debug"))
-                {
-                    foreach (var inner in ex.InnerExceptions)
-                    {
-                        log.Debug(inner);
-                    }
-                }
+                return;
             }
-            catch (ArgumentException ex)
-            {
-                log.Error("Argument error: ");
-                log.Error(ex.Message);
-            }
-            catch (CommandException ex)
+
+            var cmd = ex as CommandException;
+            if (cmd != null)
             {
                 log.Error("Command error: ");
                 log.Error(ex.Message);
+                return;
             }
-            catch (Exception ex)
+
+            var arg = ex as ArgumentException;
+            if (arg != null)
             {
+                log.Error("Argument error: ");
                 log.Error(ex.Message);
-                log.Debug(ex);
+                return;   
             }
+
+            log.Error(ex.Message);
+            log.Debug(ex);
         }
 
         static string GetFirstArgument(IEnumerable<string> args)

@@ -79,6 +79,8 @@
     </Compile>
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
+    <Compile Include="Model\Deployment.cs" />
+    <Compile Include="Model\DeploymentEnvironment.cs" />
     <Compile Include="Model\OctopusInstance.cs" />
     <Compile Include="Client\ClientModule.cs" />
     <Compile Include="Client\DeleteResult.cs" />
@@ -94,7 +96,7 @@
     <Compile Include="Client\OctopusClient.cs" />
     <Compile Include="Client\OctopusClientFactory.cs" />
     <Compile Include="Client\SaveResult.cs" />
-    <Compile Include="Model\Environment.cs" />
+    <Compile Include="Model\PackageVersion.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
     <Compile Include="Infrastructure\ICommandLocator.cs" />
@@ -104,6 +106,11 @@
     <Compile Include="Commands\Options.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
+    <Compile Include="Model\Project.cs" />
+    <Compile Include="Model\Release.cs" />
+    <Compile Include="Model\Resource.cs" />
+    <Compile Include="Model\SemanticVersion.cs" />
+    <Compile Include="Model\Step.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />

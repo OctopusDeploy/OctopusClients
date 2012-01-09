@@ -35,8 +35,7 @@ namespace OctopusTools.Commands
         public override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
-            if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a version number using the parameter: --version=X.Y.Z.W");
-
+            
             var server = Client.Handshake().Execute();
 
             var project = FindProject(server);
@@ -73,13 +72,20 @@ namespace OctopusTools.Commands
 
         Release CreateNewRelease(Project project, List<PackageVersion> latestVersions)
         {
+            var version = VersionNumber;
+            if (string.IsNullOrWhiteSpace(version))
+            {
+                version = latestVersions.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).First().ToString();
+                Log.Warn("A --version parameter was not specified, so we will infer the version number from the packages. The highest version number is: " + version);
+            }
+
             var release = new Release();
             release.Assembled = DateTime.UtcNow;
             release.AssembledBy = Environment.UserName;
-            release.Version = VersionNumber;
+            release.Version = version;
             release.PackageVersions = latestVersions.ToArray();
 
-            Log.Debug("Creating release: " + VersionNumber);
+            Log.Debug("Creating release: " + version);
 
             var result = Client.Create(project.Link("Releases"), release).Execute();
 
