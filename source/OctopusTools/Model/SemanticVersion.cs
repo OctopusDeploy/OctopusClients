@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// This is the implementation from NuGet (http://nuget.org). 
+// NuGet is licensed under the Apache license: http://nuget.codeplex.com/license
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OctopusTools.Model
