@@ -34,6 +34,6 @@ Note that packages that have already been deployed to the selected machines will
 
 If your IIS server is set up to require Windows Authentication, the tool will automatically pass the currently logged in user's credentials. If this doesn't work, or you want to use a different user, simply add these two arguments:
 
-   octo ... --user=fred --password=secret
+    octo ... --user=fred --password=secret
 
 [1]: http://octopusdeploy.com 
