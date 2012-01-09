@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="lib\MSBuild.Community.Tasks.Targets" />
+  <Import Project="lib\MSBuild.Deployment.Tasks.Targets" />
+  <Import Project="lib\MSBuild.Mercurial.tasks"/>
+
+  <PropertyGroup>
+    <ProgramFiles32>$(MSBuildProgramFiles32)</ProgramFiles32>
+    <ProgramFiles32 Condition=" '' == '$(ProgramFiles32)'">$(ProgramFiles%28x86%29)</ProgramFiles32>
+    <ProgramFiles32 Condition=" '' == '$(ProgramFiles32)' ">$(ProgramFiles)</ProgramFiles32>
+  </PropertyGroup>
+
+  <!-- Constants -->
+  <PropertyGroup>
+    <Root>$(MSBuildStartupDirectory)</Root>
+    <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console.exe</nunitconsoleexe>
+    <NuGetPath>$(Root)\tools\NuGet</NuGetPath>
+  </PropertyGroup>
+
+  <!-- Versioning -->
+  <PropertyGroup>
+    <Major>1</Major>          <!-- Huge functionality changes and backwards compatibility breaks -->
+    <Minor>0</Minor>          <!-- New functionality but still backwards compatibile -->
+    <Build>0</Build>          <!-- Set to Mercurial source control revision -->
+    <Revision>0</Revision>    <!-- Team City build number. Defaults to 1 when called from build.bat -->
+  </PropertyGroup>
+
+  <Target Name="Diagnose">
+    <Message Text="Diagnostics:"/>
+    <Message Text="Build Number:    $(build_number)" />
+    <Message Text="Project root:    $(Root)" />
+    <Message Text="Build dir:       $(MSBuildProjectDirectory)" />
+    <Message Text="NUnit Console:   $(nunitconsoleexe)" />
+    <Message Text="Drop path:       $(drop_path)" />
+  </Target>
+
+  <!--
+  Cleanup
+  -->
+  <Target Name="CleanUp">
+    <ItemGroup>
+      <FilesToDelete Include="$(Root)\source\OctopusTools\bin\**\*.*" />
+      <FilesToDelete Include="$(Root)\source\OctopusTools\obj\**\*.*" />
+      <FilesToDelete Include="$(Root)\build\Artifacts\**\*.*" />
+      <FilesToDelete Include="$(Root)\build\Temp\**\*.*" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" ContinueOnError="true" />
+  </Target>
+
+  <!-- 
+  CreateArtifactsDirectories
+  -->
+  <Target Name="CreateArtifactsDirectories">
+    <MakeDir Directories="$(Root)\build"                        Condition="!Exists('$(Root)\build')" />
+    <MakeDir Directories="$(Root)\build\Temp"                   Condition="!Exists('$(Root)\build\Temp')" />
+    <MakeDir Directories="$(Root)\build\Artifacts"              Condition="!Exists('$(Root)\build\Artifacts')" />
+  </Target>
+
+  <!-- 
+  Versioning
+  -->
+  <Target Name="Versioning">
+    <PropertyGroup>
+	  <Major>0</Major>                        <!-- Huge functionality changes and backwards compatibility breaks -->
+	  <Minor>9</Minor>                        <!-- New functionality but still backwards compatibile -->
+	  <Build>2</Build>                        <!-- Set to Mercurial source control revision -->
+	  <Revision>$(build_number)</Revision>    <!-- Team City build number. Defaults to 1 when called from build.bat -->
+    </PropertyGroup>
+  
+    <HgVersion LocalPath=".">
+      <Output TaskParameter="Revision" PropertyName="Build" />
+    </HgVersion>
+
+    <AssemblyInfo
+      CodeLanguage="CS"
+      OutputFile="$(Root)\source\Solution Items\VersionInfo.cs"
+      AssemblyVersion="$(Major).$(Minor).0.0"
+      AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)"
+      />
+    <FileUpdate Files="$(Root)\source\OctopusTools\OctopusTools.nuspec"
+      Regex='version>[0-9]+.[0-9]+.[0-9]+.[0-9]+'
+      ReplacementText='version>$(Major).$(Minor).$(Build).$(Revision)'
+      />
+  </Target>
+
+  <!--
+  Compile
+  -->
+  <Target Name="Compile" DependsOnTargets="CleanUp;CreateArtifactsDirectories">
+    <ItemGroup>
+      <ProjectToBuild Include="$(Root)\source\OctopusTools.sln" />
+    </ItemGroup>
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Build" Properties="Configuration=Release">
+      <Output TaskParameter="TargetOutputs" ItemName="AssembliesBuiltByChildProjects" />
+    </MSBuild>
+
+    <ItemGroup>
+      <AssembliesToMerge Include="$(Root)\source\OctopusTools\bin\*.dll" />
+    </ItemGroup>
+
+    <Exec Command="&quot;$(Root)\tools\ILMerge\ILMerge.exe&quot; /ndebug /internalize /t:exe /targetplatform:v4 /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
+  </Target>
+
+  <!--
+  Package
+  -->
+  <Target Name="Package" DependsOnTargets="Compile">
+    <ItemGroup>
+      <!-- Octo.exe is copied via output of ILMerge above -->
+      <PackagedFiles Include="$(Root)\source\OctopusTools\bin\Octo.exe.config" />
+      <PackagedFiles Include="$(Root)\source\OctopusTools\bin\OctopusTools.nuspec" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackagedFiles)" DestinationFolder="$(Root)\build\Temp" />
+    
+    <Exec Command='"$(NuGetPath)\NuGet.exe" pack "OctopusTools.nuspec"' WorkingDirectory='$(Root)\build\Temp' />
+    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).nupkg" />
+    
+    <ItemGroup>
+      <PackageFilesToDelete Include="$(Root)\build\Temp\OctopusTools.nuspec" />
+      <PackageFilesToDelete Include="$(Root)\build\Temp\*.nupkg" />
+    </ItemGroup>
+    
+    <Delete Files="@(PackageFilesToDelete)" ContinueOnError="true" />
+    
+    <ItemGroup>
+      <ZipFiles Include="$(Root)\build\Temp\*.*" />
+    </ItemGroup>
+    <Zip ZipFileName="$(Root)\build\Artifacts\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
+  </Target>
+
+  <!--
+  Test
+  -->
+  <Target Name="Test" DependsOnTargets="Compile">
+    <ItemGroup>
+      <TestAssemblies Include="$(Root)\source\OctopusTools.Tests\bin\OctopusTools.Tests.dll"/>
+    </ItemGroup>
+    <Exec Condition="$(teamcity_dotnet_nunitlauncher) != ''" Command="&quot;$(teamcity_dotnet_nunitlauncher)&quot; v4.0 x86 NUnit-2.5.0 @(TestAssemblies->'&quot;%(FullPath)&quot;', '%20')" />
+    <Exec Condition="$(teamcity_dotnet_nunitlauncher) == ''" Command="&quot;$(nunitconsoleexe)&quot; @(TestAssemblies->'&quot;%(FullPath)&quot;', '%20')" />
+  </Target>
+
+  <!--
+  PublishArtifacts
+  -->
+  <Target Name="PublishArtifacts" DependsOnTargets="CreateArtifactsDirectories;Package">
+    <ItemGroup>
+      <Artifacts Include="$(Root)\build\Artifacts\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(Artifacts)" DestinationFolder="$(drop_path)" Condition="$(drop_path) != ''" />
+  </Target>
+
+  <!--
+  BuildAndPackage
+  -->
+  <Target Name="BuildAndPackage" DependsOnTargets="PublishArtifacts" />
+
+  <!--
+  BuildAndPublish
+  -->
+  <Target Name="BuildAndPublish" DependsOnTargets="Versioning;PublishArtifacts;Test;Diagnose" />
+</Project>
