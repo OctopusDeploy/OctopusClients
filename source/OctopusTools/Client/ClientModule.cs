@@ -9,7 +9,6 @@ namespace OctopusTools.Client
         {
             base.Load(builder);
 
-            builder.RegisterType<HttpClientWrapper>().As<IHttpClient>();
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
         }
     }

@@ -44,18 +44,6 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Json, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\JsonValue.0.6.0\lib\40\Microsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Net.Http.Formatting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\HttpClient.0.6.0\lib\40\Microsoft.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Server.Common, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\JsonValue.0.6.0\lib\40\Microsoft.Server.Common.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -63,9 +51,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http">
-      <HintPath>..\packages\HttpClient.0.6.0\lib\40\System.Net.Http.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -86,9 +71,6 @@
     <Compile Include="Model\DeploymentEnvironment.cs" />
     <Compile Include="Model\OctopusInstance.cs" />
     <Compile Include="Client\ClientModule.cs" />
-    <Compile Include="Client\DeleteResult.cs" />
-    <Compile Include="Client\HttpClientWrapper.cs" />
-    <Compile Include="Client\IHttpClient.cs" />
     <Compile Include="Commands\ApiCommand.cs" />
     <Compile Include="Infrastructure\AutofacExtensions.cs" />
     <Compile Include="Infrastructure\CommandLocator.cs" />
@@ -98,7 +80,6 @@
     <Compile Include="Client\IOctopusClientFactory.cs" />
     <Compile Include="Client\OctopusClient.cs" />
     <Compile Include="Client\OctopusClientFactory.cs" />
-    <Compile Include="Client\SaveResult.cs" />
     <Compile Include="Model\PackageVersion.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
