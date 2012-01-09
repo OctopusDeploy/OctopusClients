@@ -30,8 +30,10 @@ Note that packages that have already been deployed to the selected machines will
 
     octo create-release --server=http://your-octopus/api --project=HelloWorld --deployto=Production --force
 
-## API Keys
+## Authentication
 
-All commands take an API key. This is for future usage, and isn't supported by Octopus just yet. For now, this tool only works when your Octopus installation is available anonymously. 
+If your IIS server is set up to require Windows Authentication, the tool will automatically pass the currently logged in user's credentials. If this doesn't work, or you want to use a different user, simply add these two arguments:
+
+   octo ... --user=fred --password=secret
 
 [1]: http://octopusdeploy.com 
