@@ -12,10 +12,11 @@ namespace OctopusTools.Commands
     {
         public CreateReleaseCommand(IOctopusClientFactory clientFactory, ILog log) : base(clientFactory, log)
         {
+            DeployToEnvironmentNames = new List<string>();
         }
 
         public string ProjectName { get; set; }
-        public string DeployToEnvironmentName { get; set; }
+        public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public bool Force { get; set; }
 
@@ -25,7 +26,7 @@ namespace OctopusTools.Commands
             {
                 var options = base.Options;
                 options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentName = v);
+                options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 return options;
@@ -40,7 +41,7 @@ namespace OctopusTools.Commands
 
             var project = FindProject(server);
 
-            var environment = FindEnvironment(server);
+            var environments = FindEnvironments(server);
 
             var steps = FindStepsForProject(project);
 
@@ -52,9 +53,10 @@ namespace OctopusTools.Commands
             }
 
             var release = CreateNewRelease(project, latestVersions);
-            if (environment != null)
+            if (environments != null)
             {
-                DeployRelease(release, environment);
+                foreach (var environment in environments)
+                    DeployRelease(release, environment);
             }
         }
 
@@ -128,24 +130,33 @@ namespace OctopusTools.Commands
             return project;
         }
 
-        DeploymentEnvironment FindEnvironment(OctopusInstance server)
+        IEnumerable<DeploymentEnvironment> FindEnvironments(OctopusInstance server)
         {
-            if (string.IsNullOrWhiteSpace(DeployToEnvironmentName))
-                return null;
+            if (DeployToEnvironmentNames == null || !DeployToEnvironmentNames.Any())
+                return Enumerable.Empty<DeploymentEnvironment>();
 
-            Log.DebugFormat("Searching for environment '{0}'", DeployToEnvironmentName);
-
+            var list = new List<DeploymentEnvironment>();
             var environments = Client.List<DeploymentEnvironment>(server.Link("Environments")).Execute();
 
-            var environment = environments.FirstOrDefault(x => string.Equals(x.Name, DeployToEnvironmentName, StringComparison.InvariantCultureIgnoreCase));
-            if (environment == null)
+            foreach (var environmentName in DeployToEnvironmentNames)
             {
-                throw new ArgumentException(string.Format("An environment named '{0}' could not be found.", DeployToEnvironmentName));
+                if (string.IsNullOrWhiteSpace(environmentName))
+                    continue;
+
+                Log.DebugFormat("Searching for environment '{0}'", environmentName);
+
+                var environment = environments.FirstOrDefault(x => string.Equals(x.Name, environmentName, StringComparison.InvariantCultureIgnoreCase));
+                if (environment == null)
+                {
+                    throw new ArgumentException(string.Format("An environment named '{0}' could not be found.", environmentName));
+                }
+
+                Log.InfoFormat("Found environment: {0} [{1}]", environment.Name, environment.Id);
+
+                list.Add(environment);
             }
 
-            Log.InfoFormat("Found environment: {0} [{1}]", environment.Name, environment.Id);
-
-            return environment;
+            return list;
         }
 
         IEnumerable<Step> FindStepsForProject(Project project)
