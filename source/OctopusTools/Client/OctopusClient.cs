@@ -48,11 +48,13 @@ namespace OctopusTools.Client
                 {
                     var request = CreateWebRequest("GET", uri);
 
-                    var response = request.GetResponse();
-                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    using (var response = request.GetResponse())
                     {
-                        var content = reader.ReadToEnd();
-                        return JsonConvert.DeserializeObject<TResource>(content);
+                        using (var reader = new StreamReader(response.GetResponseStream()))
+                        {
+                            var content = reader.ReadToEnd();
+                            return JsonConvert.DeserializeObject<TResource>(content);
+                        }
                     }
                 });
         }
@@ -70,9 +72,11 @@ namespace OctopusTools.Client
                     request.ContentType = "application/json";
                     AppendBody(request, postData);
 
-                    var response = ReadResponse(request);
-                    var location = response.Headers.Get("Location");
-                    return Get<TResource>(location).Execute();
+                    using (var response = ReadResponse(request))
+                    {
+                        var location = response.Headers.Get("Location");
+                        return Get<TResource>(location).Execute();
+                    }
                 });
         }
 
@@ -90,7 +94,7 @@ namespace OctopusTools.Client
                     request.Headers["X-HTTP-Method-Override"] = "PUT";
                     AppendBody(request, postData);
 
-                    ReadResponse(request);
+                    using (ReadResponse(request)) { }
 
                     return Get<TResource>(uri.AbsolutePath).Execute();
                 });
