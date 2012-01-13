@@ -54,3 +54,4 @@ svnignore[.-]*
 lint.db
 build
 tools/TestResult.xml
+*.ReSharper

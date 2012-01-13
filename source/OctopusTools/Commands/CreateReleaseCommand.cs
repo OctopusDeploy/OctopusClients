@@ -18,6 +18,7 @@ namespace OctopusTools.Commands
         public string ProjectName { get; set; }
         public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
+        public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
 
         public override OptionSet Options
@@ -28,6 +29,7 @@ namespace OctopusTools.Commands
                 options.Add("project=", "Name of the project", v => ProjectName = v);
                 options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
+                options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 return options;
             }
@@ -75,6 +77,7 @@ namespace OctopusTools.Commands
         Release CreateNewRelease(Project project, List<PackageVersion> latestVersions)
         {
             var version = VersionNumber;
+            var releaseNotes = ReleaseNotes;
             if (string.IsNullOrWhiteSpace(version))
             {
                 version = latestVersions.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).First().ToString();
@@ -85,6 +88,7 @@ namespace OctopusTools.Commands
             release.Assembled = DateTime.UtcNow;
             release.AssembledBy = Environment.UserName;
             release.Version = version;
+            release.ReleaseNotes = releaseNotes;
             release.PackageVersions = latestVersions.ToArray();
 
             Log.Debug("Creating release: " + version);
