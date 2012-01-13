@@ -12,10 +12,11 @@ namespace OctopusTools.Commands
     {
         public DeployReleaseCommand(IOctopusClientFactory clientFactory, ILog log) : base(clientFactory, log)
         {
+            DeployToEnvironmentNames = new List<string>();
         }
 
         public string ProjectName { get; set; }
-        public string DeployToEnvironmentName { get; set; }
+        public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public bool Force { get; set; }
 
@@ -25,7 +26,7 @@ namespace OctopusTools.Commands
             {
                 var options = base.Options;
                 options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentName = v);
+                options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number of the release to deploy.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 return options;
@@ -35,18 +36,21 @@ namespace OctopusTools.Commands
         public override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
-            if (string.IsNullOrWhiteSpace(DeployToEnvironmentName)) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
+            if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0");
             
             var server = Client.Handshake().Execute();
 
             var project = FindProject(server);
 
-            var environment = FindEnvironment(server);
+            var environments = FindEnvironments(server);
 
-            var release = FindRelease(server, project);
+            var release = FindRelease(project);
 
-            DeployRelease(release, environment);
+            foreach (var environment in environments)
+            {
+                DeployRelease(release, environment);
+            }
         }
 
         void DeployRelease(Release release, DeploymentEnvironment environment)
@@ -61,7 +65,7 @@ namespace OctopusTools.Commands
             Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + result.Name, release.Version, environment.Name);
         }
 
-        Release FindRelease(OctopusInstance server, Project project)
+        Release FindRelease(Project project)
         {
             Log.DebugFormat("Searching for release '{0}'", VersionNumber);
 
@@ -95,24 +99,33 @@ namespace OctopusTools.Commands
             return project;
         }
 
-        DeploymentEnvironment FindEnvironment(OctopusInstance server)
+        IEnumerable<DeploymentEnvironment> FindEnvironments(OctopusInstance server)
         {
-            if (string.IsNullOrWhiteSpace(DeployToEnvironmentName))
-                return null;
+            if (DeployToEnvironmentNames == null || !DeployToEnvironmentNames.Any())
+                return Enumerable.Empty<DeploymentEnvironment>();
 
-            Log.DebugFormat("Searching for environment '{0}'", DeployToEnvironmentName);
-
+            var list = new List<DeploymentEnvironment>();
             var environments = Client.List<DeploymentEnvironment>(server.Link("Environments")).Execute();
 
-            var environment = environments.FirstOrDefault(x => string.Equals(x.Name, DeployToEnvironmentName, StringComparison.InvariantCultureIgnoreCase));
-            if (environment == null)
+            foreach (var environmentName in DeployToEnvironmentNames)
             {
-                throw new ArgumentException(string.Format("An environment named '{0}' could not be found.", DeployToEnvironmentName));
+                if (string.IsNullOrWhiteSpace(environmentName))
+                    continue;
+
+                Log.DebugFormat("Searching for environment '{0}'", environmentName);
+
+                var environment = environments.FirstOrDefault(x => string.Equals(x.Name, environmentName, StringComparison.InvariantCultureIgnoreCase));
+                if (environment == null)
+                {
+                    throw new ArgumentException(string.Format("An environment named '{0}' could not be found.", environmentName));
+                }
+
+                Log.InfoFormat("Found environment: {0} [{1}]", environment.Name, environment.Id);
+
+                list.Add(environment);
             }
 
-            Log.InfoFormat("Found environment: {0} [{1}]", environment.Name, environment.Id);
-
-            return environment;
+            return list;
         }
     }
 }
