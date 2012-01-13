@@ -66,6 +66,7 @@
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CreateReleaseCommand.cs" />
+    <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Model\Deployment.cs" />
     <Compile Include="Model\DeploymentEnvironment.cs" />
