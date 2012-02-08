@@ -7,15 +7,13 @@ namespace OctopusTools.Commands
 {
     public class ListEnvironmentsCommand : ApiCommand
     {
-        public ListEnvironmentsCommand(IOctopusClientFactory client, ILog log) : base(client, log)
+        public ListEnvironmentsCommand(IOctopusSessionFactory session, ILog log) : base(session, log)
         {
         }
 
         public override void Execute()
         {
-            var root = Client.Handshake().Execute();
-
-            var environments = Client.List<DeploymentEnvironment>(root.Links["Environments"]).Execute();
+            var environments = Session.List<DeploymentEnvironment>(ServiceRoot.Links["Environments"]);
 
             Log.Info("Environments: " + environments.Count);
             foreach (var environment in environments)

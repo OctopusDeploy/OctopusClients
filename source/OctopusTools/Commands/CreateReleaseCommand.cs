@@ -10,7 +10,7 @@ namespace OctopusTools.Commands
 {
     public class CreateReleaseCommand : ApiCommand
     {
-        public CreateReleaseCommand(IOctopusClientFactory clientFactory, ILog log) : base(clientFactory, log)
+        public CreateReleaseCommand(IOctopusSessionFactory sessionFactory, ILog log) : base(sessionFactory, log)
         {
             DeployToEnvironmentNames = new List<string>();
         }
@@ -37,11 +37,9 @@ namespace OctopusTools.Commands
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             
-            var server = Client.Handshake().Execute();
+            var project = FindProject();
 
-            var project = FindProject(server);
-
-            var environments = FindEnvironments(server);
+            var environments = FindEnvironments();
 
             var steps = FindStepsForProject(project);
 
@@ -67,7 +65,7 @@ namespace OctopusTools.Commands
             deployment.ReleaseId = release.Id;
             deployment.ForceRedeployment = Force;
 
-            var result = Client.Create(release.Link("Deployments"), deployment).Execute();
+            var result = Session.Create(release.Link("Deployments"), deployment);
 
             Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + result.Name, release.Version, environment.Name);
         }
@@ -89,7 +87,7 @@ namespace OctopusTools.Commands
 
             Log.Debug("Creating release: " + version);
 
-            var result = Client.Create(project.Link("Releases"), release).Execute();
+            var result = Session.Create(project.Link("Releases"), release);
 
             Log.Info("Release created successfully!");
 
@@ -100,7 +98,7 @@ namespace OctopusTools.Commands
         {
             Log.DebugFormat("Getting latest version of package: {0}", step.NuGetPackageId);
 
-            var versions = Client.List<PackageVersion>(step.Link("AvailablePackageVersions")).Execute();
+            var versions = Session.List<PackageVersion>(step.Link("AvailablePackageVersions"));
 
             var latest = versions.FirstOrDefault();
             if (latest == null)
@@ -113,11 +111,11 @@ namespace OctopusTools.Commands
             return new SelectedPackage { StepId= step.Id, NuGetPackageVersion = latest.Version };
         }
 
-        Project FindProject(OctopusInstance server)
+        Project FindProject()
         {
             Log.DebugFormat("Searching for project '{0}'", ProjectName);
 
-            var projects = Client.List<Project>(server.Link("Projects")).Execute();
+            var projects = Session.List<Project>(ServiceRoot.Link("Projects"));
 
             var project = projects.FirstOrDefault(x => string.Equals(x.Name, ProjectName, StringComparison.InvariantCultureIgnoreCase));
             if (project == null)
@@ -130,13 +128,13 @@ namespace OctopusTools.Commands
             return project;
         }
 
-        IEnumerable<DeploymentEnvironment> FindEnvironments(OctopusInstance server)
+        IEnumerable<DeploymentEnvironment> FindEnvironments()
         {
             if (DeployToEnvironmentNames == null || !DeployToEnvironmentNames.Any())
                 return Enumerable.Empty<DeploymentEnvironment>();
 
             var list = new List<DeploymentEnvironment>();
-            var environments = Client.List<DeploymentEnvironment>(server.Link("Environments")).Execute();
+            var environments = Session.List<DeploymentEnvironment>(ServiceRoot.Link("Environments"));
 
             foreach (var environmentName in DeployToEnvironmentNames)
             {
@@ -163,7 +161,7 @@ namespace OctopusTools.Commands
         {
             Log.Debug("Getting project steps...");
 
-            var steps = Client.List<Step>(project.Link("Steps")).Execute();
+            var steps = Session.List<Step>(project.Link("Steps"));
 
             Log.DebugFormat("Found {0} steps", steps.Count);
 

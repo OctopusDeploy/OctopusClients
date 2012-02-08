@@ -70,17 +70,17 @@
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Model\Deployment.cs" />
     <Compile Include="Model\DeploymentEnvironment.cs" />
-    <Compile Include="Model\OctopusInstance.cs" />
+    <Compile Include="Model\RootDocument.cs" />
     <Compile Include="Client\ClientModule.cs" />
     <Compile Include="Commands\ApiCommand.cs" />
     <Compile Include="Infrastructure\AutofacExtensions.cs" />
     <Compile Include="Infrastructure\CommandLocator.cs" />
     <Compile Include="Commands\CommandModule.cs" />
     <Compile Include="Infrastructure\CommandProcessor.cs" />
-    <Compile Include="Client\IOctopusClient.cs" />
-    <Compile Include="Client\IOctopusClientFactory.cs" />
-    <Compile Include="Client\OctopusClient.cs" />
-    <Compile Include="Client\OctopusClientFactory.cs" />
+    <Compile Include="Client\IOctopusSession.cs" />
+    <Compile Include="Client\IOctopusSessionFactory.cs" />
+    <Compile Include="Client\OctopusSession.cs" />
+    <Compile Include="Client\OctopusSessionFactory.cs" />
     <Compile Include="Model\PackageVersion.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
@@ -97,10 +97,11 @@
     <Compile Include="Model\SelectedPackage.cs" />
     <Compile Include="Model\SemanticVersion.cs" />
     <Compile Include="Model\Step.cs" />
+    <Compile Include="Operations\EnvironmentOperations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />
-    <Compile Include="Util\TaskExtensions.cs" />
+    <Compile Include="Util\LazyExtensions.cs" />
     <Compile Include="Util\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +114,7 @@
   <ItemGroup>
     <Content Include="Properties\Octopus.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

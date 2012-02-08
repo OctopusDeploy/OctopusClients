@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using OctopusTools.Model;
+
+namespace OctopusTools.Client
+{
+    public interface IOctopusSession
+    {
+        RootDocument RootDocument { get; }
+        IList<TResource> List<TResource>(string path);
+        TResource Get<TResource>(string path);
+        TResource Create<TResource>(string path, TResource resource);
+        TResource Update<TResource>(string path, TResource resource);
+    }
+}

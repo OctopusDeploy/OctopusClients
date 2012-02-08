@@ -2,25 +2,26 @@ using System;
 using System.Net;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
+using OctopusTools.Model;
 using log4net;
 
 namespace OctopusTools.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly IOctopusClientFactory clientFactory;
-        readonly Lazy<IOctopusClient> client;
+        readonly IOctopusSessionFactory sessionFactory;
+        readonly Lazy<IOctopusSession> client;
         readonly ILog log;
         string serverBaseUrl;
         string user;
         string pass;
 
-        protected ApiCommand(IOctopusClientFactory clientFactory, ILog log)
+        protected ApiCommand(IOctopusSessionFactory sessionFactory, ILog log)
         {
-            this.clientFactory = clientFactory;
+            this.sessionFactory = sessionFactory;
             this.log = log;
 
-            client = new Lazy<IOctopusClient>(CreateAndInitializeClient);
+            client = new Lazy<IOctopusSession>(CreateAndInitializeClient);
         }
 
         public virtual OptionSet Options
@@ -40,14 +41,19 @@ namespace OctopusTools.Commands
             get { return log; }
         }
 
-        protected IOctopusClient Client
+        protected IOctopusSession Session
         {
             get { return client.Value; }
         }
 
+        protected RootDocument ServiceRoot
+        {
+            get { return client.Value.RootDocument; }
+        }
+
         public abstract void Execute();
 
-        IOctopusClient CreateAndInitializeClient()
+        IOctopusSession CreateAndInitializeClient()
         {
             if (string.IsNullOrWhiteSpace(serverBaseUrl))
                 throw new CommandException("Please specify a server using the parameter: --server=http://myserver");
@@ -61,7 +67,7 @@ namespace OctopusTools.Commands
                 credentials = new NetworkCredential(user, pass);
             }
 
-            return clientFactory.Create(uri, credentials);
+            return sessionFactory.Create(uri, credentials);
         }
     }
 }

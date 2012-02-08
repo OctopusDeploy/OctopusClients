@@ -10,7 +10,7 @@ namespace OctopusTools.Commands
 {
     public class DeployReleaseCommand : ApiCommand
     {
-        public DeployReleaseCommand(IOctopusClientFactory clientFactory, ILog log) : base(clientFactory, log)
+        public DeployReleaseCommand(IOctopusSessionFactory sessionFactory, ILog log) : base(sessionFactory, log)
         {
             DeployToEnvironmentNames = new List<string>();
         }
@@ -39,11 +39,9 @@ namespace OctopusTools.Commands
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0");
             
-            var server = Client.Handshake().Execute();
+            var project = FindProject();
 
-            var project = FindProject(server);
-
-            var environments = FindEnvironments(server);
+            var environments = FindEnvironments();
 
             var release = FindRelease(project);
 
@@ -60,7 +58,7 @@ namespace OctopusTools.Commands
             deployment.ReleaseId = release.Id;
             deployment.ForceRedeployment = Force;
 
-            var result = Client.Create(release.Link("Deployments"), deployment).Execute();
+            var result = Session.Create(release.Link("Deployments"), deployment);
 
             Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + result.Name, release.Version, environment.Name);
         }
@@ -69,7 +67,7 @@ namespace OctopusTools.Commands
         {
             Log.DebugFormat("Searching for release '{0}'", VersionNumber);
 
-            var releases = Client.List<Release>(project.Link("Releases")).Execute();
+            var releases = Session.List<Release>(project.Link("Releases"));
 
             var release = releases.FirstOrDefault(x => string.Equals(x.Version, VersionNumber, StringComparison.InvariantCultureIgnoreCase));
             if (release == null)
@@ -82,11 +80,11 @@ namespace OctopusTools.Commands
             return release;
         }
 
-        Project FindProject(OctopusInstance server)
+        Project FindProject()
         {
             Log.DebugFormat("Searching for project '{0}'", ProjectName);
 
-            var projects = Client.List<Project>(server.Link("Projects")).Execute();
+            var projects = Session.List<Project>(ServiceRoot.Link("Projects"));
 
             var project = projects.FirstOrDefault(x => string.Equals(x.Name, ProjectName, StringComparison.InvariantCultureIgnoreCase));
             if (project == null)
@@ -99,13 +97,13 @@ namespace OctopusTools.Commands
             return project;
         }
 
-        IEnumerable<DeploymentEnvironment> FindEnvironments(OctopusInstance server)
+        IEnumerable<DeploymentEnvironment> FindEnvironments()
         {
             if (DeployToEnvironmentNames == null || !DeployToEnvironmentNames.Any())
                 return Enumerable.Empty<DeploymentEnvironment>();
 
             var list = new List<DeploymentEnvironment>();
-            var environments = Client.List<DeploymentEnvironment>(server.Link("Environments")).Execute();
+            var environments = Session.List<DeploymentEnvironment>(ServiceRoot.Link("Environments"));
 
             foreach (var environmentName in DeployToEnvironmentNames)
             {

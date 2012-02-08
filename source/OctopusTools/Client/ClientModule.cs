@@ -9,7 +9,7 @@ namespace OctopusTools.Client
         {
             base.Load(builder);
 
-            builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
+            builder.RegisterType<OctopusSessionFactory>().As<IOctopusSessionFactory>();
         }
     }
 }
