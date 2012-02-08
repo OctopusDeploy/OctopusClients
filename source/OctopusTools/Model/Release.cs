@@ -11,5 +11,6 @@ namespace OctopusTools.Model
         public string Version { get; set; }
         public string Href { get; set; }
         public PackageVersion[] PackageVersions { get; set; }
+        public SelectedPackage[] SelectedPackages { get; set; }
     }
 }

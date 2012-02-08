@@ -94,6 +94,7 @@
     <Compile Include="Model\Project.cs" />
     <Compile Include="Model\Release.cs" />
     <Compile Include="Model\Resource.cs" />
+    <Compile Include="Model\SelectedPackage.cs" />
     <Compile Include="Model\SemanticVersion.cs" />
     <Compile Include="Model\Step.cs" />
     <Compile Include="Program.cs" />

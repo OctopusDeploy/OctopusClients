@@ -45,14 +45,14 @@ namespace OctopusTools.Commands
 
             var steps = FindStepsForProject(project);
 
-            var latestVersions = new List<PackageVersion>();
+            var selected = new List<SelectedPackage>();
             foreach (var step in steps)
             {
                 var version = GetLatestVersion(step);
-                latestVersions.Add(version);
+                selected.Add(version);
             }
 
-            var release = CreateNewRelease(project, latestVersions);
+            var release = CreateNewRelease(project, selected);
             if (environments != null)
             {
                 foreach (var environment in environments)
@@ -72,12 +72,12 @@ namespace OctopusTools.Commands
             Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + result.Name, release.Version, environment.Name);
         }
 
-        Release CreateNewRelease(Project project, List<PackageVersion> latestVersions)
+        Release CreateNewRelease(Project project, List<SelectedPackage> latestVersions)
         {
             var version = VersionNumber;
             if (string.IsNullOrWhiteSpace(version))
             {
-                version = latestVersions.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).First().ToString();
+                version = latestVersions.Select(p => SemanticVersion.Parse(p.NuGetPackageVersion)).OrderByDescending(v => v).First().ToString();
                 Log.Warn("A --version parameter was not specified, so we will infer the version number from the packages. The highest version number is: " + version);
             }
 
@@ -85,7 +85,7 @@ namespace OctopusTools.Commands
             release.Assembled = DateTime.UtcNow;
             release.AssembledBy = Environment.UserName;
             release.Version = version;
-            release.PackageVersions = latestVersions.ToArray();
+            release.SelectedPackages = latestVersions.ToArray();
 
             Log.Debug("Creating release: " + version);
 
@@ -96,7 +96,7 @@ namespace OctopusTools.Commands
             return result;
         }
 
-        PackageVersion GetLatestVersion(Step step)
+        SelectedPackage GetLatestVersion(Step step)
         {
             Log.DebugFormat("Getting latest version of package: {0}", step.NuGetPackageId);
 
@@ -110,7 +110,7 @@ namespace OctopusTools.Commands
 
             Log.InfoFormat("Latest available version of package '{0}' is '{1}'", step.NuGetPackageId, latest.Version);
 
-            return new PackageVersion {Id = latest.Id, Version = latest.Version};
+            return new SelectedPackage { StepId= step.Id, NuGetPackageVersion = latest.Version };
         }
 
         Project FindProject(OctopusInstance server)
