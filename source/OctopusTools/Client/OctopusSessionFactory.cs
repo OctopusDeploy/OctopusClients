@@ -13,7 +13,7 @@ namespace OctopusTools.Client
             this.log = log;
         }
 
-        public IOctopusSession Create(Uri serverBaseUrl, ICredentials credentials)
+        public IOctopusSession OpenSession(Uri serverBaseUrl, ICredentials credentials)
         {
             return new OctopusSession(serverBaseUrl, credentials, log);
         }

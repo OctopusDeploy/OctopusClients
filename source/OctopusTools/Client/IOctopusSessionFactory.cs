@@ -5,6 +5,6 @@ namespace OctopusTools.Client
 {
     public interface IOctopusSessionFactory
     {
-        IOctopusSession Create(Uri serverBaseUrl, ICredentials credentials);
+        IOctopusSession OpenSession(Uri serverBaseUrl, ICredentials credentials);
     }
 }

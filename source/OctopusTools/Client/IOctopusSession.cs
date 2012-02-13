@@ -4,7 +4,7 @@ using OctopusTools.Model;
 
 namespace OctopusTools.Client
 {
-    public interface IOctopusSession
+    public interface IOctopusSession : IDisposable
     {
         RootDocument RootDocument { get; }
         IList<TResource> List<TResource>(string path);

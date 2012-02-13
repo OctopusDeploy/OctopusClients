@@ -1,6 +1,5 @@
 ﻿using System;
 using OctopusTools.Client;
-using OctopusTools.Model;
 using log4net;
 
 namespace OctopusTools.Commands
@@ -13,8 +12,8 @@ namespace OctopusTools.Commands
 
         public override void Execute()
         {
-            var environments = Session.List<DeploymentEnvironment>(ServiceRoot.Links["Environments"]);
-
+            var environments = Session.ListEnvironments();
+            
             Log.Info("Environments: " + environments.Count);
             foreach (var environment in environments)
             {

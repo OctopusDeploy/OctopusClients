@@ -67,6 +67,9 @@
     </Compile>
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
+    <Compile Include="Extensions\DeploymentExtensions.cs" />
+    <Compile Include="Extensions\EnvironmentExtensions.cs" />
+    <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Model\Deployment.cs" />
     <Compile Include="Model\DeploymentEnvironment.cs" />
@@ -97,7 +100,6 @@
     <Compile Include="Model\SelectedPackage.cs" />
     <Compile Include="Model\SemanticVersion.cs" />
     <Compile Include="Model\Step.cs" />
-    <Compile Include="Operations\EnvironmentOperations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />

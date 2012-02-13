@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
-using OctopusTools.Model;
 using log4net;
 
 namespace OctopusTools.Commands
@@ -38,92 +36,21 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0");
-            
-            var project = FindProject();
 
-            var environments = FindEnvironments();
+            Log.Debug("Finding project: " + ProjectName);
+            var project = Session.GetProject(ProjectName);
 
-            var release = FindRelease(project);
+            Log.Debug("Finding environments...");
+            var environments = Session.FindEnvironments(DeployToEnvironmentNames);
+
+            Log.Debug("Finding release: " + VersionNumber);
+            var release = Session.GetRelease(project, VersionNumber);
 
             foreach (var environment in environments)
             {
-                DeployRelease(release, environment);
+                var deployment = Session.DeployRelease(release, environment, Force);
+                Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + deployment.Name, release.Version, environment.Name);
             }
-        }
-
-        void DeployRelease(Release release, DeploymentEnvironment environment)
-        {
-            var deployment = new Deployment();
-            deployment.EnvironmentId = environment.Id;
-            deployment.ReleaseId = release.Id;
-            deployment.ForceRedeployment = Force;
-
-            var result = Session.Create(release.Link("Deployments"), deployment);
-
-            Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + result.Name, release.Version, environment.Name);
-        }
-
-        Release FindRelease(Project project)
-        {
-            Log.DebugFormat("Searching for release '{0}'", VersionNumber);
-
-            var releases = Session.List<Release>(project.Link("Releases"));
-
-            var release = releases.FirstOrDefault(x => string.Equals(x.Version, VersionNumber, StringComparison.InvariantCultureIgnoreCase));
-            if (release == null)
-            {
-                throw new ArgumentException(string.Format("A release named '{0}' could not be found.", VersionNumber));
-            }
-
-            Log.InfoFormat("Found release: {0} [{1}]", release.Version, release.Id);
-
-            return release;
-        }
-
-        Project FindProject()
-        {
-            Log.DebugFormat("Searching for project '{0}'", ProjectName);
-
-            var projects = Session.List<Project>(ServiceRoot.Link("Projects"));
-
-            var project = projects.FirstOrDefault(x => string.Equals(x.Name, ProjectName, StringComparison.InvariantCultureIgnoreCase));
-            if (project == null)
-            {
-                throw new ArgumentException(string.Format("A project named '{0}' could not be found.", ProjectName));
-            }
-
-            Log.InfoFormat("Found project: {0} [{1}]", project.Name, project.Id);
-
-            return project;
-        }
-
-        IEnumerable<DeploymentEnvironment> FindEnvironments()
-        {
-            if (DeployToEnvironmentNames == null || !DeployToEnvironmentNames.Any())
-                return Enumerable.Empty<DeploymentEnvironment>();
-
-            var list = new List<DeploymentEnvironment>();
-            var environments = Session.List<DeploymentEnvironment>(ServiceRoot.Link("Environments"));
-
-            foreach (var environmentName in DeployToEnvironmentNames)
-            {
-                if (string.IsNullOrWhiteSpace(environmentName))
-                    continue;
-
-                Log.DebugFormat("Searching for environment '{0}'", environmentName);
-
-                var environment = environments.FirstOrDefault(x => string.Equals(x.Name, environmentName, StringComparison.InvariantCultureIgnoreCase));
-                if (environment == null)
-                {
-                    throw new ArgumentException(string.Format("An environment named '{0}' could not be found.", environmentName));
-                }
-
-                Log.InfoFormat("Found environment: {0} [{1}]", environment.Name, environment.Id);
-
-                list.Add(environment);
-            }
-
-            return list;
         }
     }
 }

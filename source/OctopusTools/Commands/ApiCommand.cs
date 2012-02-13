@@ -67,7 +67,7 @@ namespace OctopusTools.Commands
                 credentials = new NetworkCredential(user, pass);
             }
 
-            return sessionFactory.Create(uri, credentials);
+            return sessionFactory.OpenSession(uri, credentials);
         }
     }
 }

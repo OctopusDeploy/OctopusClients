@@ -144,5 +144,9 @@ namespace OctopusTools.Client
                 throw;
             }
         }
+
+        public void Dispose()
+        {
+        }
     }
 }
