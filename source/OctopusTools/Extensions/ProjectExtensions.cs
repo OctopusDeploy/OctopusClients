@@ -39,13 +39,14 @@ public static class ProjectExtensions
         return new SelectedPackage { StepId = step.Id, NuGetPackageVersion = latest.Version };
     }
 
-    public static Release CreateRelease(this IOctopusSession session, Project project, List<SelectedPackage> latestVersions, string version)
+    public static Release CreateRelease(this IOctopusSession session, Project project, List<SelectedPackage> latestVersions, string version, string releaseNotes)
     {
         var release = new Release();
         release.Assembled = DateTime.UtcNow;
         release.AssembledBy = Environment.UserName;
         release.Version = version;
         release.SelectedPackages = latestVersions.ToArray();
+        release.ReleaseNotes = releaseNotes ?? string.Empty;
 
         return session.Create(project.Link("Releases"), release);
     }
