@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Autofac;
-using Autofac.Core;
 using OctopusTools.Client;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
-using log4net;
 
 namespace OctopusTools
 {
     public class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            var container = BuildContainer(args);
-            container.Resolve<ICommandProcessor>().Process(args);
+            try
+            {
+                var container = BuildContainer(args);
+                container.Resolve<ICommandProcessor>().Process(args);
+                return 0;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.ToString());
+                return 1;
+            }
         }      
 
         static IContainer BuildContainer(IEnumerable<string> args)

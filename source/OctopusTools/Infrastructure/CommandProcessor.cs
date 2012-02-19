@@ -44,7 +44,6 @@ namespace OctopusTools.Infrastructure
             catch (Exception ex)
             {
                 PrintError(ex);
-                throw;
             }
         }
 
