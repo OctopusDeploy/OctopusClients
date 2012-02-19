@@ -18,7 +18,7 @@ namespace OctopusTools.Commands
         {
             this.deploymentWatcher = deploymentWatcher;
             DeployToEnvironmentNames = new List<string>();
-            DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(1);
+            DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
         }
 
         public string ProjectName { get; set; }
