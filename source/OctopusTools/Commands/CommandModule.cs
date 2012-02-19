@@ -12,6 +12,7 @@ namespace OctopusTools.Commands
 
             builder.RegisterType<CommandProcessor>().As<ICommandProcessor>();
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
+            builder.RegisterType<DeploymentWatcher>().As<IDeploymentWatcher>();
         }
     }
 }

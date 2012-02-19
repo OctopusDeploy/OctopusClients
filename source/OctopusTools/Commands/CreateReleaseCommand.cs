@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
@@ -10,9 +12,13 @@ namespace OctopusTools.Commands
 {
     public class CreateReleaseCommand : ApiCommand
     {
-        public CreateReleaseCommand(IOctopusSessionFactory sessionFactory, ILog log) : base(sessionFactory, log)
+        readonly IDeploymentWatcher deploymentWatcher;
+
+        public CreateReleaseCommand(IOctopusSession session, ILog log, IDeploymentWatcher deploymentWatcher): base(session, log)
         {
+            this.deploymentWatcher = deploymentWatcher;
             DeployToEnvironmentNames = new List<string>();
+            DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(1);
         }
 
         public string ProjectName { get; set; }
@@ -20,6 +26,8 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
+        public TimeSpan? WaitUntilDeploymentIsFinishedTimeout { get; set; }
+        public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
 
         public override OptionSet Options
         {
@@ -31,6 +39,9 @@ namespace OctopusTools.Commands
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
+                options.Add("deploymenttimeout=", "If this value is specified the tool will block and wait synchronously for deployment to finish.", v => WaitUntilDeploymentIsFinishedTimeout = TimeSpan.Parse(v));
+                options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time should elapse between deployment status checks", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
+
                 return options;
             }
         }
@@ -70,12 +81,28 @@ namespace OctopusTools.Commands
 
             if (environments != null)
             {
-                foreach (var environment in environments)
+                var linksToDeploymentTasks = RequestDeployments(release, environments);
+
+                if (WaitUntilDeploymentIsFinishedTimeout != null)
                 {
-                    var deployment = Session.DeployRelease(release, environment, Force);
-                    Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + deployment.Name, release.Version, environment.Name);
+
+                    deploymentWatcher.WaitForDeploymentsToFinish(linksToDeploymentTasks, WaitUntilDeploymentIsFinishedTimeout.Value, DeploymentStatusCheckSleepCycle);
                 }
             }
+        }
+
+        List<string> RequestDeployments(Release release, IEnumerable<DeploymentEnvironment> environments)
+        {
+            var linksToDeploymentTasks = new List<string>();
+            foreach (var environment in environments)
+            {
+                var deployment = Session.DeployRelease(release, environment, Force);
+                var linkToTask = deployment.Links.Single(l => l.Key == "Task").Value;
+                linksToDeploymentTasks.Add(linkToTask);
+
+                Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + deployment.Name, release.Version, environment.Name);
+            }
+            return linksToDeploymentTasks;
         }
     }
 }
