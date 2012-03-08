@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
@@ -31,11 +32,25 @@ namespace OctopusTools.Commands
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
+                options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
                 return options;
             }
         }
 
-        public override void Execute()
+    	private void ReadReleaseNotesFromFile(string value)
+    	{
+			try
+			{
+				ReleaseNotes = File.ReadAllText(value);	
+			}
+			catch(IOException ex)
+			{
+				throw new CommandException(ex.Message);
+			}
+    		
+    	}
+
+    	public override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
