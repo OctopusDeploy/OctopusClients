@@ -55,6 +55,8 @@
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\DeploymentWatcherFixture.cs" />
+    <Compile Include="Commands\HelpCommandFixture.cs" />
+    <Compile Include="Helpers\TestCommandExtensions.cs" />
     <Compile Include="Util\UriExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

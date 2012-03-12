@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
@@ -23,7 +22,7 @@ namespace OctopusTools.Commands
 
         public void Execute()
         {
-            var executable = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().FullLocalPath());
+            var executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).Assembly.FullLocalPath());
 
             if (string.IsNullOrEmpty(commandName))
             {
