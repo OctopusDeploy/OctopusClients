@@ -11,7 +11,8 @@ namespace OctopusTools.Commands
 {
     public class CreateReleaseCommand : ApiCommand
     {
-        public CreateReleaseCommand(IOctopusSessionFactory sessionFactory, ILog log) : base(sessionFactory, log)
+        public CreateReleaseCommand(IOctopusSessionFactory sessionFactory, ILog log)
+            : base(sessionFactory, log)
         {
             DeployToEnvironmentNames = new List<string>();
         }
@@ -19,7 +20,7 @@ namespace OctopusTools.Commands
         public string ProjectName { get; set; }
         public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
-		public string PackageVersionNumber { get; set; }
+        public string PackageVersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
 
@@ -31,7 +32,7 @@ namespace OctopusTools.Commands
                 options.Add("project=", "Name of the project", v => ProjectName = v);
                 options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
-				options.Add("packageversion=", "Version number of the package to use for this release.", v => PackageVersionNumber = v);
+                options.Add("packageversion=", "Version number of the package to use for this release.", v => PackageVersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
@@ -39,20 +40,19 @@ namespace OctopusTools.Commands
             }
         }
 
-    	private void ReadReleaseNotesFromFile(string value)
-    	{
-			try
-			{
-				ReleaseNotes = File.ReadAllText(value);	
-			}
-			catch(IOException ex)
-			{
-				throw new CommandException(ex.Message);
-			}
-    		
-    	}
+        private void ReadReleaseNotesFromFile(string value)
+        {
+            try
+            {
+                ReleaseNotes = File.ReadAllText(value);
+            }
+            catch (IOException ex)
+            {
+                throw new CommandException(ex.Message);
+            }
+        }
 
-    	public override void Execute()
+        public override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
@@ -69,16 +69,16 @@ namespace OctopusTools.Commands
             var selected = new List<SelectedPackage>();
             foreach (var step in steps)
             {
-				SelectedPackage version;
-				if (string.IsNullOrEmpty(PackageVersionNumber))
-				{
-					version = Session.GetLatestPackageForStep(step);	
-				}
-				else
-				{
-					version = Session.GetPackageForStep(step, PackageVersionNumber);	
-				}
-				
+                SelectedPackage version;
+                if (string.IsNullOrEmpty(PackageVersionNumber))
+                {
+                    version = Session.GetLatestPackageForStep(step);
+                }
+                else
+                {
+                    version = Session.GetPackageForStep(step, PackageVersionNumber);
+                }
+
                 Log.DebugFormat("{0} - latest: {1}", step.Description, version.NuGetPackageVersion);
                 selected.Add(version);
             }
