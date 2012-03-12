@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using NUnit.Framework;
 using OctopusTools.Client;
 using OctopusTools.Commands;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
 
-namespace OctopusTools.Tests
+namespace OctopusTools.Tests.Commands
 {
-    [TestClass]
-    public class deployment_watcher
+    [TestFixture]
+    public class DeploymentWatcherFixture
     {
-        [TestMethod]
-        public void should_wait_for_deployments_to_finish()
+        [Test]
+        public void ShouldWaitForDeploymentsToFinish()
         {
             var log = Substitute.For<ILog>();
             var session = Substitute.For<IOctopusSession>();
@@ -29,9 +29,9 @@ namespace OctopusTools.Tests
             Assert.IsTrue(stopwatch.Elapsed >= TimeSpan.FromSeconds(1));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(CommandException))]
-        public void should_raise_error_when_deployments_take_longer_than_expected()
+        public void ShouldRaiseErrorWhenDeploymentsTakeLongerThanExpected()
         {
             var log = Substitute.For<ILog>();
             var session = Substitute.For<IOctopusSession>();
@@ -42,9 +42,9 @@ namespace OctopusTools.Tests
             watcher.WaitForDeploymentsToFinish(new[] { "link" }, TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(0.5));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(CommandException))]
-        public void should_raise_error_when_one_of_the_deployment_tasks_failed()
+        public void ShouldRaiseErrorWhenOneOfTheDeploymentTasksFailed()
         {
             var log = Substitute.For<ILog>();
             var session = Substitute.For<IOctopusSession>();

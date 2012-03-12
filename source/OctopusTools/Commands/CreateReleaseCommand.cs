@@ -16,9 +16,10 @@ namespace OctopusTools.Commands
         public CreateReleaseCommand(IOctopusSession session, ILog log, IDeploymentWatcher deploymentWatcher): base(session, log)
         {
             this.deploymentWatcher = deploymentWatcher;
+            
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
-            DeploymentTimeout = TimeSpan.FromMinutes(4);
+            DeploymentTimeout = TimeSpan.FromMinutes(10);
         }
 
         public string ProjectName { get; set; }
@@ -44,8 +45,8 @@ namespace OctopusTools.Commands
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
                 options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true );
-                options.Add("deploymenttimeout=", "[Optional] Specifies maximum time that deployment can take", v => DeploymentTimeout = TimeSpan.Parse(v));
-                options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time should elapse between deployment status checks", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
+                options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
+                options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
                 return options;
             }
         }

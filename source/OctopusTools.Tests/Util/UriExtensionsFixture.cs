@@ -1,25 +1,25 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
-namespace OctopusTools.Tests
+namespace OctopusTools.Tests.Util
 {
-    [TestClass]
-    public class uri_extensions
+    [TestFixture]
+    public class UriExtensionsFixture
     {
-        [TestMethod]
-        public void should_append_suffix_if_there_is_no_overlap()
+        [Test]
+        public void ShouldAppendSuffixIfThereIsNoOverlap()
         {
             var result = new Uri("http://www.mysite.com").EnsureEndsWith("suffix");
+            
             Assert.AreEqual(result.ToString(), "http://www.mysite.com/suffix");
         }
 
-
-        [TestMethod]
-        public void should_remove_any_overlap_btween_base_addres_and_suffix()
+        [Test]
+        public void ShouldRemoveAnyOverlapBetweenBaseAddresAndSuffix()
         {
             var result = new Uri("http://www.mysite.com/virtual").EnsureEndsWith("/virtual/suffix");
+
             Assert.AreEqual(result.ToString(), "http://www.mysite.com/virtual/suffix");
         }
-
     }
 }
