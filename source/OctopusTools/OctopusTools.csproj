@@ -66,11 +66,16 @@
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CreateReleaseCommand.cs" />
+    <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
+    <Compile Include="Commands\IDeploymentWatcher.cs" />
     <Compile Include="Extensions\DeploymentExtensions.cs" />
     <Compile Include="Extensions\EnvironmentExtensions.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
+    <Compile Include="Infrastructure\CommandLineArgsProvider.cs" />
+    <Compile Include="Infrastructure\ICommandLineArgsProvider.cs" />
+    <Compile Include="Model\Task.cs" />
     <Compile Include="Model\Deployment.cs" />
     <Compile Include="Model\DeploymentEnvironment.cs" />
     <Compile Include="Model\RootDocument.cs" />

@@ -90,7 +90,7 @@ namespace OctopusTools.Client
 
         Uri QualifyUri(string path)
         {
-            return new Uri(serverBaseUri, path);
+            return serverBaseUri.EnsureEndsWith(path);
         }
 
         WebRequest CreateWebRequest(string method, Uri uri)
