@@ -19,9 +19,7 @@ namespace OctopusTools.Client
             base.Load(builder);
 
             builder.RegisterType<OctopusSessionFactory>().As<IOctopusSessionFactory>();
-            builder.Register(context => context.Resolve<IOctopusSessionFactory>().OpenSession());
             builder.RegisterType<CommandLineArgsProvider>().AsImplementedInterfaces().WithParameter(new NamedParameter("args", args));
-
         }
     }
 }

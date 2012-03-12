@@ -25,7 +25,6 @@ namespace OctopusTools.Client
             options.Parse(commandLineArgsProvider.Args);
         }
 
-
         public IOctopusSession OpenSession()
         {
             if (string.IsNullOrWhiteSpace(serverBaseUrl))

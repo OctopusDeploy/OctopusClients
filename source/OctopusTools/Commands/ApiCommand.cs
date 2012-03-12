@@ -8,13 +8,16 @@ namespace OctopusTools.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly IOctopusSession client;
+        readonly IOctopusSessionFactory client;
+        readonly Lazy<IOctopusSession> session;
         readonly ILog log;
 
-        protected ApiCommand(IOctopusSession client, ILog log)
+        protected ApiCommand(IOctopusSessionFactory client, ILog log)
         {
             this.log = log;
             this.client = client;
+
+            session = new Lazy<IOctopusSession>(client.OpenSession);
         }
 
         protected ILog Log
@@ -24,12 +27,12 @@ namespace OctopusTools.Commands
 
         protected IOctopusSession Session
         {
-            get { return client; }
+            get { return session.Value; }
         }
 
         protected RootDocument ServiceRoot
         {
-            get { return client.RootDocument; }
+            get { return Session.RootDocument; }
         }
 
         public virtual OptionSet Options

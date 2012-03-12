@@ -20,10 +20,10 @@ namespace OctopusTools.Tests.Commands
             var session = Substitute.For<IOctopusSession>();
             session.Get<Task>(Arg.Any<String>()).Returns(CreateTask("Executing"), CreateTask("Executing"), CreateTask("Success"));
 
-            var watcher = new DeploymentWatcher(session, log);
+            var watcher = new DeploymentWatcher(log);
 
             var stopwatch = Stopwatch.StartNew();
-            watcher.WaitForDeploymentsToFinish(new []{"link"}, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(0.5));
+            watcher.WaitForDeploymentsToFinish(session, new[] { "link" }, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(0.5));
             stopwatch.Stop();
 
             Assert.IsTrue(stopwatch.Elapsed >= TimeSpan.FromSeconds(1));
@@ -37,9 +37,9 @@ namespace OctopusTools.Tests.Commands
             var session = Substitute.For<IOctopusSession>();
             session.Get<Task>(Arg.Any<String>()).Returns(new Task { State = "Executing" });
 
-            var watcher = new DeploymentWatcher(session, log);
+            var watcher = new DeploymentWatcher(log);
 
-            watcher.WaitForDeploymentsToFinish(new[] { "link" }, TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(0.5));
+            watcher.WaitForDeploymentsToFinish(session, new[] { "link" }, TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(0.5));
         }
 
         [Test]
@@ -50,9 +50,9 @@ namespace OctopusTools.Tests.Commands
             var session = Substitute.For<IOctopusSession>();
             session.Get<Task>(Arg.Any<String>()).Returns(new Task { State = "Failed" });
 
-            var watcher = new DeploymentWatcher(session, log);
+            var watcher = new DeploymentWatcher(log);
 
-            watcher.WaitForDeploymentsToFinish(new[] { "link" }, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(0.5));
+            watcher.WaitForDeploymentsToFinish(session, new[] { "link" }, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(0.5));
         }
 
         Task CreateTask(string state)

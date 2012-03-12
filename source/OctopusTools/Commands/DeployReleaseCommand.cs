@@ -8,7 +8,8 @@ namespace OctopusTools.Commands
 {
     public class DeployReleaseCommand : ApiCommand
     {
-        public DeployReleaseCommand(IOctopusSession session, ILog log) : base(session, log)
+        public DeployReleaseCommand(IOctopusSessionFactory session, ILog log)
+            : base(session, log)
         {
             DeployToEnvironmentNames = new List<string>();
         }

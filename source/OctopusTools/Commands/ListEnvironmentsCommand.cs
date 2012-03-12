@@ -6,7 +6,7 @@ namespace OctopusTools.Commands
 {
     public class ListEnvironmentsCommand : ApiCommand
     {
-        public ListEnvironmentsCommand(IOctopusSession session, ILog log) : base(session, log)
+        public ListEnvironmentsCommand(IOctopusSessionFactory session, ILog log) : base(session, log)
         {
         }
 

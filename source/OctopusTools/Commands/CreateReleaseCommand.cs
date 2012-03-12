@@ -13,7 +13,8 @@ namespace OctopusTools.Commands
     {
         readonly IDeploymentWatcher deploymentWatcher;
 
-        public CreateReleaseCommand(IOctopusSession session, ILog log, IDeploymentWatcher deploymentWatcher): base(session, log)
+        public CreateReleaseCommand(IOctopusSessionFactory session, ILog log, IDeploymentWatcher deploymentWatcher)
+            : base(session, log)
         {
             this.deploymentWatcher = deploymentWatcher;
             
@@ -111,7 +112,7 @@ namespace OctopusTools.Commands
 
                 if (WaitForDeployment)
                 {
-                    deploymentWatcher.WaitForDeploymentsToFinish(linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
+                    deploymentWatcher.WaitForDeploymentsToFinish(Session, linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
                 }
             }
         }

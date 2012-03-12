@@ -12,16 +12,14 @@ namespace OctopusTools.Commands
 {
     public class DeploymentWatcher : IDeploymentWatcher
     {
-        readonly IOctopusSession session;
         readonly ILog log;
 
-        public DeploymentWatcher(IOctopusSession session, ILog log)
+        public DeploymentWatcher(ILog log)
         {
-            this.session = session;
             this.log = log;
         }
 
-        public void WaitForDeploymentsToFinish(IEnumerable<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle)
+        public void WaitForDeploymentsToFinish(IOctopusSession session, IEnumerable<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle)
         {
             IDictionary<string, Task> tasks;
             var stopwatch = Stopwatch.StartNew();
