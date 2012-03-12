@@ -19,6 +19,7 @@ namespace OctopusTools.Commands
         public string ProjectName { get; set; }
         public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
+		public string PackageVersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
 
@@ -30,6 +31,7 @@ namespace OctopusTools.Commands
                 options.Add("project=", "Name of the project", v => ProjectName = v);
                 options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
+				options.Add("packageversion=", "Version number of the package to use for this release.", v => PackageVersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
@@ -63,11 +65,20 @@ namespace OctopusTools.Commands
             Log.Debug("Finding steps for project...");
             var steps = Session.FindStepsForProject(project);
 
-            Log.Debug("Getting latest package versions for each step...");
+            Log.Debug("Getting package versions for each step...");
             var selected = new List<SelectedPackage>();
             foreach (var step in steps)
             {
-                var version = Session.GetLatestPackageForStep(step);
+				SelectedPackage version;
+				if (string.IsNullOrEmpty(PackageVersionNumber))
+				{
+					version = Session.GetLatestPackageForStep(step);	
+				}
+				else
+				{
+					version = Session.GetPackageForStep(step, PackageVersionNumber);	
+				}
+				
                 Log.DebugFormat("{0} - latest: {1}", step.Description, version.NuGetPackageVersion);
                 selected.Add(version);
             }

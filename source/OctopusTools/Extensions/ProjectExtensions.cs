@@ -26,6 +26,19 @@ public static class ProjectExtensions
         return session.List<Step>(project.Link("Steps"));
     }
 
+	public static SelectedPackage GetPackageForStep(this IOctopusSession session, Step step, string version)
+	{
+		var versions = session.List<PackageVersion>(step.Link("AvailablePackageVersions"));
+
+		var latest = versions.Where(s => (s.Version == version)).First();
+		if (latest == null)
+		{
+			throw new Exception("There are no available packages named '{0}'");
+		}
+
+		return new SelectedPackage { StepId = step.Id, NuGetPackageVersion = latest.Version };
+	}
+
     public static SelectedPackage GetLatestPackageForStep(this IOctopusSession session, Step step)
     {
         var versions = session.List<PackageVersion>(step.Link("AvailablePackageVersions"));
