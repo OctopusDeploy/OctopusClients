@@ -1,1 +1,0 @@
-powershell.exe -noexit -file tools/welcome.ps1
