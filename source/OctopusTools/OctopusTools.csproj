@@ -71,6 +71,7 @@
     <Compile Include="Commands\IDeploymentWatcher.cs" />
     <Compile Include="Extensions\DeploymentExtensions.cs" />
     <Compile Include="Extensions\EnvironmentExtensions.cs" />
+    <Compile Include="Extensions\PackageConstraintExtensions.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Infrastructure\CommandLineArgsProvider.cs" />
