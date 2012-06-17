@@ -18,6 +18,10 @@ namespace OctopusTools
                 container.Resolve<ICommandProcessor>().Process(args);
                 return 0;
             }
+            catch (ApplicationException)
+            {
+                return 2;
+            }
             catch (Exception exception)
             {
                 Console.WriteLine(exception.ToString());

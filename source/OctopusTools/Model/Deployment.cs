@@ -4,9 +4,9 @@ namespace OctopusTools.Model
 {
     public class Deployment : Resource
     {
-        public int Id { get; set; }
-        public int ReleaseId { get; set; }
-        public int EnvironmentId { get; set; }
+        public string Id { get; set; }
+        public string ReleaseId { get; set; }
+        public string EnvironmentId { get; set; }
         public bool ForceRedeployment { get; set; }
         public string Name { get; set; }
     }

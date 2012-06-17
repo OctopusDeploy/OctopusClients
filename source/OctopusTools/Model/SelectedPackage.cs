@@ -4,7 +4,7 @@ namespace OctopusTools.Model
 {
     public class SelectedPackage
     {
-        public int StepId { get; set; }
+        public string StepId { get; set; }
         public string NuGetPackageVersion { get; set; }
     }
 }

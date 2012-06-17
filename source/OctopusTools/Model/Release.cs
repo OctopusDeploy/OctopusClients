@@ -4,7 +4,7 @@ namespace OctopusTools.Model
 {
     public class Release : Resource
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string ReleaseNotes { get; set; }
         public DateTime Assembled { get; set; }
         public string AssembledBy { get; set; }

@@ -75,6 +75,7 @@
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Infrastructure\CommandLineArgsProvider.cs" />
     <Compile Include="Infrastructure\ICommandLineArgsProvider.cs" />
+    <Compile Include="Model\ApiConstants.cs" />
     <Compile Include="Model\Task.cs" />
     <Compile Include="Model\Deployment.cs" />
     <Compile Include="Model\DeploymentEnvironment.cs" />

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using log4net;
 
 namespace OctopusTools.Infrastructure
@@ -44,7 +45,7 @@ namespace OctopusTools.Infrastructure
             catch (Exception ex)
             {
                 PrintError(ex);
-                throw;
+                throw new ApplicationException("Handled error", ex);
             }
         }
 
@@ -76,7 +77,24 @@ namespace OctopusTools.Infrastructure
             {
                 log.Error("Argument error: ");
                 log.Error(ex.Message);
-                return;   
+                return;
+            }
+
+            var wex = ex as WebException;
+            if (wex != null)
+            {
+                if (wex.Status == WebExceptionStatus.ProtocolError)
+                {
+                    log.Error("Octopus server responded with: " + wex.Message);
+                    
+                    if (wex.Message.Contains("(401)"))
+                    {
+                        log.Error("Please ensure your API key is valid. If Basic authentication is being used by IIS, you will also need to pass your username and password.");
+                    }
+
+                    log.Debug(ex);
+                    return;
+                }
             }
 
             log.Error(ex.Message);

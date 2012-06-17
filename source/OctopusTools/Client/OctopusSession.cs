@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
 
@@ -13,12 +14,14 @@ namespace OctopusTools.Client
         readonly Lazy<RootDocument> rootDocument;
         readonly Uri serverBaseUri;
         readonly ICredentials credentials;
+        readonly string apiKey;
         readonly ILog log;
 
-        public OctopusSession(Uri serverBaseUri, ICredentials credentials, ILog log)
+        public OctopusSession(Uri serverBaseUri, ICredentials credentials, string apiKey, ILog log)
         {
             this.serverBaseUri = serverBaseUri;
             this.credentials = credentials;
+            this.apiKey = apiKey;
             this.log = log;
 
             rootDocument = new Lazy<RootDocument>(EstablishSession);
@@ -96,8 +99,10 @@ namespace OctopusTools.Client
         WebRequest CreateWebRequest(string method, Uri uri)
         {
             var request = WebRequest.Create(uri);
+            request.ContentType = "application/json";
             request.Credentials = credentials;
             request.Method = method;
+            request.Headers["X-Octopus-ApiKey"] = apiKey;
             return request;
         }
 
@@ -105,7 +110,18 @@ namespace OctopusTools.Client
         {
             log.Debug("Handshaking with Octopus server: " + serverBaseUri);
             var server = Get<RootDocument>("/api");
-            log.Debug("Handshake successful. Octopus version: " + server.Version);
+            log.Debug("Handshake successful. Octopus version: " + server.Version + "; API version: " + server.ApiVersion );
+
+            if (string.IsNullOrWhiteSpace(server.ApiVersion))
+                throw new CommandException("This Octopus server uses a newer API specification than this tool can handle. Please check for updates to the Octo tool.");
+            
+            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
+            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
+            var current = SemanticVersion.Parse(server.ApiVersion);
+
+            if (current < min || current > max)
+                throw new CommandException(string.Format("This Octopus server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to the Octo tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
+
             return server;
         }
 
@@ -120,10 +136,12 @@ namespace OctopusTools.Client
             }
         }
 
-        static WebResponse ReadResponse(WebRequest request)
+        WebResponse ReadResponse(WebRequest request)
         {
             try
             {
+                log.Debug(request.Method + " " + request.RequestUri);
+
                 return request.GetResponse();
             }
             catch (WebException wex)
