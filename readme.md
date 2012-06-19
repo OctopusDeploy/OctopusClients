@@ -32,6 +32,10 @@ Note that packages that have already been deployed to the selected machines will
 
 ## Authentication
 
+Every request requires an API key to be passed. This can be gotten from the Octopus web portal, by clicking the My Profile page. 
+
+    octo ... -apikey=ABCDEF123456
+
 If your IIS server is set up to require Windows Authentication, the tool will automatically pass the currently logged in user's credentials. If this doesn't work, or you want to use a different user, simply add these two arguments:
 
     octo ... --user=fred --pass=secret
