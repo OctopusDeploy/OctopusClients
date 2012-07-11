@@ -94,7 +94,7 @@
     <Copy SourceFiles="@(PackagedFiles)" DestinationFolder="$(Root)\build\Temp" />
     
     <Exec Command='"$(NuGetPath)\NuGet.exe" pack "OctopusTools.nuspec"' WorkingDirectory='$(Root)\build\Temp' />
-    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).nupkg" />
+    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(build_number).nupkg" />
     
     <ItemGroup>
       <PackageFilesToDelete Include="$(Root)\build\Temp\OctopusTools.nuspec" />
@@ -106,7 +106,7 @@
     <ItemGroup>
       <ZipFiles Include="$(Root)\build\Temp\*.*" />
     </ItemGroup>
-    <Zip ZipFileName="$(Root)\build\Artifacts\OctopusTools.$(Major).$(Minor).$(Build).$(Revision).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
+    <Zip ZipFileName="$(Root)\build\Artifacts\OctopusTools.$(build_number).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
   </Target>
 
   <!--
