@@ -16,15 +16,7 @@
     <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console.exe</nunitconsoleexe>
     <NuGetPath>$(Root)\tools\NuGet</NuGetPath>
   </PropertyGroup>
-
-  <!-- Versioning -->
-  <PropertyGroup>
-    <Major>1</Major>          <!-- Huge functionality changes and backwards compatibility breaks -->
-    <Minor>0</Minor>          <!-- New functionality but still backwards compatibile -->
-    <Build>0</Build>          <!-- Set to Mercurial source control revision -->
-    <Revision>0</Revision>    <!-- Team City build number. Defaults to 1 when called from build.bat -->
-  </PropertyGroup>
-
+  
   <Target Name="Diagnose">
     <Message Text="Diagnostics:"/>
     <Message Text="Build Number:    $(build_number)" />
@@ -59,27 +51,16 @@
   <!-- 
   Versioning
   -->
-  <Target Name="Versioning">
-    <PropertyGroup>
-	  <Major>0</Major>                        <!-- Huge functionality changes and backwards compatibility breaks -->
-	  <Minor>9</Minor>                        <!-- New functionality but still backwards compatibile -->
-	  <Build>2</Build>                        <!-- Set to Mercurial source control revision -->
-	  <Revision>$(build_number)</Revision>    <!-- Team City build number. Defaults to 1 when called from build.bat -->
-    </PropertyGroup>
-  
-    <HgVersion LocalPath=".">
-      <Output TaskParameter="Revision" PropertyName="Build" />
-    </HgVersion>
-
+  <Target Name="Versioning">  
     <AssemblyInfo
       CodeLanguage="CS"
       OutputFile="$(Root)\source\Solution Items\VersionInfo.cs"
-      AssemblyVersion="$(Major).$(Minor).0.0"
-      AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)"
+      AssemblyVersion="$(build_number)"
+      AssemblyFileVersion="$(build_number)"
       />
     <FileUpdate Files="$(Root)\source\OctopusTools\OctopusTools.nuspec"
       Regex='version>[0-9]+.[0-9]+.[0-9]+.[0-9]+'
-      ReplacementText='version>$(Major).$(Minor).$(Build).$(Revision)'
+      ReplacementText='version>$(build_number)'
       />
   </Target>
 
