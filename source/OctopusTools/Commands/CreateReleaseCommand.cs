@@ -17,10 +17,11 @@ namespace OctopusTools.Commands
             : base(session, log)
         {
             this.deploymentWatcher = deploymentWatcher;
-            
+
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
+            PackageVersionNumberOverrides = new Dictionary<string, string>();
         }
 
         public string ProjectName { get; set; }
@@ -32,6 +33,7 @@ namespace OctopusTools.Commands
         public bool WaitForDeployment { get; set; }
         public TimeSpan DeploymentTimeout { get; set; }
         public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
+        public IDictionary<string, string> PackageVersionNumberOverrides { get; set; }
 
         public override OptionSet Options
         {
@@ -42,6 +44,7 @@ namespace OctopusTools.Commands
                 options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
                 options.Add("packageversion=", "Version number of the package to use for this release.", v => PackageVersionNumber = v);
+                options.Add("packageversionoverride=", "[Optional] Version number to use for a package in the release.", ParsePackageConstraint);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
@@ -64,6 +67,39 @@ namespace OctopusTools.Commands
             }
         }
 
+        public void ParsePackageConstraint(string value)
+        {
+            try
+            {
+                var packageIdAndVersion = PackageConstraintExtensions.GetPackageIdAndVersion(value);
+
+                if (PackageVersionNumberOverrides.ContainsKey(packageIdAndVersion[0]))
+                {
+                    throw new ArgumentException(string.Format("More than one constraint was specified for package {0}", packageIdAndVersion[0]));
+                }
+
+                PackageVersionNumberOverrides.Add(packageIdAndVersion[0], packageIdAndVersion[1]);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new CommandException(ex.Message);
+            }
+        }
+
+        public string GetPackageVersionForStep(Step step)
+        {
+            if (PackageVersionNumberOverrides != null && PackageVersionNumberOverrides.ContainsKey(step.NuGetPackageId))
+            {
+                return PackageVersionNumberOverrides[step.NuGetPackageId];
+            }
+            if (!string.IsNullOrEmpty(PackageVersionNumber))
+            {
+                return PackageVersionNumber;
+            }
+
+            return null;
+        }
+
         public override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
@@ -81,14 +117,16 @@ namespace OctopusTools.Commands
             var selected = new List<SelectedPackage>();
             foreach (var step in steps)
             {
+
                 SelectedPackage version;
-                if (string.IsNullOrEmpty(PackageVersionNumber))
+                var packageVersionConstraint = GetPackageVersionForStep(step);
+                if (packageVersionConstraint != null)
                 {
-                    version = Session.GetLatestPackageForStep(step);
+                    version = Session.GetPackageForStep(step, packageVersionConstraint);
                 }
                 else
                 {
-                    version = Session.GetPackageForStep(step, PackageVersionNumber);
+                    version = Session.GetLatestPackageForStep(step);
                 }
 
                 Log.DebugFormat("{0} - latest: {1}", step.Description, version.NuGetPackageVersion);
@@ -115,6 +153,7 @@ namespace OctopusTools.Commands
                     deploymentWatcher.WaitForDeploymentsToFinish(Session, linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
                 }
             }
+
         }
 
         IEnumerable<string> RequestDeployments(Release release, IEnumerable<DeploymentEnvironment> environments)
