@@ -6,6 +6,7 @@ using OctopusTools.Client;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
+using System.Text;
 
 namespace OctopusTools.Commands
 {
@@ -136,8 +137,30 @@ namespace OctopusTools.Commands
             var versionNumber = VersionNumber;
             if (string.IsNullOrWhiteSpace(versionNumber))
             {
-                versionNumber = selected.Select(p => SemanticVersion.Parse(p.NuGetPackageVersion)).OrderByDescending(v => v).First().ToString();
-                Log.Warn("A --version parameter was not specified, so a version number was automatically selected based on the highest package version: " + versionNumber);
+                var releases = Session.List<Release>(project.Link("Releases"));
+                var lastestReleaseVersion = releases.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
+
+                if (lastestReleaseVersion != null)
+                {
+                    var incrementedReleaseVersion = new SemanticVersion(new Version(lastestReleaseVersion.Version.Major, lastestReleaseVersion.Version.Minor, lastestReleaseVersion.Version.Build + 1), lastestReleaseVersion.SpecialVersion);
+                    versionNumber = incrementedReleaseVersion.ToString();
+                    Log.Warn("A --version parameter was not specified, so a version number was automatically selected based on the lastest release version: " + versionNumber);
+                }
+                else
+                {
+                    var highestPackageVersion = selected.Select(p => SemanticVersion.Parse(p.NuGetPackageVersion)).OrderByDescending(v => v).First();
+                    versionNumber = highestPackageVersion.ToString();
+                    Log.Warn("A --version parameter was not specified and there's not current release version available, so a version number was automatically selected based on the highest package version: " + versionNumber);
+                }
+            }
+            else
+            {
+                SemanticVersion semVersion = null;
+
+                if (!SemanticVersion.TryParse(versionNumber, out semVersion))
+                {
+                    versionNumber = ParseVersionMask(versionNumber, project);
+                }
             }
 
             Log.Debug("Creating release: " + versionNumber);
@@ -154,6 +177,124 @@ namespace OctopusTools.Commands
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Parse version based on mask tokens:
+        /// i - Increment based on lastest version
+        /// c - Use the lastest version current value
+        /// </summary>
+        /// <param name="versionNumberMask"></param>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        private string ParseVersionMask(string versionNumberMask, Project project)
+        {
+            var semanticVersionTokens = versionNumberMask.ToLower().Split('-');
+            var versionTokens = semanticVersionTokens[0].Split('.');
+
+            string specialVersionToken = null;
+            if (semanticVersionTokens.Length > 1)
+            {
+                specialVersionToken = semanticVersionTokens[1];
+            }
+
+            var releases = Session.List<Release>(project.Link("Releases"));
+            var lastestReleaseVersion = releases.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
+
+            var parsedVersionBuilder = new StringBuilder();
+
+            for (int i = 0; i < versionTokens.Length; i++)
+            {
+                var versionToken = versionTokens[i];
+
+                int versionComponent;
+
+                if (!int.TryParse(versionToken, out versionComponent))
+                {
+                    int lastestVersionComponent = 0;
+
+                    if (lastestReleaseVersion != null)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                lastestVersionComponent = lastestReleaseVersion.Version.Major;
+                                break;
+                            case 1:
+                                lastestVersionComponent = lastestReleaseVersion.Version.Minor;
+                                break;
+                            case 2:
+                                lastestVersionComponent = lastestReleaseVersion.Version.Build;
+                                break;
+                            case 3:
+                                lastestVersionComponent = lastestReleaseVersion.Version.Revision;
+                                break;
+                        }
+                    }
+
+                    if (versionToken.Equals("c"))
+                    {
+                        // Current version
+                        versionComponent = lastestVersionComponent;
+
+                    }
+                    else if (versionToken.Equals("i"))
+                    {
+                        // Incremented version
+                        versionComponent = lastestVersionComponent + 1;
+                    }
+                    else
+                    {
+                        // Invalid token, puts 0 on that part
+                        versionComponent = 0;
+                    }
+                }
+
+                parsedVersionBuilder.Append(versionComponent);
+                if (i + 1 < versionTokens.Length)
+                {
+                    parsedVersionBuilder.Append(".");
+                }
+            }
+
+            // Parses SemVer special version token
+            if (!string.IsNullOrWhiteSpace(specialVersionToken))
+            {
+                string parsedSpecialVersionToken = null;
+
+                if (specialVersionToken.Equals("c") &&
+                    lastestReleaseVersion != null)
+                {
+                    parsedSpecialVersionToken = lastestReleaseVersion.SpecialVersion;
+                }
+                else if (specialVersionToken.Equals("i") &&
+                         lastestReleaseVersion != null &&
+                         !string.IsNullOrWhiteSpace(lastestReleaseVersion.SpecialVersion))
+                {
+                    int subVersionNumber = 0;
+
+                    var lastestSpecialVersionTokens = lastestReleaseVersion.SpecialVersion.Split('.');
+
+                    if (lastestSpecialVersionTokens.Length > 1)
+                    {
+                        int.TryParse(lastestSpecialVersionTokens[1], out subVersionNumber);
+                    }
+
+                    parsedSpecialVersionToken = string.Format("{0}.{1}", lastestSpecialVersionTokens[0], subVersionNumber + 1);
+                }
+                else
+                {
+                    parsedSpecialVersionToken = specialVersionToken;
+                }
+
+                if (!string.IsNullOrWhiteSpace(parsedSpecialVersionToken))
+                {
+                    parsedVersionBuilder.AppendFormat("-{0}", parsedSpecialVersionToken);
+                }
+            }
+
+            versionNumberMask = parsedVersionBuilder.ToString();
+            return versionNumberMask;
         }
 
         IEnumerable<string> RequestDeployments(Release release, IEnumerable<DeploymentEnvironment> environments)
