@@ -7,22 +7,26 @@ namespace OctopusTools.Tests.Commands
     public class OptionsFixture
     {
         [Test]
-        [TestCase("--apiKey=abc123")]
-        [TestCase("--apikey=abc123")]
-        [TestCase("-apikey=abc123")]
-        [TestCase("--apikey=abc123")]
-        [TestCase("/apikey=abc123")]
-        public void ShouldBeCaseInsensitive(string parameter)
+        [TestCase("--apiKey=abc123", "-foo=bar")]
+        [TestCase("--apikey=abc123", "/foo=bar")]
+        [TestCase("-apikey=abc123", "--foo=bar")]
+        [TestCase("--apikey=abc123", "-foo=bar")]
+        [TestCase("/apikey=abc123", "--foo=bar")]
+        public void ShouldBeCaseInsensitive(string parameter1, string parameter2)
         {
             var apiKey = string.Empty;
+            var foo = string.Empty;
+            
             var optionSet = new OptionSet()
             {
-                {"apiKey=", "API key", v => apiKey = v}
+                {"apiKey=", "API key", v => apiKey = v},
+                {"foo=", "Foo", v => foo = v}
             };
 
-            optionSet.Parse(new[] {parameter});
+            optionSet.Parse(new[] {parameter1, parameter2});
 
             Assert.That(apiKey, Is.EqualTo("abc123"));
+            Assert.That(foo, Is.EqualTo("bar"));
         }
     }
 }
