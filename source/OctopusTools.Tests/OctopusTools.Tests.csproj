@@ -57,6 +57,7 @@
     <Compile Include="Commands\CreateReleaseCommandFixture.cs" />
     <Compile Include="Commands\DeploymentWatcherFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
+    <Compile Include="Commands\OptionsFixture.cs" />
     <Compile Include="Extensions\PackageConstraintsExtensionsFixture.cs" />
     <Compile Include="Helpers\TestCommandExtensions.cs" />
     <Compile Include="Util\UriExtensionsFixture.cs" />

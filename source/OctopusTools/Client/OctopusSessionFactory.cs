@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using OctopusTools.Commands;
 using OctopusTools.Infrastructure;
@@ -38,13 +39,26 @@ namespace OctopusTools.Client
             var uri = new Uri(serverBaseUrl);
             uri = uri.EnsureEndsWith("/api");
 
-            var credentials = CredentialCache.DefaultNetworkCredentials;
-            if (!string.IsNullOrWhiteSpace(user))
-            {
-                credentials = new NetworkCredential(user, pass);
-            }
+            var credentials = ParseCredentials();
 
             return new OctopusSession(uri, credentials, apiKey, log); ;
+        }
+
+        NetworkCredential ParseCredentials()
+        {
+            if (string.IsNullOrWhiteSpace(user))
+                return CredentialCache.DefaultNetworkCredentials;
+
+            var split = user.Split('\\');
+            if (split.Length == 2)
+            {
+                var domain = split.First();
+                user = split.Last();
+                
+                return new NetworkCredential(user, pass, domain);
+            }
+
+            return new NetworkCredential(user, pass);
         }
     }
 }
