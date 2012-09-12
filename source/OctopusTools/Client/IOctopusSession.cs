@@ -8,8 +8,11 @@ namespace OctopusTools.Client
     {
         RootDocument RootDocument { get; }
         IList<TResource> List<TResource>(string path);
+        IList<TResource> List<TResource>(string path, QueryString queryString);
         TResource Get<TResource>(string path);
+        TResource Get<TResource>(string path, QueryString queryString);
         TResource Create<TResource>(string path, TResource resource);
         TResource Update<TResource>(string path, TResource resource);
+        void Delete<TResource>(string path);
     }
 }

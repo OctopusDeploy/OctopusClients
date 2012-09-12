@@ -18,7 +18,7 @@ public static class DeploymentExtensions
         return session.Create(release.Link("Deployments"), deployment);
     }
 
-    public static IEnumerable<string> RequestDeployments(this IOctopusSession session, Release release, IEnumerable<DeploymentEnvironment> environments, bool force, ILog log)
+    public static IEnumerable<string> GetDeployments(this IOctopusSession session, Release release, IEnumerable<DeploymentEnvironment> environments, bool force, ILog log)
     {
         var linksToDeploymentTasks = new List<string>();
         foreach (var environment in environments)

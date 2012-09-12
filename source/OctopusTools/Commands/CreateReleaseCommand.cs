@@ -154,7 +154,7 @@ namespace OctopusTools.Commands
 
             if (environments != null)
             {
-                var linksToDeploymentTasks = Session.RequestDeployments(release, environments, Force, Log);
+                var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, Log);
 
                 if (WaitForDeployment)
                 {

@@ -40,6 +40,7 @@ namespace OctopusTools
             builder.RegisterCommand<ListEnvironmentsCommand>("list-environments", "List all environments");
             builder.RegisterCommand<CreateReleaseCommand>("create-release", "Creates and (optionally) deploys a release");
             builder.RegisterCommand<DeployReleaseCommand>("deploy-release", "Deploys a release");
+            builder.RegisterCommand<DeleteReleasesCommand>("delete-releases", "Deletes a range of releases");
 
             return builder.Build();
         }

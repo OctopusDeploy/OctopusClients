@@ -76,4 +76,9 @@ public static class ProjectExtensions
 
         return release;
     }
+
+    public static IList<Release> GetReleases(this IOctopusSession session, Project project, int skip, int take)
+    {
+        return session.List<Release>(project.Link("Releases"), new QueryString { { "skip", skip }, { "take", take}});
+    }
 }

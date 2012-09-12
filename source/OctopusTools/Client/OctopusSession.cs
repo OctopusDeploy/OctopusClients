@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Web;
 using Newtonsoft.Json;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
@@ -42,9 +43,19 @@ namespace OctopusTools.Client
             return Get<IList<TResource>>(path);
         }
 
+        public IList<TResource> List<TResource>(string path, QueryString queryString)
+        {
+            return Get<IList<TResource>>(path, queryString);
+        }
+
         public TResource Get<TResource>(string path)
         {
-            var uri = QualifyUri(path);
+            return Get<TResource>(path, null);
+        }
+
+        public TResource Get<TResource>(string path, QueryString queryString)
+        {
+            var uri = QualifyUri(path, queryString);
 
             var request = CreateWebRequest("GET", uri);
 
@@ -91,8 +102,29 @@ namespace OctopusTools.Client
             return Get<TResource>(uri.AbsolutePath);
         }
 
-        Uri QualifyUri(string path)
+        public void Delete<TResource>(string path)
         {
+            var uri = QualifyUri(path);
+
+            var request = CreateWebRequest("POST", uri);
+            request.ContentLength = 0;
+            request.Headers["X-HTTP-Method-Override"] = "DELETE";
+
+            using (ReadResponse(request)) { }
+        }
+
+        Uri QualifyUri(string path, QueryString queryString = null)
+        {
+            if (queryString != null && queryString.Count > 0)
+            {
+                var isFirstParam = !path.Contains("?");
+                foreach (var pair in queryString)
+                {
+                    path += (isFirstParam ? "?" : "&") + pair.Key + "=" + HttpUtility.UrlEncode((pair.Value ?? string.Empty).ToString());
+                    isFirstParam = false;
+                }
+            }
+
             return serverBaseUri.EnsureEndsWith(path);
         }
 

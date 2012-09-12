@@ -52,6 +52,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,7 +66,9 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Client\QueryString.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
+    <Compile Include="Commands\DeleteReleasesCommand.cs" />
     <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
