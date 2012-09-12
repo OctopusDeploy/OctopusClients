@@ -29,7 +29,7 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string PackageVersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
-		public bool ForceVersion { get; set; }
+        public bool ForceVersion { get; set; }
         public bool Force { get; set; }
         public bool WaitForDeployment { get; set; }
         public TimeSpan DeploymentTimeout { get; set; }
@@ -46,7 +46,7 @@ namespace OctopusTools.Commands
                 options.Add("version=", "Version number to use for the new release.", v => VersionNumber = v);
                 options.Add("packageversion=", "Version number of the package to use for this release.", v => PackageVersionNumber = v);
                 options.Add("packageversionoverride=", "[Optional] Version number to use for a package in the release.", ParsePackageConstraint);
-				options.Add("forceversion", "Take the version from the packageversion option and do not check for existence first.", v => ForceVersion = true);
+                options.Add("forceversion", "Take the version from the packageversion option and do not check for existence first.", v => ForceVersion = true);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
@@ -96,7 +96,7 @@ namespace OctopusTools.Commands
             }
             if (!string.IsNullOrEmpty(PackageVersionNumber))
             {
-				return PackageVersionNumber;
+                return PackageVersionNumber;
             }
 
             return null;
@@ -119,18 +119,18 @@ namespace OctopusTools.Commands
             var selected = new List<SelectedPackage>();
             foreach (var step in steps)
             {
-				SelectedPackage version;
+                SelectedPackage version;
                 var packageVersionConstraint = GetPackageVersionForStep(step);
                 if (packageVersionConstraint != null)
                 {
-					if (ForceVersion)
-					{
-						version = new SelectedPackage { StepId = step.Id, NuGetPackageVersion = packageVersionConstraint };
-					}
-					else
-					{
-						version = Session.GetPackageForStep(step, packageVersionConstraint);
-					}
+                    if (ForceVersion)
+                    {
+                        version = new SelectedPackage { StepId = step.Id, NuGetPackageVersion = packageVersionConstraint };
+                    }
+                    else
+                    {
+                        version = Session.GetPackageForStep(step, packageVersionConstraint);
+                    }
                 }
                 else
                 {
@@ -154,28 +154,13 @@ namespace OctopusTools.Commands
 
             if (environments != null)
             {
-                var linksToDeploymentTasks = RequestDeployments(release, environments);
+                var linksToDeploymentTasks = Session.RequestDeployments(release, environments, Force, Log);
 
                 if (WaitForDeployment)
                 {
                     deploymentWatcher.WaitForDeploymentsToFinish(Session, linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
                 }
             }
-
-        }
-
-        IEnumerable<string> RequestDeployments(Release release, IEnumerable<DeploymentEnvironment> environments)
-        {
-            var linksToDeploymentTasks = new List<string>();
-            foreach (var environment in environments)
-            {
-                var deployment = Session.DeployRelease(release, environment, Force);
-                var linkToTask = deployment.Link("Task");
-                linksToDeploymentTasks.Add(linkToTask);
-
-                Log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + deployment.Name, release.Version, environment.Name);
-            }
-            return linksToDeploymentTasks;
         }
     }
 }
