@@ -51,8 +51,6 @@ namespace OctopusTools.Commands
 
 		public override void Execute()
 		{
-			System.Diagnostics.Debugger.Launch();
-
 			if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 			if (string.IsNullOrWhiteSpace(SourceEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --srcenv=XYZ");
 			if (string.IsNullOrWhiteSpace(DestinationEnvironmentName)) throw new CommandException("Please specify an destination environment name using the parameter: --dstenv=XYZ");
