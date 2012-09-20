@@ -28,7 +28,23 @@ namespace OctopusTools.Client
             options.Parse(commandLineArgsProvider.Args);
         }
 
-        public IOctopusSession OpenSession()
+		private readonly object locker = new object();
+    	static IOctopusSession instance;
+
+		IOctopusSession GetInstance(Uri serverBaseUri, ICredentials credentials, string apiKey, ILog log)
+		{
+			lock (locker)
+			{
+				if (instance == null)
+				{
+					instance = new OctopusSession(serverBaseUri, credentials, apiKey, log);
+				}
+			}
+
+    		return instance;
+    	}
+
+    	public IOctopusSession OpenSession()
         {
             if (string.IsNullOrWhiteSpace(serverBaseUrl))
                 throw new CommandException("Please specify a server using the parameter: --server=http://myserver");
@@ -41,7 +57,7 @@ namespace OctopusTools.Client
 
             var credentials = ParseCredentials();
 
-            return new OctopusSession(uri, credentials, apiKey, log); ;
+			return GetInstance(uri, credentials, apiKey, log);
         }
 
         NetworkCredential ParseCredentials()

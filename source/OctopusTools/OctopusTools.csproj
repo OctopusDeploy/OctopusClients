@@ -71,6 +71,7 @@
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
     <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
+    <Compile Include="Commands\PromoteDeployment.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
     <Compile Include="Extensions\DeploymentExtensions.cs" />
     <Compile Include="Extensions\EnvironmentExtensions.cs" />
