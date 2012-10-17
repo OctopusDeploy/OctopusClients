@@ -101,6 +101,7 @@
     <Compile Include="Infrastructure\ICommandMetadata.cs" />
     <Compile Include="Infrastructure\ICommandProcessor.cs" />
     <Compile Include="Commands\ListEnvironmentsCommand.cs" />
+    <Compile Include="Commands\ListLatestDeploymentsCommand.cs" />	
     <Compile Include="Commands\Options.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
