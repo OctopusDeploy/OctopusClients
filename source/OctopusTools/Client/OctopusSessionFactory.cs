@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using OctopusTools.Commands;
@@ -10,10 +11,11 @@ namespace OctopusTools.Client
     public class OctopusSessionFactory : IOctopusSessionFactory
     {
         readonly ILog log;
-        string serverBaseUrl;
-        string user;
-        string pass;
-        string apiKey;
+        protected string serverBaseUrl;
+        protected string user;
+        protected string pass;
+        protected string apiKey;
+        string configFile;
 
         public OctopusSessionFactory(ILog log, ICommandLineArgsProvider commandLineArgsProvider)
         {
@@ -24,8 +26,11 @@ namespace OctopusTools.Client
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
             options.Add("apiKey=", "Your API key.", v => apiKey = v);
+            options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => configFile = v);
 
             options.Parse(commandLineArgsProvider.Args);
+
+            SetDefaultValuesFromConfigFile();
         }
 
         public IOctopusSession OpenSession()
@@ -59,6 +64,45 @@ namespace OctopusTools.Client
             }
 
             return new NetworkCredential(user, pass);
+        }
+
+        protected void SetDefaultValuesFromConfigFile()
+        {
+            if(configFile == null)
+            {
+                return;
+            }
+
+            if (!File.Exists(configFile))
+            {
+                throw new CommandException("Unable to find config file "+configFile);
+            }
+
+            string line = null;
+            var file = new StreamReader(configFile);
+            while((line = file.ReadLine()) != null)
+            {
+                var idxOfDelimiter = line.IndexOf('=');
+                if(idxOfDelimiter == -1 || idxOfDelimiter == line.Length-1)
+                {
+                    continue;
+                }
+
+                var key = line.Substring(0, idxOfDelimiter).Trim();
+                var value = line.Substring(idxOfDelimiter+1).Trim();
+
+                if (String.IsNullOrEmpty(key) || String.IsNullOrEmpty(value))
+                {
+                    continue;
+                }
+
+                if (serverBaseUrl == null && String.Equals("server", key, StringComparison.InvariantCultureIgnoreCase)) serverBaseUrl = value;
+                if (apiKey == null && String.Equals("apiKey", key, StringComparison.InvariantCultureIgnoreCase)) apiKey = value;
+                if (user == null && String.Equals("user", key, StringComparison.InvariantCultureIgnoreCase)) user = value;
+                if (pass == null && String.Equals("pass", key, StringComparison.InvariantCultureIgnoreCase)) pass = value;
+
+            }
+            file.Close();
         }
     }
 }
