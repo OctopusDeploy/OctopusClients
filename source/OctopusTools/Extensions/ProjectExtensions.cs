@@ -55,7 +55,7 @@ public static class ProjectExtensions
     public static Release CreateRelease(this IOctopusSession session, Project project, List<SelectedPackage> latestVersions, string version, string releaseNotes)
     {
         var release = new Release();
-        release.Assembled = DateTime.UtcNow;
+        release.Assembled = DateTimeOffset.UtcNow;
         release.AssembledBy = Environment.UserName;
         release.Version = version;
         release.SelectedPackages = latestVersions.ToArray();
