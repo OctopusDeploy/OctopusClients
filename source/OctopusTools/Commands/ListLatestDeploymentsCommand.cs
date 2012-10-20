@@ -52,7 +52,7 @@ namespace OctopusTools.Commands
 				}
 
 				var task = Session.Get<Task>(deployment.Link("Task"));
-				var release = Session.GetReleaseById(project, deployment.ReleaseId);
+				var release = Session.Get<Release>(deployment.Link("Release"));
 				
 				var propertiesToLog = new List<string>();
 				propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(task));
@@ -71,7 +71,7 @@ namespace OctopusTools.Commands
 		{
 			return new List<string>{
 				"Date: " + task.QueueTime,
-				"Duration: " + task.Duration.ToString(@"hh\:mm\:ss"),
+				"Duration: " + task.Duration,
 				"State: "+task.State                  
 			};
 		}

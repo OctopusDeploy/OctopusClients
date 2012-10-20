@@ -77,30 +77,6 @@ public static class ProjectExtensions
         return release;
     }
 
-    public static Release GetReleaseById(this IOctopusSession session, Project project, string releaseId)
-    {
-        Release release = null;
-
-        var intervalStart = 0;
-        const int stepSize = 64;
-
-        while (release == null)
-        {
-            var releases = session.List<Release>(project.Link("Releases"), new QueryString { { "skip", intervalStart }, { "take", intervalStart + stepSize } });
-            if (releases.Count == 0)
-            {
-                break;
-            }
-            release = releases.FirstOrDefault(x => string.Equals(x.Id, releaseId, StringComparison.InvariantCultureIgnoreCase));
-            intervalStart += stepSize;
-        }
-        if (release == null)
-        {
-            throw new ArgumentException(string.Format("A release with id '{0}' could not be found.", releaseId));
-        }
-        return release;
-    }
-
     public static IList<Release> GetReleases(this IOctopusSession session, Project project, int skip, int take)
     {
         return session.List<Release>(project.Link("Releases"), new QueryString { { "skip", skip }, { "take", take}});
@@ -108,6 +84,6 @@ public static class ProjectExtensions
 
     public static IEnumerable<Deployment> GetMostRecentDeployments(this IOctopusSession session, Project project)
     {
-        return session.List<Deployment>(project.Link(("MostRecentDeployments")));
+        return session.List<Deployment>(project.Link(("RecentDeployments")));
     }
 }
