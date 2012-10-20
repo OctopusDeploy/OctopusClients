@@ -41,7 +41,8 @@ namespace OctopusTools
             builder.RegisterCommand<CreateReleaseCommand>("create-release", "Creates and (optionally) deploys a release");
             builder.RegisterCommand<DeployReleaseCommand>("deploy-release", "Deploys a release");
             builder.RegisterCommand<DeleteReleasesCommand>("delete-releases", "Deletes a range of releases");
-
+            builder.RegisterCommand<ListLatestDeploymentsCommand>("list-latestdeployments", "List the releases last-deployed in each environment");
+            
             return builder.Build();
         }
     }
