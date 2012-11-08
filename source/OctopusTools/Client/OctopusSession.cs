@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
@@ -17,6 +18,7 @@ namespace OctopusTools.Client
         readonly ICredentials credentials;
         readonly string apiKey;
         readonly ILog log;
+        readonly JsonSerializerSettings serializerSettings;
 
         public OctopusSession(Uri serverBaseUri, ICredentials credentials, string apiKey, ILog log)
         {
@@ -24,6 +26,9 @@ namespace OctopusTools.Client
             this.credentials = credentials;
             this.apiKey = apiKey;
             this.log = log;
+
+            serializerSettings = new JsonSerializerSettings();
+            serializerSettings.Converters.Add(new IsoDateTimeConverter());
 
             rootDocument = new Lazy<RootDocument>(EstablishSession);
         }
@@ -72,8 +77,7 @@ namespace OctopusTools.Client
         public TResource Create<TResource>(string path, TResource resource)
         {
             var uri = QualifyUri(path);
-
-            var postData = JsonConvert.SerializeObject(resource, Formatting.Indented);
+            var postData = JsonConvert.SerializeObject(resource, Formatting.Indented, serializerSettings);
 
             var request = CreateWebRequest("POST", uri);
             request.ContentType = "application/json";
@@ -82,6 +86,11 @@ namespace OctopusTools.Client
             using (var response = ReadResponse(request))
             {
                 var location = response.Headers.Get("Location");
+                if (location == null)
+                {
+                    throw new Exception("Unexpected response: " + new StreamReader(response.GetResponseStream()).ReadToEnd());
+                }
+
                 return Get<TResource>(location);
             }
         }
@@ -184,9 +193,16 @@ namespace OctopusTools.Client
                     {
                         var details = reader.ReadToEnd();
 
-                        if (!string.IsNullOrWhiteSpace(details))
+                        var message = wex.Message + " " + details;
+                        var header = wex.Response.Headers["X-Error"];
+                        if (header != null)
                         {
-                            throw new Exception(wex.Message + " " + details);
+                            message = header + " " + details;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(message))
+                        {
+                            throw new Exception(message);
                         }
                     }
                 }
