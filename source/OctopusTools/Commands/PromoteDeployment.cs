@@ -36,8 +36,8 @@ namespace OctopusTools.Commands
 			{
 				var options = base.Options;
 				options.Add("project=", "Name of the project", v => ProjectName = v);
-				options.Add("srcenv=", "Name of the source environment", v => SourceEnvironmentName = v);
-				options.Add("dstenv=", "Name of the destination environment", v => DestinationEnvironmentName = v);
+				options.Add("from=", "Name of the source environment", v => SourceEnvironmentName = v);
+				options.Add("to=", "Name of the destination environment", v => DestinationEnvironmentName = v);
 
 				options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
 				options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
@@ -52,8 +52,8 @@ namespace OctopusTools.Commands
 		public override void Execute()
 		{
 			if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
-			if (string.IsNullOrWhiteSpace(SourceEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --srcenv=XYZ");
-			if (string.IsNullOrWhiteSpace(DestinationEnvironmentName)) throw new CommandException("Please specify an destination environment name using the parameter: --dstenv=XYZ");
+			if (string.IsNullOrWhiteSpace(SourceEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --from=EnvironmentSource");
+			if (string.IsNullOrWhiteSpace(DestinationEnvironmentName)) throw new CommandException("Please specify an destination environment name using the parameter: --to=EnvironmentDestination");
 
 
 			Log.Debug("Finding project: " + ProjectName);
