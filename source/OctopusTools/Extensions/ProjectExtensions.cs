@@ -30,10 +30,10 @@ public static class ProjectExtensions
 	{
 		var versions = session.List<PackageVersion>(step.Link("AvailablePackageVersions"));
 
-		var latest = versions.Where(s => (s.Version == version)).First();
+		var latest = versions.FirstOrDefault(s => s.Version == version);
 		if (latest == null)
 		{
-			throw new Exception("There are no available packages named '{0}'");
+			throw new Exception(string.Format("There are no available packages named '{0}' with a version '{1}'.", step.NuGetPackageId, version));
 		}
 
 		return new SelectedPackage { StepId = step.Id, NuGetPackageVersion = latest.Version };
@@ -46,7 +46,7 @@ public static class ProjectExtensions
         var latest = versions.FirstOrDefault();
         if (latest == null)
         {
-            throw new Exception("There are no available packages named '{0}'");
+            throw new Exception(string.Format("There are no available packages named '{0}'.", step.NuGetPackageId));
         }
 
         return new SelectedPackage { StepId = step.Id, NuGetPackageVersion = latest.Version };
@@ -71,7 +71,7 @@ public static class ProjectExtensions
         var release = releases.FirstOrDefault(x => string.Equals(x.Version, version, StringComparison.InvariantCultureIgnoreCase));
         if (release == null)
         {
-            throw new ArgumentException(string.Format("A release named '{0}' could not be found.", version));
+            throw new ArgumentException(string.Format("A release named '{0}' for project '{1}' could not be found.", version, project.Name));
         }
 
         return release;
