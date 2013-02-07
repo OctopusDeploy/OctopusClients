@@ -81,4 +81,9 @@ public static class ProjectExtensions
     {
         return session.List<Release>(project.Link("Releases"), new QueryString { { "skip", skip }, { "take", take}});
     }
+
+    public static IEnumerable<Deployment> GetMostRecentDeployments(this IOctopusSession session, Project project)
+    {
+        return session.List<Deployment>(project.Link(("RecentDeployments")));
+    }
 }
