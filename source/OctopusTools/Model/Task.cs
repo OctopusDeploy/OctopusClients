@@ -8,6 +8,7 @@ namespace OctopusTools.Model
         public string Name { get; set; }
         public string Description { get; set; }
         public string Output { get; set; }
+        public DateTime QueueTime { get; set; }
         public string State { get; set; }
         public string Duration { get; set; }
         public bool IsFinished
