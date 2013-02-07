@@ -39,8 +39,9 @@ namespace OctopusTools
             builder.RegisterCommand<HelpCommand>("help", "Prints this help text", "h", "?");
             builder.RegisterCommand<ListEnvironmentsCommand>("list-environments", "List all environments");
             builder.RegisterCommand<CreateReleaseCommand>("create-release", "Creates and (optionally) deploys a release");
-            builder.RegisterCommand<DeployReleaseCommand>("deploy-release", "Deploys a release");
-            builder.RegisterCommand<DeleteReleasesCommand>("delete-releases", "Deletes a range of releases");
+			builder.RegisterCommand<DeployReleaseCommand>("deploy-release", "Deploys a release");
+			builder.RegisterCommand<DeleteReleasesCommand>("delete-releases", "Deletes a range of releases");
+			builder.RegisterCommand<PromoteDeployment>("promote-deployment", "Deploys the current release at a given project and environment to a new environment");
 
             return builder.Build();
         }

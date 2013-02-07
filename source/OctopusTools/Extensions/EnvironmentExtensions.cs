@@ -8,6 +8,19 @@ using OctopusTools.Model;
 public static class EnvironmentExtensions
 // ReSharper restore CheckNamespace
 {
+	public static DeploymentEnvironment GetEnvironment(this IOctopusSession session, string environmentName)
+	{
+		var environments = session.List<DeploymentEnvironment>(session.RootDocument.Link("Environments"));
+
+		var environment = environments.FirstOrDefault(x => string.Equals(x.Name, environmentName, StringComparison.InvariantCultureIgnoreCase));
+		if (environment == null)
+		{
+			throw new ArgumentException(string.Format("A environment named '{0}' could not be found.", environmentName));
+		}
+
+		return environment;
+	}
+
     public static IList<DeploymentEnvironment> ListEnvironments(this IOctopusSession session)
     {
         return session.List<DeploymentEnvironment>(session.RootDocument.Link("Environments"));
