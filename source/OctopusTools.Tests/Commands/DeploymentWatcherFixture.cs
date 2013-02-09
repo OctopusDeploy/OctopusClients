@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using NSubstitute;
 using NUnit.Framework;
@@ -48,7 +49,7 @@ namespace OctopusTools.Tests.Commands
         {
             var log = Substitute.For<ILog>();
             var session = Substitute.For<IOctopusSession>();
-            session.Get<Task>(Arg.Any<String>()).Returns(new Task { State = "Failed" });
+            session.Get<Task>(Arg.Any<String>()).Returns(new Task { State = "Failed", Links = new Dictionary<string, string> { { "Web", "Foo" } } });
 
             var watcher = new DeploymentWatcher(log);
 
