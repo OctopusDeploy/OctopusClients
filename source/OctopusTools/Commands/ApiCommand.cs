@@ -8,14 +8,12 @@ namespace OctopusTools.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly IOctopusSessionFactory client;
         readonly Lazy<IOctopusSession> session;
         readonly ILog log;
 
         protected ApiCommand(IOctopusSessionFactory client, ILog log)
         {
             this.log = log;
-            this.client = client;
 
             session = new Lazy<IOctopusSession>(client.OpenSession);
         }
@@ -42,5 +40,9 @@ namespace OctopusTools.Commands
 
         public abstract void Execute();
       
+        protected virtual void NotSupported(string packageversion, string parameter)
+        {
+            throw new ArgumentException("The parameter ");
+        }
     }
 }

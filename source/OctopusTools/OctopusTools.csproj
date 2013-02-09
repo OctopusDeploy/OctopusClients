@@ -47,6 +47,10 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Core, Version=2.2.31210.9045, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NuGet.Core.2.2.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -72,10 +76,15 @@
     <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
+    <Compile Include="Commands\IPackageVersionResolver.cs" />
+    <Compile Include="Commands\PackageVersionResolver.cs" />
+    <Compile Include="Commands\ReleasePlan.cs" />
+    <Compile Include="Commands\ReleasePlanItem.cs" />
+    <Compile Include="Diagnostics\LogExtensions.cs" />
     <Compile Include="Extensions\DeploymentExtensions.cs" />
     <Compile Include="Extensions\EnvironmentExtensions.cs" />
-    <Compile Include="Extensions\PackageConstraintExtensions.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
+    <Compile Include="Extensions\TimeSpanExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Infrastructure\CommandLineArgsProvider.cs" />
     <Compile Include="Infrastructure\ICommandLineArgsProvider.cs" />

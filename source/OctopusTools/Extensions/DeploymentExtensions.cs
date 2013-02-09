@@ -27,7 +27,7 @@ public static class DeploymentExtensions
             var linkToTask = deployment.Link("Task");
             linksToDeploymentTasks.Add(linkToTask);
 
-            log.InfoFormat("Successfully scheduled release '{0}' for deployment to environment '{1}'" + deployment.Name, release.Version, environment.Name);
+            log.InfoFormat("Successfully scheduled release {0} for deployment to environment {1}", release.Version, environment.Name);
         }
         return linksToDeploymentTasks;
     }

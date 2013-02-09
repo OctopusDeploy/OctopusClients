@@ -13,7 +13,7 @@ public static class EnvironmentExtensions
         return session.List<DeploymentEnvironment>(session.RootDocument.Link("Environments"));
     }
 
-    public static IList<DeploymentEnvironment> FindEnvironments(this IOctopusSession session, IList<string> environmentNames)
+    public static IList<DeploymentEnvironment> FindEnvironments(this IOctopusSession session, ICollection<string> environmentNames)
     {
         if (environmentNames == null || !environmentNames.Any())
             return new List<DeploymentEnvironment>();

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net;
 using OctopusTools.Commands;
+using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
 using log4net;
 
@@ -24,6 +25,7 @@ namespace OctopusTools.Client
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
             options.Add("apiKey=", "Your API key.", v => apiKey = v);
+            options.Add("enableservicemessages", "Enable TeamCity service messages", v => log.EnableServiceMessages());
 
             options.Parse(commandLineArgsProvider.Args);
         }

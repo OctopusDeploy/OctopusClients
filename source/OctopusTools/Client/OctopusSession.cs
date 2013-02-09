@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -41,6 +42,11 @@ namespace OctopusTools.Client
         public void Initialize()
         {
             rootDocument.LoadValue();
+        }
+
+        public string QualifyWebLink(string path)
+        {
+            return Regex.Replace(serverBaseUri.ToString(), "/api$", path);
         }
 
         public IList<TResource> List<TResource>(string path)
@@ -177,12 +183,10 @@ namespace OctopusTools.Client
             }
         }
 
-        WebResponse ReadResponse(WebRequest request)
+        static WebResponse ReadResponse(WebRequest request)
         {
             try
             {
-                log.Debug(request.Method + " " + request.RequestUri);
-
                 return request.GetResponse();
             }
             catch (WebException wex)
