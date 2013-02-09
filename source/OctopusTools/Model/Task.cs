@@ -7,6 +7,7 @@ namespace OctopusTools.Model
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ErrorMessage { get; set; }
         public string Output { get; set; }
         public DateTime QueueTime { get; set; }
         public string State { get; set; }

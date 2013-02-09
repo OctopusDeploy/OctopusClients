@@ -54,8 +54,12 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="Client\OctopusSessionFactoryFixture.cs" />
+    <Compile Include="Commands\CreateReleaseCommandFixture.cs" />
+=======
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
+>>>>>>> 7b5d9
     <Compile Include="Commands\DeploymentWatcherFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
     <Compile Include="Commands\OptionsFixture.cs" />

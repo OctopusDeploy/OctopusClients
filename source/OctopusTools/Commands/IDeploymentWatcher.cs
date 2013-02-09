@@ -6,6 +6,6 @@ namespace OctopusTools.Commands
 {
     public interface IDeploymentWatcher
     {
-        void WaitForDeploymentsToFinish(IOctopusSession session, IEnumerable<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle);
+        void WaitForDeploymentsToFinish(IOctopusSession session, IList<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle);
     }
 }

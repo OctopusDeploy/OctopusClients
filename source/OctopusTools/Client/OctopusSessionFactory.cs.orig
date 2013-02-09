@@ -27,8 +27,11 @@ namespace OctopusTools.Client
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
             options.Add("apiKey=", "Your API key.", v => apiKey = v);
+<<<<<<< HEAD
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => configFile = v);
+=======
             options.Add("enableservicemessages", "Enable TeamCity service messages", v => log.EnableServiceMessages());
+>>>>>>> 7b5d9
 
             options.Parse(commandLineArgsProvider.Args);
 

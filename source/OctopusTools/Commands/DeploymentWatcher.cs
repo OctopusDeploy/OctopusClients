@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using OctopusTools.Client;
+using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
@@ -19,34 +21,52 @@ namespace OctopusTools.Commands
             this.log = log;
         }
 
-        public void WaitForDeploymentsToFinish(IOctopusSession session, IEnumerable<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle)
+        public void WaitForDeploymentsToFinish(IOctopusSession session, IList<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle)
         {
-            IDictionary<string, Task> tasks;
-            var stopwatch = Stopwatch.StartNew();
-            do
+            var tasks = WaitUntilTasksFinish(session, linksToDeploymentTasks, timeout, deploymentStatusCheckSleepCycle);
+
+            var failedTasks = tasks.Where(task => !task.FinishedSuccessfully).ToList();
+            if (failedTasks.Any())
             {
-                tasks = linksToDeploymentTasks.ToDictionary(link => link, link => session.Get<Task>(link));
-                var allTasksFinished = tasks.Values.All(task => task.IsFinished);
-                if (allTasksFinished) break;
+                var message = new StringBuilder();
+                foreach (var task in failedTasks)
+                {
+                    message.AppendFormat("The task: '{0}' failed with the error: {1}", task.Description, task.ErrorMessage).AppendLine();
+                    message.AppendFormat("Please see the deployment page for more details: {0}", session.QualifyWebLink(task.Link("Web"))).AppendLine();
+                }
+
+                throw new CommandException(message.ToString());
+            }
+
+            log.Debug("Deployment finished successfully!");       
+        }
+
+        IEnumerable<Task> WaitUntilTasksFinish(IOctopusSession session, IList<string> linksToDeploymentTasks, TimeSpan timeout, TimeSpan deploymentStatusCheckSleepCycle)
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            while (true)
+            {
+                var tasks = FetchTasks(session, linksToDeploymentTasks);
+
+                var allFinished = tasks.All(task => task.IsFinished);
+                if (allFinished)
+                    return tasks;
 
                 EnsureDeploymentIsNotTakingLongerThanExpected(stopwatch.Elapsed, timeout);
 
-                log.Debug(String.Format("Deployment not yet finished. It's taken {0} so far.", stopwatch.Elapsed));
+                log.DebugFormat("Deployment has not yet finished. Time taken: {0}", stopwatch.Elapsed.Friendly());
+
                 Thread.Sleep(deploymentStatusCheckSleepCycle);
-            } while (true);
-
-            var failedTasks = tasks.Values.Where(task => !task.FinishedSuccessfully);
-            if (failedTasks.Any())
-            {
-                var message = "{0} of the deployment tasks has failed. Please check Octopus web site for more details. Failed tasks: {1}";
-                var taskIds = failedTasks.Aggregate("", (accumulator, task) => accumulator + task.Id + ", ");
-                throw new CommandException(String.Format(message, failedTasks.Count(), taskIds));
             }
-
-            log.Debug("Deployment has finished succeessfully");       
         }
 
-        void EnsureDeploymentIsNotTakingLongerThanExpected(TimeSpan elapsedTime, TimeSpan timeout)
+        static IList<Task> FetchTasks(IOctopusSession session, IEnumerable<string> linksToDeploymentTasks)
+        {
+            return linksToDeploymentTasks.Select(session.Get<Task>).ToList();
+        }
+
+        static void EnsureDeploymentIsNotTakingLongerThanExpected(TimeSpan elapsedTime, TimeSpan timeout)
         {
             if (elapsedTime > timeout)
             {

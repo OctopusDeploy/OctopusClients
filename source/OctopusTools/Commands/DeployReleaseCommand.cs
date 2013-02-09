@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
 using log4net;
@@ -35,7 +36,7 @@ namespace OctopusTools.Commands
                 var options = base.Options;
                 options.Add("project=", "Name of the project", v => ProjectName = v);
                 options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-                options.Add("version=", "Version number of the release to deploy.", v => VersionNumber = v);
+                options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
                 options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
                 options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
@@ -59,14 +60,12 @@ namespace OctopusTools.Commands
             Log.Debug("Finding release: " + VersionNumber);
             var release = Session.GetRelease(project, VersionNumber);
 
-            if (environments != null)
-            {
-                var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, Log);
+            if (environments == null || environments.Count <= 0) return;
+            var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, Log).ToList();
 
-                if (WaitForDeployment)
-                {
-                    deploymentWatcher.WaitForDeploymentsToFinish(Session, linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
-                }
+            if (WaitForDeployment)
+            {
+                deploymentWatcher.WaitForDeploymentsToFinish(Session, linksToDeploymentTasks, DeploymentTimeout, DeploymentStatusCheckSleepCycle);
             }
         }
     }
