@@ -44,6 +44,11 @@ namespace OctopusTools.Commands
         {
             var result = new StringBuilder();
 
+            if (steps.Count == 0)
+            {
+                return string.Empty;
+            }
+            
             var nameColumnWidth = Math.Min(steps.Max(s => s.StepName.Length) + 2, 30);
             var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-15} {3,-36}";
 
