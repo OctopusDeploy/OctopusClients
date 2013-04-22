@@ -68,12 +68,20 @@ public static class ProjectExtensions
     {
         var releases = session.List<Release>(project.Link("Releases"));
 
-        var release = releases.FirstOrDefault(x => string.Equals(x.Version, version, StringComparison.InvariantCultureIgnoreCase));
+        Release release;
+
+        if (version.ToLower() == "latest")
+        {
+            release = releases.OrderByDescending(r => SemanticVersion.Parse(r.Version)).FirstOrDefault();
+        }
+        else
+        {
+            release = releases.FirstOrDefault(x => string.Equals(x.Version, version, StringComparison.InvariantCultureIgnoreCase));
+        }
         if (release == null)
         {
             throw new ArgumentException(string.Format("A release named '{0}' for project '{1}' could not be found.", version, project.Name));
         }
-
         return release;
     }
 
