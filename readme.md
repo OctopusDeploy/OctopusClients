@@ -36,7 +36,7 @@ This command allows you to create a release, and optionally deploy it to one or 
 
 Usage: 
 
-      octo create-release [<options>]
+    octo create-release [<options>]
 
 Where `[<options>]` is any of:
 
@@ -83,7 +83,7 @@ This will create a release with a specified release number (note that this is no
 
 #### Specifying the package version:
 
-This will create a release *(1.0.3)* with a specified NuGet package version *(1.0.3)*:
+This will create a release *(1.0.3)* with a specified NuGet package version *(1.0.1)*:
 
     octo create-release --project=HelloWorld --version=1.0.3 --packageversion=1.0.1 --server=http://octopus/api --apiKey=ABCDEF123456
 
