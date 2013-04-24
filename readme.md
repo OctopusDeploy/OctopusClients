@@ -111,7 +111,7 @@ Usage:
 
     octo deploy-release [<options>]
 
-Where [<options>] is any of:
+Where `[<options>]` is any of:
 
     --project=VALUE        Name of the project
     --deployto=VALUE       Environment to deploy to, e.g., Production
