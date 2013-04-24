@@ -1,6 +1,8 @@
 # Octopus Deploy Command Line Tools
 
-[Octopus Deploy][1] is an automated release management server for professional .NET developers.  *Octo.exe* is a command line tool for managing your Octpus installation and triggering releases. The tool can be [downloaded from the GitHub downloads page][2].
+[Octopus Deploy][1] is an automated release management server for professional .NET developers.  *Octo.exe* is a command line tool for managing your Octpus installation and triggering releases. 
+
+The tool can be [downloaded from the Octopus downloads page][2].
 
 ## General usage
 
@@ -145,4 +147,4 @@ This will deploy release 1.0.0 of the *HelloWorld* project to the *Production* e
 
 
 [1]: http://octopusdeploy.com 
-[2]: https://github.com/OctopusDeploy/Octopus-Tools/downloads
+[2]: http://octopusdeploy.com/downloads
