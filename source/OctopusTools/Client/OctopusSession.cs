@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -132,12 +133,14 @@ namespace OctopusTools.Client
         {
             if (queryString != null && queryString.Count > 0)
             {
-                var isFirstParam = !path.Contains("?");
+                Uri uri = new Uri(serverBaseUri, path);
+
+                NameValueCollection currentQueryStrings = HttpUtility.ParseQueryString(uri.Query);
                 foreach (var pair in queryString)
                 {
-                    path += (isFirstParam ? "?" : "&") + pair.Key + "=" + HttpUtility.UrlEncode((pair.Value ?? string.Empty).ToString());
-                    isFirstParam = false;
+                    currentQueryStrings.Set(pair.Key, pair.Value.ToString());
                 }
+                path = string.Concat(uri.AbsolutePath, "?", currentQueryStrings);
             }
 
             return serverBaseUri.EnsureEndsWith(path);
