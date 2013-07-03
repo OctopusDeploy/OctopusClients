@@ -8,6 +8,11 @@ using OctopusTools.Model;
 public static class ProjectExtensions
 // ReSharper restore CheckNamespace
 {
+    public static IList<Project> ListProjects(this IOctopusSession session)
+    {
+        return session.List<Project>(session.RootDocument.Link("Projects"));
+    }
+
     public static Project GetProject(this IOctopusSession session, string projectName)
     {
         var projects = session.List<Project>(session.RootDocument.Link("Projects"));

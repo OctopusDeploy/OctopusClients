@@ -77,6 +77,7 @@
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
     <Compile Include="Commands\IPackageVersionResolver.cs" />
+    <Compile Include="Commands\ListProjectsCommand.cs" />
     <Compile Include="Commands\PackageVersionResolver.cs" />
     <Compile Include="Commands\ReleasePlan.cs" />
     <Compile Include="Commands\ReleasePlanItem.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="Infrastructure\ICommandMetadata.cs" />
     <Compile Include="Infrastructure\ICommandProcessor.cs" />
     <Compile Include="Commands\ListEnvironmentsCommand.cs" />
-    <Compile Include="Commands\ListLatestDeploymentsCommand.cs" />	
+    <Compile Include="Commands\ListLatestDeploymentsCommand.cs" />
     <Compile Include="Commands\Options.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
