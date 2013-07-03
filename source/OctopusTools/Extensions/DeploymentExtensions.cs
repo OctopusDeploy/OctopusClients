@@ -8,22 +8,23 @@ using log4net;
 public static class DeploymentExtensions
 // ReSharper restore CheckNamespace
 {
-    public static Deployment DeployRelease(this IOctopusSession session, Release release, DeploymentEnvironment environment, bool forceRedeploymentOfExistingPackages = false)
+    public static Deployment DeployRelease(this IOctopusSession session, Release release, DeploymentEnvironment environment, bool forceRedeploymentOfExistingPackages = false, bool forceDownloadOfPackages = false)
     {
         var deployment = new Deployment();
         deployment.EnvironmentId = environment.Id;
         deployment.ReleaseId = release.Id;
         deployment.ForceRedeployment = forceRedeploymentOfExistingPackages;
+        deployment.ForcePackageDownload = forceDownloadOfPackages;
 
         return session.Create(release.Link("Deployments"), deployment);
     }
 
-    public static IEnumerable<string> GetDeployments(this IOctopusSession session, Release release, IEnumerable<DeploymentEnvironment> environments, bool force, ILog log)
+    public static IEnumerable<string> GetDeployments(this IOctopusSession session, Release release, IEnumerable<DeploymentEnvironment> environments, bool force, bool forceDownloadOfPackages, ILog log)
     {
         var linksToDeploymentTasks = new List<string>();
         foreach (var environment in environments)
         {
-            var deployment = session.DeployRelease(release, environment, force);
+            var deployment = session.DeployRelease(release, environment, force, forceDownloadOfPackages);
             var linkToTask = deployment.Link("Task");
             linksToDeploymentTasks.Add(linkToTask);
 
