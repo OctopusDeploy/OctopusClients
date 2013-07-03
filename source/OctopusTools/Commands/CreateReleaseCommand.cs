@@ -30,6 +30,7 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
+        public bool ForcePackageDownload { get; set; }
         public bool WaitForDeployment { get; set; }
         public TimeSpan DeploymentTimeout { get; set; }
         public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
@@ -47,6 +48,7 @@ namespace OctopusTools.Commands
                 options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
                 options.Add("forceversion", "Ignored (obsolete).", v => {});
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
+                options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
                 options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
                 options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
                 options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true );
@@ -99,7 +101,7 @@ namespace OctopusTools.Commands
             Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
 
             if (environments == null || environments.Count <= 0) return;
-            var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, Log).ToList();
+            var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, ForcePackageDownload, Log).ToList();
 
             if (WaitForDeployment)
             {

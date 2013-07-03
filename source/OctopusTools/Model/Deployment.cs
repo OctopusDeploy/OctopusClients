@@ -8,6 +8,7 @@ namespace OctopusTools.Model
         public string ReleaseId { get; set; }
         public string EnvironmentId { get; set; }
         public bool ForceRedeployment { get; set; }
+        public bool ForcePackageDownload { get; set; }
         public string Name { get; set; }
     }
 }

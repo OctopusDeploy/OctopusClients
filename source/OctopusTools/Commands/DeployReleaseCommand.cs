@@ -25,6 +25,7 @@ namespace OctopusTools.Commands
         public IList<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public bool Force { get; set; }
+        public bool ForcePackageDownload { get; set; }
         public bool WaitForDeployment { get; set; }
         public TimeSpan DeploymentTimeout { get; set; }
         public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
@@ -38,6 +39,7 @@ namespace OctopusTools.Commands
                 options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
                 options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
                 options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
+                options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
                 options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
                 options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
                 options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
@@ -61,7 +63,7 @@ namespace OctopusTools.Commands
             var release = Session.GetRelease(project, VersionNumber);
 
             if (environments == null || environments.Count <= 0) return;
-            var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, Log).ToList();
+            var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, ForcePackageDownload, Log).ToList();
 
             if (WaitForDeployment)
             {
