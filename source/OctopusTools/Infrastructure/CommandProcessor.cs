@@ -38,7 +38,9 @@ namespace OctopusTools.Infrastructure
             try
             {
                 var options = command.Options;
-                options.Parse(args);
+                var leftovers = options.Parse(args);
+                if (leftovers.Any())
+                    throw new CommandException(string.Format("Extra non-recognized parameters for command: {0}", string.Join(" ", leftovers)));
 
                 command.Execute();
             }

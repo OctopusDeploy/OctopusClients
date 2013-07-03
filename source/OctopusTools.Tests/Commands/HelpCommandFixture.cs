@@ -68,24 +68,6 @@ namespace OctopusTools.Tests.Commands
             Console.SetOut(originalOutput);
         }
 
-        private class SpeakCommand : ICommand
-        {
-            public OptionSet Options
-            {
-                get 
-                { 
-                    var options = new OptionSet();
-                    options.Add("message=", m => { });
-                    return options;
-                }
-            }
-
-            public void Execute()
-            {
-                Assert.Fail("This should not be called");
-            }
-        }
-
         private class Metadata : ICommandMetadata
         {
             public string Name { get; set; }
