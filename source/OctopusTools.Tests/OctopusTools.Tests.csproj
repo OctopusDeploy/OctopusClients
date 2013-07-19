@@ -62,7 +62,6 @@
     <Compile Include="Commands\OptionsFixture.cs" />
     <Compile Include="Commands\SpeakCommand.cs" />
     <Compile Include="Extensions\TimeSpanExtensionsFixture.cs" />
-    <Compile Include="Util\UriExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +73,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
