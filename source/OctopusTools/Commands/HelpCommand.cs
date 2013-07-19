@@ -56,7 +56,6 @@ namespace OctopusTools.Commands
             Console.ResetColor();
             Console.WriteLine();
             Console.WriteLine("Where [<options>] is any of: ");
-            Console.WriteLine();
 
             command.GetHelp(Console.Out);
 

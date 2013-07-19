@@ -40,7 +40,7 @@ namespace OctopusTools.Commands
                 {"configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v)},
                 {"debug", "[Optional] Enable debug logging", v => enableDebugging = true},
                 {"ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true},
-                {"enableServiceMessages", "Enable TeamCity service messages when logging.", v => log.EnableServiceMessages()}
+                {"enableServiceMessages", "[Optional] Enable TeamCity service messages when logging.", v => log.EnableServiceMessages()}
             };
         }
 
@@ -66,7 +66,21 @@ namespace OctopusTools.Commands
 
         public void GetHelp(TextWriter writer)
         {
-            SetOptions(options);
+            var commandSpecific = new OptionSet();
+            SetOptions(commandSpecific);
+
+            if (commandSpecific.Count > 0)
+            {
+                writer.WriteLine();
+                writer.WriteLine("Command arguments:");
+                writer.WriteLine();
+                commandSpecific.WriteOptionDescriptions(writer);
+
+                writer.WriteLine();
+                writer.WriteLine("Common arguments:");
+            }
+
+            writer.WriteLine();
             
             options.WriteOptionDescriptions(writer);
         }
