@@ -7,8 +7,6 @@ public static class TestCommandExtensions
 {
     public static void Execute(this ICommand command, params string[] args)
     {
-        command.Options.Parse(args);
-
-        command.Execute();
+        command.Execute(args);
     } 
 }

@@ -1,12 +1,11 @@
 ﻿using System;
-using OctopusTools.Commands;
+using System.IO;
 
 namespace OctopusTools.Infrastructure
 {
     public interface ICommand
     {
-        OptionSet Options { get; }
-
-        void Execute();
+        void GetHelp(TextWriter writer);
+        void Execute(string[] commandLineArguments);
     }
 }

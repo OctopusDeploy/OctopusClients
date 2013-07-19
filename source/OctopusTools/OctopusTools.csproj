@@ -38,18 +38,27 @@
     <ApplicationIcon>Properties\Octopus.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\packages\Autofac.2.5.2.830\lib\NET40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.3.0.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Configuration">
+      <HintPath>..\packages\Autofac.3.0.2\lib\net40\Autofac.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core, Version=2.2.31210.9045, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NuGet.Core.2.2.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.6.40619.9041, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NuGet.Core.2.6.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Octopus.Client, Version=2.0.0.162, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Octopus.Client.2.0.0.162\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -70,57 +79,36 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Client\QueryString.cs" />
+    <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
     <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
+    <Compile Include="Commands\IOctopusRepositoryFactory.cs" />
     <Compile Include="Commands\IPackageVersionResolver.cs" />
     <Compile Include="Commands\ListProjectsCommand.cs" />
+    <Compile Include="Commands\OctopusRepositoryFactory.cs" />
     <Compile Include="Commands\PackageVersionResolver.cs" />
     <Compile Include="Commands\ReleasePlan.cs" />
     <Compile Include="Commands\ReleasePlanItem.cs" />
     <Compile Include="Diagnostics\LogExtensions.cs" />
     <Compile Include="Extensions\DeploymentExtensions.cs" />
-    <Compile Include="Extensions\EnvironmentExtensions.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Extensions\TimeSpanExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
-    <Compile Include="Infrastructure\CommandLineArgsProvider.cs" />
-    <Compile Include="Infrastructure\ICommandLineArgsProvider.cs" />
-    <Compile Include="Model\ApiConstants.cs" />
-    <Compile Include="Model\Task.cs" />
-    <Compile Include="Model\Deployment.cs" />
-    <Compile Include="Model\DeploymentEnvironment.cs" />
-    <Compile Include="Model\RootDocument.cs" />
-    <Compile Include="Client\ClientModule.cs" />
     <Compile Include="Commands\ApiCommand.cs" />
     <Compile Include="Infrastructure\AutofacExtensions.cs" />
     <Compile Include="Infrastructure\CommandLocator.cs" />
-    <Compile Include="Commands\CommandModule.cs" />
-    <Compile Include="Infrastructure\CommandProcessor.cs" />
-    <Compile Include="Client\IOctopusSession.cs" />
-    <Compile Include="Client\IOctopusSessionFactory.cs" />
-    <Compile Include="Client\OctopusSession.cs" />
-    <Compile Include="Client\OctopusSessionFactory.cs" />
-    <Compile Include="Model\PackageVersion.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
     <Compile Include="Infrastructure\ICommandLocator.cs" />
     <Compile Include="Infrastructure\ICommandMetadata.cs" />
-    <Compile Include="Infrastructure\ICommandProcessor.cs" />
     <Compile Include="Commands\ListEnvironmentsCommand.cs" />
     <Compile Include="Commands\ListLatestDeploymentsCommand.cs" />
     <Compile Include="Commands\Options.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
-    <Compile Include="Model\Project.cs" />
-    <Compile Include="Model\Release.cs" />
-    <Compile Include="Model\Resource.cs" />
-    <Compile Include="Model\SelectedPackage.cs" />
-    <Compile Include="Model\SemanticVersion.cs" />
-    <Compile Include="Model\Step.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />

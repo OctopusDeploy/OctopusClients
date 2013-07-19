@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Octopus.Client.Model;
 using OctopusTools.Model;
 using log4net;
 

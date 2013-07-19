@@ -45,7 +45,7 @@ namespace OctopusTools.Tests.Commands
         [Test]
         public void ShouldPrintHelpForExistingCommand()
         {
-            commandLocator.Find("speak").Returns(new SpeakCommand());
+            //commandLocator.Find("speak").Returns(new SpeakCommand());
             helpCommand.Execute("speak");
 
             Assert.That(output.ToString(),

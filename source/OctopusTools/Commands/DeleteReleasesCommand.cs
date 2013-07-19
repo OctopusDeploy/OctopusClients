@@ -1,14 +1,15 @@
 ﻿using System;
-using OctopusTools.Client;
+using System.Collections.Generic;
+using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
-using OctopusTools.Model;
 using log4net;
 
 namespace OctopusTools.Commands
 {
+    [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
-        public DeleteReleasesCommand(IOctopusSessionFactory client, ILog log) : base(client, log)
+        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
         }
 
@@ -17,20 +18,15 @@ namespace OctopusTools.Commands
         public string MinVersion { get; set; }
         public bool WhatIf { get; set; }
 
-        public override OptionSet Options
+        protected override void SetOptions(OptionSet options)
         {
-            get
-            {
-                var options = base.Options;
-                options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
-                options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
-                options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
-                return options;
-            }
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
+            options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
+            options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
         }
 
-        public override void Execute()
+        protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (string.IsNullOrWhiteSpace(MinVersion)) throw new CommandException("Please specify a minimum version number using the parameter: --minversion=X.Y.Z");
@@ -40,17 +36,15 @@ namespace OctopusTools.Commands
             var max = SemanticVersion.Parse(MaxVersion);
 
             Log.Debug("Finding project: " + ProjectName);
-            var project = Session.GetProject(ProjectName);
-
-            var skip = 0;
-            var take = 64;
+            var project = Repository.Projects.FindByName(ProjectName);
 
             Log.Debug("Finding releases for project...");
-            while (true)
-            {
-                var releases = Session.GetReleases(project, skip, take);
 
-                foreach (var release in releases)
+            var releases = Repository.Projects.GetReleases(project);
+            var toDelete = new List<string>();
+            while (releases.Items.Count > 0)
+            {
+                foreach (var release in releases.Items)
                 {
                     var version = SemanticVersion.Parse(release.Version);
                     if (min <= version && version <= max)
@@ -61,18 +55,23 @@ namespace OctopusTools.Commands
                         }
                         else
                         {
-                            Session.Delete<Release>(release.Link("Self"));
+                            toDelete.Add(release.Link("Self"));
                             Log.InfoFormat("Deleting version {0}", version);
                         }
                     }
                 }
 
-                skip += releases.Count;
-
-                if (releases.Count == 0)
+                if (!releases.HasLink("Page.Next"))
                 {
                     break;
                 }
+
+                releases = Repository.Client.List<ReleaseResource>(releases.Link("Next"));
+            }
+
+            if (!WhatIf)
+            {
+                throw new NotImplementedException("Need to actually delete them");                
             }
         }
     }

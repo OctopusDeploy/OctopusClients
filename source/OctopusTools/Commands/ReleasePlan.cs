@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Octopus.Client.Model;
 using OctopusTools.Model;
+using SelectedPackage = OctopusTools.Model.SelectedPackage;
 
 namespace OctopusTools.Commands
 {
