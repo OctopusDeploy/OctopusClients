@@ -5,24 +5,25 @@ using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
+    [Command("help", "?", "h", Description = "Prints this help text")]
     public class HelpCommand : ICommand
     {
         readonly ICommandLocator commands;
-        string commandName;
 
         public HelpCommand(ICommandLocator commands)
         {
             this.commands = commands;
         }
 
-        public OptionSet Options
+        public void GetHelp(TextWriter writer)
         {
-            get { return new OptionSet().WithExtras(extra => commandName = extra.FirstOrDefault()); }
         }
 
-        public void Execute()
+        public void Execute(params string[] commandLineArguments)
         {
             var executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).Assembly.FullLocalPath());
+
+            var commandName = commandLineArguments.FirstOrDefault();
 
             if (string.IsNullOrEmpty(commandName))
             {
@@ -35,18 +36,18 @@ namespace OctopusTools.Commands
                 if (command == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(string.Format("Command '{0}' is not supported", commandName));
+                    Console.WriteLine("Command '{0}' does not exist", commandName);
                     Console.ResetColor();
                     PrintGeneralHelp(executable);
                 }
                 else
                 {
-                    PrintCommandHelp(executable, command);                    
+                    PrintCommandHelp(executable, command, commandName);
                 }
             }
         }
 
-        void PrintCommandHelp(string executable, ICommand command)
+        void PrintCommandHelp(string executable, ICommand command, string commandName)
         {
             Console.ResetColor();
             Console.Write("Usage: ");
@@ -57,7 +58,7 @@ namespace OctopusTools.Commands
             Console.WriteLine("Where [<options>] is any of: ");
             Console.WriteLine();
 
-            command.Options.WriteOptionDescriptions(Console.Out);
+            command.GetHelp(Console.Out);
 
             Console.WriteLine();
             Console.Write("Or use ");

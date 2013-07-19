@@ -4,36 +4,40 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using NuGet;
 using OctopusTools.Infrastructure;
 using OctopusTools.Model;
 using log4net;
+using HttpUtility = System.Web.HttpUtility;
+using SemanticVersion = OctopusTools.Model.SemanticVersion;
 
 namespace OctopusTools.Client
 {
     public class OctopusSession : IOctopusSession
     {
         readonly Lazy<RootDocument> rootDocument;
-        readonly Uri serverBaseUri;
         readonly ICredentials credentials;
         readonly string apiKey;
         readonly ILog log;
+        readonly ILinkResolver linkResolver;
         readonly JsonSerializerSettings serializerSettings;
-
-        public OctopusSession(Uri serverBaseUri, ICredentials credentials, string apiKey, ILog log)
+        
+        public OctopusSession(Uri serverBaseUri, ICredentials credentials, string apiKey, ILog log, ILinkResolver linkResolver = null)
         {
-            this.serverBaseUri = serverBaseUri;
             this.credentials = credentials;
             this.apiKey = apiKey;
             this.log = log;
+            this.linkResolver = linkResolver ?? new DefaultLinkResolver(serverBaseUri);
 
             serializerSettings = new JsonSerializerSettings();
             serializerSettings.Converters.Add(new IsoDateTimeConverter());
 
             rootDocument = new Lazy<RootDocument>(EstablishSession);
         }
+
+        public bool EnableDebugging { get; set; }
 
         public RootDocument RootDocument
         {
@@ -47,7 +51,7 @@ namespace OctopusTools.Client
 
         public string QualifyWebLink(string path)
         {
-            return Regex.Replace(serverBaseUri.ToString(), "/api$", path);
+            return Regex.Replace(linkResolver.ToString(), "/api$", path);
         }
 
         public IList<TResource> List<TResource>(string path)
@@ -71,12 +75,22 @@ namespace OctopusTools.Client
 
             var request = CreateWebRequest("GET", uri);
 
-            using (var response = request.GetResponse())
+            using (var response = ReadResponse(request))
             {
                 using (var reader = new StreamReader(response.GetResponseStream()))
                 {
                     var content = reader.ReadToEnd();
-                    return JsonConvert.DeserializeObject<TResource>(content);
+
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<TResource>(content);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Unable to parse HTTP response from server.");
+                        log.Warn(content);
+                        throw;
+                    }
                 }
             }
         }
@@ -133,7 +147,7 @@ namespace OctopusTools.Client
         {
             if (queryString != null && queryString.Count > 0)
             {
-                Uri uri = new Uri(serverBaseUri, path);
+                Uri uri = linkResolver.Resolve(path);
 
                 NameValueCollection currentQueryStrings = HttpUtility.ParseQueryString(uri.Query);
                 foreach (var pair in queryString)
@@ -143,11 +157,14 @@ namespace OctopusTools.Client
                 path = string.Concat(uri.AbsolutePath, "?", currentQueryStrings);
             }
 
-            return serverBaseUri.EnsureEndsWith(path);
+            return linkResolver.Resolve(path);
         }
 
         WebRequest CreateWebRequest(string method, Uri uri)
         {
+            if (EnableDebugging)
+                log.Debug(method + " " + uri);
+
             var request = WebRequest.Create(uri);
             request.ContentType = "application/json";
             request.Credentials = credentials;
@@ -158,9 +175,7 @@ namespace OctopusTools.Client
 
         RootDocument EstablishSession()
         {
-            log.Debug("Handshaking with Octopus server: " + serverBaseUri);
             var server = Get<RootDocument>("/api");
-            log.Debug("Handshake successful. Octopus version: " + server.Version + "; API version: " + server.ApiVersion );
 
             if (string.IsNullOrWhiteSpace(server.ApiVersion))
                 throw new CommandException("This Octopus server uses a newer API specification than this tool can handle. Please check for updates to the Octo tool.");
@@ -209,7 +224,7 @@ namespace OctopusTools.Client
 
                         if (!string.IsNullOrWhiteSpace(message))
                         {
-                            throw new Exception(message);
+                            throw new OctopusHttpApiException("Octopus server returned HTTP " + (int)((HttpWebResponse) wex.Response).StatusCode + ": " + message + Environment.NewLine + Environment.NewLine + "The request that caused the error was: " + Environment.NewLine + request.Method + " " + request.RequestUri);
                         }
                     }
                 }

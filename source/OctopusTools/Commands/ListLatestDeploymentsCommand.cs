@@ -8,7 +8,8 @@ using log4net;
 
 namespace OctopusTools.Commands
 {
-	public class ListLatestDeploymentsCommand : ApiCommand
+    [Command("list-latestdeployments", Description = "List the releases last-deployed in each environment")]
+    public class ListLatestDeploymentsCommand : ApiCommand
 	{
 		public string ProjectName { get; set; }
 		public string EnvironmentName { get; set; }
@@ -17,19 +18,14 @@ namespace OctopusTools.Commands
 			: base(session, log)
 		{
 		}
-		
-		public override OptionSet Options
-		{
-			get
-			{
-				var options = base.Options;
-				options.Add("project=", "Name of the project", v => ProjectName = v);
-				options.Add("environment=", "Name of the environment", v => EnvironmentName = v);
-				return options;
-			}
-		}
-		
-		public override void Execute()
+
+	    protected override void SetOptions(OptionSet options)
+        {
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("environment=", "Name of the environment", v => EnvironmentName = v);
+	    }
+
+	    protected override void Execute()
 		{
 			if(string.IsNullOrWhiteSpace(ProjectName))
 			{

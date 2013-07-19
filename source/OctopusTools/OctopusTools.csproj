@@ -70,6 +70,9 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Client\DefaultLinkResolver.cs" />
+    <Compile Include="Client\ILinkResolver.cs" />
+    <Compile Include="Client\OctopusHttpApiException.cs" />
     <Compile Include="Client\QueryString.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
@@ -98,8 +101,6 @@
     <Compile Include="Commands\ApiCommand.cs" />
     <Compile Include="Infrastructure\AutofacExtensions.cs" />
     <Compile Include="Infrastructure\CommandLocator.cs" />
-    <Compile Include="Commands\CommandModule.cs" />
-    <Compile Include="Infrastructure\CommandProcessor.cs" />
     <Compile Include="Client\IOctopusSession.cs" />
     <Compile Include="Client\IOctopusSessionFactory.cs" />
     <Compile Include="Client\OctopusSession.cs" />

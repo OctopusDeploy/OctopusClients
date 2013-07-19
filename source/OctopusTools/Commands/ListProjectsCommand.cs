@@ -1,12 +1,11 @@
 ﻿using log4net;
 using OctopusTools.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
+    [Command("list-projects", Description = "List all projects")]
     public class ListProjectsCommand : ApiCommand
     {
         public ListProjectsCommand(IOctopusSessionFactory session, ILog log)
@@ -14,7 +13,7 @@ namespace OctopusTools.Commands
         {
         }
 
-        public override void Execute()
+        protected override void Execute()
         {
             var projects = Session.ListProjects();
 

@@ -59,7 +59,7 @@ namespace OctopusTools.Tests.Commands
             commandLocator.Find("foo").Returns((ICommand)null);
             helpCommand.Execute("foo");
 
-            Assert.That(output.ToString(), Is.StringContaining("Command 'foo' is not supported"));
+            Assert.That(output.ToString(), Is.StringContaining("Command 'foo' does not exist"));
         }
 
         [TearDown]

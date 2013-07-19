@@ -62,7 +62,6 @@
     <Compile Include="Commands\OptionsFixture.cs" />
     <Compile Include="Commands\SpeakCommand.cs" />
     <Compile Include="Extensions\TimeSpanExtensionsFixture.cs" />
-    <Compile Include="Helpers\TestCommandExtensions.cs" />
     <Compile Include="Util\UriExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -7,6 +7,7 @@ using log4net;
 
 namespace OctopusTools.Commands
 {
+    [Command("deploy-release", Description = "Deploys an existing release")]
     public class DeployReleaseCommand : ApiCommand
     {
         readonly IDeploymentWatcher deploymentWatcher;
@@ -30,24 +31,19 @@ namespace OctopusTools.Commands
         public TimeSpan DeploymentTimeout { get; set; }
         public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
 
-        public override OptionSet Options
+        protected override void SetOptions(OptionSet options)
         {
-            get
-            {
-                var options = base.Options;
-                options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-                options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
-                options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
-                options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
-                options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
-                options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
-                options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
-                return options;
-            }
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
+            options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
+            options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
+            options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
+            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
+            options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
         }
 
-        public override void Execute()
+        protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");

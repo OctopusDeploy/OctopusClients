@@ -9,6 +9,7 @@ using log4net;
 
 namespace OctopusTools.Commands
 {
+    [Command("create-release", Description = "Creates and (optionally) deploys a release")]
     public class CreateReleaseCommand : ApiCommand
     {
         readonly IDeploymentWatcher deploymentWatcher;
@@ -35,30 +36,25 @@ namespace OctopusTools.Commands
         public TimeSpan DeploymentTimeout { get; set; }
         public TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
 
-        public override OptionSet Options
+        protected override void SetOptions(OptionSet options)
         {
-            get
-            {
-                var options = base.Options;
-                options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-                options.Add("releaseNumber=|version=", "Release number to use for the new release.", v => VersionNumber = v);
-                options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
-                options.Add("package=|packageversionoverride=", "[Optional] Version number to use for a package in the release. Format: --package={PackageId}:{Version}", v => versionResolver.Add(v));
-                options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
-                options.Add("forceversion", "Ignored (obsolete).", v => {});
-                options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
-                options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
-                options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
-                options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
-                options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true );
-                options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
-                options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
-                return options;
-            }
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("releaseNumber=|version=", "Release number to use for the new release.", v => VersionNumber = v);
+            options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
+            options.Add("package=|packageversionoverride=", "[Optional] Version number to use for a package in the release. Format: --package={PackageId}:{Version}", v => versionResolver.Add(v));
+            options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
+            options.Add("forceversion", "Ignored (obsolete).", v => { });
+            options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
+            options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
+            options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
+            options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
+            options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
+            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
+            options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
         }
 
-        public override void Execute()
+        protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 

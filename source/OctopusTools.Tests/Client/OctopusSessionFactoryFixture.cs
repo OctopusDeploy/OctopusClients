@@ -1,103 +1,147 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using NSubstitute;
 using NUnit.Framework;
 using OctopusTools.Client;
-using OctopusTools.Infrastructure;
+using OctopusTools.Commands;
 using log4net;
+using OctopusTools.Infrastructure;
+using OctopusTools.Model;
 
 namespace OctopusTools.Tests.Client
 {
-	[TestFixture]
-	class OctopusSessionFactoryFixture
-	{
-		string configFile;
+    [TestFixture]
+    class OctopusSessionFactoryFixture
+    {
+        string configFile;
+        TestCommand command;
+        IOctopusSessionFactory sessionFactory;
+        IOctopusSession session;
 
-		[SetUp]
-		public void SetUp()
-		{
-			configFile = Path.GetTempFileName();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            configFile = Path.GetTempFileName();
+            sessionFactory = Substitute.For<IOctopusSessionFactory>();
+            command = new TestCommand(sessionFactory, Substitute.For<ILog>());
 
-		[TearDown]
-		public void TearDown()
-		{
-			if (configFile != null && File.Exists(configFile))
-			{
-				File.Delete(configFile);
-			}
-		}
+            session = Substitute.For<IOctopusSession>();
+            sessionFactory.OpenSession(Arg.Any<Uri>(), Arg.Any<NetworkCredential>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(session);
+            session.RootDocument.Returns(new RootDocument());
+        }
 
-		[Test]
-		public void ShouldAssignValuesFromConfigFileForValuesNotSpecifiedInCommandLineArgs()
-		{
-			const string serverUrlDefinedInConfigFile = "http://octopusServer";
-			const string apiKeyDefinedInConfigFile = "ABCDE0123FG";
-			const string usernameDefinedInConfigFile = "username";
-			const string passwordDefinedInConfigFile = "password";
+        [TearDown]
+        public void TearDown()
+        {
+            if (configFile != null && File.Exists(configFile))
+            {
+                File.Delete(configFile);
+            }
+        }
 
-			WriteConfigFile(serverUrlDefinedInConfigFile, apiKeyDefinedInConfigFile, usernameDefinedInConfigFile, passwordDefinedInConfigFile);
+        [Test]
+        public void ShouldRequireServerUrlToBeSpecified()
+        {
+            var ex = Assert.Throws<CommandException>(() => command.Execute(new string[0]));
 
-			var log = Substitute.For<ILog>();
-			var commandLineArgsProvider = new CommandLineArgsProvider(new List<string> { "--configFile=" + configFile });
-			var octopusSessionFactory = new TestableOctopusSessionFactory(log, commandLineArgsProvider);
+            Assert.That(ex.Message, Is.StringStarting("Please specify the Octopus Server URL"));
+        }
 
-			Assert.AreEqual(octopusSessionFactory.GetServerUrl(), serverUrlDefinedInConfigFile);
-			Assert.AreEqual(octopusSessionFactory.GetApiKey(), apiKeyDefinedInConfigFile);
-			Assert.AreEqual(octopusSessionFactory.GetUser(), usernameDefinedInConfigFile);
-			Assert.AreEqual(octopusSessionFactory.GetPassword(), passwordDefinedInConfigFile);
-		}
+        [Test]
+        public void ShouldRequireApiKey()
+        {
+            var ex = Assert.Throws<CommandException>(() => command.Execute(new[] { "--server", "http://octopusServer" }));
 
-		[Test]
-		public void ShouldNotOverrideCommandLineArgWithValueFromConfigFile()
-		{
-			const string passwordPassedInOnCommandLine = "password0";
-			const string passwordDefinedInConfigFile = "password1";
+            Assert.That(ex.Message, Is.StringStarting("Please specify your API key using"));
+        }
 
-			WriteConfigFile(null, null, null, passwordDefinedInConfigFile);
+        [Test]
+        public void ShouldRequireValidServerUri()
+        {
+            var ex = Assert.Throws<CommandException>(() => command.Execute(new[] { "--server", "::vfduf", "--apiKey", "ABC" }));
 
-			var log = Substitute.For<ILog>();
-			var commandLineArgsProvider = new CommandLineArgsProvider(new List<string> { "--pass=" + passwordPassedInOnCommandLine, "--configFile=" + configFile });
-			var octopusSessionFactory = new TestableOctopusSessionFactory(log, commandLineArgsProvider);
+            Assert.That(ex.Message, Is.StringStarting("Invalid URI format. Please specify an Octopus Server URL"));
+        }
 
-			Assert.AreEqual(octopusSessionFactory.GetPassword(), passwordPassedInOnCommandLine);
-		}
+        [Test]
+        public void ShouldRequireHttpOrHttpsServer()
+        {
+            var ex = Assert.Throws<CommandException>(() => command.Execute(new[] { "--server", "ftp://foo", "--apiKey", "ABC" }));
 
-		private void WriteConfigFile(string serverUrl, string apiKey, string user, string pass)
-		{
-			var streamWriter = File.AppendText(configFile);
+            Assert.That(ex.Message, Is.StringStarting("Invalid URI format, the URI should start with 'http' or 'https'"));
+        }
 
-			if (serverUrl != null) streamWriter.WriteLine("server=" + serverUrl);
-			if (apiKey != null) streamWriter.WriteLine("apiKey=" + apiKey);
-			if (user != null) streamWriter.WriteLine("user=" + user);
-			if (pass != null) streamWriter.WriteLine("pass=" + pass);
+        [Test]
+        public void ShouldAllowUsernameAndPasswordToBeSpecified()
+        {
+            command.Execute(new[] { "--user", "domain\\fred", "--pass", "password", "--APIKEY", "ABCDE0123FG", "--server", "http://octopusServer" });
 
-			streamWriter.Close();
-		}
-	}
-	
-	class TestableOctopusSessionFactory : OctopusSessionFactory
-	{
-		public TestableOctopusSessionFactory(ILog log, ICommandLineArgsProvider commandLineArgsProvider) : base(log, commandLineArgsProvider)
-		{
-		}
+            sessionFactory.OpenSession(
+                Arg.Any<Uri>(),
+                Arg.Is<NetworkCredential>(cred => cred.UserName == "fred" && cred.Domain == "domain" && cred.Password == "password"),
+                Arg.Any<string>(),
+                Arg.Any<bool>());
+        }
 
-		public string GetServerUrl()
-		{
-			return serverBaseUrl;
-		}
-		public string GetApiKey()
-		{
-			return apiKey;
-		}
-		public string GetUser()
-		{
-			return user;
-		}
-		public string GetPassword()
-		{
-			return pass;
-		}
-	}
+        [Test]
+        public void ShouldAssignValuesFromConfigFileForValuesNotSpecifiedInCommandLineArgs()
+        {
+            File.WriteAllLines(configFile, new[]
+            {
+                "server=http://octopusServer",
+                "apiKey=ABCDE0123FG",
+                "user=domain\\fred",
+                "password=password"
+            });
+
+            command.Execute(new[] { "--configFile", configFile });
+
+            sessionFactory.OpenSession(
+                Arg.Is<Uri>(u => u.ToString() == "http://octopusServer/"),
+                Arg.Is<NetworkCredential>(cred => cred.UserName == "fred" && cred.Domain == "domain" && cred.Password == "password"),
+                Arg.Is("ABCDE0123FG"),
+                Arg.Any<bool>());
+        }
+
+        [Test]
+        public void ShouldNotOverrideCommandLineArgWithValueFromConfigFile()
+        {
+            File.WriteAllLines(configFile, new[]
+            {
+                "server=http://octopusServer",
+                "apiKey=ABCDE0123FG",
+                "user=domain\\fred",
+                "password=password"
+            });
+
+            command.Execute(new[] { "--configFile", configFile, "--apiKEY", "ABC" });
+
+            sessionFactory.OpenSession(
+                Arg.Is<Uri>(u => u.ToString() == "http://octopusServer/"),
+                Arg.Is<NetworkCredential>(cred => cred.UserName == "fred" && cred.Domain == "domain" && cred.Password == "password"),
+                Arg.Is("ABC"),
+                Arg.Any<bool>());
+        }
+
+        [Test]
+        public void ShouldThrowOnUnrecognizedArguments()
+        {
+            var ex = Assert.Throws<CommandException>(() => command.Execute(new[] {"--baz", "bam"}));
+
+            Assert.That(ex.Message, Is.StringStarting("Unrecognized command arguments"));
+        }
+
+        class TestCommand : ApiCommand
+        {
+            public TestCommand(IOctopusSessionFactory client, ILog log)
+                : base(client, log)
+            {
+            }
+
+            protected override void Execute()
+            {
+            }
+        }
+    }
 }

@@ -1,33 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OctopusTools.Commands;
+using Autofac;
 
 namespace OctopusTools.Infrastructure
 {
     public class CommandLocator : ICommandLocator
     {
-        readonly IEnumerable<Lazy<ICommand, ICommandMetadata>> commands;
+        readonly ILifetimeScope lifetimeScope;
 
-        public CommandLocator(IEnumerable<Lazy<ICommand, ICommandMetadata>> commands)
+        public CommandLocator(ILifetimeScope lifetimeScope)
         {
-            this.commands = commands;
+            this.lifetimeScope = lifetimeScope;
         }
 
         public ICommandMetadata[] List()
         {
-            return commands.Select(x => x.Metadata).ToArray();
+            return
+                (from t in typeof(CommandLocator).Assembly.GetTypes()
+                 where typeof(ICommand).IsAssignableFrom(t)
+                 let attribute = (ICommandMetadata)t.GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
+                 where attribute != null
+                 select attribute).ToArray();
         }
 
         public ICommand Find(string name)
         {
-            var matchingCommands =
-                from command in commands
-                let commandName = command.Metadata.Name
-                let aliases = command.Metadata.Aliases
-                where commandName == name || aliases.Any(a => a == name)
-                select command.Value;
+            name = name.Trim().ToLowerInvariant();
+            var found = (from t in typeof(CommandLocator).Assembly.GetTypes()
+                         where typeof(ICommand).IsAssignableFrom(t)
+                         let attribute = (ICommandMetadata)t.GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
+                         where attribute != null
+                         where attribute.Name == name || attribute.Aliases.Any(a => a == name)
+                         select t).FirstOrDefault();
 
-            return matchingCommands.FirstOrDefault();
+            return found == null ? null : (ICommand)lifetimeScope.Resolve(found);
         }
     }
 }

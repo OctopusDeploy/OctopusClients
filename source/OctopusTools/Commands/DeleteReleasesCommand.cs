@@ -6,6 +6,7 @@ using log4net;
 
 namespace OctopusTools.Commands
 {
+    [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
         public DeleteReleasesCommand(IOctopusSessionFactory client, ILog log) : base(client, log)
@@ -17,20 +18,15 @@ namespace OctopusTools.Commands
         public string MinVersion { get; set; }
         public bool WhatIf { get; set; }
 
-        public override OptionSet Options
+        protected override void SetOptions(OptionSet options)
         {
-            get
-            {
-                var options = base.Options;
-                options.Add("project=", "Name of the project", v => ProjectName = v);
-                options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
-                options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
-                options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
-                return options;
-            }
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
+            options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
+            options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
         }
 
-        public override void Execute()
+        protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (string.IsNullOrWhiteSpace(MinVersion)) throw new CommandException("Please specify a minimum version number using the parameter: --minversion=X.Y.Z");

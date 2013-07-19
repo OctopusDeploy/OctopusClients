@@ -7,33 +7,20 @@ using System.Text;
 public static class UriExtensions
 // ReSharper restore CheckNamespace
 {
-    public static Uri EnsureEndsWith(this Uri uri, string suffix)
+    public static Uri EnsureEndsWith(this Uri uri, string allUrisStartWith)
     {
-        var path = uri.AbsolutePath.ToLowerInvariant();
-        suffix = suffix.ToLowerInvariant();
-        var overlap = FindOverlapSection(path, suffix);
-        if (!String.IsNullOrEmpty(overlap))
-        {
-            path = path.Replace(overlap, string.Empty);
-            suffix = suffix.Replace(overlap, string.Empty);
-        }
-        path = path + overlap + suffix;
-        path = path.Replace("//", "/");
+        allUrisStartWith = (allUrisStartWith.EndsWith("/") ? allUrisStartWith : allUrisStartWith + "/");
+        var rootUri = uri.ToString();
+        rootUri = (rootUri.EndsWith("/") ? rootUri : rootUri + "/");
 
-        return new Uri(uri, path);
-    }
-
-    private static string FindOverlapSection(string value1, string value2)
-    {
-        var longer = value1;
-        var shorter = value2;
-        if (shorter.Length > longer.Length)
+        var indexOfMandatorySegment = rootUri.LastIndexOf(allUrisStartWith, StringComparison.OrdinalIgnoreCase);
+        if (indexOfMandatorySegment >= 1)
         {
-            var temp = longer;
-            longer = shorter;
-            shorter = temp;
+            rootUri = rootUri.Substring(0, indexOfMandatorySegment);
         }
 
-        return longer.Contains(shorter) ? shorter : String.Empty;
+        var root = rootUri.TrimEnd('/');
+        Console.WriteLine(root);
+        return new Uri(root);
     }
 }
