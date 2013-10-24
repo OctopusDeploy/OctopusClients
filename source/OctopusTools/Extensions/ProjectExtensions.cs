@@ -72,8 +72,16 @@ public static class ProjectExtensions
     public static Release GetRelease(this IOctopusSession session, Project project, string version)
     {
         var releases = session.List<Release>(project.Link("Releases"));
-
-        var release = releases.FirstOrDefault(x => string.Equals(x.Version, version, StringComparison.InvariantCultureIgnoreCase));
+        Release release;
+        if (version.Equals("latest", StringComparison.InvariantCultureIgnoreCase))
+        {
+            release = releases.OrderByDescending(r=>r.Assembled).FirstOrDefault();
+            Console.WriteLine("found version "+release.Version);   
+        }
+        else
+        {
+            release = releases.FirstOrDefault(x => string.Equals(x.Version, version, StringComparison.InvariantCultureIgnoreCase));
+        }
         if (release == null)
         {
             throw new ArgumentException(string.Format("A release named '{0}' for project '{1}' could not be found.", version, project.Name));

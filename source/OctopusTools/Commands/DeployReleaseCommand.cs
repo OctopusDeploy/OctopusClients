@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using OctopusTools.Client;
 using OctopusTools.Infrastructure;
 using log4net;
+using OctopusTools.Model;
 
 namespace OctopusTools.Commands
 {
@@ -33,6 +35,7 @@ namespace OctopusTools.Commands
 
         protected override void SetOptions(OptionSet options)
         {
+            options.Add("deployfrom=", "Environment to pull version number from", v => DeployFromEnvironment = v);
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
@@ -43,11 +46,13 @@ namespace OctopusTools.Commands
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
         }
 
+        public string DeployFromEnvironment { get; set; }
+
         protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
-            if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0");
+            if (string.IsNullOrWhiteSpace(VersionNumber) && string.IsNullOrWhiteSpace(DeployFromEnvironment)) throw new CommandException("Please specify a release version or deploy from environment using the parameter: --version=1.0.0.0 or --deployfromenvironment=dev");
 
             Log.Debug("Finding project: " + ProjectName);
             var project = Session.GetProject(ProjectName);
@@ -55,8 +60,18 @@ namespace OctopusTools.Commands
             Log.Debug("Finding environments...");
             var environments = Session.FindEnvironments(DeployToEnvironmentNames);
 
-            Log.Debug("Finding release: " + VersionNumber);
-            var release = Session.GetRelease(project, VersionNumber);
+            Release release;
+            if (!string.IsNullOrWhiteSpace(DeployFromEnvironment))
+            {
+                var envi=Session.FindEnvironments(new Collection<string>{DeployFromEnvironment}).First();
+                var deployment = Session.GetMostRecentDeployments(project).FirstOrDefault(d => d.EnvironmentId == envi.Id);            
+                 release = Session.List<Release>(project.Link("Releases")).First(r=>r.Id==deployment.ReleaseId);
+            }
+            else
+            {
+                Log.Debug("Finding release: " + VersionNumber);
+                release = Session.GetRelease(project, VersionNumber);                
+            }
 
             if (environments == null || environments.Count <= 0) return;
             var linksToDeploymentTasks = Session.GetDeployments(release, environments, Force, ForcePackageDownload, Log).ToList();
@@ -68,3 +83,4 @@ namespace OctopusTools.Commands
         }
     }
 }
+ 
