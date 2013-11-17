@@ -8,7 +8,6 @@ using System.Security.Cryptography.X509Certificates;
 using Octopus.Client;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
-using OctopusTools.Model;
 using log4net;
 
 namespace OctopusTools.Commands

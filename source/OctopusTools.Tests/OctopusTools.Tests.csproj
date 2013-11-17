@@ -66,7 +66,10 @@
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Client\OctopusSessionFactoryFixture.cs" />
+    <Compile Include="Commands\ApiCommandFixture.cs" />
+    <Compile Include="Commands\ApiCommandFixtureBase.cs" />
     <Compile Include="Commands\CommandProcessorFixture.cs" />
+    <Compile Include="Commands\DummyApiCommand.cs" />
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
     <Compile Include="Commands\DeploymentWatcherFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
