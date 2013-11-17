@@ -79,6 +79,8 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\CreateEnvironmentCommand.cs" />
+    <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />

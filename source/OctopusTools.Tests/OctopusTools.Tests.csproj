@@ -71,6 +71,7 @@
     <Compile Include="Commands\CommandProcessorFixture.cs" />
     <Compile Include="Commands\DummyApiCommand.cs" />
     <Compile Include="Commands\ListEnvironmentsCommandFixture.cs" />
+    <Compile Include="Commands\ListProjectsCommandFixture.cs" />
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
     <Compile Include="Commands\DeploymentWatcherFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
