@@ -81,10 +81,10 @@
     </Compile>
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
+    <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
-    <Compile Include="Commands\DeploymentWatcher.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
     <Compile Include="Commands\IOctopusRepositoryFactory.cs" />
@@ -95,8 +95,6 @@
     <Compile Include="Commands\ReleasePlan.cs" />
     <Compile Include="Commands\ReleasePlanItem.cs" />
     <Compile Include="Diagnostics\LogExtensions.cs" />
-    <Compile Include="Extensions\DeploymentExtensions.cs" />
-    <Compile Include="Extensions\ProjectExtensions.cs" />
     <Compile Include="Extensions\TimeSpanExtensions.cs" />
     <Compile Include="Infrastructure\CommandException.cs" />
     <Compile Include="Commands\ApiCommand.cs" />
