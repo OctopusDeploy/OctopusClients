@@ -36,7 +36,7 @@ namespace OctopusTools.Commands
                 if (command == null)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Command '{0}' does not exist", commandName);
+                    Console.WriteLine("Command '{0}' is not supported", commandName);
                     Console.ResetColor();
                     PrintGeneralHelp(executable);
                 }
