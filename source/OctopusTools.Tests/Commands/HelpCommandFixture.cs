@@ -45,12 +45,13 @@ namespace OctopusTools.Tests.Commands
         [Test]
         public void ShouldPrintHelpForExistingCommand()
         {
-            //commandLocator.Find("speak").Returns(new SpeakCommand());
+            var speak = Substitute.For<ICommand>();
+            commandLocator.Find("speak").Returns(speak);
             helpCommand.Execute("speak");
 
             Assert.That(output.ToString(),
-                Is.StringContaining("Usage: Octo speak [<options>]").And
-                .StringContaining("message="));
+                Is.StringContaining("Usage: Octo speak [<options>]"));
+            speak.Received().GetHelp(Arg.Any<TextWriter>());
         }
 
         [Test]
