@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NuGet;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
 using log4net;
@@ -71,7 +72,10 @@ namespace OctopusTools.Commands
 
             if (!WhatIf)
             {
-                throw new NotImplementedException("Need to actually delete them");                
+                foreach (var release in toDelete)
+                {
+                    Repository.Client.Delete(release);
+                }               
             }
         }
     }
