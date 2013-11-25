@@ -166,5 +166,12 @@ namespace OctopusTools.Commands
 
             return results;
         }
+
+        protected string GetPortalUrl(string path)
+        {
+            if (!path.StartsWith("/")) path = '/' + path;
+            var uri = new Uri(serverBaseUrl + path);
+            return uri.AbsoluteUri;
+        }
     }
 }

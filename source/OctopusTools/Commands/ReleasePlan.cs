@@ -2,24 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NuGet;
 using Octopus.Client.Model;
-using OctopusTools.Model;
-using SelectedPackage = OctopusTools.Model.SelectedPackage;
 
 namespace OctopusTools.Commands
 {
     public class ReleasePlan
     {
-        private readonly IList<ReleasePlanItem> steps; 
+        private readonly IList<ReleasePlanItem> steps;
 
-        public ReleasePlan(IEnumerable<Step> steps, IPackageVersionResolver versionResolver)
+        public ReleasePlan(IEnumerable<DeploymentStepResource> deploymentSteps, IPackageVersionResolver versionResolver)
         {
-            this.steps = steps.Select(delegate(Step s)
+            foreach (var step in deploymentSteps)
             {
-                var version = versionResolver.ResolveVersion(s.ToString())
-                    ?? versionResolver.ResolveVersion(s.NuGetPackageId);
-                return new ReleasePlanItem(s, version);
-            }).ToList();
+                steps = step.Actions
+                    .Where(x => x.ActionType == "Octopus.TentaclePackage")
+                    .Select(a => new ReleasePlanItem(a.Name, a.Properties["Octopus.Action.Package.NuGetPackageId"], a.Properties["Octopus.Action.Package.NuGetFeedId"], versionResolver.ResolveVersion(a.Properties["Octopus.Action.Package.NuGetPackageId"])))
+                    .ToList();
+            }
         }
 
         public IList<ReleasePlanItem> Steps
@@ -32,10 +32,10 @@ namespace OctopusTools.Commands
             get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version)).ToList(); }
         }
 
-        public IList<SelectedPackage> GetSelections()
+        public List<SelectedPackage> GetSelections()
         {
-            return Steps.Select(s => new SelectedPackage {StepId = s.Step.Id, NuGetPackageVersion = s.Version}).ToList();
-        } 
+            return Steps.Select(x => new SelectedPackage {StepName = x.StepName, Version = x.Version}).ToList();
+        }
 
         public string GetHighestVersionNumber()
         {
@@ -50,7 +50,7 @@ namespace OctopusTools.Commands
             {
                 return string.Empty;
             }
-            
+
             var nameColumnWidth = Math.Min(steps.Max(s => s.StepName.Length) + 2, 30);
             var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-15} {3,-36}";
 

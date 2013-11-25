@@ -1,21 +1,28 @@
 using System;
-using OctopusTools.Model;
+using Octopus.Client.Model;
 
 namespace OctopusTools.Commands
 {
     public class ReleasePlanItem
     {
-        public ReleasePlanItem(Step step, string userSpecifiedVersion)
+        public ReleasePlanItem(string stepName, string packageId,string nuGetFeedId, string userSpecifiedVersion)
         {
-            Step = step;
+            StepName = stepName;
+            PackageId = packageId;
+            NuGetFeedId = nuGetFeedId;
             Version = userSpecifiedVersion;
             VersionSource = string.IsNullOrWhiteSpace(Version) ? string.Empty : "User specified";
         }
 
-        public Step Step { get; private set; }
-        public string StepName { get { return Step.ToString(); }}
+        public string StepName { get; set; }
+
+        public string PackageId { get; set; }
+
+        public string Version { get; set; }
+
+        public string NuGetFeedId { get; set; }
+
         public string VersionSource { get; private set; }
-        public string Version { get; private set; }
 
         public void SetVersionFromLatest(string version)
         {
