@@ -45,6 +45,8 @@ namespace OctopusTools.Commands
 
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
+            if (project == null)
+                throw new ArgumentException("Could not find a project named: " + ProjectName);
 
             Log.Debug("Finding environments...");
             var environments = Repository.Environments.FindByNames(DeployToEnvironmentNames);
