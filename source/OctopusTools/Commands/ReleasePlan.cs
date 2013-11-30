@@ -39,7 +39,13 @@ namespace OctopusTools.Commands
 
         public string GetHighestVersionNumber()
         {
-            return Steps.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).First().ToString();
+            var step = Steps.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
+            if (step == null)
+            {
+                throw new ArgumentException("None of the deployment steps in this release reference a NuGet package, so the highest package version number cannot be determined.");
+            }
+
+            return step.ToString();
         }
 
         public string FormatAsTable()
