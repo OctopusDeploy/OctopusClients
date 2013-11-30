@@ -36,7 +36,6 @@ namespace OctopusTools.Commands
 
             var deployments = new List<DeploymentResource>();
             var deploymentTasks = new List<TaskResource>();
-            Log.InfoFormat("Deploying {0} {1} to:", project.Name, release.Version);
 
             var releaseTemplate = Repository.Releases.GetTemplate(release);
 
@@ -69,9 +68,19 @@ namespace OctopusTools.Commands
                     UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault)
                 });
 
+                Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
+
+                foreach (var previewStep in preview.StepsToExecute)
+                {
+                    if (previewStep.HasNoApplicableMachines)
+                    {
+                        Log.Warn("Warning: there are no applicable machines roles used by step " + previewStep.ActionName + " step");
+                    }
+                }
+
                 deployments.Add(deployment);
                 deploymentTasks.Add(Repository.Tasks.Get(deployment.TaskId));
-                Log.InfoFormat("  - {0} (Guided Failure: {1})", environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
+
             }
 
             if (WaitForDeployment)
