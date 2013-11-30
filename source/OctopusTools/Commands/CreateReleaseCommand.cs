@@ -30,6 +30,7 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
+        public bool IgnoreIfAlreadyExists { get; set; }
 
         protected override void SetOptions(OptionSet options)
         {
@@ -38,12 +39,11 @@ namespace OctopusTools.Commands
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Release number to use for the new release.", v => VersionNumber = v);
             options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
-            options.Add("package=|packageversionoverride=", "[Optional] Version number to use for a package in the release. Format: --package={PackageId}:{Version}", v => versionResolver.Add(v));
+            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={PackageId}:{Version}", v => versionResolver.Add(v));
             options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
-            options.Add("forceversion", "Ignored (obsolete).", v => { });
-            options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
             options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
+            options.Add("ignoreexisting", "", v => IgnoreIfAlreadyExists = true);
         }
 
         protected override void Execute()
@@ -85,11 +85,25 @@ namespace OctopusTools.Commands
                 versionNumber = plan.GetHighestVersionNumber();
             }
 
-            Log.Info("Release plan for release:    " + versionNumber);
-            Log.Info("Steps: ");
-            Log.Info(plan.FormatAsTable());
+            if (plan.Steps.Count > 0)
+            {
+                Log.Info("Release plan for release:    " + versionNumber);
+                Log.Info("Steps: ");
+                Log.Info(plan.FormatAsTable());
+            }
 
             Log.Debug("Creating release...");
+
+            if (IgnoreIfAlreadyExists)
+            {
+                var found = Repository.Releases.FindOne(r => r.Version == VersionNumber);
+                if (found != null)
+                {
+                    Log.Info("A release with the number " + versionNumber + " already exists.");
+                    return;
+                }                
+            }
+
             var release = Repository.Releases.Create(new ReleaseResource(VersionNumber, project.Id)
             {
                 ReleaseNotes = ReleaseNotes,
