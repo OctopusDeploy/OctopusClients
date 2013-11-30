@@ -65,12 +65,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NuGet.Core.2.7.2\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.0.0.587\lib\net40\Octopus.Client.dll</HintPath>
+    <Reference Include="Octopus.Client">
+      <HintPath>..\packages\Octopus.Client.2.0.0.759\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
     <Reference Include="Octopus.Platform">
-      <HintPath>..\packages\Octopus.Client.2.0.0.587\lib\net40\Octopus.Platform.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.0.0.759\lib\net40\Octopus.Platform.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
