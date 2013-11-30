@@ -115,14 +115,6 @@ namespace OctopusTools
                 return -43;
             }
 
-            var arg = ex as ArgumentException;
-            if (arg != null)
-            {
-                Log.Error("Argument error: ");
-                Log.Error(ex.Message);
-                return -2;
-            }
-
             var octo = ex as OctopusException;
             if (octo != null)
             {

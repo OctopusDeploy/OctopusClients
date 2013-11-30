@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
@@ -28,19 +29,44 @@ namespace OctopusTools.Commands
         protected virtual TimeSpan DeploymentTimeout { get; set; }
         protected virtual TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
 
-        public void DeployRelease(ProjectResource project, ReleaseResource release, List<EnvironmentResource> environments)
+        public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
         {
+            if (environments.Count == 0)
+                return;
+
             var deployments = new List<DeploymentResource>();
             var deploymentTasks = new List<TaskResource>();
             Log.InfoFormat("Deploying {0} {1} to:", project.Name, release.Version);
-            foreach (var environment in environments)
+
+            var releaseTemplate = Repository.Releases.GetTemplate(release);
+
+            var promotingEnvironments =
+                (from environment in environments.Distinct(StringComparer.CurrentCultureIgnoreCase)
+                 let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
+                 select new {Name = environment, Promote = promote}).ToList();
+
+            var unknownEnvironments = promotingEnvironments.Where(p => p.Promote == null).ToList();
+            if (unknownEnvironments.Count > 0)
             {
+                throw new CommandException(string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the project group.", 
+                    release.Version, 
+                    project.Name, 
+                    unknownEnvironments.Count == 1 ? "environment '" + unknownEnvironments[0].Name + "' because the environment is"
+                    : "environments " + string.Join(", ", unknownEnvironments.Select(e => "'" + e.Name + "'")) + " because the environments are"
+                    ));
+            }
+
+            foreach (var environment in promotingEnvironments)
+            {
+                var promote = environment.Promote;
+                var preview = Repository.Releases.GetPreview(promote);
+
                 var deployment = Repository.Deployments.Create(new DeploymentResource
                 {
-                    EnvironmentId = environment.Id,
+                    EnvironmentId = promote.Id,
                     ReleaseId = release.Id,
                     ForcePackageDownload = ForcePackageDownload,
-                    UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(environment.UseGuidedFailure)
+                    UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault)
                 });
 
                 deployments.Add(deployment);

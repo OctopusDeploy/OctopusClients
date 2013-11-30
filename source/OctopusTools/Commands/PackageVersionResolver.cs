@@ -5,6 +5,7 @@ using System.Linq;
 using NuGet;
 using Octopus.Client.Model;
 using log4net;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
@@ -35,20 +36,20 @@ namespace OctopusTools.Commands
         {
             var index = new[] { ':', '=' }.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
             if (index <= 0)
-                throw new ArgumentException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
+                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
                 
             var key = stepNameAndVersion.Substring(0, index);
             var value = (index >= stepNameAndVersion.Length - 1) ? string.Empty : stepNameAndVersion.Substring(index + 1);
 
             if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
+                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
             }
 
             SemanticVersion version;
             if (!SemanticVersion.TryParse(value, out version))
             {
-                throw new ArgumentException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
+                throw new CommandException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
             }
             
             Add(key, value);

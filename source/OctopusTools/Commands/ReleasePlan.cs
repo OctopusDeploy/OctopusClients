@@ -4,22 +4,25 @@ using System.Linq;
 using System.Text;
 using NuGet;
 using Octopus.Client.Model;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
     public class ReleasePlan
     {
-        private readonly IList<ReleasePlanItem> steps;
+        readonly IList<ReleasePlanItem> steps = new List<ReleasePlanItem>();
 
-        public ReleasePlan(IEnumerable<DeploymentStepResource> deploymentSteps, IPackageVersionResolver versionResolver)
-        {
-            foreach (var step in deploymentSteps)
-            {
-                steps = step.Actions
-                    .Where(x => x.ActionType == "Octopus.TentaclePackage")
-                    .Select(a => new ReleasePlanItem(a.Name, a.Properties["Octopus.Action.Package.NuGetPackageId"], a.Properties["Octopus.Action.Package.NuGetFeedId"], versionResolver.ResolveVersion(a.Properties["Octopus.Action.Package.NuGetPackageId"])))
-                    .ToList();
-            }
+        public ReleasePlan(ReleaseTemplateResource releaseTemplate, IPackageVersionResolver versionResolver)
+        {       
+            steps.AddRange(
+                releaseTemplate.Packages.Select(p => new ReleasePlanItem(
+                    p.StepName,
+                    p.NuGetPackageId,
+                    p.NuGetFeedId,
+                    p.IsResolvable,
+                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.NuGetPackageId)
+                    ))
+                );
         }
 
         public IList<ReleasePlanItem> Steps
@@ -42,7 +45,7 @@ namespace OctopusTools.Commands
             var step = Steps.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
             if (step == null)
             {
-                throw new ArgumentException("None of the deployment steps in this release reference a NuGet package, so the highest package version number cannot be determined.");
+                throw new CommandException("None of the deployment steps in this release reference a NuGet package, so the highest package version number cannot be determined.");
             }
 
             return step.ToString();
@@ -65,7 +68,7 @@ namespace OctopusTools.Commands
             for (int i = 0; i < steps.Count; i++)
             {
                 var item = steps[i];
-                result.AppendFormat(format, i + 1, item.StepName, item.Version, item.VersionSource).AppendLine();
+                result.AppendFormat(format, i + 1, item.StepName, item.Version ?? "ERROR", string.IsNullOrWhiteSpace(item.VersionSource) ? "Cannot resolve" : item.VersionSource).AppendLine();
             }
 
             return result.ToString();
@@ -74,6 +77,11 @@ namespace OctopusTools.Commands
         public override string ToString()
         {
             return FormatAsTable();
+        }
+
+        public bool HasUnresolvedSteps()
+        {
+            return UnresolvedSteps.Count > 0;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace OctopusTools.Commands
 
         
         public string ProjectName { get; set; }
-        public IList<string> DeployToEnvironmentNames { get; set; }
+        public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public bool Force { get; set; }
 
@@ -46,17 +46,12 @@ namespace OctopusTools.Commands
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
-                throw new ArgumentException("Could not find a project named: " + ProjectName);
-
-            Log.Debug("Finding environments...");
-            var environments = Repository.Environments.FindByNames(DeployToEnvironmentNames);
+                throw new CommandException("Could not find a project named: " + ProjectName);
 
             Log.Debug("Finding release: " + VersionNumber);
             var release = Repository.Projects.GetReleaseByVersion(project, VersionNumber);
 
-            if (environments == null || environments.Count <= 0) return;
-
-            DeployRelease(project, release, environments);
+            DeployRelease(project, release, DeployToEnvironmentNames);
         }
 
 

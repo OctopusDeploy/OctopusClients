@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Tests.Commands
 {
@@ -79,13 +80,13 @@ namespace OctopusTools.Tests.Commands
         [Test]
         public void ShouldThrowOnInvalidConstraint()
         {
-            Assert.Throws<ArgumentException>(() => resolver.Add(":"));
-            Assert.Throws<ArgumentException>(() => resolver.Add("="));
-            Assert.Throws<ArgumentException>(() => resolver.Add(":1.0.0"));
-            Assert.Throws<ArgumentException>(() => resolver.Add("=1.0.0"));
-            Assert.Throws<ArgumentException>(() => resolver.Add("PackageA:"));
-            Assert.Throws<ArgumentException>(() => resolver.Add("PackageA:1.FRED.9"));
-            Assert.Throws<ArgumentException>(() => resolver.Add("PackageA=1.FRED.9"));
+            Assert.Throws<CommandException>(() => resolver.Add(":"));
+            Assert.Throws<CommandException>(() => resolver.Add("="));
+            Assert.Throws<CommandException>(() => resolver.Add(":1.0.0"));
+            Assert.Throws<CommandException>(() => resolver.Add("=1.0.0"));
+            Assert.Throws<CommandException>(() => resolver.Add("PackageA:"));
+            Assert.Throws<CommandException>(() => resolver.Add("PackageA:1.FRED.9"));
+            Assert.Throws<CommandException>(() => resolver.Add("PackageA=1.FRED.9"));
         }
     }
 }

@@ -20,13 +20,13 @@ namespace OctopusTools.Commands
         {
             this.versionResolver = versionResolver;
 
-            DeployToEnvironmentNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
         }
 
         public string ProjectName { get; set; }
-        public HashSet<string> DeployToEnvironmentNames { get; set; }
+        public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool Force { get; set; }
@@ -39,7 +39,7 @@ namespace OctopusTools.Commands
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Release number to use for the new release.", v => VersionNumber = v);
             options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
-            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={PackageId}:{Version}", v => versionResolver.Add(v));
+            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
             options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
             options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
@@ -53,28 +53,43 @@ namespace OctopusTools.Commands
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
-                throw new ArgumentException("Could not find a project named: " + ProjectName);
+                throw new CommandException("Could not find a project named: " + ProjectName);
 
             Log.Debug("Finding deployment process for project: " + ProjectName);
             var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
 
-            Log.Debug("Finding environments...");
-            var environments = Repository.Environments.FindByNames(DeployToEnvironmentNames);
+            Log.Debug("Finding release template...");
+            var releaseTemplate = Repository.DeploymentProcesses.GetTemplate(deploymentProcess);
 
-            Log.Debug("Finding tasks for project...");
-
-            var steps = deploymentProcess.Steps;
-
-            var plan = new ReleasePlan(steps, versionResolver);
+            var plan = new ReleasePlan(releaseTemplate, versionResolver);
 
             if (plan.UnresolvedSteps.Count > 0)
             {
                 Log.Debug("Resolving NuGet package versions...");
                 foreach (var unresolved in plan.UnresolvedSteps)
                 {
-                    Log.Debug("  - Finding latest NuGet package for step: " + unresolved.StepName);
-                    var version = Repository.Client.Get<List<PackageResource>>("~/api/feeds/{feedId}/packages?packageIds={packageId}", new {feedId = unresolved.NuGetFeedId, packageId = unresolved.PackageId})[0].Version;
-                    unresolved.SetVersionFromLatest(version);
+                    if (!unresolved.IsResolveable)
+                    {
+                        Log.ErrorFormat("The vesion number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        continue;
+                    }
+
+                    Log.Debug("Finding latest NuGet package for step: " + unresolved.StepName);
+
+                    var feed = Repository.Feeds.Get(unresolved.NuGetFeedId);
+                    if (feed == null)
+                        throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.NuGetFeedId));
+
+                    var packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new {packageIds = new[] {unresolved.PackageId}});
+                    var version = packages.FirstOrDefault();
+                    if (version == null)
+                    {
+                        Log.ErrorFormat("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
+                    }
+                    else
+                    {
+                        unresolved.SetVersionFromLatest(version.Version);
+                    }
                 }
             }
 
@@ -90,6 +105,11 @@ namespace OctopusTools.Commands
                 Log.Info("Release plan for release:    " + versionNumber);
                 Log.Info("Steps: ");
                 Log.Info(plan.FormatAsTable());
+            }
+
+            if (plan.HasUnresolvedSteps())
+            {
+                throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
             }
 
             Log.Debug("Creating release...");
@@ -113,8 +133,7 @@ namespace OctopusTools.Commands
 
             Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
 
-            if (environments == null || environments.Count <= 0) return;
-            DeployRelease(project, release, environments);
+            DeployRelease(project, release, DeployToEnvironmentNames);
         }
 
         private void ReadReleaseNotesFromFile(string value)
