@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
@@ -95,6 +96,25 @@ namespace OctopusTools.Commands
             {
                 Log.InfoFormat("Waiting for {0} deployment(s) to complete....", deploymentTasks.Count);
                 Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout.Minutes);
+                var failed = false;
+                foreach (var deploymentTask in deploymentTasks)
+                {
+                    var updated = Repository.Tasks.Get(deploymentTask.Id);
+                    if (updated.FinishedSuccessfully)
+                    {
+                        Log.InfoFormat("{0}: {1}", updated.Description, updated.State);
+                    }
+                    else
+                    {
+                        Log.ErrorFormat("{0}: {1}, {2}", updated.Description, updated.State, updated.ErrorMessage);
+                        failed = true;
+                    }
+                }
+                if (failed)
+                {
+                    throw new CommandException("One or more deployment tasks failed.");
+                }
+
                 Log.Info("Done!");
             }
             catch (TimeoutException e)
@@ -113,6 +133,7 @@ namespace OctopusTools.Commands
                         Log.WarnFormat("  - {0}: {1}", environment.Name, GetPortalUrl(string.Format("/app#/projects/{0}/releases/{1}/deployments/{2}", project.Slug, release.Version, guidedFailureDeployment.Id)));
                     }
                 }
+                throw new CommandException(e.Message);
             }
         }
     }
