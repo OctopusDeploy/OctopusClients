@@ -70,7 +70,7 @@ namespace OctopusTools.Commands
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        Log.ErrorFormat("The vesion number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        Log.ErrorFormat("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
                         continue;
                     }
 
@@ -116,7 +116,7 @@ namespace OctopusTools.Commands
 
             if (IgnoreIfAlreadyExists)
             {
-                var found = Repository.Releases.FindOne(r => r.Version == VersionNumber);
+                var found = Repository.Releases.FindOne(r => r.Version == versionNumber);
                 if (found != null)
                 {
                     Log.Info("A release with the number " + versionNumber + " already exists.");
@@ -124,7 +124,7 @@ namespace OctopusTools.Commands
                 }                
             }
 
-            var release = Repository.Releases.Create(new ReleaseResource(VersionNumber, project.Id)
+            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id)
             {
                 ReleaseNotes = ReleaseNotes,
                 SelectedPackages = plan.GetSelections()
