@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using log4net;
 using Octopus.Client.Model;
+using Octopus.Platform.Model;
 using OctopusTools.Infrastructure;
+using Octopus.Platform.Util;
 
 namespace OctopusTools.Commands
 {
@@ -12,6 +13,7 @@ namespace OctopusTools.Commands
     {
         protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
+            SpecificMachineNames = new List<string>();
         }
 
         protected virtual void SetCommonOptions(OptionSet options)
@@ -21,14 +23,15 @@ namespace OctopusTools.Commands
             options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
+            options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
         }
 
-
-        protected virtual bool ForcePackageDownload { get; set; }
-        protected virtual bool? UseGuidedFailure { get; set; }
-        protected virtual bool WaitForDeployment { get; set; }
-        protected virtual TimeSpan DeploymentTimeout { get; set; }
-        protected virtual TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
+        protected bool ForcePackageDownload { get; set; }
+        protected bool? UseGuidedFailure { get; set; }
+        protected bool WaitForDeployment { get; set; }
+        protected TimeSpan DeploymentTimeout { get; set; }
+        protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
+        protected List<string> SpecificMachineNames { get; set; }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
         {
@@ -56,6 +59,19 @@ namespace OctopusTools.Commands
                     ));
             }
 
+            var specificMachineIds = new ReferenceCollection();
+            if (SpecificMachineNames.Any())
+            {
+                var machines = Repository.Machines.FindByNames(SpecificMachineNames);
+                var missing = SpecificMachineNames.Except(machines.Select(m => m.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                if (missing.Any())
+                {
+                    throw new CommandException("The following specific machines could not be found: " + missing.ReadableJoin());
+                }
+
+                specificMachineIds.AddRange(machines.Select(m => m.Id));
+            }
+
             foreach (var environment in promotingEnvironments)
             {
                 var promote = environment.Promote;
@@ -66,7 +82,8 @@ namespace OctopusTools.Commands
                     EnvironmentId = promote.Id,
                     ReleaseId = release.Id,
                     ForcePackageDownload = ForcePackageDownload,
-                    UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault)
+                    UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
+                    SpecificMachineIds = specificMachineIds
                 });
 
                 Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
