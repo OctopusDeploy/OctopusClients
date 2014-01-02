@@ -54,13 +54,14 @@ Where `[<options>]` is any of:
                              package=PackageId:Version
     --packagesFolder=VALUE [Optional] A folder containing NuGet packages
                              from which we should get versions.
-    --forceversion         Ignored (obsolete).
-    --force                Whether to force redeployment of already
-                             installed packages (flag, default false).
     --releasenotes=VALUE   Release Notes for the new release.
     --releasenotesfile=VALUE
                            Path to a file that contains Release Notes for
                              the new release.
+    --specificmachines=VALUE
+                           [Optional] A comma-separated list of machine
+                             names to deploy to. If not specified all
+                             machines in the environment will be deployed.
     --waitfordeployment    Whether to wait synchronously for deployment to
                              finish.
     --deploymenttimeout=VALUE
@@ -101,9 +102,7 @@ To create a release *and* deploy it to an environment named *Production*:
 
     octo create-release --project=HelloWorld --deployto=Production --server=http://octopus/api --apiKey=ABCDEF123456
 
-Note that packages that have already been deployed to the selected machines will not be re-deployed. You can force them to be re-deployed using the `--force` argument:
-
-    octo create-release --project=HelloWorld --deployto=Production --force --server=http://octopus/api --apiKey=ABCDEF123456
+**Changed in 2.0** Note that packages that have already been deployed to the selected machines will be re-deployed. Machines can be skipped by specifiying the `--specificmachines` argument.
 
 ## Deploying a release
 
@@ -117,8 +116,10 @@ Where `[<options>]` is any of:
     --deployto=VALUE       Environment to deploy to, e.g., Production
     --releaseNumber, --version=VALUE
                            Version number of the release to deploy.
-    --force                Whether to force redeployment of already
-                             installed packages (flag, default false).
+    --specificmachines=VALUE
+                           [Optional] A comma-separated list of machine
+                             names to deploy to. If not specified all
+                             machines in the environment will be deployed.
     --waitfordeployment    Whether to wait synchronously for deployment to
                              finish.
     --deploymenttimeout=VALUE
