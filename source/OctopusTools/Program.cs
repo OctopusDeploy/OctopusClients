@@ -77,7 +77,9 @@ namespace OctopusTools
             if (agg != null)
             {
                 var errors = new HashSet<Exception>(agg.InnerExceptions);
-                errors.Add(ex.InnerException);
+                if (agg.InnerException != null)
+                    errors.Add(ex.InnerException);
+
                 var lastExit = 0;
                 foreach (var inner in errors)
                 {
@@ -102,11 +104,9 @@ namespace OctopusTools
                 {
                     Log.Error(loaderException);
 
-                    if (!(loaderException is FileNotFoundException)) 
-                        continue;
-
                     var exFileNotFound = loaderException as FileNotFoundException;
-                    if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
+                    if (exFileNotFound != null && 
+                        !string.IsNullOrEmpty(exFileNotFound.FusionLog))
                     {
                         Log.ErrorFormat("Fusion log: {0}", exFileNotFound.FusionLog);
                     }
