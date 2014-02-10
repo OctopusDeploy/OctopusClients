@@ -24,8 +24,10 @@ namespace OctopusTools.Commands
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
             options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
         }
 
+        protected bool ForcePackageRedeployment { get; set; }
         protected bool ForcePackageDownload { get; set; }
         protected bool? UseGuidedFailure { get; set; }
         protected bool WaitForDeployment { get; set; }
@@ -83,7 +85,8 @@ namespace OctopusTools.Commands
                     ReleaseId = release.Id,
                     ForcePackageDownload = ForcePackageDownload,
                     UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
-                    SpecificMachineIds = specificMachineIds
+                    SpecificMachineIds = specificMachineIds,
+                    ForcePackageRedeployment = ForcePackageRedeployment
                 });
 
                 Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");

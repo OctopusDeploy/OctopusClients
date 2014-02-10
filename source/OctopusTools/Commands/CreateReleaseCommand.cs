@@ -29,7 +29,6 @@ namespace OctopusTools.Commands
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
-        public bool Force { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
 
         protected override void SetOptions(OptionSet options)
@@ -37,12 +36,12 @@ namespace OctopusTools.Commands
             SetCommonOptions(options);
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-            options.Add("releaseNumber=|version=", "Release number to use for the new release.", v => VersionNumber = v);
+            options.Add("releaseNumber=|version=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
             options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
-            options.Add("releasenotes=", "Release Notes for the new release.", v => ReleaseNotes = v);
-            options.Add("releasenotesfile=", "Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
+            options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
+            options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "", v => IgnoreIfAlreadyExists = true);
         }
 
