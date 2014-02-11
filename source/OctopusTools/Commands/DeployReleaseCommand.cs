@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
 using log4net;
+using Octopus.Platform.Model;
 
 namespace OctopusTools.Commands
 {
@@ -45,10 +44,24 @@ namespace OctopusTools.Commands
             if (project == null)
                 throw new CommandException("Could not find a project named: " + ProjectName);
 
-            Log.Debug("Finding release: " + VersionNumber);
-            var release = Repository.Projects.GetReleaseByVersion(project, VersionNumber);
+            ReleaseResource releaseToPromote;
+            if (string.Equals("latest", VersionNumber, StringComparison.CurrentCultureIgnoreCase))
+            {
+                Log.Debug("Finding latest release for project");
+                releaseToPromote = Repository.Projects.GetReleases(project).Items.OrderByDescending(r => SemanticVersion.Parse(r.Version)).FirstOrDefault();
 
-            DeployRelease(project, release, DeployToEnvironmentNames);
+                if (releaseToPromote == null)
+                {
+                    throw new CommandException("Could not find the latest release");
+                }
+            }
+            else
+            {
+                Log.Debug("Finding release: " + VersionNumber);
+                releaseToPromote = Repository.Projects.GetReleaseByVersion(project, VersionNumber);                
+            }
+
+            DeployRelease(project, releaseToPromote, DeployToEnvironmentNames);
         }
 
 
