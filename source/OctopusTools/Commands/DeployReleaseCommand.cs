@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Web.UI;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
 using log4net;
@@ -18,13 +20,11 @@ namespace OctopusTools.Commands
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
         }
-
         
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
-        public bool Force { get; set; }
-
+        
         protected override void SetOptions(OptionSet options)
         {
             SetCommonOptions(options);
@@ -52,7 +52,7 @@ namespace OctopusTools.Commands
 
                 if (releaseToPromote == null)
                 {
-                    throw new CommandException("Could not find the latest release");
+                    throw new CommandException("Could not find the latest release for project " + project.Name);
                 }
             }
             else

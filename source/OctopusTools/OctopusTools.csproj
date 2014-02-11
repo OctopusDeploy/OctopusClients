@@ -107,6 +107,7 @@
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
+    <Compile Include="Commands\PromoteReleaseCommand.cs" />
     <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
