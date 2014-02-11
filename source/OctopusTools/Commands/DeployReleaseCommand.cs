@@ -12,8 +12,6 @@ namespace OctopusTools.Commands
     [Command("deploy-release", Description="Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-
-
         public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
             : base(repositoryFactory, log)
         {
@@ -34,7 +32,6 @@ namespace OctopusTools.Commands
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
-            options.Add("force", "Whether to force redeployment of already installed packages (flag, default false).", v => Force = true);
         }
 
         protected override void Execute()
