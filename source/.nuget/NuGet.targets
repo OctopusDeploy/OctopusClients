@@ -25,6 +25,7 @@
         -->
       <PackageSource Include="http://www.myget.org/F/octopus-nightly/" />
       <PackageSource Include="http://www.myget.org/F/octopus-dependencies/" />
+      <PackageSource Include="http://www.myget.org/F/octopus-prerelease/" />
       <PackageSource Include="https://nuget.org/api/v2/" />
     </ItemGroup>
 
