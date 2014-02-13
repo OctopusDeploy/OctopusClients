@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
@@ -14,6 +15,7 @@ namespace OctopusTools.Commands
         protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
             SpecificMachineNames = new List<string>();
+            SkipStepNames = new List<string>();
         }
 
         protected virtual void SetCommonOptions(OptionSet options)
@@ -25,6 +27,7 @@ namespace OctopusTools.Commands
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
             options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
             options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
+            options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
         }
 
         protected bool ForcePackageRedeployment { get; set; }
@@ -34,6 +37,7 @@ namespace OctopusTools.Commands
         protected TimeSpan DeploymentTimeout { get; set; }
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
         protected List<string> SpecificMachineNames { get; set; }
+        protected List<string> SkipStepNames { get; set; }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
         {
@@ -79,9 +83,25 @@ namespace OctopusTools.Commands
                 var promote = environment.Promote;
                 var preview = Repository.Releases.GetPreview(promote);
 
+                var skip = new ReferenceCollection();
+                foreach (var step in SkipStepNames)
+                {
+                    var stepToExecute = preview.StepsToExecute.SingleOrDefault(s => string.Equals(s.ActionName, step, StringComparison.CurrentCultureIgnoreCase));
+                    if (stepToExecute == null)
+                    {
+                        Log.WarnFormat("No step/action named '{0}' could be found when deploying to environment '{1}', so the step cannot be skipped.", step, environment);
+                    }
+                    else
+                    {
+                        Log.DebugFormat("Skipping step: {0}", stepToExecute.ActionName);
+                        skip.Add(stepToExecute.ActionId);
+                    }
+                }
+
                 var deployment = Repository.Deployments.Create(new DeploymentResource
                 {
                     EnvironmentId = promote.Id,
+                    SkipActions = skip,
                     ReleaseId = release.Id,
                     ForcePackageDownload = ForcePackageDownload,
                     UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
