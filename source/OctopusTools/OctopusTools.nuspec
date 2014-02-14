@@ -2,12 +2,20 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" xmlns:octopus="http://octopus.org">
   <metadata>
     <id>OctopusTools</id>
+    <title>OctopusTools</title>
     <version>1.0.0.0</version>
     <authors>Octopus Deploy</authors>
-    <description>Useful tools for automating Octopus.</description>
+    <owners>Octopus Deploy</owners>
+    <summary>Create, deploy and promote releases using Octopus Deploy.</summary>
+    <description>
+      Octopus Deploy is an automated deployment tool powered by NuGet. This package contains Octo.exe, a command line tool for creating and deploying releases with Octopus Deploy.
+    </description>
     <releaseNotes></releaseNotes>
     <language>en-US</language>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://octopusdeploy.com/</licenseUrl>
     <projectUrl>http://octopusdeploy.com/</projectUrl>
-    <licenseUrl>http://octopusdeploy.com/Pricing</licenseUrl>
+    <iconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</iconUrl>
+    <tags>automation deployment</tags>
   </metadata>
 </package>
