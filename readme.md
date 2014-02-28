@@ -72,6 +72,10 @@ Where `[<options>]` is any of:
                            [Optional] Specifies how much time (timespan
                              format) should elapse between deployment status
                              checks (default 00:00:10)
+    --skip=STEPNAME         [Optional] Skip a step by name.
+                            can be specified more than once.
+                            (e.g. --skip="send completion email.")
+                             
 #### Basic examples:
 
 This will create a new release of the *HelloWorld* project using the latest available NuGet packages for each step in the project. The version number of the release will be the highest NuGet package version. You can override this using: 
