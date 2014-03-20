@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NuGet;
 using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
