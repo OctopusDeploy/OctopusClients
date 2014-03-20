@@ -92,11 +92,25 @@ namespace OctopusTools.Commands
                 }
             }
 
-            var versionNumber = VersionNumber;
-            if (string.IsNullOrWhiteSpace(versionNumber))
+            string versionNumber;
+            if (!string.IsNullOrWhiteSpace(VersionNumber))
             {
-                Log.Warn("A --version parameter was not specified, so a version number was automatically selected based on the highest package version.");
-                versionNumber = plan.GetHighestVersionNumber();
+                Log.Debug("Using version number provided on command-line.");
+                versionNumber = VersionNumber;
+            }
+            else if (!string.IsNullOrWhiteSpace(releaseTemplate.NextVersionIncrement))
+            {
+                Log.Debug("Using version number from release template.");
+                versionNumber = releaseTemplate.NextVersionIncrement;
+            }
+            else if (!string.IsNullOrWhiteSpace(releaseTemplate.VersioningPackageStepName))
+            {
+                Log.Debug("Using version number from package step.");
+                versionNumber = plan.GetActionVersionNumber(releaseTemplate.VersioningPackageStepName);
+            }
+            else
+            {
+                throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
 
             if (plan.Steps.Count > 0)
