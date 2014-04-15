@@ -4,53 +4,33 @@ using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
+using System.Collections.Generic;
 
 namespace OctopusTools.Diagnostics
 {
     public static class Logger
     {
-        const string LoggingConfiguration =
-            @"<log4net>
-  <root>
-    <level value='DEBUG' />
-    <appender-ref ref='TraceAppender' />
-    <appender-ref ref='ConsoleAppender' />
-  </root>
+		public static string LoggingConfiguration 
+		{
+			get {
+				using (var reader = new System.IO.StreamReader(typeof(Logger).Assembly.GetManifestResourceStream(GetLoggingFileName())))
+				{
+					return reader.ReadToEnd();
+				}
+			}
+		}
 
-  <logger name='Octopus'>
-    <level value='DEBUG' />
-  </logger>
- 
-  <!-- For unit tests -->
-  <appender name='TraceAppender' type='log4net.Appender.TraceAppender'>
-    <layout type='log4net.Layout.PatternLayout'>
-      <conversionPattern value='%message%newline' />
-    </layout>
-  </appender>
-
-  <!-- When running interactively -->
-  <appender name='ConsoleAppender' type='log4net.Appender.ColoredConsoleAppender'>
-    <mapping>
-      <level value='ERROR' />
-      <foreColor value='Red, HighIntensity' />
-    </mapping>
-    <mapping>
-      <level value='WARN' />
-      <foreColor value='Yellow, HighIntensity' />
-    </mapping>
-    <mapping>
-      <level value='Info' />
-      <foreColor value='White, HighIntensity' />
-    </mapping>
-    <mapping>
-      <level value='Debug' />
-      <foreColor value='White' />
-    </mapping>
-    <layout type='log4net.Layout.PatternLayout'>
-      <conversionPattern value='%message%newline' />
-    </layout>
-  </appender>
-</log4net>";
+		private static string GetLoggingFileName()
+		{
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.MacOSX:
+			case PlatformID.Unix:
+				return "logging-unix.config";
+			default:
+				return "logging.config";
+			}
+		}
+	
 
         public static ILog Default
         {
@@ -81,7 +61,8 @@ namespace OctopusTools.Diagnostics
                 document.LoadXml(LoggingConfiguration);
 
                 Log = LogManager.GetLogger("Octopus");
-                XmlConfigurator.Configure(Log.Logger.Repository, (XmlElement) document.GetElementsByTagName("log4net")[0]);
+
+				XmlConfigurator.Configure(Log.Logger.Repository, (XmlElement) document.GetElementsByTagName("log4net")[0]);
             }
         }
 
