@@ -10,6 +10,7 @@ using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
 using log4net;
+using Octopus.Platform.Util;
 
 namespace OctopusTools
 {
@@ -48,6 +49,7 @@ namespace OctopusTools
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
+            builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
             builder.RegisterAssemblyTypes(typeof(Program).Assembly).Where(t => typeof(ICommand).IsAssignableFrom(t)).AsSelf().As<ICommand>();
             return builder.Build();
         }
