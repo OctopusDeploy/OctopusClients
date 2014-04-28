@@ -113,12 +113,14 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\BaseImportCommand.cs" />
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\ExportFeedsCommand.cs" />
     <Compile Include="Commands\ExportObject.cs" />
     <Compile Include="Commands\ExportProjectCommand.cs" />
+    <Compile Include="Commands\ImportFeedsCommand.cs" />
     <Compile Include="Commands\ImportProjectCommand.cs">
       <SubType>Code</SubType>
     </Compile>
