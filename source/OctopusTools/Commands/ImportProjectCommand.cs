@@ -13,13 +13,11 @@ using System.Text;
 namespace OctopusTools.Commands
 {
     [Command("import-project", Description = "Imports a projects settings, variables and deployment process.")]
-    public class ImportProjectCommand : ApiCommand
+    public class ImportProjectCommand : BaseImportCommand
     {
-        readonly IOctopusFileSystem fileSystem;
         public ImportProjectCommand(IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+            : base(fileSystem, repositoryFactory, log)
         {
-            this.fileSystem = fileSystem;
         }
 
         public string FilePath { get; set; }
@@ -33,7 +31,7 @@ namespace OctopusTools.Commands
         {
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to be imported using the parameter: --filePath=XYZ");
 
-            var exportedObject = JsonConvert.DeserializeObject<ExportObject>(GetSerializedObjectFromFile());
+            var exportedObject = JsonConvert.DeserializeObject<ExportObject>(GetSerializedObjectFromFile(FilePath));
             if (exportedObject == null)
                 throw new CommandException("Unable to deserialize the specified export file");
 
@@ -346,28 +344,6 @@ namespace OctopusTools.Commands
                 usedEnvironments.Add(env.Id, environment);
             }
             return usedEnvironments;
-        }
-
-        private string GetSerializedObjectFromFile()
-        {
-            Log.Debug("Loading export file");
-            if (!fileSystem.FileExists(FilePath))
-                throw new CommandException("Unable to find the specified export file");
-
-            var export = string.Empty;
-            try
-            {
-                var file = fileSystem.OpenFile(FilePath, FileAccess.Read, FileShare.Read);
-                var bytes = new byte[file.Length];
-                var bytesRead = file.Read(bytes, 0, (int)file.Length);
-                export = Encoding.UTF8.GetString(bytes);
-            }
-            catch (Exception ex)
-            {
-                throw new CommandException("Unable to read the specified export file. Error: " + ex.Message);
-            }
-            Log.Debug("Export file loaded");
-            return export;
         }
     }
 }
