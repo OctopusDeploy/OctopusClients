@@ -69,7 +69,7 @@ namespace OctopusTools.Commands
                     break;
                 }
 
-                releases = Repository.Client.List<ReleaseResource>(releases.Link("Next"));
+                releases = Repository.Client.List<ReleaseResource>(releases.Link("Page.Next"));
             }
 
             if (!WhatIf)

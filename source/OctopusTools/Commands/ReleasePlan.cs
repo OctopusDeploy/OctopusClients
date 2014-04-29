@@ -83,5 +83,15 @@ namespace OctopusTools.Commands
         {
             return UnresolvedSteps.Count > 0;
         }
+
+        public string GetActionVersionNumber(string packageStepName)
+        {
+            var step = steps.SingleOrDefault(s => s.StepName.Equals(packageStepName, StringComparison.OrdinalIgnoreCase));
+            if (step == null)
+                throw new CommandException("The step '" + packageStepName + "' is configured to provide the package version number but doesn't exist in the release plan.");
+            if (string.IsNullOrWhiteSpace(step.Version))
+                throw new CommandException("The step '" + packageStepName + "' provides the release version number but no package version could be determined from it.");
+            return step.Version;
+        }
     }
 }
