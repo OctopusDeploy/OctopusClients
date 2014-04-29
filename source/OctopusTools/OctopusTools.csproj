@@ -119,7 +119,7 @@
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\ExportFeedsCommand.cs" />
-    <Compile Include="Commands\ExportObject.cs" />
+    <Compile Include="Commands\ProjectExportObject.cs" />
     <Compile Include="Commands\ExportProjectCommand.cs" />
     <Compile Include="Commands\ImportFeedsCommand.cs" />
     <Compile Include="Commands\ImportProjectCommand.cs">

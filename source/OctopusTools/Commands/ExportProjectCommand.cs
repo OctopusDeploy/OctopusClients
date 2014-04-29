@@ -90,7 +90,7 @@ namespace OctopusTools.Commands
                 libraryVariableSets.Add(new ReferenceDataItem(libraryVariableSet.Id, libraryVariableSet.Name));
             }
 
-            var export = JsonConvert.SerializeObject(new ExportObject
+            var export = JsonConvert.SerializeObject(new ProjectExportObject
             {
                 Project = project,
                 ProjectGroup = new ReferenceDataItem(projectGroup.Id, projectGroup.Name),

@@ -31,7 +31,7 @@ namespace OctopusTools.Commands
         {
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to be imported using the parameter: --filePath=XYZ");
 
-            var exportedObject = JsonConvert.DeserializeObject<ExportObject>(GetSerializedObjectFromFile(FilePath));
+            var exportedObject = JsonConvert.DeserializeObject<ProjectExportObject>(GetSerializedObjectFromFile(FilePath));
             if (exportedObject == null)
                 throw new CommandException("Unable to deserialize the specified export file");
 
