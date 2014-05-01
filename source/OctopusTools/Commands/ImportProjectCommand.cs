@@ -1,23 +1,21 @@
 ﻿using log4net;
-using Newtonsoft.Json;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
 using Octopus.Platform.Util;
-using OctopusTools.Infrastructure;
+using OctopusTools.Importers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
-    [Command("import-project", Description = "Imports a projects settings, variables and deployment process.")]
-    public class ImportProjectCommand : BaseImportCommand
+    public class ImportProjectCommand : ApiCommand
     {
+        readonly FileSystemImporter importer;
         public ImportProjectCommand(IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(fileSystem, repositoryFactory, log)
+            : base(repositoryFactory, log)
         {
+            importer = new FileSystemImporter(fileSystem, log);
         }
 
         public string FilePath { get; set; }
@@ -31,13 +29,13 @@ namespace OctopusTools.Commands
         {
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to be imported using the parameter: --filePath=XYZ");
 
-            var exportedObject = JsonConvert.DeserializeObject<ProjectExportObject>(GetSerializedObjectFromFile(FilePath));
-            if (exportedObject == null)
+            var importedObject = importer.Import<ProjectExport>(FilePath);
+            if (importedObject == null)
                 throw new CommandException("Unable to deserialize the specified export file");
 
-            ProjectResource project = exportedObject.Project;
-            VariableSetResource variableSet = (VariableSetResource)exportedObject.VariableSet;
-            DeploymentProcessResource deploymentProcess = (DeploymentProcessResource)exportedObject.DeploymentProcess;
+            var project = importedObject.Project;
+            var variableSet = importedObject.VariableSet;
+            var deploymentProcess = importedObject.DeploymentProcess;
 
             var oldVariableSetId = project.VariableSetId;
             var oldDeploymentProcessId = project.DeploymentProcessId;
@@ -55,13 +53,13 @@ namespace OctopusTools.Commands
             var roles = CheckRolesExist(variableSet.ScopeValues.Roles);
 
             // Check NuGet Feeds
-            var feeds = CheckNuGetFeedsExist(exportedObject.NuGetFeeds);
+            var feeds = CheckNuGetFeedsExist(importedObject.NuGetFeeds);
 
             // Check Libary Variable Sets
-            List<string> libraryVariableSets = CheckLibraryVariableSets(exportedObject.LibraryVariableSets);
+            List<string> libraryVariableSets = CheckLibraryVariableSets(importedObject.LibraryVariableSets);
 
             // Check Project Group
-            string projectGroupId = CheckProjectGroup(exportedObject.ProjectGroup);
+            string projectGroupId = CheckProjectGroup(importedObject.ProjectGroup);
 
             try
             {
@@ -78,7 +76,7 @@ namespace OctopusTools.Commands
             catch (Exception ex)
             {
                 Log.ErrorFormat("Failed to import project '{0}'", project.Name);
-                throw new CommandException(ex.Message);
+                throw;
             }
         }
 

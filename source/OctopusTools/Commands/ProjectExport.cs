@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OctopusTools.Commands
 {
-    public class ProjectExportObject
+    public class ProjectExport
     {
         public ProjectResource Project { get; set; }
         public ReferenceDataItem ProjectGroup { get; set; }

@@ -1,21 +1,20 @@
 ﻿using log4net;
-using Newtonsoft.Json;
 using Octopus.Client.Model;
 using Octopus.Platform.Util;
-using OctopusTools.Infrastructure;
+using OctopusTools.Importers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
-    [Command("import-feeds", Description="Imports external feeds")]
-    public class ImportFeedsCommand : BaseImportCommand
+    public class ImportFeedsCommand : ApiCommand
     {
+        readonly FileSystemImporter importer;
         public ImportFeedsCommand(IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(fileSystem, repositoryFactory, log)
+            : base(repositoryFactory, log)
         {
+            importer = new FileSystemImporter(fileSystem, log);
         }
 
         public string FilePath { get; set; }
@@ -29,7 +28,7 @@ namespace OctopusTools.Commands
         {
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to be imported using the parameter: --filePath=XYZ");
 
-            var feeds = JsonConvert.DeserializeObject<List<FeedResource>>(GetSerializedObjectFromFile(FilePath));
+            var feeds = importer.Import<List<FeedResource>>(FilePath);
             if(feeds.Count == 0)
             {
                 Log.Debug("Found no feeds for import.");
@@ -59,7 +58,8 @@ namespace OctopusTools.Commands
             }
             catch(Exception ex)
             {
-                throw new CommandException(string.Format("Failed to import feeds. Error: {0}", ex.Message));
+                Log.DebugFormat("Failed to import feeds...");
+                throw;
             }
         }
     }

@@ -67,14 +67,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Octopus.Client.2.4.1\lib\net40\Octopus.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.3.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.3.7\lib\net40\Octopus.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Octopus.Platform, Version=2.3.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.3.7\lib\net40\Octopus.Platform.dll</HintPath>
-    </Reference>
     <Reference Include="Sprache, Version=1.10.0.36, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Sprache.1.10.0.36\lib\net40\Sprache.dll</HintPath>
@@ -114,18 +106,24 @@
     <Compile Include="..\Solution Items\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\BaseImportCommand.cs" />
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
-    <Compile Include="Commands\ExportFeedsCommand.cs" />
-    <Compile Include="Commands\ProjectExportObject.cs" />
-    <Compile Include="Commands\ExportProjectCommand.cs" />
+    <Compile Include="Commands\ExportCommand.cs" />
+    <Compile Include="Commands\ProjectExport.cs" />
     <Compile Include="Commands\ImportFeedsCommand.cs" />
     <Compile Include="Commands\ImportProjectCommand.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\PromoteReleaseCommand.cs" />
+    <Compile Include="Exporters\BaseExporter.cs" />
+    <Compile Include="Exporters\ExporterAttribute.cs" />
+    <Compile Include="Exporters\ExporterLocator.cs" />
+    <Compile Include="Exporters\IExporter.cs" />
+    <Compile Include="Exporters\IExporterLocator.cs" />
+    <Compile Include="Exporters\IExporterMetadata.cs" />
+    <Compile Include="Exporters\ProjectExporter.cs" />
+    <Compile Include="Exporters\ReleaseExporter.cs" />
     <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
@@ -145,6 +143,7 @@
     <Compile Include="Infrastructure\AutofacExtensions.cs" />
     <Compile Include="Infrastructure\CommandLocator.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Exporters\FileSystemExporter.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
     <Compile Include="Infrastructure\ICommandLocator.cs" />
     <Compile Include="Infrastructure\ICommandMetadata.cs" />
@@ -153,6 +152,7 @@
     <Compile Include="Commands\Options.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
+    <Compile Include="Importers\FileSystemImporter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />

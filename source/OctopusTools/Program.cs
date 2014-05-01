@@ -8,6 +8,7 @@ using Autofac.Features.ResolveAnything;
 using Octopus.Client.Exceptions;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
+using OctopusTools.Exporters;
 using OctopusTools.Infrastructure;
 using log4net;
 using Octopus.Platform.Util;
@@ -46,11 +47,14 @@ namespace OctopusTools
             var builder = new ContainerBuilder();
             builder.RegisterModule(new LoggingModule());
             builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource(t => typeof(ICommand).IsAssignableFrom(t)));
+            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource(t => typeof (IExporter).IsAssignableFrom(t)));
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
+            builder.RegisterType<ExporterLocator>().As<IExporterLocator>();
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
             builder.RegisterAssemblyTypes(typeof(Program).Assembly).Where(t => typeof(ICommand).IsAssignableFrom(t)).AsSelf().As<ICommand>();
+            builder.RegisterAssemblyTypes(typeof (Program).Assembly).Where(t => typeof (IExporter).IsAssignableFrom(t)).AsSelf().As<IExporter>();
             return builder.Build();
         }
 
