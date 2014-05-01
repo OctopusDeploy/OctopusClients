@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using log4net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NuGet;
+using Octopus.Client.Serialization;
 using Octopus.Platform.Util;
 using OctopusTools.Infrastructure;
 
@@ -31,7 +33,9 @@ namespace OctopusTools.Importers
 
             log.Debug("Export file successfully loaded");
 
-            return JsonConvert.DeserializeObject<T>(export);
+            var importedObject = JsonConvert.DeserializeObject<dynamic>(export, JsonSerialization.GetDefaultSerializerSettings());
+
+            return importedObject.Object.ToObject<T>();
         }
     }
 }

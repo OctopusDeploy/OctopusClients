@@ -1,35 +1,29 @@
-﻿using log4net;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using log4net;
+using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
 using Octopus.Platform.Util;
-using OctopusTools.Importers;
-using System;
-using System.Collections.Generic;
+using OctopusTools.Commands;
 using OctopusTools.Infrastructure;
 
-namespace OctopusTools.Commands
+namespace OctopusTools.Importers
 {
-    public class ImportProjectCommand : ApiCommand
+    [Importer("project", Description = "Imports a project from an export file")]
+    public class ProjectImporter : BaseImporter
     {
-        readonly FileSystemImporter importer;
-        public ImportProjectCommand(IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log) 
+            : base(repository, fileSystem, log)
         {
-            importer = new FileSystemImporter(fileSystem, log);
         }
 
-        public string FilePath { get; set; }
-
-        protected override void SetOptions(OptionSet options)
+        public override void Import(string filePath)
         {
-            options.Add("filePath=", "Full path and name of the export file to be imported", v => FilePath = v);
-        }
 
-        protected override void Execute()
-        {
-            if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to be imported using the parameter: --filePath=XYZ");
-
-            var importedObject = importer.Import<ProjectExport>(FilePath);
+            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath);
             if (importedObject == null)
                 throw new CommandException("Unable to deserialize the specified export file");
 
@@ -64,7 +58,7 @@ namespace OctopusTools.Commands
             try
             {
                 Log.DebugFormat("Beginning import of project '{0}'", project.Name);
-                
+
                 var importedProject = ImportProject(project, projectGroupId, libraryVariableSets);
 
                 ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds);
@@ -89,7 +83,7 @@ namespace OctopusTools.Commands
         {
             Log.Debug("Importing the Projects Variable Set");
             var existingVariableSet = Repository.VariableSets.Get(importedProject.VariableSetId);
-            
+
             var variables = UpdateVariables(variableSet, environments, machines, roles);
             existingVariableSet.Variables.Clear();
             existingVariableSet.Variables.AddRange(variables);
@@ -343,5 +337,6 @@ namespace OctopusTools.Commands
             }
             return usedEnvironments;
         }
+
     }
 }

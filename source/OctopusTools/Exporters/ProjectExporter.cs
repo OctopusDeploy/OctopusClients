@@ -13,7 +13,7 @@ using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Exporters
 {
-    [Exporter("project", Description = "A Project FileSystemExporter")]
+    [Exporter("project", Description = "Exports a project as JSON to a file")]
     public class ProjectExporter : BaseExporter
     {
         public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)

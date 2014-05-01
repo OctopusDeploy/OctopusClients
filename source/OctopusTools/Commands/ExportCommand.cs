@@ -12,7 +12,7 @@ using OctopusTools.Infrastructure;
 namespace OctopusTools.Commands
 {
     [Command("export", Description="Exports an object to a JSON file")]
-    public class ExportCommand : ApiCommand
+    public class    ExportCommand : ApiCommand
     {
         readonly IExporterLocator exporterLocator;
         readonly IOctopusFileSystem fileSystem;
@@ -44,10 +44,10 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type to export using the parameter: --type=XYZ");
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding FileSystemExporter '" + Type + "'");
+            Log.Debug("Finding exporter '" + Type + "'");
             var exporter = exporterLocator.Find(Type, Repository, fileSystem, Log);
             if(exporter == null)
-                throw new CommandException("Error: Unrecognized FileSystemExporter '" + Type + "'");
+                throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
             
             Log.Debug("Beginning the export");
             exporter.Export(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("Name={0}", Name), string.Format("ReleaseVersion={0}", ReleaseVersion));
