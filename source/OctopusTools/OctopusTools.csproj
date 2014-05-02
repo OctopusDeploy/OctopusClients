@@ -116,11 +116,14 @@
     <Compile Include="Exporters\BaseExporter.cs" />
     <Compile Include="Exporters\ExporterAttribute.cs" />
     <Compile Include="Exporters\ExporterLocator.cs" />
+    <Compile Include="Exporters\ExportMetadata.cs" />
     <Compile Include="Exporters\IExporter.cs" />
     <Compile Include="Exporters\IExporterLocator.cs" />
     <Compile Include="Exporters\IExporterMetadata.cs" />
     <Compile Include="Exporters\ProjectExporter.cs" />
     <Compile Include="Exporters\ReleaseExporter.cs" />
+    <Compile Include="Extensions\AttributeExtensions.cs" />
+    <Compile Include="Extensions\DynamicExtensions.cs" />
     <Compile Include="Importers\BaseImporter.cs" />
     <Compile Include="Importers\IImporter.cs" />
     <Compile Include="Importers\IImporterLocator.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="Importers\ImporterAttribute.cs" />
     <Compile Include="Importers\ImporterLocator.cs" />
     <Compile Include="Importers\ProjectImporter.cs" />
+    <Compile Include="Importers\ReleaseImporter.cs" />
     <Compile Include="Infrastructure\CommandAttribute.cs" />
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />

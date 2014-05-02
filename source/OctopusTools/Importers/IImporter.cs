@@ -7,6 +7,6 @@ namespace OctopusTools.Importers
 {
     public interface IImporter
     {
-        void Import(string filePath);
+        void Import(params string[] parameters);
     }
 }

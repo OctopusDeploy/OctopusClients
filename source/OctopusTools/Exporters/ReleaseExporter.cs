@@ -9,11 +9,12 @@ using NuGet;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Platform.Util;
+using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Exporters
 {
-    [Exporter("release", Description = "Exports either a single release, or multiple releases")]
+    [Exporter("release", "List", Description = "Exports either a single release, or multiple releases")]
     public class ReleaseExporter : BaseExporter
     {
         public ReleaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log) : 
@@ -62,6 +63,7 @@ namespace OctopusTools.Exporters
                     var version = SemanticVersion.Parse(release.Version);
                     if (minVersionToExport <= version && version <= maxVersionToExport)
                     {
+                        Log.Debug("Found release " + version);
                         releasesToExport.Add(release);
 
                         if (minVersionToExport == maxVersionToExport)
@@ -81,16 +83,12 @@ namespace OctopusTools.Exporters
                 releases = Repository.Client.List<ReleaseResource>(releases.Link("Next"));
             }
 
-            //When importing I think we want to just create a new release, using the NuGet package versions, 
-            //number and release notes from the exported release
-            //we can't import snapshots, so there's no point exporting them
-            //instead we'll assume that they have imported the latest project settings and thus the 
-            //deployment process + variables will be up to date
-            var metadata = new
+            var metadata = new ExportMetadata
             {
                 ExportedAt = DateTime.Now,
                 OctopusVersion = Repository.Client.RootDocument.Version,
-                Type = "release"
+                Type = typeof (ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
+                ContainerType = typeof(ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };
             FileSystemExporter.Export(FilePath, metadata, releasesToExport);
         }

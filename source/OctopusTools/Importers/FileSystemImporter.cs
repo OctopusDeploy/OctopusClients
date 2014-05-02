@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using System.Dynamic;
 using log4net;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NuGet;
 using Octopus.Client.Serialization;
 using Octopus.Platform.Util;
 using OctopusTools.Infrastructure;
@@ -24,7 +20,7 @@ namespace OctopusTools.Importers
             this.log = log;
         }
 
-        public T Import<T>(string filePath)
+        public T Import<T>(string filePath, string entityType)
         {
             if (!fileSystem.FileExists(filePath))
                 throw new CommandException("Unable to find the specified export file");
@@ -33,9 +29,22 @@ namespace OctopusTools.Importers
 
             log.Debug("Export file successfully loaded");
 
-            var importedObject = JsonConvert.DeserializeObject<dynamic>(export, JsonSerialization.GetDefaultSerializerSettings());
+            var expando = JsonConvert.DeserializeObject<ExpandoObject>(export, JsonSerialization.GetDefaultSerializerSettings());
+            var importedObject = expando as IDictionary<string, object>;
+            if (importedObject == null || 
+                !importedObject.ContainsKey("$Meta") || 
+                (importedObject["$Meta"] as dynamic).ContainerType != entityType)
+            {
+                throw new CommandException("The data is not a valid " + entityType);
+            }
+            importedObject.Remove("$Meta");
 
-            return importedObject.Object.ToObject<T>();
+            object exportedObject = null;
+            if (importedObject.ContainsKey("Items"))
+            {
+                exportedObject = importedObject["Items"];
+            }
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(exportedObject ?? expando));;
         }
     }
 }

@@ -9,11 +9,12 @@ using Octopus.Client.Model;
 using Octopus.Platform.Util;
 using Octopus.Platform.Variables;
 using OctopusTools.Commands;
+using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Exporters
 {
-    [Exporter("project", Description = "Exports a project as JSON to a file")]
+    [Exporter("project", "ProjectWithDependencies", Description = "Exports a project as JSON to a file")]
     public class ProjectExporter : BaseExporter
     {
         public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
@@ -94,11 +95,12 @@ namespace OctopusTools.Exporters
                 LibraryVariableSets = libraryVariableSets
             };
 
-            var metadata = new
+            var metadata = new ExportMetadata
             {
                 ExportedAt = DateTime.Now,
                 OctopusVersion = Repository.Client.RootDocument.Version,
-                Type = "project"
+                Type = typeof(ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
+                ContainerType = typeof(ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };
             FileSystemExporter.Export(FilePath, metadata, export);
         }

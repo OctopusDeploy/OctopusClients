@@ -8,34 +8,31 @@ using Octopus.Client.Model;
 using Octopus.Platform.Model;
 using Octopus.Platform.Util;
 using OctopusTools.Commands;
+using OctopusTools.Exporters;
+using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Importers
 {
-    [Importer("project", Description = "Imports a project from an export file")]
+    [Importer("project", "ProjectWithDependencies" , Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
-        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log) 
+        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
             : base(repository, fileSystem, log)
         {
         }
 
-        public override void Import(string filePath)
+        protected override void Import(Dictionary<string, string> paramDictionary)
         {
-
-            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath);
-            if (importedObject == null)
-                throw new CommandException("Unable to deserialize the specified export file");
+            var filePath = paramDictionary["FilePath"];
+            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
             var variableSet = importedObject.VariableSet;
             var deploymentProcess = importedObject.DeploymentProcess;
-
-            var oldVariableSetId = project.VariableSetId;
-            var oldDeploymentProcessId = project.DeploymentProcessId;
-            var oldIncludedLibraryVariableSets = project.IncludedLibraryVariableSetIds;
-            var oldVersioningStrategy = project.VersioningStrategy;
-            var oldProjectGroupId = project.ProjectGroupId;
+            var nugetFeeds = importedObject.NuGetFeeds;
+            var libVariableSets = importedObject.LibraryVariableSets;
+            var projectGroup = importedObject.ProjectGroup;
 
             // Check Environments
             var environments = CheckEnvironmentsExist(variableSet.ScopeValues.Environments);
@@ -47,38 +44,29 @@ namespace OctopusTools.Importers
             var roles = CheckRolesExist(variableSet.ScopeValues.Roles);
 
             // Check NuGet Feeds
-            var feeds = CheckNuGetFeedsExist(importedObject.NuGetFeeds);
+            var feeds = CheckNuGetFeedsExist(nugetFeeds);
 
             // Check Libary Variable Sets
-            List<string> libraryVariableSets = CheckLibraryVariableSets(importedObject.LibraryVariableSets);
+            List<string> libraryVariableSets = CheckLibraryVariableSets(libVariableSets);
 
             // Check Project Group
-            string projectGroupId = CheckProjectGroup(importedObject.ProjectGroup);
+            string projectGroupId = CheckProjectGroup(projectGroup);
 
-            try
-            {
-                Log.DebugFormat("Beginning import of project '{0}'", project.Name);
+            Log.DebugFormat("Beginning import of project '{0}'", project.Name);
 
-                var importedProject = ImportProject(project, projectGroupId, libraryVariableSets);
+            var importedProject = ImportProject(project, projectGroupId, libraryVariableSets);
 
-                ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds);
+            ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds);
 
-                ImportVariableSets(variableSet, importedProject, environments, machines, deploymentProcess, roles);
+            ImportVariableSets(variableSet, importedProject, environments, machines, roles);
 
-                Log.DebugFormat("Successfully imported project '{0}'", project.Name);
-            }
-            catch (Exception ex)
-            {
-                Log.ErrorFormat("Failed to import project '{0}'", project.Name);
-                throw;
-            }
+            Log.DebugFormat("Successfully imported project '{0}'", project.Name);
         }
 
         private void ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
             Dictionary<string, EnvironmentResource> environments,
             Dictionary<string, MachineResource> machines,
-            DeploymentProcessResource deploymentProcess,
             Dictionary<string, ReferenceDataItem> roles)
         {
             Log.Debug("Importing the Projects Variable Set");
