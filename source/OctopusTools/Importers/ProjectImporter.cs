@@ -14,7 +14,7 @@ using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Importers
 {
-    [Importer("project", "ProjectWithDependencies" , Description = "Imports a project from an export file")]
+    [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
@@ -34,14 +34,16 @@ namespace OctopusTools.Importers
             var libVariableSets = importedObject.LibraryVariableSets;
             var projectGroup = importedObject.ProjectGroup;
 
+            var scopeValuesUsed = GetScopeValuesUsed(variableSet.Variables, deploymentProcess.Steps, variableSet.ScopeValues);
+
             // Check Environments
-            var environments = CheckEnvironmentsExist(variableSet.ScopeValues.Environments);
+            var environments = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]);
 
             // Check Machines
-            var machines = CheckMachinesExist(variableSet.ScopeValues.Machines);
+            var machines = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]);
 
             // Check Roles
-            var roles = CheckRolesExist(variableSet.ScopeValues.Roles);
+            //var roles = CheckRolesExist(variableSet.ScopeValues.Roles);
 
             // Check NuGet Feeds
             var feeds = CheckNuGetFeedsExist(nugetFeeds);
@@ -58,71 +60,127 @@ namespace OctopusTools.Importers
 
             ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds);
 
-            ImportVariableSets(variableSet, importedProject, environments, machines, roles);
+            ImportVariableSets(variableSet, importedProject, environments, machines, scopeValuesUsed);
 
             Log.DebugFormat("Successfully imported project '{0}'", project.Name);
+        }
+
+        private Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
+        {
+            var usedScopeValues = new Dictionary<ScopeField, List<ReferenceDataItem>>
+            {
+                {ScopeField.Environment, new List<ReferenceDataItem>()},
+                {ScopeField.Machine, new List<ReferenceDataItem>()}
+            };
+
+            foreach (var variable in variables)
+            {
+                foreach (var variableScope in variable.Scope)
+                {
+                    switch (variableScope.Key)
+                    {
+                        case ScopeField.Environment:
+                            var usedEnvironments = variableScope.Value;
+                            foreach (var usedEnvironment in usedEnvironments)
+                            {
+                                var environment = variableScopeValues.Environments.Find(e => e.Id == usedEnvironment);
+                                if (environment != null)
+                                {
+                                    usedScopeValues[ScopeField.Environment].Add(environment);
+                                }
+                            }
+                            break;
+                        case ScopeField.Machine:
+                            var usedMachines = variableScope.Value;
+                            foreach (var usedMachine in usedMachines)
+                            {
+                                var machine = variableScopeValues.Machines.Find(m => m.Id == usedMachine);
+                                if (machine != null)
+                                {
+                                    usedScopeValues[ScopeField.Machine].Add(machine);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            foreach (var step in steps)
+            {
+                foreach (var action in step.Actions)
+                {
+                    foreach (var usedEnvironment in action.Environments)
+                    {
+                        var environment = variableScopeValues.Environments.Find(e => e.Id == usedEnvironment);
+                        if (environment != null && !usedScopeValues[ScopeField.Environment].Exists(env => env.Id == usedEnvironment))
+                        {
+                            usedScopeValues[ScopeField.Environment].Add(environment);
+                        }
+                    }
+                }
+            }
+
+            return usedScopeValues;
         }
 
         private void ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
             Dictionary<string, EnvironmentResource> environments,
             Dictionary<string, MachineResource> machines,
-            Dictionary<string, ReferenceDataItem> roles)
+            Dictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             Log.Debug("Importing the Projects Variable Set");
             var existingVariableSet = Repository.VariableSets.Get(importedProject.VariableSetId);
 
-            var variables = UpdateVariables(variableSet, environments, machines, roles);
+            var variables = UpdateVariables(variableSet, environments, machines);
             existingVariableSet.Variables.Clear();
             existingVariableSet.Variables.AddRange(variables);
 
-            var scopeValues = UpdateScopeValues(variableSet, environments, machines, roles);
+            var scopeValues = UpdateScopeValues(environments, machines, scopeValuesUsed);
             existingVariableSet.ScopeValues.Actions.Clear();
             existingVariableSet.ScopeValues.Actions.AddRange(scopeValues.Actions);
             existingVariableSet.ScopeValues.Environments.Clear();
+            existingVariableSet.ScopeValues.Environments.AddRange(scopeValues.Environments);
             existingVariableSet.ScopeValues.Machines.Clear();
-            existingVariableSet.ScopeValues.Roles.Clear();
             existingVariableSet.ScopeValues.Machines.AddRange(scopeValues.Machines);
+            existingVariableSet.ScopeValues.Roles.Clear();
             existingVariableSet.ScopeValues.Roles.AddRange(scopeValues.Roles);
+            existingVariableSet.ScopeValues.Machines.AddRange(scopeValues.Machines);
 
             Repository.VariableSets.Modify(existingVariableSet);
 
         }
 
-        private VariableScopeValues UpdateScopeValues(VariableSetResource variableSet, Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines, Dictionary<string, ReferenceDataItem> roles)
+        private VariableScopeValues UpdateScopeValues(Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines, Dictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             var scopeValues = new VariableScopeValues();
             Log.Debug("Updating the Environments of the Variable Sets Scope Values");
             scopeValues.Environments = new List<ReferenceDataItem>();
-            foreach (var environment in variableSet.ScopeValues.Environments)
+            foreach (var environment in scopeValuesUsed[ScopeField.Environment])
             {
                 var newEnvironment = environments[environment.Id];
                 scopeValues.Environments.Add(new ReferenceDataItem(newEnvironment.Id, newEnvironment.Name));
             }
             Log.Debug("Updating the Machines of the Variable Sets Scope Values");
             scopeValues.Machines = new List<ReferenceDataItem>();
-            foreach (var machine in variableSet.ScopeValues.Machines)
+            foreach (var machine in scopeValuesUsed[ScopeField.Machine])
             {
                 var newMachine = machines[machine.Id];
                 scopeValues.Machines.Add(new ReferenceDataItem(newMachine.Id, newMachine.Name));
             }
-            Log.Debug("Updating the Roles of the Variable Sets Scope Values");
-            scopeValues.Roles = new List<ReferenceDataItem>();
-            foreach (var role in variableSet.ScopeValues.Roles)
-            {
-                scopeValues.Roles.Add(roles[role.Id]);
-            }
-            scopeValues.Actions = new List<ReferenceDataItem>();
-            scopeValues.Actions.AddRange(variableSet.ScopeValues.Actions);
             return scopeValues;
         }
 
-        private IList<VariableResource> UpdateVariables(VariableSetResource variableSet, Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines, Dictionary<string, ReferenceDataItem> roles)
+        private IList<VariableResource> UpdateVariables(VariableSetResource variableSet, Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines)
         {
             var variables = variableSet.Variables;
 
             foreach (var variable in variables)
             {
+                if (variable.IsSensitive)
+                {
+                    Log.WarnFormat("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
+                    variable.Value = String.Empty;
+                }
                 foreach (var scopeValue in variable.Scope)
                 {
                     switch (scopeValue.Key)
@@ -148,17 +206,6 @@ namespace OctopusTools.Importers
                             }
                             scopeValue.Value.Clear();
                             scopeValue.Value.AddRange(newMachineIds);
-                            break;
-                        case ScopeField.Role:
-                            Log.Debug("Updating the Role IDs of the Variables scope");
-                            var oldRoleIds = scopeValue.Value;
-                            var newRoleIds = new List<string>();
-                            foreach (var oldRoleId in oldRoleIds)
-                            {
-                                newRoleIds.Add(roles[oldRoleId].Id);
-                            }
-                            scopeValue.Value.Clear();
-                            scopeValue.Value.AddRange(newRoleIds);
                             break;
                     }
                 }
