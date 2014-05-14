@@ -6,6 +6,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Features.ResolveAnything;
 using Octopus.Client.Exceptions;
+using Octopus.Platform.Util;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
@@ -49,6 +50,7 @@ namespace OctopusTools
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
             builder.RegisterAssemblyTypes(typeof(Program).Assembly).Where(t => typeof(ICommand).IsAssignableFrom(t)).AsSelf().As<ICommand>();
+            builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
             return builder.Build();
         }
 
