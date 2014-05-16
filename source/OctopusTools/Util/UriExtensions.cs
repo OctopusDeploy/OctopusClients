@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 // ReSharper disable CheckNamespace
 public static class UriExtensions
@@ -23,7 +20,7 @@ public static class UriExtensions
         return new Uri(uri, path);
     }
 
-    private static string FindOverlapSection(string value1, string value2)
+    static string FindOverlapSection(string value1, string value2)
     {
         var longer = value1;
         var shorter = value2;

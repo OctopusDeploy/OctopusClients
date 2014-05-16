@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
-using Octopus.Client;
-using Octopus.Client.Model;
 using log4net;
+using NuGet;
+using Octopus.Client.Model;
 
 namespace OctopusTools.Commands
 {
@@ -46,7 +44,7 @@ namespace OctopusTools.Commands
                 environmentsById.AddRange(Repository.Environments.FindAll().Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
             }
 
-            var deployments = Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] { });
+            var deployments = Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] {});
 
             foreach (var deployment in deployments.Items)
             {
@@ -67,7 +65,7 @@ namespace OctopusTools.Commands
             Log.InfoFormat(" - Environment: {0}", nameOfDeploymentEnvironment);
             foreach (var property in propertiesToLog)
             {
-                if(property == "State: Failed")
+                if (property == "State: Failed")
                     Log.ErrorFormat("   {0}", property);
                 else
                     Log.InfoFormat("   {0}", property);
@@ -75,34 +73,35 @@ namespace OctopusTools.Commands
             Log.InfoFormat("");
         }
 
-
-        private static IEnumerable<string> FormatTaskPropertiesAsStrings(TaskResource task)
+        static IEnumerable<string> FormatTaskPropertiesAsStrings(TaskResource task)
         {
-            return new List<string>{
-                    "Date: " + task.QueueTime,
-                    "Duration: " + task.Duration,
-                    "State: "+task.State                  
-                };
+            return new List<string>
+            {
+                "Date: " + task.QueueTime,
+                "Duration: " + task.Duration,
+                "State: " + task.State
+            };
         }
 
-        private static IEnumerable<string> FormatReleasePropertiesAsStrings(ReleaseResource release)
+        static IEnumerable<string> FormatReleasePropertiesAsStrings(ReleaseResource release)
         {
-            return new List<string>{
-                    "Version: " + release.Version,
-                    "Assembled: "+release.Assembled,
-                    "Package Versions: " + GetPackageVersionsAsString(release.SelectedPackages),
-                    "Release Notes: " + ((release.ReleaseNotes != null) ? release.ReleaseNotes.Replace(System.Environment.NewLine,@"\n"): "")
-                };
+            return new List<string>
+            {
+                "Version: " + release.Version,
+                "Assembled: " + release.Assembled,
+                "Package Versions: " + GetPackageVersionsAsString(release.SelectedPackages),
+                "Release Notes: " + ((release.ReleaseNotes != null) ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "")
+            };
         }
 
-        private static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)
+        static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)
         {
             var packageVersionsAsString = "";
 
             foreach (var package in packages)
             {
-                var packageVersionAsString = package.StepName  + " " + package.Version;
-              
+                var packageVersionAsString = package.StepName + " " + package.Version;
+
                 if (packageVersionsAsString.Contains(packageVersionAsString))
                 {
                     continue;

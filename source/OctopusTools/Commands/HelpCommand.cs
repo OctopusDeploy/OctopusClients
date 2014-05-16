@@ -21,7 +21,7 @@ namespace OctopusTools.Commands
 
         public void Execute(string[] commandLineArguments)
         {
-            var executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).Assembly.FullLocalPath());
+            var executable = Path.GetFileNameWithoutExtension(typeof (HelpCommand).Assembly.FullLocalPath());
 
             var commandName = commandLineArguments.FirstOrDefault();
 

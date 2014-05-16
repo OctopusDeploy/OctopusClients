@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Web.UI;
-using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
 using log4net;
+using Octopus.Client.Model;
 using Octopus.Platform.Model;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
-    [Command("deploy-release", Description="Deploys a release.")]
+    [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
         public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
@@ -20,11 +18,11 @@ namespace OctopusTools.Commands
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
         }
-        
+
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
-        
+
         protected override void SetOptions(OptionSet options)
         {
             SetCommonOptions(options);
@@ -58,12 +56,10 @@ namespace OctopusTools.Commands
             else
             {
                 Log.Debug("Finding release: " + VersionNumber);
-                releaseToPromote = Repository.Projects.GetReleaseByVersion(project, VersionNumber);                
+                releaseToPromote = Repository.Projects.GetReleaseByVersion(project, VersionNumber);
             }
 
             DeployRelease(project, releaseToPromote, DeployToEnvironmentNames);
         }
-
-
     }
 }

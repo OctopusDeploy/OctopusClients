@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
@@ -42,7 +39,7 @@ namespace OctopusTools.Commands
             }
 
             Log.Info("Creating environment: " + EnvironmentName);
-            env = Repository.Environments.Create(new EnvironmentResource { Name = EnvironmentName });
+            env = Repository.Environments.Create(new EnvironmentResource {Name = EnvironmentName});
 
             Log.Info("Environment created. ID: " + env.Id);
         }

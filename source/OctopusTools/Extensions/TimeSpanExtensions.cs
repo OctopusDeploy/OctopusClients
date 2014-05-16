@@ -16,6 +16,6 @@ namespace OctopusTools.Extensions
                 return string.Format("{0:n0}m:{1:n0}s", time.TotalMinutes, time.Seconds);
 
             return string.Format("{0:n0}s", time.TotalSeconds);
-        } 
+        }
     }
 }

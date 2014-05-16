@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using log4net;
 
 namespace OctopusTools.Diagnostics
@@ -16,17 +16,17 @@ namespace OctopusTools.Diagnostics
             serviceMessagesEnabled = false;
 
             // As per: http://confluence.jetbrains.com/display/TCD65/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-ServiceMessages
-            Escapes = new Dictionary<string, string>()
+            Escapes = new Dictionary<string, string>
             {
-                { "'", "|'" },
-                { "\n", "|n" },
-                { "\r", "|r" },
-                { "\u0085", "|x" },
-                { "\u2028", "|l" },
-                { "\u2029", "|p" },
-                { "|", "||" },
-                { "[", "|[" },
-                { "]", "|]" }
+                {"'", "|'"},
+                {"\n", "|n"},
+                {"\r", "|r"},
+                {"\u0085", "|x"},
+                {"\u2028", "|l"},
+                {"\u2029", "|p"},
+                {"|", "||"},
+                {"[", "|["},
+                {"]", "|]"}
             };
         }
 
@@ -42,7 +42,7 @@ namespace OctopusTools.Diagnostics
 
         public static void ServiceMessage(this ILog log, string messageName, string value)
         {
-            if (!serviceMessagesEnabled) 
+            if (!serviceMessagesEnabled)
                 return;
 
             log.InfoFormat(
@@ -53,7 +53,7 @@ namespace OctopusTools.Diagnostics
 
         public static void ServiceMessage(this ILog log, string messageName, IDictionary<string, string> values)
         {
-            if (!serviceMessagesEnabled) 
+            if (!serviceMessagesEnabled)
                 return;
 
             log.InfoFormat(
@@ -74,7 +74,7 @@ namespace OctopusTools.Diagnostics
             else
             {
                 var properties = TypeDescriptor.GetProperties(values).Cast<PropertyDescriptor>();
-                var valueDictionary = properties.ToDictionary(p => p.Name, p => (string)p.GetValue(values));
+                var valueDictionary = properties.ToDictionary(p => p.Name, p => (string) p.GetValue(values));
                 ServiceMessage(log, messageName, valueDictionary);
             }
         }

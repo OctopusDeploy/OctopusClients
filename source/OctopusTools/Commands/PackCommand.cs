@@ -12,14 +12,19 @@ namespace OctopusTools.Commands
     [Command("pack", Description = "Creates a NUPKG from files on disk, without a .NUSPEC or .CSPROJ")]
     public class PackCommand : ICommand
     {
-        readonly OptionSet options;
-        readonly ILog log;
+        readonly IList<string> authors = new List<string>();
         readonly IOctopusFileSystem fileSystem;
-
-        readonly IList<string> authors = new List<string>();  
-        string id, version, description, title, releaseNotes, releaseNotesFile, outFolder, basePath;
         readonly IList<string> includes = new List<string>();
+        readonly ILog log;
+        readonly OptionSet options;
+        string basePath;
+        string description;
+        string id;
+        string outFolder;
         bool overwrite;
+        string releaseNotes, releaseNotesFile;
+        string title;
+        string version;
 
         public PackCommand(ILog log, IOctopusFileSystem fileSystem)
         {
@@ -28,17 +33,17 @@ namespace OctopusTools.Commands
 
             options = new OptionSet
             {
-                { "id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v },
-                { "overwrite", "[Optional] Allow an existing package file of the same ID/version to be overwritten", v => overwrite = true },
-                { "include=", "[Optional, Multiple] Add a file pattern to include, relative to the base path e.g. /bin/*.dll - if none are specified, defaults to **", v => includes.Add(v) },
-                { "basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v },
-                { "outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v },
-                { "version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = v },
-                { "author=", "[Optional, Multiple] Add an author to the package metadata; defaults to the current user", v => authors.Add(v) },
-                { "title=", "[Optional] The title of the package", v => title = v },
-                { "description=", "[Optional] A description of the package; defaults to a generic description", v => description = v },
-                { "releaseNotes=", "[Optional] Release notes for this version of the package", v => releaseNotes = v },
-                { "releaseNotesFile=", "[Optional] A file containing release notes for this version of the package", v => releaseNotesFile = v }
+                {"id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v},
+                {"overwrite", "[Optional] Allow an existing package file of the same ID/version to be overwritten", v => overwrite = true},
+                {"include=", "[Optional, Multiple] Add a file pattern to include, relative to the base path e.g. /bin/*.dll - if none are specified, defaults to **", v => includes.Add(v)},
+                {"basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v},
+                {"outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v},
+                {"version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = v},
+                {"author=", "[Optional, Multiple] Add an author to the package metadata; defaults to the current user", v => authors.Add(v)},
+                {"title=", "[Optional] The title of the package", v => title = v},
+                {"description=", "[Optional] A description of the package; defaults to a generic description", v => description = v},
+                {"releaseNotes=", "[Optional] Release notes for this version of the package", v => releaseNotes = v},
+                {"releaseNotesFile=", "[Optional] A file containing release notes for this version of the package", v => releaseNotesFile = v}
             };
         }
 
@@ -66,7 +71,7 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(version))
             {
                 var now = DateTime.Now;
-                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour * 10000 + now.Hour * 100 + now.Second).ToString();
+                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Hour*100 + now.Second).ToString();
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
@@ -110,7 +115,7 @@ namespace OctopusTools.Commands
 
             var package = new PackageBuilder();
 
-            package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
+            package.PopulateFiles(basePath, includes.Select(i => new ManifestFile {Source = i}));
             package.Populate(metadata);
 
             var filename = metadata.Id + "." + metadata.Version + ".nupkg";

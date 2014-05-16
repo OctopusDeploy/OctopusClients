@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using log4net;
 using NuGet;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
-using log4net;
 
 namespace OctopusTools.Commands
 {
@@ -77,7 +77,7 @@ namespace OctopusTools.Commands
                 foreach (var release in toDelete)
                 {
                     Repository.Client.Delete(release);
-                }               
+                }
             }
         }
     }

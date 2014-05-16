@@ -128,21 +128,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace OctopusTools.Commands
 {
-
     public class OptionValueCollection : IList, IList<string>
     {
-
-        List<string> values = new List<string>();
-        OptionContext c;
+        readonly OptionContext c;
+        readonly List<string> values = new List<string>();
 
         internal OptionValueCollection(OptionContext c)
         {
@@ -150,56 +149,141 @@ namespace OctopusTools.Commands
         }
 
         #region ICollection
-        void ICollection.CopyTo(Array array, int index) { (values as ICollection).CopyTo(array, index); }
-        bool ICollection.IsSynchronized { get { return (values as ICollection).IsSynchronized; } }
-        object ICollection.SyncRoot { get { return (values as ICollection).SyncRoot; } }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            (values as ICollection).CopyTo(array, index);
+        }
+
+        bool ICollection.IsSynchronized
+        {
+            get { return (values as ICollection).IsSynchronized; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { return (values as ICollection).SyncRoot; }
+        }
+
         #endregion
 
         #region ICollection<T>
-        public void Add(string item) { values.Add(item); }
-        public void Clear() { values.Clear(); }
-        public bool Contains(string item) { return values.Contains(item); }
-        public void CopyTo(string[] array, int arrayIndex) { values.CopyTo(array, arrayIndex); }
-        public bool Remove(string item) { return values.Remove(item); }
-        public int Count { get { return values.Count; } }
-        public bool IsReadOnly { get { return false; } }
+
+        public void Clear()
+        {
+            values.Clear();
+        }
+
+        public int Count
+        {
+            get { return values.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public void Add(string item)
+        {
+            values.Add(item);
+        }
+
+        public bool Contains(string item)
+        {
+            return values.Contains(item);
+        }
+
+        public void CopyTo(string[] array, int arrayIndex)
+        {
+            values.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(string item)
+        {
+            return values.Remove(item);
+        }
+
         #endregion
 
         #region IEnumerable
-        IEnumerator IEnumerable.GetEnumerator() { return values.GetEnumerator(); }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return values.GetEnumerator();
+        }
+
         #endregion
 
         #region IEnumerable<T>
-        public IEnumerator<string> GetEnumerator() { return values.GetEnumerator(); }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return values.GetEnumerator();
+        }
+
         #endregion
 
         #region IList
-        int IList.Add(object value) { return (values as IList).Add(value); }
-        bool IList.Contains(object value) { return (values as IList).Contains(value); }
-        int IList.IndexOf(object value) { return (values as IList).IndexOf(value); }
-        void IList.Insert(int index, object value) { (values as IList).Insert(index, value); }
-        void IList.Remove(object value) { (values as IList).Remove(value); }
-        void IList.RemoveAt(int index) { (values as IList).RemoveAt(index); }
-        bool IList.IsFixedSize { get { return false; } }
-        object IList.this[int index] { get { return this[index]; } set { (values as IList)[index] = value; } }
+
+        int IList.Add(object value)
+        {
+            return (values as IList).Add(value);
+        }
+
+        bool IList.Contains(object value)
+        {
+            return (values as IList).Contains(value);
+        }
+
+        int IList.IndexOf(object value)
+        {
+            return (values as IList).IndexOf(value);
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            (values as IList).Insert(index, value);
+        }
+
+        void IList.Remove(object value)
+        {
+            (values as IList).Remove(value);
+        }
+
+        void IList.RemoveAt(int index)
+        {
+            (values as IList).RemoveAt(index);
+        }
+
+        bool IList.IsFixedSize
+        {
+            get { return false; }
+        }
+
+        object IList.this[int index]
+        {
+            get { return this[index]; }
+            set { (values as IList)[index] = value; }
+        }
+
         #endregion
 
         #region IList<T>
-        public int IndexOf(string item) { return values.IndexOf(item); }
-        public void Insert(int index, string item) { values.Insert(index, item); }
-        public void RemoveAt(int index) { values.RemoveAt(index); }
 
-        private void AssertValid(int index)
+        public int IndexOf(string item)
         {
-            if (c.Option == null)
-                throw new InvalidOperationException("OptionContext.Option is null.");
-            if (index >= c.Option.MaxValueCount)
-                throw new ArgumentOutOfRangeException("index");
-            if (c.Option.OptionValueType == OptionValueType.Required &&
-                    index >= values.Count)
-                throw new OptionException(string.Format(
-                            c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."), c.OptionName),
-                        c.OptionName);
+            return values.IndexOf(item);
+        }
+
+        public void Insert(int index, string item)
+        {
+            values.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            values.RemoveAt(index);
         }
 
         public string this[int index]
@@ -209,11 +293,22 @@ namespace OctopusTools.Commands
                 AssertValid(index);
                 return index >= values.Count ? null : values[index];
             }
-            set
-            {
-                values[index] = value;
-            }
+            set { values[index] = value; }
         }
+
+        void AssertValid(int index)
+        {
+            if (c.Option == null)
+                throw new InvalidOperationException("OptionContext.Option is null.");
+            if (index >= c.Option.MaxValueCount)
+                throw new ArgumentOutOfRangeException("index");
+            if (c.Option.OptionValueType == OptionValueType.Required &&
+                index >= values.Count)
+                throw new OptionException(string.Format(
+                    c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."), c.OptionName),
+                    c.OptionName);
+        }
+
         #endregion
 
         public List<string> ToList()
@@ -234,35 +329,20 @@ namespace OctopusTools.Commands
 
     public class OptionContext
     {
-        private Option option;
-        private string name;
-        private int index;
-        private OptionSet set;
-        private OptionValueCollection c;
+        readonly OptionValueCollection c;
+        readonly OptionSet set;
 
         public OptionContext(OptionSet set)
         {
             this.set = set;
-            this.c = new OptionValueCollection(this);
+            c = new OptionValueCollection(this);
         }
 
-        public Option Option
-        {
-            get { return option; }
-            set { option = value; }
-        }
+        public Option Option { get; set; }
 
-        public string OptionName
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public string OptionName { get; set; }
 
-        public int OptionIndex
-        {
-            get { return index; }
-            set { index = value; }
-        }
+        public int OptionIndex { get; set; }
 
         public OptionSet OptionSet
         {
@@ -284,10 +364,12 @@ namespace OctopusTools.Commands
 
     public abstract class Option
     {
-        string prototype, description;
-        string[] names;
-        OptionValueType type;
-        int count;
+        static readonly char[] NameTerminator = {'=', ':'};
+        readonly int count;
+        readonly string description;
+        readonly string[] names;
+        readonly string prototype;
+        readonly OptionValueType type;
         string[] separators;
 
         protected Option(string prototype, string description)
@@ -305,145 +387,160 @@ namespace OctopusTools.Commands
                 throw new ArgumentOutOfRangeException("maxValueCount");
 
             this.prototype = prototype;
-            this.names = prototype.Split('|');
+            names = prototype.Split('|');
             this.description = description;
-            this.count = maxValueCount;
-            this.type = ParsePrototype();
+            count = maxValueCount;
+            type = ParsePrototype();
 
-            if (this.count == 0 && type != OptionValueType.None)
+            if (count == 0 && type != OptionValueType.None)
                 throw new ArgumentException(
-                        "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
-                            "OptionValueType.Optional.",
-                        "maxValueCount");
-            if (this.type == OptionValueType.None && maxValueCount > 1)
+                    "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
+                    "OptionValueType.Optional.",
+                    "maxValueCount");
+            if (type == OptionValueType.None && maxValueCount > 1)
                 throw new ArgumentException(
-                        string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
-                        "maxValueCount");
+                    string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
+                    "maxValueCount");
             if (Array.IndexOf(names, "<>") >= 0 &&
-                    ((names.Length == 1 && this.type != OptionValueType.None) ||
-                     (names.Length > 1 && this.MaxValueCount > 1)))
+                ((names.Length == 1 && type != OptionValueType.None) ||
+                 (names.Length > 1 && MaxValueCount > 1)))
                 throw new ArgumentException(
-                        "The default option handler '<>' cannot require values.",
-                        "prototype");
+                    "The default option handler '<>' cannot require values.",
+                    "prototype");
         }
 
-        public string Prototype { get { return prototype; } }
-        public string Description { get { return description; } }
-        public OptionValueType OptionValueType { get { return type; } }
-        public int MaxValueCount { get { return count; } }
+        public string Prototype
+        {
+            get { return prototype; }
+        }
+
+        public string Description
+        {
+            get { return description; }
+        }
+
+        public OptionValueType OptionValueType
+        {
+            get { return type; }
+        }
+
+        public int MaxValueCount
+        {
+            get { return count; }
+        }
+
+        internal string[] Names
+        {
+            get { return names; }
+        }
+
+        internal string[] ValueSeparators
+        {
+            get { return separators; }
+        }
 
         public string[] GetNames()
         {
-            return (string[])names.Clone();
+            return (string[]) names.Clone();
         }
 
         public string[] GetValueSeparators()
         {
             if (separators == null)
                 return new string[0];
-            return (string[])separators.Clone();
+            return (string[]) separators.Clone();
         }
 
         protected static T Parse<T>(string value, OptionContext c)
         {
-            TypeConverter conv = TypeDescriptor.GetConverter(typeof(T));
-            T t = default(T);
+            var conv = TypeDescriptor.GetConverter(typeof (T));
+            var t = default(T);
             try
             {
                 if (value != null)
-                    t = (T)conv.ConvertFromString(value);
+                    t = (T) conv.ConvertFromString(value);
             }
             catch (Exception e)
             {
                 throw new OptionException(
-                        string.Format(
-                            c.OptionSet.MessageLocalizer("Could not convert string `{0}' to type {1} for option `{2}'."),
-                            value, typeof(T).Name, c.OptionName),
-                        c.OptionName, e);
+                    string.Format(
+                        c.OptionSet.MessageLocalizer("Could not convert string `{0}' to type {1} for option `{2}'."),
+                        value, typeof (T).Name, c.OptionName),
+                    c.OptionName, e);
             }
             return t;
         }
 
-        internal string[] Names { get { return names; } }
-        internal string[] ValueSeparators { get { return separators; } }
-
-        static readonly char[] NameTerminator = new char[] { '=', ':' };
-
-        private OptionValueType ParsePrototype()
+        OptionValueType ParsePrototype()
         {
-            char type = '\0';
-            List<string> seps = new List<string>();
-            for (int i = 0; i < names.Length; ++i)
+            var c = '\0';
+            var seps = new List<string>();
+            for (var i = 0; i < names.Length; ++i)
             {
-                string name = names[i];
+                var name = names[i];
                 if (name.Length == 0)
-                    throw new ArgumentException("Empty option names are not supported.", "prototype");
+                    throw new ArgumentException("Empty option names are not supported.");
 
-                int end = name.IndexOfAny(NameTerminator);
+                var end = name.IndexOfAny(NameTerminator);
                 if (end == -1)
                     continue;
                 names[i] = name.Substring(0, end);
-                if (type == '\0' || type == name[end])
-                    type = name[end];
+                if (c == '\0' || c == name[end])
+                    c = name[end];
                 else
                     throw new ArgumentException(
-                            string.Format("Conflicting option types: '{0}' vs. '{1}'.", type, name[end]),
-                            "prototype");
+                        string.Format("Conflicting option types: '{0}' vs. '{1}'.", c, name[end]));
                 AddSeparators(name, end, seps);
             }
 
-            if (type == '\0')
+            if (c == '\0')
                 return OptionValueType.None;
 
             if (count <= 1 && seps.Count != 0)
                 throw new ArgumentException(
-                        string.Format("Cannot provide key/value separators for Options taking {0} value(s).", count),
-                        "prototype");
+                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", count));
             if (count > 1)
             {
                 if (seps.Count == 0)
-                    this.separators = new string[] { ":", "=" };
+                    separators = new[] {":", "="};
                 else if (seps.Count == 1 && seps[0].Length == 0)
-                    this.separators = null;
+                    separators = null;
                 else
-                    this.separators = seps.ToArray();
+                    separators = seps.ToArray();
             }
 
-            return type == '=' ? OptionValueType.Required : OptionValueType.Optional;
+            return c == '=' ? OptionValueType.Required : OptionValueType.Optional;
         }
 
-        private static void AddSeparators(string name, int end, ICollection<string> seps)
+        static void AddSeparators(string name, int end, ICollection<string> seps)
         {
-            int start = -1;
-            for (int i = end + 1; i < name.Length; ++i)
+            var start = -1;
+            for (var i = end + 1; i < name.Length; ++i)
             {
                 switch (name[i])
                 {
                     case '{':
                         if (start != -1)
                             throw new ArgumentException(
-                                    string.Format("Ill-formed name/value separator found in \"{0}\".", name),
-                                    "prototype");
+                                string.Format("Ill-formed name/value separator found in \"{0}\".", name));
                         start = i + 1;
                         break;
                     case '}':
                         if (start == -1)
                             throw new ArgumentException(
-                                    string.Format("Ill-formed name/value separator found in \"{0}\".", name),
-                                    "prototype");
+                                string.Format("Ill-formed name/value separator found in \"{0}\".", name));
                         seps.Add(name.Substring(start, i - start));
                         start = -1;
                         break;
                     default:
                         if (start == -1)
-                            seps.Add(name[i].ToString());
+                            seps.Add(name[i].ToString(CultureInfo.InvariantCulture));
                         break;
                 }
             }
             if (start != -1)
                 throw new ArgumentException(
-                        string.Format("Ill-formed name/value separator found in \"{0}\".", name),
-                        "prototype");
+                    string.Format("Ill-formed name/value separator found in \"{0}\".", name));
         }
 
         public void Invoke(OptionContext c)
@@ -465,7 +562,7 @@ namespace OctopusTools.Commands
     [Serializable]
     public class OptionException : Exception
     {
-        private string option;
+        readonly string option;
 
         public OptionException()
         {
@@ -474,24 +571,24 @@ namespace OctopusTools.Commands
         public OptionException(string message, string optionName)
             : base(message)
         {
-            this.option = optionName;
+            option = optionName;
         }
 
         public OptionException(string message, string optionName, Exception innerException)
             : base(message, innerException)
         {
-            this.option = optionName;
+            option = optionName;
         }
 
         protected OptionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            this.option = info.GetString("OptionName");
+            option = info.GetString("OptionName");
         }
 
         public string OptionName
         {
-            get { return this.option; }
+            get { return option; }
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
@@ -518,7 +615,7 @@ namespace OctopusTools.Commands
             this.localizer = localizer;
         }
 
-        Converter<string, string> localizer;
+        readonly Converter<string, string> localizer;
 
         public Converter<string, string> MessageLocalizer
         {
@@ -528,7 +625,7 @@ namespace OctopusTools.Commands
         protected override string GetKeyForItem(Option item)
         {
             if (item == null)
-                throw new ArgumentNullException("option");
+                throw new ArgumentNullException("item");
             if (item.Names != null && item.Names.Length > 0)
                 return item.Names[0];
             // This should never happen, as it's invalid for Option to be
@@ -560,9 +657,9 @@ namespace OctopusTools.Commands
         protected override void RemoveItem(int index)
         {
             base.RemoveItem(index);
-            Option p = Items[index];
+            var p = Items[index];
             // KeyedCollection.RemoveItem() handles the 0th item
-            for (int i = 1; i < p.Names.Length; ++i)
+            for (var i = 1; i < p.Names.Length; ++i)
             {
                 Dictionary.Remove(p.Names[i]);
             }
@@ -575,15 +672,15 @@ namespace OctopusTools.Commands
             AddImpl(item);
         }
 
-        private void AddImpl(Option option)
+        void AddImpl(Option option)
         {
             if (option == null)
                 throw new ArgumentNullException("option");
-            List<string> added = new List<string>(option.Names.Length);
+            var added = new List<string>(option.Names.Length);
             try
             {
                 // KeyedCollection.InsertItem/SetItem handle the 0th name.
-                for (int i = 1; i < option.Names.Length; ++i)
+                for (var i = 1; i < option.Names.Length; ++i)
                 {
                     Dictionary.Add(option.Names[i], option);
                     added.Add(option.Names[i]);
@@ -591,7 +688,7 @@ namespace OctopusTools.Commands
             }
             catch (Exception)
             {
-                foreach (string name in added)
+                foreach (var name in added)
                     Dictionary.Remove(name);
                 throw;
             }
@@ -605,7 +702,7 @@ namespace OctopusTools.Commands
 
         sealed class ActionOption : Option
         {
-            Action<OptionValueCollection> action;
+            readonly Action<OptionValueCollection> action;
 
             public ActionOption(string prototype, string description, int count, Action<OptionValueCollection> action)
                 : base(prototype, description, count)
@@ -631,7 +728,7 @@ namespace OctopusTools.Commands
             if (action == null)
                 throw new ArgumentNullException("action");
             Option p = new ActionOption(prototype, description, 1,
-                    delegate(OptionValueCollection v) { action(v[0]); });
+                delegate(OptionValueCollection v) { action(v[0]); });
             base.Add(p);
             return this;
         }
@@ -646,14 +743,14 @@ namespace OctopusTools.Commands
             if (action == null)
                 throw new ArgumentNullException("action");
             Option p = new ActionOption(prototype, description, 2,
-                    delegate(OptionValueCollection v) { action(v[0], v[1]); });
+                delegate(OptionValueCollection v) { action(v[0], v[1]); });
             base.Add(p);
             return this;
         }
 
         sealed class ActionOption<T> : Option
         {
-            Action<T> action;
+            readonly Action<T> action;
 
             public ActionOption(string prototype, string description, Action<T> action)
                 : base(prototype, description, 1)
@@ -671,7 +768,7 @@ namespace OctopusTools.Commands
 
         sealed class ActionOption<TKey, TValue> : Option
         {
-            OptionAction<TKey, TValue> action;
+            readonly OptionAction<TKey, TValue> action;
 
             public ActionOption(string prototype, string description, OptionAction<TKey, TValue> action)
                 : base(prototype, description, 2)
@@ -684,8 +781,8 @@ namespace OctopusTools.Commands
             protected override void OnParseComplete(OptionContext c)
             {
                 action(
-                        Parse<TKey>(c.OptionValues[0], c),
-                        Parse<TValue>(c.OptionValues[1], c));
+                    Parse<TKey>(c.OptionValues[0], c),
+                    Parse<TValue>(c.OptionValues[1], c));
             }
         }
 
@@ -714,47 +811,49 @@ namespace OctopusTools.Commands
             return new OptionContext(this);
         }
 
-        public OptionSet WithExtras(Action<string[]> leftovers)
+        public OptionSet WithExtras(Action<string[]> lo)
         {
-            this.leftovers = leftovers;
+            leftovers = lo;
             return this;
         }
 
-		public List<string> Parse (IEnumerable<string> arguments)
-		{
-			bool process = true;
-			OptionContext c = CreateOptionContext ();
-			c.OptionIndex = -1;
-			var def = GetOptionForName ("<>");
-			var unprocessed = 
-				from argument in arguments
-				where ++c.OptionIndex >= 0 && (process || def != null)
-					? process
-						? argument == "--" 
-							? (process = false)
-							: !Parse (argument, c)
-								? def != null 
-									? Unprocessed (null, def, c, argument) 
-									: true
-								: false
-						: def != null 
-							? Unprocessed (null, def, c, argument)
-							: true
-					: true
-				select argument;
-			List<string> r = unprocessed.ToList ();
-			if (c.Option != null)
-				c.Option.Invoke (c);
+        public List<string> Parse(IEnumerable<string> arguments)
+        {
+            var process = true;
+            var c = CreateOptionContext();
+            c.OptionIndex = -1;
+#pragma warning disable 618
+            var def = GetOptionForName("<>");
+#pragma warning restore 618
+            var unprocessed =
+                from argument in arguments
+                where ++c.OptionIndex >= 0 && (process || def != null)
+                    ? process
+                        ? argument == "--"
+                            ? (process = false)
+                            : !Parse(argument, c)
+                                ? def != null
+                                    ? Unprocessed(null, def, c, argument)
+                                    : true
+                                : false
+                        : def != null
+                            ? Unprocessed(null, def, c, argument)
+                            : true
+                    : true
+                select argument;
+            var r = unprocessed.ToList();
+            if (c.Option != null)
+                c.Option.Invoke(c);
 
             if (leftovers != null && r.Count > 0)
             {
                 leftovers(r.ToArray());
             }
 
-			return r;
-		}
+            return r;
+        }
 
-        private static bool Unprocessed(ICollection<string> extra, Option def, OptionContext c, string argument)
+        static bool Unprocessed(ICollection<string> extra, Option def, OptionContext c, string argument)
         {
             if (def == null)
             {
@@ -767,10 +866,12 @@ namespace OctopusTools.Commands
             return false;
         }
 
-        private readonly Regex ValueOption = new Regex(
+        readonly Regex ValueOption = new Regex(
             @"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
 
+#pragma warning disable 649
         bool waitForExit;
+#pragma warning restore 649
 
         protected bool GetOptionParts(string argument, out string flag, out string name, out string sep, out string value)
         {
@@ -778,7 +879,7 @@ namespace OctopusTools.Commands
                 throw new ArgumentNullException("argument");
 
             flag = name = sep = value = null;
-            Match m = ValueOption.Match(argument);
+            var m = ValueOption.Match(argument);
             if (!m.Success)
             {
                 return false;
@@ -805,7 +906,7 @@ namespace OctopusTools.Commands
             if (!GetOptionParts(argument, out f, out n, out s, out v))
                 return false;
 
-            Option p = this.FirstOrDefault(x => x.Names.Any(y => string.Equals(y,n, StringComparison.InvariantCultureIgnoreCase)));
+            var p = this.FirstOrDefault(x => x.Names.Any(y => string.Equals(y, n, StringComparison.InvariantCultureIgnoreCase)));
             if (p != null)
             {
                 c.OptionName = f + n;
@@ -827,6 +928,7 @@ namespace OctopusTools.Commands
             if (ParseBool(argument, n, c))
                 return true;
             // is it a bundled option?
+// ReSharper disable once PossiblyMistakenUseOfParamsMethod
             if (ParseBundledValue(f, string.Concat(n + s + v), c))
                 return true;
 
@@ -838,36 +940,36 @@ namespace OctopusTools.Commands
             get { return waitForExit; }
         }
 
-        private void ParseValue(string option, OptionContext c)
+        void ParseValue(string option, OptionContext c)
         {
             if (option != null)
-                foreach (string o in c.Option.ValueSeparators != null
-                        ? option.Split(c.Option.ValueSeparators, StringSplitOptions.None)
-                        : new string[] { option })
+                foreach (var o in c.Option.ValueSeparators != null
+                    ? option.Split(c.Option.ValueSeparators, StringSplitOptions.None)
+                    : new[] {option})
                 {
                     c.OptionValues.Add(o);
                 }
             if (c.OptionValues.Count == c.Option.MaxValueCount ||
-                    c.Option.OptionValueType == OptionValueType.Optional)
+                c.Option.OptionValueType == OptionValueType.Optional)
                 c.Option.Invoke(c);
             else if (c.OptionValues.Count > c.Option.MaxValueCount)
             {
                 throw new OptionException(localizer(string.Format(
-                                "Error: Found {0} option values when expecting {1}.",
-                                c.OptionValues.Count, c.Option.MaxValueCount)),
-                        c.OptionName);
+                    "Error: Found {0} option values when expecting {1}.",
+                    c.OptionValues.Count, c.Option.MaxValueCount)),
+                    c.OptionName);
             }
         }
 
-        private bool ParseBool(string option, string n, OptionContext c)
+        bool ParseBool(string option, string n, OptionContext c)
         {
             Option p;
             string rn;
             if (n.Length >= 1 && (n[n.Length - 1] == '+' || n[n.Length - 1] == '-') &&
-                    Contains((rn = n.Substring(0, n.Length - 1))))
+                Contains((rn = n.Substring(0, n.Length - 1))))
             {
                 p = this[rn];
-                string v = n[n.Length - 1] == '+' ? option : null;
+                var v = n[n.Length - 1] == '+' ? option : null;
                 c.OptionName = option;
                 c.Option = p;
                 c.OptionValues.Add(v);
@@ -877,21 +979,21 @@ namespace OctopusTools.Commands
             return false;
         }
 
-        private bool ParseBundledValue(string f, string n, OptionContext c)
+        bool ParseBundledValue(string f, string n, OptionContext c)
         {
             if (f != "-")
                 return false;
-            for (int i = 0; i < n.Length; ++i)
+            for (var i = 0; i < n.Length; ++i)
             {
                 Option p;
-                string opt = f + n[i].ToString();
-                string rn = n[i].ToString();
+                var opt = f + n[i];
+                var rn = n[i].ToString(CultureInfo.InvariantCulture);
                 if (!Contains(rn))
                 {
                     if (i == 0)
                         return false;
                     throw new OptionException(string.Format(localizer(
-                                    "Cannot bundle unregistered option '{0}'."), opt), opt);
+                        "Cannot bundle unregistered option '{0}'."), opt), opt);
                 }
                 p = this[rn];
                 switch (p.OptionValueType)
@@ -901,13 +1003,13 @@ namespace OctopusTools.Commands
                         break;
                     case OptionValueType.Optional:
                     case OptionValueType.Required:
-                        {
-                            string v = n.Substring(i + 1);
-                            c.Option = p;
-                            c.OptionName = opt;
-                            ParseValue(v.Length != 0 ? v : null, c);
-                            return true;
-                        }
+                    {
+                        var v = n.Substring(i + 1);
+                        c.Option = p;
+                        c.OptionName = opt;
+                        ParseValue(v.Length != 0 ? v : null, c);
+                        return true;
+                    }
                     default:
                         throw new InvalidOperationException("Unknown OptionValueType: " + p.OptionValueType);
                 }
@@ -915,7 +1017,7 @@ namespace OctopusTools.Commands
             return true;
         }
 
-        private static void Invoke(OptionContext c, string name, string value, Option option)
+        static void Invoke(OptionContext c, string name, string value, Option option)
         {
             c.OptionName = name;
             c.Option = option;
@@ -923,13 +1025,13 @@ namespace OctopusTools.Commands
             option.Invoke(c);
         }
 
-        private const int OptionWidth = 29;
+        const int OptionWidth = 29;
 
         public void WriteOptionDescriptions(TextWriter o)
         {
-            foreach (Option p in this)
+            foreach (var p in this)
             {
-                int written = 0;
+                var written = 0;
                 if (!WriteOptionPrototype(o, p, ref written))
                     continue;
 
@@ -941,10 +1043,10 @@ namespace OctopusTools.Commands
                     o.Write(new string(' ', OptionWidth));
                 }
 
-                List<string> lines = GetLines(localizer(GetDescription(p.Description)));
+                var lines = GetLines(localizer(GetDescription(p.Description)));
                 o.WriteLine(lines[0]);
-                string prefix = new string(' ', OptionWidth + 2);
-                for (int i = 1; i < lines.Count; ++i)
+                var prefix = new string(' ', OptionWidth + 2);
+                for (var i = 1; i < lines.Count; ++i)
                 {
                     o.Write(prefix);
                     o.WriteLine(lines[i]);
@@ -954,9 +1056,9 @@ namespace OctopusTools.Commands
 
         bool WriteOptionPrototype(TextWriter o, Option p, ref int written)
         {
-            string[] names = p.Names;
+            var names = p.Names;
 
-            int i = GetNextOptionIndex(names, 0);
+            var i = GetNextOptionIndex(names, 0);
             if (i == names.Length)
                 return false;
 
@@ -972,7 +1074,8 @@ namespace OctopusTools.Commands
             }
 
             for (i = GetNextOptionIndex(names, i + 1);
-                    i < names.Length; i = GetNextOptionIndex(names, i + 1))
+                i < names.Length;
+                i = GetNextOptionIndex(names, i + 1))
             {
                 Write(o, ref written, ", ");
                 Write(o, ref written, names[i].Length == 1 ? "-" : "--");
@@ -980,17 +1083,17 @@ namespace OctopusTools.Commands
             }
 
             if (p.OptionValueType == OptionValueType.Optional ||
-                    p.OptionValueType == OptionValueType.Required)
+                p.OptionValueType == OptionValueType.Required)
             {
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
                     Write(o, ref written, localizer("["));
                 }
                 Write(o, ref written, localizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
-                string sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
+                var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
                     ? p.ValueSeparators[0]
                     : " ";
-                for (int c = 1; c < p.MaxValueCount; ++c)
+                for (var c = 1; c < p.MaxValueCount; ++c)
                 {
                     Write(o, ref written, localizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
                 }
@@ -1017,25 +1120,25 @@ namespace OctopusTools.Commands
             o.Write(s);
         }
 
-        private static string GetArgumentName(int index, int maxIndex, string description)
+        static string GetArgumentName(int index, int maxIndex, string description)
         {
             if (description == null)
                 return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
             string[] nameStart;
             if (maxIndex == 1)
-                nameStart = new string[] { "{0:", "{" };
+                nameStart = new[] {"{0:", "{"};
             else
-                nameStart = new string[] { "{" + index + ":" };
-            for (int i = 0; i < nameStart.Length; ++i)
+                nameStart = new[] {"{" + index + ":"};
+            for (var i = 0; i < nameStart.Length; ++i)
             {
                 int start, j = 0;
                 do
                 {
-                    start = description.IndexOf(nameStart[i], j);
-                } while (start >= 0 && j != 0 ? description[j++ - 1] == '{' : false);
+                    start = description.IndexOf(nameStart[i], j, StringComparison.Ordinal);
+                } while (start >= 0 && j != 0 && description[j++ - 1] == '{');
                 if (start == -1)
                     continue;
-                int end = description.IndexOf("}", start);
+                var end = description.IndexOf("}", start, StringComparison.Ordinal);
                 if (end == -1)
                     continue;
                 return description.Substring(start + nameStart[i].Length, end - start - nameStart[i].Length);
@@ -1043,13 +1146,13 @@ namespace OctopusTools.Commands
             return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
         }
 
-        private static string GetDescription(string description)
+        static string GetDescription(string description)
         {
             if (description == null)
                 return string.Empty;
-            StringBuilder sb = new StringBuilder(description.Length);
-            int start = -1;
-            for (int i = 0; i < description.Length; ++i)
+            var sb = new StringBuilder(description.Length);
+            var start = -1;
+            for (var i = 0; i < description.Length; ++i)
             {
                 switch (description[i])
                 {
@@ -1090,23 +1193,23 @@ namespace OctopusTools.Commands
             return sb.ToString();
         }
 
-        private static List<string> GetLines(string description)
+        static List<string> GetLines(string description)
         {
-            List<string> lines = new List<string>();
+            var lines = new List<string>();
             if (string.IsNullOrEmpty(description))
             {
                 lines.Add(string.Empty);
                 return lines;
             }
-            int length = 80 - OptionWidth - 2;
+            var length = 80 - OptionWidth - 2;
             int start = 0, end;
             do
             {
                 end = GetLineEnd(start, length, description);
-                bool cont = false;
+                var cont = false;
                 if (end < description.Length)
                 {
-                    char c = description[end];
+                    var c = description[end];
                     if (c == '-' || (char.IsWhiteSpace(c) && c != '\n'))
                         ++end;
                     else if (c != '\n')
@@ -1127,11 +1230,11 @@ namespace OctopusTools.Commands
             return lines;
         }
 
-        private static int GetLineEnd(int start, int length, string description)
+        static int GetLineEnd(int start, int length, string description)
         {
-            int end = Math.Min(start + length, description.Length);
-            int sep = -1;
-            for (int i = start; i < end; ++i)
+            var end = Math.Min(start + length, description.Length);
+            var sep = -1;
+            for (var i = start; i < end; ++i)
             {
                 switch (description[i])
                 {
@@ -1154,4 +1257,3 @@ namespace OctopusTools.Commands
         }
     }
 }
-

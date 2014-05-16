@@ -1,40 +1,41 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
-using System.Collections.Generic;
 
 namespace OctopusTools.Diagnostics
 {
     public static class Logger
     {
-		public static string LoggingConfiguration 
-		{
-			get {
-				using (var reader = new System.IO.StreamReader(typeof(Logger).Assembly.GetManifestResourceStream(GetLoggingFileName())))
-				{
-					return reader.ReadToEnd();
-				}
-			}
-		}
-
-		private static string GetLoggingFileName()
-		{
-			switch (Environment.OSVersion.Platform) {
-			case PlatformID.MacOSX:
-			case PlatformID.Unix:
-				return "logging-unix.config";
-			default:
-				return "logging.config";
-			}
-		}
-	
+        public static string LoggingConfiguration
+        {
+            get
+            {
+                using (var reader = new StreamReader(typeof (Logger).Assembly.GetManifestResourceStream(GetLoggingFileName())))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
 
         public static ILog Default
         {
             get { return Nested.Log; }
+        }
+
+        static string GetLoggingFileName()
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.MacOSX:
+                case PlatformID.Unix:
+                    return "logging-unix.config";
+                default:
+                    return "logging.config";
+            }
         }
 
         public static void SetLevel(this ILoggerWrapper log, string levelName)
@@ -62,7 +63,7 @@ namespace OctopusTools.Diagnostics
 
                 Log = LogManager.GetLogger("Octopus");
 
-				XmlConfigurator.Configure(Log.Logger.Repository, (XmlElement) document.GetElementsByTagName("log4net")[0]);
+                XmlConfigurator.Configure(Log.Logger.Repository, (XmlElement) document.GetElementsByTagName("log4net")[0]);
             }
         }
 
