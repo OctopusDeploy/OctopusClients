@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
-using OctopusTools.Infrastructure;
 using Octopus.Platform.Util;
+using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
@@ -18,18 +18,6 @@ namespace OctopusTools.Commands
             SkipStepNames = new List<string>();
         }
 
-        protected virtual void SetCommonOptions(OptionSet options)
-        {
-            options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
-            options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
-            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
-            options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
-            options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
-            options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
-            options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
-            options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
-        }
-
         protected bool ForcePackageRedeployment { get; set; }
         protected bool ForcePackageDownload { get; set; }
         protected bool? UseGuidedFailure { get; set; }
@@ -38,6 +26,23 @@ namespace OctopusTools.Commands
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
+
+        bool noRawLog;
+        string rawLogFile;
+
+        protected virtual void SetCommonOptions(OptionSet options)
+        {
+            options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
+            options.Add("waitfordeployment", "Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
+            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that deployment can take (default 00:10:00)", v => DeploymentTimeout = TimeSpan.Parse(v));
+            options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
+            options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
+            options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
+            options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
+            options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
+            options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
+        }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
         {
@@ -51,18 +56,20 @@ namespace OctopusTools.Commands
 
             var promotingEnvironments =
                 (from environment in environments.Distinct(StringComparer.CurrentCultureIgnoreCase)
-                 let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
-                 select new {Name = environment, Promote = promote}).ToList();
+                    let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
+                    select new {Name = environment, Promote = promote}).ToList();
 
             var unknownEnvironments = promotingEnvironments.Where(p => p.Promote == null).ToList();
             if (unknownEnvironments.Count > 0)
             {
-                throw new CommandException(string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the project group.", 
-                    release.Version, 
-                    project.Name, 
-                    unknownEnvironments.Count == 1 ? "environment '" + unknownEnvironments[0].Name + "' because the environment is"
-                    : "environments " + string.Join(", ", unknownEnvironments.Select(e => "'" + e.Name + "'")) + " because the environments are"
-                    ));
+                throw new CommandException(
+                    string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the project group.",
+                        release.Version,
+                        project.Name,
+                        unknownEnvironments.Count == 1
+                            ? "environment '" + unknownEnvironments[0].Name + "' because the environment is"
+                            : "environments " + string.Join(", ", unknownEnvironments.Select(e => "'" + e.Name + "'")) + " because the environments are"
+                        ));
             }
 
             var specificMachineIds = new ReferenceCollection();
@@ -121,7 +128,6 @@ namespace OctopusTools.Commands
 
                 deployments.Add(deployment);
                 deploymentTasks.Add(Repository.Tasks.Get(deployment.TaskId));
-
             }
 
             if (WaitForDeployment)
@@ -148,6 +154,26 @@ namespace OctopusTools.Commands
                     {
                         Log.ErrorFormat("{0}: {1}, {2}", updated.Description, updated.State, updated.ErrorMessage);
                         failed = true;
+
+                        if (!noRawLog)
+                        {
+                            try
+                            {
+                                var raw = Repository.Tasks.GetRawOutputLog(updated);
+                                if (!string.IsNullOrEmpty(rawLogFile))
+                                {
+                                    File.WriteAllText(rawLogFile, raw);
+                                }
+                                else
+                                {
+                                    Log.Error(raw);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error("Could not retrieve the raw task log for the failed task.", ex);
+                            }
+                        }
                     }
                 }
                 if (failed)

@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using OctopusTools.Commands;
 using Autofac;
+using OctopusTools.Commands;
 
 namespace OctopusTools.Infrastructure
 {
@@ -19,21 +18,21 @@ namespace OctopusTools.Infrastructure
         {
             return
                 (from t in typeof (CommandLocator).Assembly.GetTypes()
-                 where typeof (ICommand).IsAssignableFrom(t)
-                 let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
-                 where attribute != null
-                 select attribute).ToArray();
+                    where typeof (ICommand).IsAssignableFrom(t)
+                    let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
+                    where attribute != null
+                    select attribute).ToArray();
         }
 
         public ICommand Find(string name)
         {
             name = name.Trim().ToLowerInvariant();
             var found = (from t in typeof (CommandLocator).Assembly.GetTypes()
-                         where typeof (ICommand).IsAssignableFrom(t)
-                         let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
-                         where attribute != null
-                         where attribute.Name == name || attribute.Aliases.Any(a => a == name)
-                         select t).FirstOrDefault();
+                where typeof (ICommand).IsAssignableFrom(t)
+                let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
+                where attribute != null
+                where attribute.Name == name || attribute.Aliases.Any(a => a == name)
+                select t).FirstOrDefault();
 
             return found == null ? null : (ICommand) lifetimeScope.Resolve(found);
         }

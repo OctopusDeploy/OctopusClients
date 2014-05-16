@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Autofac.Features.ResolveAnything;
+using log4net;
 using Octopus.Client.Exceptions;
+using Octopus.Platform.Util;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
+using OctopusTools.Exporters;
+using OctopusTools.Importers;
 using OctopusTools.Infrastructure;
-using log4net;
 
 namespace OctopusTools
 {
@@ -19,10 +21,10 @@ namespace OctopusTools
 
         static int Main(string[] args)
         {
-            Log.Info("Octopus Deploy Command Line Tool, version " + typeof(Program).Assembly.GetFileVersion());
+            Log.Info("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetFileVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Info(string.Empty);
-            
+
             try
             {
                 var container = BuildContainer();
@@ -43,12 +45,24 @@ namespace OctopusTools
         static IContainer BuildContainer()
         {
             var builder = new ContainerBuilder();
+            var thisAssembly = typeof (Program).Assembly;
+
             builder.RegisterModule(new LoggingModule());
-            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource(t => typeof(ICommand).IsAssignableFrom(t)));
+
+            builder.RegisterAssemblyTypes(thisAssembly).As<ICommand>().AsSelf();
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
+
+            builder.RegisterAssemblyTypes(thisAssembly).As<IExporter>().AsSelf();
+            builder.RegisterAssemblyTypes(thisAssembly).As<IImporter>().AsSelf();
+            builder.RegisterType<ExporterLocator>().As<IExporterLocator>();
+            builder.RegisterType<ImporterLocator>().As<IImporterLocator>();
+
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>();
+
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
-            builder.RegisterAssemblyTypes(typeof(Program).Assembly).Where(t => typeof(ICommand).IsAssignableFrom(t)).AsSelf().As<ICommand>();
+
+            builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
+
             return builder.Build();
         }
 
@@ -105,7 +119,7 @@ namespace OctopusTools
                     Log.Error(loaderException);
 
                     var exFileNotFound = loaderException as FileNotFoundException;
-                    if (exFileNotFound != null && 
+                    if (exFileNotFound != null &&
                         !string.IsNullOrEmpty(exFileNotFound.FusionLog))
                     {
                         Log.ErrorFormat("Fusion log: {0}", exFileNotFound.FusionLog);

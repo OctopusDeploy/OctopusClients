@@ -13,7 +13,7 @@ namespace OctopusTools.Commands
         readonly IList<ReleasePlanItem> steps = new List<ReleasePlanItem>();
 
         public ReleasePlan(ReleaseTemplateResource releaseTemplate, IPackageVersionResolver versionResolver)
-        {       
+        {
             steps.AddRange(
                 releaseTemplate.Packages.Select(p => new ReleasePlanItem(
                     p.StepName,
@@ -65,7 +65,7 @@ namespace OctopusTools.Commands
 
             result.AppendFormat(format, "#", "Name", "Version", "Source").AppendLine();
             result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', 15), new string('-', 36)).AppendLine();
-            for (int i = 0; i < steps.Count; i++)
+            for (var i = 0; i < steps.Count; i++)
             {
                 var item = steps[i];
                 result.AppendFormat(format, i + 1, item.StepName, item.Version ?? "ERROR", string.IsNullOrWhiteSpace(item.VersionSource) ? "Cannot resolve" : item.VersionSource).AppendLine();

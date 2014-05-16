@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Client.Model;
 using Octopus.Platform.Model;
 using OctopusTools.Infrastructure;
 
@@ -15,6 +16,10 @@ namespace OctopusTools.Commands
             DeployToEnvironmentNames = new List<string>();
         }
 
+        public List<string> DeployToEnvironmentNames { get; set; }
+        public string ProjectName { get; set; }
+        public string FromEnvironmentName { get; set; }
+
         protected override void SetOptions(OptionSet options)
         {
             SetCommonOptions(options);
@@ -23,10 +28,6 @@ namespace OctopusTools.Commands
             options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
         }
 
-        public List<string> DeployToEnvironmentNames { get; set; }
-        public string ProjectName { get; set; }
-        public string FromEnvironmentName { get; set; }
-        
         protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");

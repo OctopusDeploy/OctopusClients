@@ -1,5 +1,4 @@
 using System;
-using Octopus.Client.Model;
 
 namespace OctopusTools.Commands
 {

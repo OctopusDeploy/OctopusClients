@@ -34,7 +34,7 @@ namespace OctopusTools.Commands
             if (group == null)
             {
                 Log.Info("Project group does not exist, it will be created");
-                group = Repository.ProjectGroups.Create(new ProjectGroupResource { Name = ProjectGroupName });
+                group = Repository.ProjectGroups.Create(new ProjectGroupResource {Name = ProjectGroupName});
             }
 
             var project = Repository.Projects.FindByName(ProjectName);
@@ -50,7 +50,7 @@ namespace OctopusTools.Commands
             }
 
             Log.Info("Creating project: " + ProjectName);
-            project = Repository.Projects.Create(new ProjectResource { Name = ProjectName, ProjectGroupId = group.Id, IsDisabled = false });
+            project = Repository.Projects.Create(new ProjectResource {Name = ProjectName, ProjectGroupId = group.Id, IsDisabled = false});
 
             Log.Info("Project created. ID: " + project.Id);
         }

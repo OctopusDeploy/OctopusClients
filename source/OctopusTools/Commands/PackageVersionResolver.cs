@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NuGet;
-using Octopus.Client.Model;
 using log4net;
+using NuGet;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
@@ -12,8 +11,8 @@ namespace OctopusTools.Commands
     public class PackageVersionResolver : IPackageVersionResolver
     {
         readonly ILog log;
-        private readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-        private string defaultVersion;
+        readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        string defaultVersion;
 
         public PackageVersionResolver(ILog log)
         {
@@ -26,7 +25,7 @@ namespace OctopusTools.Commands
             foreach (var file in Directory.GetFiles(folderPath, "*.nupkg", SearchOption.AllDirectories))
             {
                 log.Debug("Package file: " + file);
-                var package = new NuGet.ZipPackage(file);
+                var package = new ZipPackage(file);
 
                 Add(package.Id, package.Version.ToString());
             }
@@ -34,10 +33,10 @@ namespace OctopusTools.Commands
 
         public void Add(string stepNameAndVersion)
         {
-            var index = new[] { ':', '=' }.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
+            var index = new[] {':', '='}.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
             if (index <= 0)
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
-                
+
             var key = stepNameAndVersion.Substring(0, index);
             var value = (index >= stepNameAndVersion.Length - 1) ? string.Empty : stepNameAndVersion.Substring(index + 1);
 
@@ -51,7 +50,7 @@ namespace OctopusTools.Commands
             {
                 throw new CommandException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
             }
-            
+
             Add(key, value);
         }
 
@@ -80,8 +79,8 @@ namespace OctopusTools.Commands
         {
             string version;
             return stepNameToVersion.TryGetValue(stepName, out version)
-                       ? version
-                       : defaultVersion;
+                ? version
+                : defaultVersion;
         }
     }
 }

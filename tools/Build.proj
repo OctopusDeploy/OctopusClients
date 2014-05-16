@@ -2,7 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="lib\MSBuild.Community.Tasks.Targets" />
   <Import Project="lib\MSBuild.Deployment.Tasks.Targets" />
-  <Import Project="lib\MSBuild.Mercurial.tasks"/>
 
   <PropertyGroup>
     <ProgramFiles32>$(MSBuildProgramFiles32)</ProgramFiles32>
@@ -14,7 +13,7 @@
   <PropertyGroup>
     <Root>$(MSBuildStartupDirectory)</Root>
     <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console.exe</nunitconsoleexe>
-    <NuGetPath>$(Root)\tools\NuGet</NuGetPath>
+    <NuGetPath>$(Root)\source\packages\NuGet.CommandLine.2.8.1\tools</NuGetPath>
   </PropertyGroup>
   
   <Target Name="Diagnose">

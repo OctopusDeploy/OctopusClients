@@ -5,25 +5,26 @@ using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using log4net;
 using Octopus.Client;
+using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
-using log4net;
 
 namespace OctopusTools.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly IOctopusRepositoryFactory repositoryFactory;
         readonly ILog log;
-        IOctopusRepository repository;
         readonly OptionSet options;
+        readonly IOctopusRepositoryFactory repositoryFactory;
+        string apiKey;
+        bool enableDebugging;
+        bool ignoreSslErrors;
+        string pass;
+        IOctopusRepository repository;
         string serverBaseUrl;
         string user;
-        string pass;
-        string apiKey;
-        bool ignoreSslErrors;
-        bool enableDebugging;
 
         protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
         {
@@ -66,7 +67,7 @@ namespace OctopusTools.Commands
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized command arguments: " + string.Join(", ", remainingArguments));
 
-            if (string.IsNullOrWhiteSpace(serverBaseUrl)) 
+            if (string.IsNullOrWhiteSpace(serverBaseUrl))
                 throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/");
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -91,9 +92,9 @@ namespace OctopusTools.Commands
                 }
 
                 var certificate2 = (X509Certificate2) certificate;
-                var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine + 
-                              "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine + 
-                              "Certificate thumbprint:   " + ((X509Certificate2) certificate).Thumbprint; 
+                var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine +
+                                 "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine +
+                                 "Certificate thumbprint:   " + ((X509Certificate2) certificate).Thumbprint;
 
                 if (ignoreSslErrors)
                 {
@@ -101,7 +102,7 @@ namespace OctopusTools.Commands
                     log.Warn("Because --ignoreSslErrors was set, this will be ignored.");
                     return true;
                 }
-                
+
                 log.Error(warning);
                 return false;
             };

@@ -1,7 +1,7 @@
-﻿using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
+﻿using System;
+using System.Collections.Generic;
 using log4net;
-using System;
+using Octopus.Client.Model;
 
 namespace OctopusTools.Commands
 {
@@ -23,5 +23,5 @@ namespace OctopusTools.Commands
                 Log.InfoFormat(" - {0} (ID: {1})", project.Name, project.Id);
             }
         }
-    }   
+    }
 }

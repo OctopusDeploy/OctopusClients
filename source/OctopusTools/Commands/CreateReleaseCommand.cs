@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
-using log4net;
 
 namespace OctopusTools.Commands
 {
@@ -133,7 +133,7 @@ namespace OctopusTools.Commands
                 {
                     Log.Info("A release with the number " + versionNumber + " already exists.");
                     return;
-                }                
+                }
             }
 
             var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id)
@@ -143,12 +143,12 @@ namespace OctopusTools.Commands
             });
             Log.Info("Release " + release.Version + " created successfully!");
 
-            Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
+            Log.ServiceMessage("setParameter", new {name = "octo.releaseNumber", value = release.Version});
 
             DeployRelease(project, release, DeployToEnvironmentNames);
         }
 
-        private void ReadReleaseNotesFromFile(string value)
+        void ReadReleaseNotesFromFile(string value)
         {
             try
             {
