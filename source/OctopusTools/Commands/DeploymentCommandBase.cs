@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
@@ -26,6 +27,9 @@ namespace OctopusTools.Commands
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
 
+        bool noRawLog;
+        string rawLogFile;
+
         protected virtual void SetCommonOptions(OptionSet options)
         {
             options.Add("forcepackagedownload", "Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
@@ -36,6 +40,8 @@ namespace OctopusTools.Commands
             options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
             options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
             options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
+            options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
+            options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
         }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
@@ -148,6 +154,26 @@ namespace OctopusTools.Commands
                     {
                         Log.ErrorFormat("{0}: {1}, {2}", updated.Description, updated.State, updated.ErrorMessage);
                         failed = true;
+
+                        if (!noRawLog)
+                        {
+                            try
+                            {
+                                var raw = Repository.Tasks.GetRawOutputLog(updated);
+                                if (!string.IsNullOrEmpty(rawLogFile))
+                                {
+                                    File.WriteAllText(rawLogFile, raw);
+                                }
+                                else
+                                {
+                                    Log.Error(raw);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error("Could not retrieve the raw task log for the failed task.", ex);
+                            }
+                        }
                     }
                 }
                 if (failed)
