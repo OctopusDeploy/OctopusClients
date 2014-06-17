@@ -32,7 +32,9 @@ namespace OctopusTools.Commands
         protected List<string> SkipStepNames { get; set; }
 
         bool noRawLog;
+        bool showProgress;
         string rawLogFile;
+        TaskOutputProgressPrinter printer = new TaskOutputProgressPrinter();
 
         protected virtual void SetCommonOptions(OptionSet options)
         {
@@ -46,6 +48,7 @@ namespace OctopusTools.Commands
             options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
             options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
+            options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
             options.Add("v|variable=", "Values for any prompted variables in the format Name:Value", ParseVariable);
         }
 
@@ -165,10 +168,15 @@ namespace OctopusTools.Commands
 
         public void WaitForDeploymentToComplete(List<TaskResource> deploymentTasks, List<DeploymentResource> deployments, ProjectResource project, ReleaseResource release)
         {
+            if (showProgress && deploymentTasks.Count > 1)
+            {
+                Log.InfoFormat("Only progress of the first task ({0}) will be shown", deploymentTasks.First().Description);
+            }
+
             try
             {
                 Log.InfoFormat("Waiting for {0} deployment(s) to complete....", deploymentTasks.Count);
-                Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout.Minutes);
+                Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout.Minutes, PrintTaskOutput);
                 var failed = false;
                 foreach (var deploymentTask in deploymentTasks)
                 {
@@ -228,6 +236,12 @@ namespace OctopusTools.Commands
                 }
                 throw new CommandException(e.Message);
             }
+        }
+
+        void PrintTaskOutput(TaskResource[] taskResources)
+        {
+            var task = taskResources.First();
+            printer.Render(Repository, task);
         }
 
         void ParseVariable(string variable)

@@ -121,11 +121,13 @@
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
+    <Compile Include="Util\LineSplitter.cs" />
     <Compile Include="Commands\PackCommand.cs" />
     <Compile Include="Commands\ExportCommand.cs" />
     <Compile Include="Commands\ImportCommand.cs" />
     <Compile Include="Commands\ProjectExport.cs" />
     <Compile Include="Commands\PromoteReleaseCommand.cs" />
+    <Compile Include="Commands\TaskOutputProgressPrinter.cs" />
     <Compile Include="Exporters\BaseExporter.cs" />
     <Compile Include="Exporters\ExporterAttribute.cs" />
     <Compile Include="Exporters\ExporterLocator.cs" />
