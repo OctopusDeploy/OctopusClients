@@ -49,7 +49,7 @@ namespace OctopusTools.Commands
             options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
-            options.Add("v|variable=", "Values for any prompted variables in the format Name:Value", ParseVariable);
+            options.Add("v|variable=", "Values for any prompted variables in the format Label:Value", ParseVariable);
         }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
