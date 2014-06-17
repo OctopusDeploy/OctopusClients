@@ -5,13 +5,17 @@ using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
+using Octopus.Platform.Model.Forms;
 using Octopus.Platform.Util;
+using Octopus.Platform.Variables;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {
+        readonly VariableDictionary variables = new VariableDictionary();
+
         protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
             SpecificMachineNames = new List<string>();
@@ -42,6 +46,7 @@ namespace OctopusTools.Commands
             options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
             options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
+            options.Add("v|variable=", "Values for any prompted variables in the format Name:Value", ParseVariable);
         }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
@@ -105,6 +110,27 @@ namespace OctopusTools.Commands
                     }
                 }
 
+                if (preview.Form != null && preview.Form.Elements != null && preview.Form.Values != null)
+                {
+                    foreach (var element in preview.Form.Elements)
+                    {
+                        var variableInput = element.Control as VariableValue;
+                        if (variableInput == null)
+                        {
+                            continue;
+                        }
+
+                        var value = variables.Get(variableInput.Label);
+
+                        if (string.IsNullOrWhiteSpace(value) && element.IsValueRequired)
+                        {
+                            throw new ArgumentException("Please provide a variable for the prompted value " + variableInput.Label);
+                        }
+
+                        preview.Form.Values[element.Name] = value;
+                    }
+                }
+
                 var deployment = Repository.Deployments.Create(new DeploymentResource
                 {
                     EnvironmentId = promote.Id,
@@ -113,7 +139,8 @@ namespace OctopusTools.Commands
                     ForcePackageDownload = ForcePackageDownload,
                     UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
                     SpecificMachineIds = specificMachineIds,
-                    ForcePackageRedeployment = ForcePackageRedeployment
+                    ForcePackageRedeployment = ForcePackageRedeployment,
+                    FormValues = (preview.Form ?? new Form()).Values
                 });
 
                 Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
@@ -201,6 +228,18 @@ namespace OctopusTools.Commands
                 }
                 throw new CommandException(e.Message);
             }
+        }
+
+        void ParseVariable(string variable)
+        {
+            var index = new[] { ':', '=' }.Select(s => variable.IndexOf(s)).Where(i => i > 0).OrderBy(i => i).FirstOrDefault();
+            if (index <= 0)
+                return;
+
+            var key = variable.Substring(0, index);
+            var value = (index >= variable.Length - 1) ? string.Empty : variable.Substring(index + 1);
+
+            variables.Set(key, value);
         }
     }
 }
