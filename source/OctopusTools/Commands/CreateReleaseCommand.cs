@@ -128,7 +128,7 @@ namespace OctopusTools.Commands
 
             if (IgnoreIfAlreadyExists)
             {
-                var found = Repository.Releases.FindOne(r => r.Version == versionNumber);
+                var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
                 if (found != null)
                 {
                     Log.Info("A release with the number " + versionNumber + " already exists.");
