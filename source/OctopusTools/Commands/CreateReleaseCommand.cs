@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
@@ -128,11 +129,18 @@ namespace OctopusTools.Commands
 
             if (IgnoreIfAlreadyExists)
             {
-                var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
-                if (found != null)
+                try
                 {
-                    Log.Info("A release with the number " + versionNumber + " already exists.");
-                    return;
+                    var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
+                    if (found != null)
+                    {
+                        Log.Info("A release with the number " + versionNumber + " already exists.");
+                        return;
+                    }
+                }
+                catch (OctopusResourceNotFoundException)
+                {
+                    // Expected
                 }
             }
 
