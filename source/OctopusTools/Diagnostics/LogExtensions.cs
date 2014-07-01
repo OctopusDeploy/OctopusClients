@@ -18,13 +18,13 @@ namespace OctopusTools.Diagnostics
             // As per: http://confluence.jetbrains.com/display/TCD65/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-ServiceMessages
             Escapes = new Dictionary<string, string>
             {
+                {"|", "||"},
                 {"'", "|'"},
                 {"\n", "|n"},
                 {"\r", "|r"},
                 {"\u0085", "|x"},
                 {"\u2028", "|l"},
                 {"\u2029", "|p"},
-                {"|", "||"},
                 {"[", "|["},
                 {"]", "|]"}
             };
@@ -38,6 +38,11 @@ namespace OctopusTools.Diagnostics
         public static void DisableServiceMessages(this ILog log)
         {
             serviceMessagesEnabled = false;
+        }
+
+        public static bool ServiceMessagesEnabled(this ILog log)
+        {
+            return serviceMessagesEnabled;
         }
 
         public static void ServiceMessage(this ILog log, string messageName, string value)

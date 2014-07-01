@@ -263,7 +263,7 @@ namespace OctopusTools.Commands
         void PrintTaskOutput(TaskResource[] taskResources)
         {
             var task = taskResources.First();
-            printer.Render(Repository, task);
+            printer.Render(Repository, Log, task);
         }
 
         void ParseVariable(string variable)

@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
+using OctopusTools.Diagnostics;
 using OctopusTools.Util;
 
 namespace OctopusTools.Commands
@@ -10,7 +14,7 @@ namespace OctopusTools.Commands
     {
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public void Render(IOctopusRepository repository, TaskResource resource)
+        public void Render(IOctopusRepository repository, ILog log, TaskResource resource)
         {
             var details = repository.Tasks.GetDetails(resource);
 
@@ -18,20 +22,34 @@ namespace OctopusTools.Commands
             {
                 foreach (var item in details.ActivityLog.Children)
                 {
-                    Render(item, "");
+                    if (log.ServiceMessagesEnabled())
+                    {
+                        RenderToTeamCity(item, log);
+                    }
+                    else
+                    {
+                        RenderToConsole(item, log, "");                        
+                    }
                 }
             }
         }
 
-        void Render(ActivityElement element, string indent)
+        bool IsPrintable(ActivityElement element)
         {
             if (element.Status == ActivityStatus.Pending || element.Status == ActivityStatus.Running)
-                return;
+                return false;
 
             if (printed.Contains(element.Id))
-                return;
+                return false;
 
             printed.Add(element.Id);
+            return true;
+        }
+
+        void RenderToConsole(ActivityElement element, ILog log, string indent)
+        {
+            if (!IsPrintable(element))
+                return;
 
             if (element.Status == ActivityStatus.Success)
             {
@@ -58,14 +76,52 @@ namespace OctopusTools.Commands
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
-                Console.WriteLine("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
+
+                log.InfoFormat("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
                 Console.ResetColor();
             }
 
             foreach (var child in element.Children)
             {
-                Render(child, indent + "  ");
+                RenderToConsole(child, log, indent + "  ");
             }
+        }
+
+        void RenderToTeamCity(ActivityElement element, ILog log)
+        {
+            if (!IsPrintable(element))
+                return;
+
+            var blockName = element.Status + ": " + element.Name;
+
+            log.ServiceMessage("blockOpened", new { name = blockName });
+
+            foreach (var logEntry in element.LogElements)
+            {
+                var lines = logEntry.MessageText.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+                foreach (var line in lines)
+                {
+                    log.ServiceMessage("message", new { text = line, status = ConvertToTeamCityMessageStatus(logEntry.Category) });
+                }
+            }
+
+            foreach (var child in element.Children)
+            {
+                RenderToTeamCity(child, log);
+            }
+
+            log.ServiceMessage("blockClosed", new { name = blockName });
+        }
+
+        static string ConvertToTeamCityMessageStatus(string category)
+        {
+            switch (category)
+            {
+                case "Error": return "ERROR";
+                case "Fatal": return "FAILURE";
+                case "Warning": return "WARNING";
+            }
+            return "NORMAL";
         }
     }
 }
