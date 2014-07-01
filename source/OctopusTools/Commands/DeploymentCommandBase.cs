@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using log4net;
@@ -8,6 +9,7 @@ using Octopus.Platform.Model;
 using Octopus.Platform.Model.Forms;
 using Octopus.Platform.Util;
 using Octopus.Platform.Variables;
+using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
@@ -30,7 +32,7 @@ namespace OctopusTools.Commands
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
-
+        protected DateTimeOffset? DeployAt { get; set; }
         bool noRawLog;
         bool showProgress;
         string rawLogFile;
@@ -50,6 +52,19 @@ namespace OctopusTools.Commands
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
             options.Add("v|variable=", "Values for any prompted variables in the format Label:Value", ParseVariable);
+            options.Add("deployat=", "Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => ParseDeployAt(v));
+        }
+
+        DateTimeOffset? ParseDeployAt(string v)
+        {
+            try
+            {
+                return DeployAt = DateTimeOffset.Parse(v, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal);
+            }
+            catch (FormatException fex)
+            {
+                throw new CommandException("Could not convert '" + v + "' to a DateTimeOffset: " + fex.Message);
+            }
         }
 
         public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
@@ -91,6 +106,12 @@ namespace OctopusTools.Commands
                 }
 
                 specificMachineIds.AddRange(machines.Select(m => m.Id));
+            }
+
+            if (DeployAt != null)
+            {
+                var now = DateTimeOffset.UtcNow;
+                Log.InfoFormat("Deployment will be scheduled to start in: {0}", (DeployAt.Value - now).FriendlyDuration());
             }
 
             foreach (var environment in promotingEnvironments)
@@ -143,7 +164,8 @@ namespace OctopusTools.Commands
                     UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
                     SpecificMachineIds = specificMachineIds,
                     ForcePackageRedeployment = ForcePackageRedeployment,
-                    FormValues = (preview.Form ?? new Form()).Values
+                    FormValues = (preview.Form ?? new Form()).Values,
+                    QueueTime = DeployAt == null ? null : (DateTimeOffset?)DeployAt.Value
                 });
 
                 Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
