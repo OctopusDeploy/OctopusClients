@@ -2,5 +2,7 @@
 
 The tool can be [downloaded from the Octopus downloads page][2]. Documentation can be found in the [Octopus Deploy documentation](http://docs.octopusdeploy.com/pages/viewpage.action?pageId=360596). 
 
+**Please raise and track issues for this project [here](https://github.com/OctopusDeploy/Issues/issues/).**
+
 [1]: http://octopusdeploy.com 
 [2]: http://octopusdeploy.com/downloads
