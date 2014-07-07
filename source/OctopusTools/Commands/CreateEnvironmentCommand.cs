@@ -5,7 +5,7 @@ using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands
 {
-    [Command("create-environment", Description = "Creates a project")]
+    [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand
     {
         public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
