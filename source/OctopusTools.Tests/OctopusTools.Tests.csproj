@@ -60,14 +60,6 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.4.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.4.5.46\lib\net40\Octopus.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Octopus.Platform, Version=2.4.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.4.5.46\lib\net40\Octopus.Platform.dll</HintPath>
-    </Reference>
     <Reference Include="Sprache, Version=1.10.0.36, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Sprache.1.10.0.36\lib\net40\Sprache.dll</HintPath>
