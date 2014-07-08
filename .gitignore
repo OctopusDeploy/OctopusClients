@@ -55,3 +55,4 @@ build
 tools/TestResult.xml
 *.ReSharper
 source/packages
+*.orig
