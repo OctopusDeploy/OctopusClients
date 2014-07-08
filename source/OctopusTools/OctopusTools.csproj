@@ -70,13 +70,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NuGet.Core.2.8.1\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Client, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Client, Version=2.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.5.1.199\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.5.3.245\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Octopus.Platform, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octopus.Platform, Version=2.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.2.5.1.199\lib\net40\Octopus.Platform.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.2.5.3.245\lib\net40\Octopus.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Sprache, Version=1.10.0.36, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
