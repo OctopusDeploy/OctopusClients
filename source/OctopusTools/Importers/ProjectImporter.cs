@@ -294,7 +294,8 @@ namespace OctopusTools.Importers
                 {
                     throw new CommandException("Library Variable Set " + libraryVariableSet.Name + " does not exist");
                 }
-                usedLibraryVariableSets.Add(variableSet.Id);
+                if (!usedLibraryVariableSets.Contains(variableSet.Id))
+                    usedLibraryVariableSets.Add(variableSet.Id);
             }
             return usedLibraryVariableSets;
         }
@@ -310,7 +311,8 @@ namespace OctopusTools.Importers
                 {
                     throw new CommandException("NuGet Feed " + nugetFeed.Name + " does not exist");
                 }
-                feeds.Add(nugetFeed.Id, feed);
+                if (!feeds.ContainsKey(nugetFeed.Id))
+                    feeds.Add(nugetFeed.Id, feed);
             }
             return feeds;
         }
@@ -326,7 +328,8 @@ namespace OctopusTools.Importers
                 {
                     throw new CommandException("Role " + role.Name + " does not exist");
                 }
-                usedRoles.Add(role.Id, role);
+                if (!usedRoles.ContainsKey(role.Id))
+                    usedRoles.Add(role.Id, role);
             }
             return usedRoles;
         }
@@ -342,7 +345,8 @@ namespace OctopusTools.Importers
                 {
                     throw new CommandException("Machine " + m.Name + " does not exist");
                 }
-                machines.Add(m.Id, machine);
+                if (!machines.ContainsKey(m.Id))
+                    machines.Add(m.Id, machine);
             }
             return machines;
         }
@@ -358,7 +362,8 @@ namespace OctopusTools.Importers
                 {
                     throw new CommandException("Environment " + env.Name + " does not exist");
                 }
-                usedEnvironments.Add(env.Id, environment);
+                if (!usedEnvironments.ContainsKey(env.Id))
+                    usedEnvironments.Add(env.Id, environment);
             }
             return usedEnvironments;
         }
