@@ -22,7 +22,7 @@ namespace OctopusTools.Exporters
         protected override void Export(Dictionary<string, string> paramDictionary)
         {
             if (string.IsNullOrWhiteSpace(paramDictionary["Project"])) throw new CommandException("Please specify the project name using the parameter: --project=XYZ");
-            if (string.IsNullOrWhiteSpace(paramDictionary["ReleaseVersion"])) throw new CommandException("Please specify the release, or range of releases using the parameter: --release=1.0.0 for a single release, or --release=1.0.0-1.0.3 for a range of releases");
+            if (string.IsNullOrWhiteSpace(paramDictionary["ReleaseVersion"])) throw new CommandException("Please specify the release, or range of releases using the parameter: --releaseVersion=1.0.0 for a single release, or --releaseVersion=1.0.0-1.0.3 for a range of releases");
             var projectName = paramDictionary["Project"];
             var releaseVersion = paramDictionary["ReleaseVersion"];
 
