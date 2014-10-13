@@ -1045,7 +1045,7 @@ namespace OctopusTools.Commands
 
                 var lines = GetLines(localizer(GetDescription(p.Description)));
                 o.WriteLine(lines[0]);
-                var prefix = new string(' ', OptionWidth + 2);
+                var prefix = new string(' ', OptionWidth);
                 for (var i = 1; i < lines.Count; ++i)
                 {
                     o.Write(prefix);

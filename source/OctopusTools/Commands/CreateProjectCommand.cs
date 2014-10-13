@@ -11,18 +11,15 @@ namespace OctopusTools.Commands
         public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
             : base(repositoryFactory, log)
         {
+            var options = Options.For("Project creation");
+            options.Add("name=", "The name of the project", v => ProjectName = v);
+            options.Add("projectGroup=", "The name of the project group to add this project to. If the group doesn't exist, it will be created.", v => ProjectGroupName = v);
+            options.Add("ignoreIfExists", "If the project already exists, an error will be returned. Set this flag to ignore the error.", v => IgnoreIfExists = true);
         }
 
         public string ProjectName { get; set; }
         public string ProjectGroupName { get; set; }
         public bool IgnoreIfExists { get; set; }
-
-        protected override void SetOptions(OptionSet options)
-        {
-            options.Add("name=", "The name of the project", v => ProjectName = v);
-            options.Add("projectGroup=", "The name of the project group to add this project to. If the group doesn't exist, it will be created.", v => ProjectGroupName = v);
-            options.Add("ignoreIfExists", "If the project already exists, an error will be returned. Set this flag to ignore the error.", v => IgnoreIfExists = true);
-        }
 
         protected override void Execute()
         {

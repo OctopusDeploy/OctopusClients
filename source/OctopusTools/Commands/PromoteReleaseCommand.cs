@@ -14,19 +14,16 @@ namespace OctopusTools.Commands
         public PromoteReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
             DeployToEnvironmentNames = new List<string>();
+
+            var options = Options.For("Project creation");
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("from=", "Name of the environment to get the current deployment from, e.g., Staging", v => FromEnvironmentName = v);
+            options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
         }
 
         public List<string> DeployToEnvironmentNames { get; set; }
         public string ProjectName { get; set; }
         public string FromEnvironmentName { get; set; }
-
-        protected override void SetOptions(OptionSet options)
-        {
-            SetCommonOptions(options);
-            options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("from=", "Name of the environment to get the current deployment from, e.g., Staging", v => FromEnvironmentName = v);
-            options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-        }
 
         protected override void Execute()
         {

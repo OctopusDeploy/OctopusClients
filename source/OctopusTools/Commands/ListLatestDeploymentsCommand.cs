@@ -16,10 +16,7 @@ namespace OctopusTools.Commands
         public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
             : base(repositoryFactory, log)
         {
-        }
-
-        protected override void SetOptions(OptionSet options)
-        {
+            var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
         }

@@ -7,7 +7,6 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using log4net;
 using Octopus.Client;
-using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
 
@@ -16,7 +15,6 @@ namespace OctopusTools.Commands
     public abstract class ApiCommand : ICommand
     {
         readonly ILog log;
-        readonly OptionSet options;
         readonly IOctopusRepositoryFactory repositoryFactory;
         string apiKey;
         bool enableDebugging;
@@ -25,22 +23,25 @@ namespace OctopusTools.Commands
         IOctopusRepository repository;
         string serverBaseUrl;
         string user;
+        readonly Options optionGroups = new Options();
 
         protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
         {
             this.repositoryFactory = repositoryFactory;
             this.log = log;
 
-            options = new OptionSet();
+            var options = optionGroups.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => serverBaseUrl = v);
+            options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
-            options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(options, v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
-            options.Add("enableServiceMessages", "Enable TeamCity service messages when logging.", v => log.EnableServiceMessages());
+            options.Add("enableServiceMessages", "[Optional] Enable TeamCity service messages when logging.", v => log.EnableServiceMessages());
         }
+
+        protected Options Options { get { return optionGroups; } }
 
         protected ILog Log
         {
@@ -54,16 +55,12 @@ namespace OctopusTools.Commands
 
         public void GetHelp(TextWriter writer)
         {
-            SetOptions(options);
-
-            options.WriteOptionDescriptions(writer);
+            optionGroups.WriteOptionDescriptions(writer);
         }
 
         public void Execute(string[] commandLineArguments)
         {
-            SetOptions(options);
-
-            var remainingArguments = options.Parse(commandLineArguments);
+            var remainingArguments = optionGroups.Parse(commandLineArguments);
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized command arguments: " + string.Join(", ", remainingArguments));
 
@@ -112,10 +109,6 @@ namespace OctopusTools.Commands
             log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
 
             Execute();
-        }
-
-        protected virtual void SetOptions(OptionSet options)
-        {
         }
 
         protected abstract void Execute();

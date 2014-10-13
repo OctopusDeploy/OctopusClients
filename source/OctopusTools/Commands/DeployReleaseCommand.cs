@@ -17,19 +17,16 @@ namespace OctopusTools.Commands
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
+
+            var options = Options.For("Deployment");
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
         }
 
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
-
-        protected override void SetOptions(OptionSet options)
-        {
-            SetCommonOptions(options);
-            options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-            options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
-        }
 
         protected override void Execute()
         {

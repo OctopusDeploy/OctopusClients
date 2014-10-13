@@ -23,6 +23,19 @@ namespace OctopusTools.Commands
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
+
+            var options = Options.For("Release creation");
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
+            options.Add("packageversion=|defaultpackageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
+            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
+            options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
+            options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
+            options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
+            options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
+
+            options = Options.For("Deployment");
+            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
         }
 
         public string ProjectName { get; set; }
@@ -30,20 +43,6 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
-
-        protected override void SetOptions(OptionSet options)
-        {
-            SetCommonOptions(options);
-            options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-            options.Add("releaseNumber=|version=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
-            options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
-            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
-            options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => versionResolver.AddFolder(v));
-            options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
-            options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
-            options.Add("ignoreexisting", "", v => IgnoreIfAlreadyExists = true);
-        }
 
         protected override void Execute()
         {

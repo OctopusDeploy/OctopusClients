@@ -12,20 +12,17 @@ namespace OctopusTools.Commands
     {
         public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
         {
+            var options = Options.For("Deletion");
+            options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
+            options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
+            options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
         }
 
         public string ProjectName { get; set; }
         public string MaxVersion { get; set; }
         public string MinVersion { get; set; }
         public bool WhatIf { get; set; }
-
-        protected override void SetOptions(OptionSet options)
-        {
-            options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
-            options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
-            options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
-        }
 
         protected override void Execute()
         {

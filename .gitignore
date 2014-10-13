@@ -55,3 +55,4 @@ build
 tools/TestResult.xml
 *.ReSharper
 source/packages
+source/OctopusTools.v2.ncrunchsolution
