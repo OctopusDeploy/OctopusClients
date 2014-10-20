@@ -122,7 +122,9 @@
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
+    <Compile Include="Commands\LibraryVariableSetExport.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
+    <Compile Include="Exporters\LibraryVariableSetExporter.cs" />
     <Compile Include="Util\LineSplitter.cs" />
     <Compile Include="Commands\PackCommand.cs" />
     <Compile Include="Commands\ExportCommand.cs" />
