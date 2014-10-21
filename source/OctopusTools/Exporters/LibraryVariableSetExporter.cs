@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using log4net;
 using Octopus.Client;
-using Octopus.Client.Model;
-using Octopus.Client.Repositories;
 using Octopus.Platform.Util;
 using OctopusTools.Commands;
 using OctopusTools.Extensions;
@@ -25,7 +23,7 @@ namespace OctopusTools.Exporters
             var lvsName = parameters["Name"];
 
             Log.Debug("Finding library variable set: " + lvsName);
-            var libraryVariableSet = FindLibraryVariableSetByName(Repository.LibraryVariableSets, lvsName);
+            var libraryVariableSet = Repository.LibraryVariableSets.FindByName(lvsName);
             if (libraryVariableSet == null)
                 throw new CommandException("Could not find library variable set named: " + lvsName);
 
@@ -48,12 +46,6 @@ namespace OctopusTools.Exporters
                 ContainerType = typeof (LibraryVariableSetExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };
             FileSystemExporter.Export(FilePath, metadata, export);
-        }
-
-        private LibraryVariableSetResource FindLibraryVariableSetByName(ILibraryVariableSetRepository lvsRepository, string name)
-        {
-            name = (name ?? string.Empty).Trim();
-            return lvsRepository.FindOne(r => string.Equals((r.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

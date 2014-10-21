@@ -125,6 +125,7 @@
     <Compile Include="Commands\LibraryVariableSetExport.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Exporters\LibraryVariableSetExporter.cs" />
+    <Compile Include="Extensions\LibraryVariableSetRepositoryExtensions.cs" />
     <Compile Include="Util\LineSplitter.cs" />
     <Compile Include="Commands\PackCommand.cs" />
     <Compile Include="Commands\ExportCommand.cs" />
