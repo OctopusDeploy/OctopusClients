@@ -126,6 +126,8 @@ namespace OctopusTools.Commands
 
             log.InfoFormat("Saving {0} to {1}...", filename, outFolder);
 
+            fileSystem.EnsureDirectoryExists(outFolder);
+
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
                 package.Save(outStream);
 
