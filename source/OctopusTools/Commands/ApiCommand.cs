@@ -7,6 +7,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using log4net;
 using Octopus.Client;
+using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
 
@@ -166,6 +167,38 @@ namespace OctopusTools.Commands
             if (!path.StartsWith("/")) path = '/' + path;
             var uri = new Uri(serverBaseUrl + path);
             return uri.AbsoluteUri;
+        }
+
+        protected static IEnumerable<string> FormatReleasePropertiesAsStrings(ReleaseResource release)
+        {
+            return new List<string>
+            {
+                "Version: " + release.Version,
+                "Assembled: " + release.Assembled,
+                "Package Versions: " + GetPackageVersionsAsString(release.SelectedPackages),
+                "Release Notes: " + ((release.ReleaseNotes != null) ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "")
+            };
+        }
+
+        protected static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)
+        {
+            var packageVersionsAsString = "";
+
+            foreach (var package in packages)
+            {
+                var packageVersionAsString = package.StepName + " " + package.Version;
+
+                if (packageVersionsAsString.Contains(packageVersionAsString))
+                {
+                    continue;
+                }
+                if (!String.IsNullOrEmpty(packageVersionsAsString))
+                {
+                    packageVersionsAsString += "; ";
+                }
+                packageVersionsAsString += packageVersionAsString;
+            }
+            return packageVersionsAsString;
         }
     }
 }
