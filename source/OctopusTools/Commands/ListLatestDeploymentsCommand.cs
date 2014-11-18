@@ -79,37 +79,5 @@ namespace OctopusTools.Commands
                 "State: " + task.State
             };
         }
-
-        static IEnumerable<string> FormatReleasePropertiesAsStrings(ReleaseResource release)
-        {
-            return new List<string>
-            {
-                "Version: " + release.Version,
-                "Assembled: " + release.Assembled,
-                "Package Versions: " + GetPackageVersionsAsString(release.SelectedPackages),
-                "Release Notes: " + ((release.ReleaseNotes != null) ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "")
-            };
-        }
-
-        static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)
-        {
-            var packageVersionsAsString = "";
-
-            foreach (var package in packages)
-            {
-                var packageVersionAsString = package.StepName + " " + package.Version;
-
-                if (packageVersionsAsString.Contains(packageVersionAsString))
-                {
-                    continue;
-                }
-                if (!String.IsNullOrEmpty(packageVersionsAsString))
-                {
-                    packageVersionsAsString += "; ";
-                }
-                packageVersionsAsString += packageVersionAsString;
-            }
-            return packageVersionsAsString;
-        }
     }
 }
