@@ -25,7 +25,7 @@ namespace OctopusTools.Commands
             if (projects.Count > 0)
             {
                 Log.Debug("Loading projects...");
-                var test = Repository.Projects.FindByNames(projects.ToArray());
+                //var test = Repository.Projects.FindByNames(projects.ToArray());
                 projectResources = Repository.Projects.FindByNames(projects.ToArray());
                 projectsFilter = projectResources.Select(p => p.Id).ToArray();
             }
