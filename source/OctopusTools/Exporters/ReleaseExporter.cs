@@ -42,7 +42,7 @@ namespace OctopusTools.Exporters
             {
                 var releaseVersions = releaseVersion.Split(new[] { "->" }, StringSplitOptions.RemoveEmptyEntries);
                 if (releaseVersions.Count() > 2)
-                    throw new CommandException("Incorrect format for exporting multiple releases, please specify the release versions as 1.0.0-1.0.3");
+                    throw new CommandException("Incorrect format for exporting multiple releases, please specify the release versions as 1.0.0->1.0.3");
                 minVersionToExport = SemanticVersion.Parse(releaseVersions[0]);
                 maxVersionToExport = SemanticVersion.Parse(releaseVersions[1]);
             }
