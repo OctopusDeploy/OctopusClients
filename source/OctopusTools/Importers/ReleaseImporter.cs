@@ -28,8 +28,8 @@ namespace OctopusTools.Importers
         {
             if (string.IsNullOrWhiteSpace(paramDictionary["Project"])) throw new CommandException("Please specify the name of the project using the parameter: --project=XYZ");
             var projectName = paramDictionary["Project"];
-
-            var releases = FileSystemImporter.Import<List<ReleaseResource>>(FilePath, typeof (ReleaseImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var exportVersion = String.Empty;
+            var releases = FileSystemImporter.Import<List<ReleaseResource>>(FilePath, typeof (ReleaseImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType), out exportVersion);
             if (releases == null)
                 throw new CommandException("Unable to deserialize the specified export file");
 

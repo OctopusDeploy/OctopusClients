@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -27,9 +28,27 @@ namespace OctopusTools.Importers
         protected override void Import(Dictionary<string, string> paramDictionary)
         {
             var filePath = paramDictionary["FilePath"];
-            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var exportOctopusVersion = String.Empty;
+            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType), out exportOctopusVersion);
 
             var project = importedObject.Project;
+            var octopusVersion = new SemanticVersion(Repository.Client.RootDocument.Version);
+            if (octopusVersion >= new SemanticVersion(2, 6, 0, 0) &&
+                new SemanticVersion(exportOctopusVersion) < octopusVersion)
+            {
+                if (project.LifecycleId == null)
+                {
+                    Log.DebugFormat("Project '{0}' is missing a lifecycle, finding and assigning a default lifecycle", project.Name);
+                    var defaultLifecycle = Repository.Lifecycles.FindAll().FirstOrDefault();
+                    if (defaultLifecycle == null)
+                    {
+                        throw new CommandException("Unable to find a lifecycle to assign to this project.");
+                    }
+                    Log.DebugFormat("Found lifecycle '{0}'", defaultLifecycle.Name);
+                    project.LifecycleId = defaultLifecycle.Id;
+                }
+            }
+
             var variableSet = importedObject.VariableSet;
             var deploymentProcess = importedObject.DeploymentProcess;
             var nugetFeeds = importedObject.NuGetFeeds;

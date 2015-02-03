@@ -20,7 +20,7 @@ namespace OctopusTools.Importers
             this.log = log;
         }
 
-        public T Import<T>(string filePath, string entityType)
+        public T Import<T>(string filePath, string entityType, out string exportOctopusVersion)
         {
             if (!fileSystem.FileExists(filePath))
                 throw new CommandException("Unable to find the specified export file");
@@ -37,6 +37,8 @@ namespace OctopusTools.Importers
             {
                 throw new CommandException("The data is not a valid " + entityType);
             }
+            exportOctopusVersion = (importedObject["$Meta"] as dynamic).OctopusVersion;
+
             importedObject.Remove("$Meta");
 
             object exportedObject = null;
@@ -44,8 +46,8 @@ namespace OctopusTools.Importers
             {
                 exportedObject = importedObject["Items"];
             }
+            
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(exportedObject ?? expando));
-            ;
         }
     }
 }
