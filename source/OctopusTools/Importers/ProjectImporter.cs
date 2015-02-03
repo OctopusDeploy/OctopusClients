@@ -52,7 +52,7 @@ namespace OctopusTools.Importers
             var variableSet = importedObject.VariableSet;
             var deploymentProcess = importedObject.DeploymentProcess;
             var nugetFeeds = importedObject.NuGetFeeds;
-            var actionTemplates = importedObject.ActionTemplates;
+            var actionTemplates = importedObject.ActionTemplates ?? new List<ReferenceDataItem>();
             var libVariableSets = importedObject.LibraryVariableSets;
             var projectGroup = importedObject.ProjectGroup;
 
