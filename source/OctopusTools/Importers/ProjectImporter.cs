@@ -28,15 +28,12 @@ namespace OctopusTools.Importers
         protected override void Import(Dictionary<string, string> paramDictionary)
         {
             var filePath = paramDictionary["FilePath"];
-            var exportOctopusVersion = String.Empty;
-            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType), out exportOctopusVersion);
+            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
-            var octopusVersion = new SemanticVersion(Repository.Client.RootDocument.Version);
-            if (octopusVersion >= new SemanticVersion(2, 6, 0, 0) &&
-                new SemanticVersion(exportOctopusVersion) < octopusVersion)
+            if (project.LifecycleId == null)
             {
-                if (project.LifecycleId == null)
+                if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
                 {
                     Log.DebugFormat("Project '{0}' is missing a lifecycle, finding and assigning a default lifecycle", project.Name);
                     var defaultLifecycle = Repository.Lifecycles.FindAll().FirstOrDefault();
@@ -47,6 +44,15 @@ namespace OctopusTools.Importers
                     Log.DebugFormat("Found lifecycle '{0}'", defaultLifecycle.Name);
                     project.LifecycleId = defaultLifecycle.Id;
                 }
+            }
+            else
+            {
+                var lifecycleId = CheckProjectLifecycle(importedObject.Lifecycle);
+                if (lifecycleId == null)
+                {
+                    throw new CommandException("Unable to find a lifecycle to assign to this project.");
+                }
+                project.LifecycleId = lifecycleId;
             }
 
             var variableSet = importedObject.VariableSet;
@@ -88,6 +94,23 @@ namespace OctopusTools.Importers
             ImportVariableSets(variableSet, importedProject, environments, machines, scopeValuesUsed);
 
             Log.DebugFormat("Successfully imported project '{0}'", project.Name);
+        }
+
+        string CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        {
+            if (lifecycle == null) return null;
+
+            Log.DebugFormat("Checking that lifecycle {0} exists", lifecycle.Name);
+            var existingLifecycles = Repository.Lifecycles.FindAll();
+            if (existingLifecycles.Count == 0) return null;
+
+            var existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
+            if (existingLifecycle == null)
+            {
+                Log.DebugFormat("Lifecycle {0} does not exist, using default lifecycle instead", lifecycle.Name);
+                existingLifecycle = existingLifecycles.FirstOrDefault();
+            }
+            return existingLifecycle == null ? null : existingLifecycle.Id;
         }
 
         Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
