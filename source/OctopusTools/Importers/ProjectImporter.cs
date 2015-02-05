@@ -33,7 +33,6 @@ namespace OctopusTools.Importers
             var project = importedObject.Project;
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
             {
-                Log.DebugFormat("Project '{0}' is missing a lifecycle, finding and assigning a default lifecycle", project.Name);
                 var existingLifecycle = CheckProjectLifecycle(importedObject.Lifecycle);
                 if (existingLifecycle == null)
                 {
@@ -87,7 +86,10 @@ namespace OctopusTools.Importers
         LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
         {
             var existingLifecycles = Repository.Lifecycles.FindAll();
-            if (existingLifecycles.Count == 0) return null;
+            if (existingLifecycles.Count == 0)
+            {
+                return null;
+            }
 
             LifecycleResource existingLifecycle = null;
             if (lifecycle != null)
