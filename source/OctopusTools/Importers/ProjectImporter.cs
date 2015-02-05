@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -30,10 +31,21 @@ namespace OctopusTools.Importers
             var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
+            if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
+            {
+                var existingLifecycle = CheckProjectLifecycle(importedObject.Lifecycle);
+                if (existingLifecycle == null)
+                {
+                    throw new CommandException("Unable to find a lifecycle to assign to this project.");
+                }
+                Log.DebugFormat("Found lifecycle '{0}'", existingLifecycle.Name);
+                project.LifecycleId = existingLifecycle.Id;
+            }
+
             var variableSet = importedObject.VariableSet;
             var deploymentProcess = importedObject.DeploymentProcess;
             var nugetFeeds = importedObject.NuGetFeeds;
-            var actionTemplates = importedObject.ActionTemplates;
+            var actionTemplates = importedObject.ActionTemplates ?? new List<ReferenceDataItem>();
             var libVariableSets = importedObject.LibraryVariableSets;
             var projectGroup = importedObject.ProjectGroup;
 
@@ -69,6 +81,28 @@ namespace OctopusTools.Importers
             ImportVariableSets(variableSet, importedProject, environments, machines, scopeValuesUsed);
 
             Log.DebugFormat("Successfully imported project '{0}'", project.Name);
+        }
+
+        LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        {
+            var existingLifecycles = Repository.Lifecycles.FindAll();
+            if (existingLifecycles.Count == 0)
+            {
+                return null;
+            }
+
+            LifecycleResource existingLifecycle = null;
+            if (lifecycle != null)
+            {
+                Log.DebugFormat("Checking that lifecycle {0} exists", lifecycle.Name);
+                existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
+                if (existingLifecycle == null)
+                {
+                    Log.DebugFormat("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
+                }
+            }
+
+            return existingLifecycle ?? existingLifecycles.FirstOrDefault();
         }
 
         Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)

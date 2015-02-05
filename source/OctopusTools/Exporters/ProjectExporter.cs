@@ -103,6 +103,16 @@ namespace OctopusTools.Exporters
                 libraryVariableSets.Add(new ReferenceDataItem(libraryVariableSet.Id, libraryVariableSet.Name));
             }
 
+            LifecycleResource lifecycle = null;
+            if (project.LifecycleId != null)
+            {
+                lifecycle = Repository.Lifecycles.Get(project.LifecycleId);
+                if (lifecycle == null)
+                {
+                    throw new CommandException("Could not find lifecycle with Id " + project.LifecycleId + " for project " + project.Name);
+                }
+            }
+            
             var export = new ProjectExport
             {
                 Project = project,
@@ -111,7 +121,8 @@ namespace OctopusTools.Exporters
                 DeploymentProcess = deploymentProcess,
                 NuGetFeeds = nugetFeeds,
                 ActionTemplates = actionTemplates,
-                LibraryVariableSets = libraryVariableSets
+                LibraryVariableSets = libraryVariableSets,
+                Lifecycle = lifecycle != null ? new ReferenceDataItem(lifecycle.Id, lifecycle.Name) : null
             };
 
             var metadata = new ExportMetadata

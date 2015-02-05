@@ -44,8 +44,8 @@ namespace OctopusTools.Importers
             {
                 exportedObject = importedObject["Items"];
             }
+            
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(exportedObject ?? expando));
-            ;
         }
     }
 }

@@ -13,5 +13,6 @@ namespace OctopusTools.Commands
         public List<ReferenceDataItem> ActionTemplates { get; set; }
         public DeploymentProcessResource DeploymentProcess { get; set; }
         public List<ReferenceDataItem> LibraryVariableSets { get; set; }
+        public ReferenceDataItem Lifecycle { get; set; }
     }
 }
