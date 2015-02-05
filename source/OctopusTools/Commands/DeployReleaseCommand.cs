@@ -21,7 +21,7 @@ namespace OctopusTools.Commands
             var options = Options.For("Deployment");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
-            options.Add("releaseNumber=|version=", "Version number of the release to deploy.", v => VersionNumber = v);
+            options.Add("releaseNumber=|version=", "Version number of the release to deploy. Or specify --version=latest for the latest release.", v => VersionNumber = v);
         }
 
         public string ProjectName { get; set; }
