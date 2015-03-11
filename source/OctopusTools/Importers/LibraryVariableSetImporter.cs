@@ -109,7 +109,6 @@ namespace OctopusTools.Importers
             existingVariableSet.ScopeValues.Machines.AddRange(scopeValues.Machines);
             existingVariableSet.ScopeValues.Roles.Clear();
             existingVariableSet.ScopeValues.Roles.AddRange(scopeValues.Roles);
-            existingVariableSet.ScopeValues.Machines.AddRange(scopeValues.Machines);
 
             Repository.VariableSets.Modify(existingVariableSet);
         }
