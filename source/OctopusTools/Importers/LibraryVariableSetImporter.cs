@@ -141,11 +141,7 @@ namespace OctopusTools.Importers
 
             foreach (var variable in variables)
             {
-                if (variable.IsSensitive)
-                {
-                    Log.WarnFormat("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
-                    variable.Value = String.Empty;
-                }
+                ClearVariableIfSensitive(variable);
                 foreach (var scopeValue in variable.Scope)
                 {
                     switch (scopeValue.Key)
@@ -178,6 +174,15 @@ namespace OctopusTools.Importers
             return variables;
         }
 
+        void ClearVariableIfSensitive(VariableResource variable)
+        {
+            if (variable.IsSensitive)
+            {
+                Log.WarnFormat("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
+                variable.Value = String.Empty;
+            }
+        }
+
         void MergeVariables(ICollection<VariableResource> variables, ICollection<VariableResource> existingVariables)
         {
             foreach (var existingVariable in existingVariables.Where(v => !VariableExists(v, variables)))
@@ -186,11 +191,7 @@ namespace OctopusTools.Importers
 
                 // Need to give the existing variable a new unique Id before we can reuse it.
                 existingVariable.Id = Guid.NewGuid().ToString();
-                if (existingVariable.IsSensitive)
-                {
-                    Log.WarnFormat("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", existingVariable.Name);
-                    existingVariable.Value = String.Empty;
-                }
+                ClearVariableIfSensitive(existingVariable);
                 variables.Add(existingVariable);
             }
         }
