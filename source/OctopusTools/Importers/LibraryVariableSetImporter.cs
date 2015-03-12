@@ -187,7 +187,7 @@ namespace OctopusTools.Importers
         {
             foreach (var existingVariable in existingVariables.Where(v => !VariableExists(v, variables)))
             {
-                Log.InfoFormat("Preserving existing variable '{0}' with scope '{1}'", existingVariable.Name, existingVariable.Scope);
+                Log.InfoFormat("Preserving existing variable '{0}'", existingVariable.Name);
 
                 // Need to give the existing variable a new unique Id before we can reuse it.
                 existingVariable.Id = Guid.NewGuid().ToString();
