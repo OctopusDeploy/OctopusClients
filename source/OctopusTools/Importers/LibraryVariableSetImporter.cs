@@ -211,24 +211,8 @@ namespace OctopusTools.Importers
         {
             // Two scope specifications are equal if they have the same set of scope type keys and the set
             // of scope values for each scope type is equivalent.
-
-            if (!CollectionsAreEquivalent(scope1.Keys, scope2.Keys))
-            {
-                return false;
-            }
-
-            foreach (var scopeType in scope1.Keys)
-            {
-                var values1 = scope1[scopeType];
-                var values2 = scope2[scopeType];
-
-                if (!CollectionsAreEquivalent(values1, values2))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return CollectionsAreEquivalent(scope1.Keys, scope2.Keys)
+                   && scope1.Keys.All(scopeType => CollectionsAreEquivalent(scope1[scopeType], scope2[scopeType]));
         }
 
         static bool CollectionsAreEquivalent<T>(IEnumerable<T> first, IEnumerable<T> second)
