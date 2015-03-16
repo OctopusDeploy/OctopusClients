@@ -288,6 +288,12 @@ namespace OctopusTools.Importers
                     }
                     action.Environments.Clear();
                     action.Environments.AddRange(newEnvironmentIds);
+
+                    // Display warning for sensitive properties in this action
+                    if (action.SensitiveProperties.Count > 0)
+                    {
+                        Log.WarnFormat("Process step '{0}' contains sensitive settings that will be cleared, once the import has completed you will need to check this step in the UI and update required settings", action.Name);
+                    }
                 }
             }
             existingDeploymentProcess.Steps.Clear();
