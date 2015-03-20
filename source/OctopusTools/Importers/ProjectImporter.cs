@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -8,15 +10,19 @@ using Octopus.Platform.Util;
 using OctopusTools.Commands;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
+using OctopusTools.Repositories;
 
 namespace OctopusTools.Importers
 {
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
+        readonly ActionTemplateRepository actionTemplateRepository;
+
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
             : base(repository, fileSystem, log)
         {
+            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override void Import(Dictionary<string, string> paramDictionary)
@@ -25,9 +31,21 @@ namespace OctopusTools.Importers
             var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
+            if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
+            {
+                var existingLifecycle = CheckProjectLifecycle(importedObject.Lifecycle);
+                if (existingLifecycle == null)
+                {
+                    throw new CommandException("Unable to find a lifecycle to assign to this project.");
+                }
+                Log.DebugFormat("Found lifecycle '{0}'", existingLifecycle.Name);
+                project.LifecycleId = existingLifecycle.Id;
+            }
+
             var variableSet = importedObject.VariableSet;
             var deploymentProcess = importedObject.DeploymentProcess;
             var nugetFeeds = importedObject.NuGetFeeds;
+            var actionTemplates = importedObject.ActionTemplates ?? new List<ReferenceDataItem>();
             var libVariableSets = importedObject.LibraryVariableSets;
             var projectGroup = importedObject.ProjectGroup;
 
@@ -45,6 +63,9 @@ namespace OctopusTools.Importers
             // Check NuGet Feeds
             var feeds = CheckNuGetFeedsExist(nugetFeeds);
 
+            // Check Action Templates
+            var templates = CheckActionTemplates(actionTemplates);
+
             // Check Libary Variable Sets
             var libraryVariableSets = CheckLibraryVariableSets(libVariableSets);
 
@@ -55,11 +76,33 @@ namespace OctopusTools.Importers
 
             var importedProject = ImportProject(project, projectGroupId, libraryVariableSets);
 
-            ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds);
+            ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds, templates);
 
             ImportVariableSets(variableSet, importedProject, environments, machines, scopeValuesUsed);
 
             Log.DebugFormat("Successfully imported project '{0}'", project.Name);
+        }
+
+        LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        {
+            var existingLifecycles = Repository.Lifecycles.FindAll();
+            if (existingLifecycles.Count == 0)
+            {
+                return null;
+            }
+
+            LifecycleResource existingLifecycle = null;
+            if (lifecycle != null)
+            {
+                Log.DebugFormat("Checking that lifecycle {0} exists", lifecycle.Name);
+                existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
+                if (existingLifecycle == null)
+                {
+                    Log.DebugFormat("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
+                }
+            }
+
+            return existingLifecycle ?? existingLifecycles.FirstOrDefault();
         }
 
         Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
@@ -212,7 +255,8 @@ namespace OctopusTools.Importers
         void ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
             ProjectResource importedProject,
             Dictionary<string, EnvironmentResource> environments,
-            Dictionary<string, FeedResource> nugetFeeds)
+            Dictionary<string, FeedResource> nugetFeeds,
+            Dictionary<string, ActionTemplateResource> actionTemplates)
         {
             Log.Debug("Importing the Projects Deployment Process");
             var existingDeploymentProcess = Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId);
@@ -226,6 +270,14 @@ namespace OctopusTools.Importers
                         Log.Debug("Updating ID of NuGet Feed");
                         var nugetFeedId = action.Properties["Octopus.Action.Package.NuGetFeedId"];
                         action.Properties["Octopus.Action.Package.NuGetFeedId"] = nugetFeeds[nugetFeedId].Id;
+                    }
+                    if (action.Properties.ContainsKey("Octopus.Action.Template.Id"))
+                    {
+                        Log.Debug("Updating ID and version of Action Template");
+                        var templateId = action.Properties["Octopus.Action.Template.Id"];
+                        var template = actionTemplates[templateId];
+                        action.Properties["Octopus.Action.Template.Id"] = template.Id;
+                        action.Properties["Octopus.Action.Template.Version"] = template.Version.ToString(CultureInfo.InvariantCulture);
                     }
                     var oldEnvironmentIds = action.Environments;
                     var newEnvironmentIds = new List<string>();
@@ -315,6 +367,23 @@ namespace OctopusTools.Importers
                     feeds.Add(nugetFeed.Id, feed);
             }
             return feeds;
+        }
+
+        Dictionary<string, ActionTemplateResource> CheckActionTemplates(List<ReferenceDataItem> actionTemplates)
+        {
+            Log.Debug("Checking that all Action Templates exist");
+            var templates = new Dictionary<string, ActionTemplateResource>();
+            foreach (var actionTemplate in actionTemplates)
+            {
+                var template = actionTemplateRepository.FindByName(actionTemplate.Name);
+                if (template == null)
+                {
+                    throw new CommandException("Action Template " + actionTemplate.Name + " does not exist");
+                }
+                if (!templates.ContainsKey(actionTemplate.Id))
+                    templates.Add(actionTemplate.Id, template);
+            }
+            return templates;
         }
 
         Dictionary<string, ReferenceDataItem> CheckRolesExist(List<ReferenceDataItem> rolesList)

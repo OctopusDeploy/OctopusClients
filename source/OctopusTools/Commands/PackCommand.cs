@@ -24,7 +24,7 @@ namespace OctopusTools.Commands
         bool overwrite;
         string releaseNotes, releaseNotesFile;
         string title;
-        string version;
+        SemanticVersion version;
 
         public PackCommand(ILog log, IOctopusFileSystem fileSystem)
         {
@@ -38,7 +38,7 @@ namespace OctopusTools.Commands
                 {"include=", "[Optional, Multiple] Add a file pattern to include, relative to the base path e.g. /bin/*.dll - if none are specified, defaults to **", v => includes.Add(v)},
                 {"basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v},
                 {"outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v},
-                {"version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = v},
+                {"version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v) },
                 {"author=", "[Optional, Multiple] Add an author to the package metadata; defaults to the current user", v => authors.Add(v)},
                 {"title=", "[Optional] The title of the package", v => title = v},
                 {"description=", "[Optional] A description of the package; defaults to a generic description", v => description = v},
@@ -68,10 +68,27 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(outFolder))
                 outFolder = Path.GetFullPath(Environment.CurrentDirectory);
 
-            if (string.IsNullOrWhiteSpace(version))
+            if (version == null)
             {
                 var now = DateTime.Now;
-                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Hour*100 + now.Second).ToString();
+                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
+            }
+            else
+            {
+                // Make sure SpecialVersion has 20 characters maximum (Limit imposed by NuGet)
+                // https://nuget.codeplex.com/workitem/3426
+
+                const int nugetSpecialVersionMaxLength = 20;
+                if (!string.IsNullOrWhiteSpace(version.SpecialVersion) && version.SpecialVersion.Length > nugetSpecialVersionMaxLength)
+                {
+                    log.WarnFormat("SpecialVersion '{0}' will be truncated to {1} characters (NuGet limit)",
+                        version.SpecialVersion, nugetSpecialVersionMaxLength);
+
+                    var specialVersion = version.SpecialVersion;
+                    specialVersion = specialVersion.Substring(0, Math.Min(nugetSpecialVersionMaxLength, specialVersion.Length));
+
+                    version = new SemanticVersion(version.Version, specialVersion);
+                }
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
@@ -102,7 +119,7 @@ namespace OctopusTools.Commands
                 Id = id,
                 Authors = string.Join(", ", authors),
                 Description = description,
-                Version = version
+                Version = version.ToString(),
             };
 
             if (!string.IsNullOrWhiteSpace(allReleaseNotes))
@@ -125,6 +142,8 @@ namespace OctopusTools.Commands
                 throw new CommandException("The package file already exists and --overwrite was not specified");
 
             log.InfoFormat("Saving {0} to {1}...", filename, outFolder);
+
+            fileSystem.EnsureDirectoryExists(outFolder);
 
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
                 package.Save(outStream);

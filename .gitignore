@@ -57,3 +57,4 @@ tools/TestResult.xml
 source/packages
 source/OctopusTools.v2.ncrunchsolution
 *.orig
+*.userprefs

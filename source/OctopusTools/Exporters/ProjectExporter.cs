@@ -8,15 +8,19 @@ using Octopus.Platform.Util;
 using OctopusTools.Commands;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
+using OctopusTools.Repositories;
 
 namespace OctopusTools.Exporters
 {
     [Exporter("project", "ProjectWithDependencies", Description = "Exports a project as JSON to a file")]
     public class ProjectExporter : BaseExporter
     {
+        readonly ActionTemplateRepository actionTemplateRepository;
+
         public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
             : base(repository, fileSystem, log)
         {
+            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override void Export(Dictionary<string, string> parameters)
@@ -66,6 +70,27 @@ namespace OctopusTools.Exporters
                 }
             }
 
+            Log.Debug("Finding action templates for project");
+            var actionTemplates = new List<ReferenceDataItem>();
+            foreach (var step in deploymentProcess.Steps)
+            {
+                foreach (var action in step.Actions)
+                {
+                    string templateId;
+                    if (action.Properties.TryGetValue("Octopus.Action.Template.Id", out templateId))
+                    {
+                        Log.Debug("Finding action template for step " + step.Name);
+                        var template = actionTemplateRepository.Get(templateId);
+                        if (template == null)
+                            throw new CommandException("Could not find action template for step " + step.Name);
+                        if (actionTemplates.All(t => t.Id != templateId))
+                        {
+                            actionTemplates.Add(new ReferenceDataItem(template.Id, template.Name));
+                        }
+                    }
+                }
+            }
+
             var libraryVariableSets = new List<ReferenceDataItem>();
             foreach (var libraryVariableSetId in project.IncludedLibraryVariableSetIds)
             {
@@ -78,6 +103,16 @@ namespace OctopusTools.Exporters
                 libraryVariableSets.Add(new ReferenceDataItem(libraryVariableSet.Id, libraryVariableSet.Name));
             }
 
+            LifecycleResource lifecycle = null;
+            if (project.LifecycleId != null)
+            {
+                lifecycle = Repository.Lifecycles.Get(project.LifecycleId);
+                if (lifecycle == null)
+                {
+                    throw new CommandException("Could not find lifecycle with Id " + project.LifecycleId + " for project " + project.Name);
+                }
+            }
+            
             var export = new ProjectExport
             {
                 Project = project,
@@ -85,7 +120,9 @@ namespace OctopusTools.Exporters
                 VariableSet = variables,
                 DeploymentProcess = deploymentProcess,
                 NuGetFeeds = nugetFeeds,
-                LibraryVariableSets = libraryVariableSets
+                ActionTemplates = actionTemplates,
+                LibraryVariableSets = libraryVariableSets,
+                Lifecycle = lifecycle != null ? new ReferenceDataItem(lifecycle.Id, lifecycle.Name) : null
             };
 
             var metadata = new ExportMetadata

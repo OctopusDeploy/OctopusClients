@@ -22,7 +22,7 @@ namespace OctopusTools.Exporters
         protected override void Export(Dictionary<string, string> paramDictionary)
         {
             if (string.IsNullOrWhiteSpace(paramDictionary["Project"])) throw new CommandException("Please specify the project name using the parameter: --project=XYZ");
-            if (string.IsNullOrWhiteSpace(paramDictionary["ReleaseVersion"])) throw new CommandException("Please specify the release, or range of releases using the parameter: --releaseVersion=1.0.0 for a single release, or --releaseVersion=1.0.0-1.0.3 for a range of releases");
+            if (string.IsNullOrWhiteSpace(paramDictionary["ReleaseVersion"])) throw new CommandException("Please specify the release, or range of releases using the parameter: --releaseVersion=1.0.0 for a single release, or --releaseVersion=1.0.0->1.0.3 for a range of releases");
             var projectName = paramDictionary["Project"];
             var releaseVersion = paramDictionary["ReleaseVersion"];
 
@@ -38,13 +38,26 @@ namespace OctopusTools.Exporters
             SemanticVersion minVersionToExport;
             SemanticVersion maxVersionToExport;
 
-            if (releaseVersion.IndexOf("-", StringComparison.Ordinal) > 0)
+            if (releaseVersion.IndexOf("->", StringComparison.Ordinal) > 0)
+            {
+                var releaseVersions = releaseVersion.Split(new[] { "->" }, StringSplitOptions.RemoveEmptyEntries);
+                if (releaseVersions.Count() > 2)
+                    throw new CommandException("Incorrect format for exporting multiple releases, please specify the release versions as 1.0.0->1.0.3");
+                minVersionToExport = SemanticVersion.Parse(releaseVersions[0]);
+                maxVersionToExport = SemanticVersion.Parse(releaseVersions[1]);
+            }
+            else if (releaseVersion.IndexOf("-", StringComparison.Ordinal) > 0)
             {
                 var releaseVersions = releaseVersion.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
                 if (releaseVersions.Count() > 2)
                     throw new CommandException("Incorrect format for exporting multiple releases, please specify the release versions as 1.0.0-1.0.3");
+
                 minVersionToExport = SemanticVersion.Parse(releaseVersions[0]);
-                maxVersionToExport = SemanticVersion.Parse(releaseVersions[1]);
+                if (!SemanticVersion.TryParse(releaseVersions[1], out maxVersionToExport))
+                {
+                    minVersionToExport = SemanticVersion.Parse(releaseVersion);
+                    maxVersionToExport = minVersionToExport;
+                }
             }
             else
             {

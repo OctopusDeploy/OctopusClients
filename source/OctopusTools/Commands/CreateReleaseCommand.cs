@@ -33,6 +33,7 @@ namespace OctopusTools.Commands
             options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
+            options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
 
             options = Options.For("Deployment");
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
@@ -43,6 +44,7 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
+        public string VersionPrerelease { get; set; }
 
         protected override void Execute()
         {
@@ -72,14 +74,22 @@ namespace OctopusTools.Commands
                         continue;
                     }
 
-                    Log.Debug("Finding latest NuGet package for step: " + unresolved.StepName);
+                    if (!string.IsNullOrEmpty(VersionPrerelease))
+                        Log.DebugFormat("Finding latest NuGet package with pre-release '{1}' for step: {0}", unresolved.StepName, VersionPrerelease);
+                    else
+                        Log.DebugFormat("Finding latest NuGet package for step: {0}", unresolved.StepName);
 
                     var feed = Repository.Feeds.Get(unresolved.NuGetFeedId);
                     if (feed == null)
                         throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.NuGetFeedId));
 
-                    var packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new {packageIds = new[] {unresolved.PackageId}});
-                    var version = packages.FirstOrDefault();
+                    IEnumerable<PackageResource> packages; 
+                    if (!string.IsNullOrWhiteSpace(VersionPrerelease))
+                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new { packageId = unresolved.PackageId, partialMatch = true }).Where(p => p.NuGetPackageId == unresolved.PackageId && p.Version.EndsWith("-" + VersionPrerelease));
+                    else
+                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = new[] { unresolved.PackageId } });
+                     var version = packages.FirstOrDefault();
+
                     if (version == null)
                     {
                         Log.ErrorFormat("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);

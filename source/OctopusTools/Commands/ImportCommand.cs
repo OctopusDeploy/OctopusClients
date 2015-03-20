@@ -18,7 +18,7 @@ namespace OctopusTools.Commands
             this.importerLocator = importerLocator;
             this.fileSystem = fileSystem;
 
-            var options = Options.For("Export");
+            var options = Options.For("Import");
             options.Add("type=", "The Octopus object type to import", v => Type = v);
             options.Add("filePath=", "The full path and name of the exported file", v => FilePath = v);
             options.Add("project=", "[Optional] The name of the project", v => Project = v);
