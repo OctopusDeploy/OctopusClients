@@ -196,7 +196,7 @@ namespace OctopusTools.Commands
             try
             {
                 Log.InfoFormat("Waiting for {0} deployment(s) to complete....", deploymentTasks.Count);
-                Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout.TotalMinutes, PrintTaskOutput);
+                Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, (int)DeploymentTimeout.TotalMinutes, PrintTaskOutput);
                 var failed = false;
                 foreach (var deploymentTask in deploymentTasks)
                 {
