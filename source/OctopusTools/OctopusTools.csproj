@@ -95,7 +95,11 @@
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
     <Compile Include="Commands\ListReleasesCommand.cs" />
+    <Compile Include="Commands\LibraryVariableSetExport.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
+    <Compile Include="Exporters\LibraryVariableSetExporter.cs" />
+    <Compile Include="Extensions\LibraryVariableSetRepositoryExtensions.cs" />
+    <Compile Include="Importers\LibraryVariableSetImporter.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\LineSplitter.cs" />
