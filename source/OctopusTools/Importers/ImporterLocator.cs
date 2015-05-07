@@ -26,9 +26,11 @@ namespace OctopusTools.Importers
                     select attribute).ToArray();
         }
 
-        public IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        public IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log, bool dryRun = false)
         {
             name = name.Trim().ToLowerInvariant();
+            if (dryRun)
+                name += "DryRun";
             var found = (from t in typeof (ImporterLocator).Assembly.GetTypes()
                 where typeof (IImporter).IsAssignableFrom(t)
                 let attribute = (IImporterMetadata) t.GetCustomAttributes(typeof (ImporterAttribute), true).FirstOrDefault()

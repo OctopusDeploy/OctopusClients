@@ -17,7 +17,7 @@ namespace OctopusTools.Importers
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
-        readonly ActionTemplateRepository actionTemplateRepository;
+        readonly protected ActionTemplateRepository actionTemplateRepository;
 
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
             : base(repository, fileSystem, log)
@@ -83,7 +83,7 @@ namespace OctopusTools.Importers
             Log.DebugFormat("Successfully imported project '{0}'", project.Name);
         }
 
-        LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        protected LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
         {
             var existingLifecycles = Repository.Lifecycles.FindAll();
             if (existingLifecycles.Count == 0)
@@ -105,7 +105,7 @@ namespace OctopusTools.Importers
             return existingLifecycle ?? existingLifecycles.FirstOrDefault();
         }
 
-        Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
+        protected Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
         {
             var usedScopeValues = new Dictionary<ScopeField, List<ReferenceDataItem>>
             {
