@@ -25,15 +25,8 @@ namespace OctopusTools.Importers
         public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
 
 
-        class ValidatedImportSettings
+        class ValidatedImportSettings : BaseValidatedImportSettings
         {
-            public ValidatedImportSettings()
-            {
-                ErrorList = new List<string>();
-            }
-
-            public IEnumerable<string> ErrorList { get; set; }
-            public bool HasErrors { get { return ErrorList.Any(); } }
             public ProjectResource Project { get; set; }
             public IDictionary<ScopeField, List<ReferenceDataItem>> ScopeValuesUsed { get; set; }
             public string ProjectGroupId { get; set; }
@@ -55,8 +48,7 @@ namespace OctopusTools.Importers
 
         protected override bool Validate(Dictionary<string, string> paramDictionary)
         {
-            var filePath = paramDictionary["FilePath"];
-            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
