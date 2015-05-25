@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using log4net;
+using log4net.Core;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Platform.Model;
@@ -17,7 +18,27 @@ namespace OctopusTools.Importers
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
-        readonly ActionTemplateRepository actionTemplateRepository;
+        readonly protected ActionTemplateRepository actionTemplateRepository;
+        ValidatedImportSettings validatedImportSettings;
+
+        public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
+        public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
+
+
+        class ValidatedImportSettings : BaseValidatedImportSettings
+        {
+            public ProjectResource Project { get; set; }
+            public IDictionary<ScopeField, List<ReferenceDataItem>> ScopeValuesUsed { get; set; }
+            public string ProjectGroupId { get; set; }
+            public IEnumerable<string> LibraryVariableSetIds { get; set; }
+            public DeploymentProcessResource DeploymentProcess { get; set; }
+            public IDictionary<string, EnvironmentResource> Environments { get; set; }
+            public IDictionary<string, MachineResource> Machines { get; set; }
+            public IDictionary<string, FeedResource> Feeds { get; set; }
+            public IDictionary<string, ActionTemplateResource> Templates { get; set; }
+            public VariableSetResource VariableSet { get; set; }
+
+        }
 
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
             : base(repository, fileSystem, log)
@@ -25,10 +46,9 @@ namespace OctopusTools.Importers
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
-        protected override void Import(Dictionary<string, string> paramDictionary)
+        protected override bool Validate(Dictionary<string, string> paramDictionary)
         {
-            var filePath = paramDictionary["FilePath"];
-            var importedObject = FileSystemImporter.Import<ProjectExport>(filePath, typeof (ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
@@ -52,38 +72,94 @@ namespace OctopusTools.Importers
             var scopeValuesUsed = GetScopeValuesUsed(variableSet.Variables, deploymentProcess.Steps, variableSet.ScopeValues);
 
             // Check Environments
-            var environments = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]);
+            var environmentChecks = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]);
 
             // Check Machines
-            var machines = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]);
-
-            // Check Roles
-            //var roles = CheckRolesExist(variableSet.ScopeValues.Roles);
+            var machineChecks = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]);
 
             // Check NuGet Feeds
-            var feeds = CheckNuGetFeedsExist(nugetFeeds);
+            var feedChecks = CheckNuGetFeedsExist(nugetFeeds);
 
             // Check Action Templates
-            var templates = CheckActionTemplates(actionTemplates);
+            var templateChecks = CheckActionTemplates(actionTemplates);
 
             // Check Libary Variable Sets
-            var libraryVariableSets = CheckLibraryVariableSets(libVariableSets);
+            var libraryVariableSetChecks = CheckLibraryVariableSets(libVariableSets);
 
             // Check Project Group
-            var projectGroupId = CheckProjectGroup(projectGroup);
+            var projectGroupChecks = CheckProjectGroup(projectGroup);
 
-            Log.DebugFormat("Beginning import of project '{0}'", project.Name);
+            var errorList = new List<string>();
 
-            var importedProject = ImportProject(project, projectGroupId, libraryVariableSets);
+            errorList.AddRange(
+                environmentChecks.MissingDependencyErrors
+                    .Concat(machineChecks.MissingDependencyErrors)
+                    .Concat(feedChecks.MissingDependencyErrors)
+                    .Concat(templateChecks.MissingDependencyErrors)
+                    .Concat(libraryVariableSetChecks.MissingDependencyErrors)
+                    .Concat(projectGroupChecks.MissingDependencyErrors)
+                );
 
-            ImportDeploymentProcess(deploymentProcess, importedProject, environments, feeds, templates);
+            validatedImportSettings = new ValidatedImportSettings
+            {
+                Project = project,
+                ProjectGroupId = projectGroupChecks.FoundDependencies.Keys.First(),
+                LibraryVariableSetIds = libraryVariableSetChecks.FoundDependencyIds,
+                Environments = environmentChecks.FoundDependencies,
+                Feeds = feedChecks.FoundDependencies,
+                Templates = templateChecks.FoundDependencies,
+                Machines = machineChecks.FoundDependencies,
+                DeploymentProcess = deploymentProcess,
+                ScopeValuesUsed = scopeValuesUsed,
+                VariableSet = variableSet,
+                ErrorList = errorList
+            };
 
-            ImportVariableSets(variableSet, importedProject, environments, machines, scopeValuesUsed);
+            if (validatedImportSettings.HasErrors)
+            {
+                Log.Error("The following issues were found with the provided import file:");
+                foreach (var error in validatedImportSettings.ErrorList)
+                {
+                    Log.ErrorFormat(" {0}", error);
+                }
+            }
+            else
+            {
+                Log.Info("No validation errors found. Project is ready to import.");
+            }
 
-            Log.DebugFormat("Successfully imported project '{0}'", project.Name);
+            return !validatedImportSettings.HasErrors;
         }
 
-        LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        protected override void Import(Dictionary<string, string> paramDictionary)
+        {
+            if (ReadyToImport)
+            {
+                Log.DebugFormat("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
+
+                var importedProject = ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSetIds);
+
+                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates);
+
+                ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, validatedImportSettings.ScopeValuesUsed);
+
+                Log.DebugFormat("Successfully imported project '{0}'", validatedImportSettings.Project.Name);
+            }
+            else
+            {
+                Log.ErrorFormat("Project is not ready to be imported.");
+                if (validatedImportSettings.HasErrors)
+                {
+                    Log.Error("The following issues were found with the provided import file:");
+                    foreach (var error in validatedImportSettings.ErrorList)
+                    {
+                        Log.ErrorFormat(" {0}", error);
+                    }
+                }
+            }
+        }
+
+        protected LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
         {
             var existingLifecycles = Repository.Lifecycles.FindAll();
             if (existingLifecycles.Count == 0)
@@ -105,7 +181,7 @@ namespace OctopusTools.Importers
             return existingLifecycle ?? existingLifecycles.FirstOrDefault();
         }
 
-        Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
+        protected Dictionary<ScopeField, List<ReferenceDataItem>> GetScopeValuesUsed(IList<VariableResource> variables, IList<DeploymentStepResource> steps, VariableScopeValues variableScopeValues)
         {
             var usedScopeValues = new Dictionary<ScopeField, List<ReferenceDataItem>>
             {
@@ -164,9 +240,9 @@ namespace OctopusTools.Importers
 
         void ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
-            Dictionary<string, EnvironmentResource> environments,
-            Dictionary<string, MachineResource> machines,
-            Dictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
+            IDictionary<string, EnvironmentResource> environments,
+            IDictionary<string, MachineResource> machines,
+            IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             Log.Debug("Importing the Projects Variable Set");
             var existingVariableSet = Repository.VariableSets.Get(importedProject.VariableSetId);
@@ -189,7 +265,7 @@ namespace OctopusTools.Importers
             Repository.VariableSets.Modify(existingVariableSet);
         }
 
-        VariableScopeValues UpdateScopeValues(Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines, Dictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
+        VariableScopeValues UpdateScopeValues(IDictionary<string, EnvironmentResource> environments, IDictionary<string, MachineResource> machines, IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             var scopeValues = new VariableScopeValues();
             Log.Debug("Updating the Environments of the Variable Sets Scope Values");
@@ -209,7 +285,7 @@ namespace OctopusTools.Importers
             return scopeValues;
         }
 
-        IList<VariableResource> UpdateVariables(VariableSetResource variableSet, Dictionary<string, EnvironmentResource> environments, Dictionary<string, MachineResource> machines)
+        IList<VariableResource> UpdateVariables(VariableSetResource variableSet, IDictionary<string, EnvironmentResource> environments, IDictionary<string, MachineResource> machines)
         {
             var variables = variableSet.Variables;
 
@@ -254,9 +330,9 @@ namespace OctopusTools.Importers
 
         void ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
             ProjectResource importedProject,
-            Dictionary<string, EnvironmentResource> environments,
-            Dictionary<string, FeedResource> nugetFeeds,
-            Dictionary<string, ActionTemplateResource> actionTemplates)
+            IDictionary<string, EnvironmentResource> environments,
+            IDictionary<string, FeedResource> nugetFeeds,
+            IDictionary<string, ActionTemplateResource> actionTemplates)
         {
             Log.Debug("Importing the Projects Deployment Process");
             var existingDeploymentProcess = Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId);
@@ -296,7 +372,7 @@ namespace OctopusTools.Importers
             Repository.DeploymentProcesses.Modify(existingDeploymentProcess);
         }
 
-        ProjectResource ImportProject(ProjectResource project, string projectGroupId, List<string> libraryVariableSets)
+        ProjectResource ImportProject(ProjectResource project, string projectGroupId, IEnumerable<string> libraryVariableSets)
         {
             Log.Debug("Importing Project");
             var existingProject = Repository.Projects.FindByName(project.Name);
@@ -323,118 +399,75 @@ namespace OctopusTools.Importers
             return Repository.Projects.Create(project);
         }
 
-        string CheckProjectGroup(ReferenceDataItem projectGroup)
+       
+        protected CheckedReferences<ProjectGroupResource> CheckProjectGroup(ReferenceDataItem projectGroup)
         {
             Log.Debug("Checking that the Project Group exist");
+            var dependencies = new CheckedReferences<ProjectGroupResource>();
             var group = Repository.ProjectGroups.FindByName(projectGroup.Name);
-            if (group == null)
-            {
-                throw new CommandException("Project Group " + projectGroup.Name + " does not exist");
-            }
-            return group.Id;
+            dependencies.Register(projectGroup.Name, group);
+            return dependencies;
         }
 
-        List<string> CheckLibraryVariableSets(List<ReferenceDataItem> libraryVariableSets)
+        protected CheckedReferences<LibraryVariableSetResource> CheckLibraryVariableSets(List<ReferenceDataItem> libraryVariableSets)
         {
             Log.Debug("Checking that all Library Variable Sets exist");
+            var dependencies = new CheckedReferences<LibraryVariableSetResource>();
             var allVariableSets = Repository.LibraryVariableSets.FindAll();
-            var usedLibraryVariableSets = new List<string>();
             foreach (var libraryVariableSet in libraryVariableSets)
             {
                 var variableSet = allVariableSets.Find(avs => avs.Name == libraryVariableSet.Name);
-                if (variableSet == null)
-                {
-                    throw new CommandException("Library Variable Set " + libraryVariableSet.Name + " does not exist");
-                }
-                if (!usedLibraryVariableSets.Contains(variableSet.Id))
-                    usedLibraryVariableSets.Add(variableSet.Id);
+                dependencies.Register(libraryVariableSet.Name, variableSet);
             }
-            return usedLibraryVariableSets;
+            return dependencies;
         }
 
-        Dictionary<string, FeedResource> CheckNuGetFeedsExist(List<ReferenceDataItem> nugetFeeds)
+        protected CheckedReferences<FeedResource> CheckNuGetFeedsExist(List<ReferenceDataItem> nugetFeeds)
         {
             Log.Debug("Checking that all NuGet Feeds exist");
-            var feeds = new Dictionary<string, FeedResource>();
+            var dependencies = new CheckedReferences<FeedResource>();
             foreach (var nugetFeed in nugetFeeds)
             {
                 var feed = Repository.Feeds.FindByName(nugetFeed.Name);
-                if (feed == null)
-                {
-                    throw new CommandException("NuGet Feed " + nugetFeed.Name + " does not exist");
-                }
-                if (!feeds.ContainsKey(nugetFeed.Id))
-                    feeds.Add(nugetFeed.Id, feed);
+                dependencies.Register(nugetFeed.Name, feed);
             }
-            return feeds;
+            return dependencies;
         }
 
-        Dictionary<string, ActionTemplateResource> CheckActionTemplates(List<ReferenceDataItem> actionTemplates)
+        protected CheckedReferences<ActionTemplateResource> CheckActionTemplates(List<ReferenceDataItem> actionTemplates)
         {
             Log.Debug("Checking that all Action Templates exist");
-            var templates = new Dictionary<string, ActionTemplateResource>();
+            var dependencies = new CheckedReferences<ActionTemplateResource>();
             foreach (var actionTemplate in actionTemplates)
             {
                 var template = actionTemplateRepository.FindByName(actionTemplate.Name);
-                if (template == null)
-                {
-                    throw new CommandException("Action Template " + actionTemplate.Name + " does not exist");
-                }
-                if (!templates.ContainsKey(actionTemplate.Id))
-                    templates.Add(actionTemplate.Id, template);
+                dependencies.Register(actionTemplate.Name, template);
             }
-            return templates;
+            return dependencies;
         }
 
-        Dictionary<string, ReferenceDataItem> CheckRolesExist(List<ReferenceDataItem> rolesList)
-        {
-            Log.Debug("Checking that all roles exist");
-            var allRoleNames = Repository.MachineRoles.GetAllRoleNames();
-            var usedRoles = new Dictionary<string, ReferenceDataItem>();
-            foreach (var role in rolesList)
-            {
-                if (!allRoleNames.Exists(arn => arn == role.Name))
-                {
-                    throw new CommandException("Role " + role.Name + " does not exist");
-                }
-                if (!usedRoles.ContainsKey(role.Id))
-                    usedRoles.Add(role.Id, role);
-            }
-            return usedRoles;
-        }
-
-        Dictionary<string, MachineResource> CheckMachinesExist(List<ReferenceDataItem> machineList)
+        protected CheckedReferences<MachineResource> CheckMachinesExist(List<ReferenceDataItem> machineList)
         {
             Log.Debug("Checking that all machines exist");
-            var machines = new Dictionary<string, MachineResource>();
+            var dependencies = new CheckedReferences<MachineResource>();
             foreach (var m in machineList)
             {
                 var machine = Repository.Machines.FindByName(m.Name);
-                if (machine == null)
-                {
-                    throw new CommandException("Machine " + m.Name + " does not exist");
-                }
-                if (!machines.ContainsKey(m.Id))
-                    machines.Add(m.Id, machine);
+                dependencies.Register(m.Name, machine);
             }
-            return machines;
+            return dependencies;
         }
 
-        Dictionary<string, EnvironmentResource> CheckEnvironmentsExist(List<ReferenceDataItem> environmentList)
+        protected CheckedReferences<EnvironmentResource> CheckEnvironmentsExist(List<ReferenceDataItem> environmentList)
         {
             Log.Debug("Checking that all environments exist");
-            var usedEnvironments = new Dictionary<string, EnvironmentResource>();
+            var dependencies = new CheckedReferences<EnvironmentResource>();
             foreach (var env in environmentList)
             {
                 var environment = Repository.Environments.FindByName(env.Name);
-                if (environment == null)
-                {
-                    throw new CommandException("Environment " + env.Name + " does not exist");
-                }
-                if (!usedEnvironments.ContainsKey(env.Id))
-                    usedEnvironments.Add(env.Id, environment);
+                dependencies.Register(env.Name, environment);
             }
-            return usedEnvironments;
+            return dependencies;
         }
     }
 }

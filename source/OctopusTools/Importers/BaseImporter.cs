@@ -36,6 +36,14 @@ namespace OctopusTools.Importers
 
         public string FilePath { get; set; }
 
+        public bool Validate(params string[] parameters)
+        {
+            var paramDictionary = ParseParameters(parameters);
+            FilePath = paramDictionary["FilePath"];
+
+            return Validate(paramDictionary);
+        }
+
         public void Import(params string[] parameters)
         {
             var paramDictionary = ParseParameters(parameters);
@@ -48,6 +56,11 @@ namespace OctopusTools.Importers
         {
         }
 
+        protected virtual bool Validate(Dictionary<string, string> paramDictionary)
+        {
+            return true;
+        }
+
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)
         {
             var paramDictionary = new Dictionary<string, string>();
@@ -58,5 +71,6 @@ namespace OctopusTools.Importers
             }
             return paramDictionary;
         }
+
     }
 }

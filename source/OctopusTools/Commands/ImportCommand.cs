@@ -22,8 +22,10 @@ namespace OctopusTools.Commands
             options.Add("type=", "The Octopus object type to import", v => Type = v);
             options.Add("filePath=", "The full path and name of the exported file", v => FilePath = v);
             options.Add("project=", "[Optional] The name of the project", v => Project = v);
+            options.Add("dryRun", "[Optional] Perform a dry run of the import", v => DryRun = true);
         }
 
+        public bool DryRun { get; set; }
         public string Type { get; set; }
         public string FilePath { get; set; }
         public string Project { get; set; }
@@ -38,8 +40,13 @@ namespace OctopusTools.Commands
             if (importer == null)
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 
-            Log.Debug("Beginning the import");
-            importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project));
+            Log.Debug("Validating the import");
+            var validationResult = importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project));
+            if (validationResult && !DryRun)
+            {
+                Log.Debug("Beginning the import");
+                importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project));
+            }
         }
     }
 }

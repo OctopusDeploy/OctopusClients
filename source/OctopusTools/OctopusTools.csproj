@@ -96,6 +96,8 @@
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
     <Compile Include="Commands\ListReleasesCommand.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
+    <Compile Include="Importers\BaseValidatedImportSettings.cs" />
+    <Compile Include="Importers\CheckedReferences.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\LineSplitter.cs" />
