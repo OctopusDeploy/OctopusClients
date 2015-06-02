@@ -27,7 +27,7 @@ namespace OctopusTools.Importers
             MissingDependencyNames = new List<string>();
         }
 
-        public void Register(string uniqueName, T resource)
+        public void Register(string uniqueName, string originalId, T resource)
         {
             if (resource == null)
             {
@@ -35,8 +35,8 @@ namespace OctopusTools.Importers
             }
             else
             {
-                if (!FoundDependencies.ContainsKey(resource.Id))
-                    FoundDependencies.Add(resource.Id, resource);
+                if (!FoundDependencies.ContainsKey(originalId))
+                    FoundDependencies.Add(originalId, resource);
             }
         }
     }

@@ -30,7 +30,7 @@ namespace OctopusTools.Importers
             public ProjectResource Project { get; set; }
             public IDictionary<ScopeField, List<ReferenceDataItem>> ScopeValuesUsed { get; set; }
             public string ProjectGroupId { get; set; }
-            public IEnumerable<string> LibraryVariableSetIds { get; set; }
+            public IDictionary<string, LibraryVariableSetResource> LibraryVariableSets { get; set; }
             public DeploymentProcessResource DeploymentProcess { get; set; }
             public IDictionary<string, EnvironmentResource> Environments { get; set; }
             public IDictionary<string, MachineResource> Machines { get; set; }
@@ -104,7 +104,7 @@ namespace OctopusTools.Importers
             {
                 Project = project,
                 ProjectGroupId = projectGroupChecks.FoundDependencies.Keys.First(),
-                LibraryVariableSetIds = libraryVariableSetChecks.FoundDependencyIds,
+                LibraryVariableSets = libraryVariableSetChecks.FoundDependencies,
                 Environments = environmentChecks.FoundDependencies,
                 Feeds = feedChecks.FoundDependencies,
                 Templates = templateChecks.FoundDependencies,
@@ -137,7 +137,7 @@ namespace OctopusTools.Importers
             {
                 Log.DebugFormat("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
 
-                var importedProject = ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSetIds);
+                var importedProject = ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets);
 
                 ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates);
 
@@ -372,7 +372,7 @@ namespace OctopusTools.Importers
             Repository.DeploymentProcesses.Modify(existingDeploymentProcess);
         }
 
-        ProjectResource ImportProject(ProjectResource project, string projectGroupId, IEnumerable<string> libraryVariableSets)
+        ProjectResource ImportProject(ProjectResource project, string projectGroupId, IDictionary<string, LibraryVariableSetResource> libraryVariableSets)
         {
             Log.Debug("Importing Project");
             var existingProject = Repository.Projects.FindByName(project.Name);
@@ -384,7 +384,7 @@ namespace OctopusTools.Importers
                 existingProject.Description = project.Description;
                 existingProject.IsDisabled = project.IsDisabled;
                 existingProject.IncludedLibraryVariableSetIds.Clear();
-                existingProject.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets);
+                existingProject.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets.Values.Select(v => v.Id));
                 existingProject.Slug = project.Slug;
                 existingProject.VersioningStrategy.DonorPackageStepId = project.VersioningStrategy.DonorPackageStepId;
                 existingProject.VersioningStrategy.Template = project.VersioningStrategy.Template;
@@ -394,7 +394,7 @@ namespace OctopusTools.Importers
             Log.Debug("Project does not exist, a new project will be created");
             project.ProjectGroupId = projectGroupId;
             project.IncludedLibraryVariableSetIds.Clear();
-            project.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets);
+            project.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets.Values.Select(v => v.Id));
 
             return Repository.Projects.Create(project);
         }
@@ -405,7 +405,7 @@ namespace OctopusTools.Importers
             Log.Debug("Checking that the Project Group exist");
             var dependencies = new CheckedReferences<ProjectGroupResource>();
             var group = Repository.ProjectGroups.FindByName(projectGroup.Name);
-            dependencies.Register(projectGroup.Name, group);
+            dependencies.Register(projectGroup.Name, projectGroup.Id, group);
             return dependencies;
         }
 
@@ -417,7 +417,7 @@ namespace OctopusTools.Importers
             foreach (var libraryVariableSet in libraryVariableSets)
             {
                 var variableSet = allVariableSets.Find(avs => avs.Name == libraryVariableSet.Name);
-                dependencies.Register(libraryVariableSet.Name, variableSet);
+                dependencies.Register(libraryVariableSet.Name, libraryVariableSet.Id, variableSet);
             }
             return dependencies;
         }
@@ -429,7 +429,7 @@ namespace OctopusTools.Importers
             foreach (var nugetFeed in nugetFeeds)
             {
                 var feed = Repository.Feeds.FindByName(nugetFeed.Name);
-                dependencies.Register(nugetFeed.Name, feed);
+                dependencies.Register(nugetFeed.Name, nugetFeed.Id, feed);
             }
             return dependencies;
         }
@@ -441,7 +441,7 @@ namespace OctopusTools.Importers
             foreach (var actionTemplate in actionTemplates)
             {
                 var template = actionTemplateRepository.FindByName(actionTemplate.Name);
-                dependencies.Register(actionTemplate.Name, template);
+                dependencies.Register(actionTemplate.Name, actionTemplate.Id, template);
             }
             return dependencies;
         }
@@ -453,7 +453,7 @@ namespace OctopusTools.Importers
             foreach (var m in machineList)
             {
                 var machine = Repository.Machines.FindByName(m.Name);
-                dependencies.Register(m.Name, machine);
+                dependencies.Register(m.Name, m.Id, machine);
             }
             return dependencies;
         }
@@ -465,7 +465,7 @@ namespace OctopusTools.Importers
             foreach (var env in environmentList)
             {
                 var environment = Repository.Environments.FindByName(env.Name);
-                dependencies.Register(env.Name, environment);
+                dependencies.Register(env.Name, env.Id, environment);
             }
             return dependencies;
         }
