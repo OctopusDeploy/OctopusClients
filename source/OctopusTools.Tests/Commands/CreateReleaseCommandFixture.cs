@@ -130,6 +130,39 @@ namespace OctopusTools.Tests.Commands
             Repository.Releases.Received().Create(Arg.Is<ReleaseResource>(r => r.SelectedPackages.Any(p => p.Version.Equals("1.0.0-Dev"))));
         }
 
+        [Test]
+        public void when_prerelease_specified_and_fallback_mode_latest_should_choose_latest()
+        {
+            command.ProjectName = "ProjectA";
+            command.VersionPrerelease = "Dev";
+            command.PrereleaseFallbackMode = PrereleaseFallbackMode.Latest;
+            Repository.Client.Get<List<PackageResource>>("feed1search", Arg.Any<object>()).Returns(new List<PackageResource>()
+            {
+                new PackageResource(){NuGetPackageId = "Package1", Version = "1.0.0"},
+            });
+
+            Repository.Releases.Create(Arg.Any<ReleaseResource>()).Returns(new ReleaseResource());
+            command.Execute(CommandLineArgs.ToArray());
+
+            Repository.Releases.Received().Create(Arg.Is<ReleaseResource>(r => r.SelectedPackages.Any(p => p.Version.Equals("1.0.0"))));
+        }
+
+        [Test]
+        public void when_prerelease_specified_and_fallback_mode_fail_should_throw_exception()
+        {
+            command.ProjectName = "ProjectA";
+            command.VersionPrerelease = "Dev";
+            command.PrereleaseFallbackMode = PrereleaseFallbackMode.Fail;
+
+            Repository.Client.Get<List<PackageResource>>("feed1search", Arg.Any<object>()).Returns(new List<PackageResource>()
+            {
+                new PackageResource(){NuGetPackageId = "Package1", Version = "1.0.0"},
+            });
+
+            Repository.Releases.Create(Arg.Any<ReleaseResource>()).Returns(new ReleaseResource());
+
+            Assert.Throws<CommandException>(() => command.Execute(CommandLineArgs.ToArray()));
+        }
 
     }
 }

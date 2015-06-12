@@ -34,9 +34,18 @@ namespace OctopusTools.Commands
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
             options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
+            options.Add("prereleasefallbackMode=", "[Optional] Fallback mode to be used when using packageprerelease.  Values are Latest and Fail.", v => this.PrereleaseFallbackMode = ParseFallbackMode(v));
 
             options = Options.For("Deployment");
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+        }
+
+        PrereleaseFallbackMode ParseFallbackMode(string value)
+        {
+            PrereleaseFallbackMode parsed;
+            return Enum.TryParse(value, true, out parsed)
+                ? parsed
+                : PrereleaseFallbackMode.Fail;
         }
 
         public string ProjectName { get; set; }
@@ -45,6 +54,7 @@ namespace OctopusTools.Commands
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
         public string VersionPrerelease { get; set; }
+        public PrereleaseFallbackMode PrereleaseFallbackMode { get; set; }
 
         protected override void Execute()
         {
@@ -83,11 +93,19 @@ namespace OctopusTools.Commands
                     if (feed == null)
                         throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.NuGetFeedId));
 
-                    IEnumerable<PackageResource> packages; 
+                    IEnumerable<PackageResource> packages;
                     if (!string.IsNullOrWhiteSpace(VersionPrerelease))
-                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new { packageId = unresolved.PackageId }).Where(p => p.NuGetPackageId == unresolved.PackageId && p.Version.EndsWith("-" + VersionPrerelease));
+                    {
+                        var allPackages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new {packageId = unresolved.PackageId}).Where(p => p.NuGetPackageId == unresolved.PackageId).ToList();
+
+                        packages = allPackages.Where(p => p.Version.EndsWith("-" + VersionPrerelease)).ToList();
+                        if (!packages.Any() && PrereleaseFallbackMode == PrereleaseFallbackMode.Latest)
+                        {
+                            packages = allPackages;
+                        }
+                    }
                     else
-                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = new[] { unresolved.PackageId } });
+                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new {packageIds = new[] {unresolved.PackageId}});
                     var version = packages.FirstOrDefault();
 
                     if (version == null)
