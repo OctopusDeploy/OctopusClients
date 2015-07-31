@@ -85,10 +85,10 @@ namespace OctopusTools.Commands
 
                     IEnumerable<PackageResource> packages; 
                     if (!string.IsNullOrWhiteSpace(VersionPrerelease))
-                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new { packageId = unresolved.PackageId, partialMatch = true }).Where(p => p.NuGetPackageId == unresolved.PackageId && p.Version.EndsWith("-" + VersionPrerelease));
+                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new { packageId = unresolved.PackageId }).Where(p => p.NuGetPackageId == unresolved.PackageId && p.Version.EndsWith("-" + VersionPrerelease));
                     else
                         packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = new[] { unresolved.PackageId } });
-                     var version = packages.FirstOrDefault();
+                    var version = packages.FirstOrDefault();
 
                     if (version == null)
                     {
