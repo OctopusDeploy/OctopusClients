@@ -98,6 +98,7 @@
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Importers\BaseValidatedImportSettings.cs" />
     <Compile Include="Importers\CheckedReferences.cs" />
+    <Compile Include="Infrastructure\CouldNotFindException.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\LineSplitter.cs" />

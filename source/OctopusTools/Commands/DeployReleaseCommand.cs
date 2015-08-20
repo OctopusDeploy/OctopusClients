@@ -37,7 +37,7 @@ namespace OctopusTools.Commands
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
-                throw new CommandException("Could not find a project named: " + ProjectName);
+                throw new CouldNotFindException("a project named", ProjectName);
 
             ReleaseResource releaseToPromote;
             if (string.Equals("latest", VersionNumber, StringComparison.CurrentCultureIgnoreCase))
@@ -47,7 +47,7 @@ namespace OctopusTools.Commands
 
                 if (releaseToPromote == null)
                 {
-                    throw new CommandException("Could not find the latest release for project " + project.Name);
+                    throw new CouldNotFindException("the latest release for project", project.Name);
                 }
             }
             else

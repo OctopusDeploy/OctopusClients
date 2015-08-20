@@ -34,12 +34,12 @@ namespace OctopusTools.Commands
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
-                throw new CommandException("Could not find a project named: " + ProjectName);
+                throw new CouldNotFindException("a project named", ProjectName);
 
             Log.Debug("Finding environment: " + FromEnvironmentName);
             var environment = Repository.Environments.FindByName(FromEnvironmentName);
             if (environment == null)
-                throw new CommandException("Could not find an evironment named: " + FromEnvironmentName);
+                throw new CouldNotFindException("an environment named", FromEnvironmentName);
 
             var dashboard = Repository.Dashboards.GetDynamicDashboard(new[] {project.Id}, new[] {environment.Id});
             var dashboardItem = dashboard.Items.Where(e => e.EnvironmentId == environment.Id && e.ProjectId == project.Id)
@@ -48,7 +48,7 @@ namespace OctopusTools.Commands
 
             if (dashboardItem == null)
             {
-                throw new CommandException("Could not find the latest deployment of the project for this environment. Please check that a deployment for this project/environment exists on the dashboard.");
+                throw new CouldNotFindException("latest deployment of the project for this environment. Please check that a deployment for this project/environment exists on the dashboard.");
             }
 
             Log.Debug("Finding release details for release " + dashboardItem.ReleaseVersion);
