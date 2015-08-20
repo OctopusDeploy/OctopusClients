@@ -20,10 +20,10 @@ namespace OctopusTools.Commands
         string apiKey;
         bool enableDebugging;
         bool ignoreSslErrors;
-        string pass;
+        string password;
         IOctopusRepository repository;
         string serverBaseUrl;
-        string user;
+        string username;
         readonly Options optionGroups = new Options();
 
         protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
@@ -34,8 +34,8 @@ namespace OctopusTools.Commands
             var options = optionGroups.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => serverBaseUrl = v);
             options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
-            options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => user = v);
-            options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => pass = v);
+            options.Add("username=", "[Optional] Username to use when authenticating with the server.", v => username = v);
+            options.Add("password=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(options, v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
@@ -71,7 +71,7 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
 
-            var credentials = ParseCredentials(user, pass);
+            var credentials = ParseCredentials(username, password);
 
             var endpoint = new OctopusServerEndpoint(serverBaseUrl, apiKey, credentials);
 
@@ -108,6 +108,9 @@ namespace OctopusTools.Commands
             log.Debug("Handshaking with Octopus server: " + serverBaseUrl);
             var root = repository.Client.RootDocument;
             log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
+
+            var user = repository.Users.GetCurrent();
+            log.DebugFormat("Logged in as: {0} <{1}>", user.DisplayName, user.EmailAddress);
 
             Execute();
         }
