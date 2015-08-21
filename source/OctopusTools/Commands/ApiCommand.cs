@@ -34,8 +34,8 @@ namespace OctopusTools.Commands
             var options = optionGroups.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => serverBaseUrl = v);
             options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
-            options.Add("username=", "[Optional] Username to use when authenticating with the server.", v => username = v);
-            options.Add("password=", "[Optional] Password to use when authenticating with the server.", v => password = v);
+            options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => username = v);
+            options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(options, v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
