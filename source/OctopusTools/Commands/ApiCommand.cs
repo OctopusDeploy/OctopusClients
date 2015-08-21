@@ -110,7 +110,10 @@ namespace OctopusTools.Commands
             log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
 
             var user = repository.Users.GetCurrent();
-            log.DebugFormat("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)":"");
+            if (user != null)
+            {
+                log.DebugFormat("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+            }
 
             Execute();
         }
