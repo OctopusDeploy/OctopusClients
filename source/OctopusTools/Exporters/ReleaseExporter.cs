@@ -29,7 +29,7 @@ namespace OctopusTools.Exporters
             Log.Debug("Finding project: " + projectName);
             var project = Repository.Projects.FindByName(projectName);
             if (project == null)
-                throw new CommandException("Could not find a project named: " + projectName);
+                throw new CouldNotFindException("a project named", projectName);
 
             Log.Debug("Finding releases for project...");
             var releases = Repository.Projects.GetReleases(project);

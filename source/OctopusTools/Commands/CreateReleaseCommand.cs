@@ -53,7 +53,7 @@ namespace OctopusTools.Commands
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
-                throw new CommandException("Could not find a project named: " + ProjectName);
+                throw new CouldNotFindException("a project named", ProjectName);
 
             Log.Debug("Finding deployment process for project: " + ProjectName);
             var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
