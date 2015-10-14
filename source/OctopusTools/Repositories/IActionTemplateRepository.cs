@@ -1,6 +1,5 @@
 ﻿using System;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories;
 
 namespace OctopusTools.Repositories
 {

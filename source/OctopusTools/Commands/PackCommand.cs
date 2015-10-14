@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands

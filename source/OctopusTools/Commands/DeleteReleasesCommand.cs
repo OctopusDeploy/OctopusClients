@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using log4net;
-using NuGet;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
 

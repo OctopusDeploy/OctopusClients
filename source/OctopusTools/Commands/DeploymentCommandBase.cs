@@ -5,12 +5,10 @@ using System.IO;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
-using Octopus.Platform.Model;
-using Octopus.Platform.Model.Forms;
-using Octopus.Platform.Util;
-using Octopus.Platform.Variables;
-using OctopusTools.Extensions;
+using Octopus.Client.Model.Forms;
+using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
+using Octostache;
 
 namespace OctopusTools.Commands
 {

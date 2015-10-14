@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using log4net;
-using Octopus.Client.Model;
 
 namespace OctopusTools.Commands
 {

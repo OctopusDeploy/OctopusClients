@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NuGet;
 using Octopus.Client.Model;
+using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands

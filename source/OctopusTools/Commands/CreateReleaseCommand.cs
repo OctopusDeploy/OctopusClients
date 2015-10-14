@@ -26,6 +26,7 @@ namespace OctopusTools.Commands
 
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
+            options.Add("channel=", "[Optional] Channel to use for the new release.", v => ChannelName = v);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("packageversion=|defaultpackageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
@@ -40,6 +41,7 @@ namespace OctopusTools.Commands
         }
 
         public string ProjectName { get; set; }
+        public string ChannelName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
@@ -55,11 +57,30 @@ namespace OctopusTools.Commands
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
+            ChannelResource channel;
+            var channels = Repository.Projects.GetChannels(project).Items;
+            Log.Debug("Finding channel");
+            if (string.IsNullOrWhiteSpace(ChannelName))
+            {
+                if (channels.Count != 1)
+                    throw new CommandException("No channel was specified and the project contains more than one channel.  Please specify a channel using the parameter: --channel=ABC");
+
+                channel = channels.Single();
+            }
+            else
+            {
+                
+                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.Ordinal));
+                if (channel == null)
+                    throw new CouldNotFindException("a channled named", ChannelName);
+            }
+            
+
             Log.Debug("Finding deployment process for project: " + ProjectName);
             var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
 
             Log.Debug("Finding release template...");
-            var releaseTemplate = Repository.DeploymentProcesses.GetTemplate(deploymentProcess);
+            var releaseTemplate = Repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel);
 
             var plan = new ReleasePlan(releaseTemplate, versionResolver);
 
@@ -153,7 +174,7 @@ namespace OctopusTools.Commands
                 }
             }
 
-            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id)
+            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel.Id)
             {
                 ReleaseNotes = ReleaseNotes,
                 SelectedPackages = plan.GetSelections()

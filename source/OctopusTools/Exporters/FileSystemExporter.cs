@@ -3,7 +3,7 @@ using System.Text;
 using log4net;
 using Newtonsoft.Json;
 using Octopus.Client.Serialization;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Extensions;
 
 namespace OctopusTools.Exporters

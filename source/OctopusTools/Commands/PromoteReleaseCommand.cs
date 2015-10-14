@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
-using Octopus.Platform.Model;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Commands

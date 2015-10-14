@@ -1,6 +1,6 @@
 ﻿using System;
 using log4net;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Importers;
 using OctopusTools.Infrastructure;
 

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using NuGet;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 

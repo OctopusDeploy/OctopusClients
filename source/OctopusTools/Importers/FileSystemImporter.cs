@@ -4,7 +4,7 @@ using System.Dynamic;
 using log4net;
 using Newtonsoft.Json;
 using Octopus.Client.Serialization;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
 
 namespace OctopusTools.Importers

@@ -4,7 +4,7 @@ using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Commands;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;

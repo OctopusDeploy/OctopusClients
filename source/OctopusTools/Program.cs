@@ -6,7 +6,7 @@ using System.Reflection;
 using Autofac;
 using log4net;
 using Octopus.Client.Exceptions;
-using Octopus.Platform.Util;
+using Octopus.Shared.Util;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
 using OctopusTools.Exporters;
