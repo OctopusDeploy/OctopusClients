@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Shared.Util;
 using OctopusTools.Extensions;
+using OctopusTools.Util;
 
 namespace OctopusTools.Importers
 {

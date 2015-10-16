@@ -6,8 +6,8 @@ using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
-using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 using Octostache;
 
 namespace OctopusTools.Commands

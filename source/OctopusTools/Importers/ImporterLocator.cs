@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Autofac;
 using log4net;
 using Octopus.Client;
-using Octopus.Shared.Util;
+using OctopusTools.Util;
 
 namespace OctopusTools.Importers
 {

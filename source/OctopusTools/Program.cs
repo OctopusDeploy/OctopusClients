@@ -6,12 +6,12 @@ using System.Reflection;
 using Autofac;
 using log4net;
 using Octopus.Client.Exceptions;
-using Octopus.Shared.Util;
 using OctopusTools.Commands;
 using OctopusTools.Diagnostics;
 using OctopusTools.Exporters;
 using OctopusTools.Importers;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools
 {

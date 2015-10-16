@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using log4net;
 using Octopus.Client;
-using Octopus.Shared.Util;
+using OctopusTools.Util;
 
 namespace OctopusTools.Exporters
 {

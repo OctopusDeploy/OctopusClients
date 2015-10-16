@@ -1,10 +1,9 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using log4net;
 using Newtonsoft.Json;
 using Octopus.Client.Serialization;
-using Octopus.Shared.Util;
 using OctopusTools.Extensions;
+using OctopusTools.Util;
 
 namespace OctopusTools.Exporters
 {

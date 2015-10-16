@@ -1,7 +1,6 @@
-﻿using System;
-using log4net;
+﻿using log4net;
 using Octopus.Client;
-using Octopus.Shared.Util;
+using OctopusTools.Util;
 
 namespace OctopusTools.Importers
 {

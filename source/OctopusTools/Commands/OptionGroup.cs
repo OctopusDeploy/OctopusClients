@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Octopus.Shared.Util;
+using NuGet;
 
 namespace OctopusTools.Commands
 {

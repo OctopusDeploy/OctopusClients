@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using log4net;
 using Newtonsoft.Json;
 using Octopus.Client.Serialization;
-using Octopus.Shared.Util;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Importers
 {

@@ -5,11 +5,11 @@ using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Shared.Util;
 using OctopusTools.Commands;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
 using OctopusTools.Repositories;
+using OctopusTools.Util;
 
 namespace OctopusTools.Importers
 {

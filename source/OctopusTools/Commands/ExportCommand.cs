@@ -1,8 +1,7 @@
-﻿using System;
-using log4net;
-using Octopus.Shared.Util;
+﻿using log4net;
 using OctopusTools.Exporters;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {

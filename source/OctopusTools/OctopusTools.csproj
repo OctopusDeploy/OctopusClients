@@ -43,10 +43,6 @@
     <RequireRestoreConsent Condition=" '$(OS)' != 'Windows_NT'">false</RequireRestoreConsent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Halibut, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Halibut.2.0.1.41\lib\Halibut.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -57,16 +53,8 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Octopus.Client, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octopus.Shared.3.2.0-beta0001\lib\net40\Release\Octopus.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Octopus.Shared, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octopus.Shared.3.2.0-beta0001\lib\net40\Release\Octopus.Shared.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Octostache, Version=1.0.2.19, Culture=neutral, processorArchitecture=MSIL">
@@ -117,6 +105,9 @@
     <Compile Include="Infrastructure\CouldNotFindException.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
+    <Compile Include="Util\DeletionOptions.cs" />
+    <Compile Include="Util\Humanize.cs" />
+    <Compile Include="Util\IOctopusFileSystem.cs" />
     <Compile Include="Util\LineSplitter.cs" />
     <Compile Include="Commands\PackCommand.cs" />
     <Compile Include="Commands\ExportCommand.cs" />
@@ -176,6 +167,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyExtensions.cs" />
     <Compile Include="Util\LazyExtensions.cs" />
+    <Compile Include="Util\ListExtensions.cs" />
+    <Compile Include="Util\NumericExtensions.cs" />
+    <Compile Include="Util\OctopusPhysicalFileSystem.cs" />
+    <Compile Include="Util\ReplaceStatus.cs" />
     <Compile Include="Util\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

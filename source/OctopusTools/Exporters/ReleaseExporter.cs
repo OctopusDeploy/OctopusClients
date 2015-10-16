@@ -4,9 +4,9 @@ using System.Linq;
 using log4net;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Shared.Util;
 using OctopusTools.Extensions;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Exporters
 {
