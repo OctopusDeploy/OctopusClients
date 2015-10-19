@@ -82,7 +82,7 @@ namespace OctopusTools.Commands
             if (unknownEnvironments.Count > 0)
             {
                 throw new CommandException(
-                    string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the project group.",
+                    string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the lifecycle.",
                         release.Version,
                         project.Name,
                         unknownEnvironments.Count == 1
