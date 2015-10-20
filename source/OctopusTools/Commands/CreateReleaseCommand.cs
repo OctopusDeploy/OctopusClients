@@ -34,6 +34,7 @@ namespace OctopusTools.Commands
             options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
+            options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => Force = true);
             options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
 
             options = Options.For("Deployment");
@@ -46,6 +47,7 @@ namespace OctopusTools.Commands
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
+        public bool Force { get; set; }
         public string VersionPrerelease { get; set; }
 
         protected override void Execute()
@@ -178,7 +180,7 @@ namespace OctopusTools.Commands
             {
                 ReleaseNotes = ReleaseNotes,
                 SelectedPackages = plan.GetSelections()
-            });
+            }, Force);
             Log.Info("Release " + release.Version + " created successfully!");
 
             Log.ServiceMessage("setParameter", new {name = "octo.releaseNumber", value = release.Version});
