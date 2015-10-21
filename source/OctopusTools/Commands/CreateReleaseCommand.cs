@@ -74,7 +74,7 @@ namespace OctopusTools.Commands
                 
                 channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.Ordinal));
                 if (channel == null)
-                    throw new CouldNotFindException("a channled named", ChannelName);
+                    throw new CouldNotFindException("a channel named", ChannelName);
             }
             
 
