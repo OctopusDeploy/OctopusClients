@@ -59,19 +59,11 @@ namespace OctopusTools.Commands
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
-            ChannelResource channel;
-            var channels = Repository.Projects.GetChannels(project).Items;
-            Log.Debug("Finding channel");
-            if (string.IsNullOrWhiteSpace(ChannelName))
+            var channel = default(ChannelResource);
+            if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                if (channels.Count != 1)
-                    throw new CommandException("No channel was specified and the project contains more than one channel.  Please specify a channel using the parameter: --channel=ABC");
-
-                channel = channels.Single();
-            }
-            else
-            {
-                
+                Log.Debug("Finding channel");
+                var channels = Repository.Projects.GetChannels(project).Items;
                 channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.Ordinal));
                 if (channel == null)
                     throw new CouldNotFindException("a channel named", ChannelName);
@@ -176,7 +168,7 @@ namespace OctopusTools.Commands
                 }
             }
 
-            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel.Id)
+            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
             {
                 ReleaseNotes = ReleaseNotes,
                 SelectedPackages = plan.GetSelections()
