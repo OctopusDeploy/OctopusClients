@@ -140,7 +140,7 @@ namespace OctopusTools.Commands
                             continue;
                         }
 
-                        var value = variables.Get(variableInput.Label);
+                        var value = variables.Get(variableInput.Label) ?? variables.Get(variableInput.Name);
 
                         if (string.IsNullOrWhiteSpace(value) && element.IsValueRequired)
                         {
