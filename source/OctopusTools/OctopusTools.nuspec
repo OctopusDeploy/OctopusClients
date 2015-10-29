@@ -17,5 +17,11 @@
     <projectUrl>http://octopusdeploy.com/</projectUrl>
     <iconUrl>http://i.octopusdeploy.com/resources/Avatar3_360.png</iconUrl>
     <tags>automation deployment</tags>
+    <developmentDependency>true</developmentDependency>
   </metadata>
+  <files>
+    <file src="DUMMY.txt" target="lib" />
+    <file src="Octo.exe" />
+    <file src="Octo.exe.config" />
+  </files>
 </package>
