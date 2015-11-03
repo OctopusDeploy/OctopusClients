@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Web.Routing;
 using log4net;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -98,12 +100,13 @@ namespace OctopusTools.Commands
                     if (feed == null)
                         throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.NuGetFeedId));
 
-                    IEnumerable<PackageResource> packages; 
+                    var filters = GetChannelVersionFilters(unresolved.StepName, channel);
+                    filters["packageId"] = unresolved.PackageId;
                     if (!string.IsNullOrWhiteSpace(VersionPrerelease))
-                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), new { packageId = unresolved.PackageId, partialMatch = true }).Where(p => p.NuGetPackageId == unresolved.PackageId && p.Version.EndsWith("-" + VersionPrerelease));
-                    else
-                        packages = Repository.Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = new[] { unresolved.PackageId } });
-                     var version = packages.FirstOrDefault();
+                        filters["preReleaseTag"] = VersionPrerelease;
+
+                    var packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), filters);
+                    var version = packages.FirstOrDefault();
 
                     if (version == null)
                     {
@@ -190,6 +193,26 @@ namespace OctopusTools.Commands
             {
                 throw new CommandException(ex.Message);
             }
+        }
+
+        IDictionary<string, object> GetChannelVersionFilters(string stepName, ChannelResource channel)
+        {
+            var filters = new Dictionary<string, object>();
+
+            if (channel == null)
+                return filters;
+
+            var rule = channel.Rules.FirstOrDefault(r => r.Actions.Contains(stepName));
+            if (rule == null)
+                return filters;
+
+            if (rule.VersionRange != null)
+                filters["versionRange"] = rule.VersionRange;
+
+            if (rule.Tag != null)
+                filters["preReleaseTag"] = rule.Tag;
+
+            return filters;
         }
     }
 }
