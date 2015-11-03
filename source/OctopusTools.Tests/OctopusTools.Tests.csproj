@@ -47,7 +47,7 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Octopus.Client, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octopus.Shared.3.2.0-beta0001\lib\net40\Release\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.3.2.0-ci0258\lib\net40\Octopus.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
