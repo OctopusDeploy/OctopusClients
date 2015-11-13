@@ -78,7 +78,7 @@
       <AssembliesToMerge Include="$(Root)\source\OctopusTools\bin\*.dll" />
     </ItemGroup>
 
-    <Exec Command="&quot;$(Root)\tools\ILMerge\ILMerge.exe&quot; /log /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
+    <Exec Command="&quot;$(Root)\source\packages\ILRepack.2.0.8\tools\ILRepack.exe&quot; /log /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
   </Target>
 
   <!--
