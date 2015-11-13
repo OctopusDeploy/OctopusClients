@@ -1,12 +1,12 @@
-$msbuild = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
+$msbuild = "MSBuild.exe"
 
-function Create-OctopusToolsRelease ([string]$BuildNumber=1)
+function Create-OctopusToolsRelease ([string]$BuildNumber=0.0.0)
 {
     <#
     .Synopsis
      Builds a complete release (compile, test, ILMerge, NuGet package, version stamp)
     #>
-	& $msbuild "Tools\Build.proj" /p:build_number=$BuildNumber /t:BuildAndPublish
+	& $msbuild "Tools\Build.proj" /p:build_number=$BuildNumber /t:BuildAndPublish /verbosity:detailed
 }
 
 function Create-OctopusToolsPackage

@@ -12,8 +12,8 @@
   <!-- Constants -->
   <PropertyGroup>
     <Root>$(MSBuildStartupDirectory)</Root>
-    <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console.exe</nunitconsoleexe>
-    <NuGetPath>$(Root)\source\packages\NuGet.CommandLine.2.8.1\tools</NuGetPath>
+    <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console-x86.exe</nunitconsoleexe>
+    <NuGetPath>$(Root)\source\packages\NuGet.CommandLine.2.8.6\tools</NuGetPath>
   </PropertyGroup>
   
   <Target Name="Diagnose">
@@ -78,7 +78,7 @@
       <AssembliesToMerge Include="$(Root)\source\OctopusTools\bin\*.dll" />
     </ItemGroup>
 
-    <Exec Command="&quot;$(Root)\tools\ILMerge\ILMerge.exe&quot; /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
+    <Exec Command="&quot;$(Root)\tools\ILMerge\ILMerge.exe&quot; /log /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
   </Target>
 
   <!--
@@ -93,7 +93,7 @@
     </ItemGroup>
     <Copy SourceFiles="@(PackagedFiles)" DestinationFolder="$(Root)\build\Temp" />
     
-    <Exec Command='"$(NuGetPath)\NuGet.exe" pack "OctopusTools.nuspec"' WorkingDirectory='$(Root)\build\Temp' />
+    <Exec Command='"$(NuGetPath)\NuGet.exe" pack "OctopusTools.nuspec" -verbosity detailed' WorkingDirectory='$(Root)\build\Temp' />
     <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(build_number).nupkg" />
     
     <ItemGroup>
