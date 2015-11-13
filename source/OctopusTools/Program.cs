@@ -21,7 +21,7 @@ namespace OctopusTools
 
         static int Main(string[] args)
         {
-            Log.Info("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetFileVersion());
+            Log.Info("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Info(string.Empty);
 

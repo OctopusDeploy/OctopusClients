@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -15,8 +16,9 @@ public static class AssemblyExtensions
         return root;
     }
 
-    public static string GetFileVersion(this Assembly assembly)
+    public static string GetInformationalVersion(this Assembly assembly)
     {
-        return assembly.GetCustomAttributes(true).OfType<AssemblyFileVersionAttribute>().First().Version;
+        var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+        return fileVersionInfo.ProductVersion;
     }
 }
