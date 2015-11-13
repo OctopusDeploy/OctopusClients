@@ -1,0 +1,2 @@
+This file is included as a fix to make this work with NuGet 3
+https://github.com/OctopusDeploy/Issues/issues/2100
