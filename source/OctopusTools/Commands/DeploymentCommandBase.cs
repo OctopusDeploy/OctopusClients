@@ -25,7 +25,8 @@ namespace OctopusTools.Commands
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
             options.Add("forcepackagedownload", "[Optional] Whether to force downloading of already installed packages (flag, default false).", v => ForcePackageDownload = true);
             options.Add("waitfordeployment", "[Optional] Whether to wait synchronously for deployment to finish.", v => WaitForDeployment = true);
-            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that the console session will wait for the deployment to finish(default 00:10:00). This will not stop the deployment.", v => DeploymentTimeout = TimeSpan.Parse(v));
+            options.Add("deploymenttimeout=", "[Optional] Specifies maximum time (timespan format) that the console session will wait for the deployment to finish(default 00:10:00). This will not stop the deployment. Requires --waitfordeployment parameter set.", v => DeploymentTimeout = TimeSpan.Parse(v));
+            options.Add("cancelontimeout", "[Optional] Whether to cancel the deployment if the deployment timeout is reached (flag, default false).", v => CancelOnTimeout = true);
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
             options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
@@ -42,6 +43,7 @@ namespace OctopusTools.Commands
         protected bool? UseGuidedFailure { get; set; }
         protected bool WaitForDeployment { get; set; }
         protected TimeSpan DeploymentTimeout { get; set; }
+        protected bool CancelOnTimeout { get; set; }
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
@@ -239,6 +241,9 @@ namespace OctopusTools.Commands
             catch (TimeoutException e)
             {
                 Log.Error(e.Message);
+
+                CancelDeploymentOnTimeoutIfRequested(deploymentTasks);
+
                 var guidedFailureDeployments =
                     from d in deployments
                     where d.UseGuidedFailure
@@ -254,6 +259,24 @@ namespace OctopusTools.Commands
                 }
                 throw new CommandException(e.Message);
             }
+        }
+
+        private void CancelDeploymentOnTimeoutIfRequested(List<TaskResource> deploymentTasks)
+        {
+            if (!CancelOnTimeout)
+                return;
+
+            deploymentTasks.ForEach(task => {
+                Log.WarnFormat("Cancelling deployment task '{0}'", task.Description);
+                try
+                {
+                    Repository.Tasks.Cancel(task);
+                }
+                catch(Exception ex)
+                {
+                    Log.ErrorFormat("Failed to cancel deployment task '{0}': {1}", task.Description, ex.Message);
+                }
+            });
         }
 
         void PrintTaskOutput(TaskResource[] taskResources)
