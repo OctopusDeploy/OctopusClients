@@ -20,6 +20,7 @@
     <developmentDependency>true</developmentDependency>
   </metadata>
   <files>
+    <file src="init.ps1" target="tools" />
     <file src="Octo.exe" target="tools" />
     <file src="Octo.exe.config" target="tools" />
   </files>

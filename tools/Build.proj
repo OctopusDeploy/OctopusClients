@@ -73,6 +73,7 @@
       <!-- Octo.exe is copied via output of ILMerge above -->
       <PackagedFiles Include="$(Root)\source\OctopusTools\bin\Octo.exe.config" />
       <PackagedFiles Include="$(Root)\source\OctopusTools\bin\OctopusTools.nuspec" />
+      <PackagedFiles Include="$(Root)\source\OctopusTools\init.ps1" />
     </ItemGroup>
     <Copy SourceFiles="@(PackagedFiles)" DestinationFolder="$(Root)\build\Temp" />
     
