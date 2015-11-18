@@ -190,7 +190,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DUMMY.txt" />
     <Content Include="Properties\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
