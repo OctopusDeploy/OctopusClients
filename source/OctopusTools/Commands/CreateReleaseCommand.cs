@@ -64,13 +64,12 @@ namespace OctopusTools.Commands
             var channel = default(ChannelResource);
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Debug("Finding channel");
+                Log.Debug("Finding channel: " + ChannelName);
                 var channels = Repository.Projects.GetChannels(project).Items;
-                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.Ordinal));
+                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
                 if (channel == null)
                     throw new CouldNotFindException("a channel named", ChannelName);
             }
-            
 
             Log.Debug("Finding deployment process for project: " + ProjectName);
             var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
