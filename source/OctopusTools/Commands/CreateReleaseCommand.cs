@@ -205,10 +205,10 @@ namespace OctopusTools.Commands
             if (rule == null)
                 return filters;
 
-            if (rule.VersionRange != null)
+            if (!string.IsNullOrWhiteSpace(rule.VersionRange))
                 filters["versionRange"] = rule.VersionRange;
 
-            if (rule.Tag != null)
+            if (!string.IsNullOrWhiteSpace(rule.Tag))
                 filters["preReleaseTag"] = rule.Tag;
 
             return filters;
