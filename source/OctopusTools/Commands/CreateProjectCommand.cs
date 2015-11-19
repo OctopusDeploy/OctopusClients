@@ -38,7 +38,7 @@ namespace OctopusTools.Commands
             }
 
             Log.Info("Finding lifecycle: " + LifecycleName);
-            var lifecycle = Repository.Lifecycles.FindOne(l => l.Name.Equals(LifecycleName, StringComparison.Ordinal));
+            var lifecycle = Repository.Lifecycles.FindOne(l => l.Name.Equals(LifecycleName, StringComparison.OrdinalIgnoreCase));
             if (lifecycle == null)
                 throw new CommandException("The lifecycle " + LifecycleName + " does not exist.");
 
