@@ -3,7 +3,7 @@
   <metadata>
     <id>OctopusTools</id>
     <title>OctopusTools</title>
-    <version>1.0.0.0</version>
+    <version>$version$</version>
     <authors>Octopus Deploy</authors>
     <owners>Octopus Deploy</owners>
     <summary>Create, deploy and promote releases using Octopus Deploy.</summary>
@@ -20,8 +20,8 @@
     <developmentDependency>true</developmentDependency>
   </metadata>
   <files>
-    <file src="DUMMY.txt" target="lib" />
-    <file src="Octo.exe" />
-    <file src="Octo.exe.config" />
+    <file src="init.ps1" target="tools" />
+    <file src="Octo.exe" target="tools" />
+    <file src="Octo.exe.config" target="tools" />
   </files>
 </package>

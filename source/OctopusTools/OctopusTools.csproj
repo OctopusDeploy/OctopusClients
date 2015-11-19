@@ -182,6 +182,7 @@
     <Compile Include="Util\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="init.ps1" />
     <None Include="app.config" />
     <None Include="OctopusTools.nuspec">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -190,7 +191,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DUMMY.txt" />
     <Content Include="Properties\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
