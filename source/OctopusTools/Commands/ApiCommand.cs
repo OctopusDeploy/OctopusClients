@@ -39,7 +39,7 @@ namespace OctopusTools.Commands
             options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
-            options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(options, v));
+            options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity service messages when logging.", v => log.EnableServiceMessages());
@@ -145,7 +145,7 @@ namespace OctopusTools.Commands
             return new NetworkCredential(username, password);
         }
 
-        protected List<string> ReadAdditionalInputsFromConfigurationFile(OptionSet options, string configFile)
+        protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
             configFile = fileSystem.GetFullPath(configFile);
 
@@ -170,7 +170,7 @@ namespace OctopusTools.Commands
                 }
             }
 
-            var remainingArguments = options.Parse(results);
+            var remainingArguments = optionGroups.Parse(results);
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized arguments in configuration file: " + string.Join(", ", remainingArguments));
 
