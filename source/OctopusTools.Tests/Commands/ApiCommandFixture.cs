@@ -15,7 +15,7 @@ namespace OctopusTools.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            apiCommand = new DummyApiCommand(RepositoryFactory, Log);
+            apiCommand = new DummyApiCommand(RepositoryFactory, Log, FileSystem);
         }
 
         [Test]

@@ -82,6 +82,7 @@
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
     <Compile Include="Commands\OptionsFixture.cs" />
+    <Compile Include="Commands\CreateReleaseCommandFixture.cs" />
     <Compile Include="Commands\SpeakCommand.cs" />
     <Compile Include="Extensions\TimeSpanExtensionsFixture.cs" />
     <Compile Include="Helpers\TestCommandExtensions.cs" />
@@ -96,6 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="Commands\Resources\CreateRelease.config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

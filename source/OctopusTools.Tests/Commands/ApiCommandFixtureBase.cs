@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Octopus.Client;
 using Octopus.Client.Model;
 using OctopusTools.Commands;
+using OctopusTools.Util;
 
 namespace OctopusTools.Tests.Commands
 {
@@ -26,6 +27,8 @@ namespace OctopusTools.Tests.Commands
             RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);
 
+            FileSystem = Substitute.For<IOctopusFileSystem>();
+
             CommandLineArgs = new List<string>
             {
                 "--server=http://the-server",
@@ -38,6 +41,8 @@ namespace OctopusTools.Tests.Commands
         public IOctopusRepositoryFactory RepositoryFactory { get; set; }
 
         public IOctopusRepository Repository { get; set; }
+
+        public IOctopusFileSystem FileSystem { get; set; }
 
         public List<string> CommandLineArgs { get; set; }
 

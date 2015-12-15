@@ -9,13 +9,11 @@ namespace OctopusTools.Commands
     public class ExportCommand : ApiCommand
     {
         readonly IExporterLocator exporterLocator;
-        readonly IOctopusFileSystem fileSystem;
 
         public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+            : base(repositoryFactory, log, fileSystem)
         {
             this.exporterLocator = exporterLocator;
-            this.fileSystem = fileSystem;
 
             var options = Options.For("Export");
             options.Add("type=", "The type to export", v => Type = v);
@@ -37,7 +35,7 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
 
             Log.Debug("Finding exporter '" + Type + "'");
-            var exporter = exporterLocator.Find(Type, Repository, fileSystem, Log);
+            var exporter = exporterLocator.Find(Type, Repository, FileSystem, Log);
             if (exporter == null)
                 throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
 

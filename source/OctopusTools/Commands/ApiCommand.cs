@@ -10,6 +10,7 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
@@ -17,6 +18,7 @@ namespace OctopusTools.Commands
     {
         readonly ILog log;
         readonly IOctopusRepositoryFactory repositoryFactory;
+        readonly IOctopusFileSystem fileSystem;
         string apiKey;
         bool enableDebugging;
         bool ignoreSslErrors;
@@ -26,17 +28,18 @@ namespace OctopusTools.Commands
         string username;
         readonly Options optionGroups = new Options();
 
-        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
+        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
         {
             this.repositoryFactory = repositoryFactory;
             this.log = log;
+            this.fileSystem = fileSystem;
 
             var options = optionGroups.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => serverBaseUrl = v);
             options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
-            options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(options, v));
+            options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity service messages when logging.", v => log.EnableServiceMessages());
@@ -52,6 +55,11 @@ namespace OctopusTools.Commands
         protected IOctopusRepository Repository
         {
             get { return repository; }
+        }
+
+        protected IOctopusFileSystem FileSystem
+        {
+            get {  return fileSystem; }
         }
 
         public void GetHelp(TextWriter writer)
@@ -137,19 +145,20 @@ namespace OctopusTools.Commands
             return new NetworkCredential(username, password);
         }
 
-        protected List<string> ReadAdditionalInputsFromConfigurationFile(OptionSet options, string configFile)
+        protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
-            configFile = Path.GetFullPath(configFile);
+            configFile = fileSystem.GetFullPath(configFile);
 
             log.Debug("Loading additional arguments from config file: " + configFile);
 
-            if (!File.Exists(configFile))
+            if (!fileSystem.FileExists(configFile))
             {
                 throw new CommandException("Unable to find config file " + configFile);
             }
 
             var results = new List<string>();
-            using (var file = new StreamReader(configFile))
+            using (var fileStream = fileSystem.OpenFile(configFile, FileAccess.Read))
+            using (var file = new StreamReader(fileStream))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)
@@ -161,7 +170,7 @@ namespace OctopusTools.Commands
                 }
             }
 
-            var remainingArguments = options.Parse(results);
+            var remainingArguments = optionGroups.Parse(results);
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized arguments in configuration file: " + string.Join(", ", remainingArguments));
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using log4net;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     public class ListEnvironmentsCommand : ApiCommand
     {
-        public ListEnvironmentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        public ListEnvironmentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
         }
 

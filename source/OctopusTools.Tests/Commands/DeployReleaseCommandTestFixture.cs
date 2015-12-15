@@ -18,7 +18,7 @@ namespace OctopusTools.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            deployReleaseCommand = new DeployReleaseCommand(RepositoryFactory, Log);
+            deployReleaseCommand = new DeployReleaseCommand(RepositoryFactory, Log, FileSystem);
 
             var project = new ProjectResource();
             var release = new ReleaseResource { Version = "1.0.0" };

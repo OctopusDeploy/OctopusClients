@@ -1,12 +1,14 @@
 ﻿using System;
 using log4net;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("list-projects", Description = "Lists all projects")]
     public class ListProjectsCommand : ApiCommand
     {
-        public ListProjectsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        public ListProjectsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
         }
 

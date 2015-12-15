@@ -2,14 +2,15 @@
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("create-project", Description = "Creates a project")]
     public class CreateProjectCommand : ApiCommand
     {
-        public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Project creation");
             options.Add("name=", "The name of the project", v => ProjectName = v);

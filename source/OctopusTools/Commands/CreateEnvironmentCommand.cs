@@ -2,14 +2,15 @@
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand
     {
-        public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Environment creation");
             options.Add("name=", "The name of the environment", v => EnvironmentName = v);

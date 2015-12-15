@@ -8,14 +8,12 @@ namespace OctopusTools.Commands
     [Command("import", Description = "Imports an Octopus object from an export file")]
     public class ImportCommand : ApiCommand
     {
-        readonly IOctopusFileSystem fileSystem;
         readonly IImporterLocator importerLocator;
 
         public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+            : base(repositoryFactory, log, fileSystem)
         {
             this.importerLocator = importerLocator;
-            this.fileSystem = fileSystem;
 
             var options = Options.For("Import");
             options.Add("type=", "The Octopus object type to import", v => Type = v);
@@ -35,7 +33,7 @@ namespace OctopusTools.Commands
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to import using the parameter: --filePath=XYZ");
 
             Log.Debug("Finding importer '" + Type + "'");
-            var importer = importerLocator.Find(Type, Repository, fileSystem, Log);
+            var importer = importerLocator.Find(Type, Repository, FileSystem, Log);
             if (importer == null)
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 

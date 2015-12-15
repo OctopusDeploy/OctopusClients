@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
-        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Deletion");
             options.Add("project=", "Name of the project", v => ProjectName = v);

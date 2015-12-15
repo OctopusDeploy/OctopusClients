@@ -16,7 +16,8 @@ namespace OctopusTools.Commands
     {
         readonly VariableDictionary variables = new VariableDictionary();
 
-        protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             SpecificMachineNames = new List<string>();
             SkipStepNames = new List<string>();

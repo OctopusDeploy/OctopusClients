@@ -15,7 +15,7 @@ namespace OctopusTools.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listEnvironmentsCommand = new ListEnvironmentsCommand(RepositoryFactory, Log);
+            listEnvironmentsCommand = new ListEnvironmentsCommand(RepositoryFactory, Log, FileSystem);
         }
 
         [Test]
