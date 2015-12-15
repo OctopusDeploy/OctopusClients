@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Octopus.Client.Model;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
@@ -11,7 +12,8 @@ namespace OctopusTools.Commands
     {
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));

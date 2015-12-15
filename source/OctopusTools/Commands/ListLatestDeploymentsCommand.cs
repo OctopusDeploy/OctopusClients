@@ -4,6 +4,7 @@ using System.Linq;
 using log4net;
 using NuGet;
 using Octopus.Client.Model;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
@@ -13,8 +14,8 @@ namespace OctopusTools.Commands
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
@@ -34,11 +35,11 @@ namespace OctopusTools.Commands
             if (environments.Count > 0)
             {
                 Log.Debug("Loading environments...");
-                environmentsById.AddRange(Repository.Environments.FindByNames(environments.ToArray()).Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
+                CollectionExtensions.AddRange(environmentsById, Repository.Environments.FindByNames(environments.ToArray()).Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
             }
             else
             {
-                environmentsById.AddRange(Repository.Environments.FindAll().Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
+                CollectionExtensions.AddRange(environmentsById, Repository.Environments.FindAll().Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
             }
 
             var deployments = Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] {});

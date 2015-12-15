@@ -9,6 +9,7 @@ using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using OctopusTools.Diagnostics;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
@@ -17,8 +18,8 @@ namespace OctopusTools.Commands
     {
         readonly IPackageVersionResolver versionResolver;
 
-        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IPackageVersionResolver versionResolver)
-            : base(repositoryFactory, log)
+        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver)
+            : base(repositoryFactory, log, fileSystem)
         {
             this.versionResolver = versionResolver;
 

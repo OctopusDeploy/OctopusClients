@@ -6,6 +6,7 @@ using System.Xml;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
@@ -14,8 +15,8 @@ namespace OctopusTools.Commands
     {
         string filePath;
 
-        public DumpDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public DumpDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Dumper");
             options.Add("filePath=", "The full path and name of the export file", delegate(string v) { filePath = v; });

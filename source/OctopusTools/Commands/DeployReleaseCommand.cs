@@ -4,14 +4,15 @@ using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log)
-            : base(repositoryFactory, log)
+        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);

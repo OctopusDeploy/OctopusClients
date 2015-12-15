@@ -4,13 +4,15 @@ using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 using OctopusTools.Infrastructure;
+using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
     [Command("promote-release", Description = "Promotes a release.")]
     public class PromoteReleaseCommand : DeploymentCommandBase
     {
-        public PromoteReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log) : base(repositoryFactory, log)
+        public PromoteReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+            : base(repositoryFactory, log, fileSystem)
         {
             DeployToEnvironmentNames = new List<string>();
 
