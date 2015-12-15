@@ -6,15 +6,14 @@ using OctopusTools.Util;
 
 namespace OctopusTools.Tests.Commands
 {
-    public class CreateReleaseCommandFixture : ApiCommandFixture
+    public class CreateReleaseCommandFixture : ApiCommandFixtureBase
     {
         CreateReleaseCommand createReleaseCommand;
         IPackageVersionResolver versionResolver;
 
         [SetUp]
         public void SetUp()
-        {
-            base.SetUp();
+        {            
             versionResolver = Substitute.For<IPackageVersionResolver>();
         }
 
