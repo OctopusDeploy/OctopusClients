@@ -35,14 +35,14 @@ namespace OctopusTools.Commands
         {
             var index = new[] {':', '='}.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
             if (index <= 0)
-                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
+                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
 
             var key = stepNameAndVersion.Substring(0, index);
             var value = (index >= stepNameAndVersion.Length - 1) ? string.Empty : stepNameAndVersion.Substring(index + 1);
 
             if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
             {
-                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {PackageId}:{Version}");
+                throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
             }
 
             SemanticVersion version;
