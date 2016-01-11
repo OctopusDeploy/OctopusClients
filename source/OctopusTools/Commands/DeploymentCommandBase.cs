@@ -37,6 +37,7 @@ namespace OctopusTools.Commands
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("v|variable=", "[Optional] Values for any prompted variables in the format Label:Value", ParseVariable);
             options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => ParseDeployAt(v));
+            options.Add("downloadartifacts", "[Optional] Download artifacts after deployment completes.", v => { WaitForDeployment = true; DownloadArtifacts = true; });
         }
 
         protected bool ForcePackageRedeployment { get; set; }
@@ -48,6 +49,7 @@ namespace OctopusTools.Commands
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
+        protected bool DownloadArtifacts { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
         bool noRawLog;
         bool showProgress;
@@ -205,6 +207,21 @@ namespace OctopusTools.Commands
                     if (updated.FinishedSuccessfully)
                     {
                         Log.InfoFormat("{0}: {1}", updated.Description, updated.State);
+
+                        if (DownloadArtifacts)
+                        {
+                            var artifacts = Repository.Artifacts.FindRegarding(deploymentTask);
+                            foreach (var artifact in artifacts.Items)
+                            {
+                                using (var artifactStream = Repository.Client.GetContent(artifact.Link("Content")))
+                                {
+                                    var savePath = Directory.GetCurrentDirectory() + "\\" + artifact.Filename;
+                                    Log.InfoFormat("Saving artifact to {0}....", savePath);
+                                    using (var fileStream = File.Create(savePath))
+                                        artifactStream.CopyTo(fileStream);
+                                }
+                            }
+                        }
                     }
                     else
                     {
