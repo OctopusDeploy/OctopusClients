@@ -74,6 +74,7 @@
     <Compile Include="Client\OctopusSessionFactoryFixture.cs" />
     <Compile Include="Commands\ApiCommandFixture.cs" />
     <Compile Include="Commands\ApiCommandFixtureBase.cs" />
+    <Compile Include="Commands\Class1.cs" />
     <Compile Include="Commands\DeployReleaseCommandTestFixture.cs" />
     <Compile Include="Commands\DummyApiCommand.cs" />
     <Compile Include="Commands\ListEnvironmentsCommandFixture.cs" />

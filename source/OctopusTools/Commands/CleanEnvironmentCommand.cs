@@ -30,7 +30,7 @@ namespace OctopusTools.Commands
         protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(environmentName)) throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
-            if (status != MachineModelStatus.Unknown) throw new CommandException("Please specify status using the parameter: --status=Offline");
+            if (status == MachineModelStatus.Unknown) throw new CommandException("Please specify status using the parameter: --status=Offline");
 
             Log.Debug("Loading environment...");
             var environmentResource = Repository.Environments.FindByName(environmentName);
