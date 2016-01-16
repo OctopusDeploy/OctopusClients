@@ -23,6 +23,8 @@ namespace OctopusTools.Commands
 
         protected override void Execute()
         {
+            var machines = new List<MachineResource>();
+            var filteredMachines = new List<MachineResource>();
             var environmentFilter = new List<string>();
             var statusFilter = new List<MachineModelStatus>();
 
@@ -45,17 +47,20 @@ namespace OctopusTools.Commands
             }
 
             Log.Debug("Loading machines...");
-            var machines = Repository.Machines.FindMany(x =>
-            {
-                return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId));
-            });
+            if (environmentFilter.Count > 0)
+                machines = Repository.Machines.FindMany(x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });
+            else
+                machines = Repository.Machines.FindAll();
 
-            Log.Info("Machines: " + machines.Count);
+            if (machines != null)
+                filteredMachines.AddRange(machines);
 
-            foreach (var machine in machines)
+            var machinesStatus = filteredMachines.Where(p => !statusFilter.Any() || statusFilter.Contains(p.Status)).ToList();
+            Log.Info("Machines: " + machinesStatus.Count);
+
+            foreach (var machine in machinesStatus)
             {
-                if (statusFilter.Contains(machine.Status))
-                    Log.InfoFormat(" - {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                Log.InfoFormat(" - {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
             }
         }
     }
