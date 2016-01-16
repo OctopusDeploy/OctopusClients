@@ -28,20 +28,12 @@ namespace OctopusTools.Tests.Commands
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
 
-            Repository.Environments.FindByNames(Arg.Any<string[]>()).Returns(new List<EnvironmentResource>
-            {
+            Repository.Environments.FindByName("Development").Returns(
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
-            });
+            );
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(new List<MachineResource>
+            var machineList = new List<MachineResource>
             {
-                new MachineResource
-                {
-                    Name = "PC01234",
-                    Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
-                    EnvironmentIds = new ReferenceCollection("Environments-001")
-                },
                 new MachineResource
                 {
                     Name = "PC01466",
@@ -56,14 +48,19 @@ namespace OctopusTools.Tests.Commands
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
-            });
+            };
+
+            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Offline, "Machines-002");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01996", MachineModelStatus.Offline, "Machines-003");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
+
+            Log.Received().InfoFormat("Deleting - {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id);
+            Repository.Machines.Received().Delete(machineList[0]);
+
+            Log.Received().InfoFormat("Deleting - {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
+            Repository.Machines.Received().Delete(machineList[1]);
         }
 
         [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "Please specify an environment name using the parameter: --environment=XYZ")]

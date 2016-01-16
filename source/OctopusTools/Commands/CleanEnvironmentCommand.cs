@@ -47,7 +47,8 @@ namespace OctopusTools.Commands
 
                 foreach (var machine in machines)
                 {
-                    Log.InfoFormat(" - {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                    Log.InfoFormat("Deleting - {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                    Repository.Machines.Delete(machine);
                 }
             }
         }
