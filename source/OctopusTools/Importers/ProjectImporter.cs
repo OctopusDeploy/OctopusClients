@@ -115,11 +115,9 @@ namespace OctopusTools.Importers
 
             if (validatedImportSettings.HasErrors)
             {
-                Log.Error("The following issues were found with the provided import file:");
-                foreach (var error in validatedImportSettings.ErrorList)
-                {
-                    Log.ErrorFormat(" {0}", error);
-                }
+                var errorMessagesCsvString = string.Join(Environment.NewLine, validatedImportSettings.ErrorList);
+                var errorMessage = string.Format($"The following issues were found with the provided import file: {Environment.NewLine}{errorMessagesCsvString}");
+                throw new CommandException(errorMessage);
             }
             else
             {
