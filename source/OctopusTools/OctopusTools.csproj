@@ -107,6 +107,7 @@
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
+    <Compile Include="Commands\ListMachinesCommand.cs" />
     <Compile Include="Commands\ListReleasesCommand.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Importers\BaseValidatedImportSettings.cs" />

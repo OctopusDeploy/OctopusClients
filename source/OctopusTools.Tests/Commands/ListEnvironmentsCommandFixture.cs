@@ -8,7 +8,7 @@ using OctopusTools.Commands;
 namespace OctopusTools.Tests.Commands
 {
     [TestFixture]
-    public class ListEnvirnomentsCommandFixture: ApiCommandFixtureBase
+    public class ListEnvironmentsCommandFixture: ApiCommandFixtureBase
     {
         ListEnvironmentsCommand listEnvironmentsCommand;
 

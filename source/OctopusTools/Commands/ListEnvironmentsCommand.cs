@@ -4,8 +4,10 @@ using OctopusTools.Util;
 
 namespace OctopusTools.Commands
 {
+    [Command("list-environments", Description = "List environments")]
     public class ListEnvironmentsCommand : ApiCommand
     {
+
         public ListEnvironmentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
