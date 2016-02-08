@@ -77,6 +77,7 @@
     <Compile Include="Commands\CleanEnvironmentCommandFixture.cs" />
     <Compile Include="Commands\DeployReleaseCommandTestFixture.cs" />
     <Compile Include="Commands\DummyApiCommand.cs" />
+    <Compile Include="Commands\ListMachinesCommandFixture.cs" />
     <Compile Include="Commands\ListEnvironmentsCommandFixture.cs" />
     <Compile Include="Commands\ListProjectsCommandFixture.cs" />
     <Compile Include="Commands\ListReleasesCommandFixture.cs" />
