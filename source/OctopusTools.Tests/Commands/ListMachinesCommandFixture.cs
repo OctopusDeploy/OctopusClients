@@ -10,6 +10,8 @@ namespace OctopusTools.Tests.Commands
     [TestFixture]
     public class ListMachinesCommandFixture : ApiCommandFixtureBase
     {
+        const string MachineLogFormat = " - {0} {1} (ID: {2}) in {3}";
+
         [SetUp]
         public void SetUp()
         {
@@ -24,7 +26,7 @@ namespace OctopusTools.Tests.Commands
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
 
-            Repository.Environments.FindByNames(Arg.Any<string[]>()).Returns(new List<EnvironmentResource>
+            Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
@@ -36,13 +38,6 @@ namespace OctopusTools.Tests.Commands
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
-                    EnvironmentIds = new ReferenceCollection("Environments-001")
-                },
-                new MachineResource
-                {
-                    Name = "PC01466",
-                    Id = "Machines-002",
-                    Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource
@@ -51,15 +46,22 @@ namespace OctopusTools.Tests.Commands
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource
+                {
+                    Name = "PC01466",
+                    Id = "Machines-002",
+                    Status = MachineModelStatus.Offline,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Offline, "Machines-002");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01996", MachineModelStatus.Offline, "Machines-003");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Offline, "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
         }
 
         [Test]
@@ -67,7 +69,7 @@ namespace OctopusTools.Tests.Commands
         {
             CommandLineArgs.Add("-environment=Development");
 
-            Repository.Environments.FindByNames(Arg.Any<string[]>()).Returns(new List<EnvironmentResource>
+            Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
@@ -86,25 +88,30 @@ namespace OctopusTools.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 1");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Online, "Machines-002");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01996", MachineModelStatus.Offline, "Machines-003");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
         }
 
         [Test]
         public void ShouldGetListOfMachinesWithNoArgs()
         {
+            Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
+            {
+                new EnvironmentResource {Name = "Development", Id = "Environments-001"}
+            });
+
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online}
+                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
+                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Online, "Machines-002");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
         }
 
         [Test]
@@ -112,19 +119,24 @@ namespace OctopusTools.Tests.Commands
         {
             CommandLineArgs.Add("-status=Offline");
 
+            Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
+            {
+                new EnvironmentResource {Name = "Development", Id = "Environments-001"}
+            });
+
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online},
-                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline}
+                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
+                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
+                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline, EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 1");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
-            Log.DidNotReceive().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Online, "Machines-002");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01996", MachineModelStatus.Offline, "Machines-003");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
         }
 
         [Test]
@@ -132,18 +144,23 @@ namespace OctopusTools.Tests.Commands
         {
             CommandLineArgs.Add("-status=Online");
 
+            Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
+            {
+                new EnvironmentResource {Name = "Development", Id = "Environments-001"}
+            });
+
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online},
-                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline}
+                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
+                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
+                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline, EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01234", MachineModelStatus.Online, "Machines-001");
-            Log.Received().InfoFormat(" - {0} {1} (ID: {2})", "PC01466", MachineModelStatus.Online, "Machines-002");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
         }
     }
 }
