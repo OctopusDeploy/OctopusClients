@@ -116,7 +116,7 @@ namespace OctopusTools.Diagnostics
                 var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, project.Name, selflink);
                 var fileguid = Guid.NewGuid() + ".md";
                 System.IO.File.WriteAllText(fileguid, markdown);
-                log.InfoFormat("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Release;]{0}", fileguid);
+                log.InfoFormat("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{0}", fileguid);
             }
         }
 
