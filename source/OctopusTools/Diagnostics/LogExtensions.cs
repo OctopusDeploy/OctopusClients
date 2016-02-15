@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using log4net;
+using Octopus.Client.Model;
 
 namespace OctopusTools.Diagnostics
 {
+    public enum BuildEnvironment
+    {
+        NoneOrUnknown,
+        TeamCity,
+        TeamFoundationBuild
+    }
+
     public static class LogExtensions
     {
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
+        static BuildEnvironment buildEnvironment;
 
         static LogExtensions()
         {
             serviceMessagesEnabled = false;
+            buildEnvironment = BuildEnvironment.NoneOrUnknown;
 
             // As per: http://confluence.jetbrains.com/display/TCD65/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-ServiceMessages
             Escapes = new Dictionary<string, string>
@@ -33,6 +43,10 @@ namespace OctopusTools.Diagnostics
         public static void EnableServiceMessages(this ILog log)
         {
             serviceMessagesEnabled = true;
+            buildEnvironment = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID"))
+                ? string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")) ? BuildEnvironment.NoneOrUnknown : BuildEnvironment.TeamCity
+                : BuildEnvironment.TeamFoundationBuild;
+            log.InfoFormat("Build environment is {0}", buildEnvironment);
         }
 
         public static void DisableServiceMessages(this ILog log)
@@ -50,10 +64,13 @@ namespace OctopusTools.Diagnostics
             if (!serviceMessagesEnabled)
                 return;
 
-            log.InfoFormat(
-                "##teamcity[{0} {1}]",
-                messageName,
-                EscapeValue(value));
+            if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            {
+                log.InfoFormat(
+                    "##teamcity[{0} {1}]",
+                    messageName,
+                    EscapeValue(value));
+            }
         }
 
         public static void ServiceMessage(this ILog log, string messageName, IDictionary<string, string> values)
@@ -61,10 +78,13 @@ namespace OctopusTools.Diagnostics
             if (!serviceMessagesEnabled)
                 return;
 
-            log.InfoFormat(
-                "##teamcity[{0} {1}]",
-                messageName,
-                string.Join(" ", values.Select(v => v.Key + "='" + EscapeValue(v.Value) + "'")));
+            if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            {
+                log.InfoFormat(
+                    "##teamcity[{0} {1}]",
+                    messageName,
+                    string.Join(" ", values.Select(v => v.Key + "='" + EscapeValue(v.Value) + "'")));
+            }
         }
 
         public static void ServiceMessage(this ILog log, string messageName, object values)
@@ -81,6 +101,21 @@ namespace OctopusTools.Diagnostics
                 var properties = TypeDescriptor.GetProperties(values).Cast<PropertyDescriptor>();
                 var valueDictionary = properties.ToDictionary(p => p.Name, p => (string) p.GetValue(values));
                 ServiceMessage(log, messageName, valueDictionary);
+            }
+        }
+
+        public static void TfsServiceMessage(this ILog log, string projectName, ReleaseResource release)
+        {
+            if (!serviceMessagesEnabled)
+                return;
+            if (buildEnvironment == BuildEnvironment.TeamFoundationBuild || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            {
+
+                var selflink = release.Links["Self"].AsString();
+                var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, projectName, selflink.Substring(0, selflink.IndexOf("{", StringComparison.Ordinal)));
+                var fileguid = Guid.NewGuid() + ".md";
+                System.IO.File.WriteAllText(fileguid, markdown);
+                log.InfoFormat("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Release;]{0}", fileguid);
             }
         }
 
