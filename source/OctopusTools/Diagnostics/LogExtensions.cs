@@ -111,8 +111,7 @@ namespace OctopusTools.Diagnostics
             if (buildEnvironment == BuildEnvironment.TeamFoundationBuild || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
 
-                var selflink = release.Links["Web"].AsString();
-                selflink = new Uri(new Uri(serverBaseUrl), selflink.Substring(0, selflink.IndexOf("{", StringComparison.Ordinal))).ToString();
+                var selflink = new Uri(new Uri(serverBaseUrl), release.Links["Web"].AsString());
                 var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, project.Name, selflink);
                 var fileguid = Guid.NewGuid() + ".md";
                 System.IO.File.WriteAllText(fileguid, markdown);
