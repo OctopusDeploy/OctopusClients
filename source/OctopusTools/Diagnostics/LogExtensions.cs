@@ -104,7 +104,7 @@ namespace OctopusTools.Diagnostics
             }
         }
 
-        public static void TfsServiceMessage(this ILog log, string projectName, ReleaseResource release)
+        public static void TfsServiceMessage(this ILog log, string serverBaseUrl, ProjectResource project, ReleaseResource release)
         {
             if (!serviceMessagesEnabled)
                 return;
@@ -112,7 +112,8 @@ namespace OctopusTools.Diagnostics
             {
 
                 var selflink = release.Links["Self"].AsString();
-                var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, projectName, selflink.Substring(0, selflink.IndexOf("{", StringComparison.Ordinal)));
+                selflink = new Uri(new Uri(serverBaseUrl), selflink.Substring(0, selflink.IndexOf("{", StringComparison.Ordinal))).ToString();
+                var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, project.Name, selflink);
                 var fileguid = Guid.NewGuid() + ".md";
                 System.IO.File.WriteAllText(fileguid, markdown);
                 log.InfoFormat("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Release;]{0}", fileguid);

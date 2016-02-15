@@ -177,9 +177,8 @@ namespace OctopusTools.Commands
                 SelectedPackages = plan.GetSelections()
             }, Force);
             Log.Info("Release " + release.Version + " created successfully!");
-
             Log.ServiceMessage("setParameter", new {name = "octo.releaseNumber", value = release.Version});
-            Log.TfsServiceMessage(project.Name, release);
+            Log.TfsServiceMessage(ServerBaseUrl, project, release);
 
             DeployRelease(project, release, DeployToEnvironmentNames);
         }

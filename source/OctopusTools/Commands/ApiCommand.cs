@@ -52,6 +52,11 @@ namespace OctopusTools.Commands
             get { return log; }
         }
 
+        protected string ServerBaseUrl
+        {
+            get { return serverBaseUrl; }
+        }
+
         protected IOctopusRepository Repository
         {
             get { return repository; }
