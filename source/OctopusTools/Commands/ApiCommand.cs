@@ -42,7 +42,7 @@ namespace OctopusTools.Commands
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
-            options.Add("enableServiceMessages", "[Optional] Enable TeamCity service messages when logging.", v => log.EnableServiceMessages());
+            options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
         }
 
         protected Options Options { get { return optionGroups; } }
@@ -50,6 +50,11 @@ namespace OctopusTools.Commands
         protected ILog Log
         {
             get { return log; }
+        }
+
+        protected string ServerBaseUrl
+        {
+            get { return serverBaseUrl; }
         }
 
         protected IOctopusRepository Repository
