@@ -58,14 +58,14 @@ namespace OctopusTools.Exporters
             {
                 foreach (var action in step.Actions)
                 {
-                    string nugetFeedId;
+                    PropertyValueResource nugetFeedId;
                     if (action.Properties.TryGetValue("Octopus.Action.Package.NuGetFeedId", out nugetFeedId))
                     {
                         Log.Debug("Finding NuGet feed for step " + step.Name);
-                        var feed = Repository.Feeds.Get(nugetFeedId);
+                        var feed = Repository.Feeds.Get(nugetFeedId.Value);
                         if (feed == null)
                             throw new CouldNotFindException("NuGet feed for step", step.Name);
-                        if (nugetFeeds.All(f => f.Id != nugetFeedId))
+                        if (nugetFeeds.All(f => f.Id != nugetFeedId.Value))
                         {
                             nugetFeeds.Add(new ReferenceDataItem(feed.Id, feed.Name));
                         }
@@ -79,14 +79,14 @@ namespace OctopusTools.Exporters
             {
                 foreach (var action in step.Actions)
                 {
-                    string templateId;
+                    PropertyValueResource templateId;
                     if (action.Properties.TryGetValue("Octopus.Action.Template.Id", out templateId))
                     {
                         Log.Debug("Finding action template for step " + step.Name);
-                        var template = actionTemplateRepository.Get(templateId);
+                        var template = actionTemplateRepository.Get(templateId.Value);
                         if (template == null)
                             throw new CouldNotFindException("action template for step", step.Name);
-                        if (actionTemplates.All(t => t.Id != templateId))
+                        if (actionTemplates.All(t => t.Id != templateId.Value))
                         {
                             actionTemplates.Add(new ReferenceDataItem(template.Id, template.Name));
                         }

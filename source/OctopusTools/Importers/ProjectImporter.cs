@@ -341,13 +341,13 @@ namespace OctopusTools.Importers
                     {
                         Log.Debug("Updating ID of NuGet Feed");
                         var nugetFeedId = action.Properties["Octopus.Action.Package.NuGetFeedId"];
-                        action.Properties["Octopus.Action.Package.NuGetFeedId"] = nugetFeeds[nugetFeedId].Id;
+                        action.Properties["Octopus.Action.Package.NuGetFeedId"] = nugetFeeds[nugetFeedId.Value].Id;
                     }
                     if (action.Properties.ContainsKey("Octopus.Action.Template.Id"))
                     {
                         Log.Debug("Updating ID and version of Action Template");
                         var templateId = action.Properties["Octopus.Action.Template.Id"];
-                        var template = actionTemplates[templateId];
+                        var template = actionTemplates[templateId.Value];
                         action.Properties["Octopus.Action.Template.Id"] = template.Id;
                         action.Properties["Octopus.Action.Template.Version"] = template.Version.ToString(CultureInfo.InvariantCulture);
                     }
