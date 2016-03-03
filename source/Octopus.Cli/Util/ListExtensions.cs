@@ -4,7 +4,7 @@ using System.Linq;
 
 // ReSharper disable CheckNamespace
 
-namespace OctopusTools.Util
+namespace Octopus.Cli.Util
 {
     public static class ListExtensions
 // ReSharper restore CheckNamespace

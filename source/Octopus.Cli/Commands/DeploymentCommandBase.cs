@@ -8,7 +8,6 @@ using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
-using OctopusTools.Util;
 using Octostache;
 
 namespace Octopus.Cli.Commands

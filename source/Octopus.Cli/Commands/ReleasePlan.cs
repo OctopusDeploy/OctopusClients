@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Util;
 
 namespace Octopus.Cli.Commands
 {

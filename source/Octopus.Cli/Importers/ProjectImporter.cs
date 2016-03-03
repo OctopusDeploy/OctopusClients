@@ -10,7 +10,6 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Util;
 
 namespace Octopus.Cli.Importers
 {
