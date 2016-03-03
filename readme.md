@@ -1,4 +1,4 @@
-## `octo.exe`
+## `Octo.exe`
 
 [Octopus Deploy][1] is an automated deployment server for professional .NET developers. 
 
