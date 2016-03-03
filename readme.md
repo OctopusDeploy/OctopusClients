@@ -1,8 +1,6 @@
-## `Octo.exe`
-
 [Octopus Deploy][1] is an automated deployment server for professional .NET developers. 
 
-`Octo.exe` is a command line tool for automating Octopus. You can use it to create and deploy releases, create and push packages, and manage environments.
+**`Octo.exe`** is a command line tool for automating Octopus. You can use it to create and deploy releases, create and push packages, and manage environments.
 
 The tool can be [downloaded from the Octopus downloads page][2]. 
 
