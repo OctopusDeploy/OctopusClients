@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" xmlns:octopus="http://octopus.org">
   <metadata>
     <id>OctopusTools</id>
-    <title>OctopusTools</title>
+    <title>Octo.exe</title>
     <version>$version$</version>
     <authors>Octopus Deploy</authors>
     <owners>Octopus Deploy</owners>
@@ -13,8 +13,8 @@
     <releaseNotes></releaseNotes>
     <language>en-US</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>http://octopusdeploy.com/</licenseUrl>
-    <projectUrl>http://octopusdeploy.com/</projectUrl>
+    <licenseUrl>https://octopus.com/</licenseUrl>
+    <projectUrl>https://octopus.com/</projectUrl>
     <iconUrl>http://i.octopusdeploy.com/resources/Avatar3_360.png</iconUrl>
     <tags>automation deployment</tags>
     <developmentDependency>true</developmentDependency>
