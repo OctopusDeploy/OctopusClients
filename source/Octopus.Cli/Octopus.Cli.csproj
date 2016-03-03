@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="Commands\CleanEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
+    <Compile Include="Commands\PushCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
