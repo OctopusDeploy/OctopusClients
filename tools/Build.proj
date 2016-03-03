@@ -30,8 +30,8 @@
   -->
   <Target Name="CleanUp">
     <ItemGroup>
-      <FilesToDelete Include="$(Root)\source\OctopusTools\bin\**\*.*" />
-      <FilesToDelete Include="$(Root)\source\OctopusTools\obj\**\*.*" />
+      <FilesToDelete Include="$(Root)\source\Octopus.Cli\bin\**\*.*" />
+      <FilesToDelete Include="$(Root)\source\Octopus.Cli\obj\**\*.*" />
       <FilesToDelete Include="$(Root)\build\Artifacts\**\*.*" />
       <FilesToDelete Include="$(Root)\build\Temp\**\*.*" />
     </ItemGroup>
@@ -52,17 +52,17 @@
   -->
   <Target Name="Compile" DependsOnTargets="CleanUp;CreateArtifactsDirectories">
     <ItemGroup>
-      <ProjectToBuild Include="$(Root)\source\OctopusTools.sln" />
+      <ProjectToBuild Include="$(Root)\source\Octo.exe.sln" />
     </ItemGroup>
     <MSBuild Projects="@(ProjectToBuild)" Targets="Build" Properties="Configuration=Release">
       <Output TaskParameter="TargetOutputs" ItemName="AssembliesBuiltByChildProjects" />
     </MSBuild>
 
     <ItemGroup>
-      <AssembliesToMerge Include="$(Root)\source\OctopusTools\bin\*.dll" />
+      <AssembliesToMerge Include="$(Root)\source\Octopus.Cli\bin\*.dll" />
     </ItemGroup>
 
-    <Exec Command="&quot;$(Root)\source\packages\ILRepack.2.0.8\tools\ILRepack.exe&quot; /log /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\OctopusTools\bin' />
+    <Exec Command="&quot;$(Root)\source\packages\ILRepack.2.0.8\tools\ILRepack.exe&quot; /log /ndebug /t:exe /targetplatform:&quot;v4,$(ProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /closed /out:&quot;$(Root)\build\Temp\Octo.exe&quot; Octo.exe @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" WorkingDirectory='$(Root)\source\Octopus.Cli\bin' />
   </Target>
 
   <!--
@@ -71,17 +71,20 @@
   <Target Name="Package" DependsOnTargets="Compile">
     <ItemGroup>
       <!-- Octo.exe is copied via output of ILMerge above -->
-      <PackagedFiles Include="$(Root)\source\OctopusTools\bin\Octo.exe.config" />
-      <PackagedFiles Include="$(Root)\source\OctopusTools\bin\OctopusTools.nuspec" />
-      <PackagedFiles Include="$(Root)\source\OctopusTools\init.ps1" />
+      <PackagedFiles Include="$(Root)\source\Octopus.Cli\bin\Octo.exe.config" />
+      <PackagedFiles Include="$(Root)\source\Octopus.Cli\bin\Octopus.Cli.nuspec" />
+      <PackagedFiles Include="$(Root)\source\Octopus.Cli\init.ps1" />
     </ItemGroup>
     <Copy SourceFiles="@(PackagedFiles)" DestinationFolder="$(Root)\build\Temp" />
     
-    <Exec Command='"$(NuGetPath)\NuGet.exe" pack "OctopusTools.nuspec" -version $(build_number) -verbosity detailed' WorkingDirectory='$(Root)\build\Temp' />
-    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(build_number).nupkg" />
+    <Message Text='"$(NuGetPath)\NuGet.exe" pack "Octopus.Cli.nuspec" -version $(build_number) -verbosity detailed' Importance="High" />
+
+    <Exec Command='"$(NuGetPath)\NuGet.exe" pack "Octopus.Cli.nuspec" -version $(build_number) -verbosity detailed' WorkingDirectory='$(Root)\build\Temp' />
+    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\Octopus.Cli.$(build_number).nupkg" />
     
     <ItemGroup>
-      <PackageFilesToDelete Include="$(Root)\build\Temp\OctopusTools.nuspec" />
+      <PackageFilesToDelete Include="$(Root)\build\Temp\Octopus.Cli.nuspec" />
+      <PackageFilesToDelete Include="$(Root)\build\Temp\init.ps1" />
       <PackageFilesToDelete Include="$(Root)\build\Temp\*.nupkg" />
     </ItemGroup>
     
@@ -90,7 +93,7 @@
     <ItemGroup>
       <ZipFiles Include="$(Root)\build\Temp\*.*" />
     </ItemGroup>
-    <Zip ZipFileName="$(Root)\build\Artifacts\OctopusTools.$(build_number).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
+    <Zip ZipFileName="$(Root)\build\Artifacts\Octopus.Cli.$(build_number).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
   </Target>
 
   <!--
@@ -98,7 +101,7 @@
   -->
   <Target Name="Test" DependsOnTargets="Compile">
     <ItemGroup>
-      <TestAssemblies Include="$(Root)\source\OctopusTools.Tests\bin\OctopusTools.Tests.dll"/>
+      <TestAssemblies Include="$(Root)\source\Octopus.Cli.Tests\bin\Octopus.Cli.Tests.dll"/>
     </ItemGroup>
     <Exec Condition="$(teamcity_dotnet_nunitlauncher) != ''" Command="&quot;$(teamcity_dotnet_nunitlauncher)&quot; v4.0 x86 NUnit-2.5.0 @(TestAssemblies->'&quot;%(FullPath)&quot;', '%20')" />
     <Exec Condition="$(teamcity_dotnet_nunitlauncher) == ''" Command="&quot;$(nunitconsoleexe)&quot; @(TestAssemblies->'&quot;%(FullPath)&quot;', '%20')" />
