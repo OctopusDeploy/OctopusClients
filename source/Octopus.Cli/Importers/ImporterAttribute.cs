@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class ImporterAttribute : Attribute, IImporterMetadata

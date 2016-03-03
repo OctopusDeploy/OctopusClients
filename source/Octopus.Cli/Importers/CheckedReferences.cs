@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     public class CheckedReferences<T> where T:Resource
     {

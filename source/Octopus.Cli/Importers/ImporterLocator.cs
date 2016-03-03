@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Autofac;
 using log4net;
+using Octopus.Cli.Util;
 using Octopus.Client;
-using OctopusTools.Util;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     public class ImporterLocator : IImporterLocator
     {

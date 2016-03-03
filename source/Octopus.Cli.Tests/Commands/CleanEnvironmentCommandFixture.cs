@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
-using OctopusTools.Infrastructure;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class CleanEnvironmentCommandFixture : ApiCommandFixtureBase

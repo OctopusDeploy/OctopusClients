@@ -1,12 +1,15 @@
 ﻿using System;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Infrastructure;
 
 // ReSharper disable CheckNamespace
-public static class TestCommandExtensions
-// ReSharper restore CheckNamespace
+namespace Octopus.Cli.Tests.Helpers
 {
-    public static void Execute(this ICommand command, params string[] args)
+    public static class TestCommandExtensions
+// ReSharper restore CheckNamespace
     {
-        command.Execute(args);
-    } 
+        public static void Execute(this ICommand command, params string[] args)
+        {
+            command.Execute(args);
+        } 
+    }
 }

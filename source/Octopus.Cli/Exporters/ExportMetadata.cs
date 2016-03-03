@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     public class ExportMetadata
     {

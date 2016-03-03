@@ -1,7 +1,6 @@
 using System;
-using OctopusTools.Infrastructure;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Infrastructure
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class CommandAttribute : Attribute, ICommandMetadata

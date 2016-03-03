@@ -1,12 +1,12 @@
-﻿using NUnit.Framework;
-using Octopus.Client.Model;
-using OctopusTools.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NSubstitute;
-using OctopusTools.Infrastructure;
+using NUnit.Framework;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
+using Octopus.Client.Model;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class DeployReleaseCommandTestFixture: ApiCommandFixtureBase

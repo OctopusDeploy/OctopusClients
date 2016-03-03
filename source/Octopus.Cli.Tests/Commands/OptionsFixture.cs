@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
-using OctopusTools.Commands;
+﻿using System;
+using NUnit.Framework;
+using Octopus.Cli.Commands;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class OptionsFixture

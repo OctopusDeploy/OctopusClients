@@ -6,13 +6,13 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using log4net;
+using Octopus.Cli.Diagnostics;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Diagnostics;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public abstract class ApiCommand : ICommand
     {

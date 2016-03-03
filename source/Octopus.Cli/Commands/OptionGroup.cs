@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using NuGet;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class Options
     {

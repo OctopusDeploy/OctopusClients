@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using OctopusTools.Commands;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     public class SpeakCommand : ICommand
     {

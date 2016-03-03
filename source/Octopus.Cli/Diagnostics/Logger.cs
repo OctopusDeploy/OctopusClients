@@ -6,7 +6,7 @@ using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
 
-namespace OctopusTools.Diagnostics
+namespace Octopus.Cli.Diagnostics
 {
     public static class Logger
     {

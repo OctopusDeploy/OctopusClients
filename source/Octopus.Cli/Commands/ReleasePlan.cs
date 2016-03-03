@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
 using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class ReleasePlan
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("clean-environment", Description = "Cleans all Offline Machines from an Environment")]
     public class CleanEnvironmentCommand : ApiCommand

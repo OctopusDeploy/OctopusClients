@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("pack", Description = "Creates a NUPKG from files on disk, without a .NUSPEC or .CSPROJ")]
     public class PackCommand : ICommand

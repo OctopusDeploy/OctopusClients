@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Tests.Helpers;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class ApiCommandFixture : ApiCommandFixtureBase

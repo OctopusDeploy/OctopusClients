@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace OctopusTools.Extensions
+namespace Octopus.Cli.Extensions
 {
     public static class AttributeExtensions
     {

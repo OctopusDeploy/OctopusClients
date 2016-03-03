@@ -5,7 +5,7 @@ using System.Linq;
 using log4net;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Diagnostics
+namespace Octopus.Cli.Diagnostics
 {
     public enum BuildEnvironment
     {

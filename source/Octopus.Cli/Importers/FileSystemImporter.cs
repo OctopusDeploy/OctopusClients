@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using log4net;
 using Newtonsoft.Json;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Serialization;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     public class FileSystemImporter
     {

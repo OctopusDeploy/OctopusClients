@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using log4net;
 
-namespace OctopusTools.Util
+namespace Octopus.Cli.Util
 {
     public class OctopusPhysicalFileSystem : IOctopusFileSystem
     {

@@ -1,9 +1,10 @@
-﻿using log4net;
-using OctopusTools.Importers;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
+﻿using System;
+using log4net;
+using Octopus.Cli.Importers;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("import", Description = "Imports an Octopus object from an export file")]
     public class ImportCommand : ApiCommand

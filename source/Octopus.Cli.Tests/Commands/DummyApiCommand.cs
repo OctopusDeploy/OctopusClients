@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using log4net;
 using NUnit.Framework;
-using OctopusTools.Commands;
-using OctopusTools.Util;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     public class DummyApiCommand : ApiCommand
     {

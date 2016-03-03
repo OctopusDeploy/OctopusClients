@@ -1,10 +1,10 @@
 ﻿using System;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand

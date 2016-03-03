@@ -1,9 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("help", "?", "h", Description = "Prints this help text")]
     public class HelpCommand : ICommand

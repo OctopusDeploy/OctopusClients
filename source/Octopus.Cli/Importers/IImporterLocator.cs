@@ -1,8 +1,9 @@
-﻿using log4net;
+﻿using System;
+using log4net;
+using Octopus.Cli.Util;
 using Octopus.Client;
-using OctopusTools.Util;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     public interface IImporterLocator
     {

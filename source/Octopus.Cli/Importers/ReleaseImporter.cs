@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Extensions;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Extensions;
-using OctopusTools.Util;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     [Importer("release", "List", Description = "Imports a projects releases from an export file")]
     public class ReleaseImporter : BaseImporter

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using NuGet;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("list-latestdeployments", Description = "List the releases last-deployed in each environment")]
     public class ListLatestDeploymentsCommand : ApiCommand

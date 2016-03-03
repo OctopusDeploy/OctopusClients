@@ -1,9 +1,10 @@
-﻿using log4net;
-using OctopusTools.Exporters;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
+﻿using System;
+using log4net;
+using Octopus.Cli.Exporters;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("export", Description = "Exports an object to a JSON file")]
     public class ExportCommand : ApiCommand

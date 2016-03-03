@@ -1,10 +1,12 @@
-﻿using NSubstitute;
+﻿using System;
+using NSubstitute;
 using NUnit.Framework;
-using OctopusTools.Commands;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Tests.Helpers;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     public class CreateReleaseCommandFixture : ApiCommandFixtureBase
     {

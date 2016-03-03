@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class ExporterAttribute : Attribute, IExporterMetadata

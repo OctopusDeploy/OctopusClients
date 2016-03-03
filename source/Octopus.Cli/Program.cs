@@ -5,15 +5,15 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using log4net;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Diagnostics;
+using Octopus.Cli.Exporters;
+using Octopus.Cli.Importers;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Exceptions;
-using OctopusTools.Commands;
-using OctopusTools.Diagnostics;
-using OctopusTools.Exporters;
-using OctopusTools.Importers;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools
+namespace Octopus.Cli
 {
     public class Program
     {

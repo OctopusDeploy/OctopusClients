@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using log4net;
 using Newtonsoft.Json;
+using Octopus.Cli.Extensions;
+using Octopus.Cli.Util;
 using Octopus.Client.Serialization;
-using OctopusTools.Extensions;
-using OctopusTools.Util;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     public class FileSystemExporter
     {

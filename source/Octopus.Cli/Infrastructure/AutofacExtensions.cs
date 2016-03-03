@@ -2,7 +2,7 @@ using System;
 using Autofac;
 using Autofac.Builder;
 
-namespace OctopusTools.Infrastructure
+namespace Octopus.Cli.Infrastructure
 {
     public static class AutofacExtensions
     {

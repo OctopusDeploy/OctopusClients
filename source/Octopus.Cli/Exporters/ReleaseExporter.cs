@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Extensions;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Extensions;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     [Exporter("release", "List", Description = "Exports either a single release, or multiple releases")]
     public class ReleaseExporter : BaseExporter

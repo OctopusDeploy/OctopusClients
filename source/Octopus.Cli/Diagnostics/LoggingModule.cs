@@ -4,7 +4,7 @@ using Autofac;
 using log4net;
 using log4net.Appender;
 
-namespace OctopusTools.Diagnostics
+namespace Octopus.Cli.Diagnostics
 {
     public class LoggingModule : Module
     {

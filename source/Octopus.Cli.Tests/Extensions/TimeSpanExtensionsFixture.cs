@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using OctopusTools.Extensions;
+using Octopus.Cli.Extensions;
 
-namespace OctopusTools.Tests.Extensions
+namespace Octopus.Cli.Tests.Extensions
 {
     [TestFixture]
     public class TimeSpanExtensionsFixture

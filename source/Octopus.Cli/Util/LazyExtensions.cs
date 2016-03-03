@@ -1,11 +1,14 @@
 using System;
 
 // ReSharper disable CheckNamespace
-public static class LazyExtensions
-// ReSharper restore CheckNamespace
+namespace Octopus.Cli.Util
 {
-    public static T LoadValue<T>(this Lazy<T> lazy)
+    public static class LazyExtensions
+// ReSharper restore CheckNamespace
     {
-        return lazy.Value;
+        public static T LoadValue<T>(this Lazy<T> lazy)
+        {
+            return lazy.Value;
+        }
     }
 }

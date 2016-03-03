@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Cli.Commands;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class ListReleasesCommandFixture : ApiCommandFixtureBase

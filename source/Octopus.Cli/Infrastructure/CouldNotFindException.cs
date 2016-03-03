@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Infrastructure
+namespace Octopus.Cli.Infrastructure
 {
     public class CouldNotFindException : CommandException
     {

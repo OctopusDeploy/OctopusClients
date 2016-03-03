@@ -136,7 +136,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class OptionValueCollection : IList, IList<string>
     {

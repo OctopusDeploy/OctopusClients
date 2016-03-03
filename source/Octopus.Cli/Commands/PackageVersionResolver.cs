@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Infrastructure;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {

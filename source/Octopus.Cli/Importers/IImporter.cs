@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     public interface IImporter
     {

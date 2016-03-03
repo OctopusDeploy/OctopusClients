@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace OctopusTools.Infrastructure
+namespace Octopus.Cli.Infrastructure
 {
     public interface ICommand
     {

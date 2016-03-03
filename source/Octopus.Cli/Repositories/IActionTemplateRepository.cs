@@ -1,7 +1,7 @@
 ﻿using System;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Repositories
+namespace Octopus.Cli.Repositories
 {
     public interface IActionTemplateRepository
     {

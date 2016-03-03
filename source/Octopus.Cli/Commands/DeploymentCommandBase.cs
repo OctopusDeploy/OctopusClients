@@ -4,13 +4,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
-using OctopusTools.Infrastructure;
 using OctopusTools.Util;
 using Octostache;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {

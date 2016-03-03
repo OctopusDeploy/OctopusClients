@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctopusTools.Extensions
+namespace Octopus.Cli.Extensions
 {
     public static class TimeSpanExtensions
     {

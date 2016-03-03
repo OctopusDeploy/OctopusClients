@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Diagnostics;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Diagnostics;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class TaskOutputProgressPrinter
     {

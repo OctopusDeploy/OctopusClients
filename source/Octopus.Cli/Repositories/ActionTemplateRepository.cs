@@ -3,7 +3,7 @@ using System.Linq;
 using Octopus.Client;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Repositories
+namespace Octopus.Cli.Repositories
 {
     public class ActionTemplateRepository : IActionTemplateRepository
     {

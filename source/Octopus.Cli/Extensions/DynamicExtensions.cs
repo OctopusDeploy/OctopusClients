@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
-using OctopusTools.Exporters;
+using Octopus.Cli.Exporters;
 
-namespace OctopusTools.Extensions
+namespace Octopus.Cli.Extensions
 {
     public static class DynamicExtensions
     {

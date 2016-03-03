@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("list-releases", Description = "List releases by project")]
     public class ListReleasesCommand : ApiCommand

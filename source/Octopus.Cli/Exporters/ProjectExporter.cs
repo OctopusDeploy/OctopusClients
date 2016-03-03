@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Extensions;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
-using OctopusTools.Extensions;
-using OctopusTools.Infrastructure;
-using OctopusTools.Repositories;
-using OctopusTools.Util;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     [Exporter("project", "ProjectWithDependencies", Description = "Exports a project as JSON to a file")]
     public class ProjectExporter : BaseExporter

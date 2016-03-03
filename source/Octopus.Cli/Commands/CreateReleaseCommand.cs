@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Web.Routing;
 using log4net;
+using Octopus.Cli.Diagnostics;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
-using OctopusTools.Diagnostics;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("create-release", Description = "Creates (and, optionally, deploys) a release.")]
     public class CreateReleaseCommand : DeploymentCommandBase

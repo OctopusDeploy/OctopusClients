@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using log4net;
+using Octopus.Cli.Util;
 using Octopus.Client;
-using OctopusTools.Util;
 
-namespace OctopusTools.Exporters
+namespace Octopus.Cli.Exporters
 {
     public abstract class BaseExporter : IExporter
     {

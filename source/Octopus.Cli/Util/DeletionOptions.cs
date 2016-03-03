@@ -1,6 +1,6 @@
 using System;
 
-namespace OctopusTools.Util
+namespace Octopus.Cli.Util
 {
     public class DeletionOptions : IEquatable<DeletionOptions>
     {

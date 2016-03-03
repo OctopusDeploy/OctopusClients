@@ -1,6 +1,6 @@
 using System;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class ReleasePlanItem
     {

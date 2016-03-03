@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Cli.Commands;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class ListProjectsCommandFixture : ApiCommandFixtureBase

@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Extensions;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
-using OctopusTools.Extensions;
-using OctopusTools.Infrastructure;
-using OctopusTools.Repositories;
 using OctopusTools.Util;
 
-namespace OctopusTools.Importers
+namespace Octopus.Cli.Importers
 {
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OctopusTools.Util
+namespace Octopus.Cli.Util
 {
     public static class Humanize
     {

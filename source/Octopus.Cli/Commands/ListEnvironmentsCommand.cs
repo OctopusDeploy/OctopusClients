@@ -1,8 +1,9 @@
 ﻿using System;
 using log4net;
-using OctopusTools.Util;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("list-environments", Description = "List environments")]
     public class ListEnvironmentsCommand : ApiCommand

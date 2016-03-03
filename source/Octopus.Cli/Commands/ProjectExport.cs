@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public class ProjectExport
     {

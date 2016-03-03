@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
 using Autofac;
-using OctopusTools.Commands;
 
-namespace OctopusTools.Infrastructure
+namespace Octopus.Cli.Infrastructure
 {
     public class CommandLocator : ICommandLocator
     {

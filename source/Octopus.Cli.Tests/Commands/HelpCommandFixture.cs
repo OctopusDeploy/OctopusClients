@@ -2,10 +2,11 @@
 using System.IO;
 using NSubstitute;
 using NUnit.Framework;
-using OctopusTools.Commands;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Tests.Helpers;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class HelpCommandFixture

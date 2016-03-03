@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase

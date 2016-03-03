@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using log4net;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using OctopusTools.Infrastructure;
-using OctopusTools.Util;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     [Command("dump-deployments", new string[] {}, Description = "Writes deployments to an XML file that can be imported in Excel")]
     public class DumpDeploymentsCommand : ApiCommand
