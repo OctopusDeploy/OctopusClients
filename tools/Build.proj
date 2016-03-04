@@ -80,7 +80,7 @@
     <Message Text='"$(NuGetPath)\NuGet.exe" pack "Octopus.Cli.nuspec" -version $(build_number) -verbosity detailed' Importance="High" />
 
     <Exec Command='"$(NuGetPath)\NuGet.exe" pack "Octopus.Cli.nuspec" -version $(build_number) -verbosity detailed' WorkingDirectory='$(Root)\build\Temp' />
-    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\Octopus.Cli.$(build_number).nupkg" />
+    <Copy SourceFiles="$(Root)\build\Temp\OctopusTools.$(build_number).nupkg" DestinationFiles="$(Root)\build\Artifacts\OctopusTools.$(build_number).nupkg" />
     
     <ItemGroup>
       <PackageFilesToDelete Include="$(Root)\build\Temp\Octopus.Cli.nuspec" />
@@ -93,7 +93,7 @@
     <ItemGroup>
       <ZipFiles Include="$(Root)\build\Temp\*.*" />
     </ItemGroup>
-    <Zip ZipFileName="$(Root)\build\Artifacts\Octopus.Cli.$(build_number).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
+    <Zip ZipFileName="$(Root)\build\Artifacts\OctopusTools.$(build_number).zip" WorkingDirectory="$(Root)\build\Temp" Files="@(ZipFiles)" />
   </Target>
 
   <!--
