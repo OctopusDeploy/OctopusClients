@@ -1,7 +1,7 @@
 ﻿using Octopus.Client;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Commands
+namespace Octopus.Cli.Commands
 {
     public interface IChannelResolverHelper
     {

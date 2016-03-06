@@ -5,11 +5,11 @@ using NSubstitute;
 using NUnit.Framework;
 using Octopus.Client;
 using Octopus.Client.Model;
-using OctopusTools.Commands;
-using OctopusTools.Diagnostics;
-using OctopusTools.Infrastructure;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Diagnostics;
+using Octopus.Cli.Infrastructure;
 
-namespace OctopusTools.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class ChannelResolverFixture
