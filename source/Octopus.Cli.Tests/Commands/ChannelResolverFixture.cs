@@ -204,7 +204,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ResolveByRuleShouldThrowWhenNoChannelsMatch()
+        public void ResolveByRuleShouldThrowWhenNoChannelsMatchAndThereIsNoDefault()
         {
             SetupDefaultAutoChannelData();
 
@@ -213,8 +213,28 @@ namespace Octopus.Cli.Tests.Commands
                 .TestChannelRuleAgainstOctopusApi(null, null, null, null)
                 .ReturnsForAnyArgs(false);
 
+            // Ensure exception occured (as no channels were marked default)
             var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules(repositoryMock, versionResolverMock));
             Assert.IsTrue(ex.Message.Contains("no channels were matched"));
+        }
+
+        [Test]
+        public void ResolveByRuleShouldSelectDefaultWhenNoChannelsMatch()
+        {
+            SetupDefaultAutoChannelData();
+
+            // Add a default channel
+            resolver.RegisterChannels(new ChannelResource[] { new ChannelResource { Name = "Channel3", IsDefault = true, Rules = new List<ChannelVersionRuleResource>() } });
+            
+            // Setup all channels to fail match
+            helper
+                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+                .ReturnsForAnyArgs(false);
+
+            // Ensure default channel was selected
+            var channel = resolver.ResolveByRules(repositoryMock, versionResolverMock);
+            Assert.That(channel, Is.Not.Null);
+            Assert.That(channel.Name, Is.EqualTo("Channel3"));
         }
 
         [Test]
