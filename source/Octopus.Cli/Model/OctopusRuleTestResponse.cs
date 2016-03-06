@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
-namespace OctopusTools.Model
+namespace Octopus.Cli.Model
 {
     public class OctopusRuleTestResponse : Resource
     {
