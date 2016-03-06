@@ -66,6 +66,7 @@ namespace Octopus.Cli
 
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>();
 
+            builder.RegisterType<ChannelResolverHelper>().As<IChannelResolverHelper>();
             builder.RegisterType<ChannelResolver>().As<IChannelResolver>();
 
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
