@@ -30,7 +30,6 @@ namespace Octopus.Cli.Commands
 
         public void RegisterChannels(IEnumerable<ChannelResource> channels)
         {
-            this.channels.Clear();
             this.channels.AddRange(channels);
         }
 
@@ -152,16 +151,24 @@ namespace Octopus.Cli.Commands
                 var message = string.Format("Could not determine channel automatically as {0} channels ({1}) matched all steps", possibleChannels.Count, string.Join(",", possibleChannels.Select(c => c.Name)));
                 throw new Exception(message);
             }
-            else if (possibleChannels.Count <= 0)
-            {
-                var message = "Could not determine channel automatically as no channels were matched";
-                throw new Exception(message);
-            }
-            else
+            else if (possibleChannels.Count == 1)
             {
                 var channel = possibleChannels.First();
                 log.InfoFormat("Channel \"{0}\": Has been automatically selected", channel.Name);
                 return channel;
+            }
+            else
+            {
+                // Fall back to default
+                var defaultChannel = channels.FirstOrDefault(ch => ch.IsDefault);
+                if (defaultChannel != null)
+                {
+                    log.InfoFormat("Channel \"{0}\": Default channel has been automatically selected as no channels were matched", defaultChannel.Name);
+                    return defaultChannel;
+                }
+
+                var message = "Could not determine channel automatically as no channels were matched and no default channel is configured";
+                throw new Exception(message);
             }
         }
     }

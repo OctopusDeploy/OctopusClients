@@ -21,8 +21,8 @@ namespace Octopus.Cli.Commands
             var releaseTemplate = repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel);
             var plan = new ReleasePlan(releaseTemplate, versionResolver);
 
-            // Steps from the release plan with packageId are the total number of steps we need to match
-            return plan.Steps.Count(s => !string.IsNullOrWhiteSpace(s.PackageId));
+            // Steps from the release plan are the total number of steps we need to match
+            return plan.Steps.Count;
         }
 
         public bool TestChannelRuleAgainstOctopusApi(IOctopusRepository repository, ChannelResource channel, ChannelVersionRuleResource rule, string packageVersion)
