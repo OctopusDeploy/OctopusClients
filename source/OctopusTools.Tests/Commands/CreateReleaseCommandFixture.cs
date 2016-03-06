@@ -10,17 +10,19 @@ namespace OctopusTools.Tests.Commands
     {
         CreateReleaseCommand createReleaseCommand;
         IPackageVersionResolver versionResolver;
+        IChannelResolver channelResolver;
 
         [SetUp]
         public void SetUp()
         {            
             versionResolver = Substitute.For<IPackageVersionResolver>();
+            channelResolver = Substitute.For<IChannelResolver>();
         }
 
         [Test]
         public void ShouldLoadOptionsFromFile()
         {
-            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, Log, new OctopusPhysicalFileSystem(Log), versionResolver);
+            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, Log, new OctopusPhysicalFileSystem(Log), versionResolver, channelResolver);
 
             Assert.Throws<CouldNotFindException>(delegate {
                 createReleaseCommand.Execute("--configfile=Commands/Resources/CreateRelease.config.txt");
