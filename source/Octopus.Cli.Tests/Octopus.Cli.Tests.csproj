@@ -81,6 +81,7 @@
     <Compile Include="Commands\ListEnvironmentsCommandFixture.cs" />
     <Compile Include="Commands\ListProjectsCommandFixture.cs" />
     <Compile Include="Commands\ListReleasesCommandFixture.cs" />
+    <Compile Include="Commands\ChannelResolverFixture.cs" />
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
     <Compile Include="Commands\OptionsFixture.cs" />

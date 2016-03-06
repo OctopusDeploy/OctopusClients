@@ -111,13 +111,17 @@
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
     <Compile Include="Commands\DumpDeploymentsCommand.cs" />
+    <Compile Include="Commands\IChannelResolver.cs" />
+    <Compile Include="Commands\IChannelResolverHelper.cs" />
     <Compile Include="Commands\ListMachinesCommand.cs" />
     <Compile Include="Commands\ListReleasesCommand.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Commands\ZipPackageBuilder.cs" />
+    <Compile Include="Commands\ChannelResolver.cs" />
     <Compile Include="Importers\BaseValidatedImportSettings.cs" />
     <Compile Include="Importers\CheckedReferences.cs" />
     <Compile Include="Infrastructure\CouldNotFindException.cs" />
+    <Compile Include="Model\OctopusRuleTestResponse.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\DeletionOptions.cs" />

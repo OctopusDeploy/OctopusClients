@@ -15,11 +15,13 @@ namespace Octopus.Cli.Commands
     public class CreateReleaseCommand : DeploymentCommandBase
     {
         readonly IPackageVersionResolver versionResolver;
+        readonly IChannelResolver channelResolver;
 
-        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver)
+        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IChannelResolver channelResolver)
             : base(repositoryFactory, log, fileSystem)
         {
             this.versionResolver = versionResolver;
+            this.channelResolver = channelResolver;
 
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -28,6 +30,7 @@ namespace Octopus.Cli.Commands
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("channel=", "[Optional] Channel to use for the new release.", v => ChannelName = v);
+            options.Add("autochannel", "[Optional] Automatically calculate Channel based on version matching rules", v => AutoChannel = true);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("packageversion=|defaultpackageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
@@ -44,6 +47,7 @@ namespace Octopus.Cli.Commands
 
         public string ProjectName { get; set; }
         public string ChannelName { get; set; }
+        public bool AutoChannel { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
@@ -55,19 +59,24 @@ namespace Octopus.Cli.Commands
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
+            if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
+
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
             var channel = default(ChannelResource);
-            if (!string.IsNullOrWhiteSpace(ChannelName))
+            channelResolver.RegisterProject(project, Repository);
+            if (AutoChannel)
+            {
+                Log.Debug("Calculating channel automatically");
+                channel = channelResolver.ResolveByRules(Repository, versionResolver);
+            }
+            else if (!string.IsNullOrWhiteSpace(ChannelName))
             {
                 Log.Debug("Finding channel: " + ChannelName);
-                var channels = Repository.Projects.GetChannels(project).Items;
-                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
-                if (channel == null)
-                    throw new CouldNotFindException("a channel named", ChannelName);
+                channel = channelResolver.ResolveByName(ChannelName);
             }
 
             Log.Debug("Finding deployment process for project: " + ProjectName);
