@@ -15,18 +15,14 @@ namespace Octopus.Cli.Tests.Commands
     public class ChannelResolverFixture
     {
         ChannelResolver resolver;
-        IChannelResolverHelper helper;
-        IPackageVersionResolver versionResolverMock;
-        IOctopusRepository repositoryMock;
+        IChannelResolverHelper helperMock;
 
         [SetUp]
         public void SetUp()
         {
-            helper = Substitute.For<IChannelResolverHelper>();
-            versionResolverMock = Substitute.For<IPackageVersionResolver>();
-            repositoryMock = Substitute.For<IOctopusRepository>();
-
-            resolver = new ChannelResolver(Logger.Default, helper, versionResolverMock);
+            helperMock = Substitute.For<IChannelResolverHelper>();
+            
+            resolver = new ChannelResolver(Logger.Default, helperMock);
         }
 
         [Test]
@@ -37,7 +33,8 @@ namespace Octopus.Cli.Tests.Commands
                 new ChannelResource { Name = "Channel1" },
                 new ChannelResource { Name = "Channel2" }
             };
-            resolver.RegisterChannels(channels);
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(channels);
 
             Assert.That(resolver.ResolveByName("Channel1").Name, Is.EqualTo("Channel1"));
             Assert.That(resolver.ResolveByName("Channel2").Name, Is.EqualTo("Channel2"));
@@ -50,7 +47,8 @@ namespace Octopus.Cli.Tests.Commands
             {
                 new ChannelResource { Name = "Channel1" }
             };
-            resolver.RegisterChannels(channels);
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(channels);
 
             Assert.That(resolver.ResolveByName("channel1").Name, Is.EqualTo("Channel1"));
             Assert.That(resolver.ResolveByName("ChAnnEL1").Name, Is.EqualTo("Channel1"));
@@ -65,11 +63,13 @@ namespace Octopus.Cli.Tests.Commands
                 new ChannelResource { Name = "Channel1" },
                 new ChannelResource { Name = "Channel2" }
             };
-            resolver.RegisterChannels(channels);
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(channels);
 
             Assert.Throws<CouldNotFindException>(() => resolver.ResolveByName("NotAChannel"));
         }
 
+        List<ChannelResource> defaultChannels;
         public void SetupDefaultAutoChannelData()
         {
             var channel1 = new ChannelResource
@@ -108,14 +108,15 @@ namespace Octopus.Cli.Tests.Commands
                 }
             };
 
-            var channels = new ChannelResource[] { channel1, channel2 };
-            resolver.RegisterChannels(channels);
+            defaultChannels = new List<ChannelResource>() { channel1, channel2 };
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(defaultChannels);
 
             // Default version for steps/packages
-            versionResolverMock.ResolveVersion(null).ReturnsForAnyArgs("1.0.0");
-
+            helperMock.ResolveVersion(null, null).ReturnsForAnyArgs("1.0.0");
+            
             // Set expected step count to however many steps channel1 has
-            helper.GetApplicableStepCount(null, null, null, null).ReturnsForAnyArgs(channel1.Rules.Sum(r => r.Actions.Count));
+            helperMock.GetApplicableStepCount(null).ReturnsForAnyArgs(channel1.Rules.Sum(r => r.Actions.Count));
         }
 
         [Test]
@@ -124,15 +125,14 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Setup Channel1 to pass match
-            helper
+            helperMock
                 .TestChannelRuleAgainstOctopusApi(
-                    Arg.Any<IOctopusRepository>(),
                     Arg.Is<ChannelResource>(c => c.Name == "Channel1"),
                     Arg.Any<ChannelVersionRuleResource>(),
                     Arg.Any<string>())
                 .Returns(true);
 
-            var channel = resolver.ResolveByRules(repositoryMock, versionResolverMock);
+            var channel = resolver.ResolveByRules();
             Assert.That(channel, Is.Not.Null);
             Assert.That(channel.Name, Is.EqualTo("Channel1"));
         }
@@ -143,15 +143,14 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Setup rule 1 and 2 to pass
-            helper
+            helperMock
                 .TestChannelRuleAgainstOctopusApi(
-                    Arg.Any<IOctopusRepository>(),
                     Arg.Any<ChannelResource>(),
                     Arg.Is<ChannelVersionRuleResource>(r => r.Id == "rule1" || r.Id == "rule2"),
                     Arg.Any<string>())
                 .Returns(true);
 
-            var channel = resolver.ResolveByRules(repositoryMock, versionResolverMock);
+            var channel = resolver.ResolveByRules();
             Assert.That(channel, Is.Not.Null);
             Assert.That(channel.Name, Is.EqualTo("Channel1"));
         }
@@ -162,15 +161,16 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Override channel to one with no rules
-            resolver.RegisterChannels(new ChannelResource[] { new ChannelResource { Name = "Channel1", Rules = new List<ChannelVersionRuleResource>() } });
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(new ChannelResource[] { new ChannelResource { Name = "Channel1", Rules = new List<ChannelVersionRuleResource>() } });
 
             // Setup all channels to pass
-            helper
-                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+            helperMock
+                .TestChannelRuleAgainstOctopusApi(null, null, null)
                 .ReturnsForAnyArgs(true);
 
             // No matches should occur, as channel with no rules doesn't get to the test phase
-            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules(repositoryMock, versionResolverMock));
+            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules());
             Assert.IsTrue(ex.Message.Contains("no channels were matched"));
         }
 
@@ -180,26 +180,27 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Override channel to one that only covers 2 out of 3 steps
-            resolver.RegisterChannels(
-                new ChannelResource[]
-                {
-                    new ChannelResource
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(
+                    new ChannelResource[]
                     {
-                        Name = "Channel1",
-                        Rules = new List<ChannelVersionRuleResource>()
+                        new ChannelResource
                         {
-                            new ChannelVersionRuleResource { Actions = new ReferenceCollection { "step1", "step2" } }
+                            Name = "Channel1",
+                            Rules = new List<ChannelVersionRuleResource>()
+                            {
+                                new ChannelVersionRuleResource { Actions = new ReferenceCollection { "step1", "step2" } }
+                            }
                         }
-                    }
-                });
+                    });
 
             // Setup all channels to pass
-            helper
-                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+            helperMock
+                .TestChannelRuleAgainstOctopusApi(null, null, null)
                 .ReturnsForAnyArgs(true);
 
             // No matches should occur, as channel with some steps not covered by rules doesn't get to the test phase
-            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules(repositoryMock, versionResolverMock));
+            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules());
             Assert.IsTrue(ex.Message.Contains("no channels were matched"));
         }
 
@@ -209,12 +210,12 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Setup all channels to fail match
-            helper
-                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+            helperMock
+                .TestChannelRuleAgainstOctopusApi(null, null, null)
                 .ReturnsForAnyArgs(false);
 
             // Ensure exception occured (as no channels were marked default)
-            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules(repositoryMock, versionResolverMock));
+            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules());
             Assert.IsTrue(ex.Message.Contains("no channels were matched"));
         }
 
@@ -224,15 +225,18 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Add a default channel
-            resolver.RegisterChannels(new ChannelResource[] { new ChannelResource { Name = "Channel3", IsDefault = true, Rules = new List<ChannelVersionRuleResource>() } });
-            
+            var channels = defaultChannels;
+            channels.Add(new ChannelResource { Name = "Channel3", IsDefault = true, Rules = new List<ChannelVersionRuleResource>() });
+            helperMock.GetChannels()
+                .ReturnsForAnyArgs(channels);
+
             // Setup all channels to fail match
-            helper
-                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+            helperMock
+                .TestChannelRuleAgainstOctopusApi(null, null, null)
                 .ReturnsForAnyArgs(false);
 
             // Ensure default channel was selected
-            var channel = resolver.ResolveByRules(repositoryMock, versionResolverMock);
+            var channel = resolver.ResolveByRules();
             Assert.That(channel, Is.Not.Null);
             Assert.That(channel.Name, Is.EqualTo("Channel3"));
         }
@@ -243,11 +247,11 @@ namespace Octopus.Cli.Tests.Commands
             SetupDefaultAutoChannelData();
 
             // Setup all channels to pass match
-            helper
-                .TestChannelRuleAgainstOctopusApi(null, null, null, null)
+            helperMock
+                .TestChannelRuleAgainstOctopusApi(null, null, null)
                 .ReturnsForAnyArgs(true);
 
-            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules(repositoryMock, versionResolverMock));
+            var ex = Assert.Throws<Exception>(() => resolver.ResolveByRules());
             Assert.IsTrue(ex.Message.Contains("matched all steps"));
         }
     }

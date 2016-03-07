@@ -11,37 +11,18 @@ namespace Octopus.Cli.Commands
     public class ChannelResolver : IChannelResolver
     {
         readonly ILog log;
-        private List<ChannelResource> channels;
-        private DeploymentProcessResource deploymentProcess;
         private IChannelResolverHelper helper;
 
-        public ChannelResolver(ILog log, IChannelResolverHelper helper, IPackageVersionResolver versionResolver)
+        public ChannelResolver(ILog log, IChannelResolverHelper helper)
         {
             this.log = log;
-            this.channels = new List<ChannelResource>();
             this.helper = helper;
-        }
-
-        public void RegisterProject(ProjectResource project, IOctopusRepository repository)
-        {
-            RegisterChannels(repository.Projects.GetChannels(project).Items);
-            RegisterDeploymentProcess(repository.DeploymentProcesses.Get(project.DeploymentProcessId));
-        }
-
-        public void RegisterChannels(IEnumerable<ChannelResource> channels)
-        {
-            this.channels.AddRange(channels);
-        }
-
-        public void RegisterDeploymentProcess(DeploymentProcessResource process)
-        {
-            this.deploymentProcess = process;
         }
 
         public ChannelResource ResolveByName(string channelName)
         {
             // Find named channel
-            var channel = channels.SingleOrDefault(c => string.Equals(c.Name, channelName, StringComparison.OrdinalIgnoreCase));
+            var channel = helper.GetChannels().SingleOrDefault(c => string.Equals(c.Name, channelName, StringComparison.OrdinalIgnoreCase));
 
             if (channel == null)
                 throw new CouldNotFindException("a channel named", channelName);
@@ -49,10 +30,10 @@ namespace Octopus.Cli.Commands
             return channel;
         }
 
-        public ChannelResource ResolveByRules(IOctopusRepository repository, IPackageVersionResolver versionResolver)
+        public ChannelResource ResolveByRules()
         {
             var possibleChannels = new List<ChannelResource>();
-            foreach (var channel in channels)
+            foreach (var channel in helper.GetChannels())
             {
                 if (channel.Rules.Count <= 0)
                 {
@@ -63,7 +44,7 @@ namespace Octopus.Cli.Commands
                 log.DebugFormat("Channel \"{0}\": Processing {1} rules", channel.Name, channel.Rules.Count);
 
                 // Get the steps required to match
-                var requiredMatches = helper.GetApplicableStepCount(repository, deploymentProcess, channel, versionResolver);
+                var requiredMatches = helper.GetApplicableStepCount(channel);
                 log.DebugFormat("Channel \"{0}\": {1} steps need to match channel rules", channel.Name, requiredMatches);
 
                 if (channel.Rules.Sum(r => r.Actions.Count) < requiredMatches)
@@ -90,7 +71,7 @@ namespace Octopus.Cli.Commands
                         log.DebugFormat("Channel \"{0}\": Checking step: {1}", channel.Name, step);
 
                         // Use version resolver to get the package version for this step
-                        string packageVersion = versionResolver.ResolveVersion(step);
+                        string packageVersion = helper.ResolveVersion(channel, step);
                         if (string.IsNullOrEmpty(packageVersion))
                         {
                             log.DebugFormat("Channel \"{0}\": No version could be resolved for step: {1}", channel.Name, step);
@@ -102,7 +83,7 @@ namespace Octopus.Cli.Commands
                         }
 
                         // Call Octopus URL to validate package version against this rule
-                        if (helper.TestChannelRuleAgainstOctopusApi(repository, channel, rule, packageVersion))
+                        if (helper.TestChannelRuleAgainstOctopusApi(channel, rule, packageVersion))
                         {
                             stepMatchCount++;
                         }
@@ -160,7 +141,7 @@ namespace Octopus.Cli.Commands
             else
             {
                 // Fall back to default
-                var defaultChannel = channels.FirstOrDefault(ch => ch.IsDefault);
+                var defaultChannel = helper.GetChannels().FirstOrDefault(ch => ch.IsDefault);
                 if (defaultChannel != null)
                 {
                     log.InfoFormat("Channel \"{0}\": Default channel has been automatically selected as no channels were matched", defaultChannel.Name);
