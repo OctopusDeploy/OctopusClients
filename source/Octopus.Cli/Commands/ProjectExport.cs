@@ -14,5 +14,7 @@ namespace Octopus.Cli.Commands
         public DeploymentProcessResource DeploymentProcess { get; set; }
         public List<ReferenceDataItem> LibraryVariableSets { get; set; }
         public ReferenceDataItem Lifecycle { get; set; }
+        public List<ChannelResource> Channels { get; set; } 
+        public List<ReferenceDataItem> ChannelLifecycles { get; set; } 
     }
 }

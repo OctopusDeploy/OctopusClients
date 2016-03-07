@@ -46,6 +46,27 @@ namespace Octopus.Cli.Exporters
             if (variables == null)
                 throw new CouldNotFindException("variable set for project", project.Name);
 
+            var channels = new List<ChannelResource>();
+            var channelLifecycles = new List<ReferenceDataItem>();
+            if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(3, 2, 0, 0))
+            {
+                Log.Debug("Finding channels for project");
+                channels.AddRange(Repository.Projects.GetChannels(project).Items);
+                foreach (var channel in channels)
+                {
+                    if (channel.LifecycleId != null)
+                    {
+                        var channelLifecycle = Repository.Lifecycles.Get(channel.LifecycleId);
+                        if (channelLifecycle == null)
+                            throw new CouldNotFindException("Lifecycle for channel", channel.Name);
+                        if (channelLifecycles.All(cl => cl.Id != channelLifecycle.Id))
+                        {
+                            channelLifecycles.Add(new ReferenceDataItem(channelLifecycle.Id, channelLifecycle.Name));
+                        }
+                    }
+                }
+            }
+
             Log.Debug("Finding deployment process for project");
             var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
             if (deploymentProcess == null)
@@ -125,7 +146,9 @@ namespace Octopus.Cli.Exporters
                 NuGetFeeds = nugetFeeds,
                 ActionTemplates = actionTemplates,
                 LibraryVariableSets = libraryVariableSets,
-                Lifecycle = lifecycle != null ? new ReferenceDataItem(lifecycle.Id, lifecycle.Name) : null
+                Lifecycle = lifecycle != null ? new ReferenceDataItem(lifecycle.Id, lifecycle.Name) : null,
+                Channels = channels.ToList(),
+                ChannelLifecycles = channelLifecycles,
             };
 
             var metadata = new ExportMetadata

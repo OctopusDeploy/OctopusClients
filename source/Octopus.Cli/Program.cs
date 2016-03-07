@@ -12,6 +12,7 @@ using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client.Exceptions;
+using System.Net;
 
 namespace Octopus.Cli
 {
@@ -24,6 +25,12 @@ namespace Octopus.Cli
             Log.Info("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Info(string.Empty);
+
+            ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Ssl3
+                | SecurityProtocolType.Tls
+                | SecurityProtocolType.Tls11
+                | SecurityProtocolType.Tls12;
 
             try
             {
