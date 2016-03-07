@@ -1,11 +1,15 @@
-﻿using Octopus.Client;
+﻿using System.Collections.Generic;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
     public interface IChannelResolverHelper
     {
-        int GetApplicableStepCount(IOctopusRepository repository, DeploymentProcessResource deploymentProcess, ChannelResource channel, IPackageVersionResolver versionResolver);
-        bool TestChannelRuleAgainstOctopusApi(IOctopusRepository repository, ChannelResource channel, ChannelVersionRuleResource rule, string packageVersion);
+        void SetContext(IOctopusRepository repository, ProjectResource project);
+        IEnumerable<ChannelResource> GetChannels();
+        int GetApplicableStepCount(ChannelResource channel);
+        bool TestChannelRuleAgainstOctopusApi(ChannelResource channel, ChannelVersionRuleResource rule, string packageVersion);
+        string ResolveVersion(ChannelResource channel, string step);
     }
 }

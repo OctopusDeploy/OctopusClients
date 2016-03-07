@@ -10,10 +10,7 @@ namespace Octopus.Cli.Commands
 {
     public interface IChannelResolver
     {
-        void RegisterProject(ProjectResource project, IOctopusRepository repository);
-        void RegisterChannels(IEnumerable<ChannelResource> channels);
-        void RegisterDeploymentProcess(DeploymentProcessResource process);
         ChannelResource ResolveByName(string channelName);
-        ChannelResource ResolveByRules(IOctopusRepository repository, IPackageVersionResolver versionResolver);
+        ChannelResource ResolveByRules();
     }
 }

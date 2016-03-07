@@ -16,12 +16,14 @@ namespace Octopus.Cli.Commands
     {
         readonly IPackageVersionResolver versionResolver;
         readonly IChannelResolver channelResolver;
+        readonly IChannelResolverHelper channelResolverHelper;
 
-        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IChannelResolver channelResolver)
+        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IChannelResolver channelResolver, IChannelResolverHelper channelResolverHelper)
             : base(repositoryFactory, log, fileSystem)
         {
             this.versionResolver = versionResolver;
             this.channelResolver = channelResolver;
+            this.channelResolverHelper = channelResolverHelper;
 
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -66,12 +68,13 @@ namespace Octopus.Cli.Commands
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
+            channelResolverHelper.SetContext(Repository, project);
+
             var channel = default(ChannelResource);
-            channelResolver.RegisterProject(project, Repository);
             if (AutoChannel)
             {
                 Log.Debug("Calculating channel automatically");
-                channel = channelResolver.ResolveByRules(Repository, versionResolver);
+                channel = channelResolver.ResolveByRules();
             }
             else if (!string.IsNullOrWhiteSpace(ChannelName))
             {
