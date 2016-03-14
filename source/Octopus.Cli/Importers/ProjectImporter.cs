@@ -148,7 +148,7 @@ namespace Octopus.Cli.Importers
                     ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles)
                         .ToDictionary(k => k.Key, v => v.Value);
 
-                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates);
+                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels);
 
                 ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed);
 
@@ -381,7 +381,8 @@ namespace Octopus.Cli.Importers
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
             IDictionary<string, FeedResource> nugetFeeds,
-            IDictionary<string, ActionTemplateResource> actionTemplates)
+            IDictionary<string, ActionTemplateResource> actionTemplates,
+            IDictionary<string, ChannelResource> channels)
         {
             Log.Debug("Importing the Projects Deployment Process");
             var existingDeploymentProcess = Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId);
@@ -413,6 +414,16 @@ namespace Octopus.Cli.Importers
                     }
                     action.Environments.Clear();
                     action.Environments.AddRange(newEnvironmentIds);
+
+                    var oldChannelIds = action.Channels;
+                    var newChannelIds = new List<string>();
+                    Log.Debug("Updating IDs of Channels");
+                    foreach (var oldChannelId in oldChannelIds)
+                    {
+                        newChannelIds.Add(channels[oldChannelId].Id);
+                    }
+                    action.Channels.Clear();
+                    action.Channels.AddRange(newChannelIds);
                 }
             }
             existingDeploymentProcess.Steps.Clear();
