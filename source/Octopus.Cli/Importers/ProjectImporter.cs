@@ -22,7 +22,7 @@ namespace Octopus.Cli.Importers
 
         public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
         public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
-
+        public bool KeepExistingProjectChannels { get; set; }
 
         class ValidatedImportSettings : BaseValidatedImportSettings
         {
@@ -432,19 +432,18 @@ namespace Octopus.Cli.Importers
             Repository.DeploymentProcesses.Modify(existingDeploymentProcess);
         }
 
-        IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(IEnumerable<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
+        IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
         {
             Log.Debug("Importing the channels for the project");
             var projectChannels = Repository.Projects.GetChannels(importedProject).Items;
             var defaultChannel = projectChannels.FirstOrDefault(c => c.IsDefault);
+            var newDefaultChannel = channels.FirstOrDefault(nc => nc.IsDefault);
+            var defaultChannelUpdated = false;
 
             foreach (var channel in channels)
             {
                 var existingChannel =
-                    projectChannels.FirstOrDefault(c => c.Name.Equals(channel.Name, StringComparison.OrdinalIgnoreCase)) ??
-                    ((channel.IsDefault && defaultChannel != null)
-                        ? defaultChannel
-                        : null);
+                    projectChannels.FirstOrDefault(c => c.Name.Equals(channel.Name, StringComparison.OrdinalIgnoreCase));
                 
                 if (existingChannel != null)
                 {
@@ -456,9 +455,16 @@ namespace Octopus.Cli.Importers
                     {
                         existingChannel.LifecycleId = channelLifecycles[channel.LifecycleId].Id;
                     }
+                    if (existingChannel.IsDefault && !existingChannel.Name.Equals(newDefaultChannel?.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        existingChannel.IsDefault = false;
+                    }
                     existingChannel.Rules.Clear();
                     existingChannel.Rules.AddRange(channel.Rules);
-
+                    if (existingChannel.Name.Equals(defaultChannel?.Name))
+                    {
+                        defaultChannelUpdated = true;
+                    }
                     yield return
                         new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Modify(existingChannel));
                 }
@@ -471,16 +477,16 @@ namespace Octopus.Cli.Importers
                     {
                         channel.LifecycleId = channelLifecycles[channel.LifecycleId].Id;
                     }
-                    if (projectChannels.Any(c => c.IsDefault) && channel.IsDefault)
-                    {
-                        channel.IsDefault = false;
-                    }
+
                     yield return
                         new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Create(channel));
                 }
             }
 
-            
+            if (!KeepExistingProjectChannels && !defaultChannelUpdated)
+            {
+                Repository.Channels.Delete(defaultChannel);
+            }
         }
 
         ProjectResource ImportProject(ProjectResource project, string projectGroupId, IDictionary<string, LibraryVariableSetResource> libraryVariableSets)
@@ -489,6 +495,7 @@ namespace Octopus.Cli.Importers
             var existingProject = Repository.Projects.FindByName(project.Name);
             if (existingProject != null)
             {
+                KeepExistingProjectChannels = true;
                 Log.Debug("Project already exist, project will be updated with new settings");
                 existingProject.ProjectGroupId = projectGroupId;
                 existingProject.DefaultToSkipIfAlreadyInstalled = project.DefaultToSkipIfAlreadyInstalled;
