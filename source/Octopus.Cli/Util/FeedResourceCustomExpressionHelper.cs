@@ -3,7 +3,7 @@
 namespace Octopus.Cli.Util
 {
     /// <summary>
-    /// Helps with situation where feeds use custom expressions Eg. #{MyCustomFeedURL}
+    /// Helps with situations where feeds use custom expressions Eg. #{MyCustomFeedURL}
     /// </summary>
     public static class FeedResourceCustomExpressionHelper
     {
