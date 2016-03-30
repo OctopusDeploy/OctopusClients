@@ -84,10 +84,10 @@ namespace Octopus.Cli.Exporters
                     {
                         Log.Debug("Finding NuGet feed for step " + step.Name);
                         FeedResource feed = null;
-                        if (FeedResourceCustomExpressionHelper.IsValidRepositoryId(nugetFeedId.Value))
+                        if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeedId.Value))
                             feed = Repository.Feeds.Get(nugetFeedId.Value);
                         else
-                            feed = FeedResourceCustomExpressionHelper.FeedResourceWithId(nugetFeedId.Value);
+                            feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeedId.Value);
 
                         if (feed == null)
                             throw new CouldNotFindException("NuGet feed for step", step.Name);

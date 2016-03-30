@@ -544,10 +544,10 @@ namespace Octopus.Cli.Importers
             foreach (var nugetFeed in nugetFeeds)
             {
                 FeedResource feed = null;
-                if (FeedResourceCustomExpressionHelper.IsValidRepositoryId(nugetFeed.Id))
+                if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeed.Id))
                     feed = Repository.Feeds.FindByName(nugetFeed.Name);
                 else
-                    feed = FeedResourceCustomExpressionHelper.FeedResourceWithId(nugetFeed.Id);
+                    feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeed.Id);
 
                 dependencies.Register(nugetFeed.Name, nugetFeed.Id, feed);
             }

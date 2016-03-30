@@ -1,20 +1,21 @@
 ﻿using Octopus.Client.Model;
+using System;
 
 namespace Octopus.Cli.Util
 {
     /// <summary>
     /// Helps with situations where feeds use custom expressions Eg. #{MyCustomFeedURL}
     /// </summary>
-    public static class FeedResourceCustomExpressionHelper
+    public static class FeedCustomExpressionHelper
     {
-        public static string FeedName = "Custom expression";
+        public static string CustomExpressionFeedName = "Custom expression";
 
-        public static FeedResource FeedResourceWithId(string id)
+        public static FeedResource CustomExpressionFeedWithId(string id)
         {
             var feed = new FeedResource()
             {
                 Id = id,
-                Name = FeedResourceCustomExpressionHelper.FeedName
+                Name = FeedCustomExpressionHelper.CustomExpressionFeedName
             };
             return feed;
         }
@@ -29,9 +30,9 @@ namespace Octopus.Cli.Util
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool IsValidRepositoryId(string id)
+        public static bool IsRealFeedId(string id)
         {
-            if (id.ToLowerInvariant().StartsWith("feeds-"))
+            if (id.StartsWith("feeds-", StringComparison.OrdinalIgnoreCase))
                 return true;
             return false;
         }
