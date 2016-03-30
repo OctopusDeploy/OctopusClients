@@ -74,7 +74,6 @@ namespace Octopus.Cli.Exporters
                 throw new CouldNotFindException("deployment process for project",project.Name);
 
             Log.Debug("Finding NuGet feed for deployment process...");
-
             var nugetFeeds = new List<ReferenceDataItem>();
             foreach (var step in deploymentProcess.Steps)
             {
