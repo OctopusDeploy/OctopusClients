@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Permissions;
 using log4net;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
@@ -37,8 +36,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, ActionTemplateResource> Templates { get; set; }
             public VariableSetResource VariableSet { get; set; }
             public IEnumerable<ChannelResource> Channels { get; set; } 
-            public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; } 
-
+            public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; }
         }
 
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
@@ -59,6 +57,7 @@ namespace Octopus.Cli.Importers
                 {
                     throw new CommandException("Unable to find a lifecycle to assign to this project.");
                 }
+
                 Log.DebugFormat("Found lifecycle '{0}'", existingLifecycle.Name);
                 project.LifecycleId = existingLifecycle.Id;
             }
@@ -470,7 +469,6 @@ namespace Octopus.Cli.Importers
                 }
                 else
                 {
-
                     Log.Debug("Channel does not exist, a new channel will be created");
                     channel.ProjectId = importedProject.Id;
                     if (channel.LifecycleId != null)
@@ -516,7 +514,6 @@ namespace Octopus.Cli.Importers
 
             return Repository.Projects.Create(project);
         }
-
        
         protected CheckedReferences<ProjectGroupResource> CheckProjectGroup(ReferenceDataItem projectGroup)
         {
@@ -546,7 +543,12 @@ namespace Octopus.Cli.Importers
             var dependencies = new CheckedReferences<FeedResource>();
             foreach (var nugetFeed in nugetFeeds)
             {
-                var feed = Repository.Feeds.FindByName(nugetFeed.Name);
+                FeedResource feed = null;
+                if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeed.Id))
+                    feed = Repository.Feeds.FindByName(nugetFeed.Name);
+                else
+                    feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeed.Id);
+
                 dependencies.Register(nugetFeed.Name, nugetFeed.Id, feed);
             }
             return dependencies;
