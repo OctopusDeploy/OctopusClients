@@ -83,6 +83,7 @@ namespace Octopus.Cli.Exporters
                     PropertyValueResource nugetFeedId;
                     if (action.Properties.TryGetValue("Octopus.Action.Package.NuGetFeedId", out nugetFeedId))
                     {
+                        Log.Debug("Finding NuGet feed for step " + step.Name);
                         FeedResource feed = null;
                         if (FeedResourceCustomExpressionHelper.IsValidRepositoryId(nugetFeedId.Value))
                             feed = Repository.Feeds.Get(nugetFeedId.Value);
