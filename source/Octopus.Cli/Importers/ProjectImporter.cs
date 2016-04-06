@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Permissions;
 using log4net;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
@@ -22,7 +21,7 @@ namespace Octopus.Cli.Importers
 
         public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
         public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
-
+        public bool KeepExistingProjectChannels { get; set; }
 
         class ValidatedImportSettings : BaseValidatedImportSettings
         {
@@ -37,8 +36,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, ActionTemplateResource> Templates { get; set; }
             public VariableSetResource VariableSet { get; set; }
             public IEnumerable<ChannelResource> Channels { get; set; } 
-            public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; } 
-
+            public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; }
         }
 
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
@@ -59,6 +57,7 @@ namespace Octopus.Cli.Importers
                 {
                     throw new CommandException("Unable to find a lifecycle to assign to this project.");
                 }
+
                 Log.DebugFormat("Found lifecycle '{0}'", existingLifecycle.Name);
                 project.LifecycleId = existingLifecycle.Id;
             }
@@ -148,7 +147,7 @@ namespace Octopus.Cli.Importers
                     ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles)
                         .ToDictionary(k => k.Key, v => v.Value);
 
-                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates);
+                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels);
 
                 ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed);
 
@@ -381,7 +380,8 @@ namespace Octopus.Cli.Importers
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
             IDictionary<string, FeedResource> nugetFeeds,
-            IDictionary<string, ActionTemplateResource> actionTemplates)
+            IDictionary<string, ActionTemplateResource> actionTemplates,
+            IDictionary<string, ChannelResource> channels)
         {
             Log.Debug("Importing the Projects Deployment Process");
             var existingDeploymentProcess = Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId);
@@ -413,6 +413,16 @@ namespace Octopus.Cli.Importers
                     }
                     action.Environments.Clear();
                     action.Environments.AddRange(newEnvironmentIds);
+
+                    var oldChannelIds = action.Channels;
+                    var newChannelIds = new List<string>();
+                    Log.Debug("Updating IDs of Channels");
+                    foreach (var oldChannelId in oldChannelIds)
+                    {
+                        newChannelIds.Add(channels[oldChannelId].Id);
+                    }
+                    action.Channels.Clear();
+                    action.Channels.AddRange(newChannelIds);
                 }
             }
             existingDeploymentProcess.Steps.Clear();
@@ -421,19 +431,18 @@ namespace Octopus.Cli.Importers
             Repository.DeploymentProcesses.Modify(existingDeploymentProcess);
         }
 
-        IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(IEnumerable<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
+        IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
         {
             Log.Debug("Importing the channels for the project");
             var projectChannels = Repository.Projects.GetChannels(importedProject).Items;
             var defaultChannel = projectChannels.FirstOrDefault(c => c.IsDefault);
+            var newDefaultChannel = channels.FirstOrDefault(nc => nc.IsDefault);
+            var defaultChannelUpdated = false;
 
             foreach (var channel in channels)
             {
                 var existingChannel =
-                    projectChannels.FirstOrDefault(c => c.Name.Equals(channel.Name, StringComparison.OrdinalIgnoreCase)) ??
-                    ((channel.IsDefault && defaultChannel != null)
-                        ? defaultChannel
-                        : null);
+                    projectChannels.FirstOrDefault(c => c.Name.Equals(channel.Name, StringComparison.OrdinalIgnoreCase));
                 
                 if (existingChannel != null)
                 {
@@ -445,31 +454,37 @@ namespace Octopus.Cli.Importers
                     {
                         existingChannel.LifecycleId = channelLifecycles[channel.LifecycleId].Id;
                     }
+                    if (existingChannel.IsDefault && !existingChannel.Name.Equals(newDefaultChannel?.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        existingChannel.IsDefault = false;
+                    }
                     existingChannel.Rules.Clear();
                     existingChannel.Rules.AddRange(channel.Rules);
-
+                    if (existingChannel.Name.Equals(defaultChannel?.Name))
+                    {
+                        defaultChannelUpdated = true;
+                    }
                     yield return
                         new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Modify(existingChannel));
                 }
                 else
                 {
-
                     Log.Debug("Channel does not exist, a new channel will be created");
                     channel.ProjectId = importedProject.Id;
                     if (channel.LifecycleId != null)
                     {
                         channel.LifecycleId = channelLifecycles[channel.LifecycleId].Id;
                     }
-                    if (projectChannels.Any(c => c.IsDefault) && channel.IsDefault)
-                    {
-                        channel.IsDefault = false;
-                    }
+
                     yield return
                         new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Create(channel));
                 }
             }
 
-            
+            if (!KeepExistingProjectChannels && !defaultChannelUpdated)
+            {
+                Repository.Channels.Delete(defaultChannel);
+            }
         }
 
         ProjectResource ImportProject(ProjectResource project, string projectGroupId, IDictionary<string, LibraryVariableSetResource> libraryVariableSets)
@@ -478,6 +493,7 @@ namespace Octopus.Cli.Importers
             var existingProject = Repository.Projects.FindByName(project.Name);
             if (existingProject != null)
             {
+                KeepExistingProjectChannels = true;
                 Log.Debug("Project already exist, project will be updated with new settings");
                 existingProject.ProjectGroupId = projectGroupId;
                 existingProject.DefaultToSkipIfAlreadyInstalled = project.DefaultToSkipIfAlreadyInstalled;
@@ -498,7 +514,6 @@ namespace Octopus.Cli.Importers
 
             return Repository.Projects.Create(project);
         }
-
        
         protected CheckedReferences<ProjectGroupResource> CheckProjectGroup(ReferenceDataItem projectGroup)
         {
@@ -528,7 +543,12 @@ namespace Octopus.Cli.Importers
             var dependencies = new CheckedReferences<FeedResource>();
             foreach (var nugetFeed in nugetFeeds)
             {
-                var feed = Repository.Feeds.FindByName(nugetFeed.Name);
+                FeedResource feed = null;
+                if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeed.Id))
+                    feed = Repository.Feeds.FindByName(nugetFeed.Name);
+                else
+                    feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeed.Id);
+
                 dependencies.Register(nugetFeed.Name, nugetFeed.Id, feed);
             }
             return dependencies;

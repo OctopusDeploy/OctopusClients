@@ -29,6 +29,7 @@ namespace Octopus.Cli.Exporters
             {
                 throw new CommandException("Please specify the name of the project to export using the paramater: --name=XYZ");
             }
+
             var projectName = parameters["Name"];
 
             Log.Debug("Finding project: " + projectName);
@@ -73,7 +74,6 @@ namespace Octopus.Cli.Exporters
                 throw new CouldNotFindException("deployment process for project",project.Name);
 
             Log.Debug("Finding NuGet feed for deployment process...");
-
             var nugetFeeds = new List<ReferenceDataItem>();
             foreach (var step in deploymentProcess.Steps)
             {
@@ -83,9 +83,15 @@ namespace Octopus.Cli.Exporters
                     if (action.Properties.TryGetValue("Octopus.Action.Package.NuGetFeedId", out nugetFeedId))
                     {
                         Log.Debug("Finding NuGet feed for step " + step.Name);
-                        var feed = Repository.Feeds.Get(nugetFeedId.Value);
+                        FeedResource feed = null;
+                        if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeedId.Value))
+                            feed = Repository.Feeds.Get(nugetFeedId.Value);
+                        else
+                            feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeedId.Value);
+
                         if (feed == null)
                             throw new CouldNotFindException("NuGet feed for step", step.Name);
+
                         if (nugetFeeds.All(f => f.Id != nugetFeedId.Value))
                         {
                             nugetFeeds.Add(new ReferenceDataItem(feed.Id, feed.Name));
@@ -123,7 +129,6 @@ namespace Octopus.Cli.Exporters
                 {
                     throw new CouldNotFindException("library variable set with Id", libraryVariableSetId);
                 }
-
                 libraryVariableSets.Add(new ReferenceDataItem(libraryVariableSet.Id, libraryVariableSet.Name));
             }
 
