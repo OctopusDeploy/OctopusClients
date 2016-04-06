@@ -41,10 +41,14 @@ namespace Octopus.Cli.Commands
             return null;
         }
 
-        private OctopusRuleTestResponse GetRuleTestResponse(ChannelResource channel, string packageVersion, string versionRange, string tag)
+        private OctopusRuleTestResponse GetRuleTestResponse(ChannelResource channel, string packageVersion, string versionRange, string tag, Action<string> traceHandler)
         {
             var checkChannelUri = string.Format("api/channels/rule-test?version={0}&versionRange={1}&preReleaseTag={2}", packageVersion, versionRange, tag);
-            log.DebugFormat("Channel \"{0}\": Calling Octopus API to test rule => {1}", channel.Name, checkChannelUri);
+
+            if (traceHandler != null)
+            {
+                traceHandler(string.Format("Channel \"{0}\": Calling Octopus API to test rule => {1}", channel.Name, checkChannelUri));
+            }
 
             return _repository.Client.Get<OctopusRuleTestResponse>(checkChannelUri);
         }
@@ -82,10 +86,17 @@ namespace Octopus.Cli.Commands
             return package == null ? "" : package.NuGetPackageId;
         }
 
-        public bool TestChannelRuleAgainstOctopusApi(ChannelResource channel, ChannelVersionRuleResource rule, string packageVersion)
+        public bool TestChannelRuleAgainstOctopusApi(ChannelResource channel, ChannelVersionRuleResource rule, string packageVersion, Action<string> traceHandler)
         {
-            var response = GetRuleTestResponse(channel, packageVersion, rule.VersionRange, rule.Tag);
-            log.DebugFormat("Channel \"{0}\": API Response: SatisfiesVersionRang={1} SatisfiesPreReleaseTag={2}", channel.Name, response.SatisfiesVersionRange, response.SatisfiesPreReleaseTag);
+            var response = GetRuleTestResponse(channel, packageVersion, rule.VersionRange, rule.Tag, traceHandler);
+            if (traceHandler != null)
+            {
+                foreach (var error in response.Errors)
+                {
+                    traceHandler(string.Format("Channel \"{0}\": API Error: {1}", channel.Name, error));
+                }
+                traceHandler(string.Format("Channel \"{0}\": API Response: SatisfiesVersionRang={1} SatisfiesPreReleaseTag={2}", channel.Name, response.SatisfiesVersionRange, response.SatisfiesPreReleaseTag));
+            }
 
             return response.SatisfiesVersionRange && response.SatisfiesPreReleaseTag;
         }
