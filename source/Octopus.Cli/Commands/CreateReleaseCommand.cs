@@ -42,6 +42,7 @@ namespace Octopus.Cli.Commands
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
             options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => Force = true);
             options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
+            options.Add("whatif", "[Optional] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
             options = Options.For("Deployment");
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
@@ -56,6 +57,7 @@ namespace Octopus.Cli.Commands
         public bool IgnoreIfAlreadyExists { get; set; }
         public bool Force { get; set; }
         public string VersionPrerelease { get; set; }
+        public bool WhatIf { get; set; }
 
         protected override void Execute()
         {
@@ -163,10 +165,9 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
             }
 
-            Log.Debug("Creating release...");
-
             if (IgnoreIfAlreadyExists)
             {
+                Log.Debug("Checking for existing release...");
                 try
                 {
                     var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
@@ -179,19 +180,30 @@ namespace Octopus.Cli.Commands
                 catch (OctopusResourceNotFoundException)
                 {
                     // Expected
+                    Log.Debug("No release exists - the coast is clear!");
                 }
             }
 
-            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
+            if (WhatIf)
             {
-                ReleaseNotes = ReleaseNotes,
-                SelectedPackages = plan.GetSelections()
-            }, Force);
-            Log.Info("Release " + release.Version + " created successfully!");
-            Log.ServiceMessage("setParameter", new {name = "octo.releaseNumber", value = release.Version});
-            Log.TfsServiceMessage(ServerBaseUrl, project, release);
+                // We were just doing a dry run - bail out here
+                Log.InfoFormat("\"WhatIf\" Run Complete - not creating or deploying release");
+            }
+            else
+            {
+                // Actually create the release!
+                Log.Debug("Creating release...");
+                var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
+                {
+                    ReleaseNotes = ReleaseNotes,
+                    SelectedPackages = plan.GetSelections()
+                }, Force);
+                Log.Info("Release " + release.Version + " created successfully!");
+                Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
+                Log.TfsServiceMessage(ServerBaseUrl, project, release);
 
-            DeployRelease(project, release, DeployToEnvironmentNames);
+                DeployRelease(project, release, DeployToEnvironmentNames);
+            }
         }
 
         void ReadReleaseNotesFromFile(string value)
