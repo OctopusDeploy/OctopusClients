@@ -94,7 +94,7 @@ namespace Octopus.Cli.Commands
 
             if (plan.UnresolvedSteps.Count > 0)
             {
-                Log.Debug("Resolving NuGet package versions...");
+                Log.Debug("Resolving package versions...");
                 foreach (var unresolved in plan.UnresolvedSteps)
                 {
                     if (!unresolved.IsResolveable)
@@ -104,9 +104,9 @@ namespace Octopus.Cli.Commands
                     }
 
                     if (!string.IsNullOrEmpty(VersionPrerelease))
-                        Log.DebugFormat("Finding latest NuGet package with pre-release '{1}' for step: {0}", unresolved.StepName, VersionPrerelease);
+                        Log.DebugFormat("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, VersionPrerelease);
                     else
-                        Log.DebugFormat("Finding latest NuGet package for step: {0}", unresolved.StepName);
+                        Log.DebugFormat("Finding latest package for step: {0}", unresolved.StepName);
 
                     var feed = Repository.Feeds.Get(unresolved.NuGetFeedId);
                     if (feed == null)
@@ -126,6 +126,7 @@ namespace Octopus.Cli.Commands
                     }
                     else
                     {
+                        Log.DebugFormat("Selected version for package with ID '{0}' determined to be '{1}'", unresolved.PackageId, version.Version);
                         unresolved.SetVersionFromLatest(version.Version);
                     }
                 }
