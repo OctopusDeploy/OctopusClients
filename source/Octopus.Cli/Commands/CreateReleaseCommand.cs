@@ -15,11 +15,15 @@ namespace Octopus.Cli.Commands
     public class CreateReleaseCommand : DeploymentCommandBase
     {
         readonly IPackageVersionResolver versionResolver;
+        readonly IChannelResolver channelResolver;
+        readonly IChannelResolverHelper channelResolverHelper;
 
-        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver)
+        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IChannelResolver channelResolver, IChannelResolverHelper channelResolverHelper)
             : base(repositoryFactory, log, fileSystem)
         {
             this.versionResolver = versionResolver;
+            this.channelResolver = channelResolver;
+            this.channelResolverHelper = channelResolverHelper;
 
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -28,6 +32,7 @@ namespace Octopus.Cli.Commands
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("channel=", "[Optional] Channel to use for the new release.", v => ChannelName = v);
+            options.Add("autochannel", "[Optional] Automatically calculate Channel based on version matching rules", v => AutoChannel = true);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("packageversion=|defaultpackageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
@@ -37,6 +42,7 @@ namespace Octopus.Cli.Commands
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
             options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => Force = true);
             options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
+            options.Add("whatif", "[Optional] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
             options = Options.For("Deployment");
             options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
@@ -44,30 +50,38 @@ namespace Octopus.Cli.Commands
 
         public string ProjectName { get; set; }
         public string ChannelName { get; set; }
+        public bool AutoChannel { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
         public bool Force { get; set; }
         public string VersionPrerelease { get; set; }
+        public bool WhatIf { get; set; }
 
         protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
+
+            if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
 
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
+            channelResolverHelper.SetContext(Repository, project);
+
             var channel = default(ChannelResource);
-            if (!string.IsNullOrWhiteSpace(ChannelName))
+            if (AutoChannel)
+            {
+                Log.Debug("Calculating channel automatically");
+                channel = channelResolver.ResolveByRules();
+            }
+            else if (!string.IsNullOrWhiteSpace(ChannelName))
             {
                 Log.Debug("Finding channel: " + ChannelName);
-                var channels = Repository.Projects.GetChannels(project).Items;
-                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
-                if (channel == null)
-                    throw new CouldNotFindException("a channel named", ChannelName);
+                channel = channelResolver.ResolveByName(ChannelName);
             }
 
             Log.Debug("Finding deployment process for project: " + ProjectName);
@@ -151,10 +165,9 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
             }
 
-            Log.Debug("Creating release...");
-
             if (IgnoreIfAlreadyExists)
             {
+                Log.Debug("Checking for existing release...");
                 try
                 {
                     var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
@@ -167,19 +180,30 @@ namespace Octopus.Cli.Commands
                 catch (OctopusResourceNotFoundException)
                 {
                     // Expected
+                    Log.Debug("No release exists - the coast is clear!");
                 }
             }
 
-            var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
+            if (WhatIf)
             {
-                ReleaseNotes = ReleaseNotes,
-                SelectedPackages = plan.GetSelections()
-            }, Force);
-            Log.Info("Release " + release.Version + " created successfully!");
-            Log.ServiceMessage("setParameter", new {name = "octo.releaseNumber", value = release.Version});
-            Log.TfsServiceMessage(ServerBaseUrl, project, release);
+                // We were just doing a dry run - bail out here
+                Log.InfoFormat("\"WhatIf\" Run Complete - not creating or deploying release");
+            }
+            else
+            {
+                // Actually create the release!
+                Log.Debug("Creating release...");
+                var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
+                {
+                    ReleaseNotes = ReleaseNotes,
+                    SelectedPackages = plan.GetSelections()
+                }, Force);
+                Log.Info("Release " + release.Version + " created successfully!");
+                Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
+                Log.TfsServiceMessage(ServerBaseUrl, project, release);
 
-            DeployRelease(project, release, DeployToEnvironmentNames);
+                DeployRelease(project, release, DeployToEnvironmentNames);
+            }
         }
 
         void ReadReleaseNotesFromFile(string value)
