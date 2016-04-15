@@ -64,10 +64,9 @@ namespace Octopus.Cli
             builder.RegisterType<ExporterLocator>().As<IExporterLocator>();
             builder.RegisterType<ImporterLocator>().As<IImporterLocator>();
 
+            builder.RegisterType<ReleasePlanBuilder>().As<IReleasePlanBuilder>().SingleInstance();
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
-
-            builder.RegisterType<ChannelResolverHelper>().As<IChannelResolverHelper>().SingleInstance();
-            builder.RegisterType<ChannelResolver>().As<IChannelResolver>();
+            builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
 

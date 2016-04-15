@@ -14,16 +14,12 @@ namespace Octopus.Cli.Commands
     [Command("create-release", Description = "Creates (and, optionally, deploys) a release.")]
     public class CreateReleaseCommand : DeploymentCommandBase
     {
-        readonly IPackageVersionResolver versionResolver;
-        readonly IChannelResolver channelResolver;
-        readonly IChannelResolverHelper channelResolverHelper;
+        private readonly IReleasePlanBuilder releasePlanBuilder;
 
-        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IChannelResolver channelResolver, IChannelResolverHelper channelResolverHelper)
+        public CreateReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder)
             : base(repositoryFactory, log, fileSystem)
         {
-            this.versionResolver = versionResolver;
-            this.channelResolver = channelResolver;
-            this.channelResolverHelper = channelResolverHelper;
+            this.releasePlanBuilder = releasePlanBuilder;
 
             DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -41,7 +37,7 @@ namespace Octopus.Cli.Commands
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
             options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => Force = true);
-            options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPrerelease = v);
+            options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPreReleaseTag = v);
             options.Add("whatif", "[Optional] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
             options = Options.For("Deployment");
@@ -56,7 +52,7 @@ namespace Octopus.Cli.Commands
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
         public bool Force { get; set; }
-        public string VersionPrerelease { get; set; }
+        public string VersionPreReleaseTag { get; set; }
         public bool WhatIf { get; set; }
 
         protected override void Execute()
@@ -65,72 +61,14 @@ namespace Octopus.Cli.Commands
 
             if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
 
+            if (WhatIf) Log.Info("What if: no release will be created.");
+
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
-            channelResolverHelper.SetContext(Repository, project);
-
-            var channel = default(ChannelResource);
-            if (AutoChannel)
-            {
-                Log.Debug("Calculating channel automatically");
-                channel = channelResolver.ResolveByRules();
-            }
-            else if (!string.IsNullOrWhiteSpace(ChannelName))
-            {
-                Log.Debug("Finding channel: " + ChannelName);
-                channel = channelResolver.ResolveByName(ChannelName);
-            }
-
-            Log.Debug("Finding deployment process for project: " + ProjectName);
-            var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
-
-            Log.Debug("Finding release template...");
-            var releaseTemplate = Repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel);
-
-            var plan = new ReleasePlan(releaseTemplate, versionResolver);
-
-            if (plan.UnresolvedSteps.Count > 0)
-            {
-                Log.Debug("Resolving package versions...");
-                foreach (var unresolved in plan.UnresolvedSteps)
-                {
-                    if (!unresolved.IsResolveable)
-                    {
-                        Log.ErrorFormat("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
-                        continue;
-                    }
-
-                    if (!string.IsNullOrEmpty(VersionPrerelease))
-                        Log.DebugFormat("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, VersionPrerelease);
-                    else
-                        Log.DebugFormat("Finding latest package for step: {0}", unresolved.StepName);
-
-                    var feed = Repository.Feeds.Get(unresolved.NuGetFeedId);
-                    if (feed == null)
-                        throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.NuGetFeedId));
-
-                    var filters = GetChannelVersionFilters(unresolved.StepName, channel);
-                    filters["packageId"] = unresolved.PackageId;
-                    if (!string.IsNullOrWhiteSpace(VersionPrerelease))
-                        filters["preReleaseTag"] = VersionPrerelease;
-
-                    var packages = Repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), filters);
-                    var version = packages.FirstOrDefault();
-
-                    if (version == null)
-                    {
-                        Log.ErrorFormat("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
-                    }
-                    else
-                    {
-                        Log.DebugFormat("Selected version for package with ID '{0}' determined to be '{1}'", unresolved.PackageId, version.Version);
-                        unresolved.SetVersionFromLatest(version.Version);
-                    }
-                }
-            }
+            var plan = BuildReleasePlan(project);
 
             string versionNumber;
             if (!string.IsNullOrWhiteSpace(VersionNumber))
@@ -138,25 +76,24 @@ namespace Octopus.Cli.Commands
                 Log.Debug("Using version number provided on command-line.");
                 versionNumber = VersionNumber;
             }
-            else if (!string.IsNullOrWhiteSpace(releaseTemplate.NextVersionIncrement))
+            else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.NextVersionIncrement))
             {
                 Log.Debug("Using version number from release template.");
-                versionNumber = releaseTemplate.NextVersionIncrement;
+                versionNumber = plan.ReleaseTemplate.NextVersionIncrement;
             }
-            else if (!string.IsNullOrWhiteSpace(releaseTemplate.VersioningPackageStepName))
+            else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.VersioningPackageStepName))
             {
                 Log.Debug("Using version number from package step.");
-                versionNumber = plan.GetActionVersionNumber(releaseTemplate.VersioningPackageStepName);
+                versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName);
             }
             else
             {
                 throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
 
-            if (plan.Steps.Count > 0)
+            if (plan.Steps.Any())
             {
                 Log.Info("Release plan for release:    " + versionNumber);
-                Log.Info("Steps: ");
                 Log.Info(plan.FormatAsTable());
             }
 
@@ -187,13 +124,13 @@ namespace Octopus.Cli.Commands
             if (WhatIf)
             {
                 // We were just doing a dry run - bail out here
-                Log.InfoFormat("\"WhatIf\" Run Complete - not creating or deploying release");
+                Log.InfoFormat("What if: not creating this release");
             }
             else
             {
                 // Actually create the release!
                 Log.Debug("Creating release...");
-                var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, channel?.Id)
+                var release = Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, plan.Channel?.Id)
                 {
                     ReleaseNotes = ReleaseNotes,
                     SelectedPackages = plan.GetSelections()
@@ -206,6 +143,79 @@ namespace Octopus.Cli.Commands
             }
         }
 
+        private ReleasePlan BuildReleasePlan(ProjectResource project)
+        {
+            ReleasePlan plan;
+
+            if (AutoChannel)
+            {
+                Log.Debug("Automatically selecting the best channel for this release...");
+                plan = AutoSelectBestReleasePlanOrThrow(project);
+            }
+            else if (!string.IsNullOrWhiteSpace(ChannelName))
+            {
+                Log.Debug("Building release plan for channel: " + ChannelName);
+                var channels = Repository.Projects.GetChannels(project);
+                var matchingChannel =
+                    channels.Items.SingleOrDefault(c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase));
+                if (matchingChannel == null)
+                    throw new CouldNotFindException($"a channel in {project.Name} named", ChannelName);
+
+                plan = releasePlanBuilder.Build(Repository, project, matchingChannel, VersionPreReleaseTag);
+            }
+            else
+            {
+                plan = releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag);
+            }
+
+            return plan;
+        }
+
+        ReleasePlan AutoSelectBestReleasePlanOrThrow(ProjectResource project)
+        {
+            // Build a release plan for each channel to determine which channel is the best match for the provided options
+            var candidateChannels = Repository.Projects.GetChannels(project).Items;
+            var releasePlans = new List<ReleasePlan>();
+            foreach (var channel in candidateChannels)
+            {
+                if (channel.Rules.Count <= 0)
+                {
+                    Log.Debug($"Channel '{channel.Name}' has no version rules, skipping...");
+                    continue;
+                }
+
+                Log.Debug($"Building a release plan for Channel '{channel.Name}'...");
+
+                var plan = releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag);
+                releasePlans.Add(plan);
+            }
+
+            var viablePlans = releasePlans.Where(p => p.IsViableReleasePlan()).ToArray();
+            if (viablePlans.Length <= 0)
+            {
+                throw new CommandException(
+                    "There are no viable release plans in any channels using the provided arguments. The following release plans were considered:" +
+                    Environment.NewLine +
+                    $"{string.Join(Environment.NewLine, releasePlans.Select(p => p.FormatAsTable()))}");
+            }
+
+            if (viablePlans.Length == 1)
+            {
+                var selectedPlan = viablePlans.Single();
+                Log.Info($"Selected the release plan for Channel '{selectedPlan.Channel.Name}' - it is a perfect match");
+                return selectedPlan;
+            }
+
+            throw new CommandException(
+                $"There are {viablePlans.Length} viable release plans using the provided arguments so we cannot auto-select one. The viable release plans are:" +
+                Environment.NewLine +
+                $"{string.Join(Environment.NewLine, viablePlans.Select(p => p.FormatAsTable()))}" +
+                Environment.NewLine +
+                "The unviable release plans are:" +
+                Environment.NewLine +
+                $"{string.Join(Environment.NewLine, releasePlans.Except(viablePlans).Select(p => p.FormatAsTable()))}");
+        }
+
         void ReadReleaseNotesFromFile(string value)
         {
             try
@@ -216,26 +226,6 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException(ex.Message);
             }
-        }
-
-        IDictionary<string, object> GetChannelVersionFilters(string stepName, ChannelResource channel)
-        {
-            var filters = new Dictionary<string, object>();
-
-            if (channel == null)
-                return filters;
-
-            var rule = channel.Rules.FirstOrDefault(r => r.Actions.Contains(stepName));
-            if (rule == null)
-                return filters;
-
-            if (!string.IsNullOrWhiteSpace(rule.VersionRange))
-                filters["versionRange"] = rule.VersionRange;
-
-            if (!string.IsNullOrWhiteSpace(rule.Tag))
-                filters["preReleaseTag"] = rule.Tag;
-
-            return filters;
         }
     }
 }
