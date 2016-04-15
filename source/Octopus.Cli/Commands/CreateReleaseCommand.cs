@@ -154,7 +154,7 @@ namespace Octopus.Cli.Commands
             }
             else if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Debug("Building release plan for channel: " + ChannelName);
+                Log.Info("Building release plan for channel: " + ChannelName);
                 var channels = Repository.Projects.GetChannels(project);
                 var matchingChannel =
                     channels.Items.SingleOrDefault(c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase));
@@ -184,7 +184,7 @@ namespace Octopus.Cli.Commands
                     continue;
                 }
 
-                Log.Debug($"Building a release plan for Channel '{channel.Name}'...");
+                Log.Info($"Building a release plan for Channel '{channel.Name}'...");
 
                 var plan = releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag);
                 releasePlans.Add(plan);

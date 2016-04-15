@@ -26,7 +26,7 @@ namespace Octopus.Cli.Commands
             if (repository == null) throw new ArgumentNullException(nameof(repository));
             if (project == null) throw new ArgumentNullException(nameof(project));
 
-            log.Debug("Finding deployment process for project: " + project.Name);
+            log.Debug("Finding deployment process...");
             var deploymentProcess = repository.DeploymentProcesses.Get(project.DeploymentProcessId);
 
             log.Debug("Finding release template...");
@@ -36,7 +36,7 @@ namespace Octopus.Cli.Commands
 
             if (plan.UnresolvedSteps.Any())
             {
-                log.Debug("Resolving package versions...");
+                log.Debug("The package version for some steps was not specified. Going to try and resolve those automatically...");
                 foreach (var unresolved in plan.UnresolvedSteps)
                 {
                     if (!unresolved.IsResolveable)
@@ -68,6 +68,7 @@ namespace Octopus.Cli.Commands
                     }
                     else
                     {
+                        log.DebugFormat("Selected '{0}' version '{1}' for '{2}'", latestPackage.NuGetPackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }
