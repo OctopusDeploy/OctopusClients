@@ -69,8 +69,8 @@
       <HintPath>..\packages\NuGet.Core.2.9.0\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Octopus.Client, Version=3.3.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octopus.Client.3.3.2\lib\net40\Octopus.Client.dll</HintPath>
+    <Reference Include="Octopus.Client, Version=3.3.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octopus.Client.3.3.9\lib\net40\Octopus.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Octostache, Version=1.0.2.21, Culture=neutral, processorArchitecture=MSIL">
