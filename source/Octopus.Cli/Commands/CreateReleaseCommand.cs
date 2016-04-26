@@ -60,6 +60,7 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
             if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
+            if (AutoChannel && Force) throw new CommandException("Cannot specify --autochannel and --ignorechannelrules arguments - the channel rules are how we select the most suitable channel");
 
             if (WhatIf) Log.Info("What if: no release will be created.");
 
