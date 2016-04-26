@@ -83,7 +83,7 @@ namespace Octopus.Cli.Commands
             var nameColumnWidth = Width("Name", steps.Select(s => s.StepName));
             var versionColumnWidth = Width("Version", steps.Select(s => s.Version));
             var sourceColumnWidth = Width("Source", steps.Select(s => s.VersionSource));
-            var rulesColumnWidth = Width("Version rules", steps.Select(s => s.ChannelVersionRuleTestResult.ToSummaryString()));
+            var rulesColumnWidth = Width("Version rules", steps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
             var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + versionColumnWidth + "} {3,-" + sourceColumnWidth + "} {4,-" + rulesColumnWidth + "}";
 
             result.AppendFormat(format, "#", "Name", "Version", "Source", "Version rules").AppendLine();
@@ -96,7 +96,7 @@ namespace Octopus.Cli.Commands
                     item.StepName,
                     item.Version ?? "ERROR",
                     item.VersionSource,
-                    item.ChannelVersionRuleTestResult.ToSummaryString())
+                    item.ChannelVersionRuleTestResult?.ToSummaryString())
                     .AppendLine();
             }
 
