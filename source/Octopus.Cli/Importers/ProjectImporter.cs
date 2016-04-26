@@ -108,7 +108,7 @@ namespace Octopus.Cli.Importers
             validatedImportSettings = new ValidatedImportSettings
             {
                 Project = project,
-                ProjectGroupId = projectGroupChecks.FoundDependencies.Values.First().Id,
+                ProjectGroupId = projectGroupChecks.FoundDependencies.Values.FirstOrDefault()?.Id,
                 LibraryVariableSets = libraryVariableSetChecks.FoundDependencies,
                 Environments = environmentChecks.FoundDependencies,
                 Feeds = feedChecks.FoundDependencies,
