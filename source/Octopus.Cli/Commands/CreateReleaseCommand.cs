@@ -92,15 +92,28 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
 
-            if (plan.Steps.Any())
+            if (plan.IsViableReleasePlan())
             {
-                Log.Info("Release plan for release:    " + versionNumber);
-                Log.Info(plan.FormatAsTable());
+                Log.Info($"Release plan for {ProjectName} {versionNumber}{Environment.NewLine}{plan.FormatAsTable()}");
+            }
+            else
+            {
+                Log.Error($"Release plan for {ProjectName} {versionNumber}{Environment.NewLine}{plan.FormatAsTable()}");
             }
 
             if (plan.HasUnresolvedSteps())
             {
                 throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
+            }
+
+            if (plan.HasStepsViolatingChannelVersionRules())
+            {
+                if (Force)
+                {
+                    Log.Warn($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Forcing the release to be created ignoring these rules...");
+                }
+
+                throw new CommandException($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Either correct the package versions for this release, select a different channel using --channel=MyChannel argument, let Octopus select the best channel using the --autoChannel argument, or ignore these version rules altogether by using the --ignoreChannelRules argument.");
             }
 
             if (IgnoreIfAlreadyExists)
