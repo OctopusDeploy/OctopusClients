@@ -74,18 +74,18 @@ namespace Octopus.Cli.Commands
             string versionNumber;
             if (!string.IsNullOrWhiteSpace(VersionNumber))
             {
-                Log.Debug("Using version number provided on command-line.");
                 versionNumber = VersionNumber;
+                Log.Debug("Using version number provided on command-line: " + versionNumber);
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.NextVersionIncrement))
             {
-                Log.Debug("Using version number from release template.");
                 versionNumber = plan.ReleaseTemplate.NextVersionIncrement;
+                Log.Debug("Using version number from release template: " + versionNumber);
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.VersioningPackageStepName))
             {
-                Log.Debug("Using version number from package step.");
                 versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName);
+                Log.Debug("Using version number from package step: " + versionNumber);
             }
             else
             {
