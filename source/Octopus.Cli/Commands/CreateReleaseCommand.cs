@@ -59,6 +59,7 @@ namespace Octopus.Cli.Commands
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
+            if (!Repository.Client.RootDocument.HasLink("Channels") && (AutoChannel || !string.IsNullOrWhiteSpace(ChannelName))) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Either upgrade your Octopus server, or create the release without any channel arguments.");
             if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
             if (AutoChannel && Force) throw new CommandException("Cannot specify --autochannel and --ignorechannelrules arguments - the channel rules are how we select the most suitable channel");
 
