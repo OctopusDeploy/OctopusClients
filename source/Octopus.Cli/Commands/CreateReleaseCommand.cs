@@ -230,6 +230,13 @@ namespace Octopus.Cli.Commands
                 return selectedPlan;
             }
 
+            if (viablePlans.Length > 1 && viablePlans.Any(p => p.Channel.IsDefault))
+            {
+                var selectedPlan = viablePlans.First(p => p.Channel.IsDefault);
+                Log.Info($"Selected the release plan for Channel '{selectedPlan.Channel.Name}' - there were multiple matching Channels ({string.Join(", ", viablePlans.Select(p => p.Channel.Name))}) so we selected the default channel.");
+                return selectedPlan;
+            }
+
             throw new CommandException(
                 $"There are {viablePlans.Length} viable release plans using the provided arguments so we cannot auto-select one. The viable release plans are:" +
                 Environment.NewLine +
