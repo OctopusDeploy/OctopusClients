@@ -160,30 +160,39 @@ namespace Octopus.Cli.Commands
 
         private ReleasePlan BuildReleasePlan(ProjectResource project)
         {
-            ReleasePlan plan;
-
             if (AutoChannel)
             {
                 Log.Debug("Automatically selecting the best channel for this release...");
-                plan = AutoSelectBestReleasePlanOrThrow(project);
+                return AutoSelectBestReleasePlanOrThrow(project);
             }
-            else if (!string.IsNullOrWhiteSpace(ChannelName))
+
+            if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Info("Building release plan for channel: " + ChannelName);
+                Log.Info($"Building release plan for channel '{ChannelName}'...");
                 var channels = Repository.Projects.GetChannels(project);
                 var matchingChannel =
                     channels.Items.SingleOrDefault(c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase));
                 if (matchingChannel == null)
                     throw new CouldNotFindException($"a channel in {project.Name} named", ChannelName);
 
-                plan = releasePlanBuilder.Build(Repository, project, matchingChannel, VersionPreReleaseTag);
-            }
-            else
-            {
-                plan = releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag);
+                return releasePlanBuilder.Build(Repository, project, matchingChannel, VersionPreReleaseTag);
             }
 
-            return plan;
+            // All Octopus 3.2+ servers should have the Channels hypermedia link, we should use the channel information
+            if (Repository.Client.RootDocument.HasLink("Channels"))
+            {
+                Log.Info($"Building a release plan for the default channel in {project.Name}...");
+                var channels = Repository.Projects.GetChannels(project);
+                var defaultChannel = channels.Items.FirstOrDefault(c => c.IsDefault);
+                if (defaultChannel == null)
+                    throw new CouldNotFindException($"a default channel in {project.Name}");
+
+                return releasePlanBuilder.Build(Repository, project, defaultChannel, VersionPreReleaseTag);
+            }
+            
+            // Compatibility: this has to cater for Octopus before Channels existed
+            Log.Info("Building release plan without a channel...");
+            return releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag);
         }
 
         ReleasePlan AutoSelectBestReleasePlanOrThrow(ProjectResource project)
