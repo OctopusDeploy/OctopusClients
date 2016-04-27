@@ -48,7 +48,7 @@ namespace Octopus.Cli.Commands
 
         public bool HasStepsViolatingChannelVersionRules()
         {
-            return Steps.Any(s => s.ChannelVersionRuleTestResult?.IsSatisfied != true);
+            return Channel != null && Steps.Any(s => s.ChannelVersionRuleTestResult.IsSatisfied != true);
         }
 
         public List<SelectedPackage> GetSelections()
