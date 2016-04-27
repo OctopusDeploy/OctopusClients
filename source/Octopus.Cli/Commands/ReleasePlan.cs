@@ -72,7 +72,9 @@ namespace Octopus.Cli.Commands
             var result = new StringBuilder();
             if (Channel != null)
             {
-                result.AppendLine($"Channel: '{Channel.Name}'");
+                result.Append($"Channel: '{Channel.Name}'");
+                if (Channel.IsDefault) result.Append(" (this is the default channel)");
+                result.AppendLine();
             }
 
             if (steps.Length == 0)
