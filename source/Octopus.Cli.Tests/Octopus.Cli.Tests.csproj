@@ -75,6 +75,7 @@
     <Compile Include="Commands\ApiCommandFixture.cs" />
     <Compile Include="Commands\ApiCommandFixtureBase.cs" />
     <Compile Include="Commands\CleanEnvironmentCommandFixture.cs" />
+    <Compile Include="Commands\CreateChannelCommandFixture.cs" />
     <Compile Include="Commands\DeployReleaseCommandTestFixture.cs" />
     <Compile Include="Commands\DummyApiCommand.cs" />
     <Compile Include="Commands\ListMachinesCommandFixture.cs" />
