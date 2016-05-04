@@ -48,13 +48,13 @@ namespace Octopus.Cli.Commands
             else
             {
                 Log.DebugFormat("Loading lifecycle {0}", lifecycleName);
-                var lifecycle = Repository.Lifecycles.FindOne(l => l.Name == lifecycleName);
+                var lifecycle = Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0);
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
                 lifecycleId = lifecycle.Id;
             }
 
             var channelsForThisProject = Repository.Client.List<ChannelResource>(project.Links["Channels"]);
-            var channel = channelsForThisProject.Items.FirstOrDefault(ch => ch.Name == channelName);
+            var channel = channelsForThisProject.Items.FirstOrDefault(ch => string.Compare(ch.Name, channelName, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (channel == null)
             {
