@@ -35,15 +35,23 @@ namespace Octopus.Cli.Commands
         {
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
-            if (string.IsNullOrWhiteSpace(lifecycleName)) throw new CommandException("Please specify a lifecycle name using the parameter: --lifecycle=LifecycleXYZ");
 
             Log.DebugFormat("Loading project {0}", projectName);
             var project = Repository.Projects.FindByName(projectName);
             if (project == null) throw new CouldNotFindException("project named", projectName);
 
-            Log.DebugFormat("Loading lifecycle {0}", lifecycleName);
-            var lifecycle = Repository.Lifecycles.FindOne(l => l.Name == lifecycleName);
-            if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
+            string lifecycleId = null;
+            if (string.IsNullOrWhiteSpace(lifecycleName))
+            {
+                Log.DebugFormat("No lifecycle specified. Using default.");
+            }
+            else
+            {
+                Log.DebugFormat("Loading lifecycle {0}", lifecycleName);
+                var lifecycle = Repository.Lifecycles.FindOne(l => l.Name == lifecycleName);
+                if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
+                lifecycleId = lifecycle.Id;
+            }
 
             var channelsForThisProject = Repository.Client.List<ChannelResource>(project.Links["Channels"]);
             var channel = channelsForThisProject.Items.FirstOrDefault(ch => ch.Name == channelName);
@@ -56,7 +64,7 @@ namespace Octopus.Cli.Commands
                     Name = channelName,
                     IsDefault = makeDefaultChannel ?? false,
                     Description = channelDescription ?? string.Empty,
-                    LifecycleId = lifecycle.Id,
+                    LifecycleId = lifecycleId,
                     Rules = new List<ChannelVersionRuleResource>(),
                 };
 
@@ -68,7 +76,7 @@ namespace Octopus.Cli.Commands
             {
                 if (!updateIfExists) throw new CommandException("This channel already exists. If you would like to update it, please use the parameter: --update-if-exists");
 
-                channel.LifecycleId = lifecycle.Id;
+                channel.LifecycleId = lifecycleId ?? channel.LifecycleId;
                 channel.IsDefault = makeDefaultChannel ?? channel.IsDefault;
                 channel.Description = channelDescription ?? channel.Description;
 
