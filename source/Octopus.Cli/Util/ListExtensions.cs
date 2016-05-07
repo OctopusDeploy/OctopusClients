@@ -55,5 +55,9 @@ namespace Octopus.Cli.Util
                 yield return item;
             }
         }
+
+        public static HashSet<TElement> ToHashSet<TElement>(this IEnumerable<TElement> items) => new HashSet<TElement>(items);
+
+        public static bool None<TElement>(this IEnumerable<TElement> items) => !items.Any();
     }
 }

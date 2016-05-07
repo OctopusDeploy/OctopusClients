@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Cli.Commands
 {
@@ -17,12 +19,14 @@ namespace Octopus.Cli.Commands
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("minversion=", "Minimum (inclusive) version number for the range of versions to delete", v => MinVersion = v);
             options.Add("maxversion=", "Maximum (inclusive) version number for the range of versions to delete", v => MaxVersion = v);
+            options.Add("channel=", "[Optional] if specified, only releases associated with the channel will be deleted; specify this argument multiple times to target multiple channels.", v => ChannelNames.Add(v));
             options.Add("whatif", "[Optional, Flag] if specified, releases won't actually be deleted, but will be listed as if simulating the command", v => WhatIf = true);
         }
 
         public string ProjectName { get; set; }
         public string MaxVersion { get; set; }
         public string MinVersion { get; set; }
+        public List<string> ChannelNames { get; } = new List<string>();
         public bool WhatIf { get; set; }
 
         protected override void Execute()
@@ -34,10 +38,8 @@ namespace Octopus.Cli.Commands
             var min = SemanticVersion.Parse(MinVersion);
             var max = SemanticVersion.Parse(MaxVersion);
 
-            Log.Debug("Finding project: " + ProjectName);
-            var project = Repository.Projects.FindByName(ProjectName);
-            if (project == null)
-                throw new CouldNotFindException("a project named", ProjectName);
+            var project = GetProject();
+            var channels = GetChannelIds(project);
 
             Log.Debug("Finding releases for project...");
 
@@ -47,18 +49,21 @@ namespace Octopus.Cli.Commands
             {
                 foreach (var release in releases.Items)
                 {
+                    if (channels.Any() && !channels.Contains(release.ChannelId))
+                        continue;
+
                     var version = SemanticVersion.Parse(release.Version);
-                    if (min <= version && version <= max)
+                    if (min > version || version > max)
+                        continue;
+
+                    if (WhatIf)
                     {
-                        if (WhatIf)
-                        {
-                            Log.InfoFormat("[Whatif] Version {0} would have been deleted", version);
-                        }
-                        else
-                        {
-                            toDelete.Add(release.Link("Self"));
-                            Log.InfoFormat("Deleting version {0}", version);
-                        }
+                        Log.InfoFormat("[Whatif] Version {0} would have been deleted", version);
+                    }
+                    else
+                    {
+                        toDelete.Add(release.Link("Self"));
+                        Log.InfoFormat("Deleting version {0}", version);
                     }
                 }
 
@@ -77,6 +82,47 @@ namespace Octopus.Cli.Commands
                     Repository.Client.Delete(release);
                 }
             }
+        }
+
+        private HashSet<string> GetChannelIds(ProjectResource project)
+        {
+            if (ChannelNames.None())
+                return new HashSet<string>();
+
+            Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
+
+            var channels = GetAllChannelsFor(project)
+                .Where(c => ChannelNames.Contains(c.Name, StringComparer.InvariantCultureIgnoreCase))
+                .ToArray();
+
+            var notFoundChannels = ChannelNames.Except(channels.Select(c => c.Name), StringComparer.InvariantCultureIgnoreCase).ToArray();
+            if(notFoundChannels.Any())
+                throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
+
+            return channels.Select(c => c.Id).ToHashSet();
+        }
+
+        private IEnumerable<ChannelResource> GetAllChannelsFor(ProjectResource project)
+        {
+            var channelCollection = Repository.Projects.GetChannels(project);
+            foreach (var channel in channelCollection.Items)
+                yield return channel;
+
+            while (channelCollection.HasLink("Page.Next"))
+            {
+                channelCollection = Repository.Client.List<ChannelResource>(channelCollection.Link("Page.Next"));
+                foreach (var channel in channelCollection.Items)
+                    yield return channel;
+            }
+        }
+
+        private ProjectResource GetProject()
+        {
+            Log.Debug("Finding project: " + ProjectName);
+            var project = Repository.Projects.FindByName(ProjectName);
+            if (project == null)
+                throw new CouldNotFindException("a project named", ProjectName);
+            return project;
         }
     }
 }
