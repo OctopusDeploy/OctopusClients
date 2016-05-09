@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -79,11 +80,8 @@ namespace Octopus.Cli.Commands
             {
                 foreach (var step in plan.Steps)
                 {
-                    var rule =
-                        channel.Rules.SingleOrDefault(
-                            r => r.Actions.Any(s => s.Equals(step.StepName, StringComparison.OrdinalIgnoreCase)));
-                    if (rule == null) continue;
-
+                    // Note the rule can be null, meaning: anything goes
+                    var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.StepName, StringComparison.OrdinalIgnoreCase)));
                     var result = versionRuleTester.Test(repository, rule, step.Version);
                     step.SetChannelVersionRuleTestResult(result);
                 }

@@ -195,12 +195,6 @@ namespace Octopus.Cli.Commands
             var releasePlans = new List<ReleasePlan>();
             foreach (var channel in candidateChannels)
             {
-                if (channel.Rules.Count <= 0)
-                {
-                    Log.Debug($"Channel '{channel.Name}' has no version rules, skipping...");
-                    continue;
-                }
-
                 Log.Info($"Building a release plan for Channel '{channel.Name}'...");
 
                 var plan = releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag);
