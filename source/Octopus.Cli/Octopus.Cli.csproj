@@ -195,6 +195,7 @@
     <Compile Include="Util\NumericExtensions.cs" />
     <Compile Include="Util\OctopusPhysicalFileSystem.cs" />
     <Compile Include="Util\ReplaceStatus.cs" />
+    <Compile Include="Util\ResourceCollectionExtensions.cs" />
     <Compile Include="Util\StringExtensions.cs" />
     <Compile Include="Util\UriExtensions.cs" />
   </ItemGroup>

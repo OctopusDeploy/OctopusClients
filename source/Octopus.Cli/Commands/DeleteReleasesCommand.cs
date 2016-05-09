@@ -67,12 +67,12 @@ namespace Octopus.Cli.Commands
                     }
                 }
 
-                if (!releases.HasLink("Page.Next"))
+                if (!releases.HasNextPage())
                 {
                     break;
                 }
 
-                releases = Repository.Client.List<ReleaseResource>(releases.Link("Page.Next"));
+                releases = Repository.Client.List<ReleaseResource>(releases.NextPageLink());
             }
 
             if (!WhatIf)
@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands
 
             Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
 
-            var channels = GetAllChannelsFor(project)
+            var channels = Repository.Projects.GetChannels(project).GetAllPages(Repository)
                 .Where(c => ChannelNames.Contains(c.Name, StringComparer.InvariantCultureIgnoreCase))
                 .ToArray();
 
@@ -100,20 +100,6 @@ namespace Octopus.Cli.Commands
                 throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
 
             return channels.Select(c => c.Id).ToHashSet();
-        }
-
-        private IEnumerable<ChannelResource> GetAllChannelsFor(ProjectResource project)
-        {
-            var channelCollection = Repository.Projects.GetChannels(project);
-            foreach (var channel in channelCollection.Items)
-                yield return channel;
-
-            while (channelCollection.HasLink("Page.Next"))
-            {
-                channelCollection = Repository.Client.List<ChannelResource>(channelCollection.Link("Page.Next"));
-                foreach (var channel in channelCollection.Items)
-                    yield return channel;
-            }
         }
 
         private ProjectResource GetProject()

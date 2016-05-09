@@ -191,7 +191,7 @@ namespace Octopus.Cli.Commands
         ReleasePlan AutoSelectBestReleasePlanOrThrow(ProjectResource project)
         {
             // Build a release plan for each channel to determine which channel is the best match for the provided options
-            var candidateChannels = Repository.Projects.GetChannels(project).Items;
+            var candidateChannels = Repository.Projects.GetChannels(project).GetAllPages(Repository);
             var releasePlans = new List<ReleasePlan>();
             foreach (var channel in candidateChannels)
             {
