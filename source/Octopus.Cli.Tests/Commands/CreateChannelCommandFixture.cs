@@ -25,14 +25,33 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
+        public void ShouldThrowForOlderOctopusServers()
+        {
+            Repository.Client.RootDocument.Returns(new RootResource
+            {
+                Links = new LinkCollection()//.Add("Channels", "DOES_NOT_MATTER")
+            });
+
+            CommandLineArgs.Add($"--channel={$"Channel-{Guid.NewGuid()}"}");
+            CommandLineArgs.Add($"--project={$"Project-{Guid.NewGuid()}"}");
+            CommandLineArgs.Add($"--lifecycle={$"Lifecycle-{Guid.NewGuid()}"}");
+
+            Assert.Throws<CommandException>(() => createChannelCommand.Execute(CommandLineArgs.ToArray()));
+        }
+
+        [Test]
         public void ShouldCreateNewChannel()
         {
+            Repository.Client.RootDocument.Returns(new RootResource
+            {
+                Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
+            });
+
             var projectName = $"Project-{Guid.NewGuid()}";
             var project = new ProjectResource()
             {
-                Links = new LinkCollection()
+                Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
             };
-            project.Links.Add("Channels", "DOES_NOT_MATTER");
             Repository.Projects.FindByName(projectName).Returns(project);
 
             var lifecycleName = $"Lifecycle-{Guid.NewGuid()}";
@@ -54,6 +73,11 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldUpdateExistingChannel()
         {
+            Repository.Client.RootDocument.Returns(new RootResource
+            {
+                Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
+            });
+
             var projectName = $"Project-{Guid.NewGuid()}";
             var project = new ProjectResource()
             {
@@ -63,7 +87,7 @@ namespace Octopus.Cli.Tests.Commands
             Repository.Projects.FindByName(projectName).Returns(project);
 
             var lifecycleName = $"Lifecycle-{Guid.NewGuid()}";
-            Repository.Lifecycles.FindOne(Arg.Any<Func<LifecycleResource, bool>>()).Returns(new LifecycleResource());
+            Repository.Lifecycles.FindOne(Arg.Any<Func<LifecycleResource, bool>>()).Returns(new LifecycleResource { Id = lifecycleName });
 
             var channelName = $"Channel-{Guid.NewGuid()}";
             var channel = new ChannelResource()
@@ -78,7 +102,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--channel={channelName}");
             CommandLineArgs.Add($"--project={projectName}");
             CommandLineArgs.Add($"--lifecycle={lifecycleName}");
-            CommandLineArgs.Add("--update-if-exists");
+            CommandLineArgs.Add("--update-existing");
 
             createChannelCommand.Execute(CommandLineArgs.ToArray());
 
