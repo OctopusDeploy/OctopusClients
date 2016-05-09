@@ -119,13 +119,13 @@ namespace Octopus.Cli.Commands
 
             if (IgnoreIfAlreadyExists)
             {
-                Log.Debug("Checking for existing release...");
+                Log.Debug($"Checking for existing release for {ProjectName} {versionNumber} because you specified --ignoreexisting...");
                 try
                 {
                     var found = Repository.Projects.GetReleaseByVersion(project, versionNumber);
                     if (found != null)
                     {
-                        Log.Info("A release with the number " + versionNumber + " already exists.");
+                        Log.Info($"A release of {ProjectName} with the number {versionNumber} already exists, and you specified --ignoreexisting, so we won't even attempt to create the release.");
                         return;
                     }
                 }
