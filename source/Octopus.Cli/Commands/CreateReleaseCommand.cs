@@ -60,8 +60,6 @@ namespace Octopus.Cli.Commands
 
             Log.DebugFormat("This Octopus Server {0} channels", ServerSupportsChannels() ? "supports" : "does not support");
 
-            if (WhatIf) Log.Info("What if: no release will be created.");
-
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
@@ -138,7 +136,8 @@ namespace Octopus.Cli.Commands
             if (WhatIf)
             {
                 // We were just doing a dry run - bail out here
-                Log.InfoFormat("You specified --whatif, not creating this release");
+                Log.InfoFormat("[WhatIf] This release would have been created using the release plan{0}",
+                    DeployToEnvironmentNames.Any() ? $" and deployed to {DeployToEnvironmentNames.CommaSeperate()}" : string.Empty);
             }
             else
             {
@@ -214,7 +213,7 @@ namespace Octopus.Cli.Commands
                 throw new CommandException(
                     "There are no viable release plans in any channels using the provided arguments. The following release plans were considered:" +
                     Environment.NewLine +
-                    $"{string.Join(Environment.NewLine, releasePlans.Select(p => p.FormatAsTable()))}");
+                    $"{releasePlans.Select(p => p.FormatAsTable()).NewlineSeperate()}");
             }
 
             if (viablePlans.Length == 1)
@@ -227,18 +226,18 @@ namespace Octopus.Cli.Commands
             if (viablePlans.Length > 1 && viablePlans.Any(p => p.Channel.IsDefault))
             {
                 var selectedPlan = viablePlans.First(p => p.Channel.IsDefault);
-                Log.Info($"Selected the release plan for Channel '{selectedPlan.Channel.Name}' - there were multiple matching Channels ({string.Join(", ", viablePlans.Select(p => p.Channel.Name))}) so we selected the default channel.");
+                Log.Info($"Selected the release plan for Channel '{selectedPlan.Channel.Name}' - there were multiple matching Channels ({viablePlans.Select(p => p.Channel.Name).CommaSeperate()}) so we selected the default channel.");
                 return selectedPlan;
             }
 
             throw new CommandException(
                 $"There are {viablePlans.Length} viable release plans using the provided arguments so we cannot auto-select one. The viable release plans are:" +
                 Environment.NewLine +
-                $"{string.Join(Environment.NewLine, viablePlans.Select(p => p.FormatAsTable()))}" +
+                $"{viablePlans.Select(p => p.FormatAsTable()).NewlineSeperate()}" +
                 Environment.NewLine +
                 "The unviable release plans are:" +
                 Environment.NewLine +
-                $"{string.Join(Environment.NewLine, releasePlans.Except(viablePlans).Select(p => p.FormatAsTable()))}");
+                $"{releasePlans.Except(viablePlans).Select(p => p.FormatAsTable()).NewlineSeperate()}");
         }
 
         void ReadReleaseNotesFromFile(string value)
