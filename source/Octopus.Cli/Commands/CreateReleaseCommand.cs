@@ -28,7 +28,6 @@ namespace Octopus.Cli.Commands
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("channel=", "[Optional] Channel to use for the new release.", v => ChannelName = v);
-            options.Add("autochannel", "[Optional] Automatically calculate Channel based on version matching rules", v => AutoChannel = true);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("packageversion=|defaultpackageversion=", "Default version number of all packages to use for this release.", v => versionResolver.Default(v));
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
@@ -36,7 +35,7 @@ namespace Octopus.Cli.Commands
             options.Add("releasenotes=", "[Optional] Release Notes for the new release.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release.", ReadReleaseNotesFromFile);
             options.Add("ignoreexisting", "If a release with the version number already exists, ignore it", v => IgnoreIfAlreadyExists = true);
-            options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => Force = true);
+            options.Add("ignorechannelrules", "[Optional] Ignore package version matching rules", v => IgnoreChannelRules = true);
             options.Add("packageprerelease=", "[Optional] Pre-release for latest version of all packages to use for this release.", v => VersionPreReleaseTag = v);
             options.Add("whatif", "[Optional] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
@@ -46,12 +45,11 @@ namespace Octopus.Cli.Commands
 
         public string ProjectName { get; set; }
         public string ChannelName { get; set; }
-        public bool AutoChannel { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
-        public bool Force { get; set; }
+        public bool IgnoreChannelRules { get; set; }
         public string VersionPreReleaseTag { get; set; }
         public bool WhatIf { get; set; }
 
@@ -59,9 +57,9 @@ namespace Octopus.Cli.Commands
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
 
-            if (!Repository.Client.RootDocument.HasLink("Channels") && (AutoChannel || !string.IsNullOrWhiteSpace(ChannelName))) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Either upgrade your Octopus server, or create the release without any channel arguments.");
-            if (AutoChannel && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Cannot specify --channel and --autochannel arguments");
-            if (AutoChannel && Force) throw new CommandException("Cannot specify --autochannel and --ignorechannelrules arguments - the channel rules are how we select the most suitable channel");
+            if (!ServerSupportsChannels() && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Either upgrade your Octopus server, or create the release without any channel arguments.");
+
+            Log.DebugFormat("This Octopus Server {0} channels", ServerSupportsChannels() ? "supports" : "does not support");
 
             if (WhatIf) Log.Info("What if: no release will be created.");
 
@@ -92,14 +90,14 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
-
+            
             if (plan.IsViableReleasePlan())
             {
                 Log.Info($"Release plan for {ProjectName} {versionNumber}{Environment.NewLine}{plan.FormatAsTable()}");
             }
             else
             {
-                Log.Error($"Release plan for {ProjectName} {versionNumber}{Environment.NewLine}{plan.FormatAsTable()}");
+                Log.Warn($"Release plan for {ProjectName} {versionNumber}{Environment.NewLine}{plan.FormatAsTable()}");
             }
 
             if (plan.HasUnresolvedSteps())
@@ -109,12 +107,14 @@ namespace Octopus.Cli.Commands
 
             if (plan.HasStepsViolatingChannelVersionRules())
             {
-                if (Force)
+                if (IgnoreChannelRules)
                 {
                     Log.Warn($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Forcing the release to be created ignoring these rules...");
                 }
-
-                throw new CommandException($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Either correct the package versions for this release, select a different channel using --channel=MyChannel argument, let Octopus select the best channel using the --autoChannel argument, or ignore these version rules altogether by using the --ignoreChannelRules argument.");
+                else
+                {
+                    throw new CommandException($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Either correct the package versions for this release, let Octopus select the best channel by omitting the --channel argument, select a different channel using --channel=MyChannel argument, or ignore these version rules altogether by using the --ignoreChannelRules argument.");
+                }
             }
 
             if (IgnoreIfAlreadyExists)
@@ -139,7 +139,7 @@ namespace Octopus.Cli.Commands
             if (WhatIf)
             {
                 // We were just doing a dry run - bail out here
-                Log.InfoFormat("What if: not creating this release");
+                Log.InfoFormat("You specified --whatif, not creating this release");
             }
             else
             {
@@ -149,8 +149,8 @@ namespace Octopus.Cli.Commands
                 {
                     ReleaseNotes = ReleaseNotes,
                     SelectedPackages = plan.GetSelections()
-                }, Force);
-                Log.Info("Release " + release.Version + " created successfully!");
+                }, ignoreChannelRules: IgnoreChannelRules);
+                Log.Info($"Release {release.Version} created successfully!");
                 Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
                 Log.TfsServiceMessage(ServerBaseUrl, project, release);
 
@@ -160,12 +160,6 @@ namespace Octopus.Cli.Commands
 
         private ReleasePlan BuildReleasePlan(ProjectResource project)
         {
-            if (AutoChannel)
-            {
-                Log.Debug("Automatically selecting the best channel for this release...");
-                return AutoSelectBestReleasePlanOrThrow(project);
-            }
-
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
                 Log.Info($"Building release plan for channel '{ChannelName}'...");
@@ -179,20 +173,21 @@ namespace Octopus.Cli.Commands
             }
 
             // All Octopus 3.2+ servers should have the Channels hypermedia link, we should use the channel information
-            if (Repository.Client.RootDocument.HasLink("Channels"))
+            // to select the most appropriate channel, or provide enough information to proceed from here
+            if (ServerSupportsChannels())
             {
-                Log.Info($"Building a release plan for the default channel in {project.Name}...");
-                var channels = Repository.Projects.GetChannels(project);
-                var defaultChannel = channels.Items.FirstOrDefault(c => c.IsDefault);
-                if (defaultChannel == null)
-                    throw new CouldNotFindException($"a default channel in {project.Name}");
-
-                return releasePlanBuilder.Build(Repository, project, defaultChannel, VersionPreReleaseTag);
+                Log.Debug("Automatically selecting the best channel for this release...");
+                return AutoSelectBestReleasePlanOrThrow(project);
             }
             
             // Compatibility: this has to cater for Octopus before Channels existed
-            Log.Info("Building release plan without a channel...");
+            Log.Info("Building release plan without a channel for Octopus Server without channels support...");
             return releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag);
+        }
+
+        private bool ServerSupportsChannels()
+        {
+            return Repository.Client.RootDocument.HasLink("Channels");
         }
 
         ReleasePlan AutoSelectBestReleasePlanOrThrow(ProjectResource project)
