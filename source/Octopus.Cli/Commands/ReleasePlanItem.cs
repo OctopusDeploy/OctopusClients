@@ -1,35 +1,42 @@
-using System;
+using Octopus.Cli.Model;
 
 namespace Octopus.Cli.Commands
 {
     public class ReleasePlanItem
     {
-        public ReleasePlanItem(string stepName, string packageId, string nuGetFeedId, bool isResolveable, string userSpecifiedVersion)
+        public ReleasePlanItem(string stepName, string packageId, string packageFeedId, bool isResolveable, string userSpecifiedVersion)
         {
             StepName = stepName;
             PackageId = packageId;
-            NuGetFeedId = nuGetFeedId;
+            PackageFeedId = packageFeedId;
             IsResolveable = isResolveable;
             Version = userSpecifiedVersion;
-            VersionSource = string.IsNullOrWhiteSpace(Version) ? string.Empty : "User specified";
+            VersionSource = string.IsNullOrWhiteSpace(Version) ? "Cannot resolve" : "User specified";
         }
 
-        public string StepName { get; set; }
+        public string StepName { get; }
 
-        public string PackageId { get; set; }
+        public string PackageId { get; }
 
-        public string Version { get; set; }
+        public string PackageFeedId { get; }
 
-        public string NuGetFeedId { get; set; }
+        public bool IsResolveable { get; }
 
-        public bool IsResolveable { get; set; }
+        public string Version { get; private set; }
 
         public string VersionSource { get; private set; }
+
+        public ChannelVersionRuleTestResult ChannelVersionRuleTestResult { get; private set; }
 
         public void SetVersionFromLatest(string version)
         {
             Version = version;
-            VersionSource = "Latest available in NuGet repository";
+            VersionSource = "Latest available";
+        }
+
+        public void SetChannelVersionRuleTestResult(ChannelVersionRuleTestResult result)
+        {
+            ChannelVersionRuleTestResult = result;
         }
     }
 }

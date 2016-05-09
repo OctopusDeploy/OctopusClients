@@ -5,7 +5,6 @@ using log4net;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories;
 
 namespace Octopus.Cli.Commands
 {
@@ -31,6 +30,7 @@ namespace Octopus.Cli.Commands
 
         protected override void Execute()
         {
+            if (ChannelNames.Any() && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel arguments.");
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (string.IsNullOrWhiteSpace(MinVersion)) throw new CommandException("Please specify a minimum version number using the parameter: --minversion=X.Y.Z");
             if (string.IsNullOrWhiteSpace(MaxVersion)) throw new CommandException("Please specify a maximum version number using the parameter: --maxversion=X.Y.Z");
@@ -67,12 +67,12 @@ namespace Octopus.Cli.Commands
                     }
                 }
 
-                if (!releases.HasLink("Page.Next"))
+                if (!releases.HasNextPage())
                 {
                     break;
                 }
 
-                releases = Repository.Client.List<ReleaseResource>(releases.Link("Page.Next"));
+                releases = Repository.Client.List<ReleaseResource>(releases.NextPageLink());
             }
 
             if (!WhatIf)
@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands
 
             Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
 
-            var channels = GetAllChannelsFor(project)
+            var channels = Repository.Projects.GetChannels(project).GetAllPages(Repository)
                 .Where(c => ChannelNames.Contains(c.Name, StringComparer.InvariantCultureIgnoreCase))
                 .ToArray();
 
@@ -100,20 +100,6 @@ namespace Octopus.Cli.Commands
                 throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
 
             return channels.Select(c => c.Id).ToHashSet();
-        }
-
-        private IEnumerable<ChannelResource> GetAllChannelsFor(ProjectResource project)
-        {
-            var channelCollection = Repository.Projects.GetChannels(project);
-            foreach (var channel in channelCollection.Items)
-                yield return channel;
-
-            while (channelCollection.HasLink("Page.Next"))
-            {
-                channelCollection = Repository.Client.List<ChannelResource>(channelCollection.Link("Page.Next"));
-                foreach (var channel in channelCollection.Items)
-                    yield return channel;
-            }
         }
 
         private ProjectResource GetProject()

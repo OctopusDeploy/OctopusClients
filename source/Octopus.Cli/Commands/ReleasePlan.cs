@@ -3,36 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Octopus.Cli.Infrastructure;
-using Octopus.Cli.Util;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
     public class ReleasePlan
     {
-        readonly IList<ReleasePlanItem> steps = new List<ReleasePlanItem>();
+        readonly ReleasePlanItem[] steps;
 
-        public ReleasePlan(ReleaseTemplateResource releaseTemplate, IPackageVersionResolver versionResolver)
+        public ReleasePlan(ProjectResource project, ChannelResource channel, ReleaseTemplateResource releaseTemplate, IPackageVersionResolver versionResolver)
         {
-            steps.AddRange(
-                releaseTemplate.Packages.Select(p => new ReleasePlanItem(
+            Project = project;
+            Channel = channel;
+            ReleaseTemplate = releaseTemplate;
+            steps = releaseTemplate.Packages.Select(
+                p => new ReleasePlanItem(
                     p.StepName,
                     p.NuGetPackageId,
                     p.NuGetFeedId,
                     p.IsResolvable,
-                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.NuGetPackageId)
-                    ))
-                );
+                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.NuGetPackageId)))
+                .ToArray();
         }
 
-        public IList<ReleasePlanItem> Steps
+        public ProjectResource Project { get; }
+
+        public ChannelResource Channel { get; }
+
+        public ReleaseTemplateResource ReleaseTemplate { get; }
+
+        public IEnumerable<ReleasePlanItem> Steps => steps;
+
+        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules();
+
+        public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
-            get { return steps; }
+            get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version)).ToArray(); }
         }
 
-        public IList<ReleasePlanItem> UnresolvedSteps
+        public bool HasUnresolvedSteps()
         {
-            get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version)).ToList(); }
+            return UnresolvedSteps.Any();
+        }
+
+        public bool HasStepsViolatingChannelVersionRules()
+        {
+            return Channel != null && Steps.Any(s => s.ChannelVersionRuleTestResult.IsSatisfied != true);
         }
 
         public List<SelectedPackage> GetSelections()
@@ -54,34 +70,50 @@ namespace Octopus.Cli.Commands
         public string FormatAsTable()
         {
             var result = new StringBuilder();
-
-            if (steps.Count == 0)
+            if (Channel != null)
             {
-                return string.Empty;
+                result.Append($"Channel: '{Channel.Name}'");
+                if (Channel.IsDefault) result.Append(" (this is the default channel)");
+                result.AppendLine();
             }
 
-            var nameColumnWidth = Math.Min(steps.Max(s => s.StepName.Length) + 2, 30);
-            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-15} {3,-36}";
+            if (steps.Length == 0)
+            {
+                return result.ToString();
+            }
 
-            result.AppendFormat(format, "#", "Name", "Version", "Source").AppendLine();
-            result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', 15), new string('-', 36)).AppendLine();
-            for (var i = 0; i < steps.Count; i++)
+            var nameColumnWidth = Width("Name", steps.Select(s => s.StepName));
+            var versionColumnWidth = Width("Version", steps.Select(s => s.Version));
+            var sourceColumnWidth = Width("Source", steps.Select(s => s.VersionSource));
+            var rulesColumnWidth = Width("Version rules", steps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
+            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + versionColumnWidth + "} {3,-" + sourceColumnWidth + "} {4,-" + rulesColumnWidth + "}";
+
+            result.AppendFormat(format, "#", "Name", "Version", "Source", "Version rules").AppendLine();
+            result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', versionColumnWidth), new string('-', sourceColumnWidth), new string('-', rulesColumnWidth)).AppendLine();
+            for (var i = 0; i < steps.Length; i++)
             {
                 var item = steps[i];
-                result.AppendFormat(format, i + 1, item.StepName, item.Version ?? "ERROR", string.IsNullOrWhiteSpace(item.VersionSource) ? "Cannot resolve" : item.VersionSource).AppendLine();
+                result.AppendFormat(format,
+                    i + 1,
+                    item.StepName,
+                    item.Version ?? "ERROR",
+                    item.VersionSource,
+                    item.ChannelVersionRuleTestResult?.ToSummaryString())
+                    .AppendLine();
             }
 
             return result.ToString();
         }
 
+        public int Width(string heading, IEnumerable<string> inputs, int padding = 2, int max = int.MaxValue)
+        {
+            var calculated = new[] {heading}.Concat(inputs).Where(x => x != null).Max(x => x.Length) + padding;
+            return Math.Min(calculated, max);
+        }
+
         public override string ToString()
         {
             return FormatAsTable();
-        }
-
-        public bool HasUnresolvedSteps()
-        {
-            return UnresolvedSteps.Count > 0;
         }
 
         public string GetActionVersionNumber(string packageStepName)

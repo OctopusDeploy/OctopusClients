@@ -81,12 +81,12 @@ namespace Octopus.Cli.Exporters
                     }
                 }
 
-                if (((minVersionToExport == maxVersionToExport) && releasesToExport.Count == 1) || !releases.HasLink("Page.Next"))
+                if (((minVersionToExport == maxVersionToExport) && releasesToExport.Count == 1) || !releases.HasNextPage())
                 {
                     break;
                 }
 
-                releases = Repository.Client.List<ReleaseResource>(releases.Link("Page.Next"));
+                releases = Repository.Client.List<ReleaseResource>(releases.NextPageLink());
             }
 
             var metadata = new ExportMetadata
