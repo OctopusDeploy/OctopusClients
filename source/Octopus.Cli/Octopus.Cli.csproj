@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="Commands\ChannelVersionRuleTester.cs" />
     <Compile Include="Commands\CleanEnvironmentCommand.cs" />
+    <Compile Include="Commands\CreateChannelCommand.cs" />
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\IPackageBuilder.cs" />
     <Compile Include="Commands\IReleasePlanBuilder.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\DeletionOptions.cs" />
+    <Compile Include="Util\FeatureDetectionExtensions.cs" />
     <Compile Include="Util\FeedCustomExpressionHelper.cs" />
     <Compile Include="Util\Humanize.cs" />
     <Compile Include="Util\IOctopusFileSystem.cs" />
@@ -193,6 +195,7 @@
     <Compile Include="Util\NumericExtensions.cs" />
     <Compile Include="Util\OctopusPhysicalFileSystem.cs" />
     <Compile Include="Util\ReplaceStatus.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
     <Compile Include="Util\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -55,9 +55,8 @@ namespace Octopus.Cli.Commands
 
         protected override void Execute()
         {
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
-
-            if (!ServerSupportsChannels() && !string.IsNullOrWhiteSpace(ChannelName)) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Either upgrade your Octopus server, or create the release without any channel arguments.");
 
             Log.DebugFormat("This Octopus Server {0} channels", ServerSupportsChannels() ? "supports" : "does not support");
 
