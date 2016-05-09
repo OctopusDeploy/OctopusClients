@@ -122,6 +122,7 @@
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
     <Compile Include="Util\DeletionOptions.cs" />
+    <Compile Include="Util\FeatureDetectionExtensions.cs" />
     <Compile Include="Util\FeedCustomExpressionHelper.cs" />
     <Compile Include="Util\Humanize.cs" />
     <Compile Include="Util\IOctopusFileSystem.cs" />
