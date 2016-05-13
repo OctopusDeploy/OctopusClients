@@ -49,7 +49,7 @@ namespace Octopus.Cli.Exporters
 
             var channels = new ChannelResource[0];
             var channelLifecycles = new List<ReferenceDataItem>();
-            if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(3, 2, 0, 0))
+            if (Repository.SupportsChannels())
             {
                 Log.Debug("Finding channels for project");
                 channels = Repository.Projects.GetChannels(project).GetAllPages(Repository).ToArray();
