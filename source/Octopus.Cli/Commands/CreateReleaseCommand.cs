@@ -161,9 +161,9 @@ namespace Octopus.Cli.Commands
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
                 Log.Info($"Building release plan for channel '{ChannelName}'...");
-                var channels = Repository.Projects.GetChannels(project);
-                var matchingChannel =
-                    channels.Items.SingleOrDefault(c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase));
+                var matchingChannel = Repository.Projects.GetChannels(project)
+                    .FindOne(Repository, c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase));
+
                 if (matchingChannel == null)
                     throw new CouldNotFindException($"a channel in {project.Name} named", ChannelName);
 

@@ -46,47 +46,55 @@ namespace Octopus.Cli.Commands
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
                 Log.Debug("Finding channel: " + ChannelName);
-                var channels = Repository.Projects.GetChannels(project).Items;
-                channel = channels.SingleOrDefault(c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
+                channel = Repository.Projects.GetChannels(project)
+                    .FindOne(Repository, c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
+
                 if (channel == null)
                     throw new CouldNotFindException("a channel named", ChannelName);
             }
 
-            ReleaseResource releaseToPromote;
+            string message;
+            ReleaseResource releaseToPromote = null;
             if (string.Equals("latest", VersionNumber, StringComparison.CurrentCultureIgnoreCase))
             {
+                message = channel == null
+                    ? "latest release for project"
+                    : $"latest release in channel '{channel.Name}'";
+
+                Log.Debug($"Finding {message}");
+
                 if (channel == null)
                 {
-
-                    Log.Debug("Finding latest release for project");
                     releaseToPromote = Repository
                         .Projects
                         .GetReleases(project)
-                        .Items
+                        .Items // We only need the first page
                         .OrderByDescending(r => SemanticVersion.Parse(r.Version))
                         .FirstOrDefault();
                 }
                 else
                 {
-                    Log.Debug("Finding latest release for channel");
-                    releaseToPromote = Repository
-                        .Projects
-                        .GetReleases(project)
-                        .Items
-                        .Where(r => r.ChannelId == channel.Id)
-                        .OrderByDescending(r => SemanticVersion.Parse(r.Version))
-                        .FirstOrDefault();
-                }
+                    Repository.Projects.GetReleases(project).Paginate(Repository, page =>
+                    {
+                        releaseToPromote = page.Items
+                            .OrderByDescending(r => SemanticVersion.Parse(r.Version))
+                            .FirstOrDefault(r => r.ChannelId == channel.Id);
 
-                if (releaseToPromote == null)
-                {
-                    throw new CouldNotFindException("the latest release for project", project.Name);
+                        // If we haven't found one yet, keep paginating
+                        return releaseToPromote == null;
+                    });
                 }
             }
             else
             {
-                Log.Debug("Finding release: " + VersionNumber);
+                message = $"release {VersionNumber}";
+                Log.Debug($"Finding {message}");
                 releaseToPromote = Repository.Projects.GetReleaseByVersion(project, VersionNumber);
+            }
+
+            if (releaseToPromote == null)
+            {
+                throw new CouldNotFindException($"the {message}", project.Name);
             }
 
             DeployRelease(project, releaseToPromote, DeployToEnvironmentNames);

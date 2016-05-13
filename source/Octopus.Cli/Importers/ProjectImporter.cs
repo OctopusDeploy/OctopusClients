@@ -434,7 +434,7 @@ namespace Octopus.Cli.Importers
         IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
         {
             Log.Debug("Importing the channels for the project");
-            var projectChannels = Repository.Projects.GetChannels(importedProject).Items;
+            var projectChannels = Repository.Projects.GetChannels(importedProject).GetAllPages(Repository).ToArray();
             var defaultChannel = projectChannels.FirstOrDefault(c => c.IsDefault);
             var newDefaultChannel = channels.FirstOrDefault(nc => nc.IsDefault);
             var defaultChannelUpdated = false;

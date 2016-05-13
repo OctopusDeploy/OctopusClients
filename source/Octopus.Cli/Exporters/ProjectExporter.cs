@@ -47,12 +47,13 @@ namespace Octopus.Cli.Exporters
             if (variables == null)
                 throw new CouldNotFindException("variable set for project", project.Name);
 
-            var channels = new List<ChannelResource>();
+            var channels = new ChannelResource[0];
             var channelLifecycles = new List<ReferenceDataItem>();
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(3, 2, 0, 0))
             {
                 Log.Debug("Finding channels for project");
-                channels.AddRange(Repository.Projects.GetChannels(project).Items);
+                channels = Repository.Projects.GetChannels(project).GetAllPages(Repository).ToArray();
+
                 foreach (var channel in channels)
                 {
                     if (channel.LifecycleId != null)

@@ -30,10 +30,6 @@ namespace Octopus.Cli.Exporters
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
 
-            Log.Debug("Finding releases for project...");
-            var releases = Repository.Projects.GetReleases(project);
-
-            var releasesToExport = new List<ReleaseResource>();
             SemanticVersion minVersionToExport;
             SemanticVersion maxVersionToExport;
 
@@ -64,9 +60,11 @@ namespace Octopus.Cli.Exporters
                 maxVersionToExport = minVersionToExport;
             }
 
-            while (releases.Items.Count > 0)
+            Log.Debug("Finding releases for project...");
+            var releasesToExport = new List<ReleaseResource>();
+            Repository.Projects.GetReleases(project).Paginate(Repository, page =>
             {
-                foreach (var release in releases.Items)
+                foreach (var release in page.Items)
                 {
                     var version = SemanticVersion.Parse(release.Version);
                     if (minVersionToExport <= version && version <= maxVersionToExport)
@@ -81,13 +79,9 @@ namespace Octopus.Cli.Exporters
                     }
                 }
 
-                if (((minVersionToExport == maxVersionToExport) && releasesToExport.Count == 1) || !releases.HasNextPage())
-                {
-                    break;
-                }
-
-                releases = Repository.Client.List<ReleaseResource>(releases.NextPageLink());
-            }
+                // Stop paging if the range is a single version, or if there is only a single release worth exporting after this page
+                return (minVersionToExport != maxVersionToExport) || releasesToExport.Count != 1;
+            });
 
             var metadata = new ExportMetadata
             {

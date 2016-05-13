@@ -80,21 +80,28 @@ namespace Octopus.Cli.Importers
         {
             if (ReadyToImport)
             {
-                foreach (var release in validatedImportSettings.Releases)
+                // Start with the full list of releases from the import file, and exclude any existing releases
+                var releasesToImport = validatedImportSettings.Releases.ToList();
+                Repository.Projects.GetReleases(validatedImportSettings.Project).Paginate(Repository, page =>
                 {
-                    Log.Debug("Importing release '" + release.Version);
-                    var existingReleases = Repository.Projects.GetReleases(validatedImportSettings.Project);
+                    foreach (var existingRelease in page.Items)
+                    {
+                        if (releasesToImport.Any(r => r.Version == existingRelease.Version))
+                        {
+                            Log.Debug("Release '" + existingRelease.Version + "' already exists for project " + validatedImportSettings.Project.Name);
+                            releasesToImport.RemoveWhere(r => r.Version == existingRelease.Version);
+                        }
+                    }
 
-                    if (existingReleases == null || existingReleases.Items.All(rls => rls.Version != release.Version))
-                    {
-                        release.ProjectId = validatedImportSettings.Project.Id;
-                        Log.Debug("Creating new release '" + release.Version + "' for project " + validatedImportSettings.Project.Name);
-                        Repository.Releases.Create(release);
-                    }
-                    else
-                    {
-                        Log.Debug("Release '" + release.Version + "' already exists for project " + validatedImportSettings.Project.Name);
-                    }
+                    // Stop paginating if there's nothing left to import
+                    return releasesToImport.Any();
+                });
+
+                foreach (var release in releasesToImport)
+                {
+                    release.ProjectId = validatedImportSettings.Project.Id;
+                    Log.Debug("Creating new release '" + release.Version + "' for project " + validatedImportSettings.Project.Name);
+                    Repository.Releases.Create(release);
                 }
 
                 Log.Debug("Successfully imported releases for project " + validatedImportSettings.Project.Name);

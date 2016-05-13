@@ -42,12 +42,10 @@ namespace Octopus.Cli.Commands
             var channels = GetChannelIds(project);
 
             Log.Debug("Finding releases for project...");
-
-            var releases = Repository.Projects.GetReleases(project);
             var toDelete = new List<string>();
-            while (releases.Items.Count > 0)
+            Repository.Projects.GetReleases(project).Paginate(Repository, page =>
             {
-                foreach (var release in releases.Items)
+                foreach (var release in page.Items)
                 {
                     if (channels.Any() && !channels.Contains(release.ChannelId))
                         continue;
@@ -67,20 +65,16 @@ namespace Octopus.Cli.Commands
                     }
                 }
 
-                if (!releases.HasNextPage())
-                {
-                    break;
-                }
+                // We need to consider all releases
+                return true;
+            });
 
-                releases = Repository.Client.List<ReleaseResource>(releases.NextPageLink());
-            }
+            // Don't do anything else for WhatIf
+            if (WhatIf) return;
 
-            if (!WhatIf)
+            foreach (var release in toDelete)
             {
-                foreach (var release in toDelete)
-                {
-                    Repository.Client.Delete(release);
-                }
+                Repository.Client.Delete(release);
             }
         }
 

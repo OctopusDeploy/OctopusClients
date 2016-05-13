@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
@@ -53,8 +50,8 @@ namespace Octopus.Cli.Commands
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
             }
 
-            var channelsForThisProject = Repository.Client.List<ChannelResource>(project.Links["Channels"]);
-            var channel = channelsForThisProject.Items.FirstOrDefault(ch => string.Compare(ch.Name, channelName, StringComparison.OrdinalIgnoreCase) == 0);
+            var channel = Repository.Projects.GetChannels(project)
+                .FindOne(Repository, ch => string.Equals(ch.Name, channelName, StringComparison.OrdinalIgnoreCase));
 
             if (channel == null)
             {
