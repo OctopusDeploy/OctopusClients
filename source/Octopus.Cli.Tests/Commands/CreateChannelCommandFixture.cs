@@ -57,7 +57,7 @@ namespace Octopus.Cli.Tests.Commands
             var lifecycleName = $"Lifecycle-{Guid.NewGuid()}";
             Repository.Lifecycles.FindOne(Arg.Any<Func<LifecycleResource, bool>>()).Returns(new LifecycleResource());
 
-            Repository.Client.List<ChannelResource>(Arg.Any<string>(), Arg.Any<object>())
+            Repository.Projects.GetChannels(Arg.Any<ProjectResource>())
                 .Returns(new ResourceCollection<ChannelResource>(Enumerable.Empty<ChannelResource>(), new LinkCollection()));
 
             var channelName = $"Channel-{Guid.NewGuid()}";
@@ -96,7 +96,7 @@ namespace Octopus.Cli.Tests.Commands
                 Name = channelName
             };
 
-            Repository.Client.List<ChannelResource>(Arg.Any<string>(), Arg.Any<object>())
+            Repository.Projects.GetChannels(Arg.Any<ProjectResource>())
                 .Returns(new ResourceCollection<ChannelResource>(new[] { channel }, new LinkCollection()));
 
             CommandLineArgs.Add($"--channel={channelName}");
