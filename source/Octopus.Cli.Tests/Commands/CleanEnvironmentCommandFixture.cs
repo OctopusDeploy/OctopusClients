@@ -115,5 +115,14 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-environment=Development");
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
         }
+
+        [Test, ExpectedException(typeof(CouldNotFindException), ExpectedMessage = "Could not find the specified environment; either it does not exist or you lack permissions to view it.")]
+        public void ShouldNotCleanTheEnvironmentIfEnvironmentNotFound()
+        {
+            CommandLineArgs.Add("-environment=Development");
+            CommandLineArgs.Add("-status=Offline");
+
+            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+        }
     }
 }

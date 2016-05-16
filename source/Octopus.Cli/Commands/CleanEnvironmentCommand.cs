@@ -31,6 +31,10 @@ namespace Octopus.Cli.Commands
 
             Log.Debug("Loading environment...");
             var environmentResource = Repository.Environments.FindByName(environmentName);
+            if (environmentResource == null)
+            {
+                throw new CouldNotFindException("the specified environment");
+            }
 
             Log.Debug("Loading machines...");
             var machines = Repository.Machines.FindMany(x =>
