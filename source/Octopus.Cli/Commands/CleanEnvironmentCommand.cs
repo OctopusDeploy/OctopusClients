@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     public class CleanEnvironmentCommand : ApiCommand
     {
         string environmentName;
-        MachineModelStatus status = MachineModelStatus.Unknown;
+        MachineModelHealthStatus status = MachineModelHealthStatus.Unknown;
 
         public CleanEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
@@ -27,7 +27,7 @@ namespace Octopus.Cli.Commands
         protected override void Execute()
         {
             if (string.IsNullOrWhiteSpace(environmentName)) throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
-            if (status == MachineModelStatus.Unknown) throw new CommandException("Please specify a status using the parameter: --status=Offline");
+            if (status == MachineModelHealthStatus.Unknown) throw new CommandException("Please specify a status using the parameter: --status=Offline");
 
             Log.Debug("Loading environment...");
             var environmentResource = Repository.Environments.FindByName(environmentName);
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Commands
             Log.Debug("Loading machines...");
             var machines = Repository.Machines.FindMany(x =>
             {
-                return x.Status == status && x.EnvironmentIds.Any(environmentId => environmentId == environmentResource.Id);
+                return x.HealthStatus == status && x.EnvironmentIds.Any(environmentId => environmentId == environmentResource.Id);
             });
 
             if (machines != null)
@@ -56,13 +56,13 @@ namespace Octopus.Cli.Commands
                     // If the machine belongs to more than one environment, we should remove the machine from the environment rather than delete it altogether.
                     if (machine.EnvironmentIds.Count > 1)
                     {
-                        Log.InfoFormat("Removing {0} {1} (ID: {2}) from {3}", machine.Name, machine.Status, machine.Id, environmentResource.Name);
+                        Log.InfoFormat("Removing {0} {1} (ID: {2}) from {3}", machine.Name, machine.HealthStatus, machine.Id, environmentResource.Name);
                         machine.EnvironmentIds.Remove(environmentResource.Id);
                         Repository.Machines.Modify(machine);
                     }
                     else
                     {
-                        Log.InfoFormat("Deleting {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                        Log.InfoFormat("Deleting {0} {1} (ID: {2})", machine.Name, machine.HealthStatus, machine.Id);
                         Repository.Machines.Delete(machine);
                     }
                 }

@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        string[] StatusNames = Enum.GetNames(typeof (MachineModelStatus));
+        string[] StatusNames = Enum.GetNames(typeof (MachineModelHealthStatus));
 
         public ListMachinesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
@@ -30,7 +30,7 @@ namespace Octopus.Cli.Commands
                 throw new CommandException(string.Format("The following status value is unknown: {0}. Please choose from {1}",
                     string.Join(", ", missingStatuses), string.Join(", ", StatusNames)));
 
-            var statusFilter = new List<MachineModelStatus>();
+            var statusFilter = new List<MachineModelHealthStatus>();
 
             Log.Debug("Loading environments...");
             var environmentResources = Repository.Environments.FindAll();
@@ -59,14 +59,14 @@ namespace Octopus.Cli.Commands
                 Log.Debug("Loading statuses...");
                 foreach (var status in statuses)
                 {
-                    MachineModelStatus result;
+                    MachineModelHealthStatus result;
                     if (Enum.TryParse(status, true, out result))
                         statusFilter.Add(result);
                 }
             }
 
             var machines = statusFilter.Any()
-                ? environmentMachines.Where(p => statusFilter.Contains(p.Status))
+                ? environmentMachines.Where(p => statusFilter.Contains(p.HealthStatus))
                 : environmentMachines;
 
             var orderedMachines = machines.OrderBy(m => m.Name).ToList();
@@ -75,7 +75,7 @@ namespace Octopus.Cli.Commands
 
             foreach (var machine in orderedMachines)
             {
-                Log.InfoFormat(" - {0} {1} (ID: {2}) in {3}", machine.Name, machine.Status, machine.Id, string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
+                Log.InfoFormat(" - {0} {1} (ID: {2}) in {3}", machine.Name, machine.HealthStatus, machine.Id, string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
             }
         }
     }

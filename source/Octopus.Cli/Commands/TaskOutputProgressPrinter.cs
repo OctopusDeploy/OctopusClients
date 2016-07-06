@@ -17,9 +17,9 @@ namespace Octopus.Cli.Commands
         {
             var details = repository.Tasks.GetDetails(resource);
 
-            if (details.ActivityLog != null)
+            if (details.ActivityLogs != null)
             {
-                foreach (var item in details.ActivityLog.Children)
+                foreach (var item in details.ActivityLogs)
                 {
                     if (log.ServiceMessagesEnabled())
                     {
