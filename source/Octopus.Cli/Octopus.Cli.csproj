@@ -110,6 +110,7 @@
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
     <Compile Include="Commands\IPackageBuilder.cs" />
     <Compile Include="Commands\IReleasePlanBuilder.cs" />
+    <Compile Include="Commands\ListTenantsCommand.cs" />
     <Compile Include="Commands\NuGetPackageBuilder.cs" />
     <Compile Include="Commands\PushCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
