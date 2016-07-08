@@ -25,8 +25,8 @@ namespace Octopus.Cli.Commands
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Version number of the release to deploy. Or specify --version=latest for the latest release.", v => VersionNumber = v);
             options.Add("channel=", "[Optional] Channel to use when getting the release to deploy", v => ChannelName = v);
-            options.Add("tenant=", "A tenant who the machine will be connected to; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to tenants able to deploy.", t => Tenants.Add(t));
-            options.Add("tenanttag=", "A tenant tag which the machine will be tagged with; specify this argument multiple times to add multiple tenant tags", tt => TenantTags.Add(tt));
+            options.Add("tenant=", "A tenant the deployment will be performed for; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to tenants able to deploy.", t => Tenants.Add(t));
+            options.Add("tenanttag=", "A tenant tag used to match tenants that the deployment will be performed for; specify this argument multiple times to add multiple tenant tags", tt => TenantTags.Add(tt));
         }
 
         public List<string> DeployToEnvironmentNames { get; set; }
