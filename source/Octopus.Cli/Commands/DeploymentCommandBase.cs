@@ -72,12 +72,16 @@ namespace Octopus.Cli.Commands
             }
             catch (FormatException fex)
             {
-                throw new CommandException("Could not convert '" + v + "' to a DateTimeOffset: " + fex.Message);
+                throw new CommandException($"Could not convert '{v}' to a DateTimeOffset: {fex.Message}");
             }
         }
 
-        protected void DeployRelease(ProjectResource project, ReleaseResource release, string environment, List<string> tenants, List<string> tenantTags)
+        protected void DeployRelease(ProjectResource project, ReleaseResource release, List<string> tenants, List<string> tenantTags)
         {
+            if (DeployToEnvironmentNames.Count != 1)
+                return;
+
+            var environment = DeployToEnvironmentNames[0];
             var releaseTemplate = Repository.Releases.GetTemplate(release);
             var deploymentTenants = GetTenants(project, environment, release, releaseTemplate, tenants, tenantTags);
             var specificMachineIds = GetSpecificMachines();
@@ -126,16 +130,16 @@ namespace Octopus.Cli.Commands
             return specificMachineIds;
         }
 
-        protected void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
+        protected void DeployRelease(ProjectResource project, ReleaseResource release)
         {
-            if (environments.Count == 0)
+            if (DeployToEnvironmentNames.Count == 0)
                 return;
 
             var releaseTemplate = Repository.Releases.GetTemplate(release);
             var specificMachineIds = GetSpecificMachines();
 
             var promotingEnvironments =
-                (from environment in environments.Distinct(StringComparer.CurrentCultureIgnoreCase)
+                (from environment in DeployToEnvironmentNames.Distinct(StringComparer.CurrentCultureIgnoreCase)
                     let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
                     select new { Name = environment, Promotion = promote }).ToList();
 

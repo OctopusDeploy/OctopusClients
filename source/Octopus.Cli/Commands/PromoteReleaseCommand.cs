@@ -55,7 +55,7 @@ namespace Octopus.Cli.Commands
             Log.Debug("Finding release details for release " + dashboardItem.ReleaseVersion);
             var release = Repository.Projects.GetReleaseByVersion(project, dashboardItem.ReleaseVersion);
 
-            DeployRelease(project, release, DeployToEnvironmentNames);
+            DeployRelease(project, release);
         }
     }
 }

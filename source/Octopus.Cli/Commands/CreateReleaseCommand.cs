@@ -155,7 +155,7 @@ namespace Octopus.Cli.Commands
                 Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
                 Log.TfsServiceMessage(ServerBaseUrl, project, release);
 
-                DeployRelease(project, release, DeployToEnvironmentNames);
+                DeployRelease(project, release);
             }
         }
 

@@ -54,9 +54,9 @@ namespace Octopus.Cli.Commands
             var releaseToPromote = GetRelease(project, channel);
 
             if (IsTenantedDeployment)
-                DeployRelease(project, releaseToPromote, DeployToEnvironmentNames[0], Tenants, TenantTags);
+                DeployRelease(project, releaseToPromote, Tenants, TenantTags);
             else
-                DeployRelease(project, releaseToPromote, DeployToEnvironmentNames);
+                DeployRelease(project, releaseToPromote);
         }
 
         private ReleaseResource GetRelease(ProjectResource project, ChannelResource channel)
