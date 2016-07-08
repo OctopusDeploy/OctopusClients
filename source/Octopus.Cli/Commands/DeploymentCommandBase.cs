@@ -49,10 +49,18 @@ namespace Octopus.Cli.Commands
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
+        public string ProjectName { get; set; }
+
         bool noRawLog;
         bool showProgress;
         string rawLogFile;
         TaskOutputProgressPrinter printer = new TaskOutputProgressPrinter();
+
+        protected override void ValidateParameters()
+        {
+            if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
+            base.ValidateParameters();
+        }
 
         DateTimeOffset? ParseDeployAt(string v)
         {

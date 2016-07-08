@@ -23,12 +23,10 @@ namespace Octopus.Cli.Commands
         }
 
         public List<string> DeployToEnvironmentNames { get; set; }
-        public string ProjectName { get; set; }
         public string FromEnvironmentName { get; set; }
 
         protected override void Execute()
         {
-            if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(FromEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --from=XYZ");
 

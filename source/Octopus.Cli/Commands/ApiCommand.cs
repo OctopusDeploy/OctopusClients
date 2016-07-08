@@ -128,8 +128,11 @@ namespace Octopus.Cli.Commands
                 log.DebugFormat("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
+            ValidateParameters();
             Execute();
         }
+
+        protected virtual void ValidateParameters() { }
 
         protected abstract void Execute();
 
