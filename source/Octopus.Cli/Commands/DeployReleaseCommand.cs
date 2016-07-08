@@ -14,7 +14,6 @@ namespace Octopus.Cli.Commands
         public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
-            DeployToEnvironmentNames = new List<string>();
             TenantTags = new List<string>();
             Tenants = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -29,7 +28,7 @@ namespace Octopus.Cli.Commands
             options.Add("tenanttag=", "A tenant tag used to match tenants that the deployment will be performed for; specify this argument multiple times to add multiple tenant tags", tt => TenantTags.Add(tt));
         }
 
-        public List<string> DeployToEnvironmentNames { get; set; }
+        
         public string VersionNumber { get; set; }
         public string ChannelName { get; set; }
         public List<string> Tenants { get; set; }
@@ -37,7 +36,7 @@ namespace Octopus.Cli.Commands
 
         private bool IsTenantedDeployment => (Tenants.Any() || TenantTags.Any());
 
-        protected override void Execute()
+        protected override void ValidateParameters()
         {
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0 or --version=latest for the latest release");
@@ -45,6 +44,11 @@ namespace Octopus.Cli.Commands
             if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
 
+            base.ValidateParameters();
+        }
+
+        protected override void Execute()
+        {
             var project = GetProject();
             var channel = GetChannel(project);
             var releaseToPromote = GetRelease(project, channel);

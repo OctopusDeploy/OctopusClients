@@ -20,8 +20,6 @@ namespace Octopus.Cli.Commands
             : base(repositoryFactory, log, fileSystem)
         {
             this.releasePlanBuilder = releasePlanBuilder;
-
-            DeployToEnvironmentNames = new List<string>();
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
             DeploymentTimeout = TimeSpan.FromMinutes(10);
 
@@ -44,7 +42,6 @@ namespace Octopus.Cli.Commands
         }
 
         public string ChannelName { get; set; }
-        public List<string> DeployToEnvironmentNames { get; set; }
         public string VersionNumber { get; set; }
         public string ReleaseNotes { get; set; }
         public bool IgnoreIfAlreadyExists { get; set; }
@@ -52,9 +49,17 @@ namespace Octopus.Cli.Commands
         public string VersionPreReleaseTag { get; set; }
         public bool WhatIf { get; set; }
 
+        protected override void ValidateParameters()
+        {
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels())
+                throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
+
+            base.ValidateParameters();
+        }
+
         protected override void Execute()
         {
-            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
+            
 
             Log.DebugFormat("This Octopus Server {0} channels", ServerSupportsChannels() ? "supports" : "does not support");
 

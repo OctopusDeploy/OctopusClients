@@ -21,6 +21,7 @@ namespace Octopus.Cli.Commands
         {
             SpecificMachineNames = new List<string>();
             SkipStepNames = new List<string>();
+            DeployToEnvironmentNames = new List<string>();
 
             var options = Options.For("Deployment");
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
@@ -50,6 +51,7 @@ namespace Octopus.Cli.Commands
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
         public string ProjectName { get; set; }
+        public List<string> DeployToEnvironmentNames { get; set; }
 
         bool noRawLog;
         bool showProgress;

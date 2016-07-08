@@ -14,22 +14,24 @@ namespace Octopus.Cli.Commands
         public PromoteReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
-            DeployToEnvironmentNames = new List<string>();
-
             var options = Options.For("Release Promotion");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("from=", "Name of the environment to get the current deployment from, e.g., Staging", v => FromEnvironmentName = v);
             options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
         }
 
-        public List<string> DeployToEnvironmentNames { get; set; }
         public string FromEnvironmentName { get; set; }
 
-        protected override void Execute()
+        protected override void ValidateParameters()
         {
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(FromEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --from=XYZ");
 
+            base.ValidateParameters();
+        }
+
+        protected override void Execute()
+        {
             Log.Debug("Finding project: " + ProjectName);
             var project = Repository.Projects.FindByName(ProjectName);
             if (project == null)
