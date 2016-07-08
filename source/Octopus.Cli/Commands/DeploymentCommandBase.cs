@@ -66,22 +66,70 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        public void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
+        protected void DeployRelease(ProjectResource project, ReleaseResource release, string environment, List<string> tenants, List<string> tenantTags)
+        {
+            var releaseTemplate = Repository.Releases.GetTemplate(release);
+            var deploymentTenants = GetTenants(project, environment, release, releaseTemplate, tenants, tenantTags);
+            var specificMachineIds = GetSpecificMachines();
+
+            LogScheduledDeployment();
+
+            var deployments = deploymentTenants.Select(tenant =>
+            {
+                var promotion =
+                    releaseTemplate.TenantPromotions
+                    .First(t => t.Id == tenant.Id).PromoteTo
+                    .First(tt => tt.Name.Equals(environment, StringComparison.InvariantCultureIgnoreCase));
+                return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
+            }).ToList();
+
+            if (WaitForDeployment)
+            {
+                WaitForDeploymentToComplete(deployments, project, release);
+            }
+        }
+
+        private void LogScheduledDeployment()
+        {
+            if (DeployAt != null)
+            {
+                var now = DateTimeOffset.UtcNow;
+                Log.InfoFormat("Deployment will be scheduled to start in: {0}", (DeployAt.Value - now).FriendlyDuration());
+            }
+        }
+
+        private ReferenceCollection GetSpecificMachines()
+        {
+            var specificMachineIds = new ReferenceCollection();
+            if (SpecificMachineNames.Any())
+            {
+                var machines = Repository.Machines.FindByNames(SpecificMachineNames);
+                var missing =
+                    SpecificMachineNames.Except(machines.Select(m => m.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                if (missing.Any())
+                {
+                    throw new CommandException("The following specific machines could not be found: " + missing.ReadableJoin());
+                }
+
+                specificMachineIds.AddRange(machines.Select(m => m.Id));
+            }
+            return specificMachineIds;
+        }
+
+        protected void DeployRelease(ProjectResource project, ReleaseResource release, List<string> environments)
         {
             if (environments.Count == 0)
                 return;
 
-            var deployments = new List<DeploymentResource>();
-            var deploymentTasks = new List<TaskResource>();
-
             var releaseTemplate = Repository.Releases.GetTemplate(release);
+            var specificMachineIds = GetSpecificMachines();
 
             var promotingEnvironments =
                 (from environment in environments.Distinct(StringComparer.CurrentCultureIgnoreCase)
                     let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
-                    select new {Name = environment, Promote = promote}).ToList();
+                    select new { Name = environment, Promotion = promote }).ToList();
 
-            var unknownEnvironments = promotingEnvironments.Where(p => p.Promote == null).ToList();
+            var unknownEnvironments = promotingEnvironments.Where(p => p.Promotion == null).ToList();
             if (unknownEnvironments.Count > 0)
             {
                 throw new CommandException(
@@ -94,104 +142,199 @@ namespace Octopus.Cli.Commands
                         ));
             }
 
-            var specificMachineIds = new ReferenceCollection();
-            if (SpecificMachineNames.Any())
-            {
-                var machines = Repository.Machines.FindByNames(SpecificMachineNames);
-                var missing = SpecificMachineNames.Except(machines.Select(m => m.Name), StringComparer.OrdinalIgnoreCase).ToList();
-                if (missing.Any())
-                {
-                    throw new CommandException("The following specific machines could not be found: " + missing.ReadableJoin());
-                }
+            LogScheduledDeployment();
 
-                specificMachineIds.AddRange(machines.Select(m => m.Id));
-            }
-
-            if (DeployAt != null)
-            {
-                var now = DateTimeOffset.UtcNow;
-                Log.InfoFormat("Deployment will be scheduled to start in: {0}", (DeployAt.Value - now).FriendlyDuration());
-            }
-
-            foreach (var environment in promotingEnvironments)
-            {
-                var promote = environment.Promote;
-                var preview = Repository.Releases.GetPreview(promote);
-
-                var skip = new ReferenceCollection();
-                foreach (var step in SkipStepNames)
-                {
-                    var stepToExecute = preview.StepsToExecute.SingleOrDefault(s => string.Equals(s.ActionName, step, StringComparison.CurrentCultureIgnoreCase));
-                    if (stepToExecute == null)
-                    {
-                        Log.WarnFormat("No step/action named '{0}' could be found when deploying to environment '{1}', so the step cannot be skipped.", step, environment);
-                    }
-                    else
-                    {
-                        Log.DebugFormat("Skipping step: {0}", stepToExecute.ActionName);
-                        skip.Add(stepToExecute.ActionId);
-                    }
-                }
-
-                if (preview.Form != null && preview.Form.Elements != null && preview.Form.Values != null)
-                {
-                    foreach (var element in preview.Form.Elements)
-                    {
-                        var variableInput = element.Control as VariableValue;
-                        if (variableInput == null)
-                        {
-                            continue;
-                        }
-
-                        var value = variables.Get(variableInput.Label) ?? variables.Get(variableInput.Name);
-
-                        if (string.IsNullOrWhiteSpace(value) && element.IsValueRequired)
-                        {
-                            throw new ArgumentException("Please provide a variable for the prompted value " + variableInput.Label);
-                        }
-
-                        preview.Form.Values[element.Name] = value;
-                    }
-                }
-
-                var deployment = Repository.Deployments.Create(new DeploymentResource
-                {
-                    EnvironmentId = promote.Id,
-                    SkipActions = skip,
-                    ReleaseId = release.Id,
-                    ForcePackageDownload = ForcePackageDownload,
-                    UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
-                    SpecificMachineIds = specificMachineIds,
-                    ForcePackageRedeployment = ForcePackageRedeployment,
-                    FormValues = (preview.Form ?? new Form()).Values,
-                    QueueTime = DeployAt == null ? null : (DateTimeOffset?)DeployAt.Value
-                });
-
-                Log.InfoFormat("Deploying {0} {1} to: {2} (Guided Failure: {3})", project.Name, release.Version, environment.Name, deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
-
-                foreach (var previewStep in preview.StepsToExecute)
-                {
-                    if (previewStep.HasNoApplicableMachines)
-                    {
-                        Log.Warn("Warning: there are no applicable machines roles used by step " + previewStep.ActionName + " step");
-                    }
-                }
-
-                deployments.Add(deployment);
-                deploymentTasks.Add(Repository.Tasks.Get(deployment.TaskId));
-            }
-
+            var deployments =
+                promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds))
+                .ToList();
+                    
             if (WaitForDeployment)
             {
-                WaitForDeploymentToComplete(deploymentTasks, deployments, project, release);
+                WaitForDeploymentToComplete(deployments, project, release);
             }
         }
 
-        public void WaitForDeploymentToComplete(List<TaskResource> deploymentTasks, List<DeploymentResource> deployments, ProjectResource project, ReleaseResource release)
+        private List<TenantResource> GetTenants(ProjectResource project, string environmentName, ReleaseResource release,
+            DeploymentTemplateResource releaseTemplate, List<string> tenants, List<string> tenantTags)
         {
-            if (showProgress && deploymentTasks.Count > 1)
+            if (!tenants.Any() && !tenantTags.Any())
             {
-                Log.InfoFormat("Only progress of the first task ({0}) will be shown", deploymentTasks.First().Description);
+                return new List<TenantResource>();
+            }
+
+            var deployableTenants = new List<TenantResource>();
+
+            if (tenants.Contains("*"))
+            {
+                var tenantPromotions = releaseTemplate.TenantPromotions.Where(
+                    tp => tp.PromoteTo.Any(
+                        promo => promo.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase))).Select(tp => tp.Id).ToArray();
+
+                deployableTenants.AddRange(Repository.Tenants.Get(tenantPromotions));
+
+                Log.InfoFormat("Found {0} Tenants who can deploy {1} {2} to {3}", deployableTenants.Count, project.Name,release.Version, environmentName);
+            }
+            else
+            {
+                if (tenants.Any())
+                {
+
+
+                    var tenantsByName = Repository.Tenants.FindByNames(tenants);
+                    var missing =
+                        tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+                    var tenantsById = Repository.Tenants.Get(missing);
+                    missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
+                    if (missing.Any())
+                        throw new ArgumentException(
+                            $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+
+                    deployableTenants.AddRange(tenantsByName);
+                    deployableTenants.AddRange(tenantsById);
+
+                    var unDeployableTenants =
+                        deployableTenants.Where(dt => !dt.ProjectEnvironments.ContainsKey(project.Id))
+                            .Select(dt => $"'{dt.Name}'")
+                            .ToList();
+                    if (unDeployableTenants.Any())
+                        throw new CommandException(
+                            string.Format(
+                                "Release '{0}' of project '{1}' cannot be deployed for tenant{2} {3}. This may be because either a) {4} not connected to this project, or b) you do not have permission to deploy {5} to this project.",
+                                release.Version,
+                                project.Name,
+                                unDeployableTenants.Count == 1 ? "" : "s",
+                                string.Join(" or ", unDeployableTenants),
+                                unDeployableTenants.Count == 1 ? "it is" : "they are",
+                                unDeployableTenants.Count == 1 ? "it" : "them"));
+
+                    unDeployableTenants = deployableTenants.Where(dt =>
+                    {
+                        var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
+                        return tenantPromo == null ||
+                               !tenantPromo.PromoteTo.Any(
+                                   tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+                    }).Select(dt => $"'{dt.Name}'").ToList();
+                    if (unDeployableTenants.Any())
+                    {
+                        throw new CommandException(
+                            string.Format(
+                                "Release '{0}' of project '{1}' cannot be deployed for tenant{2} {3} to environment '{4}'. This may be because a) the tenant{2} {5} not connected to this environment, a) The lifecycle has not reached this phase, b) the environment does not exist, b) the environment name is misspelled, c) you don't have permission to deploy to this environment, d) the environment is not in the list of environments defined by the lifecycle, or e) {6} unable to deploy to this channel.",
+                                release.Version,
+                                project.Name,
+                                unDeployableTenants.Count == 1 ? "" : "s",
+                                string.Join(" or ", unDeployableTenants),
+                                environmentName,
+                                unDeployableTenants.Count == 1 ? "is" : "are",
+                                unDeployableTenants.Count == 1 ? "it is" : "they are"));
+                    }
+                }
+
+                /*
+                //////////////////////////////////Fix when API allows search
+                var tenantsByTag = Repository.Tenants.FindByNames(tenants);
+                var deployableByTag = tenantsByTag.Where(dt =>
+                {
+                    var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
+                    return tenantPromo == null ||
+                           !tenantPromo.PromoteTo.Any(
+                               tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+                });
+                deployableTenants.AddRange(deployableByTag); //Fix when API allows search
+                //////////////////////////////////Fix when API allows search
+                */
+            }
+
+            if (!deployableTenants.Any())
+                throw new CommandException(
+                    string.Format(
+                        "No tenants are available to be deployed for release '{0}' of project '{1}' to environment '{2}'.  This may be because a) No tenants matched the tags provided b) The tenants that do match are not connected to this project or environment, c) The tenants that do match are not yet able to release to this lifecycle phase, or d) you do not have the appropriate deployment permissions.",
+                        release.Version, project.Name, environmentName));
+
+
+            return deployableTenants;
+        }
+
+        private DeploymentResource CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, TenantResource tenant = null)
+        {
+            
+            var preview = Repository.Releases.GetPreview(promotionTarget);
+
+            // Validate skipped steps
+            var skip = new ReferenceCollection();
+            foreach (var step in SkipStepNames)
+            {
+                var stepToExecute =
+                    preview.StepsToExecute.SingleOrDefault(s => string.Equals(s.ActionName, step, StringComparison.CurrentCultureIgnoreCase));
+                if (stepToExecute == null)
+                {
+                    Log.WarnFormat("No step/action named '{0}' could be found when deploying to environment '{1}', so the step cannot be skipped.", step, promotionTarget.Name);
+                }
+                else
+                {
+                    Log.DebugFormat("Skipping step: {0}", stepToExecute.ActionName);
+                    skip.Add(stepToExecute.ActionId);
+                }
+            }
+
+            // Validate form values supplied
+            if (preview.Form != null && preview.Form.Elements != null && preview.Form.Values != null)
+            {
+                foreach (var element in preview.Form.Elements)
+                {
+                    var variableInput = element.Control as VariableValue;
+                    if (variableInput == null)
+                    {
+                        continue;
+                    }
+
+                    var value = variables.Get(variableInput.Label) ?? variables.Get(variableInput.Name);
+
+                    if (string.IsNullOrWhiteSpace(value) && element.IsValueRequired)
+                    {
+                        throw new ArgumentException("Please provide a variable for the prompted value " + variableInput.Label);
+                    }
+
+                    preview.Form.Values[element.Name] = value;
+                }
+            }
+
+            // Log step with no machines
+            foreach (var previewStep in preview.StepsToExecute)
+            {
+                if (previewStep.HasNoApplicableMachines)
+                {
+                    Log.Warn("Warning: there are no applicable machines roles used by step " + previewStep.ActionName + " step");
+                }
+            }
+
+            var deployment = Repository.Deployments.Create(new DeploymentResource
+            {
+                TenantId = tenant?.Id,
+                EnvironmentId = promotionTarget.Id,
+                SkipActions = skip,
+                ReleaseId = release.Id,
+                ForcePackageDownload = ForcePackageDownload,
+                UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
+                SpecificMachineIds = specificMachineIds,
+                ForcePackageRedeployment = ForcePackageRedeployment,
+                FormValues = (preview.Form ?? new Form()).Values,
+                QueueTime = DeployAt == null ? null : (DateTimeOffset?) DeployAt.Value
+            });
+
+            Log.InfoFormat("Deploying {0} {1} to: {2} {3}(Guided Failure: {4})", project.Name, release.Version, promotionTarget.Name,
+                tenant == null ? string.Empty : $"for {tenant.Name} ",
+                deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
+
+            return deployment;
+        }
+
+        public void WaitForDeploymentToComplete(List<DeploymentResource> deployments, ProjectResource project, ReleaseResource release)
+        {
+            var deploymentTasks = deployments.Select(dep => Repository.Tasks.Get(dep.TaskId)).ToList();
+            if (showProgress && deployments.Count > 1)
+            {
+                Log.InfoFormat("Only progress of the first task ({0}) will be shown", deploymentTasks.First().Name);
             }
 
             try
@@ -211,24 +354,26 @@ namespace Octopus.Cli.Commands
                         Log.ErrorFormat("{0}: {1}, {2}", updated.Description, updated.State, updated.ErrorMessage);
                         failed = true;
 
-                        if (!noRawLog)
+                        if (noRawLog)
                         {
-                            try
+                            continue;
+                        }
+
+                        try
+                        {
+                            var raw = Repository.Tasks.GetRawOutputLog(updated);
+                            if (!string.IsNullOrEmpty(rawLogFile))
                             {
-                                var raw = Repository.Tasks.GetRawOutputLog(updated);
-                                if (!string.IsNullOrEmpty(rawLogFile))
-                                {
-                                    File.WriteAllText(rawLogFile, raw);
-                                }
-                                else
-                                {
-                                    Log.Error(raw);
-                                }
+                                File.WriteAllText(rawLogFile, raw);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Log.Error("Could not retrieve the raw task log for the failed task.", ex);
+                                Log.Error(raw);
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Could not retrieve the raw task log for the failed task.", ex);
                         }
                     }
                 }
