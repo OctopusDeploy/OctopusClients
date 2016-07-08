@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
         {
             DeployToEnvironmentNames = new List<string>();
 
-            var options = Options.For("Project creation");
+            var options = Options.For("Release Promotion");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("from=", "Name of the environment to get the current deployment from, e.g., Staging", v => FromEnvironmentName = v);
             options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
