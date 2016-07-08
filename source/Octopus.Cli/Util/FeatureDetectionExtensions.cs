@@ -14,5 +14,15 @@ namespace Octopus.Cli.Util
         {
             return source?.HasLink("Channels") == true;
         }
+
+        public static bool SupportsTenants(this IOctopusRepository repository)
+        {
+            return repository?.Client?.RootDocument.SupportsTenants() == true;
+        }
+
+        public static bool SupportsTenants(this RootResource source)
+        {
+            return source?.HasLink("Tenants") == true;
+        }
     }
 }

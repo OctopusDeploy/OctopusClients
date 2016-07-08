@@ -59,8 +59,6 @@ namespace Octopus.Cli.Commands
 
         protected override void Execute()
         {
-            
-
             Log.DebugFormat("This Octopus Server {0} channels", ServerSupportsChannels() ? "supports" : "does not support");
 
             Log.Debug("Finding project: " + ProjectName);

@@ -22,6 +22,8 @@ namespace Octopus.Cli.Commands
             SpecificMachineNames = new List<string>();
             SkipStepNames = new List<string>();
             DeployToEnvironmentNames = new List<string>();
+            TenantTags = new List<string>();
+            Tenants = new List<string>();
 
             var options = Options.For("Deployment");
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
@@ -38,6 +40,8 @@ namespace Octopus.Cli.Commands
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("v|variable=", "[Optional] Values for any prompted variables in the format Label:Value", ParseVariable);
             options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => ParseDeployAt(v));
+            options.Add("tenant=", "A tenant the deployment will be performed for; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to tenants able to deploy.", t => Tenants.Add(t));
+            options.Add("tenanttag=", "A tenant tag used to match tenants that the deployment will be performed for; specify this argument multiple times to add multiple tenant tags", tt => TenantTags.Add(tt));
         }
 
         protected bool ForcePackageRedeployment { get; set; }
@@ -52,6 +56,10 @@ namespace Octopus.Cli.Commands
         protected DateTimeOffset? DeployAt { get; set; }
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
+        public List<string> Tenants { get; set; }
+        public List<string> TenantTags { get; set; }
+
+        private bool IsTenantedDeployment => (Tenants.Any() || TenantTags.Any());
 
         bool noRawLog;
         bool showProgress;
@@ -61,6 +69,12 @@ namespace Octopus.Cli.Commands
         protected override void ValidateParameters()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
+            if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
+            if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
+
+            if (IsTenantedDeployment && !Repository.SupportsTenants())
+                throw new CommandException("Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, or remove the --tenant and --tenanttag arguments.");
+
             base.ValidateParameters();
         }
 
@@ -76,14 +90,14 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        protected void DeployRelease(ProjectResource project, ReleaseResource release, List<string> tenants, List<string> tenantTags)
+        private void DeployTenantedRelease(ProjectResource project, ReleaseResource release)
         {
             if (DeployToEnvironmentNames.Count != 1)
                 return;
 
             var environment = DeployToEnvironmentNames[0];
             var releaseTemplate = Repository.Releases.GetTemplate(release);
-            var deploymentTenants = GetTenants(project, environment, release, releaseTemplate, tenants, tenantTags);
+            var deploymentTenants = GetTenants(project, environment, release, releaseTemplate);
             var specificMachineIds = GetSpecificMachines();
 
             LogScheduledDeployment();
@@ -132,6 +146,9 @@ namespace Octopus.Cli.Commands
 
         protected void DeployRelease(ProjectResource project, ReleaseResource release)
         {
+            if (IsTenantedDeployment)
+                DeployTenantedRelease(project, release);
+
             if (DeployToEnvironmentNames.Count == 0)
                 return;
 
@@ -169,16 +186,16 @@ namespace Octopus.Cli.Commands
         }
 
         private List<TenantResource> GetTenants(ProjectResource project, string environmentName, ReleaseResource release,
-            DeploymentTemplateResource releaseTemplate, List<string> tenants, List<string> tenantTags)
+            DeploymentTemplateResource releaseTemplate)
         {
-            if (!tenants.Any() && !tenantTags.Any())
+            if (!Tenants.Any() && !TenantTags.Any())
             {
                 return new List<TenantResource>();
             }
 
             var deployableTenants = new List<TenantResource>();
 
-            if (tenants.Contains("*"))
+            if (Tenants.Contains("*"))
             {
                 var tenantPromotions = releaseTemplate.TenantPromotions.Where(
                     tp => tp.PromoteTo.Any(
@@ -190,13 +207,13 @@ namespace Octopus.Cli.Commands
             }
             else
             {
-                if (tenants.Any())
+                if (Tenants.Any())
                 {
 
 
-                    var tenantsByName = Repository.Tenants.FindByNames(tenants);
+                    var tenantsByName = Repository.Tenants.FindByNames(Tenants);
                     var missing =
-                        tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+                        Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
                     var tenantsById = Repository.Tenants.Get(missing);
                     missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
