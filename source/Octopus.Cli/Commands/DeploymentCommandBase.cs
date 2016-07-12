@@ -261,19 +261,16 @@ namespace Octopus.Cli.Commands
                     }
                 }
 
-                /*
-                //////////////////////////////////Fix when API allows search
-                var tenantsByTag = Repository.Tenants.FindByNames(tenants);
-                var deployableByTag = tenantsByTag.Where(dt =>
+                if (TenantTags.Any())
                 {
-                    var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
-                    return tenantPromo == null ||
-                           !tenantPromo.PromoteTo.Any(
-                               tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
-                });
-                deployableTenants.AddRange(deployableByTag); //Fix when API allows search
-                //////////////////////////////////Fix when API allows search
-                */
+                    var tenantsByTag = Repository.Tenants.FindAll(null, TenantTags.ToArray());
+                    var deployableByTag = tenantsByTag.Where(dt =>
+                    {
+                        var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
+                        return tenantPromo != null && tenantPromo.PromoteTo.Any(tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+                    }).Where(tenant => !deployableTenants.Any(deployable => deployable.Id == tenant.Id));
+                    deployableTenants.AddRange(deployableByTag);
+                }
             }
 
             if (!deployableTenants.Any())
