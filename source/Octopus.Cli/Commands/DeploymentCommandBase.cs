@@ -90,10 +90,10 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        private void DeployTenantedRelease(ProjectResource project, ReleaseResource release)
+        private List<DeploymentResource> DeployTenantedRelease(ProjectResource project, ReleaseResource release)
         {
             if (DeployToEnvironmentNames.Count != 1)
-                return;
+                return new List<DeploymentResource>(); ;
 
             var environment = DeployToEnvironmentNames[0];
             var releaseTemplate = Repository.Releases.GetTemplate(release);
@@ -102,7 +102,7 @@ namespace Octopus.Cli.Commands
 
             LogScheduledDeployment();
 
-            var deployments = deploymentTenants.Select(tenant =>
+            return deploymentTenants.Select(tenant =>
             {
                 var promotion =
                     releaseTemplate.TenantPromotions
@@ -110,11 +110,6 @@ namespace Octopus.Cli.Commands
                     .First(tt => tt.Name.Equals(environment, StringComparison.InvariantCultureIgnoreCase));
                 return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
             }).ToList();
-
-            if (WaitForDeployment)
-            {
-                WaitForDeploymentToComplete(deployments, project, release);
-            }
         }
 
         private void LogScheduledDeployment()
@@ -146,11 +141,20 @@ namespace Octopus.Cli.Commands
 
         protected void DeployRelease(ProjectResource project, ReleaseResource release)
         {
-            if (IsTenantedDeployment)
-                DeployTenantedRelease(project, release);
+            var deployments = IsTenantedDeployment ?
+                DeployTenantedRelease(project, release) : 
+                DeployToEnvironments(project, release);
 
+            if (deployments.Any() && WaitForDeployment)
+            {
+                WaitForDeploymentToComplete(deployments, project, release);
+            }
+        }
+
+        private List<DeploymentResource> DeployToEnvironments(ProjectResource project, ReleaseResource release)
+        {
             if (DeployToEnvironmentNames.Count == 0)
-                return;
+                return new List<DeploymentResource>();
 
             var releaseTemplate = Repository.Releases.GetTemplate(release);
             var specificMachineIds = GetSpecificMachines();
@@ -158,31 +162,28 @@ namespace Octopus.Cli.Commands
             var promotingEnvironments =
                 (from environment in DeployToEnvironmentNames.Distinct(StringComparer.CurrentCultureIgnoreCase)
                     let promote = releaseTemplate.PromoteTo.FirstOrDefault(p => string.Equals(p.Name, environment))
-                    select new { Name = environment, Promotion = promote }).ToList();
+                    select new {Name = environment, Promotion = promote}).ToList();
 
             var unknownEnvironments = promotingEnvironments.Where(p => p.Promotion == null).ToList();
             if (unknownEnvironments.Count > 0)
             {
                 throw new CommandException(
-                    string.Format("Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the lifecycle.",
+                    string.Format(
+                        "Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the lifecycle.",
                         release.Version,
                         project.Name,
                         unknownEnvironments.Count == 1
                             ? "environment '" + unknownEnvironments[0].Name + "' because the environment is"
-                            : "environments " + string.Join(", ", unknownEnvironments.Select(e => "'" + e.Name + "'")) + " because the environments are"
+                            : "environments " + string.Join(", ", unknownEnvironments.Select(e => "'" + e.Name + "'")) +
+                              " because the environments are"
                         ));
             }
 
             LogScheduledDeployment();
 
-            var deployments =
-                promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds))
-                .ToList();
-                    
-            if (WaitForDeployment)
-            {
-                WaitForDeploymentToComplete(deployments, project, release);
-            }
+            return promotingEnvironments.Select(
+                    promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds))
+                    .ToList();
         }
 
         private List<TenantResource> GetTenants(ProjectResource project, string environmentName, ReleaseResource release,
