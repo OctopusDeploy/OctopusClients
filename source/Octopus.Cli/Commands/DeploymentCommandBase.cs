@@ -263,6 +263,7 @@ namespace Octopus.Cli.Commands
 
                 if (TenantTags.Any())
                 {
+
                     var tenantsByTag = Repository.Tenants.FindAll(null, TenantTags.ToArray());
                     var deployableByTag = tenantsByTag.Where(dt =>
                     {

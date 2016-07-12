@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
+#pragma warning disable 618
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -103,8 +104,18 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")}
+                new MachineResource {
+                    Name = "PC01234",
+                    Id = "Machines-001",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource {
+                    Name = "PC01466",
+                    Id = "Machines-002",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                }
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
@@ -126,9 +137,23 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
-                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline, EnvironmentIds = new ReferenceCollection("Environments-001")}
+                new MachineResource {
+                    Name = "PC0123",
+                    Id = "Machines-001",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource {
+                    Name = "PC01466",
+                    Id = "Machines-002",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource {
+                    Name = "PC01996",
+                    Id = "Machines-003",
+                    Status = MachineModelStatus.Offline,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
@@ -151,9 +176,24 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindAll().Returns(new List<MachineResource>
             {
-                new MachineResource {Name = "PC01234", Id = "Machines-001", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
-                new MachineResource {Name = "PC01466", Id = "Machines-002", Status = MachineModelStatus.Online, EnvironmentIds = new ReferenceCollection("Environments-001")},
-                new MachineResource {Name = "PC01996", Id = "Machines-003", Status = MachineModelStatus.Offline, EnvironmentIds = new ReferenceCollection("Environments-001")}
+                new MachineResource {
+                    Name = "PC01234",
+                    Id = "Machines-001",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource {
+                    Name = "PC01466",
+                    Id = "Machines-002",
+                    Status = MachineModelStatus.Online,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                },
+                new MachineResource {
+                    Name = "PC01996",
+                    Id = "Machines-003",
+                    Status = MachineModelStatus.Offline,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                }
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());

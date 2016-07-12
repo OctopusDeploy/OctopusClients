@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
+#pragma warning disable 618
 
 namespace Octopus.Cli.Tests.Commands
 {
