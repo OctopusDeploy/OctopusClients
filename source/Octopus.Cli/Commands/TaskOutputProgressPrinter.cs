@@ -23,7 +23,10 @@ namespace Octopus.Cli.Commands
                 {
                     if (log.ServiceMessagesEnabled())
                     {
-                        RenderToTeamCity(item, log);
+                        if (log.IsVSTS())
+                            RenderToVSTS(item, log, "");
+                        else
+                            RenderToTeamCity(item, log);
                     }
                     else
                     {
@@ -110,6 +113,24 @@ namespace Octopus.Cli.Commands
             }
 
             log.ServiceMessage("blockClosed", new { name = blockName });
+        }
+
+        void RenderToVSTS(ActivityElement element, ILog log, string indent)
+        {
+            if (!IsPrintable(element))
+                return;
+
+            log.Info($"{indent}         {element.Status}: {element.Name}");
+
+            foreach (var logEntry in element.LogElements)
+            {
+                log.Info($"{logEntry.Category,-8}{indent}   {logEntry.MessageText}");
+            }
+
+            foreach (var child in element.Children)
+            {
+                RenderToVSTS(child, log, indent + "  ");
+            }
         }
 
         static string ConvertToTeamCityMessageStatus(string category)

@@ -43,7 +43,7 @@ namespace Octopus.Cli.Diagnostics
         public static void EnableServiceMessages(this ILog log)
         {
             serviceMessagesEnabled = true;
-            buildEnvironment = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID"))
+            buildEnvironment = (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
                 ? string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")) ? BuildEnvironment.NoneOrUnknown : BuildEnvironment.TeamCity
                 : BuildEnvironment.TeamFoundationBuild;
             log.InfoFormat("Build environment is {0}", buildEnvironment);
@@ -59,6 +59,11 @@ namespace Octopus.Cli.Diagnostics
             return serviceMessagesEnabled;
         }
 
+        public static bool IsVSTS(this ILog log)
+        {
+            return buildEnvironment == BuildEnvironment.TeamFoundationBuild;
+        }
+
         public static void ServiceMessage(this ILog log, string messageName, string value)
         {
             if (!serviceMessagesEnabled)
@@ -66,10 +71,11 @@ namespace Octopus.Cli.Diagnostics
 
             if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
-                log.InfoFormat(
-                    "##teamcity[{0} {1}]",
-                    messageName,
-                    EscapeValue(value));
+                log.Info($"##teamcity[{messageName} {EscapeValue(value)}]");
+            }
+            else
+            {
+                log.Info($"{messageName} {EscapeValue(value)}");
             }
         }
 
@@ -78,12 +84,14 @@ namespace Octopus.Cli.Diagnostics
             if (!serviceMessagesEnabled)
                 return;
 
+            var valueSummary = string.Join(" ", values.Select(v => $"{v.Key}='{EscapeValue(v.Value)}'"));
             if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
-                log.InfoFormat(
-                    "##teamcity[{0} {1}]",
-                    messageName,
-                    string.Join(" ", values.Select(v => v.Key + "='" + EscapeValue(v.Value) + "'")));
+                log.Info($"##teamcity[{messageName} {valueSummary}]");
+            }
+            else
+            {
+                log.Info($"{messageName} {valueSummary}");
             }
         }
 

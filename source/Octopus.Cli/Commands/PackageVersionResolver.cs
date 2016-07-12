@@ -72,7 +72,19 @@ namespace Octopus.Cli.Commands
 
         public void Default(string packageVersion)
         {
-            defaultVersion = packageVersion;
+            try
+            {
+                SemanticVersion.Parse(packageVersion);
+                defaultVersion = packageVersion;
+            }
+            catch (ArgumentException)
+            {
+                if (packageVersion.Contains(":"))
+                {
+                    throw new ArgumentException("Invalid package version format. Use the package parameter if you need to specify the step name and version.");
+                }
+                throw;
+            }
         }
 
         public string ResolveVersion(string stepName)

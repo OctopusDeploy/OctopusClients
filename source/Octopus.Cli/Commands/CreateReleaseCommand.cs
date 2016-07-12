@@ -25,7 +25,7 @@ namespace Octopus.Cli.Commands
 
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release. Override per-package using --package.", v => versionResolver.Default(v));
+            options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release. Override per-package using --package.", versionResolver.Default);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("channel=", "[Optional] Channel to use for the new release. Omit this argument to automatically select the best channel.", v => ChannelName = v);
             options.Add("package=", "[Optional] Version number to use for a package in the release. Format: --package={StepName}:{Version}", v => versionResolver.Add(v));
