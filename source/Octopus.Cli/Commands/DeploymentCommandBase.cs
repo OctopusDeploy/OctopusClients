@@ -73,7 +73,7 @@ namespace Octopus.Cli.Commands
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
 
             if (IsTenantedDeployment && !Repository.SupportsTenants())
-                throw new CommandException("Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, or remove the --tenant and --tenanttag arguments.");
+                throw new CommandException("Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
 
             base.ValidateParameters();
         }
@@ -93,7 +93,7 @@ namespace Octopus.Cli.Commands
         private List<DeploymentResource> DeployTenantedRelease(ProjectResource project, ReleaseResource release)
         {
             if (DeployToEnvironmentNames.Count != 1)
-                return new List<DeploymentResource>(); ;
+                return new List<DeploymentResource>();
 
             var environment = DeployToEnvironmentNames[0];
             var releaseTemplate = Repository.Releases.GetTemplate(release);
