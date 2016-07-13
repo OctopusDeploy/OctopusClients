@@ -20,9 +20,11 @@ namespace Octopus.Cli.Tests.Commands
             RootResource rootDocument = Substitute.For<RootResource>();
             rootDocument.ApiVersion = "2.0";
             rootDocument.Version = "2.0";
+            rootDocument.Links.Add("Tenants", "http://tenants.org");
 
             Repository = Substitute.For<IOctopusRepository>();
             Repository.Client.RootDocument.Returns(rootDocument);
+
 
             RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -23,12 +24,14 @@ namespace Octopus.Cli.Tests.Commands
             var project = new ProjectResource();
             var release = new ReleaseResource { Version = "1.0.0" };
             var releases = new ResourceCollection<ReleaseResource>(new[] { release }, new LinkCollection());
-            var deploymentPromotionTarget = new DeploymentPromotionTarget { Name = "TestEnvironment" };
+            var deploymentPromotionTarget = new DeploymentPromotionTarget { Name = "TestEnvironment", Id = "Env-1" };
             var promotionTargets = new List<DeploymentPromotionTarget> { deploymentPromotionTarget };
-            var deploymentTemplate = new DeploymentTemplateResource { PromoteTo = promotionTargets };
+            var tenantPromotionTarget1 = new DeploymentPromomotionTenant() { Id = "Tenant-1", PromoteTo = promotionTargets };
+            var tenantPromotionTarget2 = new DeploymentPromomotionTenant() { Id = "Tenant-2", PromoteTo = new List<DeploymentPromotionTarget>()};
+            var deploymentTemplate = new DeploymentTemplateResource { PromoteTo = promotionTargets, TenantPromotions = { tenantPromotionTarget1 , tenantPromotionTarget2 } };
             var deploymentPreviewResource = new DeploymentPreviewResource { StepsToExecute = new List<DeploymentTemplateStep>() };
-            var deployment = new DeploymentResource { TaskId = "1" };
-            taskResource = new TaskResource();
+            var deployment = new DeploymentResource { TaskId = "Task-1" };
+            taskResource = new TaskResource() { Id = "Task-1"};
 
             Repository.Projects.FindByName(ProjectName).Returns(project);
             Repository.Projects.GetReleases(project).Returns(releases);
@@ -36,6 +39,9 @@ namespace Octopus.Cli.Tests.Commands
             Repository.Releases.GetTemplate(release).Returns(deploymentTemplate);
             Repository.Deployments.Create(Arg.Any<DeploymentResource>()).Returns(deployment);
             Repository.Tasks.Get(deployment.TaskId).Returns(taskResource);
+
+
+         
         }
 
         [Test]
@@ -73,6 +79,50 @@ namespace Octopus.Cli.Tests.Commands
             Assert.Throws<CommandException>(() => deployReleaseCommand.Execute(CommandLineArgs.ToArray()));
 
             Repository.Tasks.DidNotReceive().Cancel(Arg.Any<TaskResource>());
+        }
+
+
+        [Test]
+        public void ShouldRejectIfMultipleEnvironmentsAndTenanted()
+        {
+            CommandLineArgs.Add("--project=" + ProjectName);
+            CommandLineArgs.Add("--deploymenttimeout=00:00:01");
+            CommandLineArgs.Add("--deployto=TestEnvironment");
+            CommandLineArgs.Add("--deployto=DevEnvironment");
+            CommandLineArgs.Add("--tenant=James");
+            CommandLineArgs.Add("--version=latest");
+            CommandLineArgs.Add("--progress");
+            CommandLineArgs.Add("--cancelontimeout");
+
+            Assert.Throws<CommandException>(() => deployReleaseCommand.Execute(CommandLineArgs.ToArray()),
+                "Please specify only one environment at a time when deploying to tenants.");
+
+            Repository.Deployments.DidNotReceive().Create(Arg.Any<DeploymentResource>());
+        }
+
+
+        [Test]
+        public void ShouldTryLoadTenant()
+        {
+            var tenant1 = new TenantResource() {Id = "Tenant-1", Name = "Tenant One"};
+            Repository.Tenants
+                .Get(Arg.Is<string[]>(t => t.SequenceEqual(new [] {"Tenant-1"})))
+                .Returns(new List<TenantResource>() {tenant1});
+            taskResource.State = TaskState.Success;
+
+            CommandLineArgs.Add("--project=" + ProjectName);
+            CommandLineArgs.Add("--deploymenttimeout=00:00:01");
+            CommandLineArgs.Add("--deployto=TestEnvironment");
+            CommandLineArgs.Add("--tenant=*");
+            CommandLineArgs.Add("--version=latest");
+            CommandLineArgs.Add("--progress");
+            CommandLineArgs.Add("--cancelontimeout");
+
+            deployReleaseCommand.Execute(CommandLineArgs.ToArray());
+
+            Repository.Deployments.Received(1).Create(Arg.Any<DeploymentResource>());
+            Repository.Deployments.Received()
+                .Create(Arg.Is<DeploymentResource>(dr => dr.TenantId == tenant1.Id && dr.EnvironmentId == "Env-1"));
         }
     }
 }
