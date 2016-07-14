@@ -8,9 +8,9 @@ using Octopus.Client.Model;
 namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
-    public class OverrideAutoDeployCommandFixture : ApiCommandFixtureBase
+    public class DeleteOverrideCommandFixture : ApiCommandFixtureBase
     {
-        OverrideAutoDeployCommand overrideAutoDeployCommand;
+        DeleteOverrideCommand deleteOverrideCommand;
 
         private EnvironmentResource environment;
         private ProjectResource project;
@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            overrideAutoDeployCommand = new OverrideAutoDeployCommand(RepositoryFactory, Log, FileSystem);
+            deleteOverrideCommand = new DeleteOverrideCommand(RepositoryFactory, Log, FileSystem);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");
@@ -64,59 +64,51 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldAddOverrideForEnvironmentAndRelease()
+        public void ShouldDeleteOverrideForEnvironment()
         {
             CommandLineArgs.Add("-project=OctoFx");
             CommandLineArgs.Add("-environment=Production");
-            CommandLineArgs.Add("-version=1.2.0");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, release.Id));
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production");
+            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+
+            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
-            var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
-            Assert.AreEqual(project.Id, savedProject.Id);
-            Assert.AreEqual(release.Id, autoDeployOverride.ReleaseId);
-            Assert.AreEqual(null, autoDeployOverride.TenantId);
-            Assert.AreEqual(environment.Id, autoDeployOverride.EnvironmentId);
+            Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
 
         [Test]
-        public void ShouldAddOverrideForTenantsByName()
+        public void ShouldDeleteOverrideForTenantByName()
         {
             CommandLineArgs.Add("-project=OctoFx");
             CommandLineArgs.Add("-environment=Production");
-            CommandLineArgs.Add("-version=1.2.0");
             CommandLineArgs.Add("-tenant=Octopus");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, octopusTenant.Id, release.Id));
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
+            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+
+            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
-            var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
-            Assert.AreEqual(project.Id, savedProject.Id);
-            Assert.AreEqual(release.Id, autoDeployOverride.ReleaseId);
-            Assert.AreEqual(octopusTenant.Id, autoDeployOverride.TenantId);
-            Assert.AreEqual(environment.Id, autoDeployOverride.EnvironmentId);
+            Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
 
         [Test]
-        public void ShouldAddOverrideForTenantsByTag()
+        public void ShouldDeleteOverrideForTenantByTag()
         {
             CommandLineArgs.Add("-project=OctoFx");
             CommandLineArgs.Add("-environment=Production");
-            CommandLineArgs.Add("-version=1.2.0");
             CommandLineArgs.Add("-tenanttag=VIP");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, octopusTenant.Id, release.Id));
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
+            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+
+            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
-            var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
-            Assert.AreEqual(project.Id, savedProject.Id);
-            Assert.AreEqual(release.Id, autoDeployOverride.ReleaseId);
-            Assert.AreEqual(octopusTenant.Id, autoDeployOverride.TenantId);
-            Assert.AreEqual(environment.Id, autoDeployOverride.EnvironmentId);
+            Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
+
     }
 }

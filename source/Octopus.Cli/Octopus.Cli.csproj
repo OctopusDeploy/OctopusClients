@@ -73,7 +73,7 @@
     <Reference Include="Octopus.Client, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octopus.Client.3.4.0-unstable2080\lib\net40\Octopus.Client.dll</HintPath>
       <Private>True</Private>
-    </Reference>	
+    </Reference>
     <Reference Include="Octostache, Version=1.0.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octostache.1.0.2.29\lib\net40\Octostache.dll</HintPath>
       <Private>True</Private>
@@ -122,6 +122,7 @@
     <Compile Include="Commands\ListReleasesCommand.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Commands\ReleasePlanBuilder.cs" />
+    <Compile Include="Commands\DeleteOverrideCommand.cs" />
     <Compile Include="Commands\ZipPackageBuilder.cs" />
     <Compile Include="Importers\BaseValidatedImportSettings.cs" />
     <Compile Include="Importers\CheckedReferences.cs" />
