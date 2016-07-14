@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
@@ -210,14 +211,17 @@ namespace Octopus.Cli.Commands
             {
                 if (Tenants.Any())
                 {
-
-
                     var tenantsByName = Repository.Tenants.FindByNames(Tenants);
-                    var missing =
-                        Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+                    var missing = tenantsByName == null || !tenantsByName.Any()
+                        ? Tenants.ToArray()
+                        : Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
                     var tenantsById = Repository.Tenants.Get(missing);
-                    missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
+
+                    missing = tenantsById == null || !tenantsById.Any()
+                        ? missing
+                        : missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
+
                     if (missing.Any())
                         throw new ArgumentException(
                             $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");

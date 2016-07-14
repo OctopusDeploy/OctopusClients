@@ -2,6 +2,7 @@
 using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
 #pragma warning disable 618

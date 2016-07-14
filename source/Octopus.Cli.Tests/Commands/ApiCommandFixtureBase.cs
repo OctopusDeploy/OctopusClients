@@ -4,6 +4,7 @@ using log4net;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;

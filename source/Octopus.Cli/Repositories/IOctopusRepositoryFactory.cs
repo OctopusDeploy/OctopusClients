@@ -1,7 +1,6 @@
-using System;
 using Octopus.Client;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Repositories
 {
     public interface IOctopusRepositoryFactory
     {

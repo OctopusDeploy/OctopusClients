@@ -71,9 +71,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Octopus.Client, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octopus.Client.3.4.0-unstable1934\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.3.4.0-unstable2080\lib\net40\Octopus.Client.dll</HintPath>
       <Private>True</Private>
-    </Reference>
+    </Reference>	
     <Reference Include="Octostache, Version=1.0.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octostache.1.0.2.29\lib\net40\Octostache.dll</HintPath>
       <Private>True</Private>
@@ -112,6 +112,7 @@
     <Compile Include="Commands\IReleasePlanBuilder.cs" />
     <Compile Include="Commands\ListTenantsCommand.cs" />
     <Compile Include="Commands\NuGetPackageBuilder.cs" />
+    <Compile Include="Commands\OverrideAutoDeployCommand.cs" />
     <Compile Include="Commands\PushCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
@@ -128,6 +129,9 @@
     <Compile Include="Model\ChannelVersionRuleTestResult.cs" />
     <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\IActionTemplateRepository.cs" />
+    <Compile Include="Repositories\IOctopusRepositoryFactory.cs" />
+    <Compile Include="Repositories\OctopusRepositoryCommonQueries.cs" />
+    <Compile Include="Repositories\OctopusRepositoryFactory.cs" />
     <Compile Include="Util\DeletionOptions.cs" />
     <Compile Include="Util\FeatureDetectionExtensions.cs" />
     <Compile Include="Util\FeedCustomExpressionHelper.cs" />
@@ -164,10 +168,8 @@
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
     <Compile Include="Commands\IDeploymentWatcher.cs" />
-    <Compile Include="Commands\IOctopusRepositoryFactory.cs" />
     <Compile Include="Commands\IPackageVersionResolver.cs" />
     <Compile Include="Commands\ListProjectsCommand.cs" />
-    <Compile Include="Commands\OctopusRepositoryFactory.cs" />
     <Compile Include="Commands\PackageVersionResolver.cs" />
     <Compile Include="Commands\ReleasePlan.cs" />
     <Compile Include="Commands\ReleasePlanItem.cs" />
@@ -206,7 +208,9 @@
     <None Include="Octopus.Cli.nuspec">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Icon.ico" />

@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 
 namespace Octopus.Cli.Commands

@@ -2,6 +2,7 @@
 using log4net;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 
 namespace Octopus.Cli.Commands

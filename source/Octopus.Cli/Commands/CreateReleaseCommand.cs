@@ -5,6 +5,7 @@ using System.Linq;
 using log4net;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;

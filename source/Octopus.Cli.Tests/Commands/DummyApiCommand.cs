@@ -2,6 +2,7 @@
 using log4net;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 
 namespace Octopus.Cli.Tests.Commands

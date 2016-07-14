@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using log4net;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client.Model;
 
@@ -41,68 +40,11 @@ namespace Octopus.Cli.Commands
 
         protected override void Execute()
         {
-            var project = GetProject();
+            var project = RepositoryCommonQueries.GetProjectByName(ProjectName);
             var channel = GetChannel(project);
-            var releaseToPromote = GetRelease(project, channel);
+            var releaseToPromote = RepositoryCommonQueries.GetReleaseByVersion(VersionNumber, project, channel);
 
             DeployRelease(project, releaseToPromote);
-        }
-
-        private ReleaseResource GetRelease(ProjectResource project, ChannelResource channel)
-        {
-            string message;
-            ReleaseResource releaseToPromote = null;
-            if (string.Equals("latest", VersionNumber, StringComparison.CurrentCultureIgnoreCase))
-            {
-                message = channel == null
-                    ? "latest release for project"
-                    : $"latest release in channel '{channel.Name}'";
-
-                Log.Debug($"Finding {message}");
-
-                if (channel == null)
-                {
-                    releaseToPromote = Repository
-                        .Projects
-                        .GetReleases(project)
-                        .Items // We only need the first page
-                        .OrderByDescending(r => SemanticVersion.Parse(r.Version))
-                        .FirstOrDefault();
-                }
-                else
-                {
-                    Repository.Projects.GetReleases(project).Paginate(Repository, page =>
-                    {
-                        releaseToPromote = page.Items
-                            .OrderByDescending(r => SemanticVersion.Parse(r.Version))
-                            .FirstOrDefault(r => r.ChannelId == channel.Id);
-
-                        // If we haven't found one yet, keep paginating
-                        return releaseToPromote == null;
-                    });
-                }
-            }
-            else
-            {
-                message = $"release {VersionNumber}";
-                Log.Debug($"Finding {message}");
-                releaseToPromote = Repository.Projects.GetReleaseByVersion(project, VersionNumber);
-            }
-
-            if (releaseToPromote == null)
-            {
-                throw new CouldNotFindException($"the {message}", project.Name);
-            }
-            return releaseToPromote;
-        }
-
-        private ProjectResource GetProject()
-        {
-            Log.Debug("Finding project: " + ProjectName);
-            var project = Repository.Projects.FindByName(ProjectName);
-            if (project == null)
-                throw new CouldNotFindException("a project named", ProjectName);
-            return project;
         }
 
         private ChannelResource GetChannel(ProjectResource project)

@@ -49,7 +49,7 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Octopus.Client, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octopus.Client.3.4.0-unstable1934\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.3.4.0-unstable2080\lib\net40\Octopus.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -82,6 +82,7 @@
     <Compile Include="Commands\ListEnvironmentsCommandFixture.cs" />
     <Compile Include="Commands\ListProjectsCommandFixture.cs" />
     <Compile Include="Commands\ListReleasesCommandFixture.cs" />
+    <Compile Include="Commands\OverrideAutoDeployCommandFixture.cs" />
     <Compile Include="Commands\PackageVersionResolverFixture.cs" />
     <Compile Include="Commands\HelpCommandFixture.cs" />
     <Compile Include="Commands\OptionsFixture.cs" />

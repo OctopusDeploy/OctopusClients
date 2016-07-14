@@ -13,6 +13,7 @@ using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client.Exceptions;
 using System.Net;
+using Octopus.Cli.Repositories;
 
 namespace Octopus.Cli
 {

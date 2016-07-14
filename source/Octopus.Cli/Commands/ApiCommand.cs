@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using log4net;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -27,6 +28,7 @@ namespace Octopus.Cli.Commands
         string serverBaseUrl;
         string username;
         readonly Options optionGroups = new Options();
+        private OctopusRepositoryCommonQueries repositoryCommonQueries;
 
         protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
         {
@@ -62,6 +64,11 @@ namespace Octopus.Cli.Commands
             get { return repository; }
         }
 
+        protected OctopusRepositoryCommonQueries RepositoryCommonQueries
+        {
+            get { return repositoryCommonQueries; }
+        }
+
         protected IOctopusFileSystem FileSystem
         {
             get {  return fileSystem; }
@@ -89,6 +96,7 @@ namespace Octopus.Cli.Commands
             var endpoint = new OctopusServerEndpoint(serverBaseUrl, apiKey, credentials);
 
             repository = repositoryFactory.CreateRepository(endpoint);
+            repositoryCommonQueries = new OctopusRepositoryCommonQueries(repository, log);
 
             if (enableDebugging)
             {
