@@ -8,10 +8,10 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
-    [Command("delete-override", Description = "Delete auto deploy release overrides")]
-    public class DeleteOverrideCommand : ApiCommand
+    [Command("delete-autodeployoverride", Description = "Delete auto deploy release overrides")]
+    public class DeleteAutoDeployOverrideCommand : ApiCommand
     {
-        public DeleteOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
+        public DeleteAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
             base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Delete auto deploy release override");

@@ -8,10 +8,10 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
-    [Command("override-autodeploy", Description = "Override the release that auto deploy will use")]
-    public class OverrideAutoDeployCommand : ApiCommand
+    [Command("create-autodeployoverride", Description = "Override the release that auto deploy will use")]
+    public class CreateAutoDeployOverrideCommand : ApiCommand
     {
-        public OverrideAutoDeployCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
+        public CreateAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
             base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Auto deploy release override");

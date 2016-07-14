@@ -8,9 +8,9 @@ using Octopus.Client.Model;
 namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
-    public class DeleteOverrideCommandFixture : ApiCommandFixtureBase
+    public class DeleteAutoDeployOverrideCommandFixture : ApiCommandFixtureBase
     {
-        DeleteOverrideCommand deleteOverrideCommand;
+        DeleteAutoDeployOverrideCommand deleteAutoDeployOverrideCommand;
 
         private EnvironmentResource environment;
         private ProjectResource project;
@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            deleteOverrideCommand = new DeleteOverrideCommand(RepositoryFactory, Log, FileSystem);
+            deleteAutoDeployOverrideCommand = new DeleteAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");
@@ -71,7 +71,7 @@ namespace Octopus.Cli.Tests.Commands
 
             project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, release.Id));
 
-            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+            deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
@@ -87,7 +87,7 @@ namespace Octopus.Cli.Tests.Commands
 
             project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, octopusTenant.Id, release.Id));
 
-            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+            deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
@@ -103,7 +103,7 @@ namespace Octopus.Cli.Tests.Commands
 
             project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, octopusTenant.Id, release.Id));
 
-            deleteOverrideCommand.Execute(CommandLineArgs.ToArray());
+            deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);

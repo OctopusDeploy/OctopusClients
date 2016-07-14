@@ -112,7 +112,7 @@
     <Compile Include="Commands\IReleasePlanBuilder.cs" />
     <Compile Include="Commands\ListTenantsCommand.cs" />
     <Compile Include="Commands\NuGetPackageBuilder.cs" />
-    <Compile Include="Commands\OverrideAutoDeployCommand.cs" />
+    <Compile Include="Commands\CreateAutoDeployOverrideCommand.cs" />
     <Compile Include="Commands\PushCommand.cs" />
     <Compile Include="Commands\CreateProjectCommand.cs" />
     <Compile Include="Commands\DeploymentCommandBase.cs" />
@@ -122,7 +122,7 @@
     <Compile Include="Commands\ListReleasesCommand.cs" />
     <Compile Include="Commands\OptionGroup.cs" />
     <Compile Include="Commands\ReleasePlanBuilder.cs" />
-    <Compile Include="Commands\DeleteOverrideCommand.cs" />
+    <Compile Include="Commands\DeleteAutoDeployOverrideCommand.cs" />
     <Compile Include="Commands\ZipPackageBuilder.cs" />
     <Compile Include="Importers\BaseValidatedImportSettings.cs" />
     <Compile Include="Importers\CheckedReferences.cs" />

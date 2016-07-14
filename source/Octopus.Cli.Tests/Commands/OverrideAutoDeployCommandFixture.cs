@@ -10,7 +10,7 @@ namespace Octopus.Cli.Tests.Commands
     [TestFixture]
     public class OverrideAutoDeployCommandFixture : ApiCommandFixtureBase
     {
-        OverrideAutoDeployCommand overrideAutoDeployCommand;
+        CreateAutoDeployOverrideCommand createAutoDeployOverrideCommand;
 
         private EnvironmentResource environment;
         private ProjectResource project;
@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            overrideAutoDeployCommand = new OverrideAutoDeployCommand(RepositoryFactory, Log, FileSystem);
+            createAutoDeployOverrideCommand = new CreateAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");
@@ -70,7 +70,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-environment=Production");
             CommandLineArgs.Add("-version=1.2.0");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
@@ -89,7 +89,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-version=1.2.0");
             CommandLineArgs.Add("-tenant=Octopus");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
@@ -108,7 +108,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-version=1.2.0");
             CommandLineArgs.Add("-tenanttag=VIP");
 
-            overrideAutoDeployCommand.Execute(CommandLineArgs.ToArray());
+            createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
