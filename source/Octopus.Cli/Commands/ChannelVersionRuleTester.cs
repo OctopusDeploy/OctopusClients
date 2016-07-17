@@ -15,7 +15,7 @@ namespace Octopus.Cli.Commands
             }
 
             var link = repository.Client.RootDocument.Link("VersionRuleTest");
-            var response = repository.Client.Get<ChannelVersionRuleTestResult>(link, new
+            var response = repository.Client.Post<object, ChannelVersionRuleTestResult>(link, new
             {
                 version = packageVersion,
                 versionRange = rule.VersionRange,
