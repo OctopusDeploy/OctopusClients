@@ -5,6 +5,7 @@ using System.Linq;
 using log4net;
 using NuGet;
 using Octopus.Cli.Infrastructure;
+using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands
 {

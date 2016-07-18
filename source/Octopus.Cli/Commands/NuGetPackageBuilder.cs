@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 
@@ -22,6 +23,8 @@ namespace Octopus.Cli.Commands
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite)
         {
+            AssertSemVer1(metadata.Version);
+
             var package = new PackageBuilder();
 
             package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
@@ -39,6 +42,14 @@ namespace Octopus.Cli.Commands
 
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
                 package.Save(outStream);
+        }
+
+        static void AssertSemVer1(string version)
+        {
+            var semver = NuGetVersion.Parse(version);
+
+            if (semver.IsSemVer2)
+                throw new CommandException($"Semantic Versioning 2.0.0 is not supported for NuGet packages. '{version}' is not a valid SemVer 1.0.0 version string.");
         }
     }
 }
