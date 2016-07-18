@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 
 namespace Octopus.Cli.Commands
@@ -45,8 +46,8 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
             }
 
-            SemanticVersion version;
-            if (!SemanticVersion.TryParse(value, out version))
+            NuGetVersion version;
+            if (!NuGetVersion.TryParse(value, out version))
             {
                 throw new CommandException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
             }
@@ -59,8 +60,8 @@ namespace Octopus.Cli.Commands
             string current;
             if (stepNameToVersion.TryGetValue(stepName, out current))
             {
-                var newVersion = SemanticVersion.Parse(packageVersion);
-                var currentVersion = SemanticVersion.Parse(current);
+                var newVersion = NuGetVersion.Parse(packageVersion);
+                var currentVersion = NuGetVersion.Parse(current);
                 if (newVersion < currentVersion)
                 {
                     return;
@@ -74,7 +75,7 @@ namespace Octopus.Cli.Commands
         {
             try
             {
-                SemanticVersion.Parse(packageVersion);
+                NuGetVersion.Parse(packageVersion);
                 defaultVersion = packageVersion;
             }
             catch (ArgumentException)

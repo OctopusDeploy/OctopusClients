@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
-using NuGet;
+using NuGet.Packaging;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 
@@ -23,7 +24,7 @@ namespace Octopus.Cli.Commands
         bool overwrite;
         string releaseNotes, releaseNotesFile;
         string title;
-        SemanticVersion version;
+        NuGetVersion version;
         readonly Options optionGroups = new Options();
         IPackageBuilder packageBuilder;
 
@@ -46,7 +47,7 @@ namespace Octopus.Cli.Commands
             var basic = optionGroups.For("Basic options");
             basic.Add("id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v);
             basic.Add("format=", "Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward.", fmt => packageBuilder = SelectFormat(fmt));
-            basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v));
+            basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new NuGetVersion(v));
             basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v);
             basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v);
 
@@ -77,24 +78,7 @@ namespace Octopus.Cli.Commands
             if (version == null)
             {
                 var now = DateTime.Now;
-                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
-            }
-            else
-            {
-                // Make sure SpecialVersion has 20 characters maximum (Limit imposed by NuGet)
-                // https://nuget.codeplex.com/workitem/3426
-
-                const int nugetSpecialVersionMaxLength = 20;
-                if (!string.IsNullOrWhiteSpace(version.SpecialVersion) && version.SpecialVersion.Length > nugetSpecialVersionMaxLength)
-                {
-                    log.WarnFormat("SpecialVersion '{0}' will be truncated to {1} characters (NuGet limit)",
-                        version.SpecialVersion, nugetSpecialVersionMaxLength);
-
-                    var specialVersion = version.SpecialVersion;
-                    specialVersion = specialVersion.Substring(0, Math.Min(nugetSpecialVersionMaxLength, specialVersion.Length));
-
-                    version = new SemanticVersion(version.Version, specialVersion);
-                }
+                version = new NuGetVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
@@ -123,9 +107,9 @@ namespace Octopus.Cli.Commands
             var metadata = new ManifestMetadata
             {
                 Id = id,
-                Authors = string.Join(", ", authors),
+                Authors = authors, 
                 Description = description,
-                Version = version.ToString(),
+                Version = version,
             };
 
             if (!string.IsNullOrWhiteSpace(allReleaseNotes))

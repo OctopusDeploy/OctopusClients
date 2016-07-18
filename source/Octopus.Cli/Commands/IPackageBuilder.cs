@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using NuGet;
+using ManifestMetadata = NuGet.Packaging.ManifestMetadata;
 
 namespace Octopus.Cli.Commands
 {

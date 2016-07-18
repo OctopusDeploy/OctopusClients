@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
-using NuGet;
+using NuGet.Packaging;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
+using PackageBuilder = Octopus.Cli.Commands.NuGet.PackageBuilder;
 
 namespace Octopus.Cli.Commands
 {
@@ -27,7 +29,7 @@ namespace Octopus.Cli.Commands
             package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
             package.Populate(metadata);
 
-            var filename = metadata.Id + "." + metadata.Version + ".nupkg";
+            var filename = metadata.Id + "." + GetNormalizedVersionForFileName(metadata.Version)  + ".nupkg";
             var output = Path.Combine(outFolder, filename);
 
             if (fileSystem.FileExists(output) && !overwrite)
@@ -39,6 +41,18 @@ namespace Octopus.Cli.Commands
 
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
                 package.Save(outStream);
+        }
+
+        static string GetNormalizedVersionForFileName(NuGetVersion specifiedVersion)
+        {
+            var normalized = specifiedVersion.ToNormalizedString();
+
+            if (specifiedVersion.HasMetadata)
+            {
+                normalized = normalized.Replace("+" + specifiedVersion.Metadata, "");
+            }
+
+            return normalized;
         }
     }
 }
