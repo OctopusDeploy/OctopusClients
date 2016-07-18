@@ -13,7 +13,7 @@
   <PropertyGroup>
     <Root>$(MSBuildStartupDirectory)</Root>
     <nunitconsoleexe>$(Root)\tools\Nunit\nunit-console-x86.exe</nunitconsoleexe>
-    <NuGetPath>$(Root)\source\packages\NuGet.CommandLine.2.8.6\tools</NuGetPath>
+    <NuGetPath>$(Root)\source\packages\NuGet.CommandLine.3.4.3\tools</NuGetPath>
   </PropertyGroup>
   
   <Target Name="Diagnose">
