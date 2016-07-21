@@ -45,7 +45,8 @@ namespace Octopus.Cli.Commands
                         if (string.Equals(fullFilePath, output, StringComparison.InvariantCultureIgnoreCase))
                             continue;
 
-                        var relativePath = fullFilePath.Substring(basePathLength).TrimStart('\\');
+                        var relativePath = UseCrossPlatformDirectorySeparator(
+                            fullFilePath.Substring(basePathLength).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
                         log.Debug("Adding file: " + relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
@@ -58,6 +59,23 @@ namespace Octopus.Cli.Commands
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Per the .ZIP File Format Specification 4.4.17.1 all slashes should be forward slashes, not back slashes. 
+        /// https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+        ///
+        /// This functionality is being implemented in the framework: 
+        /// https://github.com/dotnet/corefx/commit/7b9331e89a795c72709aef38898929e74c343dfb
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        static string UseCrossPlatformDirectorySeparator(string path)
+        {
+            if (Path.DirectorySeparatorChar == '\\')
+                return path.Replace('\\', '/');
+
+            return path;
         }
     }
 }
