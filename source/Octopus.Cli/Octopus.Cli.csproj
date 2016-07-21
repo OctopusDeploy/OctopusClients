@@ -75,7 +75,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Octopus.Client">
-      <HintPath>..\packages\Octopus.Client.3.4.0-unstable2121\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.3.4.0-beta0002\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
     <Reference Include="Octostache, Version=1.0.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octostache.1.0.2.29\lib\net40\Octostache.dll</HintPath>

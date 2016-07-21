@@ -50,7 +50,7 @@
     </Reference>
     <Reference Include="Octopus.Client, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Octopus.Client.3.4.0-unstable2121\lib\net40\Octopus.Client.dll</HintPath>
+      <HintPath>..\packages\Octopus.Client.3.4.0-beta0002\lib\net40\Octopus.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
