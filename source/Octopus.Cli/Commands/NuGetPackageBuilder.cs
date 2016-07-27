@@ -27,7 +27,7 @@ namespace Octopus.Cli.Commands
             package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
             package.Populate(metadata);
 
-            var filename = metadata.Id + "." + metadata.Version.ToNormalizedString()  + ".nupkg";
+            var filename = metadata.Id + "." + metadata.Version + ".nupkg";
             var output = Path.Combine(outFolder, filename);
 
             if (fileSystem.FileExists(output) && !overwrite)
