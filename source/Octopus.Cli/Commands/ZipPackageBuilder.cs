@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using log4net;
-using NuGet;
+using NuGet.Common;
+using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 
