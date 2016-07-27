@@ -5,7 +5,6 @@ using log4net;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using PackageBuilder = Octopus.Cli.Commands.NuGet.PackageBuilder;
 
 namespace Octopus.Cli.Commands
 {
@@ -22,10 +21,10 @@ namespace Octopus.Cli.Commands
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite)
         {
-            var package = new PackageBuilder();
+            var nugetPkgBuilder = new NuGet.PackageBuilder();
 
-            package.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
-            package.Populate(metadata);
+            nugetPkgBuilder.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
+            nugetPkgBuilder.Populate(metadata);
 
             var filename = metadata.Id + "." + metadata.Version + ".nupkg";
             var output = Path.Combine(outFolder, filename);
@@ -38,7 +37,7 @@ namespace Octopus.Cli.Commands
             fileSystem.EnsureDirectoryExists(outFolder);
 
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
-                package.Save(outStream);
+                nugetPkgBuilder.Save(outStream);
         }
     }
 }

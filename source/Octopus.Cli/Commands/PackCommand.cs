@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using log4net;
 using NuGet.Packaging;
-using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
+using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
@@ -24,7 +24,7 @@ namespace Octopus.Cli.Commands
         bool overwrite;
         string releaseNotes, releaseNotesFile;
         string title;
-        NuGetVersion version;
+        SemanticVersion version;
         readonly Options optionGroups = new Options();
         IPackageBuilder packageBuilder;
 
@@ -47,7 +47,7 @@ namespace Octopus.Cli.Commands
             var basic = optionGroups.For("Basic options");
             basic.Add("id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v);
             basic.Add("format=", "Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward.", fmt => packageBuilder = SelectFormat(fmt));
-            basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new NuGetVersion(v));
+            basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v));
             basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v);
             basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v);
 
@@ -78,7 +78,7 @@ namespace Octopus.Cli.Commands
             if (version == null)
             {
                 var now = DateTime.Now;
-                version = new NuGetVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
+                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
@@ -109,7 +109,7 @@ namespace Octopus.Cli.Commands
                 Id = id,
                 Authors = authors, 
                 Description = description,
-                Version = version,
+                Version = version.ToNuGetVersion(),
             };
 
             if (!string.IsNullOrWhiteSpace(allReleaseNotes))

@@ -17,7 +17,7 @@ using NuGet.Versioning;
 
 namespace Octopus.Cli.Commands.NuGet
 {
-    public class PackageBuilder : IPackageMetadata
+    internal class PackageBuilder : IPackageMetadata
     {
         private const string DefaultContentType = "application/octet";
         internal const string ManifestRelationType = "manifest";
