@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
-using NuGet;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using Octopus.Cli.Infrastructure;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
@@ -26,9 +27,12 @@ namespace Octopus.Cli.Commands
             foreach (var file in Directory.GetFiles(folderPath, "*.nupkg", SearchOption.AllDirectories))
             {
                 log.Debug("Package file: " + file);
-                var package = new ZipPackage(file);
 
-                Add(package.Id, package.Version.ToString());
+                PackageIdentity packageIdentity;
+                if (TryReadPackageIdentity(file, out packageIdentity))
+                {
+                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                }
             }
         }
 
@@ -94,6 +98,26 @@ namespace Octopus.Cli.Commands
             return stepNameToVersion.TryGetValue(stepName, out version)
                 ? version
                 : defaultVersion;
+        }
+
+        bool TryReadPackageIdentity(string packageFile, out PackageIdentity packageIdentity)
+        {
+            packageIdentity = null;
+            try
+            {
+                using (var reader = new PackageArchiveReader(new FileStream(packageFile, FileMode.Open, FileAccess.Read)))
+                {
+                    var nuspecReader = new NuspecReader(reader.GetNuspec());
+                    packageIdentity = nuspecReader.GetIdentity();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+               log.WarnFormat("Could not read manifest from '{0}': {1}", packageFile, ex); 
+            }
+
+            return false;
         }
     }
 }

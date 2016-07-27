@@ -90,10 +90,6 @@
       <HintPath>..\packages\NuGet.Packaging.Core.Types.3.4.3\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Core, Version=2.11.1.812, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Core.2.11.1\lib\net40-Client\NuGet.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NuGet.Versioning, Version=3.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\NuGet.Versioning.3.4.3\lib\net45\NuGet.Versioning.dll</HintPath>
       <Private>True</Private>
