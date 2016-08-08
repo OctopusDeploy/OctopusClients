@@ -125,7 +125,6 @@ namespace Octopus.Cli.Tests.Commands
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
-            var calls = Log.ReceivedCalls().ToList();
             Log.Received().Info("Machines: 2");
             Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
             Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");

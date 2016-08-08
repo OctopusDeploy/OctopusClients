@@ -193,8 +193,6 @@
     <Compile Include="Commands\CreateReleaseCommand.cs" />
     <Compile Include="Commands\DeleteReleasesCommand.cs" />
     <Compile Include="Commands\DeployReleaseCommand.cs" />
-    <Compile Include="Commands\IDeploymentWatcher.cs" />
-    <Compile Include="Commands\IOctopusRepositoryFactory.cs" />
     <Compile Include="Commands\IPackageVersionResolver.cs" />
     <Compile Include="Commands\ListProjectsCommand.cs" />
     <Compile Include="Commands\PackageVersionResolver.cs" />
