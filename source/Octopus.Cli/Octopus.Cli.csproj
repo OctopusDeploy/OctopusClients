@@ -131,6 +131,7 @@
     <Compile Include="Commands\CleanEnvironmentCommand.cs" />
     <Compile Include="Commands\CreateChannelCommand.cs" />
     <Compile Include="Commands\CreateEnvironmentCommand.cs" />
+    <Compile Include="Commands\HealthStatusProvider.cs" />
     <Compile Include="Commands\IPackageBuilder.cs" />
     <Compile Include="Commands\IReleasePlanBuilder.cs" />
     <Compile Include="Commands\ListTenantsCommand.cs" />

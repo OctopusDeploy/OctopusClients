@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -60,9 +61,9 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Offline, "Machines-002", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
         }
 
         [Test]
@@ -89,9 +90,9 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 1");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -108,21 +109,23 @@ namespace Octopus.Cli.Tests.Commands
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
-
+            var calls = Log.ReceivedCalls().ToList();
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
         }
 
         [Test]
@@ -159,9 +162,9 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 1");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline, "Machines-003", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -199,8 +202,8 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online, "Machines-001", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online, "Machines-002", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
         }
     }
 }

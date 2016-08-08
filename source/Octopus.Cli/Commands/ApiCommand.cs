@@ -161,6 +161,15 @@ namespace Octopus.Cli.Commands
             return new NetworkCredential(username, password);
         }
 
+        protected void SetFlagState(string input, ref bool? setter)
+        {
+            bool tempBool;
+            if (bool.TryParse(input, out tempBool))
+            {
+                setter = tempBool;
+            }
+        }
+
         protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
             configFile = fileSystem.GetFullPath(configFile);

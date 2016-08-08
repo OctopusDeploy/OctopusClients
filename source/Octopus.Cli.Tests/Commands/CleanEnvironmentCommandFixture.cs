@@ -52,7 +52,7 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline);
+            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
 
             Log.Received().InfoFormat("Deleting {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id);
             Repository.Machines.Received().Delete(machineList[0]);
@@ -93,7 +93,7 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline);
+            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
             Log.Received().InfoFormat("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", "Development");
 
             Log.Received().InfoFormat("Removing {0} {1} (ID: {2}) from {3}", machineList[0].Name, machineList[0].Status, machineList[0].Id, "Development");
@@ -110,7 +110,7 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
         }
 
-        [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "Please specify a status using the parameter: --status=Offline")]
+        [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "Please specify a status using the parameter: --status or --health-status")]
         public void ShouldNotCleanEnvironmentWithMissingStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
