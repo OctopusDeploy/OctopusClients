@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net;
+using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
 
@@ -9,17 +9,17 @@ namespace Octopus.Cli.Exporters
     public abstract class BaseExporter : IExporter
     {
         readonly FileSystemExporter fileSystemExporter;
-        readonly ILog log;
+        readonly ILogger log;
         readonly IOctopusRepository repository;
 
-        protected BaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        protected BaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             this.log = log;
             this.repository = repository;
             fileSystemExporter = new FileSystemExporter(fileSystem, log);
         }
 
-        public ILog Log
+        public ILogger Log
         {
             get { return log; }
         }

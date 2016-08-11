@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using log4net;
+using Serilog;
 using Newtonsoft.Json;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
@@ -12,9 +12,9 @@ namespace Octopus.Cli.Importers
     public class FileSystemImporter
     {
         readonly IOctopusFileSystem fileSystem;
-        readonly ILog log;
+        readonly ILogger log;
 
-        public FileSystemImporter(IOctopusFileSystem fileSystem, ILog log)
+        public FileSystemImporter(IOctopusFileSystem fileSystem, ILogger log)
         {
             this.fileSystem = fileSystem;
             this.log = log;

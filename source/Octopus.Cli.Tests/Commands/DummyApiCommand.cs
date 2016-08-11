@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Repositories;
@@ -10,7 +10,7 @@ namespace Octopus.Cli.Tests.Commands
     public class DummyApiCommand : ApiCommand
     {
         string pill;
-        public DummyApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public DummyApiCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Dummy");

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net;
+using Serilog;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -16,7 +16,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void BaseSetup()
         {
-            Log = Substitute.For<ILog>();
+            Log = Substitute.For<ILogger>();
 
             RootResource rootDocument = Substitute.For<RootResource>();
             rootDocument.ApiVersion = "2.0";
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Tests.Commands
             }; 
         }
 
-        public ILog Log { get; set; }
+        public ILogger Log { get; set; }
 
         public IOctopusRepositoryFactory RepositoryFactory { get; set; }
 

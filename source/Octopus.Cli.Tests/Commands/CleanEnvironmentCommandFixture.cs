@@ -52,12 +52,12 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
+            Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
 
-            Log.Received().InfoFormat("Deleting {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id);
+            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id);
             Repository.Machines.Received().Delete(machineList[0]);
 
-            Log.Received().InfoFormat("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
+            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
             Repository.Machines.Received().Delete(machineList[1]);
         }
 
@@ -93,14 +93,14 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
-            Log.Received().InfoFormat("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", "Development");
+            Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
+            Log.Received().Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", "Development");
 
-            Log.Received().InfoFormat("Removing {0} {1} (ID: {2}) from {3}", machineList[0].Name, machineList[0].Status, machineList[0].Id, "Development");
+            Log.Received().Information("Removing {0} {1} (ID: {2}) from {3}", machineList[0].Name, machineList[0].Status, machineList[0].Id, "Development");
             Assert.That(machineList[0].EnvironmentIds.Count, Is.EqualTo(1), "The machine should have been removed from the Development environment.");
             Repository.Machines.Received().Modify(machineList[0]);
 
-            Log.Received().InfoFormat("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
+            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
             Repository.Machines.Received().Delete(machineList[1]);
         }
 

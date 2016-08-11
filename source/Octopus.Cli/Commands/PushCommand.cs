@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     [Command("push", Description = "Pushes a package (.nupkg, .zip, .tar.gz, etc.) package to the built-in NuGet repository in an Octopus server.")]
     public class PushCommand : ApiCommand
     {
-        public PushCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public PushCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Package pushing");
@@ -28,7 +28,7 @@ namespace Octopus.Cli.Commands
 
             foreach (var package in Packages)
             {
-                Log.DebugFormat("Pushing package: {0}...", package);
+                Log.Debug("Pushing package: {0}...", package);
 
                 using (var fileStream = FileSystem.OpenFile(package, FileAccess.Read))
                 {

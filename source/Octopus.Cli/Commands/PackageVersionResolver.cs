@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using log4net;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using Octopus.Cli.Infrastructure;
@@ -12,11 +11,11 @@ namespace Octopus.Cli.Commands
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {
-        readonly ILog log;
+        readonly Serilog.ILogger log;
         readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
         string defaultVersion;
 
-        public PackageVersionResolver(ILog log)
+        public PackageVersionResolver(Serilog.ILogger log)
         {
             this.log = log;
         }
@@ -114,7 +113,7 @@ namespace Octopus.Cli.Commands
             }
             catch (Exception ex)
             {
-               log.WarnFormat("Could not read manifest from '{0}': {1}", packageFile, ex); 
+               log.Warning("Could not read manifest from '{0}': {1}", packageFile, ex); 
             }
 
             return false;

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using log4net;
 using NuGet.Common;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
@@ -13,9 +12,9 @@ namespace Octopus.Cli.Commands
     public class ZipPackageBuilder : IPackageBuilder
     {
         readonly IOctopusFileSystem fileSystem;
-        readonly ILog log;
+        readonly Serilog.ILogger log;
 
-        public ZipPackageBuilder(IOctopusFileSystem fileSystem, ILog log)
+        public ZipPackageBuilder(IOctopusFileSystem fileSystem, Serilog.ILogger log)
         {
             this.fileSystem = fileSystem;
             this.log = log;
@@ -29,7 +28,7 @@ namespace Octopus.Cli.Commands
             if (fileSystem.FileExists(output) && !overwrite)
                 throw new CommandException("The package file already exists and --overwrite was not specified");
 
-            log.InfoFormat("Saving {0} to {1}...", filename, outFolder);
+            log.Information("Saving {0} to {1}...", filename, outFolder);
 
             fileSystem.EnsureDirectoryExists(outFolder);
 
@@ -39,7 +38,7 @@ namespace Octopus.Cli.Commands
             {
                 foreach (var pattern in includes)
                 {
-                    log.DebugFormat("Adding files from '{0}' matching pattern '{1}'", basePath, pattern);
+                    log.Debug("Adding files from '{0}' matching pattern '{1}'", basePath, pattern);
                     foreach (var file in PathResolver.PerformWildcardSearch(basePath, pattern))
                     {
                         var fullFilePath = fileSystem.GetFullPath(file);

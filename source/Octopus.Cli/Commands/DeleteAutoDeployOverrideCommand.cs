@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     [Command("delete-autodeployoverride", Description = "Delete auto deploy release overrides")]
     public class DeleteAutoDeployOverrideCommand : ApiCommand
     {
-        public DeleteAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
+        public DeleteAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem) :
             base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Delete auto deploy release override");
@@ -78,12 +78,12 @@ namespace Octopus.Cli.Commands
 
             if (autoDeployOverride == null)
             {
-                Log.Warn($"Did not find an auto deploy override for the project {project.Name} and environment {environment.Name}");
+                Log.Warning($"Did not find an auto deploy override for the project {project.Name} and environment {environment.Name}");
             }
             else
             {
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Info($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name}");
+                Log.Information($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name}");
             }
         }
 
@@ -94,12 +94,12 @@ namespace Octopus.Cli.Commands
 
             if (autoDeployOverride == null)
             {
-                Log.Warn($"Did not find an auto deploy override for the project {project.Name}, environment {environment.Name} and tenant {tenant.Name}");
+                Log.Warning($"Did not find an auto deploy override for the project {project.Name}, environment {environment.Name} and tenant {tenant.Name}");
             }
             else
             {
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Info($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name} and tenant {tenant.Name}");
+                Log.Information($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name} and tenant {tenant.Name}");
             }
         }
     }

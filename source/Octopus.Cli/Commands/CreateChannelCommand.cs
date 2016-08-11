@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     [Command("create-channel", Description = "Creates a channel for a project")]
     public class CreateChannelCommand : ApiCommand
     {
-        public CreateChannelCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) : base(repositoryFactory, log, fileSystem)
+        public CreateChannelCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem) : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Create");
             options.Add("project=", "The name of the project in which to create the channel", p => projectName = p);
@@ -35,18 +35,18 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
 
-            Log.DebugFormat("Loading project {0}...", projectName);
+            Log.Debug("Loading project {0}...", projectName);
             var project = Repository.Projects.FindByName(projectName);
             if (project == null) throw new CouldNotFindException("project named", projectName);
 
             LifecycleResource lifecycle = null;
             if (string.IsNullOrWhiteSpace(lifecycleName))
             {
-                Log.DebugFormat("No lifecycle specified. Going to inherit the project lifecycle...");
+                Log.Debug("No lifecycle specified. Going to inherit the project lifecycle...");
             }
             else
             {
-                Log.DebugFormat("Loading lifecycle {0}...", lifecycleName);
+                Log.Debug("Loading lifecycle {0}...", lifecycleName);
                 lifecycle = Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0);
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
             }
@@ -66,9 +66,9 @@ namespace Octopus.Cli.Commands
                     Rules = new List<ChannelVersionRuleResource>(),
                 };
 
-                Log.DebugFormat("Creating channel {0}", channelName);
+                Log.Debug("Creating channel {0}", channelName);
                 Repository.Channels.Create(channel);
-                Log.InfoFormat("Channel {0} created", channelName);
+                Log.Information("Channel {0} created", channelName);
                 return;
             }
 
@@ -77,34 +77,34 @@ namespace Octopus.Cli.Commands
             var updateRequired = false;
             if (channel.LifecycleId != lifecycle?.Id)
             {
-                Log.InfoFormat("Updating this channel to {0}", lifecycle != null ? $"use lifecycle {lifecycle.Name} for promoting releases" : "inherit the project lifecycle for promoting releases");
+                Log.Information("Updating this channel to {0}", lifecycle != null ? $"use lifecycle {lifecycle.Name} for promoting releases" : "inherit the project lifecycle for promoting releases");
                 channel.LifecycleId = lifecycle?.Id;
                 updateRequired = true;
             }
 
             if (!channel.IsDefault && makeDefaultChannel == true)
             {
-                Log.InfoFormat("Making this the default channel for {0}", project.Name);
+                Log.Information("Making this the default channel for {0}", project.Name);
                 channel.IsDefault = makeDefaultChannel ?? channel.IsDefault;
                 updateRequired = true;
             }
 
             if (!string.IsNullOrWhiteSpace(channelDescription) && channel.Description != channelDescription)
             {
-                Log.InfoFormat("Updating channel description to '{0}'", channelDescription);
+                Log.Information("Updating channel description to '{0}'", channelDescription);
                 channel.Description = channelDescription ?? channel.Description;
                 updateRequired = true;
             }
 
             if (!updateRequired)
             {
-                Log.InfoFormat("The channel already looks exactly the way it should, no need to update it.");
+                Log.Information("The channel already looks exactly the way it should, no need to update it.");
                 return;
             }
 
-            Log.DebugFormat("Updating channel {0}", channelName);
+            Log.Debug("Updating channel {0}", channelName);
             Repository.Channels.Modify(channel);
-            Log.InfoFormat("Channel {0} updated", channelName);
+            Log.Information("Channel {0} updated", channelName);
         }
     }
 }

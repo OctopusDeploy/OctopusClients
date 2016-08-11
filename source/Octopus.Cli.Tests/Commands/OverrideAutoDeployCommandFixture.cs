@@ -72,7 +72,7 @@ namespace Octopus.Cli.Tests.Commands
 
             createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production");
+            Log.Received().Information("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
             Assert.AreEqual(project.Id, savedProject.Id);
@@ -91,7 +91,7 @@ namespace Octopus.Cli.Tests.Commands
 
             createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
+            Log.Received().Information("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
             Assert.AreEqual(project.Id, savedProject.Id);
@@ -110,7 +110,7 @@ namespace Octopus.Cli.Tests.Commands
 
             createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
+            Log.Received().Information("Auto deploy will deploy version 1.2.0 of the project OctoFx to the environment Production for the tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             var autoDeployOverride = savedProject.AutoDeployReleaseOverrides.Single();
             Assert.AreEqual(project.Id, savedProject.Id);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -12,9 +12,9 @@ namespace Octopus.Cli.Repositories
     public class OctopusRepositoryCommonQueries
     {
         readonly IOctopusRepository repository;
-        readonly ILog log;
+        readonly ILogger log;
 
-        public OctopusRepositoryCommonQueries(IOctopusRepository repository, ILog log)
+        public OctopusRepositoryCommonQueries(IOctopusRepository repository, ILogger log)
         {
             this.repository = repository;
             this.log = log;

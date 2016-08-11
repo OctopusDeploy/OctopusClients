@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
@@ -13,7 +13,7 @@ namespace Octopus.Cli.Exporters
     [Exporter("release", "List", Description = "Exports either a single release, or multiple releases")]
     public class ReleaseExporter : BaseExporter
     {
-        public ReleaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log) :
+        public ReleaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log) :
             base(repository, fileSystem, log)
         {
         }

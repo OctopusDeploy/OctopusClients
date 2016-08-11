@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Infrastructure;
@@ -17,7 +17,7 @@ namespace Octopus.Cli.Exporters
     {
         readonly ActionTemplateRepository actionTemplateRepository;
 
-        public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);

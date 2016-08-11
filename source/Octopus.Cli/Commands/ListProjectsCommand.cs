@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -9,7 +9,7 @@ namespace Octopus.Cli.Commands
     [Command("list-projects", Description = "Lists all projects")]
     public class ListProjectsCommand : ApiCommand
     {
-        public ListProjectsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public ListProjectsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
         }
@@ -18,11 +18,11 @@ namespace Octopus.Cli.Commands
         {
             var projects = Repository.Projects.FindAll();
 
-            Log.Info("Projects: " + projects.Count);
+            Log.Information("Projects: " + projects.Count);
 
             foreach (var project in projects)
             {
-                Log.InfoFormat(" - {0} (ID: {1})", project.Name, project.Id);
+                Log.Information(" - {0} (ID: {1})", project.Name, project.Id);
             }
         }
     }

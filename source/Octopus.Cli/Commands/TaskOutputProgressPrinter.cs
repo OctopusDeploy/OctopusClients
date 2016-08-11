@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public void Render(IOctopusRepository repository, ILog log, TaskResource resource)
+        public void Render(IOctopusRepository repository, ILogger log, TaskResource resource)
         {
             var details = repository.Tasks.GetDetails(resource);
 
@@ -48,7 +48,7 @@ namespace Octopus.Cli.Commands
             return true;
         }
 
-        void RenderToConsole(ActivityElement element, ILog log, string indent)
+        void RenderToConsole(ActivityElement element, ILogger log, string indent)
         {
             if (!IsPrintable(element))
                 return;
@@ -79,7 +79,7 @@ namespace Octopus.Cli.Commands
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
 
-                log.InfoFormat("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
+                log.Information("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
                 Console.ResetColor();
             }
 
@@ -89,7 +89,7 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        void RenderToTeamCity(ActivityElement element, ILog log)
+        void RenderToTeamCity(ActivityElement element, ILogger log)
         {
             if (!IsPrintable(element))
                 return;
@@ -115,16 +115,16 @@ namespace Octopus.Cli.Commands
             log.ServiceMessage("blockClosed", new { name = blockName });
         }
 
-        void RenderToVSTS(ActivityElement element, ILog log, string indent)
+        void RenderToVSTS(ActivityElement element, ILogger log, string indent)
         {
             if (!IsPrintable(element))
                 return;
 
-            log.Info($"{indent}         {element.Status}: {element.Name}");
+            log.Information($"{indent}         {element.Status}: {element.Name}");
 
             foreach (var logEntry in element.LogElements)
             {
-                log.Info($"{logEntry.Category,-8}{indent}   {logEntry.MessageText}");
+                log.Information($"{logEntry.Category,-8}{indent}   {logEntry.MessageText}");
             }
 
             foreach (var child in element.Children)

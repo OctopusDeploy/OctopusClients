@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     [Command("create-autodeployoverride", Description = "Override the release that auto deploy will use")]
     public class CreateAutoDeployOverrideCommand : ApiCommand
     {
-        public CreateAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem) :
+        public CreateAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem) :
             base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Auto deploy release override");
@@ -84,24 +84,24 @@ namespace Octopus.Cli.Commands
         void AddOverrideForEnvironment(ProjectResource project, EnvironmentResource environment, ReleaseResource release)
         {
             project.AddAutoDeployReleaseOverride(environment, release);
-            Log.Info($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name}");
+            Log.Information($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name}");
         }
 
         void AddOverrideForTenant(ProjectResource project, EnvironmentResource environment, TenantResource tenant, ReleaseResource release)
         {
             if (!tenant.ProjectEnvironments.ContainsKey(project.Id))
             {
-                Log.Warn($"The tenant {tenant.Name} was skipped because it has not been connected to the project {project.Name}");
+                Log.Warning($"The tenant {tenant.Name} was skipped because it has not been connected to the project {project.Name}");
                 return;
             }
             if (!tenant.ProjectEnvironments[project.Id].Contains(environment.Id))
             {
-                Log.Warn($"The tenant {tenant.Name} was skipped because it has not been connected to the environment {environment.Name}");
+                Log.Warning($"The tenant {tenant.Name} was skipped because it has not been connected to the environment {environment.Name}");
                 return;
             }
 
             project.AddAutoDeployReleaseOverride(environment, tenant, release);
-            Log.Info($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name} for the tenant {tenant.Name}");
+            Log.Information($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name} for the tenant {tenant.Name}");
         }
     }
 }

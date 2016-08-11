@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
     {
         string filePath;
 
-        public DumpDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public DumpDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Dumper");
@@ -29,18 +29,18 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
             }
-            Log.Info("Listing projects");
+            Log.Information("Listing projects");
             var source = Repository.Projects.FindAll();
             var projects = source.ToDictionary(p => p.Id, p => p.Name);
             var projectsByGroup = source.ToDictionary(p => p.Id, p => p.ProjectGroupId);
             
-            Log.Info("Listing project groups");
+            Log.Information("Listing project groups");
             var projectGroups = Repository.ProjectGroups.GetAll().ToDictionary(p => p.Id, p => p.Name);
             
-            Log.Info("Listing environments");
+            Log.Information("Listing environments");
             var environments = Repository.Environments.GetAll().ToDictionary(p => p.Id, p => p.Name);
 
-            Log.Info("Dumping deployments...");
+            Log.Information("Dumping deployments...");
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 var xml = new XmlTextWriter(new StreamWriter(fileStream)) {Formatting = Formatting.Indented};
@@ -61,7 +61,7 @@ namespace Octopus.Cli.Commands
                         xml.WriteElementString("Id", current.Id);
                         xml.WriteEndElement();
                     }
-                    Log.InfoFormat("Wrote {0:n0} of {1:n0} deployments...", seenBefore.Count, page.TotalResults);
+                    Log.Information("Wrote {0:n0} of {1:n0} deployments...", seenBefore.Count, page.TotalResults);
                     return true;
                 });
                 xml.WriteEndElement();
