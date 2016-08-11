@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -10,7 +10,7 @@ namespace Octopus.Cli.Commands
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
 

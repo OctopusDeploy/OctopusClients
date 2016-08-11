@@ -67,7 +67,7 @@ namespace Octopus.Cli.Tests.Commands
 
             createChannelCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Channel {0} created", channelName);
+            Log.Received().Information("Channel {0} created", channelName);
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace Octopus.Cli.Tests.Commands
 
             createChannelCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Channel {0} updated", channelName);
+            Log.Received().Information("Channel {0} updated", channelName);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -10,7 +10,7 @@ namespace Octopus.Cli.Commands
     [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand
     {
-        public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Environment creation");
@@ -30,17 +30,17 @@ namespace Octopus.Cli.Commands
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Info("The environment " + env.Name + " (ID " + env.Id + ") already exists");
+                    Log.Information("The environment " + env.Name + " (ID " + env.Id + ") already exists");
                     return;
                 }
 
                 throw new CommandException("The environment " + env.Name + " (ID " + env.Id + ") already exists");
             }
 
-            Log.Info("Creating environment: " + EnvironmentName);
+            Log.Information("Creating environment: " + EnvironmentName);
             env = Repository.Environments.Create(new EnvironmentResource {Name = EnvironmentName});
 
-            Log.Info("Environment created. ID: " + env.Id);
+            Log.Information("Environment created. ID: " + env.Id);
         }
     }
 }

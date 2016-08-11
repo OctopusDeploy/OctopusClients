@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     {
         readonly IExporterLocator exporterLocator;
 
-        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
+        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log)
             : base(repositoryFactory, log, fileSystem)
         {
             this.exporterLocator = exporterLocator;

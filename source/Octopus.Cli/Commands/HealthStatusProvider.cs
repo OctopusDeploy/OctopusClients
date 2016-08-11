@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -15,14 +15,14 @@ namespace Octopus.Cli.Commands
     /// </summary>
     public class HealthStatusProvider
     {
-        private readonly ILog log;
+        private readonly ILogger log;
         private readonly HashSet<string> statuses;
         private readonly HashSet<string> healthStatuses;
 
         public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
-        public HealthStatusProvider(IOctopusRepository repository, ILog log, HashSet<string> statuses, HashSet<string> healthStatuses)
+        public HealthStatusProvider(IOctopusRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses)
         {
             this.log = log;
             this.statuses = statuses;
@@ -37,7 +37,7 @@ namespace Octopus.Cli.Commands
             {
                 if (statuses.Any())
                 {
-                    log.Warn("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+                    log.Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
                 }
             }
             else

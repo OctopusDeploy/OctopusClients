@@ -73,7 +73,7 @@ namespace Octopus.Cli.Tests.Commands
 
             deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production");
+            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -89,7 +89,7 @@ namespace Octopus.Cli.Tests.Commands
 
             deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -105,7 +105,7 @@ namespace Octopus.Cli.Tests.Commands
 
             deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             Repository.Projects.ReceivedWithAnyArgs().Modify(null);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }

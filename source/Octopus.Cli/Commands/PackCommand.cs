@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using log4net;
+using Serilog;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
         readonly IList<string> authors = new List<string>();
         readonly IOctopusFileSystem fileSystem;
         readonly IList<string> includes = new List<string>();
-        readonly ILog log;
+        readonly ILogger log;
         string basePath;
         string description;
         string id;
@@ -28,7 +28,7 @@ namespace Octopus.Cli.Commands
         readonly Options optionGroups = new Options();
         IPackageBuilder packageBuilder;
 
-        public PackCommand(ILog log, IOctopusFileSystem fileSystem)
+        public PackCommand(ILogger log, IOctopusFileSystem fileSystem)
         {
             this.log = log;
             this.fileSystem = fileSystem;
@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands
             if (!string.IsNullOrWhiteSpace(releaseNotesFile))
             {
                 if (!File.Exists(releaseNotesFile))
-                    log.WarnFormat("The release notes file '{0}' could not be found", releaseNotesFile);
+                    log.Warning("The release notes file '{0}' could not be found", releaseNotesFile);
                 else
                     allReleaseNotes = fileSystem.ReadFile(releaseNotesFile);
             }
@@ -118,11 +118,11 @@ namespace Octopus.Cli.Commands
             if (!string.IsNullOrWhiteSpace(title))
                 metadata.Title = title;
 
-            log.InfoFormat("Packing {0} version {1}...", id, version);
+            log.Information("Packing {0} version {1}...", id, version);
 
             packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite);
 
-            log.InfoFormat("Done.");
+            log.Information("Done.");
         }
 
         IPackageBuilder SelectFormat(string fmt)

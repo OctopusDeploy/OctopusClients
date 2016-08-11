@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -16,7 +15,7 @@ namespace Octopus.Cli.Commands
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, Serilog.ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
@@ -62,15 +61,15 @@ namespace Octopus.Cli.Commands
             var propertiesToLog = new List<string>();
             propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(task));
             propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(release));
-            Log.InfoFormat(" - Environment: {0}", nameOfDeploymentEnvironment);
+            Log.Information(" - Environment: {0}", nameOfDeploymentEnvironment);
             foreach (var property in propertiesToLog)
             {
                 if (property == "State: Failed")
-                    Log.ErrorFormat("   {0}", property);
+                    Log.Error("   {0}", property);
                 else
-                    Log.InfoFormat("   {0}", property);
+                    Log.Information("   {0}", property);
             }
-            Log.InfoFormat("");
+            Log.Information("");
         }
 
         static IEnumerable<string> FormatTaskPropertiesAsStrings(TaskResource task)

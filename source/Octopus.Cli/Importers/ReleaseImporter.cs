@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -15,7 +15,7 @@ namespace Octopus.Cli.Importers
         ValidatedImportSettings validatedImportSettings;
         public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
 
-        public ReleaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        public ReleaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
         }
@@ -59,12 +59,12 @@ namespace Octopus.Cli.Importers
                 Log.Error("The following issues were found with the provided input:");
                 foreach (var error in validatedImportSettings.ErrorList)
                 {
-                    Log.ErrorFormat(" {0}", error);
+                    Log.Error(" {0}", error);
                 }
             }
             else
             {
-                Log.Info("No validation errors found. Releases are ready to import.");
+                Log.Information("No validation errors found. Releases are ready to import.");
             }
 
             return !validatedImportSettings.HasErrors;
@@ -108,13 +108,13 @@ namespace Octopus.Cli.Importers
             }
             else
             {
-                Log.ErrorFormat("Releases are not ready to be imported.");
+                Log.Error("Releases are not ready to be imported.");
                 if (validatedImportSettings.HasErrors)
                 {
                     Log.Error("The following issues were found with the provided input:");
                     foreach (var error in validatedImportSettings.ErrorList)
                     {
-                        Log.ErrorFormat(" {0}", error);
+                        Log.Error(" {0}", error);
                     }
                 }
             }

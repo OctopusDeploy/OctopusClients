@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Infrastructure;
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; }
         }
 
-        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);
@@ -58,7 +58,7 @@ namespace Octopus.Cli.Importers
                     throw new CommandException("Unable to find a lifecycle to assign to this project.");
                 }
 
-                Log.DebugFormat("Found lifecycle '{0}'", existingLifecycle.Name);
+                Log.Debug("Found lifecycle '{0}'", existingLifecycle.Name);
                 project.LifecycleId = existingLifecycle.Id;
             }
 
@@ -130,7 +130,7 @@ namespace Octopus.Cli.Importers
             }
             else
             {
-                Log.Info("No validation errors found. Project is ready to import.");
+                Log.Information("No validation errors found. Project is ready to import.");
             }
 
             return !validatedImportSettings.HasErrors;
@@ -140,7 +140,7 @@ namespace Octopus.Cli.Importers
         {
             if (ReadyToImport)
             {
-                Log.DebugFormat("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
+                Log.Debug("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
 
                 var importedProject = ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets);
                 var importedChannels =
@@ -151,17 +151,17 @@ namespace Octopus.Cli.Importers
 
                 ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed);
 
-                Log.DebugFormat("Successfully imported project '{0}'", validatedImportSettings.Project.Name);
+                Log.Debug("Successfully imported project '{0}'", validatedImportSettings.Project.Name);
             }
             else
             {
-                Log.ErrorFormat("Project is not ready to be imported.");
+                Log.Error("Project is not ready to be imported.");
                 if (validatedImportSettings.HasErrors)
                 {
                     Log.Error("The following issues were found with the provided import file:");
                     foreach (var error in validatedImportSettings.ErrorList)
                     {
-                        Log.ErrorFormat(" {0}", error);
+                        Log.Error(" {0}", error);
                     }
                 }
             }
@@ -178,11 +178,11 @@ namespace Octopus.Cli.Importers
             LifecycleResource existingLifecycle = null;
             if (lifecycle != null)
             {
-                Log.DebugFormat("Checking that lifecycle {0} exists", lifecycle.Name);
+                Log.Debug("Checking that lifecycle {0} exists", lifecycle.Name);
                 existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
                 if (existingLifecycle == null)
                 {
-                    Log.DebugFormat("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
+                    Log.Debug("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
                 }
             }
 
@@ -330,7 +330,7 @@ namespace Octopus.Cli.Importers
             {
                 if (variable.IsSensitive)
                 {
-                    Log.WarnFormat("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
+                    Log.Warning("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
                     variable.Value = String.Empty;
                 }
                 foreach (var scopeValue in variable.Scope)

@@ -29,9 +29,9 @@ namespace Octopus.Cli.Tests.Commands
 
             listEnvironmentsCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Environments: 2");
-            Log.Received().InfoFormat(" - {0} (ID: {1})", "Dev", "devenvid");
-            Log.Received().InfoFormat(" - {0} (ID: {1})", "Prod", "prodenvid");
+            Log.Received().Information("Environments: 2");
+            Log.Received().Information(" - {0} (ID: {1})", "Dev", "devenvid");
+            Log.Received().Information(" - {0} (ID: {1})", "Prod", "prodenvid");
         }
     }
 }

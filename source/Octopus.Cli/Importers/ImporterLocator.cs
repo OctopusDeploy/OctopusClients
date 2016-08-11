@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Autofac;
-using log4net;
+using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
 
@@ -26,7 +26,7 @@ namespace Octopus.Cli.Importers
                     select attribute).ToArray();
         }
 
-        public IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        public IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             name = name.Trim().ToLowerInvariant();
             var found = (from t in typeof (ImporterLocator).Assembly.GetTypes()
@@ -36,7 +36,7 @@ namespace Octopus.Cli.Importers
                 where attribute.Name == name
                 select t).FirstOrDefault();
 
-            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILog), log));
+            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILogger), log));
         }
     }
 }

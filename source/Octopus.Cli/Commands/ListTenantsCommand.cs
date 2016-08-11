@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     public class ListTenantsCommand : ApiCommand
     {
 
-        public ListTenantsCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public ListTenantsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
         }
@@ -19,11 +19,11 @@ namespace Octopus.Cli.Commands
         protected override void Execute()
         {
             var tenants = Repository.Tenants.FindAll();
-            Log.Info("Tenants: " + tenants.Count);
+            Log.Information("Tenants: " + tenants.Count);
 
             foreach (var tenant in tenants.OrderBy(m => m.Name))
             {
-                Log.InfoFormat(" - {0} (ID: {1})", tenant.Name, tenant.Id);
+                Log.Information(" - {0} (ID: {1})", tenant.Name, tenant.Id);
             }
         }
     }

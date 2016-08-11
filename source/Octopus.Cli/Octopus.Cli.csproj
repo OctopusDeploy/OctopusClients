@@ -50,10 +50,6 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MarkdownSharp.1.13.0.0\lib\35\MarkdownSharp.dll</HintPath>
       <Private>True</Private>
@@ -99,6 +95,18 @@
     </Reference>
     <Reference Include="Octostache, Version=1.0.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octostache.1.0.2.29\lib\net40\Octostache.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.1.0\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.ColoredConsole, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.ColoredConsole.2.0.0\lib\net45\Serilog.Sinks.ColoredConsole.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Trace, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Trace.2.0.0\lib\net45\Serilog.Sinks.Trace.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Sprache, Version=2.0.0.50, Culture=neutral, processorArchitecture=MSIL">
@@ -212,7 +220,6 @@
     <Compile Include="Commands\ListEnvironmentsCommand.cs" />
     <Compile Include="Commands\ListLatestDeploymentsCommand.cs" />
     <Compile Include="Commands\Options.cs" />
-    <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\LoggingModule.cs" />
     <Compile Include="Importers\FileSystemImporter.cs" />
     <Compile Include="Program.cs" />
@@ -239,14 +246,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="logging.config">
-      <LogicalName>logging.config</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="logging-unix.config">
-      <LogicalName>logging-unix.config</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\GitVersionTask.3.3.0\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.3.0\build\dotnet\GitVersionTask.targets')" />

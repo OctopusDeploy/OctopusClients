@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
-        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Deletion");
@@ -57,12 +57,12 @@ namespace Octopus.Cli.Commands
 
                     if (WhatIf)
                     {
-                        Log.InfoFormat("[Whatif] Version {0} would have been deleted", version);
+                        Log.Information("[Whatif] Version {0} would have been deleted", version);
                     }
                     else
                     {
                         toDelete.Add(release.Link("Self"));
-                        Log.InfoFormat("Deleting version {0}", version);
+                        Log.Information("Deleting version {0}", version);
                     }
                 }
 

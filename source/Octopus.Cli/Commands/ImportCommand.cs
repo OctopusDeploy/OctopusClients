@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Serilog;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     {
         readonly IImporterLocator importerLocator;
 
-        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILog log)
+        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log)
             : base(repositoryFactory, log, fileSystem)
         {
             this.importerLocator = importerLocator;

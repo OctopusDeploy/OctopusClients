@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using log4net;
+using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Exporters;
@@ -19,13 +19,12 @@ namespace Octopus.Cli
 {
     public class Program
     {
-        static readonly ILog Log = Logger.Default;
-
         static int Main(string[] args)
         {
-            Log.Info("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
+            ConfigureLogger();
+            Log.Information("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
-            Log.Info(string.Empty);
+            Log.Information(string.Empty);
 
             ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Ssl3
@@ -48,6 +47,15 @@ namespace Octopus.Cli
                 Console.WriteLine("Exit code: " + exit);
                 return exit;
             }
+        }
+
+        public static void ConfigureLogger()
+        {
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Debug()
+               .WriteTo.Trace()
+               .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
+               .CreateLogger();
         }
 
         static IContainer BuildContainer()
@@ -122,17 +130,17 @@ namespace Octopus.Cli
             var reflex = ex as ReflectionTypeLoadException;
             if (reflex != null)
             {
-                Log.Error(ex);
+                Log.Error(ex, "");
 
                 foreach (var loaderException in reflex.LoaderExceptions)
                 {
-                    Log.Error(loaderException);
+                    Log.Error(loaderException, "");
 
                     var exFileNotFound = loaderException as FileNotFoundException;
                     if (exFileNotFound != null &&
                         !string.IsNullOrEmpty(exFileNotFound.FusionLog))
                     {
-                        Log.ErrorFormat("Fusion log: {0}", exFileNotFound.FusionLog);
+                        Log.Error("Fusion log: {0}", exFileNotFound.FusionLog);
                     }
                 }
 
@@ -146,7 +154,7 @@ namespace Octopus.Cli
                 return -7;
             }
 
-            Log.Error(ex);
+            Log.Error(ex, "");
             return -3;
         }
     }

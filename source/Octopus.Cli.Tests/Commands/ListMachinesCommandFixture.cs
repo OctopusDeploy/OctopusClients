@@ -63,10 +63,10 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().Information("Machines: 2");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
         }
 
         [Test]
@@ -92,10 +92,10 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 1");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.Received().Information("Machines: 1");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -125,9 +125,9 @@ namespace Octopus.Cli.Tests.Commands
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
-            Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().Information("Machines: 2");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
         }
 
         [Test]
@@ -163,10 +163,10 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 1");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.DidNotReceive().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.Received().Information("Machines: 1");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -205,8 +205,8 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 1");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelHealthStatus.HasWarnings.ToString(), "Machines-002", "Development");
+            Log.Received().Information("Machines: 1");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.HasWarnings.ToString(), "Machines-002", "Development");
         }
 
         [Test]
@@ -245,8 +245,8 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Warn("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
-            Log.Received().Info("Machines: 2");
+            Log.Received().Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+            Log.Received().Information("Machines: 2");
         }
 
         [Test]
@@ -306,8 +306,8 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 1");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "Development");
+            Log.Received().Information("Machines: 1");
+            Log.Received().Information(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "Development");
         }
 
         [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "The `--health-status` parameter is only available on Octopus Server instances from 3.4.0 onwards.")]
@@ -353,9 +353,9 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Machines: 2");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.Received().InfoFormat(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().Information("Machines: 2");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
         }
     }
 }

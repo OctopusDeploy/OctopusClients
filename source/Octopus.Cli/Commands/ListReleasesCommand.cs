@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
@@ -39,11 +39,11 @@ namespace Octopus.Cli.Commands
                     return projectsFilter.Contains(x.ProjectId);
                 });
 
-            Log.InfoFormat("Releases: {0}", releases.Count);
+            Log.Information("Releases: {0}", releases.Count);
 
             foreach (var project in projectResources)
             {
-                Log.InfoFormat(" - Project: {0}", project.Name);
+                Log.Information(" - Project: {0}", project.Name);
                 
                 foreach (var release in releases.Where(x => x.ProjectId == project.Id))
                 {
@@ -51,9 +51,9 @@ namespace Octopus.Cli.Commands
                     propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(release));
                     foreach (var property in propertiesToLog)
                     {
-                        Log.InfoFormat("    {0}", property);
+                        Log.Information("    {0}", property);
                     }
-                    Log.Info("");
+                    Log.Information("");
                 }
             }
         }

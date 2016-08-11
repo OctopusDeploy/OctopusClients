@@ -5,7 +5,7 @@
 //using NUnit.Framework;
 //using OctopusTools.Client;
 //using OctopusTools.Infrastructure;
-//using log4net;
+//using Serilog;
 
 //namespace OctopusTools.Tests.Client
 //{
@@ -39,7 +39,7 @@
 
 //            WriteConfigFile(serverUrlDefinedInConfigFile, apiKeyDefinedInConfigFile, usernameDefinedInConfigFile, passwordDefinedInConfigFile);
 
-//            var log = Substitute.For<ILog>();
+//            var log = Substitute.For<ILogger>();
 //            var commandLineArgsProvider = new CommandLineArgsProvider(new List<string> { "--configFile=" + configFile });
 //            var octopusSessionFactory = new TestableOctopusSessionFactory(log, commandLineArgsProvider);
 
@@ -57,7 +57,7 @@
 
 //            WriteConfigFile(null, null, null, passwordDefinedInConfigFile);
 
-//            var log = Substitute.For<ILog>();
+//            var log = Substitute.For<ILogger>();
 //            var commandLineArgsProvider = new CommandLineArgsProvider(new List<string> { "--pass=" + passwordPassedInOnCommandLine, "--configFile=" + configFile });
 //            var octopusSessionFactory = new TestableOctopusSessionFactory(log, commandLineArgsProvider);
 
@@ -79,7 +79,7 @@
 	
 //    class TestableOctopusSessionFactory : OctopusSessionFactory
 //    {
-//        public TestableOctopusSessionFactory(ILog log, ICommandLineArgsProvider commandLineArgsProvider) : base(log, commandLineArgsProvider)
+//        public TestableOctopusSessionFactory(ILogger log, ICommandLineArgsProvider commandLineArgsProvider) : base(log, commandLineArgsProvider)
 //        {
 //        }
 

@@ -29,9 +29,9 @@ namespace Octopus.Cli.Tests.Commands
 
             listProjectsCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().Info("Projects: 2");
-            Log.Received().InfoFormat(" - {0} (ID: {1})", "ProjectA", "projectaid");
-            Log.Received().InfoFormat(" - {0} (ID: {1})", "ProjectB", "projectbid");
+            Log.Received().Information("Projects: 2");
+            Log.Received().Information(" - {0} (ID: {1})", "ProjectA", "projectaid");
+            Log.Received().Information(" - {0} (ID: {1})", "ProjectB", "projectbid");
         }
     }
 }

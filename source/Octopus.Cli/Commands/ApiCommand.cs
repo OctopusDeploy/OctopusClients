@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using log4net;
+using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -17,7 +17,7 @@ namespace Octopus.Cli.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly ILog log;
+        readonly ILogger log;
         readonly IOctopusRepositoryFactory repositoryFactory;
         readonly IOctopusFileSystem fileSystem;
         string apiKey;
@@ -30,7 +30,7 @@ namespace Octopus.Cli.Commands
         readonly Options optionGroups = new Options();
         private OctopusRepositoryCommonQueries repositoryCommonQueries;
 
-        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
         {
             this.repositoryFactory = repositoryFactory;
             this.log = log;
@@ -49,7 +49,7 @@ namespace Octopus.Cli.Commands
 
         protected Options Options { get { return optionGroups; } }
 
-        protected ILog Log
+        protected ILogger Log
         {
             get { return log; }
         }
@@ -117,8 +117,8 @@ namespace Octopus.Cli.Commands
 
                 if (ignoreSslErrors)
                 {
-                    log.Warn(warning);
-                    log.Warn("Because --ignoreSslErrors was set, this will be ignored.");
+                    log.Warning(warning);
+                    log.Warning("Because --ignoreSslErrors was set, this will be ignored.");
                     return true;
                 }
 
@@ -133,7 +133,7 @@ namespace Octopus.Cli.Commands
             var user = repository.Users.GetCurrent();
             if (user != null)
             {
-                log.DebugFormat("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                log.Debug("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();

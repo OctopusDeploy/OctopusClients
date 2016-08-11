@@ -6,15 +6,15 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
-using log4net;
+using Serilog;
 
 namespace Octopus.Cli.Util
 {
     public class OctopusPhysicalFileSystem : IOctopusFileSystem
     {
-        readonly ILog log;
+        readonly ILogger log;
 
-        public OctopusPhysicalFileSystem(ILog log)
+        public OctopusPhysicalFileSystem(ILogger log)
         {
             this.log = log;
         }

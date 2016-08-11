@@ -37,16 +37,16 @@ namespace Octopus.Cli.Tests.Commands
 
             listReleasesCommand.Execute(CommandLineArgs.ToArray());
 
-            Log.Received().InfoFormat("Releases: {0}", 2);
-            Log.Received().InfoFormat(" - Project: {0}", "ProjectA");
-            Log.Received().InfoFormat("    {0}", "Version: 1.0");
-            Log.Received().InfoFormat("    {0}", "Assembled: " + DateTimeOffset.MinValue);
-            Log.Received().InfoFormat("    {0}", "Package Versions: ");
-            Log.Received().InfoFormat("    {0}", "Release Notes: Release Notes 1");
-            Log.Received().InfoFormat("    {0}", "Version: 2.0");
-            Log.Received().InfoFormat("    {0}", "Assembled: " + DateTimeOffset.MaxValue);
-            Log.Received().InfoFormat("    {0}", "Package Versions: ");
-            Log.Received().InfoFormat("    {0}", "Release Notes: Release Notes 2");
+            Log.Received().Information("Releases: {0}", 2);
+            Log.Received().Information(" - Project: {0}", "ProjectA");
+            Log.Received().Information("    {0}", "Version: 1.0");
+            Log.Received().Information("    {0}", "Assembled: " + DateTimeOffset.MinValue);
+            Log.Received().Information("    {0}", "Package Versions: ");
+            Log.Received().Information("    {0}", "Release Notes: Release Notes 1");
+            Log.Received().Information("    {0}", "Version: 2.0");
+            Log.Received().Information("    {0}", "Assembled: " + DateTimeOffset.MaxValue);
+            Log.Received().Information("    {0}", "Package Versions: ");
+            Log.Received().Information("    {0}", "Release Notes: Release Notes 2");
         }
     }
 }

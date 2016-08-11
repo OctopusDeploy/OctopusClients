@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListMachinesCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public ListMachinesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
@@ -45,10 +45,10 @@ namespace Octopus.Cli.Commands
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();
-            Log.Info("Machines: " + orderedMachines.Count);
+            Log.Information("Machines: " + orderedMachines.Count);
             foreach (var machine in orderedMachines)
             {
-                Log.InfoFormat(" - {0} {1} (ID: {2}) in {3}", machine.Name, provider.GetStatus(machine), machine.Id,
+                Log.Information(" - {0} {1} (ID: {2}) in {3}", machine.Name, provider.GetStatus(machine), machine.Id,
                     string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
             }
         }
@@ -97,7 +97,7 @@ namespace Octopus.Cli.Commands
             IEnumerable<MachineResource> environmentMachines;
             if (environmentFilter.Count > 0)
             {
-                Log.DebugFormat("Loading machines from {0}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
+                Log.Debug("Loading machines from {0}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
                 environmentMachines =
                     Repository.Machines.FindMany(
                         x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });

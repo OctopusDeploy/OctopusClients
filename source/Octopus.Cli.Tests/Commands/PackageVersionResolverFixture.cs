@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
-using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
+using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -14,7 +14,8 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            resolver = new PackageVersionResolver(Logger.Default);
+            Program.ConfigureLogger();
+            resolver = new PackageVersionResolver(Log.Logger);
         }
 
         [Test]

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Model;
 using Octopus.Client;
@@ -11,11 +11,11 @@ namespace Octopus.Cli.Commands
 {
     public class ReleasePlanBuilder : IReleasePlanBuilder
     {
-        private readonly ILog log;
+        private readonly ILogger log;
         private readonly IPackageVersionResolver versionResolver;
         private readonly IChannelVersionRuleTester versionRuleTester;
 
-        public ReleasePlanBuilder(ILog log, IPackageVersionResolver versionResolver, IChannelVersionRuleTester versionRuleTester)
+        public ReleasePlanBuilder(ILogger log, IPackageVersionResolver versionResolver, IChannelVersionRuleTester versionRuleTester)
         {
             this.log = log;
             this.versionResolver = versionResolver;
@@ -42,14 +42,14 @@ namespace Octopus.Cli.Commands
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        log.ErrorFormat("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        log.Error("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
                         continue;
                     }
 
                     if (!string.IsNullOrEmpty(versionPreReleaseTag))
-                        log.DebugFormat("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, versionPreReleaseTag);
+                        log.Debug("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, versionPreReleaseTag);
                     else
-                        log.DebugFormat("Finding latest package for step: {0}", unresolved.StepName);
+                        log.Debug("Finding latest package for step: {0}", unresolved.StepName);
 
                     var feed = repository.Feeds.Get(unresolved.PackageFeedId);
                     if (feed == null)
@@ -65,11 +65,11 @@ namespace Octopus.Cli.Commands
 
                     if (latestPackage == null)
                     {
-                        log.ErrorFormat("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
+                        log.Error("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
                     }
                     else
                     {
-                        log.DebugFormat("Selected '{0}' version '{1}' for '{2}'", latestPackage.NuGetPackageId, latestPackage.Version, unresolved.StepName);
+                        log.Debug("Selected '{0}' version '{1}' for '{2}'", latestPackage.NuGetPackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }

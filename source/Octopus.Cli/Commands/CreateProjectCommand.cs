@@ -1,5 +1,5 @@
 ﻿using System;
-using log4net;
+using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -10,7 +10,7 @@ namespace Octopus.Cli.Commands
     [Command("create-project", Description = "Creates a project")]
     public class CreateProjectCommand : ApiCommand
     {
-        public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILog log, IOctopusFileSystem fileSystem)
+        public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
             : base(repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Project creation");
@@ -31,15 +31,15 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --name=XYZ");
             if (string.IsNullOrWhiteSpace(LifecycleName)) throw new CommandException("Please specify a lifecycle name using the parameter: --lifecycle=XYZ");
 
-            Log.Info("Finding project group: " + ProjectGroupName);
+            Log.Information("Finding project group: " + ProjectGroupName);
             var group = Repository.ProjectGroups.FindByName(ProjectGroupName);
             if (group == null)
             {
-                Log.Info("Project group does not exist, it will be created");
+                Log.Information("Project group does not exist, it will be created");
                 group = Repository.ProjectGroups.Create(new ProjectGroupResource {Name = ProjectGroupName});
             }
 
-            Log.Info("Finding lifecycle: " + LifecycleName);
+            Log.Information("Finding lifecycle: " + LifecycleName);
             var lifecycle = Repository.Lifecycles.FindOne(l => l.Name.Equals(LifecycleName, StringComparison.OrdinalIgnoreCase));
             if (lifecycle == null)
                 throw new CommandException("The lifecycle " + LifecycleName + " does not exist.");
@@ -49,17 +49,17 @@ namespace Octopus.Cli.Commands
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Info("The project " + project.Name + " (ID " + project.Id + ") already exists");
+                    Log.Information("The project " + project.Name + " (ID " + project.Id + ") already exists");
                     return;
                 }
 
                 throw new CommandException("The project " + project.Name + " (ID " + project.Id + ") already exists in this project group.");
             }
             
-            Log.Info("Creating project: " + ProjectName);
+            Log.Information("Creating project: " + ProjectName);
             project = Repository.Projects.Create(new ProjectResource {Name = ProjectName, ProjectGroupId = group.Id, IsDisabled = false, LifecycleId = lifecycle.Id});
 
-            Log.Info("Project created. ID: " + project.Id);
+            Log.Information("Project created. ID: " + project.Id);
         }
     }
 }

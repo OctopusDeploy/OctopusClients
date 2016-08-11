@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using log4net;
+using Serilog;
 using Newtonsoft.Json;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Util;
@@ -11,9 +11,9 @@ namespace Octopus.Cli.Exporters
     public class FileSystemExporter
     {
         readonly IOctopusFileSystem fileSystem;
-        readonly ILog log;
+        readonly ILogger log;
 
-        public FileSystemExporter(IOctopusFileSystem fileSystem, ILog log)
+        public FileSystemExporter(IOctopusFileSystem fileSystem, ILogger log)
         {
             this.fileSystem = fileSystem;
             this.log = log;
@@ -28,7 +28,7 @@ namespace Octopus.Cli.Exporters
 
             fileSystem.WriteAllBytes(filePath, Encoding.UTF8.GetBytes(serializedObject));
 
-            log.DebugFormat("Export file {0} successfully created.", filePath);
+            log.Debug("Export file {0} successfully created.", filePath);
         }
     }
 }

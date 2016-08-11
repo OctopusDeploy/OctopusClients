@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net;
+using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
 
@@ -9,17 +9,17 @@ namespace Octopus.Cli.Importers
     public abstract class BaseImporter : IImporter
     {
         readonly FileSystemImporter fileSystemImporter;
-        readonly ILog log;
+        readonly ILogger log;
         readonly IOctopusRepository repository;
 
-        protected BaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILog log)
+        protected BaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             this.log = log;
             this.repository = repository;
             fileSystemImporter = new FileSystemImporter(fileSystem, log);
         }
 
-        public ILog Log
+        public ILogger Log
         {
             get { return log; }
         }
