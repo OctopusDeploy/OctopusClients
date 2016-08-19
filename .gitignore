@@ -58,3 +58,5 @@ source/packages
 source/OctopusTools.v2.ncrunchsolution
 *.orig
 *.userprefs
+*.lock.json
+.vs
