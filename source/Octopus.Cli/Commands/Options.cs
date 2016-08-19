@@ -580,12 +580,6 @@ namespace Octopus.Cli.Commands
             option = optionName;
         }
 
-        protected OptionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            option = info.GetString("OptionName");
-        }
-
         public string OptionName
         {
             get { return option; }
