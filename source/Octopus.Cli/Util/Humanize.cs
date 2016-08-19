@@ -23,7 +23,7 @@ namespace Octopus.Cli.Util
 
         public static string Plural(this string simpleNoun, int count = 2)
         {
-            if (simpleNoun == null) throw new ArgumentNullException("simpleNoun");
+            if (simpleNoun == null) throw new ArgumentNullException(nameof(simpleNoun));
             if (count == 1) return simpleNoun;
 
             if (simpleNoun.EndsWith("ay") ||
@@ -47,7 +47,7 @@ namespace Octopus.Cli.Util
 
         public static string ReadableJoin<T>(this IEnumerable<T> list, string junction = "and")
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
 
             var result = new StringBuilder();
             object prev = null;

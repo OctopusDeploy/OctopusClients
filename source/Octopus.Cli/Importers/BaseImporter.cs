@@ -8,31 +8,18 @@ namespace Octopus.Cli.Importers
 {
     public abstract class BaseImporter : IImporter
     {
-        readonly FileSystemImporter fileSystemImporter;
-        readonly ILogger log;
-        readonly IOctopusRepository repository;
-
         protected BaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
-            this.log = log;
-            this.repository = repository;
-            fileSystemImporter = new FileSystemImporter(fileSystem, log);
+            this.Log = log;
+            this.Repository = repository;
+            FileSystemImporter = new FileSystemImporter(fileSystem, log);
         }
 
-        public ILogger Log
-        {
-            get { return log; }
-        }
+        public ILogger Log { get; }
 
-        public IOctopusRepository Repository
-        {
-            get { return repository; }
-        }
+        public IOctopusRepository Repository { get; }
 
-        public FileSystemImporter FileSystemImporter
-        {
-            get { return fileSystemImporter; }
-        }
+        public FileSystemImporter FileSystemImporter { get; }
 
         public string FilePath { get; set; }
 

@@ -19,8 +19,8 @@ namespace Octopus.Cli.Importers
         readonly protected ActionTemplateRepository actionTemplateRepository;
         ValidatedImportSettings validatedImportSettings;
 
-        public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
-        public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
+        public bool ReadyToImport => validatedImportSettings != null && !validatedImportSettings.ErrorList.Any();
+        public IEnumerable<string> ErrorList => validatedImportSettings.ErrorList;
         public bool KeepExistingProjectChannels { get; set; }
 
         class ValidatedImportSettings : BaseValidatedImportSettings

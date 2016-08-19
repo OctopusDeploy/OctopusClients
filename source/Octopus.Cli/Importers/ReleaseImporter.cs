@@ -13,7 +13,7 @@ namespace Octopus.Cli.Importers
     public class ReleaseImporter : BaseImporter
     {
         ValidatedImportSettings validatedImportSettings;
-        public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
+        public bool ReadyToImport => validatedImportSettings != null && !validatedImportSettings.ErrorList.Any();
 
         public ReleaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
