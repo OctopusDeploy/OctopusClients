@@ -43,7 +43,8 @@ namespace Octopus.Cli.Commands
             Log.Information("Dumping deployments...");
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
-                var xml = new XmlTextWriter(new StreamWriter(fileStream)) {Formatting = Formatting.Indented};
+                var xmlWriterSettings = new XmlWriterSettings() {Indent = true};
+                var xml = XmlWriter.Create(new StreamWriter(fileStream), xmlWriterSettings);
                 xml.WriteStartElement("Deployments");
                 var seenBefore = new HashSet<string>();
                 Repository.Deployments.Paginate(delegate(ResourceCollection<DeploymentResource> page)

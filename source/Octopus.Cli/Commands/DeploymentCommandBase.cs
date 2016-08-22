@@ -108,7 +108,7 @@ namespace Octopus.Cli.Commands
                 var promotion =
                     releaseTemplate.TenantPromotions
                     .First(t => t.Id == tenant.Id).PromoteTo
-                    .First(tt => tt.Name.Equals(environment, StringComparison.InvariantCultureIgnoreCase));
+                    .First(tt => tt.Name.Equals(environment, StringComparison.CurrentCultureIgnoreCase));
                 return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
             }).ToList();
         }
@@ -201,7 +201,7 @@ namespace Octopus.Cli.Commands
             {
                 var tenantPromotions = releaseTemplate.TenantPromotions.Where(
                     tp => tp.PromoteTo.Any(
-                        promo => promo.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase))).Select(tp => tp.Id).ToArray();
+                        promo => promo.Name.Equals(environmentName, StringComparison.CurrentCultureIgnoreCase))).Select(tp => tp.Id).ToArray();
 
                 deployableTenants.AddRange(Repository.Tenants.Get(tenantPromotions));
 
@@ -249,7 +249,7 @@ namespace Octopus.Cli.Commands
                         var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
                         return tenantPromo == null ||
                                !tenantPromo.PromoteTo.Any(
-                                   tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+                                   tdt => tdt.Name.Equals(environmentName, StringComparison.CurrentCultureIgnoreCase));
                     }).Select(dt => $"'{dt.Name}'").ToList();
                     if (unDeployableTenants.Any())
                     {
@@ -273,7 +273,7 @@ namespace Octopus.Cli.Commands
                     var deployableByTag = tenantsByTag.Where(dt =>
                     {
                         var tenantPromo = releaseTemplate.TenantPromotions.FirstOrDefault(tp => tp.Id == dt.Id);
-                        return tenantPromo != null && tenantPromo.PromoteTo.Any(tdt => tdt.Name.Equals(environmentName, StringComparison.InvariantCultureIgnoreCase));
+                        return tenantPromo != null && tenantPromo.PromoteTo.Any(tdt => tdt.Name.Equals(environmentName, StringComparison.CurrentCultureIgnoreCase));
                     }).Where(tenant => !deployableTenants.Any(deployable => deployable.Id == tenant.Id));
                     deployableTenants.AddRange(deployableByTag);
                 }

@@ -250,9 +250,6 @@ namespace Octopus.Cli.Commands.NuGet
             List<string> creatorInfo = new List<string>();
             var assembly = typeof(PackageBuilder).GetTypeInfo().Assembly;
             creatorInfo.Add(assembly.FullName);
-#if !DNXCORE50 // CORECLR_TODO: Environment.OSVersion
-            creatorInfo.Add(Environment.OSVersion.ToString());
-#endif
 
             var attribute = assembly.GetCustomAttributes<System.Runtime.Versioning.TargetFrameworkAttribute>().FirstOrDefault();
             if (attribute != null)

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
+using System.Reflection;
 
 namespace Octopus.Cli.Commands
 {
@@ -22,7 +23,7 @@ namespace Octopus.Cli.Commands
 
         public void Execute(string[] commandLineArguments)
         {
-            var executable = Path.GetFileNameWithoutExtension(typeof (HelpCommand).Assembly.FullLocalPath());
+            var executable = Path.GetFileNameWithoutExtension(typeof (HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
 
             var commandName = commandLineArguments.FirstOrDefault();
 

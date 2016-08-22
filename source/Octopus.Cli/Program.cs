@@ -22,7 +22,7 @@ namespace Octopus.Cli
         static int Main(string[] args)
         {
             ConfigureLogger();
-            Log.Information("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
+            Log.Information("Octopus Deploy Command Line Tool, version " + typeof (Program).GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Information(string.Empty);
 
@@ -61,7 +61,7 @@ namespace Octopus.Cli
         static IContainer BuildContainer()
         {
             var builder = new ContainerBuilder();
-            var thisAssembly = typeof (Program).Assembly;
+            var thisAssembly = typeof (Program).GetTypeInfo().Assembly;
 
             builder.RegisterModule(new LoggingModule());
 
@@ -135,13 +135,6 @@ namespace Octopus.Cli
                 foreach (var loaderException in reflex.LoaderExceptions)
                 {
                     Log.Error(loaderException, "");
-
-                    var exFileNotFound = loaderException as FileNotFoundException;
-                    if (exFileNotFound != null &&
-                        !string.IsNullOrEmpty(exFileNotFound.FusionLog))
-                    {
-                        Log.Error("Fusion log: {0}", exFileNotFound.FusionLog);
-                    }
                 }
 
                 return -43;

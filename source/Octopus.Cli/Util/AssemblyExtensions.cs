@@ -2,11 +2,9 @@
 using System.Diagnostics;
 using System.Reflection;
 
-// ReSharper disable CheckNamespace
 namespace Octopus.Cli.Util
 {
     public static class AssemblyExtensions
-// ReSharper restore CheckNamespace
     {
         public static string FullLocalPath(this Assembly assembly)
         {
@@ -17,10 +15,9 @@ namespace Octopus.Cli.Util
             return root;
         }
 
-        public static string GetInformationalVersion(this Assembly assembly)
+        public static string GetInformationalVersion(this Type type)
         {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fileVersionInfo.ProductVersion;
+            return type.GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         }
     }
 }

@@ -87,11 +87,11 @@ namespace Octopus.Cli.Commands
             Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
 
             var channels = Repository.Projects.GetChannels(project).GetAllPages(Repository)
-                .Where(c => ChannelNames.Contains(c.Name, StringComparer.InvariantCultureIgnoreCase))
+                .Where(c => ChannelNames.Contains(c.Name, StringComparer.CurrentCultureIgnoreCase))
                 .ToArray();
 
-            var notFoundChannels = ChannelNames.Except(channels.Select(c => c.Name), StringComparer.InvariantCultureIgnoreCase).ToArray();
-            if(notFoundChannels.Any())
+            var notFoundChannels = ChannelNames.Except(channels.Select(c => c.Name), StringComparer.CurrentCultureIgnoreCase).ToArray();
+            if (notFoundChannels.Any())
                 throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
 
             return channels.Select(c => c.Id).ToHashSet();

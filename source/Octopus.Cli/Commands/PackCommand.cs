@@ -70,10 +70,10 @@ namespace Octopus.Cli.Commands
                 includes.Add("**");
 
             if (string.IsNullOrWhiteSpace(basePath))
-                basePath = Path.GetFullPath(Environment.CurrentDirectory);
+                basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
 
             if (string.IsNullOrWhiteSpace(outFolder))
-                outFolder = Path.GetFullPath(Environment.CurrentDirectory);
+                outFolder = Path.GetFullPath(Directory.GetCurrentDirectory());
 
             if (version == null)
             {
@@ -82,7 +82,7 @@ namespace Octopus.Cli.Commands
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
-                authors.Add(Environment.UserName + "@" + Environment.UserDomainName);
+                authors.Add(Environment.GetEnvironmentVariable("USERNAME") + "@" + Environment.GetEnvironmentVariable("USERDOMAIN"));
 
             if (string.IsNullOrWhiteSpace(description))
                 description = "A deployment package created from files on disk.";
