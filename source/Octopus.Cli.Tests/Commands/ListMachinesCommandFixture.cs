@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -310,13 +311,15 @@ namespace Octopus.Cli.Tests.Commands
             Log.Received().Information(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "Development");
         }
 
-        [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "The `--health-status` parameter is only available on Octopus Server instances from 3.4.0 onwards.")]
+        [Test]
         public void ShouldThrowIfUsingHealthStatusPre34()
         {
             CommandLineArgs.Add("--health-status=Online");
             Repository.Client.RootDocument.Version = "3.1.0";
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>()
+              .WithMessage("The `--health-status` parameter is only available on Octopus Server instances from 3.4.0 onwards.");
         }
 
         [Test]

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
+using FluentAssertions;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -36,11 +37,12 @@ namespace Octopus.Cli.Tests.Commands
             });
 
             helpCommand.Execute();
-            
-            Assert.That(output.ToString(), 
-                Is.StringContaining("Usage: Octo <command> [<options>]").And
-                .StringContaining("Where <command> is one of:").And
-                .StringContaining("create-foo"));
+
+            output.ToString()
+                .Should()
+                .Contain("Usage: Octo <command> [<options>]")
+                .And.Contain("Where <command> is one of:")
+                .And.Contain("create-foo");
         }
 
         [Test]
@@ -50,8 +52,10 @@ namespace Octopus.Cli.Tests.Commands
             commandLocator.Find("speak").Returns(speak);
             helpCommand.Execute("speak");
 
-            Assert.That(output.ToString(),
-                Is.StringContaining("Usage: Octo speak [<options>]"));
+            output.ToString()
+                .Should()
+                .Contain("Usage: Octo speak [<options>]");
+
             speak.Received().GetHelp(Arg.Any<TextWriter>());
         }
 
@@ -61,7 +65,7 @@ namespace Octopus.Cli.Tests.Commands
             commandLocator.Find("foo").Returns((ICommand)null);
             helpCommand.Execute("foo");
 
-            Assert.That(output.ToString(), Is.StringContaining("Command 'foo' is not supported"));
+            Assert.That(output.ToString(), Does.Contain("Command 'foo' is not supported"));
         }
 
         [TearDown]

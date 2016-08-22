@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using NUnit.Framework;
 using Octopus.Cli.Tests.Helpers;
 using Octopus.Client;
@@ -11,14 +12,14 @@ namespace Octopus.Cli.Tests
         [Test]
         public void TheTestAssemblyIsVersioned_WithGitVersion()
         {
-            Assert.That(new SemanticVersionInfo(GetType().Assembly).Major, Is.GreaterThan(1));
+            Assert.That(new SemanticVersionInfo(GetType().GetTypeInfo().Assembly).Major, Is.GreaterThan(1));
         }
 
         [Test]
         public void AllOctopusAssemblies_ShouldHaveTheSameSemanticVersion()
         {
-            var octocliVersion = (new SemanticVersionInfo(typeof(Octopus.Cli.Program).Assembly));
-            var octopusClientVersion = new SemanticVersionInfo(typeof(IOctopusRepository).Assembly);
+            var octocliVersion = (new SemanticVersionInfo(typeof(Octopus.Cli.Program).GetTypeInfo().Assembly));
+            var octopusClientVersion = new SemanticVersionInfo(typeof(IOctopusRepository).GetTypeInfo().Assembly);
 
             var isClientPreRelease = !string.IsNullOrEmpty(octopusClientVersion.PreReleaseTag);
             var isThisPreRelease = !string.IsNullOrEmpty(octocliVersion.PreReleaseTag);

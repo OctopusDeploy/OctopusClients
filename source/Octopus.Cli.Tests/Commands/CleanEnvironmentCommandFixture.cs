@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
+using FluentAssertions;
 #pragma warning disable 618
 
 namespace Octopus.Cli.Tests.Commands
@@ -104,26 +105,32 @@ namespace Octopus.Cli.Tests.Commands
             Repository.Machines.Received().Delete(machineList[1]);
         }
 
-        [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "Please specify an environment name using the parameter: --environment=XYZ")]
+        [Test]
         public void ShouldNotCleanEnvironmentWithMissingEnvironmentArgs()
         {
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>()
+                .WithMessage("Please specify an environment name using the parameter: --environment=XYZ");
         }
 
-        [Test, ExpectedException(typeof(CommandException), ExpectedMessage = "Please specify a status using the parameter: --status or --health-status")]
+        [Test]
         public void ShouldNotCleanEnvironmentWithMissingStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>()
+              .WithMessage("Please specify a status using the parameter: --status or --health-status");
         }
 
-        [Test, ExpectedException(typeof(CouldNotFindException), ExpectedMessage = "Could not find the specified environment; either it does not exist or you lack permissions to view it.")]
+        [Test]
         public void ShouldNotCleanTheEnvironmentIfEnvironmentNotFound()
         {
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CouldNotFindException>()
+              .WithMessage("Could not find the specified environment; either it does not exist or you lack permissions to view it.");
         }
     }
 }

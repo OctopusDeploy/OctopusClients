@@ -24,7 +24,7 @@ namespace Octopus.Cli.Tests.Helpers
 
         static Dictionary<string, string> LoadGitVersionDetails(Assembly assembly)
         {
-            var gitVersionInformationType = assembly.GetType(assembly.GetName() + ".GitVersionInformation", throwOnError: false) ?? assembly.DefinedTypes.FirstOrDefault(t => t.Name == "GitVersionInformation");
+            var gitVersionInformationType = assembly.GetType(assembly.GetName() + ".GitVersionInformation", throwOnError: false)?.GetTypeInfo() ?? assembly.DefinedTypes.FirstOrDefault(t => t.Name == "GitVersionInformation");
             if (gitVersionInformationType == null) throw new Exception($"Couldn't find the GitVersionInformation class defined in the Assembly {assembly.GetName().Name}");
             var fields = gitVersionInformationType.GetFields();
             return fields.ToDictionary(field => field.Name, field => (string)field.GetValue(null));
