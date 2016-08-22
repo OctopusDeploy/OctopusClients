@@ -1,4 +1,5 @@
 {
+  "name": "OctopusTools",
   "version": "0.0.0-*",
   "dependencies": {
     "Microsoft.NETCore.App": "1.0.0",
@@ -26,27 +27,35 @@
   "frameworks": {
     "netcoreapp1.0": {
       "imports": "dnxcore50"
-      /* "frameworkAssemblies": {
-        "System.ComponentModel.Composition": "*",
-        "System.ComponentModel.DataAnnotations": "*",
-        "System.Configuration": "*",
-        "System.Core": "*",
-        "System.IO.Compression": "*",
-        "System.Net": "*",
-        "System.Runtime.Serialization": "*",
-        "System.Web": "*",
-        "System.Xml.Linq": "*",
-        "System.Data.DataSetExtensions": "*",
-        "Microsoft.CSharp": "*",
-        "System.Data": "*",
-        "System.Xml": "*"
-      }*/
     }
   },
   "buildOptions": {
+    "outputName": "Octo",
+    "debugType": "portable",
     "emitEntryPoint": true
+   // "warningsAsErrors": true
+  },
+  "configurations": {
+    "Release": {
+      "buildOptions": {
+        "optimize": true
+      }
+    }
   },
   "runtimes": {
-    "win7-x64": {} 
+    "win7-x64": {}
+  },
+  "packOptions": {
+    "tags": [ "automation", "deployment" ],
+    "owners": [ "Octopus Deploy" ],
+    "requireLicenseAcceptance": false,
+    "summary": "Octopus Deploy is an automated deployment tool powered by NuGet. This package contains Octo.exe, a command line tool for creating and deploying releases with Octopus Deploy.",
+    "projectUrl": "http://octopusdeploy.com/",
+    "licenseUrl": "http://octopusdeploy.com/pricing",
+    "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3-32x32.png",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/OctopusDeploy/Octo.exe"
+    }
   }
 }
