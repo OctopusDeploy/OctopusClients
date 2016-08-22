@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Serilog;
@@ -82,6 +83,8 @@ namespace Octopus.Cli.Commands
                 Repository.Client.SendingOctopusRequest += request => Log.Debug(request.Method + " " + request.Uri);
             }
 
+#warning TODO Make this great again
+            /*
             ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
             {
                 if (errors == SslPolicyErrors.None)
@@ -103,7 +106,7 @@ namespace Octopus.Cli.Commands
 
                 Log.Error(warning);
                 return false;
-            };
+            };*/
 
             Log.Debug("Handshaking with Octopus server: " + ServerBaseUrl);
             var root = Repository.Client.RootDocument;
