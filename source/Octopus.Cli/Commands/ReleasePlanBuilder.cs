@@ -69,7 +69,7 @@ namespace Octopus.Cli.Commands
                     }
                     else
                     {
-                        log.Debug("Selected '{0}' version '{1}' for '{2}'", latestPackage.NuGetPackageId, latestPackage.Version, unresolved.StepName);
+                        log.Debug("Selected '{0}' version '{1}' for '{2}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }
