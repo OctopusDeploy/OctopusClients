@@ -62,4 +62,5 @@ source/OctopusTools.v2.ncrunchsolution
 .vs
 /tools/
 /artifacts/
+/publish/
 TestResult.xml

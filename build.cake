@@ -4,6 +4,8 @@
 #tool "nuget:?package=GitVersion.CommandLine"
 #addin "MagicChunks"
 
+using Path = System.IO.Path;
+
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -13,9 +15,11 @@ var configuration = Argument("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
+var publishDir = "./publish";
 var artifactsDir = "./artifacts";
-var globalAssemblyFile = "./source/Octostache/Properties/AssemblyInfo.cs";
-var projectToPackage = "./source/Octostache";
+var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
+var projectToPublish = "./source/Octo";
+var projectToPublishProjectJson = Path.Combine(projectToPublish,"project.json");
 
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 
@@ -23,14 +27,22 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
     OutputType = GitVersionOutput.Json
 });
 
-var nugetVersion = isContinuousIntegrationBuild ? gitVersionInfo.NuGetVersion : "0.0.0";
+var nugetVersion = gitVersionInfo.NuGetVersion;
+var runtimes = new[] { 
+    "win7-x64", 
+    "ubuntu.14.04-x64",  
+    "ubuntu.16.04-x64",
+    "centos.7-x64",
+    "osx.10.10-x64",
+    "osx.10.11-x64"
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    Information("Building Octostache v{0}", nugetVersion);
+    Information("Building Octo.exe v{0}", nugetVersion);
 });
 
 Teardown(context =>
@@ -49,15 +61,15 @@ Task("__Default")
     .IsDependentOn("__Build")
     .IsDependentOn("__Test")
     .IsDependentOn("__UpdateProjectJsonVersion")
-    .IsDependentOn("__Pack")
-    .IsDependentOn("__Publish");
+    .IsDependentOn("__Publish")
+    .IsDependentOn("__Push");
 
 Task("__Clean")
     .Does(() =>
 {
     CleanDirectory(artifactsDir);
-    CleanDirectories("./src/**/bin");
-    CleanDirectories("./src/**/obj");
+    CleanDirectories("./source/**/bin");
+    CleanDirectories("./source/**/obj");
 });
 
 Task("__Restore")
@@ -95,7 +107,8 @@ Task("__Test")
         {
             DotNetCoreTest(testProjectFile.ToString(), new DotNetCoreTestSettings
             {
-                Configuration = configuration
+                Configuration = configuration,
+                WorkingDirectory = Path.GetDirectoryName(testProjectFile.ToString())
             });
         });
 });
@@ -104,26 +117,54 @@ Task("__UpdateProjectJsonVersion")
     .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
-    var projectToPackagePackageJson = $"{projectToPackage}/project.json";
-    Information("Updating {0} version -> {1}", projectToPackagePackageJson, nugetVersion);
+    Information("Updating {0} version -> {1}", projectToPublishProjectJson, nugetVersion);
 
-    TransformConfig(projectToPackagePackageJson, projectToPackagePackageJson, new TransformationCollection {
+    TransformConfig(projectToPublishProjectJson, projectToPublishProjectJson, new TransformationCollection {
         { "version", nugetVersion }
     });
 });
 
-Task("__Pack")
+Task("__Publish")
     .Does(() =>
 {
-    DotNetCorePack(projectToPackage, new DotNetCorePackSettings
+    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
         Configuration = configuration,
-        OutputDirectory = artifactsDir,
-        NoBuild = true
+        OutputDirectory = Path.Combine(publishDir, "portable")
     });
+
+    var backup = projectToPublishProjectJson + ".bak";
+    CopyFile(projectToPublishProjectJson, backup);
+
+    // TODO: change this if https://github.com/sergeyzwezdin/magic-chunks/pull/10 gets merged
+    System.IO.File.WriteAllText(
+        projectToPublishProjectJson,
+        System.IO.File.ReadAllText(projectToPublishProjectJson)
+            .Replace("Microsoft.NETCore.App", "Microsoft.NETCore.Runtime.CoreCLR")
+    );
+    var transform = new TransformationCollection {
+        { "dependencies/Microsoft.NETCore.Runtime.CoreCLR", "1.0.4"},
+        { "dependencies/Microsoft.NETCore.DotNetHostPolicy", "1.0.1"},
+    };
+    foreach(var runtime in runtimes)
+        transform[$"runtimes/{runtime}"] = "";
+
+    TransformConfig(projectToPublishProjectJson, projectToPublishProjectJson, transform);
+
+    DotNetCoreRestore();
+
+    foreach(var runtime in runtimes)
+        DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+        {
+            Configuration = configuration,
+            Runtime = runtime,
+            OutputDirectory = Path.Combine(publishDir, runtime)
+        });
+    DeleteFile(projectToPublishProjectJson);
+    MoveFile(backup, projectToPublishProjectJson);        
 });
 
-Task("__Publish")
+Task("__Push")
     .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
