@@ -1,1 +1,0 @@
-// Versioned by GitVersionTask
