@@ -60,3 +60,6 @@ source/OctopusTools.v2.ncrunchsolution
 *.userprefs
 *.lock.json
 .vs
+/tools/
+/artifacts/
+TestResult.xml
