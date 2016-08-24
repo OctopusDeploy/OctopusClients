@@ -120,10 +120,10 @@ namespace Octopus.Cli.Diagnostics
             {
                 var workingDirectory = Environment.GetEnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY") ?? new System.IO.FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).DirectoryName;
                 var selflink = new Uri(new Uri(serverBaseUrl), release.Links["Web"].AsString());
-                var markdown = string.Format("[Release {0} created for '{1}']({2})", release.Version, project.Name, selflink);
+                var markdown = $"[Release {release.Version} created for '{project.Name}']({selflink})";
                 var markdownFile = System.IO.Path.Combine(workingDirectory, Guid.NewGuid() + ".md");
                 System.IO.File.WriteAllText(markdownFile, markdown);
-                log.Information(String.Format("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{0}", markdownFile));
+                log.Information($"##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{markdownFile}");
             }
         }
 
