@@ -26,7 +26,8 @@ namespace Octopus.Cli.Tests
             Console.WriteLine($"Octopus.Client: {octopusClientVersion.SemVer}");
             Console.WriteLine($"Octopus.Cli (Octo.exe): {octocliVersion.SemVer}");
 
-            Assert.That(!(isClientPreRelease ^ isThisPreRelease), "Octo.exe must be a pre-release if Octopus.Client is a pre-release, and non pre-release if Octopus.Client is not a pre-release");
+            if (isClientPreRelease) Assert.That(isThisPreRelease, "We are using a pre-release version of Octopus.Client, so octo.exe should also be versioned as a pre-release. We should only build full-releases of octo.exe using full releases of Octopus.Client.");
+            else Assert.That(true);
         }
     }
 }
