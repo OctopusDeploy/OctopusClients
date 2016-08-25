@@ -2,9 +2,16 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine"
-#addin "MagicChunks"
+#addin "nuget:?package=Newtonsoft.Json"
+#addin "nuget:?package=SharpCompress"
 
 using Path = System.IO.Path;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using IO = System.IO;
+using SharpCompress;
+using SharpCompress.Common;
+using SharpCompress.Writer;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -29,12 +36,7 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 
 var nugetVersion = gitVersionInfo.NuGetVersion;
 var runtimes = new[] { 
-    "win7-x64", 
-    "ubuntu.14.04-x64",  
-    "ubuntu.16.04-x64",
-    "centos.7-x64",
-    "osx.10.10-x64",
-    "osx.10.11-x64"
+    "win7-x64"
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,12 +64,14 @@ Task("__Default")
     .IsDependentOn("__Test")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
+    .IsDependentOn("__Zip")
     .IsDependentOn("__Push");
 
 Task("__Clean")
     .Does(() =>
 {
     CleanDirectory(artifactsDir);
+    CleanDirectory(publishDir);
     CleanDirectories("./source/**/bin");
     CleanDirectories("./source/**/obj");
 });
@@ -118,10 +122,7 @@ Task("__UpdateProjectJsonVersion")
     .Does(() =>
 {
     Information("Updating {0} version -> {1}", projectToPublishProjectJson, nugetVersion);
-
-    TransformConfig(projectToPublishProjectJson, projectToPublishProjectJson, new TransformationCollection {
-        { "version", nugetVersion }
-    });
+    ModifyJson(projectToPublishProjectJson, json => json["version"] = nugetVersion);
 });
 
 Task("__Publish")
@@ -132,37 +133,89 @@ Task("__Publish")
         Configuration = configuration,
         OutputDirectory = Path.Combine(publishDir, "portable")
     });
+   
 
-    var backup = projectToPublishProjectJson + ".bak";
-    CopyFile(projectToPublishProjectJson, backup);
+    using(new AutoRestoreFile(projectToPublishProjectJson))
+    {
+        ConvertToJsonOutput(projectToPublishProjectJson);
+        DotNetCoreRestore();
 
-    // TODO: change this if https://github.com/sergeyzwezdin/magic-chunks/pull/10 gets merged
-    System.IO.File.WriteAllText(
-        projectToPublishProjectJson,
-        System.IO.File.ReadAllText(projectToPublishProjectJson)
-            .Replace("Microsoft.NETCore.App", "Microsoft.NETCore.Runtime.CoreCLR")
-    );
-    var transform = new TransformationCollection {
-        { "dependencies/Microsoft.NETCore.Runtime.CoreCLR", "1.0.4"},
-        { "dependencies/Microsoft.NETCore.DotNetHostPolicy", "1.0.1"},
-    };
-    foreach(var runtime in runtimes)
-        transform[$"runtimes/{runtime}"] = "";
-
-    TransformConfig(projectToPublishProjectJson, projectToPublishProjectJson, transform);
-
-    DotNetCoreRestore();
-
-    foreach(var runtime in runtimes)
-        DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-        {
-            Configuration = configuration,
-            Runtime = runtime,
-            OutputDirectory = Path.Combine(publishDir, runtime)
-        });
-    DeleteFile(projectToPublishProjectJson);
-    MoveFile(backup, projectToPublishProjectJson);        
+        foreach(var runtime in runtimes)
+            DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+            {
+                Configuration = configuration,
+                Runtime = runtime,
+                OutputDirectory = Path.Combine(publishDir, runtime)
+            });
+    } 
 });
+
+private void ConvertToJsonOutput(string projectJson)
+{
+    ModifyJson(projectJson, json => {
+        var deps = (JObject)json["dependencies"];
+        deps.Remove("Microsoft.NETCore.App");
+        deps["Microsoft.NETCore.Runtime.CoreCLR"] = new JValue("1.0.4");
+        deps["Microsoft.NETCore.DotNetHostPolicy"] = new JValue("1.0.1");
+        json["runtimes"] = new JObject();
+        foreach (var runtime in runtimes)
+            json["runtimes"][runtime] = new JObject();
+    });
+}
+
+private void ModifyJson(string jsonFile, Action<JObject> modify)
+{
+    var json = JsonConvert.DeserializeObject<JObject>(IO.File.ReadAllText(jsonFile));
+    modify(json);
+    IO.File.WriteAllText(jsonFile, JsonConvert.SerializeObject(json, Formatting.Indented));
+}
+
+private class AutoRestoreFile : IDisposable
+{
+	private byte[] _contents;
+	private string _filename;
+	public AutoRestoreFile(string filename)
+	{
+		_filename = filename;
+		_contents = IO.File.ReadAllBytes(filename);
+	}
+
+	public void Dispose() => IO.File.WriteAllBytes(_filename, _contents);
+}
+
+private void TarGzip(string path, string outputFile)
+{
+    var outFile = $"{outputFile}.tar.gz";
+    Information("Creating TGZ file {0} from {1}", outFile, path);
+    using (var tarMemStream = new MemoryStream())
+    {
+        using (var tar = WriterFactory.Open(tarMemStream, ArchiveType.Tar, CompressionType.None, true))
+        {
+            tar.WriteAll(path, "*", SearchOption.AllDirectories);
+        }
+
+        tarMemStream.Seek(0, SeekOrigin.Begin);
+
+        using (Stream stream = IO.File.Open(outFile, FileMode.Create))
+        using (var zip = WriterFactory.Open(stream, ArchiveType.GZip, CompressionType.GZip))
+            zip.Write($"{outputFile}.tar", tarMemStream);
+    }
+    Information("Successfully created TGZ file: {0}", outFile);
+}
+
+Task("__Zip")
+    .Does(() => {
+        foreach(var dir in IO.Directory.EnumerateDirectories(publishDir))
+        {
+            var dirName = Path.GetFileName(dir);
+            var outFile = Path.Combine(artifactsDir, $"Octo.exe.{dirName}");
+            if(dirName.StartsWith("win") || dirName == "portable")
+                Zip(dir, outFile + ".zip");
+
+            if(!dirName.StartsWith("win"))
+                TarGzip(dir, outFile);
+        }
+    });
 
 Task("__Push")
     .WithCriteria(isContinuousIntegrationBuild)

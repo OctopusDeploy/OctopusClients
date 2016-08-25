@@ -60,6 +60,7 @@ source/OctopusTools.v2.ncrunchsolution
 *.userprefs
 *.lock.json
 .vs
+.vscode
 /tools/
 /artifacts/
 /publish/
