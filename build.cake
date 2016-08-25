@@ -24,10 +24,10 @@ var configuration = Argument("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 var publishDir = "./publish";
 var artifactsDir = "./artifacts";
+var assetDir = "./BuildAssets";
 var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
 var projectToPublish = "./source/Octo";
 var projectToPublishProjectJson = Path.Combine(projectToPublish,"project.json");
-
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 
 var gitVersionInfo = GitVersion(new GitVersionSettings {
@@ -35,8 +35,9 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 });
 
 var nugetVersion = gitVersionInfo.NuGetVersion;
+var winBinary = "win7-x64"; 
 var runtimes = new[] { 
-    "win7-x64"
+    winBinary
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,6 +66,7 @@ Task("__Default")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__Zip")
+    .IsDependentOn("__PackNuget")
     .IsDependentOn("__Push");
 
 Task("__Clean")
@@ -128,12 +130,14 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
+    var portablePublishDir = Path.Combine(publishDir, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
         Configuration = configuration,
-        OutputDirectory = Path.Combine(publishDir, "portable")
+        OutputDirectory = portablePublishDir
     });
-   
+    CopyFileToDirectory(Path.Combine(assetDir, "Octo"), portablePublishDir);
+    CopyFileToDirectory(Path.Combine(assetDir, "Octo.cmd"), portablePublishDir);
 
     using(new AutoRestoreFile(projectToPublishProjectJson))
     {
@@ -204,6 +208,7 @@ private void TarGzip(string path, string outputFile)
 }
 
 Task("__Zip")
+    .IsDependentOn("__Publish")
     .Does(() => {
         foreach(var dir in IO.Directory.EnumerateDirectories(publishDir))
         {
@@ -217,7 +222,25 @@ Task("__Zip")
         }
     });
 
+Task("__PackNuget")
+    .IsDependentOn("__Publish")
+    .Does(() => {
+        var nugetPackDir = Path.Combine(publishDir, "nuget");
+        var nuspecFile = "OctopusTools.nuspec";
+        
+        CopyDirectory(Path.Combine(publishDir, winBinary), nugetPackDir);
+        CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
+        CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
+
+        NuGetPack(Path.Combine(nugetPackDir, nuspecFile), new NuGetPackSettings {
+            Version = nugetVersion,
+            OutputDirectory = artifactsDir
+        });
+    });
+
 Task("__Push")
+    .IsDependentOn("__Zip")
+    .IsDependentOn("__PackNuget")
     .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
