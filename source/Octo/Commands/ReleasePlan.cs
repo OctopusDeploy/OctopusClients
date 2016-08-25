@@ -19,10 +19,10 @@ namespace Octopus.Cli.Commands
             steps = releaseTemplate.Packages.Select(
                 p => new ReleasePlanItem(
                     p.StepName,
-                    p.NuGetPackageId,
-                    p.NuGetFeedId,
+                    p.PackageId,
+                    p.FeedId,
                     p.IsResolvable,
-                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.NuGetPackageId)))
+                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.PackageId)))
                 .ToArray();
         }
 

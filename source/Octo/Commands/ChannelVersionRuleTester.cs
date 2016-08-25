@@ -1,4 +1,5 @@
 ﻿using Octopus.Cli.Model;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -15,12 +16,17 @@ namespace Octopus.Cli.Commands
             }
 
             var link = repository.Client.RootDocument.Link("VersionRuleTest");
-            var response = repository.Client.Post<object, ChannelVersionRuleTestResult>(link, new
+
+            var resource = new
             {
                 version = packageVersion,
                 versionRange = rule.VersionRange,
                 preReleaseTag = rule.Tag
-            });
+            };
+
+            var response = repository.Client.RootDocument.UsePostForChannelVersionRuleTest()
+                ? repository.Client.Post<object, ChannelVersionRuleTestResult>(link, resource)
+                : repository.Client.Get<ChannelVersionRuleTestResult>(link, resource);
 
             return response;
         }

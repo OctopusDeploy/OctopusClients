@@ -592,7 +592,7 @@ namespace Octopus.Cli.Importers
 
         protected CheckedReferences<LifecycleResource> CheckChannelLifecycles(List<ReferenceDataItem> channelLifecycles)
         {
-            Log.Debug("Chekcing that all channel lifecycles exist");
+            Log.Debug("Checking that all channel lifecycles exist");
             var dependencies = new CheckedReferences<LifecycleResource>();
             
             foreach (var channelLifecycle in channelLifecycles)
