@@ -1,6 +1,8 @@
 ﻿using System;
+using NuGet.Versioning;
 using NUnit.Framework;
 using Octopus.Cli.Tests.Helpers;
+using Octopus.Cli.Util;
 using Octopus.Client;
 
 namespace Octopus.Cli.Tests
@@ -9,25 +11,23 @@ namespace Octopus.Cli.Tests
     public class VersioningFixture
     {
         [Test]
-        public void TheTestAssemblyIsVersioned_WithGitVersion()
+        public void TheOctoAssemblyIsVersioned_WithGitVersion()
         {
-            Assert.That(new SemanticVersionInfo(GetType().Assembly).Major, Is.GreaterThan(1));
+            Assert.That(SemanticVersion.Parse(typeof(Program).GetInformationalVersion()).Major, Is.GreaterThan(1));
         }
 
         [Test]
         public void AllOctopusAssemblies_ShouldHaveTheSameSemanticVersion()
         {
-            var octocliVersion = (new SemanticVersionInfo(typeof(Octopus.Cli.Program).Assembly));
-            var octopusClientVersion = new SemanticVersionInfo(typeof(IOctopusRepository).Assembly);
+            var octocliVersion = SemanticVersion.Parse(typeof(Program).GetInformationalVersion());
+            var octopusClientVersion = SemanticVersion.Parse(typeof(IOctopusClient).GetInformationalVersion());
 
-            var isClientPreRelease = !string.IsNullOrEmpty(octopusClientVersion.PreReleaseTag);
-            var isThisPreRelease = !string.IsNullOrEmpty(octocliVersion.PreReleaseTag);
 
-            Console.WriteLine($"Octopus.Client: {octopusClientVersion.SemVer}");
-            Console.WriteLine($"Octopus.Cli (Octo.exe): {octocliVersion.SemVer}");
+            Console.WriteLine($"Octopus.Client: {octopusClientVersion}");
+            Console.WriteLine($"Octopus.Cli (Octo.exe): {octocliVersion}");
 
-            if (isClientPreRelease) Assert.That(isThisPreRelease, "We are using a pre-release version of Octopus.Client, so octo.exe should also be versioned as a pre-release. We should only build full-releases of octo.exe using full releases of Octopus.Client.");
-            else Assert.That(true);
+            if (octopusClientVersion.IsPrerelease)
+                Assert.That(octocliVersion.IsPrerelease, "We are using a pre-release version of Octopus.Client, so octo.exe should also be versioned as a pre-release. We should only build full-releases of octo.exe using full releases of Octopus.Client.");
         }
     }
 }
