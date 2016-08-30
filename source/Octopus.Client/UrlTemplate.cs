@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Octopus.Client.Extensions;
+using Octopus.Client.Util;
 
 namespace Octopus.Client
 {
@@ -449,13 +452,13 @@ namespace Octopus.Client
                     || UriUnreservedSymbols.IndexOf(c) != -1
                     // Unreserved symbols  - These should never be percent encoded
                     || (allowReserved && UriReservedSymbols.IndexOf(c) != -1))
-                    // Reserved symbols - should be included if requested (+)
+                // Reserved symbols - should be included if requested (+)
                 {
                     result.Append(c);
                 }
                 else
                 {
-                    result.Append(Uri.HexEscape(c));
+                    result.Append(UriExtensions.HexEscape(c));
                 }
             }
 
@@ -496,7 +499,7 @@ namespace Octopus.Client
 
             if (parameters != null)
             {
-                var properties = parameters.GetType().GetProperties();
+                var properties = parameters.GetType().GetTypeInfo().GetProperties();
                 foreach (var property in properties)
                 {
                     dictionary[property.Name] = property.GetValue(parameters, null);

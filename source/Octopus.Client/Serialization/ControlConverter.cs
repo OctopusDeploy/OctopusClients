@@ -20,7 +20,7 @@ namespace Octopus.Client.Serialization
             writer.WritePropertyName("Type");
             writer.WriteValue(typeName);
 
-            foreach (var property in value.GetType().GetProperties(
+            foreach (var property in value.GetType().GetTypeInfo().GetProperties(
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty))
             {
                 writer.WritePropertyName(property.Name);
@@ -34,19 +34,19 @@ namespace Octopus.Client.Serialization
         {
             var jo = JObject.Load(reader);
             var typeName = jo.GetValue("Type").ToObject<string>();
-            var fullName = typeof (Control).Namespace + "." + typeName;
-            var type = typeof (Control).Assembly.GetType(fullName);
-            var ctor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
+            var fullName = typeof(Control).Namespace + "." + typeName;
+            var type = typeof(Control).GetTypeInfo().Assembly.GetType(fullName);
+            var ctor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
             var args = from p in ctor.GetParameters()
-                let name = char.ToUpper(p.Name[0]) + p.Name.Substring(1)
-                let jToken = jo.GetValue(name)
-                select jToken == null ? p.ParameterType.GetDefault() : jToken.ToObject(p.ParameterType, serializer);
+                       let name = char.ToUpper(p.Name[0]) + p.Name.Substring(1)
+                       let jToken = jo.GetValue(name)
+                       select jToken == null ? p.ParameterType.GetDefault() : jToken.ToObject(p.ParameterType, serializer);
 
             var instance = ctor.Invoke(args.ToArray());
-            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance))
+            foreach (var prop in type.GetTypeInfo().GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance))
             {
                 var jToken = jo.GetValue(prop.Name);
-                if(jToken != null)
+                if (jToken != null)
                     prop.SetValue(instance, jToken.ToObject(prop.PropertyType, serializer), null);
             }
             return instance;
@@ -54,7 +54,7 @@ namespace Octopus.Client.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof (Control).IsAssignableFrom(objectType);
+            return typeof(Control).GetTypeInfo().IsAssignableFrom(objectType);
         }
     }
 }

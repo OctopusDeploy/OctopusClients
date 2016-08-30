@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Octopus.Client.Util;
 using Octopus.Client.Model.Accounts;
 
 namespace Octopus.Client.Serialization
@@ -24,6 +25,7 @@ namespace Octopus.Client.Serialization
             writer.WriteStartObject();
 
             foreach (var property in value.GetType()
+                .GetTypeInfo()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty)
                 .Where(p => p.CanRead))
             {
@@ -41,13 +43,14 @@ namespace Octopus.Client.Serialization
 
             var jo = JObject.Load(reader);
             var accountType = jo.GetValue("AccountType").ToObject<string>();
-            var type = AccountTypes[(AccountType)Enum.Parse(typeof (AccountType), accountType)];
-            var ctor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
+            var type = AccountTypes[(AccountType)Enum.Parse(typeof(AccountType), accountType)];
+            var ctor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
             var args = ctor.GetParameters().Select(p =>
                 jo.GetValue(char.ToUpper(p.Name[0]) + p.Name.Substring(1))
                     .ToObject(p.ParameterType, serializer)).ToArray();
             var instance = ctor.Invoke(args);
             foreach (var prop in type
+                .GetTypeInfo()
                 .GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
                 .Where(p => p.CanWrite))
             {
@@ -60,7 +63,7 @@ namespace Octopus.Client.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof (AccountResource).IsAssignableFrom(objectType);
+            return typeof(AccountResource).GetTypeInfo().IsAssignableFrom(objectType);
         }
     }
 }
