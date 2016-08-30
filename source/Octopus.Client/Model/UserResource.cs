@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using Octopus.Client.Validation;
 
 namespace Octopus.Client.Model
 {
@@ -36,7 +35,6 @@ namespace Octopus.Client.Model
         public bool IsRequestor { get; set; }
 
         [Writeable]
-        [PasswordComplexity]
         [NotReadable]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }

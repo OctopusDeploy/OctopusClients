@@ -121,19 +121,13 @@ namespace Octopus.Client.Model
         /// may have finished successfully or failed).
         /// </summary>
         [JsonProperty(Order = 24)]
-        public bool IsCompleted
-        {
-            get { return State.IsCompleted(); }
-        }
+        public bool IsCompleted { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the task ran to completion successfully.
         /// </summary>
         [JsonProperty(Order = 31)]
-        public bool FinishedSuccessfully
-        {
-            get { return State == TaskState.Success; }
-        }
+        public bool FinishedSuccessfully { get; set; }
 
         /// <summary>
         /// True if the task is waiting for manual intervention.

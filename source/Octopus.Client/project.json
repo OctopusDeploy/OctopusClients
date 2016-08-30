@@ -2,7 +2,7 @@
   "version": "0.0.0-*",
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
-    "NuGet.Versioning": "3.4.3",
+    "NuGet.Versioning": "3.4.3"
   },
   "buildOptions": {
     "debugType": "portable",

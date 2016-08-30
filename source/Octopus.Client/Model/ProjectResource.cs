@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Octopus.Client.Validation;
 
 namespace Octopus.Client.Model
 {
@@ -31,7 +30,6 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(Order = 2)]
-        [ContainsSomeValidCharacters]
         public string Name { get; set; }
 
         [JsonProperty(Order = 3)]
