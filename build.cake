@@ -27,7 +27,8 @@ var artifactsDir = "./artifacts";
 var assetDir = "./BuildAssets";
 var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
 var projectToPublish = "./source/Octo";
-var projectToPublishProjectJson = Path.Combine(projectToPublish,"project.json");
+var projectToPublishProjectJson = Path.Combine(projectToPublish, "project.json");
+var octopusClientFolder = "./source/Octopus.Client"
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 
 var gitVersionInfo = GitVersion(new GitVersionSettings {
@@ -124,6 +125,7 @@ Task("__UpdateProjectJsonVersion")
     .Does(() =>
 {
     Information("Updating {0} version -> {1}", projectToPublishProjectJson, nugetVersion);
+    ModifyJson(Path.Combine(octopusClientFolder, "project.json"), json => json["version"] = nugetVersion);
     ModifyJson(projectToPublishProjectJson, json => json["version"] = nugetVersion);
 });
 
@@ -224,6 +226,18 @@ Task("__Zip")
 
 Task("__PackNuget")
     .IsDependentOn("__Publish")
+    .IsDependentOn("__PackOctopusToolsNuget")
+    .IsDependentOn("__PackClientNuget")
+
+Task("__PackClientNuget")
+    .Does(() => {
+        DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
+            Configuration = configuration,
+            OutputDirectory = artifactsDir
+        });
+    });
+
+Task("__PackOctopusToolsNuget")
     .Does(() => {
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
