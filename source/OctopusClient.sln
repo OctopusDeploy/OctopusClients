@@ -6,8 +6,6 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octo", "Octo\Octo.xproj", "
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octo.Tests", "Octo.Tests\Octo.Tests.xproj", "{B05E3858-5607-46DB-876C-4E1F5728A4BB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A88CC6CE-8758-46E3-B646-26088F238774}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octopus.Client", "Octopus.Client\Octopus.Client.xproj", "{B22C7BE1-DDBB-4721-8C16-3CBA1F365B3D}"
 EndProject
 Global

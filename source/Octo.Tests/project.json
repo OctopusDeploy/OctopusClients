@@ -6,7 +6,9 @@
       "version": "1.0.0"
     },
     "Serilog": "2.1.0",
-    "Octopus.Client": "3.4.0-dnc2411",
+    "Octopus.Client": {
+      "target": "project"
+    },
     "Octo": {
       "target": "project"
     },
