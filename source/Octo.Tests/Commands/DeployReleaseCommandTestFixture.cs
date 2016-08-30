@@ -109,7 +109,6 @@ namespace Octopus.Cli.Tests.Commands
                 .Get(Arg.Is<string[]>(t => t.SequenceEqual(new [] {"Tenant-1"})))
                 .Returns(new List<TenantResource>() {tenant1});
             taskResource.State = TaskState.Success;
-            taskResource.FinishedSuccessfully = true;
 
             CommandLineArgs.Add("--project=" + ProjectName);
             CommandLineArgs.Add("--deploymenttimeout=00:00:01");
