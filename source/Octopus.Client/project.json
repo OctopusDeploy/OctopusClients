@@ -1,0 +1,62 @@
+﻿{
+  "version": "0.0.0-*",
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1",
+    "NuGet.Versioning": "3.4.3",
+  },
+  "buildOptions": {
+    "debugType": "portable",
+    "xmlDoc": true,
+    "warningsAsErrors": true,
+    "nowarn": [
+      "CS1591" // Missing XML Comment
+    ]
+  },
+  "configurations": {
+    "Release": {
+      "buildOptions": {
+        "optimize": true
+      }
+    }
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Numerics": ""
+      },
+      "buildOptions": {
+        "define": [ "WEB_REQUEST_CAN_CHUNK", "WEB_REQUEST_HAS_CONTENT_LENGTH" ]
+      }
+    },
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "System.ComponentModel.Annotations": "4.1.0",
+        "System.ComponentModel.Primitives": "4.1.0",
+        "System.Runtime": "4.1.0",
+        "System.Net.Requests": "4.0.11",
+        "System.Net.Primitives": "4.0.11",
+        "System.Threading": "4.0.11",
+        "System.Threading.Thread": "4.0.0",
+        "System.IO.FileSystem": "4.0.1",
+        "System.Reflection": "4.1.0",
+        "System.Globalization": "4.0.11",
+        "System.Runtime.Numerics": "4.0.1",
+        "Microsoft.NETCore.Portable.Compatibility": "1.0.1"
+      }
+    }
+  },
+  "packOptions": {
+    "owners": [ "Octopus Deploy" ],
+    "requireLicenseAcceptance": false,
+    "summary": "Octopus Deploy is a user-friendly automated deployment tool for .NET developers.\r\n\r\nThis package contains the client library for the HTTP API in Octopus.",
+    "projectUrl": "http://octopusdeploy.com/",
+    "licenseUrl": "http://octopusdeploy.com/pricing",
+    "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3-32x32.png"
+    /*"repository": {
+      "type": "git",
+      "url": "https://github.com/OctopusDeploy/???"
+    }*/
+  }
+}
