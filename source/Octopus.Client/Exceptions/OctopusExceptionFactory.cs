@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Octopus.Client.Exceptions
@@ -13,34 +15,29 @@ namespace Octopus.Client.Exceptions
         /// <summary>
         /// Creates the appropriate <see cref="OctopusException" /> from a HTTP response.
         /// </summary>
-        /// <param name="webException">The web exception.</param>
         /// <param name="response">The response.</param>
         /// <returns>A rich exception describing the problem.</returns>
-        public static OctopusException CreateException(WebException webException, HttpWebResponse response)
+        public static async Task<OctopusException> CreateException(HttpResponseMessage response)
         {
             var statusCode = (int)response.StatusCode;
 
-            var body = "";
-            var responseStream = response.GetResponseStream();
-            if (responseStream != null)
-            {
-                using (var reader = new StreamReader(responseStream))
-                {
-                    body = reader.ReadToEnd();
-                }
-            }
+            var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (statusCode == 400 || statusCode == 409) // Bad request: usually validation error 
             {
                 var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                return new OctopusValidationException(statusCode, errors.ErrorMessage, errors.Errors) {HelpText = errors.HelpText};
+                return new OctopusValidationException(statusCode, errors.ErrorMessage, errors.Errors) { HelpText = errors.HelpText };
             }
 
             if (statusCode == 401 || statusCode == 403) // Forbidden, usually no API key or permissions
             {
                 var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                errors = errors ?? new OctopusErrorsContract {ErrorMessage = string.Format("The server returned a status code of {0}: {1}", statusCode, body)};
-                return new OctopusSecurityException(statusCode, errors.ErrorMessage) {HelpText = errors.HelpText};
+                errors = errors ?? new OctopusErrorsContract
+                {
+                    ErrorMessage =
+                                 $"The server returned a status code of {statusCode}: {body}"
+                };
+                return new OctopusSecurityException(statusCode, errors.ErrorMessage) { HelpText = errors.HelpText };
             }
 
             if (statusCode == 404) // Not found
@@ -70,12 +67,12 @@ namespace Octopus.Client.Exceptions
                     }
                 }
             }
-                // ReSharper disable once EmptyGeneralCatchClause
+            // ReSharper disable once EmptyGeneralCatchClause
             catch
             {
             }
 
-            return new OctopusServerException(statusCode, fullDetails) {HelpText = helpText};
+            return new OctopusServerException(statusCode, fullDetails) { HelpText = helpText };
         }
 
         static string GetErrorMessage(string body)

@@ -3,6 +3,7 @@
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
     "NuGet.Versioning": "3.4.3",
+    "System.Net.Http": "4.1.0"
   },
   "buildOptions": {
     "debugType": "portable",
@@ -24,9 +25,6 @@
       "frameworkAssemblies": {
         "System.ComponentModel.DataAnnotations": "",
         "System.Numerics": ""
-      },
-      "buildOptions": {
-        "define": [ "WEB_REQUEST_CAN_CHUNK", "WEB_REQUEST_HAS_CONTENT_LENGTH" ]
       }
     },
     "netstandard1.6": {
@@ -53,10 +51,10 @@
     "summary": "Octopus Deploy is a user-friendly automated deployment tool for .NET developers.\r\n\r\nThis package contains the client library for the HTTP API in Octopus.",
     "projectUrl": "http://octopusdeploy.com/",
     "licenseUrl": "http://octopusdeploy.com/pricing",
-    "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3-32x32.png"
-    /*"repository": {
+    "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3-32x32.png",
+    "repository": {
       "type": "git",
-      "url": "https://github.com/OctopusDeploy/???"
-    }*/
+      "url": "https://github.com/OctopusDeploy/OctopusClients"
+    }
   }
 }

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Test": {
+      "executablePath": "C:\\Users\\rober\\.nuget\\packages\\NUnit.ConsoleRunner\\3.4.1\\tools\\nunit3-console.exe",
+      "commandName": "Project",
+      "commandLineArgs": "bin/Debug/net451/Octopus.Client.Tests.dll"
+    }
+  }
+}

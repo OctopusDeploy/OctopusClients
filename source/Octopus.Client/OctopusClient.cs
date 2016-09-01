@@ -10,6 +10,9 @@ using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace Octopus.Client
 {
@@ -21,8 +24,8 @@ namespace Octopus.Client
         readonly object rootDocumentLock = new object();
         RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
-        readonly CookieContainer cookies = new CookieContainer();
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+        private readonly HttpClient client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -31,6 +34,18 @@ namespace Octopus.Client
         public OctopusClient(OctopusServerEndpoint serverEndpoint)
         {
             this.serverEndpoint = serverEndpoint;
+            var handler = new HttpClientHandler()
+            {
+                Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
+            };
+
+            if (serverEndpoint.Proxy != null)
+                handler.Proxy = serverEndpoint.Proxy;
+            if (serverEndpoint.Credentials != null)
+                handler.Credentials = serverEndpoint.Credentials;
+
+            this.client = new HttpClient(handler, true);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         /// <summary>
@@ -75,7 +90,7 @@ namespace Octopus.Client
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
-        public event Action<WebRequest> BeforeSendingHttpRequest;
+        public event Action<HttpRequestMessage> BeforeSendingHttpRequest;
 
         /// <summary>
         /// Occurs when a request is about to be sent.
@@ -375,196 +390,109 @@ namespace Octopus.Client
             return server;
         }
 
-        OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
+        private OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
-            var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
-            if (serverEndpoint.Proxy != null)
+            using (var message = new HttpRequestMessage())
             {
-                webRequest.Proxy = serverEndpoint.Proxy;
+                message.RequestUri = request.Uri;
+                message.Method = new HttpMethod(request.Method);
+
+                if (request.Method == "PUT" || request.Method == "DELETE")
+                {
+                    message.Method = HttpMethod.Post;
+                    message.Headers.Add("X-HTTP-Method-Override", request.Method);
+                }
+
+                var requestHandler = SendingOctopusRequest;
+                requestHandler?.Invoke(request);
+
+                var webRequestHandler = BeforeSendingHttpRequest;
+                webRequestHandler?.Invoke(message);
+
+
+                if (request.RequestResource != null)
+                    message.Content = GetContent(request);
+
+                var ct = new CancellationToken(); // TODO
+                var completionOption = readResponse
+                    ? HttpCompletionOption.ResponseContentRead
+                    : HttpCompletionOption.ResponseHeadersRead;
+
+                using (var response = client.SendAsync(message, completionOption, ct).Result)
+                {
+                    //   throw new TimeoutException($"Timeout after {ApiConstants.DefaultClientRequestTimeout}ms getting response");
+
+                    if (!response.IsSuccessStatusCode)
+                        throw OctopusExceptionFactory.CreateException(response).Result;
+
+                    var resource = readResponse
+                        ? ReadResponse<TResponseResource>(response).Result
+                        : default(TResponseResource);
+
+                    var locationHeader = response.Headers.Location?.ToString();
+                    var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode, locationHeader, resource);
+                    ReceivedOctopusResponse?.Invoke(octopusResponse);
+
+                    return octopusResponse;
+                }
             }
-            webRequest.CookieContainer = cookies;
-            webRequest.Accept = "application/json";
-            webRequest.ContentType = "application/json";
-            webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
-            webRequest.Method = request.Method;
-            webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-            
-            if (webRequest.Method == "PUT")
+        }
+
+        private HttpContent GetContent(OctopusRequest request)
+        {
+            var requestStreamContent = request.RequestResource as Stream;
+            if (requestStreamContent != null)
             {
-                webRequest.Headers["X-HTTP-Method-Override"] = "PUT";
-                webRequest.Method = "POST";
+                var streamContent = new StreamContent(requestStreamContent);
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                return streamContent;
             }
 
-            if (webRequest.Method == "DELETE")
+            var fileUploadContent = request.RequestResource as FileUpload;
+            if (fileUploadContent != null)
             {
-                webRequest.Headers["X-HTTP-Method-Override"] = "DELETE";
-                webRequest.Method = "POST";
+                var formContent = new MultipartFormDataContent();
+                var streamContent = new StreamContent(fileUploadContent.Contents);
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                formContent.Add(streamContent, "file", fileUploadContent.FileName);
+                return formContent;
             }
 
-            var requestHandler = SendingOctopusRequest;
-            requestHandler?.Invoke(request);
+            var text = JsonConvert.SerializeObject(request.RequestResource, defaultJsonSerializerSettings);
 
-            var webRequestHandler = BeforeSendingHttpRequest;
-            webRequestHandler?.Invoke(webRequest);
+            var content = new StringContent(text, Encoding.UTF8, "application/json");
+            content.Headers.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+            return content;
+        }
 
-            HttpWebResponse webResponse = null;
+        private async Task<T> ReadResponse<T>(HttpResponseMessage response)
+        {
+            var content = response.Content;
+
+            if (typeof(T) == typeof(Stream))
+            {
+                var stream = new MemoryStream();
+                await content.CopyToAsync(stream).ConfigureAwait(false);
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T)(object)stream;
+            }
+
+            if (typeof(T) == typeof(byte[]))
+                return (T)(object)await content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            var str = await content.ReadAsStringAsync().ConfigureAwait(false);
+            if (typeof(T) == typeof(string))
+                return (T)(object)str;
+
             try
             {
-                if (request.RequestResource == null)
-                {
-                    SetContentLength(webRequest, 0);
-                }
-                else
-                {
-                    var requestStreamContent = request.RequestResource as Stream;
-                    if (requestStreamContent != null)
-                    {
-                        webRequest.Accept = null;
-                        webRequest.ContentType = "application/octet-stream";
-                        SetContentLength(webRequest, requestStreamContent.Length);
-                        requestStreamContent.CopyTo(GetRequestStream(webRequest));
-                        // Caller owns stream.
-                    }
-                    else
-                    {
-                        var fileUploadContent = request.RequestResource as FileUpload;
-                        if (fileUploadContent != null)
-                        {
-#if WEB_REQUEST_CAN_CHUNK
-                            webRequest.AllowWriteStreamBuffering = false;
-                            webRequest.SendChunked = true;
-#endif
-                            var boundary = "----------------------------" + DateTime.Now.Ticks.ToString("x");
-                            var boundarybytes = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
-                            webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
-
-                            var requestStream = GetRequestStream(webRequest);
-                            requestStream.Write(boundarybytes, 0, boundarybytes.Length);
-
-                            var headerTemplate = "Content-Disposition: form-data; filename=\"{0}\"\r\nContent-Type: application/octet-stream\r\n\r\n";
-                            var header = string.Format(headerTemplate, fileUploadContent.FileName);
-                            var headerbytes = Encoding.UTF8.GetBytes(header);
-                            requestStream.Write(headerbytes, 0, headerbytes.Length);
-                            fileUploadContent.Contents.CopyTo(requestStream);
-                            requestStream.Write(boundarybytes, 0, boundarybytes.Length);
-                            requestStream.Flush();
-                            requestStream.Dispose();
-                        }
-                        else
-                        {
-                            var text = JsonConvert.SerializeObject(request.RequestResource, defaultJsonSerializerSettings);
-                            SetContentLength(webRequest, Encoding.UTF8.GetByteCount(text));
-                            var requestStream = new StreamWriter(GetRequestStream(webRequest));
-                            requestStream.Write(text);
-                            requestStream.Flush();
-                        }
-                    }
-                }
-
-                webResponse = GetResponseStream(webRequest);
-
-                var resource = default(TResponseResource);
-                if (readResponse)
-                {
-                    var responseStream = webResponse.GetResponseStream();
-                    if (responseStream != null)
-                    {
-                        if (typeof(TResponseResource) == typeof(Stream))
-                        {
-                            var stream = new MemoryStream();
-                            responseStream.CopyTo(stream);
-                            stream.Seek(0, SeekOrigin.Begin);
-                            resource = (TResponseResource)(object)stream;
-                        }
-                        else if (typeof(TResponseResource) == typeof(byte[]))
-                        {
-                            var stream = new MemoryStream();
-                            responseStream.CopyTo(stream);
-                            resource = (TResponseResource)(object)stream.ToArray();
-                        }
-                        else if (typeof(TResponseResource) == typeof(string))
-                        {
-                            using (var reader = new StreamReader(responseStream))
-                            {
-                                resource = (TResponseResource)(object)reader.ReadToEnd();
-                            }
-                        }
-                        else
-                        {
-                            using (var reader = new StreamReader(responseStream))
-                            {
-                                var content = reader.ReadToEnd();
-                                try
-                                {
-                                    resource = JsonConvert.DeserializeObject<TResponseResource>(content, defaultJsonSerializerSettings);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new OctopusDeserializationException((int)webResponse.StatusCode, "Unable to process response from server: " + ex.Message + ". Response content: " + (content.Length > 100 ? content.Substring(0, 100) : content), ex);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                var locationHeader = webResponse.Headers["Location"];
-                var octopusResponse = new OctopusResponse<TResponseResource>(request, webResponse.StatusCode, locationHeader, resource);
-                ReceivedOctopusResponse?.Invoke(octopusResponse);
-
-                return octopusResponse;
+                return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
             }
-            catch (WebException wex)
+            catch (Exception ex)
             {
-                if (wex.Response != null)
-                {
-                    throw OctopusExceptionFactory.CreateException(wex, (HttpWebResponse)wex.Response);
-                }
-
-                throw;
+                throw new OctopusDeserializationException((int)response.StatusCode,
+                    $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 100 ? str.Substring(0, 100) : str)}", ex);
             }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    try
-                    {
-                        webResponse.Dispose();
-                    }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch
-                    {
-                    }
-                }
-            }
-        }
-
-        private void SetContentLength(HttpWebRequest webRequest, long length)
-        {
-#if WEB_REQUEST_HAS_CONTENT_LENGTH
-                        webRequest.ContentLength = length;
-#else
-            webRequest.Headers[HttpRequestHeader.ContentLength] = length.ToString();
-#endif
-        }
-
-        static HttpWebResponse GetResponseStream(HttpWebRequest webRequest)
-        {
-            var asyncResult = webRequest.BeginGetResponse(null, null);
-            if (asyncResult.AsyncWaitHandle.WaitOne(ApiConstants.DefaultClientRequestTimeout))
-                return (HttpWebResponse)webRequest.EndGetResponse(asyncResult);
-
-            webRequest.Abort();
-            throw new TimeoutException($"Timeout after {ApiConstants.DefaultClientRequestTimeout}ms getting response");
-        }
-
-        static Stream GetRequestStream(HttpWebRequest webRequest)
-        {
-            var asyncResult = webRequest.BeginGetRequestStream(null, null);
-            if (asyncResult.AsyncWaitHandle.WaitOne(ApiConstants.DefaultClientRequestTimeout))
-                return webRequest.EndGetRequestStream(asyncResult);
-
-            webRequest.Abort();
-            throw new TimeoutException($"Timeout after {ApiConstants.DefaultClientRequestTimeout}ms getting the request stream");
         }
 
         /// <summary>
@@ -572,6 +500,7 @@ namespace Octopus.Client
         /// </summary>
         public void Dispose()
         {
+            client?.Dispose();
         }
     }
 }

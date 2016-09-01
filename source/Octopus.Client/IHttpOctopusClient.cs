@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Http;
 
 namespace Octopus.Client
 {
@@ -11,6 +12,6 @@ namespace Octopus.Client
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
-        event Action<WebRequest> BeforeSendingHttpRequest;
+        event Action<HttpRequestMessage> BeforeSendingHttpRequest;
     }
 }
