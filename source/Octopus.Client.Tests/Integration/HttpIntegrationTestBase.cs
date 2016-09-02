@@ -26,7 +26,6 @@ namespace Octopus.Client.Tests.Integration
 {
     public abstract class HttpIntegrationTestBase : NancyModule
     {
-        //public static readonly Uri HostBaseUri = new Uri("http://foo.localtest.me:17358");
         public static readonly string HostBaseUri = "http://localhost:17358";
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         private static IWebHost _currentHost;

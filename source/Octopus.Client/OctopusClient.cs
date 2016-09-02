@@ -36,7 +36,9 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             var handler = new HttpClientHandler()
             {
+#if !COREFX_ISSUE_11266_EXISTS
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
+#endif
             };
 
             if (serverEndpoint.Proxy != null)

@@ -3,7 +3,6 @@
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
     "NuGet.Versioning": "3.4.3",
-    "System.Net.Http": "4.1.0"
   },
   "buildOptions": {
     "debugType": "portable",
@@ -25,6 +24,9 @@
       "frameworkAssemblies": {
         "System.ComponentModel.DataAnnotations": "",
         "System.Numerics": ""
+      },
+      "dependencies": {
+        "System.Net.Http": "4.0.0"
       }
     },
     "netstandard1.6": {
@@ -41,7 +43,13 @@
         "System.Reflection": "4.1.0",
         "System.Globalization": "4.0.11",
         "System.Runtime.Numerics": "4.0.1",
-        "Microsoft.NETCore.Portable.Compatibility": "1.0.1"
+        "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+        "System.Net.Http": "4.1.0"
+      },
+      "buildOptions": {
+        "define": [
+          "COREFX_ISSUE_11266_EXISTS" // https://github.com/dotnet/corefx/issues/11266
+        ]
       }
     }
   },
