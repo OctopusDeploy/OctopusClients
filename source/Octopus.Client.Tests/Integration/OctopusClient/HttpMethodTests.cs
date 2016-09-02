@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using FluentAssertions;
 using Nancy;
 using Nancy.ModelBinding;
@@ -6,15 +7,15 @@ using NUnit.Framework;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
 {
-    public class HttpMethodTests : OctopusClientTestBase
+    public class HttpMethodTests : HttpIntegrationTestBase
     {
         private static string _lastMethod;
 
         public HttpMethodTests()
         {
-            Get["/"] = p => Response.AsJson(new TestDto() {Value = "42"});
+            Get(TestRootPath, p => Response.AsJson(new TestDto() { Value = "42" }));
 
-            Post["/"] = p =>
+            Post(TestRootPath, p =>
             {
                 var dto = this.Bind<TestDto>();
                 if (dto.Value != "Foo")
@@ -22,9 +23,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
                 _lastMethod = "Post";
                 return HttpStatusCode.NoContent;
-            };
+            });
 
-            Put["/"] = p =>
+            Put(TestRootPath, p =>
             {
                 var dto = this.Bind<TestDto>();
                 if (dto.Value != "Foo")
@@ -32,22 +33,22 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
                 _lastMethod = "Put";
                 return HttpStatusCode.NoContent;
-            };
+            });
 
-            Delete["/"] = p => _lastMethod = "Delete";
+            Delete(TestRootPath, p => _lastMethod = "Delete");
         }
 
         [Test]
         public void GetReturnsAValue()
         {
-            Client.Get<TestDto>("/").Value.Should().Be("42");
+            Client.Get<TestDto>("~/").Value.Should().Be("42");
         }
 
         [Test]
         public void PostingAObjectWorks()
         {
             _lastMethod = null;
-            Action post = () => Client.Post("/", new TestDto {Value = "Foo"});
+            Action post = () => Client.Post("~/", new TestDto { Value = "Foo" });
             post.ShouldNotThrow();
             _lastMethod.Should().Be("Post");
         }
@@ -56,7 +57,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void PuttingAObjectWorks()
         {
             _lastMethod = null;
-            Action put = () => Client.Put("/", new TestDto {Value = "Foo"});
+            Action put = () => Client.Put("~/", new TestDto { Value = "Foo" });
             put.ShouldNotThrow();
             _lastMethod.Should().Be("Put");
         }
@@ -65,7 +66,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void DeleteReachesTheServer()
         {
             _lastMethod = null;
-            Action delete = () => Client.Delete("/");
+            Action delete = () => Client.Delete("~/");
             delete.ShouldNotThrow();
             _lastMethod.Should().Be("Delete");
         }

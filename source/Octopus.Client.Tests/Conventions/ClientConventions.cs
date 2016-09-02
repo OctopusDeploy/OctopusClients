@@ -1,43 +1,45 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Conventional;
-using Conventional.Conventions;
 using NUnit.Framework;
 using Octopus.Client.Extensions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 using Autofac;
-using Autofac.Util;
 using Nancy.Extensions;
+
+#if HAS_BEST_CONVENTIONAL
+using Conventional;
+using Conventional.Conventions;
+#endif
 
 namespace Octopus.Client.Tests.Conventions
 {
     [TestFixture]
     public class ClientConventions
     {
-        private static readonly Type[] ExportedTypes = typeof(IOctopusClient).Assembly.GetExportedTypes().Select(t => t).ToArray();
-        private static readonly Type[] RepositoryInterfaceTypes = ExportedTypes
+        private static readonly TypeInfo[] ExportedTypes = typeof(IOctopusClient).GetTypeInfo().Assembly.GetExportedTypes().Select(t => t.GetTypeInfo()).ToArray();
+        private static readonly TypeInfo[] RepositoryInterfaceTypes = ExportedTypes
             .Where(t => t.IsInterface && t.Name.EndsWith("Repository"))
-            .Where(t => t != typeof(IOctopusRepository))
+            .Where(t => t.AsType() != typeof(IOctopusRepository))
             .ToArray();
-        private static readonly Type[] RepositoryTypes = ExportedTypes
+        private static readonly TypeInfo[] RepositoryTypes = ExportedTypes
             .Where(t => !t.IsInterface && t.Name.EndsWith("Repository"))
-            .Where(t => t != typeof(OctopusRepository))
+            .Where(t => t.AsType() != typeof(OctopusRepository))
             .ToArray();
-        private static readonly Type[] ResourceTypes = ExportedTypes
+        private static readonly TypeInfo[] ResourceTypes = ExportedTypes
             .Where(t => t.Name.EndsWith("Resource"))
             .ToArray();
-        private static readonly Type[] RepositoryResourceTypes = ResourceTypes
+        private static readonly TypeInfo[] RepositoryResourceTypes = ResourceTypes
             .Where(res => RepositoryTypes
-                .Any(rep => rep.BaseType?.IsGenericType == true && rep.BaseType?.GetGenericArguments().Contains(res) == true))
+                .Any(rep => rep.BaseType?.GetTypeInfo().IsGenericType == true && rep.BaseType?.GetTypeInfo().GetGenericArguments().Contains(res.AsType()) == true))
             .ToArray();
 
         [Test]
         public void AllRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
             var exposedTypes = typeof(IOctopusRepository).GetProperties()
-                .Select(p => p.PropertyType)
+                .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
             var missingTypes = RepositoryInterfaceTypes.Except(exposedTypes).ToArray();
@@ -51,7 +53,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllRepositoriesShouldBeAvailableViaOctopusRepository()
         {
             var exposedTypes = typeof(OctopusRepository).GetProperties()
-                .Select(p => p.PropertyType)
+                .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
             var missingTypes = RepositoryInterfaceTypes.Except(exposedTypes).ToArray();
@@ -64,7 +66,7 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AllRepositoriesShouldImplementNonGenericSimpleInterface()
         {
-            var repositoryInterfaceMap = RepositoryTypes.Select(r => new { Repository = r, Interface = r.GetInterfaces().Where(i => !i.IsGenericType) }).ToArray();
+            var repositoryInterfaceMap = RepositoryTypes.Select(r => new { Repository = r, Interface = r.GetInterfaces().Where(i => !i.GetTypeInfo().IsGenericType) }).ToArray();
             var missingInterface = repositoryInterfaceMap.Where(x => x.Interface == null).ToArray();
 
             if (missingInterface.Any())
@@ -81,11 +83,11 @@ namespace Octopus.Client.Tests.Conventions
                 {
                     Repository = r,
                     DeclaredMethodMap = r.GetMethods()
-                    .Where(m => m.DeclaringType == r)
+                    .Where(m => m.DeclaringType.GetTypeInfo() == r)
                     .Select(m => new
                     {
                         DelcaredMethod = m,
-                        r.GetInterfaces().Select(r.GetInterfaceMap).FirstOrDefault(map => map.TargetMethods.Contains(m)).InterfaceType
+                        r.GetInterfaces().Select(r.GetRuntimeInterfaceMap).FirstOrDefault(map => map.TargetMethods.Contains(m)).InterfaceType
                     }).ToArray(),
                 }).ToArray();
 
@@ -95,6 +97,151 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"The following repositories do not expose at least one of their public members by interface, and hence won't be accessible by clients.{Environment.NewLine}{exposureMap.Where(x => x.DeclaredMethodMap.Any(map => map.InterfaceType == null)).Select(x => $"{x.Repository.Name}: {x.DeclaredMethodMap.Where(map => map.InterfaceType == null).Select(map => $"{map.DelcaredMethod.Name}({map.DelcaredMethod.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}").CommaSeperate()})").CommaSeperate()}").NewLineSeperate()}");
             }
         }
+
+        [Test]
+        public void RepositoriesShouldNotRepresentMultipleResourceTypes()
+        {
+            var repositoryResourceMap = RepositoryTypes
+                .Select(t => new
+                {
+                    Repository = t,
+                    ResourceTypes = t.GetInterfaces().Concat(new[] { t.BaseType })
+                        .Where(i => i.GetTypeInfo().IsGenericType)
+                        .SelectMany(i => i.GetGenericArguments())
+                        .Distinct()
+                        .ToArray()
+                }).ToArray();
+
+            var confusedRepositories = repositoryResourceMap.Where(x => x.ResourceTypes.Length > 1).ToArray();
+
+            if (confusedRepositories.Any())
+            {
+                Assert.Fail($"Repositories should represent consistent Resource type. These repositories have an identity crisis: {Environment.NewLine}{confusedRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}>").NewLineSeperate()}");
+            }
+        }
+
+        [Test]
+        public void RepositoriesShouldBeNamedLikeTheirResourceType()
+        {
+            var repositoryResourceMap = RepositoryTypes
+                .Select(t => new
+                {
+                    Repository = t,
+                    ResourceTypes = t.GetInterfaces().Concat(new[] { t.BaseType })
+                        .Where(i => i.GetTypeInfo().IsGenericType)
+                        .SelectMany(i => i.GetGenericArguments())
+                        .Distinct()
+                        .ToArray()
+                }).ToArray();
+
+            var confusingRepositories = repositoryResourceMap
+                .Where(x => x.ResourceTypes.Any())
+                .Where(x => !x.Repository.Name.StartsWith(x.ResourceTypes.First().Name.Replace("Resource", "")))
+                .ToArray();
+
+            if (confusingRepositories.Any())
+            {
+                Assert.Fail($"Repositories should be named like their Resource type. These repositories could be confusing: {Environment.NewLine}{confusingRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}> - based on the resource type this should be named something like {x.ResourceTypes.First().Name.Replace("Resource", "")}Repository? Or maybe this is using the wrong generic type argument?").NewLineSeperate()}");
+            }
+        }
+
+        [Test]
+        public void TopLevelResourcesWithAPublicNamePropertyShouldProbablyImplementINamedResource()
+        {
+            var ignored = new[]
+            {
+                typeof (DeploymentResource).GetTypeInfo(),
+                typeof (TaskResource).GetTypeInfo()
+            };
+
+            var shouldProbablyBeINamedResource = RepositoryResourceTypes
+                .Except(ignored)
+                .Where(t => t.GetProperty("Name") != null && !t.AsType().IsAssignableTo<INamedResource>())
+                .ToArray();
+
+            if (shouldProbablyBeINamedResource.Any())
+            {
+                Assert.Fail($"The following top-level resource types have a Name property, and should probably implement INamedResource: {Environment.NewLine}{shouldProbablyBeINamedResource.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+
+        [Test]
+        public void SomeINamedResourcesShouldNeverBeIFindByNameToAvoidGettingTheWrongAnswer()
+        {
+            var denied = new[]
+            {
+                typeof (IChannelRepository),
+                typeof (IDeploymentProcessRepository),
+                typeof (ITaskRepository)
+            };
+
+            var misleadingRepositories = denied.Where(r => r.IsAssignableToGenericType(typeof(IFindByName<>))).ToArray();
+
+            if (misleadingRepositories.Any())
+            {
+                Assert.Fail($"The following repositories allow the client to FindByName, but this will end up returning a misleading result, and the resource should be loaded in another way:{Environment.NewLine}{misleadingRepositories.Select(r => $"{r.Name}").NewLineSeperate()}");
+            }
+        }
+
+        [Test]
+        public void RepositoriesThatGetNamedResourcesShouldUsuallyImplementIFindByName()
+        {
+            var ignored = new[]
+            {
+                typeof (IChannelRepository).GetTypeInfo(),
+                typeof (IProjectTriggerRepository).GetTypeInfo()
+            };
+
+            var getsResources = RepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(IGet<>)))
+                .ToArray();
+
+            var getsNamedResources = getsResources
+                .Where(t => t.GetInterfaces()
+                    .Where(i => i.IsClosedTypeOf(typeof(IGet<>)))
+                    .Any(i => i.GenericTypeArguments.Any(r => r.IsAssignableTo<INamedResource>())))
+                .ToArray();
+
+            var canFindByName = getsNamedResources
+                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IFindByName<>))))
+                .ToArray();
+
+            var missingFindByName = getsNamedResources.Except(canFindByName).ToArray();
+
+            if (missingFindByName.Any())
+            {
+                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+
+        [Test]
+        public void MostRepositoriesThatGetResourcesShouldImplementIPaginate()
+        {
+            var ignored = new[]
+            {
+                typeof (IDeploymentProcessRepository).GetTypeInfo(),
+                typeof (IInterruptionRepository).GetTypeInfo(),
+                typeof (IEventRepository).GetTypeInfo(),
+                typeof (IVariableSetRepository).GetTypeInfo(),
+                typeof (IChannelRepository).GetTypeInfo(),
+                typeof (IProjectTriggerRepository).GetTypeInfo()
+            };
+
+            var missing = RepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(IGet<>)))
+                .Except(RepositoryInterfaceTypes.Where(t => t.AsType().IsAssignableToGenericType(typeof(IPaginate<>))))
+                .ToArray();
+
+            if (missing.Any())
+            {
+                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+
+
+#if HAS_BEST_CONVENTIONAL
 
         [Test]
         public void AllRepositoryInterfacesShouldFollowTheseConventions()
@@ -130,148 +277,6 @@ namespace Octopus.Client.Tests.Conventions
                 .WithFailureAssertion(Assert.Fail);
         }
 
-        [Test]
-        public void RepositoriesShouldNotRepresentMultipleResourceTypes()
-        {
-            var repositoryResourceMap = RepositoryTypes
-                .Select(t => new
-                {
-                    Repository = t,
-                    ResourceTypes = t.GetInterfaces().Concat(new[] { t.BaseType })
-                        .Where(i => i.IsGenericType)
-                        .SelectMany(i => i.GetGenericArguments())
-                        .Distinct()
-                        .ToArray()
-                }).ToArray();
-
-            var confusedRepositories = repositoryResourceMap.Where(x => x.ResourceTypes.Length > 1).ToArray();
-
-            if (confusedRepositories.Any())
-            {
-                Assert.Fail($"Repositories should represent consistent Resource type. These repositories have an identity crisis: {Environment.NewLine}{confusedRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}>").NewLineSeperate()}");
-            }
-        }
-
-        [Test]
-        public void RepositoriesShouldBeNamedLikeTheirResourceType()
-        {
-            var repositoryResourceMap = RepositoryTypes
-                .Select(t => new
-                {
-                    Repository = t,
-                    ResourceTypes = t.GetInterfaces().Concat(new[] { t.BaseType })
-                        .Where(i => i.IsGenericType)
-                        .SelectMany(i => i.GetGenericArguments())
-                        .Distinct()
-                        .ToArray()
-                }).ToArray();
-
-            var confusingRepositories = repositoryResourceMap
-                .Where(x => x.ResourceTypes.Any())
-                .Where(x => !x.Repository.Name.StartsWith(x.ResourceTypes.First().Name.Replace("Resource", "")))
-                .ToArray();
-
-            if (confusingRepositories.Any())
-            {
-                Assert.Fail($"Repositories should be named like their Resource type. These repositories could be confusing: {Environment.NewLine}{confusingRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}> - based on the resource type this should be named something like {x.ResourceTypes.First().Name.Replace("Resource", "")}Repository? Or maybe this is using the wrong generic type argument?").NewLineSeperate()}");
-            }
-        }
-
-        [Test]
-        public void TopLevelResourcesWithAPublicNamePropertyShouldProbablyImplementINamedResource()
-        {
-            var ignored = new[]
-            {
-                typeof (DeploymentResource),
-                typeof (TaskResource)
-            };
-
-            var shouldProbablyBeINamedResource = RepositoryResourceTypes
-                .Except(ignored)
-                .Where(t => t.GetProperty("Name") != null && !t.IsAssignableTo<INamedResource>())
-                .ToArray();
-
-            if (shouldProbablyBeINamedResource.Any())
-            {
-                Assert.Fail($"The following top-level resource types have a Name property, and should probably implement INamedResource: {Environment.NewLine}{shouldProbablyBeINamedResource.Select(t => t.Name).NewLineSeperate()}");
-            }
-        }
-
-        [Test]
-        public void SomeINamedResourcesShouldNeverBeIFindByNameToAvoidGettingTheWrongAnswer()
-        {
-            var denied = new[]
-            {
-                typeof (IChannelRepository),
-                typeof (IDeploymentProcessRepository),
-                typeof (ITaskRepository)
-            };
-
-            var misleadingRepositories = denied.Where(r => r.IsAssignableToGenericType(typeof(IFindByName<>))).ToArray();
-
-            if (misleadingRepositories.Any())
-            {
-                Assert.Fail($"The following repositories allow the client to FindByName, but this will end up returning a misleading result, and the resource should be loaded in another way:{Environment.NewLine}{misleadingRepositories.Select(r => $"{r.Name}").NewLineSeperate()}");
-            }
-        }
-
-        [Test]
-        public void RepositoriesThatGetNamedResourcesShouldUsuallyImplementIFindByName()
-        {
-            var ignored = new[]
-            {
-                typeof (IChannelRepository),
-                typeof (IProjectTriggerRepository)
-            };
-
-            var getsResources = RepositoryInterfaceTypes
-                .Except(ignored)
-                .Where(t => t.IsAssignableToGenericType(typeof(IGet<>)))
-                .ToArray();
-
-            var getsNamedResources = getsResources
-                .Where(t => t.GetInterfaces()
-                    .Where(i => i.IsClosedTypeOf(typeof(IGet<>)))
-                    .Any(i => i.GenericTypeArguments.Any(r => r.IsAssignableTo<INamedResource>())))
-                .ToArray();
-
-            var canFindByName = getsNamedResources
-                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IFindByName<>))))
-                .ToArray();
-
-            var missingFindByName = getsNamedResources.Except(canFindByName).ToArray();
-
-            if (missingFindByName.Any())
-            {
-                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
-            }
-        }
-
-        [Test]
-        public void MostRepositoriesThatGetResourcesShouldImplementIPaginate()
-        {
-            var ignored = new[]
-            {
-                typeof (IDeploymentProcessRepository),
-                typeof (IInterruptionRepository),
-                typeof (IEventRepository),
-                typeof (IVariableSetRepository),
-                typeof (IChannelRepository),
-                typeof (IProjectTriggerRepository)
-            };
-
-            var missing = RepositoryInterfaceTypes
-                .Except(ignored)
-                .Where(t => t.IsAssignableToGenericType(typeof(IGet<>)))
-                .Except(RepositoryInterfaceTypes.Where(t => t.IsAssignableToGenericType(typeof(IPaginate<>))))
-                .ToArray();
-
-            if (missing.Any())
-            {
-                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
-            }
-        }
-
         public class MustLiveInParentNamespaceConventionSpecification : ConventionSpecification
         {
             private readonly string parentNamespace;
@@ -290,5 +295,6 @@ namespace Octopus.Client.Tests.Conventions
                 return ConventionResult.NotSatisfied(type.FullName, string.Format(FailureMessage, parentNamespace, type.Namespace));
             }
         }
+#endif
     }
 }

@@ -6,14 +6,13 @@ using NUnit.Framework;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
 {
-    public class StreamTests : OctopusClientTestBase
+    public class StreamTests : HttpIntegrationTestBase
     {
-        private const string Path = "/StreamTests";
         private static bool _recieved;
 
         public StreamTests()
         {
-            Post[Path] = p =>
+            Post(TestRootPath, p =>
             {
                 if (Request.Headers.ContentType != "application/octet-stream")
                     return CreateErrorResponse($"Wrong header type, found '{Request.Headers.ContentType}'");
@@ -23,7 +22,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
                 _recieved = true;
                 return HttpStatusCode.NoContent;
-            };
+            });
         }
 
         [Test]
@@ -32,7 +31,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             using (var ms = new MemoryStream(SharedBytes))
             {
                 _recieved = false;
-                Action post = () => Client.Post(Path, ms);
+                Action post = () => Client.Post("~/", ms);
                 post.ShouldNotThrow();
                 _recieved.Should().BeTrue();
             }

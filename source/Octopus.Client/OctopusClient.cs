@@ -41,11 +41,10 @@ namespace Octopus.Client
 
             if (serverEndpoint.Proxy != null)
                 handler.Proxy = serverEndpoint.Proxy;
-            if (serverEndpoint.Credentials != null)
-                handler.Credentials = serverEndpoint.Credentials;
 
             this.client = new HttpClient(handler, true);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
         }
 
         /// <summary>
@@ -461,7 +460,6 @@ namespace Octopus.Client
             var text = JsonConvert.SerializeObject(request.RequestResource, defaultJsonSerializerSettings);
 
             var content = new StringContent(text, Encoding.UTF8, "application/json");
-            content.Headers.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             return content;
         }
 
@@ -486,12 +484,13 @@ namespace Octopus.Client
 
             try
             {
+                var s = str;
                 return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
             }
             catch (Exception ex)
             {
                 throw new OctopusDeserializationException((int)response.StatusCode,
-                    $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 100 ? str.Substring(0, 100) : str)}", ex);
+                    $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
         }
 
