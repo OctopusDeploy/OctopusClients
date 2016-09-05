@@ -30,7 +30,11 @@
         "Microsoft.NETCore.App": {
           "version": "1.0.0",
           "type": "platform"
-        }
+        },
+        "System.Net.Http.WinHttpHandler": "*"
+      },
+      "buildOptions": {
+        "define": [ "COREFX_ISSUE_11266_EXISTS" ]
       }
     }
   }

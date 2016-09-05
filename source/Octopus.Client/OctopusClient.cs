@@ -36,7 +36,9 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             var handler = new HttpClientHandler()
             {
-#if !COREFX_ISSUE_11266_EXISTS
+#if COREFX_ISSUE_11266_EXISTS
+                Credentials = serverEndpoint.Credentials ==  CredentialCache.DefaultNetworkCredentials ? null : serverEndpoint.Credentials
+#else
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
 #endif
             };
@@ -393,6 +395,11 @@ namespace Octopus.Client
 
         private OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
+            return DispatchRequestAsync<TResponseResource>(request, readResponse).GetAwaiter().GetResult();
+        }
+
+        private async Task<OctopusResponse<TResponseResource>> DispatchRequestAsync<TResponseResource>(OctopusRequest request, bool readResponse)
+        {
             using (var message = new HttpRequestMessage())
             {
                 message.RequestUri = request.Uri;
@@ -419,15 +426,15 @@ namespace Octopus.Client
                     ? HttpCompletionOption.ResponseContentRead
                     : HttpCompletionOption.ResponseHeadersRead;
 
-                using (var response = client.SendAsync(message, completionOption, ct).Result)
+                using (var response = await client.SendAsync(message, completionOption, ct).ConfigureAwait(false))
                 {
                     //   throw new TimeoutException($"Timeout after {ApiConstants.DefaultClientRequestTimeout}ms getting response");
 
                     if (!response.IsSuccessStatusCode)
-                        throw OctopusExceptionFactory.CreateException(response).Result;
+                        throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
 
                     var resource = readResponse
-                        ? ReadResponse<TResponseResource>(response).Result
+                        ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
                         : default(TResponseResource);
 
                     var locationHeader = response.Headers.Location?.ToString();
