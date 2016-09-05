@@ -38,7 +38,9 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 var nugetVersion = gitVersionInfo.NuGetVersion;
 var winBinary = "win7-x64"; 
 var runtimes = new[] { 
-    winBinary
+    winBinary,
+    "osx.10.10-x64",
+    "ubuntu.16.04-x64"
 };
 
 ///////////////////////////////////////////////////////////////////////////////
