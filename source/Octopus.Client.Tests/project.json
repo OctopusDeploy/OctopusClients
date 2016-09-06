@@ -34,7 +34,7 @@
         "System.Net.Http.WinHttpHandler": "*"
       },
       "buildOptions": {
-        "define": [ "COREFX_ISSUE_11266_EXISTS" ]
+        "define": [ "COREFX_ISSUE_11456_EXISTS" ]
       }
     }
   }

@@ -48,7 +48,7 @@
       },
       "buildOptions": {
         "define": [
-          "COREFX_ISSUE_11266_EXISTS" // https://github.com/dotnet/corefx/issues/11266
+          "COREFX_ISSUE_11456_EXISTS" // https://github.com/dotnet/corefx/issues/11456
         ]
       }
     }

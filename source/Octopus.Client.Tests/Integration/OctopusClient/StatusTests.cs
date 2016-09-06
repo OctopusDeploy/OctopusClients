@@ -13,7 +13,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public StatusTests()
         {
             Get($"{TestRootPath}401", p => Response.AsJson(
-                new { ErrorMessage = "You must be logged in to perform this action.Please provide a valid API key or log in again." },
+                new { ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again." },
                 HttpStatusCode.Unauthorized
             ));
 
