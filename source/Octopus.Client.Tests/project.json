@@ -12,9 +12,13 @@
     "Autofac": "4.1.0",
     "Nancy": "2.0.0-barneyrubble",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
     "Microsoft.AspNetCore.Owin": "1.0.0"
   },
   "testRunner": "nunit",
+  "buildOptions": {
+    "embed": [ "**/*.pfx"]
+  },
   "frameworks": {
     "net452": {
       "dependencies": {
@@ -30,11 +34,12 @@
         "Microsoft.NETCore.App": {
           "version": "1.0.0",
           "type": "platform"
-        },
-        "System.Net.Http.WinHttpHandler": "*"
+        }
       },
       "buildOptions": {
-        "define": [ "COREFX_ISSUE_11456_EXISTS" ]
+        "define": [
+        //  "HTTP_CLIENT_SUPPORTS_SSL_OPTIONS"
+        ]
       }
     }
   }

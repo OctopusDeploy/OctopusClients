@@ -29,6 +29,7 @@ namespace Octopus.Cli.Tests.Commands
 
             RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);
+            RepositoryFactory.CreateRepository(null, null).ReturnsForAnyArgs(Repository);
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
 

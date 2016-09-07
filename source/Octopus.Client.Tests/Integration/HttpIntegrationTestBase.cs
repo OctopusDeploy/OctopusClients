@@ -20,6 +20,7 @@ using Octopus.Client.Serialization;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Nancy.Extensions;
 
 namespace Octopus.Client.Tests.Integration
@@ -27,6 +28,7 @@ namespace Octopus.Client.Tests.Integration
     public abstract class HttpIntegrationTestBase : NancyModule
     {
         public static readonly string HostBaseUri = "http://localhost:17358";
+        public static readonly string HostBaseSslUri = "https://localhost:17359";
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         private static IWebHost _currentHost;
         public static Client.OctopusClient CurrentClient { get; set; }
@@ -37,19 +39,38 @@ namespace Octopus.Client.Tests.Integration
         {
             _currentHost = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseKestrel()
+                .UseKestrel(o => o.UseHttps(GetCert()))
                 .UseStartup<Startup>()
-                .UseUrls(HostBaseUri)
+                .UseUrls(HostBaseUri, HostBaseSslUri)
                 .Build();
+            Task.Run(() =>
+            {
+                try
+                {
+                    _currentHost.Run();
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                }
+            });
+        }
 
-            Task.Run(() => _currentHost.Run());
+        private static X509Certificate2 GetCert()
+        {
+            using (var s = typeof(HttpIntegrationTestBase).GetAssembly().GetManifestResourceStream($"{typeof(HttpIntegrationTestBase).Namespace}.TestingCert.pfx"))
+            using (var ms = new MemoryStream())
+            {
+                s.CopyTo(ms);
+                return new X509Certificate2(ms.ToArray(), "password");
+            }
         }
 
 
         [OneTimeTearDown]
         public static void OneTimeTearDown()
         {
-            _currentHost.Dispose();
+            _currentHost?.Dispose();
         }
 
         protected HttpIntegrationTestBase()
@@ -62,13 +83,13 @@ namespace Octopus.Client.Tests.Integration
         [SetUp]
         public void Setup()
         {
-            var octopusServerEndpoint = new OctopusServerEndpoint(HostBaseUri + TestRootPath);
-            Client = new Client.OctopusClient(octopusServerEndpoint);
+            Client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
         }
+
 
         public void TearDown()
         {
-            Client.Dispose();
+            Client?.Dispose();
         }
 
         protected Response CreateErrorResponse(string message)

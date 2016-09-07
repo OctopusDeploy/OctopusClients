@@ -8,5 +8,10 @@ namespace Octopus.Cli.Repositories
         {
             return new OctopusRepository(endpoint);
         }
+
+        public IOctopusRepository CreateRepository(OctopusServerEndpoint endpoint, OctopusClientOptions options)
+        {
+            return new OctopusRepository(endpoint, options);
+        }
     }
 }

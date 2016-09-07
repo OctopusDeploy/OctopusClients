@@ -26,13 +26,6 @@ namespace Octopus.Cli
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Information(string.Empty);
 
-#warning Make this code great again
-            /*ServicePointManager.SecurityProtocol =
-                SecurityProtocolType.Ssl3
-                | SecurityProtocolType.Tls
-                | SecurityProtocolType.Tls11
-                | SecurityProtocolType.Tls12;
-            */
             try
             {
                 var container = BuildContainer();

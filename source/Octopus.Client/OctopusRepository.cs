@@ -64,7 +64,11 @@ namespace Octopus.Client
         readonly ITagSetRepository tagSets;
         readonly IBuiltInPackageRepositoryRepository builtInPackageRepositoryRepository;
 
-        public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
+        public OctopusRepository(OctopusServerEndpoint endpoint) : this(endpoint, null)
+        {
+        }
+
+        public OctopusRepository(OctopusServerEndpoint endpoint, OctopusClientOptions options) : this(new OctopusClient(endpoint, options))
         {
         }
 
@@ -109,6 +113,8 @@ namespace Octopus.Client
             tagSets = new TagSetRepository(client);
             builtInPackageRepositoryRepository = new BuiltInPackageRepositoryRepository(client);
         }
+
+   
 
         public IOctopusClient Client
         {

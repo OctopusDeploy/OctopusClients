@@ -36,8 +36,8 @@
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": true,
-    "outputName": "Octo"
-    // "warningsAsErrors": true
+    "outputName": "Octo",
+    "warningsAsErrors": true
   },
   "configurations": {
     "Release": {

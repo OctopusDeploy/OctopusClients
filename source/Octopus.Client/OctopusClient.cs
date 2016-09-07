@@ -12,7 +12,10 @@ using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Octopus.Client.Logging;
 
 namespace Octopus.Client
 {
@@ -21,30 +24,72 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClient : IHttpOctopusClient
     {
+        private static readonly ILog Logger = LogProvider.For<OctopusClient>();
+
         readonly object rootDocumentLock = new object();
         RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
+        private readonly bool ignoreSslErrors = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OctopusClient" /> class.
+        /// </summary>
+        /// <param name="serverEndpoint">The server endpoint.</param>
+        /// <param name="options">The <see cref="OctopusClientOptions" /> used to configure the behavour of the client, may be null.</param>
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options)
+        {
+            options = options ?? new OctopusClientOptions();
+
             this.serverEndpoint = serverEndpoint;
             var handler = new HttpClientHandler()
             {
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            handler.SslProtocols = options.SslProtocols;
+            ignoreSslErrors = options.IgnoreSslErrors;
+            handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
+#endif
+
             if (serverEndpoint.Proxy != null)
                 handler.Proxy = serverEndpoint.Proxy;
-
-            this.client = new HttpClient(handler, true);
+            
+            client = new HttpClient(handler, true);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+        }
+
+        private bool IgnoreServerCertificateCallback(HttpRequestMessage message, X509Certificate2 certificate, X509Chain chain, SslPolicyErrors errors)
+        {
+            if (errors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            var warning = $@"The following certificate errors were encountered when establishing the HTTPS connection to the server: {errors}
+Certificate subject name: {certificate.SubjectName.Name}
+Certificate thumbprint:   {certificate.Thumbprint}";
+
+            if (ignoreSslErrors)
+            {
+                Logger.Warn(warning);
+                Logger.Warn("Because --ignoreSslErrors was set, this will be ignored.");
+                return true;
+            }
+
+            Logger.Error(warning);
+            return false;
         }
 
         /// <summary>

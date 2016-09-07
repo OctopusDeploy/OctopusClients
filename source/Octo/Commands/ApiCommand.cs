@@ -38,7 +38,9 @@ namespace Octopus.Cli.Commands
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
+#endif
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
         }
 
@@ -75,38 +77,18 @@ namespace Octopus.Cli.Commands
 
             var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
 
-            Repository = repositoryFactory.CreateRepository(endpoint);
+            Repository = repositoryFactory.CreateRepository(endpoint, new OctopusClientOptions()
+            {
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+                IgnoreSslErrors = ignoreSslErrors
+#endif
+            });
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
 
             if (enableDebugging)
             {
                 Repository.Client.SendingOctopusRequest += request => Log.Debug(request.Method + " " + request.Uri);
             }
-
-#warning TODO Make this great again
-            /*
-            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
-            {
-                if (errors == SslPolicyErrors.None)
-                {
-                    return true;
-                }
-
-                var certificate2 = (X509Certificate2) certificate;
-                var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine +
-                                 "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine +
-                                 "Certificate thumbprint:   " + ((X509Certificate2) certificate).Thumbprint;
-
-                if (ignoreSslErrors)
-                {
-                    Log.Warning(warning);
-                    Log.Warning("Because --ignoreSslErrors was set, this will be ignored.");
-                    return true;
-                }
-
-                Log.Error(warning);
-                return false;
-            };*/
 
             Log.Debug("Handshaking with Octopus server: " + ServerBaseUrl);
             var root = Repository.Client.RootDocument;
