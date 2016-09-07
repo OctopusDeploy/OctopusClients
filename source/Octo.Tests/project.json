@@ -5,17 +5,30 @@
       "type": "platform",
       "version": "1.0.0"
     },
+    "NuGet.CommandLine": "3.4.3",
+    "NuGet.Common": "3.4.3",
+    "NuGet.Frameworks": "3.4.3",
+    "NuGet.Logging": "3.4.3",
+    "NuGet.Packaging": "3.4.3",
+    "NuGet.Packaging.Core": "3.4.3",
+    "NuGet.Packaging.Core.Types": "3.4.3",
+    "NuGet.Versioning": "3.4.3",
     "Serilog": "2.1.0",
+    "Serilog.Sinks.TextWriter": "2.0.0",
+    "NUnit": "3.4.1",
+    "dotnet-test-nunit": "3.4.0-beta-2",
+    "NSubstitute": "2.0.0-rc",
+    "FluentAssertions": "4.12.0",
+    "Nancy": "2.0.0-barneyrubble",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
+    "Microsoft.AspNetCore.Owin": "1.0.0",
     "Octopus.Client": {
       "target": "project"
     },
     "Octo": {
       "target": "project"
-    },
-    "NUnit": "3.4.1",
-    "dotnet-test-nunit": "3.4.0-beta-2",
-    "NSubstitute": "2.0.0-rc",
-    "FluentAssertions": "4.12.0"
+    }
   },
   "testRunner": "nunit",
   "frameworks": {

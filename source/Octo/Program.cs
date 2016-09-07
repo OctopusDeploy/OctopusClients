@@ -11,9 +11,9 @@ using Octopus.Cli.Exporters;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using Octopus.Client.Exceptions;
 using System.Net;
 using Octopus.Cli.Repositories;
+using Octopus.Client.Exceptions;
 
 namespace Octopus.Cli
 {
@@ -22,7 +22,12 @@ namespace Octopus.Cli
         static int Main(string[] args)
         {
             ConfigureLogger();
-            Log.Information("Octopus Deploy Command Line Tool, version " + typeof (Program).GetInformationalVersion());
+            return Run(args);
+        }
+
+        internal static int Run(string[] args)
+        {
+            Log.Information("Octopus Deploy Command Line Tool, version " + typeof(Program).GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Information(string.Empty);
 
