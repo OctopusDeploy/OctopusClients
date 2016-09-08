@@ -109,7 +109,6 @@ Task("__Build")
 });
 
 Task("__Test")
-    .WithCriteria(!isContinuousIntegrationBuild)
     .Does(() =>
 {
     GetFiles("**/*Tests/project.json")
@@ -136,25 +135,6 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
-    DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        Framework = "net452",
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","net452")
-    });
-     DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        Framework = "netcoreapp1.0",
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","netcoreapp1.0")
-    });
-
-    DotNetCorePublish("source/Octo.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octo.Tests")
-    });
-
     var portablePublishDir = Path.Combine(publishDir, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {

@@ -4,6 +4,7 @@ using FluentAssertions;
 using Nancy;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Octopus.Client.Tests.Extensions;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
 {
@@ -48,7 +49,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 s.CopyTo(ms);
                 var content = Encoding.UTF8.GetString(ms.ToArray());
-                content.Should().Be("{\r\n  \"Value\": \"42\"\r\n}");
+                content.RemoveNewlines().Should().Be("{  \"Value\": \"42\"}");
             }
         }
 
