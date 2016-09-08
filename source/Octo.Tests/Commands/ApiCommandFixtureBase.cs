@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Serilog;
 using NSubstitute;
@@ -13,6 +14,21 @@ namespace Octopus.Cli.Tests.Commands
 {
     public abstract class ApiCommandFixtureBase
     {
+        private static string _previousCurrentDirectory;
+
+        [OneTimeSetUp]
+        public static void OneTimeSetUp()
+        {
+            _previousCurrentDirectory = Directory.GetCurrentDirectory();
+            Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+        }
+
+        [OneTimeTearDown]
+        public static void OneTimeTearDown()
+        {
+            Directory.SetCurrentDirectory(_previousCurrentDirectory);
+        }
+
         [SetUp]
         public void BaseSetup()
         {

@@ -1,5 +1,4 @@
 {
-  "name": "OctopusTools",
   "version": "0.0.0-*",
   "dependencies": {
     "Microsoft.NETCore.App": { // The build will replace this for platform specific publishes

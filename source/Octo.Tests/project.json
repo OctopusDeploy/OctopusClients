@@ -30,6 +30,11 @@
       "target": "project"
     }
   },
+  "buildOptions": {
+    "copyToOutput": {
+      "include": ["Commands/Resources/**"]
+    }
+  },
   "testRunner": "nunit",
   "frameworks": {
     "netcoreapp1.0": {
