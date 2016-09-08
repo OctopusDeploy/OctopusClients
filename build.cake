@@ -69,8 +69,7 @@ Task("__Default")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__Zip")
-    .IsDependentOn("__PackNuget")
-    .IsDependentOn("__Push");
+    .IsDependentOn("__PackNuget");
 
 Task("__Clean")
     .Does(() =>
@@ -108,6 +107,7 @@ Task("__Build")
 });
 
 Task("__Test")
+    .WithCriteria(!isContinuousIntegrationBuild)
     .Does(() =>
 {
     GetFiles("**/*Tests/project.json")
@@ -254,40 +254,6 @@ Task("__PackOctopusToolsNuget")
         });
     });
 
-Task("__Push")
-    .IsDependentOn("__Zip")
-    .IsDependentOn("__PackNuget")
-    .WithCriteria(isContinuousIntegrationBuild)
-    .Does(() =>
-{
-    var isPullRequest = !String.IsNullOrEmpty(EnvironmentVariable("APPVEYOR_PULL_REQUEST_NUMBER"));
-    var isMasterBranch = EnvironmentVariable("APPVEYOR_REPO_BRANCH") == "master" && !isPullRequest;
-    var shouldPushToMyGet = !BuildSystem.IsLocalBuild;
-    var shouldPushToNuGet = !BuildSystem.IsLocalBuild && isMasterBranch;
-
-    if (shouldPushToMyGet)
-    {
-        NuGetPush("artifacts/OctopusTools." + nugetVersion + ".nupkg", new NuGetPushSettings {
-            Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
-            ApiKey = EnvironmentVariable("MyGetApiKey")
-        });
-         NuGetPush("artifacts/Octopus.Client." + nugetVersion + ".nupkg", new NuGetPushSettings {
-            Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
-            ApiKey = EnvironmentVariable("MyGetApiKey")
-        });
-    }
-    if (shouldPushToNuGet)
-    {
-        NuGetPush("artifacts/OctopusTools." + nugetVersion + ".nupkg", new NuGetPushSettings {
-            Source = "https://www.nuget.org/api/v2/package",
-            ApiKey = EnvironmentVariable("NuGetApiKey")
-        });
-          NuGetPush("artifacts/Octopus.Client." + nugetVersion + ".nupkg", new NuGetPushSettings {
-            Source = "https://www.nuget.org/api/v2/package",
-            ApiKey = EnvironmentVariable("NuGetApiKey")
-        });
-    }
-});
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
