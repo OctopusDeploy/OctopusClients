@@ -95,6 +95,8 @@ Task("__UpdateAssemblyVersionInformation")
     Information("AssemblyVersion -> {0}", gitVersionInfo.AssemblySemVer);
     Information("AssemblyFileVersion -> {0}", $"{gitVersionInfo.MajorMinorPatch}.0");
     Information("AssemblyInformationalVersion -> {0}", gitVersionInfo.InformationalVersion);
+    if(BuildSystem.IsRunningOnTeamCity)
+        BuildSystem.TeamCity.SetBuildNumber(gitVersionInfo.InformationalVersion);
 });
 
 Task("__Build")
@@ -134,6 +136,25 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
+    DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        Framework = "net452",
+        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","net452")
+    });
+     DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        Framework = "netcoreapp1.0",
+        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","netcoreapp1.0")
+    });
+
+    DotNetCorePublish("source/Octo.Tests", new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = Path.Combine(publishDir, "Tests", "Octo.Tests")
+    });
+
     var portablePublishDir = Path.Combine(publishDir, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
