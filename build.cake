@@ -69,7 +69,8 @@ Task("__Default")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__Zip")
-    .IsDependentOn("__PackNuget");
+    .IsDependentOn("__PackNuget")
+    .IsDependentOn("__Push");
 
 Task("__Clean")
     .Does(() =>
@@ -95,8 +96,6 @@ Task("__UpdateAssemblyVersionInformation")
     Information("AssemblyVersion -> {0}", gitVersionInfo.AssemblySemVer);
     Information("AssemblyFileVersion -> {0}", $"{gitVersionInfo.MajorMinorPatch}.0");
     Information("AssemblyInformationalVersion -> {0}", gitVersionInfo.InformationalVersion);
-    if(BuildSystem.IsRunningOnTeamCity)
-        BuildSystem.TeamCity.SetBuildNumber(gitVersionInfo.InformationalVersion);
 });
 
 Task("__Build")
@@ -109,7 +108,6 @@ Task("__Build")
 });
 
 Task("__Test")
-    .WithCriteria(!isContinuousIntegrationBuild)
     .Does(() =>
 {
     GetFiles("**/*Tests/project.json")
@@ -136,25 +134,6 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
-    DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        Framework = "net452",
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","net452")
-    });
-     DotNetCorePublish("source/Octopus.Client.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        Framework = "netcoreapp1.0",
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octopus.Client.Tests","netcoreapp1.0")
-    });
-
-    DotNetCorePublish("source/Octo.Tests", new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = Path.Combine(publishDir, "Tests", "Octo.Tests")
-    });
-
     var portablePublishDir = Path.Combine(publishDir, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
@@ -275,6 +254,40 @@ Task("__PackOctopusToolsNuget")
         });
     });
 
+Task("__Push")
+    .IsDependentOn("__Zip")
+    .IsDependentOn("__PackNuget")
+    .WithCriteria(isContinuousIntegrationBuild)
+    .Does(() =>
+{
+    var isPullRequest = !String.IsNullOrEmpty(EnvironmentVariable("APPVEYOR_PULL_REQUEST_NUMBER"));
+    var isMasterBranch = EnvironmentVariable("APPVEYOR_REPO_BRANCH") == "master" && !isPullRequest;
+    var shouldPushToMyGet = !BuildSystem.IsLocalBuild;
+    var shouldPushToNuGet = !BuildSystem.IsLocalBuild && isMasterBranch;
+
+    if (shouldPushToMyGet)
+    {
+        NuGetPush("artifacts/OctopusTools." + nugetVersion + ".nupkg", new NuGetPushSettings {
+            Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
+            ApiKey = EnvironmentVariable("MyGetApiKey")
+        });
+         NuGetPush("artifacts/Octopus.Client." + nugetVersion + ".nupkg", new NuGetPushSettings {
+            Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
+            ApiKey = EnvironmentVariable("MyGetApiKey")
+        });
+    }
+    if (shouldPushToNuGet)
+    {
+        NuGetPush("artifacts/OctopusTools." + nugetVersion + ".nupkg", new NuGetPushSettings {
+            Source = "https://www.nuget.org/api/v2/package",
+            ApiKey = EnvironmentVariable("NuGetApiKey")
+        });
+          NuGetPush("artifacts/Octopus.Client." + nugetVersion + ".nupkg", new NuGetPushSettings {
+            Source = "https://www.nuget.org/api/v2/package",
+            ApiKey = EnvironmentVariable("NuGetApiKey")
+        });
+    }
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
