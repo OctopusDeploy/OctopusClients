@@ -1,0 +1,45 @@
+﻿{
+  "version": "0.0.0-*",
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1",
+    "NuGet.Versioning": "3.4.3"
+  },
+  "buildOptions": {
+    "debugType": "portable",
+    "xmlDoc": true,
+    "warningsAsErrors": true,
+    "nowarn": [
+      "CS1591" // Missing XML Comment
+    ]
+  },
+  "configurations": {
+    "Release": {
+      "buildOptions": {
+        "optimize": true
+      }
+    }
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Numerics": ""
+      },
+      "dependencies": {
+        "System.Net.Http": "4.0.0"
+      }
+    }
+  },
+  "packOptions": {
+    "owners": [ "Octopus Deploy" ],
+    "requireLicenseAcceptance": false,
+    "summary": "Octopus Deploy is a user-friendly automated deployment tool for .NET developers.\r\n\r\nThis package contains the client library for the HTTP API in Octopus.",
+    "projectUrl": "http://octopusdeploy.com/",
+    "licenseUrl": "http://octopusdeploy.com/pricing",
+    "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3-32x32.png",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/OctopusDeploy/OctopusClients"
+    }
+  }
+}
