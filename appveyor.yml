@@ -1,7 +1,4 @@
 version: '{build}'
-environment:
-  MyGetApiKey:
-    secure: gZPBkuTOssW7pLkg5qibqndC/gFOjsJvym6vzbgsxf/vLZb13ewQKfiD6gGmLXJj
 configuration: Release
 platform: Any CPU
 build_script:
