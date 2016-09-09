@@ -162,6 +162,7 @@ Task("__MergeOctoExe")
                 Libs = new List<FilePath>() { octoPublishFolder }
             }
         );
+        DeleteFile(Path.Combine(octoMergedFolder, "Octo.exe.pdb"));
         CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
     });
 
@@ -169,7 +170,7 @@ Task("__Zip")
     .IsDependentOn("__Publish")
     .IsDependentOn("__MergeOctoExe")
     .Does(() => {
-        var outFile = Path.Combine(artifactsDir, $"OctopusTools{nugetVersion}.zip");
+        var outFile = Path.Combine(artifactsDir, $"OctopusTools.{nugetVersion}.zip");
         Zip(octoMergedFolder, outFile);
     });
 
