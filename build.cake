@@ -2,6 +2,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&prerelease"
+#tool "nuget:?package=ILRepack"
 #addin "nuget:?package=Newtonsoft.Json"
 #addin "nuget:?package=SharpCompress"
 
@@ -30,6 +31,8 @@ var projectToPublish = "./source/Octo";
 var projectToPublishProjectJson = Path.Combine(projectToPublish, "project.json");
 var octopusClientFolder = "./source/Octopus.Client";
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
+var octoPublishFolder = Path.Combine(publishDir, "Octo");
+var octoMergedFolder = Path.Combine(publishDir, "OctoMerged");
 
 var gitVersionInfo = GitVersion(new GitVersionSettings {
     OutputType = GitVersionOutput.Json
@@ -60,7 +63,6 @@ Task("__Default")
     .IsDependentOn("__UpdateAssemblyVersionInformation")
     .IsDependentOn("__Build")
     .IsDependentOn("__Test")
-    .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__Zip")
     .IsDependentOn("__PackNuget");
@@ -96,6 +98,8 @@ Task("__UpdateAssemblyVersionInformation")
 });
 
 Task("__Build")
+    .IsDependentOn("__UpdateProjectJsonVersion")
+    .IsDependentOn("__UpdateAssemblyVersionInformation")
     .Does(() =>
 {
     DotNetCoreBuild("**/project.json", new DotNetCoreBuildSettings
@@ -142,17 +146,31 @@ Task("__Publish")
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
         Configuration = configuration,
-        OutputDirectory =  Path.Combine(publishDir, "Octo.exe")
+        OutputDirectory = octoPublishFolder
     });
 });
 
+Task("__MergeOctoExe")
+    .Does(() => {
+        CreateDirectory(octoMergedFolder);
+        ILRepack(
+            Path.Combine(octoMergedFolder, "Octo.exe"),
+            Path.Combine(octoPublishFolder, "Octo.exe"),
+            IO.Directory.EnumerateFiles(octoPublishFolder, "*.dll").Select(f => (FilePath) f),
+            new ILRepackSettings { 
+                Internalize = true, 
+                Libs = new List<FilePath>() { octoPublishFolder }
+            }
+        );
+        CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
+    });
 
 Task("__Zip")
     .IsDependentOn("__Publish")
+    .IsDependentOn("__MergeOctoExe")
     .Does(() => {
-        var dir = Path.Combine(publishDir, "Octo.exe");
-        var outFile = Path.Combine(artifactsDir, $"Octo.exe.zip");
-        Zip(dir, outFile);
+        var outFile = Path.Combine(artifactsDir, $"OctopusTools{nugetVersion}.zip");
+        Zip(octoMergedFolder, outFile);
     });
 
 Task("__PackNuget")
@@ -173,7 +191,7 @@ Task("__PackOctopusToolsNuget")
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
         
-        CopyDirectory(Path.Combine(publishDir, "Octo.exe"), nugetPackDir);
+        CopyDirectory(octoMergedFolder, nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
 
