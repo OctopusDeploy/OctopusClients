@@ -162,7 +162,7 @@ Task("__MergeOctoExe")
                 Libs = new List<FilePath>() { octoPublishFolder }
             }
         );
-        DeleteFile(Path.Combine(octoMergedFolder, "Octo.exe.pdb"));
+        DeleteFile(Path.Combine(octoMergedFolder, "Octo.pdb"));
         CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
     });
 
