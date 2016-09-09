@@ -64,7 +64,6 @@ Task("__Default")
     .IsDependentOn("__Build")
     .IsDependentOn("__Test")
     .IsDependentOn("__Publish")
-    .IsDependentOn("__Zip")
     .IsDependentOn("__PackNuget");
 
 Task("__Clean")
@@ -166,14 +165,6 @@ Task("__MergeOctoExe")
         CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
     });
 
-Task("__Zip")
-    .IsDependentOn("__Publish")
-    .IsDependentOn("__MergeOctoExe")
-    .Does(() => {
-        var outFile = Path.Combine(artifactsDir, $"OctopusTools.{nugetVersion}.zip");
-        Zip(octoMergedFolder, outFile);
-    });
-
 Task("__PackNuget")
     .IsDependentOn("__Publish")
     .IsDependentOn("__PackOctopusToolsNuget")
@@ -188,6 +179,7 @@ Task("__PackClientNuget")
     });
 
 Task("__PackOctopusToolsNuget")
+    .IsDependentOn("__MergeOctoExe")
     .Does(() => {
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
