@@ -1,0 +1,11 @@
+version: '{build}'
+configuration: Release
+platform: Any CPU
+build_script:
+- cmd: build.cmd
+artifacts:
+- path: artifacts\**\*.*
+cache:
+- '%USERPROFILE%\.nuget\packages'
+test: off
+deploy: off

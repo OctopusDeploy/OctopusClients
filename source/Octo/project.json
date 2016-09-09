@@ -1,0 +1,52 @@
+{
+  "version": "0.0.0-*",
+  "dependencies": {
+    "Autofac": "3.5.2",
+    "GitVersionTask": "3.3.0",
+    "ILRepack": "2.0.8",
+    "MarkdownSharp": "1.13.0.0",
+    "Microsoft.Web.Xdt": "2.1.1",
+    "Newtonsoft.Json": "9.0.1",
+    "NuGet.CommandLine": "3.4.3",
+    "NuGet.Common": "3.4.3",
+    "NuGet.Frameworks": "3.4.3",
+    "NuGet.Logging": "3.4.3",
+    "NuGet.Packaging": "3.4.3",
+    "NuGet.Packaging.Core": "3.4.3",
+    "NuGet.Packaging.Core.Types": "3.4.3",
+    "NuGet.Versioning": "3.4.3",
+    "Octostache": "1.0.2.29",
+    "Serilog": "2.1.0",
+    "Serilog.Sinks.ColoredConsole": "2.0.0",
+    "Serilog.Sinks.Trace": "2.0.0",
+    "Sprache": "2.0.0.50",
+    "Octopus.Client": {
+      "target": "project"
+    }
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.Composition": "*",
+        "System.ComponentModel.DataAnnotations": "*",
+        "System.Configuration": "*",
+        "System.Core": "*",
+        "System.IO.Compression": "*",
+        "System.Net": "*",
+        "System.Runtime.Serialization": "*",
+        "System.Web": "*",
+        "System.Xml.Linq": "*",
+        "System.Data.DataSetExtensions": "*",
+        "Microsoft.CSharp": "*",
+        "System.Data": "*",
+        "System.Xml": "*"
+      },
+      "buildOptions": {
+        "platform": "anycpu32bitpreferred"
+      }
+    }
+  },
+  "buildOptions": {
+    "emitEntryPoint": true
+  }
+}
