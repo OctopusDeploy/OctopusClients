@@ -42,7 +42,7 @@ var nugetVersion = gitVersionInfo.NuGetVersion;
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    Information("Building Octo.exe v{0}", nugetVersion);
+    Information("Building OctopusClients v{0}", nugetVersion);
 });
 
 Teardown(context =>
@@ -90,7 +90,7 @@ Task("__UpdateAssemblyVersionInformation")
     Information("AssemblyFileVersion -> {0}", $"{gitVersionInfo.MajorMinorPatch}.0");
     Information("AssemblyInformationalVersion -> {0}", gitVersionInfo.InformationalVersion);
     if(BuildSystem.IsRunningOnTeamCity)
-        BuildSystem.TeamCity.SetBuildNumber(gitVersionInfo.InformationalVersion);
+        BuildSystem.TeamCity.SetBuildNumber(gitVersionInfo.NuGetVersion);
 });
 
 Task("__Build")
