@@ -40,7 +40,7 @@ namespace Octopus.Client.Serialization
             var args = from p in ctor.GetParameters()
                 let name = char.ToUpper(p.Name[0]) + p.Name.Substring(1)
                 let jToken = jo.GetValue(name)
-                select jToken == null ? p.ParameterType.GetDefault() : jToken.ToObject(p.ParameterType, serializer);
+                select jToken == null ? GetDefault(p.ParameterType) : jToken.ToObject(p.ParameterType, serializer);
 
             var instance = ctor.Invoke(args.ToArray());
             foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance))
@@ -51,6 +51,7 @@ namespace Octopus.Client.Serialization
             }
             return instance;
         }
+        public static object GetDefault(Type t) => t.IsValueType ? Activator.CreateInstance(t) : null;
 
         public override bool CanConvert(Type objectType)
         {
