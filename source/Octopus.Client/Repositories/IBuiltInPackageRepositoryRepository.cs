@@ -6,9 +6,9 @@ namespace Octopus.Client.Repositories
 {
     public interface IBuiltInPackageRepositoryRepository
     {
-        PackageResource PushPackage(string fileName, Stream contents, bool replaceExisting = false);
-        ResourceCollection<PackageResource> ListPackages(string packageId, int skip = 0, int take = 30);
-        ResourceCollection<PackageResource> LatestPackages(int skip = 0, int take = 30);
+        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false);
+        ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip = 0, int take = 30);
+        ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
     }
 }

@@ -452,7 +452,7 @@ namespace Octopus.Client
                     || UriUnreservedSymbols.IndexOf(c) != -1
                     // Unreserved symbols  - These should never be percent encoded
                     || (allowReserved && UriReservedSymbols.IndexOf(c) != -1))
-                // Reserved symbols - should be included if requested (+)
+                    // Reserved symbols - should be included if requested (+)
                 {
                     result.Append(c);
                 }

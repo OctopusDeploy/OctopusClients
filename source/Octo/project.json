@@ -8,7 +8,6 @@
     "System.ComponentModel.TypeConverter": "4.1.0",
     "System.Xml.ReaderWriter": "4.0.11",
     "Autofac": "4.0.0",
-    "ILRepack": "2.0.8",
     "Newtonsoft.Json": "9.0.1",
     "NuGet.CommandLine": "3.4.3",
     "NuGet.Common": "3.4.3",
@@ -36,7 +35,10 @@
     "debugType": "portable",
     "emitEntryPoint": true,
     "outputName": "Octo",
-    "warningsAsErrors": true
+    "warningsAsErrors": true,
+    "nowarn": [
+      "CS0612" // Obsolete
+    ] 
   },
   "configurations": {
     "Release": {

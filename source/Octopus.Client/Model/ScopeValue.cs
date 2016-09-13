@@ -6,7 +6,7 @@ namespace Octopus.Client.Model
 {
     public class ScopeValue : ReferenceCollection
     {
-        // TODO: [ObsoleteEx(Message = "For persistence only", TreatAsErrorFromVersion = "3.0")]
+        [Obsolete] // TODO: [ObsoleteEx(Message = "For persistence only", TreatAsErrorFromVersion = "3.0")]
         public ScopeValue()
         {
         }

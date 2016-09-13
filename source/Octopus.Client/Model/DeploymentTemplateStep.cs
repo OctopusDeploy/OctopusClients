@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
         public string ActionNumber { get; set; }
         public string[] Roles { get; set; }
 
-        // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "Machines")]
+        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "Machines")]
         public string[] MachineNames { get; set; }
 
         public MachineDeploymentPreview[] Machines { get; set; }

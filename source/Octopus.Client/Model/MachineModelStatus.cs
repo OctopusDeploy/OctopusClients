@@ -1,6 +1,8 @@
-﻿namespace Octopus.Client.Model
+﻿using System;
+
+namespace Octopus.Client.Model
 {
-    // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "MachineModelHealthStatus")]
+    [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "MachineModelHealthStatus")]
     public enum MachineModelStatus
     {
         Online,

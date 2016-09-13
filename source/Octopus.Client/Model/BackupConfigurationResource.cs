@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool IsMasterKeyBackedUp { get; set; }
-        
+
         [Writeable]
         public bool BackupAutomatically { get; set; }
 

@@ -788,22 +788,22 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public PackageResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+            public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
             {
-                return client.Post<FileUpload, PackageResource>(
+                return client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                     client.RootDocument.Link("PackageUpload"),
                     new FileUpload() {Contents = contents, FileName = fileName},
                     new {replace = replaceExisting});
             }
 
-            public ResourceCollection<PackageResource> ListPackages(string packageId, int skip=0, int take = 30)
+            public ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip=0, int take = 30)
             {
-                return client.List<PackageResource>(client.RootDocument.Link("Packages"), new {nuGetPackageId = packageId, take, skip});
+                return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new {nuGetPackageId = packageId, take, skip});
             }
 
-            public ResourceCollection<PackageResource> LatestPackages(int skip = 0, int take = 30)
+            public ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30)
             {
-                return client.List<PackageResource>(client.RootDocument.Link("Packages"), new { latest = true, take, skip });
+                return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { latest = true, take, skip });
             }
 
             public void DeletePackage(PackageResource package)
