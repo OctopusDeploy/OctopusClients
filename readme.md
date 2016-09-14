@@ -10,9 +10,10 @@ This repository contains the command line tool (`Octo.exe`) and .NET Client Libr
 Please see [Contributing](CONTRIBUTING.md)
 
 ## Compatibility
-Version 3.3 and later of the clients are backwards compatible with Octopus 3.0 or later. Obviously the available features and APIs are limited to those supported by server.
-
-We also aim to keep backwards compatabilty on the Octopus Server API, allowing an older version of the client to be used with newer servers. Again features are limited to those supported by the client.
+For:
+- Octopus Server 3.0-3.2 use Octopus Client 3.0-3.2 (newer is better)
+- Octopus Server 3.3 use Octopus Client 3.3 or newer release notes
+- Octopus Server 3.4 or newer use Octopus Client 3.4 or newer release notes
 
 ## Versioning
 As of `3.5.0` we started using semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
