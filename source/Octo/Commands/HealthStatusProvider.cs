@@ -6,7 +6,6 @@ using Octopus.Cli.Infrastructure;
 using Octopus.Client;
 using Octopus.Client.Model;
 
-#pragma warning disable 618
 namespace Octopus.Cli.Commands
 {
     /// <summary>
@@ -19,7 +18,7 @@ namespace Octopus.Cli.Commands
         private readonly HashSet<string> statuses;
         private readonly HashSet<string> healthStatuses;
 
-        public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
+        public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
         public HealthStatusProvider(IOctopusRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses)
@@ -70,7 +69,7 @@ namespace Octopus.Cli.Commands
                 return status;
             }
 
-            return machineResource.Status.ToString();
+            return machineResource.HealthStatus.ToString();
         }
 
         private bool IsHealthStatusPendingDeprication { get; }
@@ -84,20 +83,20 @@ namespace Octopus.Cli.Commands
 
         IEnumerable<MachineResource> FilterByProvidedStatus(IEnumerable<MachineResource> machines)
         {
-            var statusFilter = new List<MachineModelStatus>();
+            var statusFilter = new List<MachineModelHealthStatus>();
             if (statuses.Count > 0)
             {
                 log.Debug("Loading statuses...");
                 foreach (var status in statuses)
                 {
-                    MachineModelStatus result;
+                    MachineModelHealthStatus result;
                     if (Enum.TryParse(status, true, out result))
                         statusFilter.Add(result);
                 }
             }
 
             return statusFilter.Any()
-                ? machines.Where(p => statusFilter.Contains(p.Status))
+                ? machines.Where(p => statusFilter.Contains(p.HealthStatus))
                 : machines;
         }
 

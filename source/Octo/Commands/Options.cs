@@ -546,7 +546,6 @@ namespace Octopus.Cli.Commands
             throw new InvalidOperationException("Option has no names!");
         }
 
-        [Obsolete("Use KeyedCollection.this[string]")]
         protected Option GetOptionForName(string option)
         {
             if (option == null)
@@ -735,9 +734,7 @@ namespace Octopus.Cli.Commands
             var process = true;
             var c = CreateOptionContext();
             c.OptionIndex = -1;
-#pragma warning disable 618
             var def = GetOptionForName("<>");
-#pragma warning restore 618
             var unprocessed =
                 from argument in arguments
                 where ++c.OptionIndex >= 0 && (process || def != null)
@@ -781,9 +778,6 @@ namespace Octopus.Cli.Commands
 
         readonly Regex ValueOption = new Regex(
             @"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
-
-#pragma warning disable 649
-#pragma warning restore 649
 
         protected bool GetOptionParts(string argument, out string flag, out string name, out string sep, out string value)
         {

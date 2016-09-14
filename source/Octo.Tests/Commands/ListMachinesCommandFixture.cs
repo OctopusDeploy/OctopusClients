@@ -9,7 +9,6 @@ using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
-#pragma warning disable 618
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -30,7 +29,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldGetListOfMachinesWithEnvironmentAndStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-status=Unavailable");
 
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
@@ -43,21 +42,21 @@ namespace Octopus.Cli.Tests.Commands
                 {
                     Name = "PC01234",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource
                 {
                     Name = "PC01996",
                     Id = "Machines-003",
-                    Status = MachineModelStatus.Offline,
+                    HealthStatus = MachineModelHealthStatus.Unhealthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource
                 {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Offline,
+                    HealthStatus = MachineModelHealthStatus.Unhealthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
             });
@@ -65,9 +64,9 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Information("Machines: 2");
-            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development");
-            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
-            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.Unhealthy.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelHealthStatus.Unhealthy.ToString(), "Machines-003", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelHealthStatus.Healthy.ToString(), "Machines-001", "Development");
         }
 
         [Test]
@@ -86,7 +85,7 @@ namespace Octopus.Cli.Tests.Commands
                 {
                     Name = "PC01234",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
             });
@@ -94,9 +93,9 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Information("Machines: 1");
-            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
-            Log.DidNotReceive().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelHealthStatus.Healthy.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.Healthy.ToString(), "Machines-002", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01996", MachineModelHealthStatus.Unavailable.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -112,14 +111,12 @@ namespace Octopus.Cli.Tests.Commands
                 new MachineResource {
                     Name = "PC01234",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
@@ -127,14 +124,14 @@ namespace Octopus.Cli.Tests.Commands
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
             Log.Received().Information("Machines: 2");
-            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelHealthStatus.Healthy.ToString(), "Machines-001", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.Healthy.ToString(), "Machines-002", "Development");
         }
 
         [Test]
         public void ShouldGetListOfMachinesWithOfflineStatusArgs()
         {
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-status=Unavailable");
 
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
@@ -146,28 +143,28 @@ namespace Octopus.Cli.Tests.Commands
                 new MachineResource {
                     Name = "PC0123",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01996",
                     Id = "Machines-003",
-                    Status = MachineModelStatus.Offline,
+                    HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Information("Machines: 1");
-            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
-            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelHealthStatus.Healthy.ToString(), "Machines-001", "Development");
+            Log.DidNotReceive().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.Healthy.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01996", MachineModelHealthStatus.Unavailable.ToString(), "Machines-003", "Development");
         }
 
         [Test]
@@ -185,21 +182,18 @@ namespace Octopus.Cli.Tests.Commands
                 new MachineResource {
                     Name = "PC0123",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.HasWarnings,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01996",
                     Id = "Machines-003",
-                    Status = MachineModelStatus.Offline,
                     HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
@@ -225,21 +219,18 @@ namespace Octopus.Cli.Tests.Commands
                 new MachineResource {
                     Name = "PC0123",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.HasWarnings,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01996",
                     Id = "Machines-003",
-                    Status = MachineModelStatus.Offline,
                     HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
@@ -337,19 +328,19 @@ namespace Octopus.Cli.Tests.Commands
                 new MachineResource {
                     Name = "PC01234",
                     Id = "Machines-001",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01466",
                     Id = "Machines-002",
-                    Status = MachineModelStatus.Online,
+                    HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
                 new MachineResource {
                     Name = "PC01996",
                     Id = "Machines-003",
-                    Status = MachineModelStatus.Offline,
+                    HealthStatus = MachineModelHealthStatus.Unhealthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 }
             });
@@ -357,8 +348,8 @@ namespace Octopus.Cli.Tests.Commands
             listMachinesCommand.Execute(CommandLineArgs.ToArray());
 
             Log.Received().Information("Machines: 2");
-            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
-            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01234", MachineModelHealthStatus.Healthy.ToString(), "Machines-001", "Development");
+            Log.Received().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.Healthy.ToString(), "Machines-002", "Development");
         }
     }
 }

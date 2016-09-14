@@ -202,7 +202,6 @@ namespace Octopus.Client.Operations
             return existing ?? new MachineResource();
         }
 
-#pragma warning disable 618
         void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants)
         {
             machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());

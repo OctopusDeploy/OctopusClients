@@ -8,7 +8,6 @@ using Octopus.Cli.Util;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
-#pragma warning disable 618
 
 namespace Octopus.Cli.Commands
 {
@@ -62,14 +61,14 @@ namespace Octopus.Cli.Commands
                 // If the machine belongs to more than one environment, we should remove the machine from the environment rather than delete it altogether.
                 if (machine.EnvironmentIds.Count > 1)
                 {
-                    Log.Information("Removing {0} {1} (ID: {2}) from {3}", machine.Name, machine.Status, machine.Id,
+                    Log.Information("Removing {0} {1} (ID: {2}) from {3}", machine.Name, machine.HealthStatus, machine.Id,
                         environmentResource.Name);
                     machine.EnvironmentIds.Remove(environmentResource.Id);
                     Repository.Machines.Modify(machine);
                 }
                 else
                 {
-                    Log.Information("Deleting {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                    Log.Information("Deleting {0} {1} (ID: {2})", machine.Name, machine.HealthStatus, machine.Id);
                     Repository.Machines.Delete(machine);
                 }
             }

@@ -17,7 +17,8 @@
   },
   "testRunner": "nunit",
   "buildOptions": {
-    "embed": [ "**/*.pfx"]
+    "embed": [ "**/*.pfx" ],
+    "warningsAsErrors": true
   },
   "frameworks": {
     "net452": {
