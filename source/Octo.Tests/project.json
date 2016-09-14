@@ -32,8 +32,9 @@
   },
   "buildOptions": {
     "copyToOutput": {
-      "include": ["Commands/Resources/**"]
-    }
+      "include": [ "Commands/Resources/**" ]
+    },
+    "warningsAsErrors": true
   },
   "testRunner": "nunit",
   "frameworks": {

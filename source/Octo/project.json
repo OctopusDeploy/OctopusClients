@@ -35,10 +35,7 @@
     "debugType": "portable",
     "emitEntryPoint": true,
     "outputName": "Octo",
-    "warningsAsErrors": true,
-    "nowarn": [
-      "CS0612" // Obsolete
-    ] 
+    "warningsAsErrors": true
   },
   "configurations": {
     "Release": {

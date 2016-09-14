@@ -5,32 +5,10 @@ namespace Octopus.Client.Model
     public class ReleaseTemplatePackage
     {
         public string StepName { get; set; }
-
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "PackageId")]
-        public string NuGetPackageId
-        {
-            get { return PackageId; }
-            set { PackageId = value; }
-        }
-
+    
         public string PackageId { get; set; }
-
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "FeedId")]
-        public string NuGetFeedId
-        {
-            get { return FeedId; }
-            set { FeedId = value; }
-        }
-
+     
         public string FeedId { get; set; }
-
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "FeedName")]
-        public string NuGetFeedName
-        {
-            get { return FeedName; }
-            set { FeedName = value; }
-        }
-
         public string FeedName { get; set; }
 
         public string VersionSelectedLastRelease { get; set; }

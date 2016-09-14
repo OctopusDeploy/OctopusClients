@@ -49,7 +49,6 @@ namespace Octopus.Client.Tests.Operations
             var ex = Assert.Throws<ArgumentException>(() => operation.Execute(serverEndpoint));
             Assert.That(ex.Message, Is.EqualTo("Could not find the environment Atlantis on the Octopus server."));
         }
-#pragma warning disable 618
         [Test]
         public void ShouldCreateNewMachine()
         {
