@@ -16,7 +16,6 @@ namespace Octopus.Client.Tests.Serialization
         [Test]
         public void MissingFeedTypeDeserializesAsFeedResource()
         {
-
             var input = new
             {
                 Name = "Blah",
@@ -25,18 +24,15 @@ namespace Octopus.Client.Tests.Serialization
 
             var result = Execute<FeedResource>(input);
 
-
             Assert.AreEqual(input.Name, result.Name);
             Assert.AreEqual(input.FeedUri, result.FeedUri);
             Assert.AreEqual(FeedType.None, result.FeedType);
             Assert.IsAssignableFrom(typeof(FeedResource), result);
-
         }
 
         [Test]
         public void DockerFeedTypesDeserialize()
         {
-
             var input = new
             {
                 Name = "Blah",
@@ -51,12 +47,9 @@ namespace Octopus.Client.Tests.Serialization
             Assert.AreEqual(input.ApiVersion, result.ApiVersion);
         }
 
-
-
         [Test]
         public void NuGetFeedTypesDeserialize()
         {
-
             var input = new
             {
                 Name = "Blah",
@@ -68,7 +61,6 @@ namespace Octopus.Client.Tests.Serialization
             Assert.AreEqual(FeedType.NuGet, result.FeedType);
             Assert.IsAssignableFrom(typeof(NuGetFeedResource), result);
         }
-
 
         private static T Execute<T>(object input)
         {
