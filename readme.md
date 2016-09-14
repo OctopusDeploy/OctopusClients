@@ -12,8 +12,8 @@ Please see [Contributing](CONTRIBUTING.md)
 ## Compatibility
 For:
 - Octopus Server 3.0-3.2 use Octopus Client 3.0-3.2 (newer is better)
-- Octopus Server 3.3 use Octopus Client 3.3 or newer release notes
-- Octopus Server 3.4 or newer use Octopus Client 3.4 or newer release notes
+- Octopus Server 3.3 use Octopus Client 3.3 or newer [release notes](https://octopus.com/downloads/3.3.0)
+- Octopus Server 3.4 use Octopus Client 3.4 or newer [release notes](https://octopus.com/downloads/3.4.0)
 
 ## Versioning
 As of `3.5.0` we started using semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
