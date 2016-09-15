@@ -10,6 +10,7 @@ namespace Octopus.Client.Model
         public string IconUrl { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
+        public bool IsInstalled { get; set; }
 
         public LinkCollection Links { get; set; }
     }
