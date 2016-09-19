@@ -1,17 +1,17 @@
-using Octopus.Client;
+﻿using Octopus.Client;
 
 namespace Octopus.Cli.Repositories
 {
-    class OctopusRepositoryFactory : IOctopusRepositoryFactory
+    public interface IOctopusRepositoryFactory
     {
-        public IOctopusRepository CreateRepository(OctopusServerEndpoint endpoint)
-        {
-            return new OctopusRepository(endpoint);
-        }
+        IOctopusRepository CreateRepository(IOctopusClient client);
+    }
 
-        public IOctopusRepository CreateRepository(OctopusServerEndpoint endpoint, OctopusClientOptions options)
+    public class OctopusRepositoryFactory : IOctopusRepositoryFactory
+    {
+        public IOctopusRepository CreateRepository(IOctopusClient client)
         {
-            return new OctopusRepository(endpoint, options);
+            return new OctopusRepository(client);
         }
     }
 }

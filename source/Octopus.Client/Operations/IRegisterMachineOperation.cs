@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Operations
@@ -73,12 +74,12 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        void Execute(OctopusServerEndpoint serverEndpoint);
+        Task Execute(OctopusServerEndpoint serverEndpoint);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        void Execute(OctopusRepository repository);
+        Task Execute(OctopusRepository repository);
     }
 }

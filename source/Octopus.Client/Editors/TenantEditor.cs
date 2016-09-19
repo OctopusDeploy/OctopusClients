@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -8,32 +10,32 @@ namespace Octopus.Client.Editors
     public class TenantEditor : IResourceEditor<TenantResource, TenantEditor>
     {
         private readonly ITenantRepository repository;
-        private readonly Lazy<TenantVariablesEditor> variables;
+        private readonly Lazy<Task<TenantVariablesEditor>> variables;
 
         public TenantEditor(ITenantRepository repository)
         {
             this.repository = repository;
-            variables = new Lazy<TenantVariablesEditor>(() => new TenantVariablesEditor(repository, Instance).Load());
+            variables = new Lazy<Task<TenantVariablesEditor>>(() => new TenantVariablesEditor(repository, Instance).Load());
         }
 
         public TenantResource Instance { get; private set; }
 
-        public TenantVariablesEditor Variables => variables.Value;
+        public Task<TenantVariablesEditor> Variables => variables.Value;
 
-        public TenantEditor CreateOrModify(string name)
+        public async Task<TenantEditor> CreateOrModify(string name)
         {
-            var existing = repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = repository.Create(new TenantResource
+                Instance = await repository.Create(new TenantResource
                 {
                     Name = name,
-                });
+                }).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
-                Instance = repository.Modify(existing);
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
@@ -79,12 +81,13 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public TenantEditor Save()
+        public async Task<TenantEditor> Save()
         {
-            Instance = repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             if (variables.IsValueCreated)
             {
-                variables.Value.Save();
+                var vars = await variables.Value.ConfigureAwait(false);
+                await vars.Save().ConfigureAwait(false);
             }
             return this;
         }

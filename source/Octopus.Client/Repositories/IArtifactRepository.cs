@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.IO;
 using Octopus.Client.Model;
 
@@ -11,8 +12,8 @@ namespace Octopus.Client.Repositories
         IModify<ArtifactResource>,
         IDelete<ArtifactResource>
     {
-        Stream GetContent(ArtifactResource artifact);
-        void PutContent(ArtifactResource artifact, Stream contentStream);
-        ResourceCollection<ArtifactResource> FindRegarding(IResource resource);
+        Task<Stream> GetContent(ArtifactResource artifact);
+        Task PutContent(ArtifactResource artifact, Stream contentStream);
+        Task<ResourceCollection<ArtifactResource>> FindRegarding(IResource resource);
     }
 }

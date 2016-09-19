@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Cli.Importers
 {
     public interface IImporter
     {
-        bool Validate(params string[] parameters);
-        void Import(params string[] parameters);
+        Task<bool> Validate(params string[] parameters);
+        Task Import(params string[] parameters);
     }
 }

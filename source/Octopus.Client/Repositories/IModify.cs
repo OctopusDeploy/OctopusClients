@@ -1,9 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories
 {
     public interface IModify<TResource>
     {
-        TResource Modify(TResource resource);
+        Task<TResource> Modify(TResource resource);
     }
 }

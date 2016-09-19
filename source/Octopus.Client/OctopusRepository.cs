@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
@@ -25,356 +26,194 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
-        readonly IOctopusClient client;
-        readonly IAccountRepository accounts;
-        readonly IFeedRepository feeds;
-        readonly IBackupRepository backups;
-        readonly IMachineRepository machines;
-        readonly IMachineRoleRepository machineRoles;
-        readonly IMachinePolicyRepository machinePolicies;
-        readonly IEnvironmentRepository environments;
-        readonly IEventRepository events;
-        readonly IFeaturesConfigurationRepository featuresConfiguration;
-        readonly IProjectGroupRepository projectGroups;
-        readonly IProjectRepository projects;
-        readonly IProxyRepository proxies;
-        readonly ITaskRepository tasks;
-        readonly IUserRepository users;
-        readonly IVariableSetRepository variableSets;
-        readonly ILibraryVariableSetRepository libraryVariableSets;
-        readonly IDeploymentProcessRepository deploymentProcesses;
-        readonly IReleaseRepository releases;
-        readonly IDeploymentRepository deployments;
-        readonly ICertificateRepository certificates;
-        readonly IDashboardRepository dashboards;
-        readonly IDashboardConfigurationRepository dashboardConfigurations;
-        readonly IArtifactRepository artifacts;
-        readonly IInterruptionRepository interruptions;
-        readonly IServerStatusRepository serverStatus;
-        readonly IUserRolesRepository userRoles;
-        readonly ITeamsRepository teams;
-        readonly IRetentionPolicyRepository retentionPolicies;
-        readonly IDefectsRepository defects;
-        readonly ILifecyclesRepository lifecycles;
-        readonly IOctopusServerNodeRepository octopusServerNodes;
-        readonly IChannelRepository channels;
-        readonly IProjectTriggerRepository projectTriggers;
-        readonly ISchedulerRepository schedulers;
-        readonly ITenantRepository tenants;
-        readonly ITagSetRepository tagSets;
-        readonly IBuiltInPackageRepositoryRepository builtInPackageRepositoryRepository;
-
-        public OctopusRepository(OctopusServerEndpoint endpoint) : this(endpoint, null)
-        {
-        }
-
-        public OctopusRepository(OctopusServerEndpoint endpoint, OctopusClientOptions options) : this(new OctopusClient(endpoint, options))
-        {
-        }
-
         public OctopusRepository(IOctopusClient client)
         {
-            this.client = client;
-            feeds = new FeedRepository(client);
-            backups = new BackupRepository(client);
-            machines = new MachineRepository(client);
-            machineRoles = new MachineRoleRepository(client);
-            machinePolicies = new MachinePolicyRepository(client);
-            environments = new EnvironmentRepository(client);
-            events = new EventRepository(client);
-            featuresConfiguration = new FeaturesConfigurationRepository(client);
-            projectGroups = new ProjectGroupRepository(client);
-            projects = new ProjectsRepository(client);
-            proxies = new ProxyRepository(client);
-            tasks = new TaskRepository(client);
-            users = new UserRepository(client);
-            variableSets = new VariableSetRepository(client);
-            libraryVariableSets = new LibraryVariableSetRepository(client);
-            deploymentProcesses = new DeploymentProcessRepository(client);
-            releases = new ReleaseRepository(client);
-            deployments = new DeploymentRepository(client);
-            certificates = new CertificateRepository(client);
-            dashboards = new DashboardRepository(client);
-            dashboardConfigurations = new DashboardConfigurationRepository(client);
-            artifacts = new ArtifactRepository(client);
-            interruptions = new InterruptionRepository(client);
-            serverStatus = new ServerStatusRepository(client);
-            userRoles = new UserRolesRepository(client);
-            teams = new TeamsRepository(client);
-            retentionPolicies = new RetentionPolicyRepository(client);
-            accounts = new AccountRepository(client);
-            defects = new DefectsRepository(client);
-            lifecycles = new LifecyclesRepository(client);
-            octopusServerNodes = new OctopusServerNodeRepository(client);
-            channels = new ChannelRepository(client);
-            projectTriggers = new ProjectTriggerRepository(client);
-            schedulers = new SchedulerRepository(client);
-            tenants = new TenantRepository(client);
-            tagSets = new TagSetRepository(client);
-            builtInPackageRepositoryRepository = new BuiltInPackageRepositoryRepository(client);
+            this.Client = client;
+            Feeds = new FeedRepository(client);
+            Backups = new BackupRepository(client);
+            Machines = new MachineRepository(client);
+            MachineRoles = new MachineRoleRepository(client);
+            MachinePolicies = new MachinePolicyRepository(client);
+            Environments = new EnvironmentRepository(client);
+            Events = new EventRepository(client);
+            FeaturesConfiguration = new FeaturesConfigurationRepository(client);
+            ProjectGroups = new ProjectGroupRepository(client);
+            Projects = new ProjectsRepository(client);
+            Proxies = new ProxyRepository(client);
+            Tasks = new TaskRepository(client);
+            Users = new UserRepository(client);
+            VariableSets = new VariableSetRepository(client);
+            LibraryVariableSets = new LibraryVariableSetRepository(client);
+            DeploymentProcesses = new DeploymentProcessRepository(client);
+            Releases = new ReleaseRepository(client);
+            Deployments = new DeploymentRepository(client);
+            Certificates = new CertificateRepository(client);
+            Dashboards = new DashboardRepository(client);
+            DashboardConfigurations = new DashboardConfigurationRepository(client);
+            Artifacts = new ArtifactRepository(client);
+            Interruptions = new InterruptionRepository(client);
+            ServerStatus = new ServerStatusRepository(client);
+            UserRoles = new UserRolesRepository(client);
+            Teams = new TeamsRepository(client);
+            RetentionPolicies = new RetentionPolicyRepository(client);
+            Accounts = new AccountRepository(client);
+            Defects = new DefectsRepository(client);
+            Lifecycles = new LifecyclesRepository(client);
+            OctopusServerNodes = new OctopusServerNodeRepository(client);
+            Channels = new ChannelRepository(client);
+            ProjectTriggers = new ProjectTriggerRepository(client);
+            Schedulers = new SchedulerRepository(client);
+            Tenants = new TenantRepository(client);
+            TagSets = new TagSetRepository(client);
+            BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(client);
         }
 
-   
+        public IOctopusClient Client { get; }
 
-        public IOctopusClient Client
-        {
-            get { return client; }
-        }
+        public IDashboardRepository Dashboards { get; }
 
-        public IDashboardRepository Dashboards
-        {
-            get { return dashboards; }
-        }
+        public IDashboardConfigurationRepository DashboardConfigurations { get; }
 
-        public IDashboardConfigurationRepository DashboardConfigurations
-        {
-            get { return dashboardConfigurations; }
-        }
+        public IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
 
-        public IBuiltInPackageRepositoryRepository BuiltInPackageRepository
-        {
-            get { return builtInPackageRepositoryRepository; }
-        }
+        public IFeedRepository Feeds { get; }
 
-        public IFeedRepository Feeds
-        {
-            get { return feeds; }
-        }
+        public IAccountRepository Accounts { get; }
 
-        public IAccountRepository Accounts
-        {
-            get { return accounts; }
-        }
+        public IBackupRepository Backups { get; }
 
-        public IBackupRepository Backups
-        {
-            get { return backups; }
-        }
+        public IMachineRepository Machines { get; }
 
-        public IMachineRepository Machines
-        {
-            get { return machines; }
-        }
+        public IMachineRoleRepository MachineRoles { get; }
 
-        public IMachineRoleRepository MachineRoles
-        {
-            get { return machineRoles; }
-        }
+        public IMachinePolicyRepository MachinePolicies { get; }
 
-        public IMachinePolicyRepository MachinePolicies
-        {
-            get { return machinePolicies; }
-        }
+        public ILifecyclesRepository Lifecycles { get; }
 
-        public ILifecyclesRepository Lifecycles
-        {
-            get { return lifecycles; }
-        }
+        public IReleaseRepository Releases { get; }
 
-        public IReleaseRepository Releases
-        {
-            get { return releases; }
-        }
+        public IDefectsRepository Defects { get; }
 
-        public IDefectsRepository Defects
-        {
-            get { return defects; }
-        }
+        public IDeploymentRepository Deployments { get; }
 
-        public IDeploymentRepository Deployments
-        {
-            get { return deployments; }
-        }
+        public IEnvironmentRepository Environments { get; }
 
-        public IEnvironmentRepository Environments
-        {
-            get { return environments; }
-        }
+        public IEventRepository Events { get; }
 
-        public IEventRepository Events
-        {
-            get { return events; }
-        }
-        public IFeaturesConfigurationRepository FeaturesConfiguration
-        {
-            get { return featuresConfiguration; }
-        }
+        public IFeaturesConfigurationRepository FeaturesConfiguration { get; }
 
-        public IInterruptionRepository Interruptions
-        {
-            get { return interruptions; }
-        }
+        public IInterruptionRepository Interruptions { get; }
 
-        public IProjectGroupRepository ProjectGroups
-        {
-            get { return projectGroups; }
-        }
+        public IProjectGroupRepository ProjectGroups { get; }
 
-        public IProjectRepository Projects
-        {
-            get { return projects; }
-        }
+        public IProjectRepository Projects { get; }
 
-        public IProxyRepository Proxies
-        {
-            get { return proxies; }
-        }
+        public IProxyRepository Proxies { get; }
 
-        public ITaskRepository Tasks
-        {
-            get { return tasks; }
-        }
+        public ITaskRepository Tasks { get; }
 
-        public IUserRepository Users
-        {
-            get { return users; }
-        }
+        public IUserRepository Users { get; }
 
-        public IUserRolesRepository UserRoles
-        {
-            get { return userRoles; }
-        }
+        public IUserRolesRepository UserRoles { get; }
 
-        public ITeamsRepository Teams
-        {
-            get { return teams; }
-        }
+        public ITeamsRepository Teams { get; }
 
-        public IVariableSetRepository VariableSets
-        {
-            get { return variableSets; }
-        }
+        public IVariableSetRepository VariableSets { get; }
 
-        public ILibraryVariableSetRepository LibraryVariableSets
-        {
-            get { return libraryVariableSets; }
-        }
+        public ILibraryVariableSetRepository LibraryVariableSets { get; }
 
-        public IDeploymentProcessRepository DeploymentProcesses
-        {
-            get { return deploymentProcesses; }
-        }
+        public IDeploymentProcessRepository DeploymentProcesses { get; }
 
-        public ICertificateRepository Certificates
-        {
-            get { return certificates; }
-        }
+        public ICertificateRepository Certificates { get; }
 
-        public IArtifactRepository Artifacts
-        {
-            get { return artifacts; }
-        }
+        public IArtifactRepository Artifacts { get; }
 
-        public IServerStatusRepository ServerStatus
-        {
-            get { return serverStatus; }
-        }
+        public IServerStatusRepository ServerStatus { get; }
 
-        public IRetentionPolicyRepository RetentionPolicies
-        {
-            get { return retentionPolicies; }
-        }
+        public IRetentionPolicyRepository RetentionPolicies { get; }
 
-        public IOctopusServerNodeRepository OctopusServerNodes
-        {
-            get { return octopusServerNodes; }
-        }
+        public IOctopusServerNodeRepository OctopusServerNodes { get; }
 
-        public IChannelRepository Channels
-        {
-            get { return channels; }
-        }
+        public IChannelRepository Channels { get; }
 
-        public IProjectTriggerRepository ProjectTriggers
-        {
-            get { return projectTriggers; }
-        }
-        public ISchedulerRepository Schedulers
-        {
-            get { return schedulers; }
-        }
+        public IProjectTriggerRepository ProjectTriggers { get; }
 
-        public ITagSetRepository TagSets
-        {
-            get { return tagSets;  }
-        }
-        public ITenantRepository Tenants
-        {
-            get { return tenants; }
-        }
+        public ISchedulerRepository Schedulers { get; }
+
+        public ITagSetRepository TagSets { get; }
+
+        public ITenantRepository Tenants { get; }
 
         // ReSharper disable MemberCanBePrivate.Local
         // ReSharper disable UnusedMember.Local
         // ReSharper disable MemberCanBeProtected.Local
         abstract class BasicRepository<TResource> where TResource : class, IResource
         {
-            readonly IOctopusClient client;
             protected readonly string CollectionLinkName;
 
             protected BasicRepository(IOctopusClient client, string collectionLinkName)
             {
-                this.client = client;
+                this.Client = client;
                 this.CollectionLinkName = collectionLinkName;
             }
 
-            public IOctopusClient Client
+            public IOctopusClient Client { get; }
+
+            public Task<TResource> Create(TResource resource)
             {
-                get { return client; }
+                return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource);
             }
 
-            public TResource Create(TResource resource)
+            public Task<TResource> Modify(TResource resource)
             {
-                return client.Create(client.RootDocument.Link(CollectionLinkName), resource);
+                return Client.Update(resource.Links["Self"], resource);
             }
 
-            public TResource Modify(TResource resource)
+            public Task Delete(TResource resource)
             {
-                return client.Update(resource.Links["Self"], resource);
+                return Client.Delete(resource.Links["Self"]);
             }
 
-            public void Delete(TResource resource)
+            public Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
             {
-                client.Delete(resource.Links["Self"]);
+                return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
             }
 
-            public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
-            {
-                client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters ?? new {}, getNextPage);
-            }
-
-            public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
+            public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
             {
                 TResource resource = null;
-                Paginate(page =>
+                await Paginate(page =>
                 {
                     resource = page.Items.FirstOrDefault(search);
                     return resource == null;
-                }, path, pathParameters);
+                }, path, pathParameters)
+                    .ConfigureAwait(false);
                 return resource;
             }
 
-            public List<TResource> FindMany(Func<TResource, bool> search, string path = null, object pathParameters = null)
+            public async Task<List<TResource>> FindMany(Func<TResource, bool> search, string path = null, object pathParameters = null)
             {
                 var resources = new List<TResource>();
-                Paginate(page =>
+                await Paginate(page =>
                 {
                     resources.AddRange(page.Items.Where(search));
                     return true;
-                }, path, pathParameters);
+                }, path, pathParameters)
+                    .ConfigureAwait(false);
                 return resources;
             }
 
-            public List<TResource> FindAll(string path = null, object pathParameters = null)
+            public Task<List<TResource>> FindAll(string path = null, object pathParameters = null)
             {
                 return FindMany(r => true, path, pathParameters);
             }
 
-            public List<TResource> GetAll()
+            public Task<List<TResource>> GetAll()
             {
-                return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), new {id = "all"});
+                return Client.Get<List<TResource>>(Client.RootDocument.Link(CollectionLinkName), new { id = "all" });
             }
 
-            public TResource FindByName(string name, string path = null, object pathParameters = null)
+            public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
             {
                 name = (name ?? string.Empty).Trim();
                 return FindOne(r =>
@@ -385,7 +224,7 @@ namespace Octopus.Client
                 }, path, pathParameters);
             }
 
-            public List<TResource> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
+            public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
             {
                 var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
                 return FindMany(r =>
@@ -396,39 +235,37 @@ namespace Octopus.Client
                 }, path, pathParameters);
             }
 
-            public TResource Get(string idOrHref)
+            public Task<TResource> Get(string idOrHref)
             {
                 if (string.IsNullOrWhiteSpace(idOrHref))
                     return null;
 
-                if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    return client.Get<TResource>(idOrHref);
-                }
-
-                return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new {id = idOrHref});
+                return idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase) 
+                    ? Client.Get<TResource>(idOrHref) 
+                    : Client.Get<TResource>(Client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
             }
 
-            public List<TResource> Get(params string[] ids)
+            public async Task<List<TResource>> Get(params string[] ids)
             {
                 if (ids == null) return new List<TResource>();
                 var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
                 if (actualIds.Length == 0) return new List<TResource>();
 
                 var resources = new List<TResource>();
-                client.Paginate<TResource>(
-                    client.RootDocument.Link(CollectionLinkName) + "{?ids}",
-                    new {ids = actualIds},
+                await Client.Paginate<TResource>(
+                    Client.RootDocument.Link(CollectionLinkName) + "{?ids}",
+                    new { ids = actualIds },
                     page =>
                     {
                         resources.AddRange(page.Items);
                         return true;
-                    });
+                    })
+                    .ConfigureAwait(false);
 
                 return resources;
             }
 
-            public TResource Refresh(TResource resource)
+            public Task<TResource> Refresh(TResource resource)
             {
                 if (resource == null) throw new ArgumentNullException("resource");
                 return Get(resource.Id);
@@ -445,12 +282,12 @@ namespace Octopus.Client
             {
             }
 
-            public ServerStatusResource GetServerStatus()
+            public Task<ServerStatusResource> GetServerStatus()
             {
                 return Client.Get<ServerStatusResource>(Client.RootDocument.Link("ServerStatus"));
             }
 
-            public SystemInfoResource GetSystemInfo(ServerStatusResource status)
+            public Task<SystemInfoResource> GetSystemInfo(ServerStatusResource status)
             {
                 if (status == null) throw new ArgumentNullException("status");
                 return Client.Get<SystemInfoResource>(status.Link("SystemInfo"));
@@ -466,12 +303,12 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public BackupConfigurationResource GetConfiguration()
+            public Task<BackupConfigurationResource> GetConfiguration()
             {
                 return client.Get<BackupConfigurationResource>(client.RootDocument.Link("BackupConfiguration"));
             }
 
-            public BackupConfigurationResource ModifyConfiguration(BackupConfigurationResource backupConfiguration)
+            public Task<BackupConfigurationResource> ModifyConfiguration(BackupConfigurationResource backupConfiguration)
             {
                 return client.Update(backupConfiguration.Link("Self"), backupConfiguration);
             }
@@ -500,19 +337,19 @@ namespace Octopus.Client
             {
             }
 
-            public Stream GetContent(ArtifactResource artifact)
+            public Task<Stream> GetContent(ArtifactResource artifact)
             {
                 return Client.GetContent(artifact.Link("Content"));
             }
 
-            public void PutContent(ArtifactResource artifact, Stream contentStream)
+            public Task PutContent(ArtifactResource artifact, Stream contentStream)
             {
-                Client.PutContent(artifact.Link("Content"), contentStream);
+                return Client.PutContent(artifact.Link("Content"), contentStream);
             }
 
-            public ResourceCollection<ArtifactResource> FindRegarding(IResource resource)
+            public Task<ResourceCollection<ArtifactResource>> FindRegarding(IResource resource)
             {
-                return Client.List<ArtifactResource>(Client.RootDocument.Link("Artifacts"), new {regarding = resource.Id});
+                return Client.List<ArtifactResource>(Client.RootDocument.Link("Artifacts"), new { regarding = resource.Id });
             }
         }
 
@@ -530,9 +367,9 @@ namespace Octopus.Client
             {
             }
 
-            public List<PackageResource> GetVersions(FeedResource feed, string[] packageIds)
+            public Task<List<PackageResource>> GetVersions(FeedResource feed, string[] packageIds)
             {
-                return Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new {packageIds = packageIds});
+                return Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = packageIds });
             }
         }
 
@@ -543,10 +380,10 @@ namespace Octopus.Client
             {
             }
 
-            public TaskResource ApplyNow()
+            public Task<TaskResource> ApplyNow()
             {
                 var tasks = new TaskRepository(Client);
-                var task = new TaskResource {Name = "Retention", Description = "Request to apply retention policies via the API"};
+                var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API" };
                 return tasks.Create(task);
             }
         }
@@ -557,24 +394,24 @@ namespace Octopus.Client
             {
             }
 
-            public MachineResource Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
+            public Task<MachineResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
             {
-                return Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new {host, port, type});
+                return Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
             }
 
-            public MachineConnectionStatus GetConnectionStatus(MachineResource machine)
+            public Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine)
             {
                 if (machine == null) throw new ArgumentNullException("machine");
                 return Client.Get<MachineConnectionStatus>(machine.Link("Connection"));
             }
 
-            public List<MachineResource> FindByThumbprint(string thumbprint)
+            public Task<List<MachineResource>> FindByThumbprint(string thumbprint)
             {
                 if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-                return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id="all", thumbprint });                
+                return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
             }
 
-            public MachineEditor CreateOrModify(
+            public Task<MachineEditor> CreateOrModify(
                 string name,
                 EndpointResource endpoint,
                 EnvironmentResource[] environments,
@@ -585,7 +422,7 @@ namespace Octopus.Client
                 return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags);
             }
 
-            public MachineEditor CreateOrModify(
+            public Task<MachineEditor> CreateOrModify(
                 string name,
                 EndpointResource endpoint,
                 EnvironmentResource[] environments,
@@ -609,37 +446,37 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0)
+            public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0)
             {
-                return Client.List<ReleaseResource>(project.Link("Releases"), new {skip});
+                return Client.List<ReleaseResource>(project.Link("Releases"), new { skip });
             }
 
-            public ReleaseResource GetReleaseByVersion(ProjectResource project, string version)
+            public Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version)
             {
-                return Client.Get<ReleaseResource>(project.Link("Releases"), new {version});
+                return Client.Get<ReleaseResource>(project.Link("Releases"), new { version });
             }
 
-            public ResourceCollection<ChannelResource> GetChannels(ProjectResource project)
+            public Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project)
             {
                 return Client.List<ChannelResource>(project.Link("Channels"));
             }
 
-            public ResourceCollection<ProjectTriggerResource> GetTriggers(ProjectResource project)
+            public Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project)
             {
                 return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
             }
 
-            public void SetLogo(ProjectResource project, string fileName, Stream contents)
+            public Task SetLogo(ProjectResource project, string fileName, Stream contents)
             {
-                Client.Post(project.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
+                return Client.Post(project.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
             }
 
-            public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
+            public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
             {
                 return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle);
             }
 
-            public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
+            public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
             {
                 return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle, description);
             }
@@ -650,7 +487,7 @@ namespace Octopus.Client
             public ProxyRepository(IOctopusClient client)
                 : base(client, "Proxies")
             {
-                
+
             }
         }
 
@@ -661,12 +498,12 @@ namespace Octopus.Client
             {
             }
 
-            public LifecycleEditor CreateOrModify(string name)
+            public Task<LifecycleEditor> CreateOrModify(string name)
             {
                 return new LifecycleEditor(this).CreateOrModify(name);
             }
 
-            public LifecycleEditor CreateOrModify(string name, string description)
+            public Task<LifecycleEditor> CreateOrModify(string name, string description)
             {
                 return new LifecycleEditor(this).CreateOrModify(name, description);
             }
@@ -679,19 +516,19 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<DefectResource> GetDefects(ReleaseResource release)
+            public Task<ResourceCollection<DefectResource>> GetDefects(ReleaseResource release)
             {
                 return Client.List<DefectResource>(release.Link("Defects"));
             }
 
-            public void RaiseDefect(ReleaseResource release, string description)
+            public Task RaiseDefect(ReleaseResource release, string description)
             {
-                Client.Post(release.Link("ReportDefect"), new DefectResource(description));
+                return Client.Post(release.Link("ReportDefect"), new DefectResource(description));
             }
 
-            public void ResolveDefect(ReleaseResource release)
+            public Task ResolveDefect(ReleaseResource release)
             {
-                Client.Post(release.Link("ResolveDefect"));
+                return Client.Post(release.Link("ResolveDefect"));
             }
         }
 
@@ -702,38 +539,38 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<DeploymentResource> GetDeployments(ReleaseResource release, int skip = 0)
+            public Task<ResourceCollection<DeploymentResource>> GetDeployments(ReleaseResource release, int skip = 0)
             {
-                return Client.List<DeploymentResource>(release.Link("Deployments"), new {skip});
+                return Client.List<DeploymentResource>(release.Link("Deployments"), new { skip });
             }
 
-            public ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0)
+            public Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0)
             {
-                return Client.List<ArtifactResource>(release.Link("Artifacts"), new {skip});
+                return Client.List<ArtifactResource>(release.Link("Artifacts"), new { skip });
             }
 
-            public DeploymentTemplateResource GetTemplate(ReleaseResource release)
+            public Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release)
             {
                 return Client.Get<DeploymentTemplateResource>(release.Link("DeploymentTemplate"));
             }
 
-            public DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget)
+            public Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget)
             {
                 return Client.Get<DeploymentPreviewResource>(promotionTarget.Link("Preview"));
             }
 
-            public ReleaseResource SnapshotVariables(ReleaseResource release)
+            public Task<ReleaseResource> SnapshotVariables(ReleaseResource release)
             {
                 Client.Post(release.Link("SnapshotVariables"));
                 return Get(release.Id);
             }
 
-            public ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false)
+            public Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
             {
                 return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, new { ignoreChannelRules });
             }
 
-            public ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false)
+            public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)
             {
                 return Client.Update(resource.Links["Self"], resource, new { ignoreChannelRules });
             }
@@ -748,14 +585,14 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public DashboardResource GetDashboard()
+            public Task<DashboardResource> GetDashboard()
             {
                 return client.Get<DashboardResource>(client.RootDocument.Link("Dashboard"));
             }
 
-            public DashboardResource GetDynamicDashboard(string[] projects, string[] environments)
+            public Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments)
             {
-                return client.Get<DashboardResource>(client.RootDocument.Link("DashboardDynamic"), new {projects, environments});
+                return client.Get<DashboardResource>(client.RootDocument.Link("DashboardDynamic"), new { projects, environments });
             }
         }
 
@@ -768,12 +605,12 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public DashboardConfigurationResource GetDashboardConfiguration()
+            public Task<DashboardConfigurationResource> GetDashboardConfiguration()
             {
                 return client.Get<DashboardConfigurationResource>(client.RootDocument.Link("DashboardConfiguration"));
             }
 
-            public DashboardConfigurationResource ModifyDashboardConfiguration(DashboardConfigurationResource resource)
+            public Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource)
             {
                 return client.Update(client.RootDocument.Link("DashboardConfiguration"), resource);
             }
@@ -788,27 +625,27 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+            public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
             {
                 return client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                     client.RootDocument.Link("PackageUpload"),
-                    new FileUpload() {Contents = contents, FileName = fileName},
-                    new {replace = replaceExisting});
+                    new FileUpload() { Contents = contents, FileName = fileName },
+                    new { replace = replaceExisting });
             }
 
-            public ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip=0, int take = 30)
+            public Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
             {
-                return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new {nuGetPackageId = packageId, take, skip});
+                return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
             }
 
-            public ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30)
+            public Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
             {
                 return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { latest = true, take, skip });
             }
 
-            public void DeletePackage(PackageResource package)
+            public Task DeletePackage(PackageResource package)
             {
-                client.Delete(client.RootDocument.Link("Packages"), new {id = package.Id});
+                return client.Delete(client.RootDocument.Link("Packages"), new { id = package.Id });
             }
         }
 
@@ -819,19 +656,19 @@ namespace Octopus.Client
             {
             }
 
-            public TaskResource GetTask(DeploymentResource resource)
+            public Task<TaskResource> GetTask(DeploymentResource resource)
             {
                 return Client.Get<TaskResource>(resource.Link("Task"));
             }
 
-            public ResourceCollection<DeploymentResource> FindAll(string[] projects, string[] environments, int skip = 0)
+            public Task<ResourceCollection<DeploymentResource>> FindAll(string[] projects, string[] environments, int skip = 0)
             {
-                return Client.List<DeploymentResource>(Client.RootDocument.Link("Deployments"), new {skip, projects = projects ?? new string[0], environments = environments ?? new string[0]});
+                return Client.List<DeploymentResource>(Client.RootDocument.Link("Deployments"), new { skip, projects = projects ?? new string[0], environments = environments ?? new string[0] });
             }
 
-            public void Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
+            public Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
             {
-                Client.Paginate(Client.RootDocument.Link("Deployments"), new {projects = projects ?? new string[0], environments = environments ?? new string[0]}, getNextPage);
+                return Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0] }, getNextPage);
             }
         }
 
@@ -844,12 +681,12 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public FeaturesConfigurationResource GetFeaturesConfiguration()
+            public Task<FeaturesConfigurationResource> GetFeaturesConfiguration()
             {
                 return client.Get<FeaturesConfigurationResource>(client.RootDocument.Link("FeaturesConfiguration"));
             }
 
-            public FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
+            public Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
             {
                 return client.Update(client.RootDocument.Link("FeaturesConfiguration"), resource);
             }
@@ -862,9 +699,9 @@ namespace Octopus.Client
             {
             }
 
-            public string[] GetVariableNames(string project, string[] environments)
+            public Task<string[]> GetVariableNames(string project, string[] environments)
             {
-                return Client.Get<string[]>(Client.RootDocument.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments  ?? new string[0]});
+                return Client.Get<string[]>(Client.RootDocument.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
             }
 
         }
@@ -876,12 +713,12 @@ namespace Octopus.Client
             {
             }
 
-            public LibraryVariableSetEditor CreateOrModify(string name)
+            public Task<LibraryVariableSetEditor> CreateOrModify(string name)
             {
                 return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name);
             }
 
-            public LibraryVariableSetEditor CreateOrModify(string name, string description)
+            public Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
             {
                 return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name, description);
             }
@@ -894,7 +731,7 @@ namespace Octopus.Client
             {
             }
 
-            public CertificateResource GetOctopusCertificate()
+            public Task<CertificateResource> GetOctopusCertificate()
             {
                 return Get("certificate-global");
             }
@@ -907,9 +744,9 @@ namespace Octopus.Client
             {
             }
 
-            public ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
+            public Task<ReleaseTemplateResource> GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
             {
-                return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id});
+                return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id });
             }
         }
 
@@ -922,9 +759,9 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public List<string> GetAllRoleNames()
+            public async Task<IReadOnlyList<string>> GetAllRoleNames()
             {
-                return client.Get<string[]>(client.RootDocument.Link("MachineRoles")).ToList();
+                return await client.Get<string[]>(client.RootDocument.Link("MachineRoles")).ConfigureAwait(false);
             }
         }
 
@@ -939,26 +776,26 @@ namespace Octopus.Client
             {
                 var resources = new List<MachineResource>();
 
-                Client.Paginate<MachineResource>(environment.Link("Machines"), new {}, page =>
-                {
-                    resources.AddRange(page.Items);
-                    return true;
-                });
+                Client.Paginate<MachineResource>(environment.Link("Machines"), new { }, page =>
+                 {
+                     resources.AddRange(page.Items);
+                     return true;
+                 });
 
                 return resources;
             }
 
-            public void Sort(string[] environmentIdsInOrder)
+            public Task Sort(string[] environmentIdsInOrder)
             {
-                Client.Put(Client.RootDocument.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+                return Client.Put(Client.RootDocument.Link("EnvironmentSortOrder"), environmentIdsInOrder);
             }
 
-            public EnvironmentEditor CreateOrModify(string name)
+            public Task<EnvironmentEditor> CreateOrModify(string name)
             {
                 return new EnvironmentEditor(this).CreateOrModify(name);
             }
 
-            public EnvironmentEditor CreateOrModify(string name, string description)
+            public Task<EnvironmentEditor> CreateOrModify(string name, string description)
             {
                 return new EnvironmentEditor(this).CreateOrModify(name, description);
             }
@@ -971,9 +808,9 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<EventResource> List(int skip = 0, string filterByUserId = null, string regardingDocumentId = null, bool includeInternalEvents = false)
+            public Task<ResourceCollection<EventResource>> List(int skip = 0, string filterByUserId = null, string regardingDocumentId = null, bool includeInternalEvents = false)
             {
-                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new {skip, user = filterByUserId, regarding = regardingDocumentId, @internal = includeInternalEvents.ToString()});
+                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new { skip, user = filterByUserId, regarding = regardingDocumentId, @internal = includeInternalEvents.ToString() });
             }
         }
 
@@ -984,22 +821,22 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<InterruptionResource> List(int skip = 0, bool pendingOnly = false, string regardingDocumentId = null)
+            public Task<ResourceCollection<InterruptionResource>> List(int skip = 0, bool pendingOnly = false, string regardingDocumentId = null)
             {
-                return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new {skip, pendingOnly, regarding = regardingDocumentId});
+                return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new { skip, pendingOnly, regarding = regardingDocumentId });
             }
 
-            public void Submit(InterruptionResource interruption)
+            public Task Submit(InterruptionResource interruption)
             {
-                Client.Post(interruption.Link("Submit"), interruption.Form.Values);
+                return Client.Post(interruption.Link("Submit"), interruption.Form.Values);
             }
 
-            public void TakeResponsibility(InterruptionResource interruption)
+            public Task TakeResponsibility(InterruptionResource interruption)
             {
-                Client.Put(interruption.Link("Responsible"), (InterruptionResource)null);
+                return Client.Put(interruption.Link("Responsible"), (InterruptionResource)null);
             }
 
-            public UserResource GetResponsibleUser(InterruptionResource interruption)
+            public Task<UserResource> GetResponsibleUser(InterruptionResource interruption)
             {
                 return Client.Get<UserResource>(interruption.Link("Responsible"));
             }
@@ -1012,25 +849,25 @@ namespace Octopus.Client
             {
             }
 
-            public List<ProjectResource> GetProjects(ProjectGroupResource projectGroup)
+            public async Task<List<ProjectResource>> GetProjects(ProjectGroupResource projectGroup)
             {
                 var resources = new List<ProjectResource>();
 
-                Client.Paginate<ProjectResource>(projectGroup.Link("ProjectGroups"), new {}, page =>
-                {
-                    resources.AddRange(page.Items);
-                    return true;
-                });
+                await Client.Paginate<ProjectResource>(projectGroup.Link("ProjectGroups"), new { }, page =>
+                 {
+                     resources.AddRange(page.Items);
+                     return true;
+                 }).ConfigureAwait(false);
 
                 return resources;
             }
 
-            public ProjectGroupEditor CreateOrModify(string name)
+            public Task<ProjectGroupEditor> CreateOrModify(string name)
             {
                 return new ProjectGroupEditor(this).CreateOrModify(name);
             }
 
-            public ProjectGroupEditor CreateOrModify(string name, string description)
+            public Task<ProjectGroupEditor> CreateOrModify(string name, string description)
             {
                 return new ProjectGroupEditor(this).CreateOrModify(name, description);
             }
@@ -1043,7 +880,7 @@ namespace Octopus.Client
             {
             }
 
-            public TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null)
+            public Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null)
             {
                 var resource = new TaskResource();
                 resource.Name = BuiltInTasks.Health.Name;
@@ -1058,7 +895,7 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
-            public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
+            public Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
             {
                 var resource = new TaskResource();
                 resource.Name = BuiltInTasks.UpdateCalamari.Name;
@@ -1070,7 +907,7 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
-            public TaskResource ExecuteBackup(string description = null)
+            public Task<TaskResource> ExecuteBackup(string description = null)
             {
                 var resource = new TaskResource();
                 resource.Name = BuiltInTasks.Backup.Name;
@@ -1078,7 +915,7 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
-            public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null)
+            public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null)
             {
                 var resource = new TaskResource();
                 resource.Name = BuiltInTasks.Upgrade.Name;
@@ -1091,7 +928,7 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
-            public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
+            public Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
             {
                 var resource = new TaskResource();
                 resource.Name = BuiltInTasks.AdHocScript.Name;
@@ -1107,32 +944,41 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
-            public TaskDetailsResource GetDetails(TaskResource resource)
+            public Task<TaskDetailsResource> GetDetails(TaskResource resource)
             {
                 return Client.Get<TaskDetailsResource>(resource.Link("Details"));
             }
 
-            public string GetRawOutputLog(TaskResource resource)
+            public Task<string> GetRawOutputLog(TaskResource resource)
             {
                 return Client.Get<string>(resource.Link("Raw"));
             }
 
-            public void Rerun(TaskResource resource)
+            public Task Rerun(TaskResource resource)
             {
-                Client.Post(resource.Link("Rerun"), (TaskResource)null);
+                return Client.Post(resource.Link("Rerun"), (TaskResource)null);
             }
 
-            public void Cancel(TaskResource resource)
+            public Task Cancel(TaskResource resource)
             {
-                Client.Post(resource.Link("Cancel"), (TaskResource)null);
+                return Client.Post(resource.Link("Cancel"), (TaskResource)null);
             }
 
-            public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
+            public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
             {
-                WaitForCompletion(new[] {task}, pollIntervalSeconds, timeoutAfterMinutes, interval);
+                return WaitForCompletion(new[] { task }, pollIntervalSeconds, timeoutAfterMinutes, interval);
             }
 
-            public void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
+            public Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
+            {
+                Func<TaskResource[], Task> taskInterval = null;
+                if (interval != null)
+                    taskInterval = tr => Task.Run(() => interval(tr));
+
+                return WaitForCompletion(tasks, pollIntervalSeconds, timeoutAfterMinutes, taskInterval);
+            }
+
+            public async Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], Task> interval = null)
             {
                 var start = Stopwatch.StartNew();
                 if (tasks == null || tasks.Length == 0)
@@ -1140,25 +986,23 @@ namespace Octopus.Client
 
                 while (true)
                 {
-                    var stillRunning =
-                        (from task in tasks
-                            let currentStatus = Client.Get<TaskResource>(task.Link("Self"))
-                            select currentStatus).ToArray();
+                    var stillRunning = await Task.WhenAll(
+                            tasks.Select(t => Client.Get<TaskResource>(t.Link("Self")))
+                        )
+                        .ConfigureAwait(false);
 
                     if (interval != null)
-                    {
-                        interval(stillRunning);
-                    }
+                        await interval(stillRunning).ConfigureAwait(false);
 
                     if (stillRunning.All(t => t.IsCompleted))
                         return;
 
                     if (timeoutAfterMinutes > 0 && start.Elapsed.TotalMinutes > timeoutAfterMinutes)
                     {
-                        throw new TimeoutException(string.Format("One or more tasks did not complete before the timeout was reached. We waited {0:n1} minutes for the tasks to complete.", start.Elapsed.TotalMinutes));
+                        throw new TimeoutException($"One or more tasks did not complete before the timeout was reached. We waited {start.Elapsed.TotalMinutes:n1} minutes for the tasks to complete.");
                     }
 
-                    Thread.Sleep(pollIntervalSeconds*1000);
+                    Thread.Sleep(pollIntervalSeconds * 1000);
                 }
             }
         }
@@ -1181,34 +1025,34 @@ namespace Octopus.Client
                 invitations = new InvitationRepository(client);
             }
 
-            public UserResource Register(RegisterCommand registerCommand)
+            public async Task<UserResource> Register(RegisterCommand registerCommand)
             {
-                Client.Post(Client.RootDocument.Link("Register"), registerCommand);
-                return GetCurrent();
+                await Client.Post(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
+                return await GetCurrent().ConfigureAwait(false);
             }
 
-            public void SignIn(LoginCommand loginCommand)
+            public Task SignIn(LoginCommand loginCommand)
             {
-                Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+                return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
             }
 
-            public void SignOut()
+            public Task SignOut()
             {
-                Client.Post(Client.RootDocument.Link("SignOut"));
+                return Client.Post(Client.RootDocument.Link("SignOut"));
             }
 
-            public UserResource GetCurrent()
+            public Task<UserResource> GetCurrent()
             {
                 return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
             }
 
-            public UserPermissionSetResource GetPermissions(UserResource user)
+            public Task<UserPermissionSetResource> GetPermissions(UserResource user)
             {
                 if (user == null) throw new ArgumentNullException("user");
                 return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
             }
 
-            public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)
+            public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)
             {
                 if (user == null) throw new ArgumentNullException("user");
                 return Client.Post<object, ApiKeyResource>(user.Link("ApiKeys"), new
@@ -1217,34 +1061,34 @@ namespace Octopus.Client
                 });
             }
 
-            public List<ApiKeyResource> GetApiKeys(UserResource user)
+            public async Task<List<ApiKeyResource>> GetApiKeys(UserResource user)
             {
                 if (user == null) throw new ArgumentNullException("user");
                 var resources = new List<ApiKeyResource>();
 
-                Client.Paginate<ApiKeyResource>(user.Link("ApiKeys"), page =>
+                await Client.Paginate<ApiKeyResource>(user.Link("ApiKeys"), page =>
                 {
                     resources.AddRange(page.Items);
                     return true;
-                });
+                }).ConfigureAwait(false);
 
                 return resources;
             }
 
-            public void RevokeApiKey(ApiKeyResource apiKey)
+            public Task RevokeApiKey(ApiKeyResource apiKey)
             {
-                Client.Delete(apiKey.Link("Self"));
+                return Client.Delete(apiKey.Link("Self"));
             }
 
-            public InvitationResource Invite(string addToTeamId)
+            public Task<InvitationResource> Invite(string addToTeamId)
             {
                 if (addToTeamId == null) throw new ArgumentNullException("addToTeamId");
-                return Invite(new ReferenceCollection {addToTeamId});
+                return Invite(new ReferenceCollection { addToTeamId });
             }
 
-            public InvitationResource Invite(ReferenceCollection addToTeamIds)
+            public Task<InvitationResource> Invite(ReferenceCollection addToTeamIds)
             {
-                return invitations.Create(new InvitationResource {AddToTeamIds = addToTeamIds ?? new ReferenceCollection()});
+                return invitations.Create(new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() });
             }
         }
 
@@ -1263,17 +1107,17 @@ namespace Octopus.Client
             {
             }
 
-            public ChannelResource FindByName(ProjectResource project, string name)
+            public Task<ChannelResource> FindByName(ProjectResource project, string name)
             {
                 return FindByName(name, path: project.Link("Channels"));
             }
 
-            public ChannelEditor CreateOrModify(ProjectResource project, string name)
+            public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name)
             {
                 return new ChannelEditor(this).CreateOrModify(project, name);
             }
 
-            public ChannelEditor CreateOrModify(ProjectResource project, string name, string description)
+            public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description)
             {
                 return new ChannelEditor(this).CreateOrModify(project, name, description);
             }
@@ -1286,18 +1130,18 @@ namespace Octopus.Client
             {
             }
 
-            public ProjectTriggerResource FindByName(ProjectResource project, string name)
+            public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
             {
                 return FindByName(name, path: project.Link("Triggers"));
             }
 
-            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
+            public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
             {
                 return new ProjectTriggerEditor(this).CreateOrModify(project, name, type);
             }
         }
 
-        class SchedulerRepository: ISchedulerRepository
+        class SchedulerRepository : ISchedulerRepository
         {
             readonly IOctopusClient client;
 
@@ -1306,29 +1150,29 @@ namespace Octopus.Client
                 this.client = client;
             }
 
-            public void Start()
+            public Task Start()
             {
-                client.GetContent("~/api/scheduler/start");
+                return client.GetContent("~/api/scheduler/start");
             }
 
-            public void Start(string taskName)
+            public Task Start(string taskName)
             {
-                client.GetContent($"~/api/scheduler/start?task={taskName}");
+                return client.GetContent($"~/api/scheduler/start?task={taskName}");
             }
 
-            public void Trigger(string taskName)
+            public Task Trigger(string taskName)
             {
-                client.GetContent($"~/api/scheduler/trigger?task={taskName}");
+                return client.GetContent($"~/api/scheduler/trigger?task={taskName}");
             }
 
-            public void Stop()
+            public Task Stop()
             {
-                client.GetContent("~/api/scheduler/stop");
+                return client.GetContent("~/api/scheduler/stop");
             }
 
-            public void Stop(string taskName)
+            public Task Stop(string taskName)
             {
-                client.GetContent($"~/api/scheduler/stop?task={taskName}");
+                return client.GetContent($"~/api/scheduler/stop?task={taskName}");
             }
         }
 
@@ -1339,22 +1183,22 @@ namespace Octopus.Client
             {
             }
 
-            public TenantVariableResource GetVariables(TenantResource tenant)
+            public Task<TenantVariableResource> GetVariables(TenantResource tenant)
             {
                 return Client.Get<TenantVariableResource>(tenant.Link("Variables"));
             }
 
-            public List<TenantResource> FindAll(string name, string[] tags)
+            public Task<List<TenantResource>> FindAll(string name, string[] tags)
             {
-                return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id="all", name, tags});
+                return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags });
             }
 
-            public TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables)
+            public Task<TenantVariableResource> ModifyVariables(TenantResource tenant, TenantVariableResource variables)
             {
                 return Client.Post<TenantVariableResource, TenantVariableResource>(tenant.Link("Variables"), variables);
             }
 
-            public List<TenantsMissingVariablesResource> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
+            public Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
             {
                 return Client.Get<List<TenantsMissingVariablesResource>>(Client.RootDocument.Link("TenantsMissingVariables"), new
                 {
@@ -1364,12 +1208,12 @@ namespace Octopus.Client
                 });
             }
 
-            public void SetLogo(TenantResource tenant, string fileName, Stream contents)
+            public Task SetLogo(TenantResource tenant, string fileName, Stream contents)
             {
-                Client.Post(tenant.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
+                return Client.Post(tenant.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
             }
 
-            public TenantEditor CreateOrModify(string name)
+            public Task<TenantEditor> CreateOrModify(string name)
             {
                 return new TenantEditor(this).CreateOrModify(name);
             }
@@ -1381,17 +1225,17 @@ namespace Octopus.Client
             {
             }
 
-            public void Sort(string[] tagSetIdsInOrder)
+            public Task Sort(string[] tagSetIdsInOrder)
             {
-                Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
+                return Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
             }
 
-            public TagSetEditor CreateOrModify(string name)
+            public Task<TagSetEditor> CreateOrModify(string name)
             {
                 return new TagSetEditor(this).CreateOrModify(name);
             }
 
-            public TagSetEditor CreateOrModify(string name, string description)
+            public Task<TagSetEditor> CreateOrModify(string name, string description)
             {
                 return new TagSetEditor(this).CreateOrModify(name, description);
             }

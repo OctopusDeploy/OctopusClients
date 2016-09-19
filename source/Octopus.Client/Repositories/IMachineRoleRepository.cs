@@ -1,10 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Octopus.Client.Repositories
 {
     public interface IMachineRoleRepository
     {
-        List<string> GetAllRoleNames();
+        Task<IReadOnlyList<string>> GetAllRoleNames();
     }
 }

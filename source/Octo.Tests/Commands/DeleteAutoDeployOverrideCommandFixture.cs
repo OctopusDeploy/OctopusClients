@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            deleteAutoDeployOverrideCommand = new DeleteAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem);
+            deleteAutoDeployOverrideCommand = new DeleteAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");

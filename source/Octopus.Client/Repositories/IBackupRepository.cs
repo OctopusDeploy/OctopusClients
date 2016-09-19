@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
     public interface IBackupRepository
     {
-        BackupConfigurationResource GetConfiguration();
-        BackupConfigurationResource ModifyConfiguration(BackupConfigurationResource backupConfiguration);
+        Task<BackupConfigurationResource> GetConfiguration();
+        Task<BackupConfigurationResource> ModifyConfiguration(BackupConfigurationResource backupConfiguration);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Client
 {
@@ -11,7 +12,8 @@ namespace Octopus.Client
         /// Creates an appropriate <see cref="IOctopusClient" /> for the provided <see cref="OctopusServerEndpoint" />.
         /// </summary>
         /// <param name="serverEndpoint">The endpoint to create a client for.</param>
+        /// <param name="octopusClientOptions"></param>
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
-        IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint);
+        Task<IOctopusClient> CreateClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null);
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {
@@ -15,52 +18,48 @@ namespace Octopus.Cli.Commands
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, Serilog.ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public ListLatestDeploymentsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             var projectsFilter = new string[0];
             if (projects.Count > 0)
             {
                 Log.Debug("Loading projects...");
-                projectsFilter = Repository.Projects.FindByNames(projects.ToArray()).Select(p => p.Id).ToArray();
+                var projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
+                projectsFilter = projectResources.Select(p => p.Id).ToArray();
             }
 
-            var environmentsById = new Dictionary<string, string>();
-            if (environments.Count > 0)
-            {
-                Log.Debug("Loading environments...");
-                CollectionExtensions.AddRange(environmentsById, Repository.Environments.FindByNames(environments.ToArray()).Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
-            }
-            else
-            {
-                CollectionExtensions.AddRange(environmentsById, Repository.Environments.FindAll().Select(p => new KeyValuePair<string, string>(p.Id, p.Name)));
-            }
+            Log.Debug("Loading environments...");
+            var environmentResources = environments.Count > 0
+                ? Repository.Environments.FindByNames(environments.ToArray())
+                : Repository.Environments.FindAll();
 
-            var deployments = Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] {});
+            var environmentsById = (await environmentResources.ConfigureAwait(false)).ToDictionary(p => p.Id, p => p.Name);
+
+            var deployments = await Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] { }).ConfigureAwait(false);
 
             foreach (var deployment in deployments.Items)
             {
-                LogDeploymentInfo(deployment, environmentsById);
+                await LogDeploymentInfo(deployment, environmentsById).ConfigureAwait(false);
             }
         }
 
-        public void LogDeploymentInfo(DeploymentResource deployment, Dictionary<string, string> environmentsById)
+        public async Task LogDeploymentInfo(DeploymentResource deployment, Dictionary<string, string> environmentsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[deployment.EnvironmentId];
-            var taskId = deployment.Link("Task");
-            var task = Repository.Tasks.Get(taskId);
-            var release = Repository.Releases.Get(deployment.Link("Release"));
+            var task = Repository.Tasks.Get(deployment.Link("Task")).ConfigureAwait(false);
+            var release = Repository.Releases.Get(deployment.Link("Release")).ConfigureAwait(false);
 
             var propertiesToLog = new List<string>();
-            propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(task));
-            propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(release));
+            propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(await task));
+            propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(await release));
             Log.Information(" - Environment: {0}", nameOfDeploymentEnvironment);
             foreach (var property in propertiesToLog)
             {

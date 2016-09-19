@@ -1,9 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories
 {
     public interface ICreate<TResource>
     {
-        TResource Create(TResource resource);
+        Task<TResource> Create(TResource resource);
     }
 }

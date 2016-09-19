@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 
@@ -11,7 +12,7 @@ namespace Octopus.Client.Repositories
         IDelete<LibraryVariableSetResource>,
         IFindByName<LibraryVariableSetResource>
     {
-        LibraryVariableSetEditor CreateOrModify(string name);
-        LibraryVariableSetEditor CreateOrModify(string name, string description);
+        Task<LibraryVariableSetEditor> CreateOrModify(string name);
+        Task<LibraryVariableSetEditor> CreateOrModify(string name, string description);
     }
 }

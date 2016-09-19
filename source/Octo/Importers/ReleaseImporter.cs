@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Util;
@@ -26,7 +27,7 @@ namespace Octopus.Cli.Importers
             public IEnumerable<ReleaseResource> Releases { get; set; }
         }
 
-        protected override bool Validate(Dictionary<string, string> paramDictionary)
+        protected override async Task<bool> Validate(Dictionary<string, string> paramDictionary)
         {
             var errorList = new List<string>();
 
@@ -38,7 +39,7 @@ namespace Octopus.Cli.Importers
             else
             {
                 var projectName = paramDictionary["Project"];
-                project = Repository.Projects.FindByName(projectName);
+                project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
                 if (project == null)
                     errorList.Add("Could not find project named '" + projectName + "'");
             }
@@ -76,13 +77,14 @@ namespace Octopus.Cli.Importers
         //instead we'll assume that they have imported the latest project settings and thus the 
         //deployment process + variables will be up to date
 
-        protected override void Import(Dictionary<string, string> paramDictionary)
+        protected override async Task Import(Dictionary<string, string> paramDictionary)
         {
             if (ReadyToImport)
             {
                 // Start with the full list of releases from the import file, and exclude any existing releases
                 var releasesToImport = validatedImportSettings.Releases.ToList();
-                Repository.Projects.GetReleases(validatedImportSettings.Project).Paginate(Repository, page =>
+                var releases = await Repository.Projects.GetReleases(validatedImportSettings.Project).ConfigureAwait(false);
+                await releases.Paginate(Repository, page =>
                 {
                     foreach (var existingRelease in page.Items)
                     {
@@ -95,13 +97,14 @@ namespace Octopus.Cli.Importers
 
                     // Stop paginating if there's nothing left to import
                     return releasesToImport.Any();
-                });
+                })
+                .ConfigureAwait(false);
 
                 foreach (var release in releasesToImport)
                 {
                     release.ProjectId = validatedImportSettings.Project.Id;
                     Log.Debug("Creating new release '" + release.Version + "' for project " + validatedImportSettings.Project.Name);
-                    Repository.Releases.Create(release);
+                    await Repository.Releases.Create(release).ConfigureAwait(false);
                 }
 
                 Log.Debug("Successfully imported releases for project " + validatedImportSettings.Project.Name);

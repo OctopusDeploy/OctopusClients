@@ -1,9 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories
 {
     public interface IDelete<in TResource>
     {
-        void Delete(TResource resource);
+        Task Delete(TResource resource);
     }
 }

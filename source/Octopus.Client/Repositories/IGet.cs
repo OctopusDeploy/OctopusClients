@@ -1,12 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Octopus.Client.Repositories
 {
     public interface IGet<TResource>
     {
-        TResource Get(string idOrHref);
-        List<TResource> Get(params string[] ids);
-        TResource Refresh(TResource resource);
+        Task<TResource> Get(string idOrHref);
+        Task<List<TResource>> Get(params string[] ids);
+        Task<TResource> Refresh(TResource resource);
     }
 }

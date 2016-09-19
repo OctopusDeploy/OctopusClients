@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
@@ -8,11 +9,11 @@ namespace Octopus.Client.Repositories
 {
     public interface IMachineRepository : IFindByName<MachineResource>, IGet<MachineResource>, ICreate<MachineResource>, IModify<MachineResource>, IDelete<MachineResource>
     {
-        MachineResource Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
-        MachineConnectionStatus GetConnectionStatus(MachineResource machine);
-        List<MachineResource> FindByThumbprint(string thumbprint);
+        Task<MachineResource> Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
+        Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine);
+        Task<List<MachineResource>> FindByThumbprint(string thumbprint);
 
-        MachineEditor CreateOrModify(
+        Task<MachineEditor> CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
@@ -20,7 +21,7 @@ namespace Octopus.Client.Repositories
             TenantResource[] tenants,
             TagResource[] tenantTags);
 
-        MachineEditor CreateOrModify(
+        Task<MachineEditor> CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,

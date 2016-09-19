@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -9,7 +11,7 @@ namespace Octopus.Client.Editors
     {
         private readonly IChannelRepository repository;
         private readonly ProjectResource owner;
-        private readonly List<ChannelEditor> trackedChannelBuilders = new List<ChannelEditor>(); 
+        private readonly List<ChannelEditor> trackedChannelBuilders = new List<ChannelEditor>();
 
         public ProjectChannelsEditor(IChannelRepository repository, ProjectResource owner)
         {
@@ -17,30 +19,33 @@ namespace Octopus.Client.Editors
             this.owner = owner;
         }
 
-        public ChannelEditor CreateOrModify(string name)
+        public async Task<ChannelEditor> CreateOrModify(string name)
         {
-            var channelBuilder = new ChannelEditor(repository).CreateOrModify(owner, name);
+            var channelBuilder = await new ChannelEditor(repository).CreateOrModify(owner, name).ConfigureAwait(false);
             trackedChannelBuilders.Add(channelBuilder);
             return channelBuilder;
         }
 
-        public ChannelEditor CreateOrModify(string name, string description)
+        public async Task<ChannelEditor> CreateOrModify(string name, string description)
         {
-            var channelBuilder = new ChannelEditor(repository).CreateOrModify(owner, name, description);
+            var channelBuilder = await new ChannelEditor(repository).CreateOrModify(owner, name, description).ConfigureAwait(false);
             trackedChannelBuilders.Add(channelBuilder);
             return channelBuilder;
         }
 
-        public ProjectChannelsEditor Delete(string name)
+        public async Task<ProjectChannelsEditor> Delete(string name)
         {
-            var channel = repository.FindByName(owner, name);
-            if (channel != null) repository.Delete(channel);
+            var channel = await repository.FindByName(owner, name).ConfigureAwait(false);
+            if (channel != null)
+                await repository.Delete(channel).ConfigureAwait(false);
             return this;
         }
 
-        public ProjectChannelsEditor SaveAll()
+        public async Task<ProjectChannelsEditor> SaveAll()
         {
-            trackedChannelBuilders.ForEach(x => x.Save());
+            await Task.WhenAll(
+                trackedChannelBuilders.Select(x => x.Save())
+            ).ConfigureAwait(false);
             return this;
         }
     }

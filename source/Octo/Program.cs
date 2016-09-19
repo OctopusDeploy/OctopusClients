@@ -13,6 +13,7 @@ using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using System.Net;
 using Octopus.Cli.Repositories;
+using Octopus.Client;
 using Octopus.Client.Exceptions;
 
 namespace Octopus.Cli
@@ -37,7 +38,7 @@ namespace Octopus.Cli
                 var commandLocator = container.Resolve<ICommandLocator>();
                 var first = GetFirstArgument(args);
                 var command = GetCommand(first, commandLocator);
-                command.Execute(args.Skip(1).ToArray());
+                command.Execute(args.Skip(1).ToArray()).GetAwaiter().GetResult();
                 return 0;
             }
             catch (Exception exception)
@@ -76,6 +77,7 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
+            builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();

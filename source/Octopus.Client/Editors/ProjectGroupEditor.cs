@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -15,12 +16,12 @@ namespace Octopus.Client.Editors
 
         public ProjectGroupResource Instance { get; private set; }
 
-        public ProjectGroupEditor CreateOrModify(string name)
+        public async Task<ProjectGroupEditor> CreateOrModify(string name)
         {
-            var existing = repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = repository.Create(new ProjectGroupResource
+                Instance = await repository.Create(new ProjectGroupResource
                 {
                     Name = name,
                 });
@@ -29,17 +30,17 @@ namespace Octopus.Client.Editors
             {
                 existing.Name = name;
 
-                Instance = repository.Modify(existing);
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
         }
-        public ProjectGroupEditor CreateOrModify(string name, string description)
+        public async Task<ProjectGroupEditor> CreateOrModify(string name, string description)
         {
-            var existing = repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = repository.Create(new ProjectGroupResource
+                Instance = await repository.Create(new ProjectGroupResource
                 {
                     Name = name,
                     Description = description
@@ -50,7 +51,7 @@ namespace Octopus.Client.Editors
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = repository.Modify(existing);
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
@@ -62,9 +63,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public ProjectGroupEditor Save()
+        public async Task<ProjectGroupEditor> Save()
         {
-            Instance = repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
         }
     }

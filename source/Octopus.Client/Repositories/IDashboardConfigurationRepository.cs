@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
     public interface IDashboardConfigurationRepository
     {
-        DashboardConfigurationResource GetDashboardConfiguration();
-        DashboardConfigurationResource ModifyDashboardConfiguration(DashboardConfigurationResource resource);
+        Task<DashboardConfigurationResource> GetDashboardConfiguration();
+        Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource);
     }
 }

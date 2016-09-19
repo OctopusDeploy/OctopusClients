@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -23,7 +24,7 @@ namespace Octopus.Cli.Importers
 
         public string FilePath { get; set; }
 
-        public bool Validate(params string[] parameters)
+        public Task<bool> Validate(params string[] parameters)
         {
             var paramDictionary = ParseParameters(parameters);
             FilePath = paramDictionary["FilePath"];
@@ -31,21 +32,22 @@ namespace Octopus.Cli.Importers
             return Validate(paramDictionary);
         }
 
-        public void Import(params string[] parameters)
+        public Task Import(params string[] parameters)
         {
             var paramDictionary = ParseParameters(parameters);
             FilePath = paramDictionary["FilePath"];
 
-            Import(paramDictionary);
+            return Import(paramDictionary);
         }
 
-        protected virtual void Import(Dictionary<string, string> paramDictionary)
+        protected virtual Task Import(Dictionary<string, string> paramDictionary)
         {
+            return Task.CompletedTask;
         }
 
-        protected virtual bool Validate(Dictionary<string, string> paramDictionary)
+        protected virtual Task<bool> Validate(Dictionary<string, string> paramDictionary)
         {
-            return true;
+            return Task.FromResult(true);
         }
 
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
@@ -24,9 +25,9 @@ namespace Octopus.Cli.Tests.Commands
             Options.WriteOptionDescriptions(writer);
         }
 
-        public void Execute(string[] commandLineArguments)
+        public Task Execute(string[] commandLineArguments)
         {
-            Assert.Fail("This should not be called");
+            return Task.Run(() => Assert.Fail("This should not be called"));
         }
     }
 }

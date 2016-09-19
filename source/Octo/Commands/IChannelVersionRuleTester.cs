@@ -1,4 +1,5 @@
-﻿using Octopus.Cli.Model;
+﻿using System.Threading.Tasks;
+using Octopus.Cli.Model;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -6,6 +7,6 @@ namespace Octopus.Cli.Commands
 {
     public interface IChannelVersionRuleTester
     {
-        ChannelVersionRuleTestResult Test(IOctopusRepository repository, ChannelVersionRuleResource rule, string packageVersion);
+        Task<ChannelVersionRuleTestResult> Test(IOctopusRepository repository, ChannelVersionRuleResource rule, string packageVersion);
     }
 }

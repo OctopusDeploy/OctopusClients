@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -17,23 +19,24 @@ namespace Octopus.Client.Editors
             this.owner = owner;
         }
 
-        public ProjectTriggerEditor CreateOrModify(string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public async Task<ProjectTriggerEditor> CreateOrModify(string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
         {
-            var projectTriggerBuilder = new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, conditions);
+            var projectTriggerBuilder = await new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, conditions).ConfigureAwait(false);
             trackedProjectTriggerBuilders.Add(projectTriggerBuilder);
             return projectTriggerBuilder;
         }
 
-        public ProjectTriggersEditor Delete(string name)
+        public async Task<ProjectTriggersEditor> Delete(string name)
         {
-            var trigger = repository.FindByName(owner, name);
-            if (trigger != null) repository.Delete(trigger);
+            var trigger = await repository.FindByName(owner, name).ConfigureAwait(false);
+            if (trigger != null)
+                await repository.Delete(trigger).ConfigureAwait(false);
             return this;
         }
 
-        public ProjectTriggersEditor SaveAll()
+        public async Task<ProjectTriggersEditor> SaveAll()
         {
-            trackedProjectTriggerBuilders.ForEach(x => x.Save());
+            await Task.WhenAll(trackedProjectTriggerBuilders.Select(x => x.Save())).ConfigureAwait(false);
             return this;
         }
     }

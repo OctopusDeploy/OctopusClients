@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
@@ -49,7 +50,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     FileName = "foo.txt"
                 };
                 _recieved = false;
-                Action post = () => Client.Post("~/", file);
+                Func<Task> post = () => Client.Post("~/", file);
                 post.ShouldNotThrow();
                 _recieved.Should().BeTrue();
             }

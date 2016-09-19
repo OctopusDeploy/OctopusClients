@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -22,8 +25,8 @@ namespace Octopus.Cli.Commands
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public CleanEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public CleanEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Cleanup");
             options.Add("environment=", "Name of an environment to clean up.", v => environmentName = v);
@@ -34,15 +37,15 @@ namespace Octopus.Cli.Commands
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to clean up. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             if (string.IsNullOrWhiteSpace(environmentName))
                 throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
             if (!healthStatuses.Any() && !statuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --status or --health-status");
 
-            var environmentResource = GetEnvironment();
-            var machines = FilterByEnvironment(environmentResource);
+            var environmentResource = await GetEnvironment().ConfigureAwait(false);
+            IEnumerable<MachineResource> machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
             CleanUpEnvironment(machines.ToList(), environmentResource);
@@ -78,7 +81,6 @@ namespace Octopus.Cli.Commands
         private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines)
         {
             var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
-
             environmentMachines = provider.Filter(environmentMachines);
 
             if (isDisabled.HasValue)
@@ -118,16 +120,16 @@ namespace Octopus.Cli.Commands
             return description;
         }
 
-        private IEnumerable<MachineResource> FilterByEnvironment(EnvironmentResource environmentResource)
+        private Task<List<MachineResource>> FilterByEnvironment(EnvironmentResource environmentResource)
         {
             Log.Debug("Loading machines...");
             return Repository.Machines.FindMany(x =>  x.EnvironmentIds.Any(environmentId => environmentId == environmentResource.Id));
         }
 
-        private EnvironmentResource GetEnvironment()
+        private async Task<EnvironmentResource> GetEnvironment()
         {
             Log.Debug("Loading environments...");
-            var environmentResource = Repository.Environments.FindByName(environmentName);
+            var environmentResource = await Repository.Environments.FindByName(environmentName).ConfigureAwait(false);
             if (environmentResource == null)
             {
                 throw new CouldNotFindException("the specified environment");

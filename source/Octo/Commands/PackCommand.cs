@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
@@ -59,70 +60,73 @@ namespace Octopus.Cli.Commands
             optionGroups.WriteOptionDescriptions(writer);
         }
 
-        public void Execute(string[] commandLineArguments)
+        public Task Execute(string[] commandLineArguments)
         {
-            optionGroups.Parse(commandLineArguments);
-
-            if (string.IsNullOrWhiteSpace(id))
-                throw new CommandException("An ID is required");
-
-            if (includes.All(string.IsNullOrWhiteSpace))
-                includes.Add("**");
-
-            if (string.IsNullOrWhiteSpace(basePath))
-                basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
-
-            if (string.IsNullOrWhiteSpace(outFolder))
-                outFolder = Path.GetFullPath(Directory.GetCurrentDirectory());
-
-            if (version == null)
+            return Task.Run(() =>
             {
-                var now = DateTime.Now;
-                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
-            }
+                optionGroups.Parse(commandLineArguments);
 
-            if (authors.All(string.IsNullOrWhiteSpace))
-                authors.Add(Environment.GetEnvironmentVariable("USERNAME") + "@" + Environment.GetEnvironmentVariable("USERDOMAIN"));
+                if (string.IsNullOrWhiteSpace(id))
+                    throw new CommandException("An ID is required");
 
-            if (string.IsNullOrWhiteSpace(description))
-                description = "A deployment package created from files on disk.";
+                if (includes.All(string.IsNullOrWhiteSpace))
+                    includes.Add("**");
 
-            string allReleaseNotes = null;
-            if (!string.IsNullOrWhiteSpace(releaseNotesFile))
-            {
-                if (!File.Exists(releaseNotesFile))
-                    log.Warning("The release notes file '{0}' could not be found", releaseNotesFile);
-                else
-                    allReleaseNotes = fileSystem.ReadFile(releaseNotesFile);
-            }
+                if (string.IsNullOrWhiteSpace(basePath))
+                    basePath = Path.GetFullPath(Directory.GetCurrentDirectory());
 
-            if (!string.IsNullOrWhiteSpace(releaseNotes))
-            {
-                if (allReleaseNotes != null)
-                    allReleaseNotes += Environment.NewLine + releaseNotes;
-                else
-                    allReleaseNotes = releaseNotes;
-            }
+                if (string.IsNullOrWhiteSpace(outFolder))
+                    outFolder = Path.GetFullPath(Directory.GetCurrentDirectory());
 
-            var metadata = new ManifestMetadata
-            {
-                Id = id,
-                Authors = authors, 
-                Description = description,
-                Version = version.ToNuGetVersion(),
-            };
+                if (version == null)
+                {
+                    var now = DateTime.Now;
+                    version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
+                }
 
-            if (!string.IsNullOrWhiteSpace(allReleaseNotes))
-                metadata.ReleaseNotes = allReleaseNotes;
+                if (authors.All(string.IsNullOrWhiteSpace))
+                    authors.Add(Environment.GetEnvironmentVariable("USERNAME") + "@" + Environment.GetEnvironmentVariable("USERDOMAIN"));
 
-            if (!string.IsNullOrWhiteSpace(title))
-                metadata.Title = title;
+                if (string.IsNullOrWhiteSpace(description))
+                    description = "A deployment package created from files on disk.";
 
-            log.Information("Packing {0} version {1}...", id, version);
+                string allReleaseNotes = null;
+                if (!string.IsNullOrWhiteSpace(releaseNotesFile))
+                {
+                    if (!File.Exists(releaseNotesFile))
+                        log.Warning("The release notes file '{0}' could not be found", releaseNotesFile);
+                    else
+                        allReleaseNotes = fileSystem.ReadFile(releaseNotesFile);
+                }
 
-            packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite);
+                if (!string.IsNullOrWhiteSpace(releaseNotes))
+                {
+                    if (allReleaseNotes != null)
+                        allReleaseNotes += Environment.NewLine + releaseNotes;
+                    else
+                        allReleaseNotes = releaseNotes;
+                }
 
-            log.Information("Done.");
+                var metadata = new ManifestMetadata
+                {
+                    Id = id,
+                    Authors = authors,
+                    Description = description,
+                    Version = version.ToNuGetVersion(),
+                };
+
+                if (!string.IsNullOrWhiteSpace(allReleaseNotes))
+                    metadata.ReleaseNotes = allReleaseNotes;
+
+                if (!string.IsNullOrWhiteSpace(title))
+                    metadata.Title = title;
+
+                log.Information("Packing {0} version {1}...", id, version);
+
+                packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite);
+
+                log.Information("Done.");
+            });
         }
 
         IPackageBuilder SelectFormat(string fmt)

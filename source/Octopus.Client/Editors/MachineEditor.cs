@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories;
@@ -17,22 +19,22 @@ namespace Octopus.Client.Editors
 
         public MachineResource Instance { get; private set; }
 
-        public MachineEditor CreateOrModify(
+        public async Task<MachineEditor> CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles)
         {
-            var existing = repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = repository.Create(new MachineResource
+                Instance = await repository.Create(new MachineResource
                 {
                     Name = name,
                     Endpoint = endpoint,
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles)
-                });
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -41,13 +43,13 @@ namespace Octopus.Client.Editors
                 existing.EnvironmentIds.ReplaceAll(environments.Select(e => e.Id));
                 existing.Roles.ReplaceAll(roles);
 
-                Instance = repository.Modify(existing);
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
         }
 
-        public MachineEditor CreateOrModify(
+        public async Task<MachineEditor> CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
@@ -55,10 +57,10 @@ namespace Octopus.Client.Editors
             TenantResource[] tenants,
             TagResource[] tenantTags)
         {
-            var existing = repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = repository.Create(new MachineResource
+                Instance = await repository.Create(new MachineResource
                 {
                     Name = name,
                     Endpoint = endpoint,
@@ -66,7 +68,7 @@ namespace Octopus.Client.Editors
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
                     TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName))
-                });
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -77,7 +79,7 @@ namespace Octopus.Client.Editors
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
 
-                Instance = repository.Modify(existing);
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
@@ -119,9 +121,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public MachineEditor Save()
+        public async Task<MachineEditor> Save()
         {
-            Instance = repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
         }
     }

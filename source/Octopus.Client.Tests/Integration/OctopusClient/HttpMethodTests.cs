@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using Nancy.ModelBinding;
 using NUnit.Framework;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
 {
@@ -36,19 +38,21 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             });
 
             Delete(TestRootPath, p => _lastMethod = "Delete");
+            
         }
 
         [Test]
         public void GetReturnsAValue()
         {
-            Client.Get<TestDto>("~/").Value.Should().Be("42");
+            var dto = Client.Get<TestDto>("~/").Result;
+            dto.Value.Should().Be("42");
         }
 
         [Test]
         public void PostingAObjectWorks()
         {
             _lastMethod = null;
-            Action post = () => Client.Post("~/", new TestDto { Value = "Foo" });
+            Func<Task> post = () => Client.Post("~/", new TestDto { Value = "Foo" });
             post.ShouldNotThrow();
             _lastMethod.Should().Be("Post");
         }
@@ -57,7 +61,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void PuttingAObjectWorks()
         {
             _lastMethod = null;
-            Action put = () => Client.Put("~/", new TestDto { Value = "Foo" });
+            Func<Task> put = () => Client.Put("~/", new TestDto { Value = "Foo" });
             put.ShouldNotThrow();
             _lastMethod.Should().Be("Put");
         }
@@ -66,7 +70,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void DeleteReachesTheServer()
         {
             _lastMethod = null;
-            Action delete = () => Client.Delete("~/");
+            Func<Task> delete = () => Client.Delete("~/");
             delete.ShouldNotThrow();
             _lastMethod.Should().Be("Delete");
         }

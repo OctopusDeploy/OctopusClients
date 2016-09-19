@@ -9,7 +9,7 @@ namespace Octopus.Cli.Tests.Helpers
     {
         public static void Execute(this ICommand command, params string[] args)
         {
-            command.Execute(args);
+            command.Execute(args).GetAwaiter().GetResult(); 
         } 
     }
 }

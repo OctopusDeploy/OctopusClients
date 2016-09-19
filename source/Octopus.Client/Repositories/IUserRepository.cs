@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Octopus.Client.Model;
 
@@ -10,15 +11,15 @@ namespace Octopus.Client.Repositories
         IModify<UserResource>,
         IDelete<UserResource>
     {
-        UserResource Register(RegisterCommand registerCommand);
-        void SignIn(LoginCommand loginCommand);
-        void SignOut();
-        UserResource GetCurrent();
-        UserPermissionSetResource GetPermissions(UserResource user);
-        ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
-        List<ApiKeyResource> GetApiKeys(UserResource user);
-        void RevokeApiKey(ApiKeyResource apiKey);
-        InvitationResource Invite(string addToTeamId);
-        InvitationResource Invite(ReferenceCollection addToTeamIds);
+        Task<UserResource> Register(RegisterCommand registerCommand);
+        Task SignIn(LoginCommand loginCommand);
+        Task SignOut();
+        Task<UserResource> GetCurrent();
+        Task<UserPermissionSetResource> GetPermissions(UserResource user);
+        Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
+        Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
+        Task RevokeApiKey(ApiKeyResource apiKey);
+        Task<InvitationResource> Invite(string addToTeamId);
+        Task<InvitationResource> Invite(ReferenceCollection addToTeamIds);
     }
 }

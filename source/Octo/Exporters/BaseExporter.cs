@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -31,8 +32,9 @@ namespace Octopus.Cli.Exporters
             Export(parameterDictionary);
         }
 
-        protected virtual void Export(Dictionary<string, string> paramDictionary)
+        protected virtual Task Export(Dictionary<string, string> paramDictionary)
         {
+            return Task.CompletedTask;
         }
 
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)

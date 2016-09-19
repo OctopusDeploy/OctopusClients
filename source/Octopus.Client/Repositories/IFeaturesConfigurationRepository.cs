@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
     public interface IFeaturesConfigurationRepository
     {
-        FeaturesConfigurationResource GetFeaturesConfiguration();
-        FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource);
+        Task<FeaturesConfigurationResource> GetFeaturesConfiguration();
+        Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource);
     }
 }

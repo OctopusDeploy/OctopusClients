@@ -22,22 +22,23 @@ using Nancy.Responses.Negotiation;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Nancy.Extensions;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Integration
 {
     public abstract class HttpIntegrationTestBase : NancyModule
     {
-        public static readonly string HostBaseUri = "http://localhost:17358";
+        public static readonly string HostBaseUri = "http://foo.localtest.me:17358";
         public static readonly string HostBaseSslUri = "https://localhost:17359";
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
-        private static IWebHost _currentHost;
-        public static Client.OctopusClient CurrentClient { get; set; }
-        protected Client.OctopusClient Client { get; private set; }
+        static IWebHost currentHost;
+
+        protected IOctopusClient Client { get; private set; }
 
         [OneTimeSetUp]
         public static void OneTimeSetup()
         {
-            _currentHost = new WebHostBuilder()
+            currentHost = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel(o => o.UseHttps(GetCert()))
                 .UseStartup<Startup>()
@@ -47,7 +48,7 @@ namespace Octopus.Client.Tests.Integration
             {
                 try
                 {
-                    _currentHost.Run();
+                    currentHost.Run();
                 }
                 catch (Exception ex)
                 {
@@ -70,20 +71,31 @@ namespace Octopus.Client.Tests.Integration
         [OneTimeTearDown]
         public static void OneTimeTearDown()
         {
-            _currentHost?.Dispose();
+            currentHost?.Dispose();
         }
 
         protected HttpIntegrationTestBase()
         {
             TestRootPath = $"/{GetType().Name}/";
+
+            Get($"{TestRootPath}api", p => Response.AsJson(
+                 new RootResource()
+                 {
+                     ApiVersion = "3.0.0",
+                     Links = new LinkCollection()
+                     {
+                         { "CurrentUser",$"{TestRootPath}/api/users/me" }
+                     }
+                 }
+             ));
         }
 
         public string TestRootPath { get; }
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
-            Client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
+            Client = await Octopus.Client.OctopusClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath)).ConfigureAwait(false);
         }
 
 

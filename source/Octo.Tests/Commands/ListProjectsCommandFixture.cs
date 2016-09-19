@@ -15,7 +15,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listProjectsCommand = new ListProjectsCommand(RepositoryFactory, Log, FileSystem);
+            listProjectsCommand = new ListProjectsCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         [Test]

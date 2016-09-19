@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -16,7 +17,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, Log, FileSystem);
+            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         CleanEnvironmentCommand listMachinesCommand;
@@ -51,7 +52,7 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
             Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
 
@@ -92,7 +93,7 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
             Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
             Log.Received().Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", "Development");
@@ -108,7 +109,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldNotCleanEnvironmentWithMissingEnvironmentArgs()
         {
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()
                 .WithMessage("Please specify an environment name using the parameter: --environment=XYZ");
         }
@@ -117,7 +118,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldNotCleanEnvironmentWithMissingStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()
               .WithMessage("Please specify a status using the parameter: --status or --health-status");
         }
@@ -128,7 +129,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
 
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CouldNotFindException>()
               .WithMessage("Could not find the specified environment; either it does not exist or you lack permissions to view it.");
         }

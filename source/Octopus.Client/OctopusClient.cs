@@ -26,27 +26,19 @@ namespace Octopus.Client
     {
         private static readonly ILog Logger = LogProvider.For<OctopusClient>();
 
-        readonly object rootDocumentLock = new object();
-        RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly bool ignoreSslErrors = false;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusClient" /> class.
-        /// </summary>
-        /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
-        {
-        }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
         /// <param name="options">The <see cref="OctopusClientOptions" /> used to configure the behavour of the client, may be null.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options)
+        OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options)
         {
             options = options ?? new OctopusClientOptions();
 
@@ -92,6 +84,21 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return false;
         }
 
+        public static async Task<IOctopusClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
+        {
+            var client = new OctopusClient(serverEndpoint, options ?? new OctopusClientOptions());
+            try
+            {
+                client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
+                return client;
+            }
+            catch
+            {
+                client.Dispose();
+                throw;
+            }
+        }
+
         /// <summary>
         /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
         /// server. Instead of hardcoding paths,
@@ -99,36 +106,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusClient" />.
         /// </summary>
-        public RootResource RootDocument
-        {
-            get
-            {
-                if (rootDocument != null) return rootDocument;
-
-                lock (rootDocumentLock)
-                {
-                    if (rootDocument != null) return rootDocument;
-
-                    var root = EstablishSession();
-                    Interlocked.MemoryBarrier();
-                    rootDocument = root;
-                    return root;
-                }
-            }
-        }
+        public RootResource RootDocument { get; private set; }
 
         /// <summary>
         /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
         /// </summary>
         /// <returns>A fresh copy of the root document.</returns>
-        public RootResource RefreshRootDocument()
+        public async Task<RootResource> RefreshRootDocument()
         {
-            var root = Get<RootResource>("~/api");
-            lock (rootDocumentLock)
-            {
-                rootDocument = root;
-            }
-            return rootDocument;
+            var RootDocument = await Get<RootResource>("~/api").ConfigureAwait(false);
+            return RootDocument;
         }
 
         /// <summary>
@@ -147,15 +134,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public event Action<OctopusResponse> ReceivedOctopusResponse;
 
         /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        public void Initialize()
-        {
-            // Force the Lazy instance to be loaded
-            RootDocument.Link("Self");
-        }
-
-        /// <summary>
         /// Fetches a single resource from the server using the HTTP GET verb.
         /// </summary>
         /// <typeparam name="TResource"></typeparam>
@@ -164,11 +142,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The resource from the server.
         /// </returns>
-        public TResource Get<TResource>(string path, object pathParameters = null)
+        public async Task<TResource> Get<TResource>(string path, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
+            var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+            return response.ResponseResource;
         }
 
         /// <summary>
@@ -182,9 +161,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The collection of resources from the server.
         /// </returns>
-        public ResourceCollection<TResource> List<TResource>(string path, object pathParameters = null)
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters = null)
         {
-            return Get<ResourceCollection<TResource>>(path, pathParameters);
+            return await Get<ResourceCollection<TResource>>(path, pathParameters).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -197,13 +176,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
         /// page will also be requested.
         /// </param>
-        public void Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage)
+        public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
-            var page = List<TResource>(path, pathParameters);
+            var page = await List<TResource>(path, pathParameters).ConfigureAwait(true);
 
             while (getNextPage(page) && page.Items.Count > 0 && page.HasLink("Page.Next"))
             {
-                page = List<TResource>(page.Link("Page.Next"));
+                page = await List<TResource>(page.Link("Page.Next")).ConfigureAwait(true);
             }
         }
 
@@ -216,9 +195,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
         /// page will also be requested.
         /// </param>
-        public void Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage)
+        public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
-            Paginate(path, null, getNextPage);
+            return Paginate(path, null, getNextPage);
         }
 
         /// <summary>
@@ -232,12 +211,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
-        public TResource Create<TResource>(string path, TResource resource, object pathParameters = null)
+        public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true);
-            return Get<TResource>(response.Location);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(true);
+            return await Get<TResource>(response.Location).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -247,11 +226,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public void Post<TResource>(string path, TResource resource, object pathParameters = null)
+        public Task Post<TResource>(string path, TResource resource, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), false);
+            return DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), false);
         }
 
         /// <summary>
@@ -262,22 +241,22 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to post.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public TResponse Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
-
-            return DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ResponseResource;
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(true);
+            return response.ResponseResource;
         }
 
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>
         /// <param name="path">The path to the container resource.</param>
-        public void Post(string path)
+        public Task Post(string path)
         {
             var uri = QualifyUri(path);
 
-            DispatchRequest<string>(new OctopusRequest("POST", uri), false);
+            return DispatchRequest<string>(new OctopusRequest("POST", uri), false);
         }
 
         /// <summary>
@@ -295,11 +274,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
-        public void Put<TResource>(string path, TResource resource)
+        public Task Put<TResource>(string path, TResource resource)
         {
             var uri = QualifyUri(path);
 
-            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
         }
 
         /// <summary>
@@ -307,11 +286,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public void Delete(string path, object pathParameters = null)
+        public Task Delete(string path, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<string>(new OctopusRequest("DELETE", uri), true);
+            return DispatchRequest<string>(new OctopusRequest("DELETE", uri), true);
         }
 
         /// <summary>
@@ -325,12 +304,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
-        public TResource Update<TResource>(string path, TResource resource, object pathParameters = null)
+        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
-            return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
+            await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false).ConfigureAwait(false);
+            var result = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+            return result.ResponseResource;
         }
 
         /// <summary>
@@ -348,10 +328,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the resource to fetch.</param>
         /// <returns>A stream containing the content of the resource.</returns>
-        public Stream GetContent(string path)
+        public async Task<Stream> GetContent(string path)
         {
             var uri = QualifyUri(path);
-            return DispatchRequest<Stream>(new OctopusRequest("GET", uri), true).ResponseResource;
+            var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+            return response.ResponseResource;
         }
 
         /// <summary>
@@ -359,11 +340,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         /// <param name="path">The path to the resource to create or update.</param>
         /// <param name="contentStream">A stream containing content of the resource.</param>
-        public void PutContent(string path, Stream contentStream)
+        public Task PutContent(string path, Stream contentStream)
         {
             if (contentStream == null) throw new ArgumentNullException("contentStream");
             var uri = QualifyUri(path);
-            DispatchRequest<Stream>(new OctopusRequest("PUT", uri, requestResource: contentStream), false);
+            return DispatchRequest<Stream>(new OctopusRequest("PUT", uri, requestResource: contentStream), false);
         }
 
         public Uri QualifyUri(string path, object parameters = null)
@@ -375,7 +356,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        RootResource EstablishSession()
+        async Task<RootResource> EstablishSession()
         {
             RootResource server;
 
@@ -399,7 +380,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                 try
                 {
-                    server = Get<RootResource>("~/api");
+                    server = await Get<RootResource>("~/api").ConfigureAwait(true);
                     break;
                 }
                 catch (WebException ex)
@@ -434,12 +415,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return server;
         }
 
-        private OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
-        {
-            return DispatchRequestAsync<TResponseResource>(request, readResponse).GetAwaiter().GetResult();
-        }
-
-        private async Task<OctopusResponse<TResponseResource>> DispatchRequestAsync<TResponseResource>(OctopusRequest request, bool readResponse)
+        private async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
 #if COREFX_ISSUE_11456_EXISTS
             try

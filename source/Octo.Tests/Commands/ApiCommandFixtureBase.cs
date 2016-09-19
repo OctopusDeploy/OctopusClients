@@ -42,10 +42,10 @@ namespace Octopus.Cli.Tests.Commands
             Repository = Substitute.For<IOctopusRepository>();
             Repository.Client.RootDocument.Returns(rootDocument);
 
+            ClientFactory = Substitute.For<IOctopusClientFactory>();
 
             RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);
-            RepositoryFactory.CreateRepository(null, null).ReturnsForAnyArgs(Repository);
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
 
@@ -55,6 +55,8 @@ namespace Octopus.Cli.Tests.Commands
                 "--apiKey=ABCDEF123456789"
             }; 
         }
+
+        public IOctopusClientFactory ClientFactory { get; set; }
 
         public ILogger Log { get; set; }
 

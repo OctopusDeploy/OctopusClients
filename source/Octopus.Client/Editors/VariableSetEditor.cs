@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -15,9 +16,9 @@ namespace Octopus.Client.Editors
 
         public VariableSetResource Instance { get; private set; }
 
-        public VariableSetEditor Load(string id)
+        public async Task<VariableSetEditor> Load(string id)
         {
-            Instance = repository.Get(id);
+            Instance = await repository.Get(id).ConfigureAwait(false);
             return this;
         }
 
@@ -45,9 +46,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public VariableSetEditor Save()
+        public async Task<VariableSetEditor> Save()
         {
-            Instance = repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
         }
     }

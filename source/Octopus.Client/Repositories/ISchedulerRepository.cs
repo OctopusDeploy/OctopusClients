@@ -1,11 +1,13 @@
-﻿namespace Octopus.Client.Repositories
+﻿using System.Threading.Tasks;
+
+namespace Octopus.Client.Repositories
 {
     public interface ISchedulerRepository
     {
-        void Start();
-        void Start(string taskName);
-        void Stop();
-        void Stop(string taskName);
-        void Trigger(string taskName);
+        Task Start();
+        Task Start(string taskName);
+        Task Stop();
+        Task Stop(string taskName);
+        Task Trigger(string taskName);
     }
 }

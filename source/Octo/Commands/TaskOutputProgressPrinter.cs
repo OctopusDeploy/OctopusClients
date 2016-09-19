@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Util;
@@ -13,9 +14,9 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public void Render(IOctopusRepository repository, ILogger log, TaskResource resource)
+        public async Task Render(IOctopusRepository repository, ILogger log, TaskResource resource)
         {
-            var details = repository.Tasks.GetDetails(resource);
+            var details = await repository.Tasks.GetDetails(resource).ConfigureAwait(false);
 
             if (details.ActivityLogs != null)
             {

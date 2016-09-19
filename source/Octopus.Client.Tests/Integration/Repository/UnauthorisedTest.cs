@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
@@ -14,16 +15,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public UnauthorisedTest()
         {
 
-            Get($"{TestRootPath}api", p => Response.AsJson(
-                 new RootResource()
-                 {
-                     ApiVersion = "3.0.0",
-                     Links = new LinkCollection()
-                     {
-                         { "CurrentUser",$"{TestRootPath}/api/users/me" }
-                     }
-                 }
-             ));
+           
             Get($"{TestRootPath}api/users/me", p =>
             {
                 var response = Response.AsJson(
@@ -38,7 +30,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
             var repo = new OctopusRepository(Client);
-            Action getUser = () => repo.Users.GetCurrent();
+            Func<Task> getUser = () => repo.Users.GetCurrent();
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
     }

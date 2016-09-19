@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
@@ -23,7 +24,7 @@ namespace Octopus.Cli.Exporters
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
-        protected override void Export(Dictionary<string, string> parameters)
+        protected override async Task Export(Dictionary<string, string> parameters)
         {
             if (string.IsNullOrWhiteSpace(parameters["Name"]))
             {
@@ -33,32 +34,33 @@ namespace Octopus.Cli.Exporters
             var projectName = parameters["Name"];
 
             Log.Debug("Finding project: " + projectName);
-            var project = Repository.Projects.FindByName(projectName);
+            var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
 
             Log.Debug("Finding project group for project");
-            var projectGroup = Repository.ProjectGroups.Get(project.ProjectGroupId);
+            var projectGroup = await Repository.ProjectGroups.Get(project.ProjectGroupId).ConfigureAwait(false);
             if (projectGroup == null)
                 throw new CouldNotFindException("project group for project", project.Name);
 
             Log.Debug("Finding variable set for project");
-            var variables = Repository.VariableSets.Get(project.VariableSetId);
+            var variables = await Repository.VariableSets.Get(project.VariableSetId).ConfigureAwait(false);
             if (variables == null)
                 throw new CouldNotFindException("variable set for project", project.Name);
 
-            var channels = new ChannelResource[0];
             var channelLifecycles = new List<ReferenceDataItem>();
+            var channels = new ChannelResource[0];
             if (Repository.SupportsChannels())
             {
                 Log.Debug("Finding channels for project");
-                channels = Repository.Projects.GetChannels(project).GetAllPages(Repository).ToArray();
+                var firstChannelPage = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+                channels = (await firstChannelPage.GetAllPages(Repository).ConfigureAwait(false)).ToArray();
 
-                foreach (var channel in channels)
+                foreach (var channel in channels.ToArray())
                 {
                     if (channel.LifecycleId != null)
                     {
-                        var channelLifecycle = Repository.Lifecycles.Get(channel.LifecycleId);
+                        var channelLifecycle = await Repository.Lifecycles.Get(channel.LifecycleId).ConfigureAwait(false);
                         if (channelLifecycle == null)
                             throw new CouldNotFindException("Lifecycle for channel", channel.Name);
                         if (channelLifecycles.All(cl => cl.Id != channelLifecycle.Id))
@@ -70,7 +72,7 @@ namespace Octopus.Cli.Exporters
             }
 
             Log.Debug("Finding deployment process for project");
-            var deploymentProcess = Repository.DeploymentProcesses.Get(project.DeploymentProcessId);
+            var deploymentProcess = await Repository.DeploymentProcesses.Get(project.DeploymentProcessId).ConfigureAwait(false);
             if (deploymentProcess == null)
                 throw new CouldNotFindException("deployment process for project",project.Name);
 
@@ -86,7 +88,7 @@ namespace Octopus.Cli.Exporters
                         Log.Debug("Finding NuGet feed for step " + step.Name);
                         FeedResource feed = null;
                         if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeedId.Value))
-                            feed = Repository.Feeds.Get(nugetFeedId.Value);
+                            feed = await Repository.Feeds.Get(nugetFeedId.Value).ConfigureAwait(false);
                         else
                             feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeedId.Value);
 
@@ -111,7 +113,7 @@ namespace Octopus.Cli.Exporters
                     if (action.Properties.TryGetValue("Octopus.Action.Template.Id", out templateId))
                     {
                         Log.Debug("Finding action template for step " + step.Name);
-                        var template = actionTemplateRepository.Get(templateId.Value);
+                        var template = await actionTemplateRepository.Get(templateId.Value).ConfigureAwait(false);
                         if (template == null)
                             throw new CouldNotFindException("action template for step", step.Name);
                         if (actionTemplates.All(t => t.Id != templateId.Value))
@@ -125,7 +127,7 @@ namespace Octopus.Cli.Exporters
             var libraryVariableSets = new List<ReferenceDataItem>();
             foreach (var libraryVariableSetId in project.IncludedLibraryVariableSetIds)
             {
-                var libraryVariableSet = Repository.LibraryVariableSets.Get(libraryVariableSetId);
+                var libraryVariableSet = await Repository.LibraryVariableSets.Get(libraryVariableSetId).ConfigureAwait(false);
                 if (libraryVariableSet == null)
                 {
                     throw new CouldNotFindException("library variable set with Id", libraryVariableSetId);
@@ -136,7 +138,7 @@ namespace Octopus.Cli.Exporters
             LifecycleResource lifecycle = null;
             if (project.LifecycleId != null)
             {
-                lifecycle = Repository.Lifecycles.Get(project.LifecycleId);
+                lifecycle = await Repository.Lifecycles.Get(project.LifecycleId).ConfigureAwait(false);
                 if (lifecycle == null)
                 {
                     throw new CouldNotFindException("lifecycle with Id " + project.LifecycleId + " for project ", project.Name);

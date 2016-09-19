@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
@@ -18,15 +19,20 @@ namespace Octopus.Cli.Commands
 {
     public abstract class ApiCommand : ICommand
     {
+        readonly IOctopusClientFactory clientFactory;
         readonly IOctopusRepositoryFactory repositoryFactory;
         string apiKey;
         bool enableDebugging;
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
         bool ignoreSslErrors;
+#endif
         string password;
         string username;
+        IOctopusClient client;
 
-        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
         {
+            this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
             this.Log = log;
             this.FileSystem = fileSystem;
@@ -61,7 +67,7 @@ namespace Octopus.Cli.Commands
             Options.WriteOptionDescriptions(writer);
         }
 
-        public void Execute(string[] commandLineArguments)
+        public async Task Execute(string[] commandLineArguments)
         {
             var remainingArguments = Options.Parse(commandLineArguments);
             if (remainingArguments.Count > 0)
@@ -77,12 +83,13 @@ namespace Octopus.Cli.Commands
 
             var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
 
-            Repository = repositoryFactory.CreateRepository(endpoint, new OctopusClientOptions()
+            client = await clientFactory.CreateClient(endpoint, new OctopusClientOptions()
             {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
                 IgnoreSslErrors = ignoreSslErrors
 #endif
-            });
+            }).ConfigureAwait(false);
+            Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
 
             if (enableDebugging)
@@ -94,19 +101,19 @@ namespace Octopus.Cli.Commands
             var root = Repository.Client.RootDocument;
             Log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
 
-            var user = Repository.Users.GetCurrent();
+            var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
             {
                 Log.Debug("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
-            Execute();
+            await Execute().ConfigureAwait(false);
         }
 
         protected virtual void ValidateParameters() { }
 
-        protected abstract void Execute();
+        protected abstract Task Execute();
 
         static NetworkCredential ParseCredentials(string username, string password)
         {
