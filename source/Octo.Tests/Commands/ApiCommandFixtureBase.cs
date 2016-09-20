@@ -39,12 +39,12 @@ namespace Octopus.Cli.Tests.Commands
             rootDocument.Version = "2.0";
             rootDocument.Links.Add("Tenants", "http://tenants.org");
 
-            Repository = Substitute.For<IOctopusRepository>();
+            Repository = Substitute.For<IOctopusAsyncRepository>();
             Repository.Client.RootDocument.Returns(rootDocument);
 
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
-            RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
+            RepositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
@@ -60,9 +60,9 @@ namespace Octopus.Cli.Tests.Commands
 
         public ILogger Log { get; set; }
 
-        public IOctopusRepositoryFactory RepositoryFactory { get; set; }
+        public IOctopusAsyncRepositoryFactory RepositoryFactory { get; set; }
 
-        public IOctopusRepository Repository { get; set; }
+        public IOctopusAsyncRepository Repository { get; set; }
 
         public IOctopusFileSystem FileSystem { get; set; }
 

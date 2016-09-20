@@ -16,7 +16,7 @@ namespace Octopus.Client.Tests.Operations
     {
         RegisterMachineOperation operation;
         IOctopusClientFactory clientFactory;
-        IOctopusClient client;
+        IOctopusAsyncClient client;
         OctopusServerEndpoint serverEndpoint;
         ResourceCollection<EnvironmentResource> environments;
         ResourceCollection<MachineResource> machines;
@@ -25,8 +25,8 @@ namespace Octopus.Client.Tests.Operations
         public void SetUp()
         {
             clientFactory = Substitute.For<IOctopusClientFactory>();
-            client = Substitute.For<IOctopusClient>();
-            clientFactory.CreateClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
+            client = Substitute.For<IOctopusAsyncClient>();
+            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
             operation = new RegisterMachineOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 
@@ -47,7 +47,7 @@ namespace Octopus.Client.Tests.Operations
         public void ShouldThrowIfEnvironmentNotFound()
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
-            Func<Task> exec = () => operation.Execute(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment Atlantis on the Octopus server.");
         }
 
@@ -64,7 +64,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] {"Production"};
 
-            await operation.Execute(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
@@ -88,7 +88,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] {"Production"};
 
-            Func<Task> exec = () => operation.Execute(serverEndpoint);
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             exec.ShouldThrow<ArgumentException>();
         }
 
@@ -108,7 +108,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] {"Production"};
             operation.AllowOverwrite = true;
 
-            await operation.Execute(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
@@ -132,7 +132,7 @@ namespace Octopus.Client.Tests.Operations
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
             operation.EnvironmentNames = new[] { "Production" };
 
-            await operation.Execute(serverEndpoint).ConfigureAwait(false);
+            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"

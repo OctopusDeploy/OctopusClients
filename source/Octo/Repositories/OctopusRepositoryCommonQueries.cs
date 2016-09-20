@@ -12,10 +12,10 @@ namespace Octopus.Cli.Repositories
 {
     public class OctopusRepositoryCommonQueries
     {
-        readonly IOctopusRepository repository;
+        readonly IOctopusAsyncRepository repository;
         readonly ILogger log;
 
-        public OctopusRepositoryCommonQueries(IOctopusRepository repository, ILogger log)
+        public OctopusRepositoryCommonQueries(IOctopusAsyncRepository repository, ILogger log)
         {
             this.repository = repository;
             this.log = log;

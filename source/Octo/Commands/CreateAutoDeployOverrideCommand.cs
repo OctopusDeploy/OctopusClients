@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     [Command("create-autodeployoverride", Description = "Override the release that auto deploy will use")]
     public class CreateAutoDeployOverrideCommand : ApiCommand
     {
-        public CreateAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) :
+        public CreateAutoDeployOverrideCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) :
             base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Auto deploy release override");

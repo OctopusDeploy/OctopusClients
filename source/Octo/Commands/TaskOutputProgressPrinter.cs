@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public async Task Render(IOctopusRepository repository, ILogger log, TaskResource resource)
+        public async Task Render(IOctopusAsyncRepository repository, ILogger log, TaskResource resource)
         {
             var details = await repository.Tasks.GetDetails(resource).ConfigureAwait(false);
 

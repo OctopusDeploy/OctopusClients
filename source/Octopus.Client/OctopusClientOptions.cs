@@ -4,7 +4,7 @@ using System.Security.Authentication;
 namespace Octopus.Client
 {
     /// <summary>
-    /// Options used to change the behaviour of <see cref="OctopusClient" />
+    /// Options used to change the behaviour of <see cref="OctopusAsyncClient" />
     /// </summary>
     public class OctopusClientOptions
     {

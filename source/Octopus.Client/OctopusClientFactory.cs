@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Octopus.Client
 {
     /// <summary>
-    /// Creates instances of the <see cref="IOctopusClient" />.
+    /// Creates instances of the <see cref="IOctopusAsyncClient" />.
     /// </summary>
     public class OctopusClientFactory : IOctopusClientFactory
     {
@@ -13,10 +13,10 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
         /// <param name="octopusClientOptions"></param>
-        /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
-        public Task<IOctopusClient> CreateClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null)
+        /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
+        public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null)
         {
-            return OctopusClient.Create(serverEndpoint, octopusClientOptions);
+            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions);
         }
     }
 }

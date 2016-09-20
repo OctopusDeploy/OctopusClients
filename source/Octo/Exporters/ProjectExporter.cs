@@ -18,7 +18,7 @@ namespace Octopus.Cli.Exporters
     {
         readonly ActionTemplateRepository actionTemplateRepository;
 
-        public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public ProjectExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);

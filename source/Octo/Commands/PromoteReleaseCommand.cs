@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     [Command("promote-release", Description = "Promotes a release.")]
     public class PromoteReleaseCommand : DeploymentCommandBase
     {
-        public PromoteReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public PromoteReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(repositoryFactory, log, fileSystem, clientFactory)
         {
             var options = Options.For("Release Promotion");

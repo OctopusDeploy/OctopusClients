@@ -19,7 +19,7 @@ namespace Octopus.Cli.Commands
     {
         readonly VariableDictionary variables = new VariableDictionary();
 
-        protected DeploymentCommandBase(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        protected DeploymentCommandBase(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             SpecificMachineNames = new List<string>();

@@ -8,6 +8,6 @@ namespace Octopus.Cli.Importers
     public interface IImporterLocator
     {
         IImporterMetadata[] List();
-        IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log);
+        IImporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log);
     }
 }

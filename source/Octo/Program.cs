@@ -78,7 +78,7 @@ namespace Octopus.Cli
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
-            builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
+            builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
 

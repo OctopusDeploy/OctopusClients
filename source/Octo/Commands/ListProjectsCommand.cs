@@ -11,7 +11,7 @@ namespace Octopus.Cli.Commands
     [Command("list-projects", Description = "Lists all projects")]
     public class ListProjectsCommand : ApiCommand
     {
-        public ListProjectsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public ListProjectsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
         }

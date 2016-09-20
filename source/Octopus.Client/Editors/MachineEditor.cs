@@ -5,6 +5,7 @@ using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {

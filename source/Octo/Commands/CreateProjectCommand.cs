@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     [Command("create-project", Description = "Creates a project")]
     public class CreateProjectCommand : ApiCommand
     {
-        public CreateProjectCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public CreateProjectCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Project creation");

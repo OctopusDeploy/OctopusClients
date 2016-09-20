@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public ListReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");

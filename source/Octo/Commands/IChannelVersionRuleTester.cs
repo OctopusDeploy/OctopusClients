@@ -7,6 +7,6 @@ namespace Octopus.Cli.Commands
 {
     public interface IChannelVersionRuleTester
     {
-        Task<ChannelVersionRuleTestResult> Test(IOctopusRepository repository, ChannelVersionRuleResource rule, string packageVersion);
+        Task<ChannelVersionRuleTestResult> Test(IOctopusAsyncRepository repository, ChannelVersionRuleResource rule, string packageVersion);
     }
 }

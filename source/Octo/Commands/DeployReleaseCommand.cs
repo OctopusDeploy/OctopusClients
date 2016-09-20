@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(repositoryFactory, log, fileSystem, clientFactory)
         {
 

@@ -21,7 +21,7 @@ namespace Octopus.Cli.Util
             return source.Link(PageNext);
         }
 
-        public static async Task<IEnumerable<TResource>> GetAllPages<TResource>(this ResourceCollection<TResource> source, IOctopusRepository repository)
+        public static async Task<IEnumerable<TResource>> GetAllPages<TResource>(this ResourceCollection<TResource> source, IOctopusAsyncRepository repository)
         {
             var items = source.Items.ToList();
 
@@ -33,13 +33,13 @@ namespace Octopus.Cli.Util
             return items;
         }
 
-        public static async Task Paginate<TResource>(this ResourceCollection<TResource> source, IOctopusRepository repository, Func<ResourceCollection<TResource>, bool> getNextPage)
+        public static async Task Paginate<TResource>(this ResourceCollection<TResource> source, IOctopusAsyncRepository repository, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
             while (getNextPage(source) && source.Items.Count > 0 && source.HasNextPage())
                 source = await repository.Client.List<TResource>(source.NextPageLink()).ConfigureAwait(false);
         }
 
-        public static async Task<TResource> FindOne<TResource>(this ResourceCollection<TResource> source, IOctopusRepository repository, Func<TResource, bool> search)
+        public static async Task<TResource> FindOne<TResource>(this ResourceCollection<TResource> source, IOctopusAsyncRepository repository, Func<TResource, bool> search)
         {
             var resource = default(TResource);
             await source.Paginate(repository, page =>
@@ -51,7 +51,7 @@ namespace Octopus.Cli.Util
             return resource;
         }
 
-        public static async Task<List<TResource>> FindMany<TResource>(this ResourceCollection<TResource> source, IOctopusRepository repository, Func<TResource, bool> search)
+        public static async Task<List<TResource>> FindMany<TResource>(this ResourceCollection<TResource> source, IOctopusAsyncRepository repository, Func<TResource, bool> search)
         {
             var resources = new List<TResource>();
             await  source.Paginate(repository, page =>

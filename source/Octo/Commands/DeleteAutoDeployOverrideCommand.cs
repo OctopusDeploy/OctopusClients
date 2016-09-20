@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     [Command("delete-autodeployoverride", Description = "Delete auto deploy release overrides")]
     public class DeleteAutoDeployOverrideCommand : ApiCommand
     {
-        public DeleteAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory octopusClientFactory) :
+        public DeleteAutoDeployOverrideCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory octopusClientFactory) :
             base(octopusClientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Delete auto deploy release override");

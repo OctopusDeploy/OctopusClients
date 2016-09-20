@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand
     {
-        public CreateEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public CreateEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Environment creation");

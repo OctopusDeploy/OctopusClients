@@ -22,7 +22,7 @@ namespace Octopus.Cli.Commands
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListMachinesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");

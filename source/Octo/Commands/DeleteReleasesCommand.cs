@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
-        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public DeleteReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Deletion");

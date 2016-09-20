@@ -9,7 +9,7 @@ namespace Octopus.Cli.Importers
 {
     public abstract class BaseImporter : IImporter
     {
-        protected BaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        protected BaseImporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             this.Log = log;
             this.Repository = repository;
@@ -18,7 +18,7 @@ namespace Octopus.Cli.Importers
 
         public ILogger Log { get; }
 
-        public IOctopusRepository Repository { get; }
+        public IOctopusAsyncRepository Repository { get; }
 
         public FileSystemImporter FileSystemImporter { get; }
 

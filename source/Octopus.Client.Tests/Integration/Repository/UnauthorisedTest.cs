@@ -29,7 +29,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
-            var repo = new OctopusRepository(Client);
+            var repo = new OctopusAsyncRepository(Client);
             Func<Task> getUser = () => repo.Users.GetCurrent();
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }

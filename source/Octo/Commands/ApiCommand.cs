@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
     public abstract class ApiCommand : ICommand
     {
         readonly IOctopusClientFactory clientFactory;
-        readonly IOctopusRepositoryFactory repositoryFactory;
+        readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;
         bool enableDebugging;
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -28,9 +28,9 @@ namespace Octopus.Cli.Commands
 #endif
         string password;
         string username;
-        IOctopusClient client;
+        IOctopusAsyncClient client;
 
-        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
         {
             this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
@@ -56,7 +56,7 @@ namespace Octopus.Cli.Commands
 
         protected string ServerBaseUrl { get; private set; }
 
-        protected IOctopusRepository Repository { get; private set; }
+        protected IOctopusAsyncRepository Repository { get; private set; }
 
         protected OctopusRepositoryCommonQueries RepositoryCommonQueries { get; private set; }
 
@@ -83,7 +83,7 @@ namespace Octopus.Cli.Commands
 
             var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
 
-            client = await clientFactory.CreateClient(endpoint, new OctopusClientOptions()
+            client = await clientFactory.CreateAsyncClient(endpoint, new OctopusClientOptions()
             {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
                 IgnoreSslErrors = ignoreSslErrors

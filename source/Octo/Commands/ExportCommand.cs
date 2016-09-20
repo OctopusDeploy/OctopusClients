@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     {
         readonly IExporterLocator exporterLocator;
 
-        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
+        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             this.exporterLocator = exporterLocator;

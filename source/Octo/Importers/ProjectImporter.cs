@@ -40,7 +40,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; }
         }
 
-        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public ProjectImporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
             actionTemplateRepository = new ActionTemplateRepository(repository.Client);

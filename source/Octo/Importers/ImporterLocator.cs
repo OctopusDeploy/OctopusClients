@@ -28,7 +28,7 @@ namespace Octopus.Cli.Importers
                     select attribute).ToArray();
         }
 
-        public IImporter Find(string name, IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public IImporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             var iImporterType = typeof (IImporter).GetTypeInfo();
             name = name.Trim().ToLowerInvariant();
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Importers
                 where attribute.Name == name
                 select t).FirstOrDefault();
 
-            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILogger), log));
+            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusAsyncRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILogger), log));
         }
     }
 }

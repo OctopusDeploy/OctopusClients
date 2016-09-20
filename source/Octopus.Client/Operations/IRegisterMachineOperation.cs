@@ -74,12 +74,12 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        Task Execute(OctopusServerEndpoint serverEndpoint);
+        Task ExecuteAsync(OctopusServerEndpoint serverEndpoint);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        Task Execute(OctopusRepository repository);
+        Task ExecuteAsync(OctopusAsyncRepository repository);
     }
 }

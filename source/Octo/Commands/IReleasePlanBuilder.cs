@@ -6,6 +6,6 @@ namespace Octopus.Cli.Commands
 {
     public interface IReleasePlanBuilder
     {
-        Task<ReleasePlan> Build(IOctopusRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag);
+        Task<ReleasePlan> Build(IOctopusAsyncRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag);
     }
 }

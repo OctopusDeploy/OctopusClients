@@ -7,6 +7,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 using Autofac;
 using Nancy.Extensions;
+using Octopus.Client.Repositories.Async;
 
 #if HAS_BEST_CONVENTIONAL
 using Conventional;
@@ -18,14 +19,14 @@ namespace Octopus.Client.Tests.Conventions
     [TestFixture]
     public class ClientConventions
     {
-        private static readonly TypeInfo[] ExportedTypes = typeof(IOctopusClient).GetTypeInfo().Assembly.GetExportedTypes().Select(t => t.GetTypeInfo()).ToArray();
+        private static readonly TypeInfo[] ExportedTypes = typeof(IOctopusAsyncClient).GetTypeInfo().Assembly.GetExportedTypes().Select(t => t.GetTypeInfo()).ToArray();
         private static readonly TypeInfo[] RepositoryInterfaceTypes = ExportedTypes
             .Where(t => t.IsInterface && t.Name.EndsWith("Repository"))
-            .Where(t => t.AsType() != typeof(IOctopusRepository))
+            .Where(t => t.AsType() != typeof(IOctopusAsyncRepository))
             .ToArray();
         private static readonly TypeInfo[] RepositoryTypes = ExportedTypes
             .Where(t => !t.IsInterface && t.Name.EndsWith("Repository"))
-            .Where(t => t.AsType() != typeof(OctopusRepository))
+            .Where(t => t.AsType() != typeof(OctopusAsyncRepository))
             .ToArray();
         private static readonly TypeInfo[] ResourceTypes = ExportedTypes
             .Where(t => t.Name.EndsWith("Resource"))
@@ -36,30 +37,30 @@ namespace Octopus.Client.Tests.Conventions
             .ToArray();
 
         [Test]
-        public void AllRepositoriesShouldBeAvailableViaIOctopusRepository()
+        public void AllRepositoriesShouldBeAvailableViaIOctopusAsyncRepository()
         {
-            var exposedTypes = typeof(IOctopusRepository).GetProperties()
+            var exposedTypes = typeof(IOctopusAsyncRepository).GetProperties()
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
             var missingTypes = RepositoryInterfaceTypes.Except(exposedTypes).ToArray();
             if (missingTypes.Any())
             {
-                Assert.Fail($"All *Repository types should be exposed by {nameof(IOctopusRepository)}. Missing: {missingTypes.Select(t => t.Name)}");
+                Assert.Fail($"All *Repository types should be exposed by {nameof(IOctopusAsyncRepository)}. Missing: {missingTypes.Select(t => t.Name)}");
             }
         }
 
         [Test]
-        public void AllRepositoriesShouldBeAvailableViaOctopusRepository()
+        public void AllRepositoriesShouldBeAvailableViaOctopusAsyncRepository()
         {
-            var exposedTypes = typeof(OctopusRepository).GetProperties()
+            var exposedTypes = typeof(OctopusAsyncRepository).GetProperties()
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
             var missingTypes = RepositoryInterfaceTypes.Except(exposedTypes).ToArray();
             if (missingTypes.Any())
             {
-                Assert.Fail($"All *Repository types should be exposed by {nameof(OctopusRepository)}. Missing: {missingTypes.Select(t => t.Name).CommaSeperate()}");
+                Assert.Fail($"All *Repository types should be exposed by {nameof(OctopusAsyncRepository)}. Missing: {missingTypes.Select(t => t.Name).CommaSeperate()}");
             }
         }
 
@@ -71,7 +72,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingInterface.Any())
             {
-                Assert.Fail($"All *Repository types should implement a non-generic interface representing the repository contract {nameof(OctopusRepository)}.{Environment.NewLine}{missingInterface.Select(x => $"{x.Repository.Name} expected to implement I{x.Repository.Name}").NewLineSeperate()}");
+                Assert.Fail($"All *Repository types should implement a non-generic interface representing the repository contract {nameof(OctopusAsyncRepository)}.{Environment.NewLine}{missingInterface.Select(x => $"{x.Repository.Name} expected to implement I{x.Repository.Name}").NewLineSeperate()}");
             }
         }
 
@@ -247,7 +248,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllRepositoryInterfacesShouldFollowTheseConventions()
         {
             RepositoryInterfaceTypes
-                .MustConformTo(Convention.MustLiveInNamespace("Octopus.Client.Repositories"))
+                .MustConformTo(Convention.MustLiveInNamespace("Octopus.Client.Repositories").Or(Convention.MustLiveInNamespace("Octopus.Client.Repositories.Async")))
                 .AndMustConformTo(Convention.NameMustEndWith("Repository"))
                 .WithFailureAssertion(Assert.Fail);
         }

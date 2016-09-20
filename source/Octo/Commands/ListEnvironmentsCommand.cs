@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands
     public class ListEnvironmentsCommand : ApiCommand
     {
 
-        public ListEnvironmentsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public ListEnvironmentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
         }

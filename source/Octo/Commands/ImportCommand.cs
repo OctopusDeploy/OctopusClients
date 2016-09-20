@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     {
         readonly IImporterLocator importerLocator;
 
-        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
+        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             this.importerLocator = importerLocator;

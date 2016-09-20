@@ -12,7 +12,7 @@ namespace Octopus.Cli.Tests.Commands
     public class DummyApiCommand : ApiCommand
     {
         string pill;
-        public DummyApiCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public DummyApiCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Dummy");

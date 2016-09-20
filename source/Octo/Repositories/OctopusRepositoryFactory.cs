@@ -2,16 +2,16 @@
 
 namespace Octopus.Cli.Repositories
 {
-    public interface IOctopusRepositoryFactory
+    public interface IOctopusAsyncRepositoryFactory
     {
-        IOctopusRepository CreateRepository(IOctopusClient client);
+        IOctopusAsyncRepository CreateRepository(IOctopusAsyncClient client);
     }
 
-    public class OctopusRepositoryFactory : IOctopusRepositoryFactory
+    public class OctopusRepositoryFactory : IOctopusAsyncRepositoryFactory
     {
-        public IOctopusRepository CreateRepository(IOctopusClient client)
+        public IOctopusAsyncRepository CreateRepository(IOctopusAsyncClient client)
         {
-            return new OctopusRepository(client);
+            return client.CreateRepository();
         }
     }
 }

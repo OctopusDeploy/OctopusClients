@@ -23,7 +23,7 @@ namespace Octopus.Cli.Commands
             this.versionRuleTester = versionRuleTester;
         }
 
-        public async Task<ReleasePlan> Build(IOctopusRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag)
+        public async Task<ReleasePlan> Build(IOctopusAsyncRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag)
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
             if (project == null) throw new ArgumentNullException(nameof(project));

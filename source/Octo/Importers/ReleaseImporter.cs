@@ -16,7 +16,7 @@ namespace Octopus.Cli.Importers
         ValidatedImportSettings validatedImportSettings;
         public bool ReadyToImport => validatedImportSettings != null && !validatedImportSettings.ErrorList.Any();
 
-        public ReleaseImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public ReleaseImporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
         }

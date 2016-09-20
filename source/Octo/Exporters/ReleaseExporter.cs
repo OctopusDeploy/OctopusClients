@@ -14,7 +14,7 @@ namespace Octopus.Cli.Exporters
     [Exporter("release", "List", Description = "Exports either a single release, or multiple releases")]
     public class ReleaseExporter : BaseExporter
     {
-        public ReleaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log) :
+        public ReleaseExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log) :
             base(repository, fileSystem, log)
         {
         }

@@ -13,7 +13,7 @@ namespace Octopus.Cli.Commands
     [Command("create-channel", Description = "Creates a channel for a project")]
     public class CreateChannelCommand : ApiCommand
     {
-        public CreateChannelCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) : base(clientFactory, repositoryFactory, log, fileSystem)
+        public CreateChannelCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Create");
             options.Add("project=", "The name of the project in which to create the channel", p => projectName = p);

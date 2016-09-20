@@ -33,7 +33,7 @@ namespace Octopus.Client.Tests.Integration
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         static IWebHost currentHost;
 
-        protected IOctopusClient Client { get; private set; }
+        protected IOctopusAsyncClient Client { get; private set; }
 
         [OneTimeSetUp]
         public static void OneTimeSetup()
@@ -95,7 +95,7 @@ namespace Octopus.Client.Tests.Integration
         [SetUp]
         public async Task Setup()
         {
-            Client = await Octopus.Client.OctopusClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath)).ConfigureAwait(false);
+            Client = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath)).ConfigureAwait(false);
         }
 
 

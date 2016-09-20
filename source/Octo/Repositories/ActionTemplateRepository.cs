@@ -8,9 +8,9 @@ namespace Octopus.Cli.Repositories
 {
     public class ActionTemplateRepository : IActionTemplateRepository
     {
-        private readonly IOctopusClient client;
+        private readonly IOctopusAsyncClient client;
 
-        public ActionTemplateRepository(IOctopusClient client)
+        public ActionTemplateRepository(IOctopusAsyncClient client)
         {
             this.client = client;
             

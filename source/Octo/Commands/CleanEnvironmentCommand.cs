@@ -25,7 +25,7 @@ namespace Octopus.Cli.Commands
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public CleanEnvironmentCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public CleanEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Cleanup");

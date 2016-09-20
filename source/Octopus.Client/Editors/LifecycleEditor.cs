@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {

@@ -8,7 +8,7 @@ namespace Octopus.Cli.Commands
 {
     public class ChannelVersionRuleTester : IChannelVersionRuleTester
     {
-        public async Task<ChannelVersionRuleTestResult> Test(IOctopusRepository repository, ChannelVersionRuleResource rule, string packageVersion)
+        public async Task<ChannelVersionRuleTestResult> Test(IOctopusAsyncRepository repository, ChannelVersionRuleResource rule, string packageVersion)
         {
             if (rule == null)
             {

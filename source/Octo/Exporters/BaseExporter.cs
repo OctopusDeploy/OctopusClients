@@ -9,7 +9,7 @@ namespace Octopus.Cli.Exporters
 {
     public abstract class BaseExporter : IExporter
     {
-        protected BaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        protected BaseExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
             this.Log = log;
             this.Repository = repository;
@@ -18,7 +18,7 @@ namespace Octopus.Cli.Exporters
 
         public ILogger Log { get; }
 
-        public IOctopusRepository Repository { get; }
+        public IOctopusAsyncRepository Repository { get; }
 
         public FileSystemExporter FileSystemExporter { get; }
 
