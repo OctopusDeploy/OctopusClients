@@ -93,6 +93,125 @@ namespace Octopus.Client.Operations
 
         public Uri SubscriptionId { get; set; }
 
+#if SYNC_CLIENT
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        [Obsolete("Use ExecuteAsync instead")]
+        public void Execute(OctopusServerEndpoint serverEndpoint)
+        {
+            using (var client = clientFactory.CreateClient(serverEndpoint))
+            {
+                var repository = new OctopusRepository(client);
+
+                Execute(repository);
+            }
+        }
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        [Obsolete("Use ExecuteAsync instead")]
+        public void Execute(OctopusRepository repository)
+        {
+            var selectedEnvironments = GetEnvironments(repository);
+            var machinePolicy = GetMachinePolicy(repository);
+            var machine = GetMachine(repository);
+            var tenants = GetTenants(repository);
+            ValidateTenantTags(repository);
+
+            ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants);
+
+            if (machine.Id != null)
+                repository.Machines.Modify(machine);
+            else
+                repository.Machines.Create(machine);
+        }
+
+        [Obsolete]
+        List<TenantResource> GetTenants(OctopusRepository repository)
+        {
+            if (Tenants == null || !Tenants.Any())
+            {
+                return new List<TenantResource>();
+            }
+            var tenantsByName = repository.Tenants.FindByNames(Tenants);
+            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+
+            var tenantsById = repository.Tenants.Get(missing);
+            missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missing.Any())
+                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+
+            return tenantsById.Concat(tenantsByName).ToList();
+        }
+
+        [Obsolete]
+        void ValidateTenantTags(OctopusRepository repository)
+        {
+            if (TenantTags == null || !TenantTags.Any())
+                return;
+
+            var tagSets = repository.TagSets.FindAll();
+            var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
+
+            if (missingTags.Any())
+                throw new ArgumentException($"Could not find the {"tag" + (missingTags.Count == 1 ? "" : "s")} {string.Join(", ", missingTags)} on the Octopus server.");
+        }
+
+
+        [Obsolete]
+        List<EnvironmentResource> GetEnvironments(OctopusRepository repository)
+        {
+            var selectedEnvironments = repository.Environments.FindByNames(EnvironmentNames);
+
+            var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
+
+            if (missing.Any())
+                throw new ArgumentException($"Could not find the {"environment" + (missing.Count == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+
+            return selectedEnvironments;
+        }
+
+        [Obsolete]
+        MachinePolicyResource GetMachinePolicy(OctopusRepository repository)
+        {
+
+            var machinePolicy = default(MachinePolicyResource);
+            if (!string.IsNullOrEmpty(MachinePolicy))
+            {
+                machinePolicy = repository.MachinePolicies.FindByName(MachinePolicy);
+                if (machinePolicy == null)
+                    throw new ArgumentException($"Could not find a machine policy named {MachinePolicy}.");
+            }
+            return machinePolicy;
+        }
+
+        [Obsolete]
+        MachineResource GetMachine(OctopusRepository repository)
+        {
+            var existing = default(MachineResource);
+            try
+            {
+                existing = repository.Machines.FindByName(MachineName);
+                if (!AllowOverwrite && existing?.Id != null)
+                    throw new ArgumentException(string.Format("A machine named '{0}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.", MachineName));
+            }
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            {
+            }
+            return existing ?? new MachineResource();
+        }
+#endif
+
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>

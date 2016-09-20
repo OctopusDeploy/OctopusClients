@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -19,43 +16,43 @@ namespace Octopus.Client.Editors
 
         public LifecycleResource Instance { get; private set; }
 
-        public async Task<LifecycleEditor> CreateOrModify(string name)
+        public LifecycleEditor CreateOrModify(string name)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = await repository.Create(new LifecycleResource
+                Instance = repository.Create(new LifecycleResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<LifecycleEditor> CreateOrModify(string name, string description)
+        public LifecycleEditor CreateOrModify(string name, string description)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = await repository.Create(new LifecycleResource
+                Instance = repository.Create(new LifecycleResource
                 {
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -90,9 +87,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<LifecycleEditor> Save()
+        public LifecycleEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

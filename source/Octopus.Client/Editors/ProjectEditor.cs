@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using Octopus.Client.Editors.DeploymentProcess;
+using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -12,9 +10,9 @@ namespace Octopus.Client.Editors
     {
         private readonly IProjectRepository repository;
         private readonly Lazy<ProjectChannelsEditor> channels; 
-        private readonly Lazy<Task<DeploymentProcessEditor>> deploymentProcess;
+        private readonly Lazy<DeploymentProcessEditor> deploymentProcess;
         private readonly Lazy<ProjectTriggersEditor> triggers; 
-        private readonly Lazy<Task<VariableSetEditor>> variables;
+        private readonly Lazy<VariableSetEditor> variables;
 
         public ProjectEditor(
             IProjectRepository repository,
@@ -25,35 +23,35 @@ namespace Octopus.Client.Editors
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            deploymentProcess = new Lazy<Task<DeploymentProcessEditor>>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
+            deploymentProcess = new Lazy<DeploymentProcessEditor>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
-            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
+            variables = new Lazy<VariableSetEditor>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
 
         public ProjectResource Instance { get; private set; }
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public Task<DeploymentProcessEditor> DeploymentProcess => deploymentProcess.Value;
+        public DeploymentProcessEditor DeploymentProcess => deploymentProcess.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 
-        public Task<VariableSetEditor> Variables => variables.Value;
+        public VariableSetEditor Variables => variables.Value;
 
         public IVariableTemplateContainerEditor<ProjectResource> VariableTemplates => Instance;
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new ProjectResource
+                Instance = repository.Create(new ProjectResource
                 {
                     Name = name,
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
@@ -61,25 +59,25 @@ namespace Octopus.Client.Editors
                 existing.ProjectGroupId = projectGroup.Id;
                 existing.LifecycleId = lifecycle.Id;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new ProjectResource
+                Instance = repository.Create(new ProjectResource
                 {
                     Name = name,
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
                     Description = description
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
@@ -88,7 +86,7 @@ namespace Octopus.Client.Editors
                 existing.LifecycleId = lifecycle.Id;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -116,26 +114,24 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<ProjectEditor> Save()
+        public ProjectEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             if (channels.IsValueCreated)
             {
-                await channels.Value.SaveAll().ConfigureAwait(false);
+                channels.Value.SaveAll();
             }
             if (deploymentProcess.IsValueCreated)
             {
-                var depProcess = await deploymentProcess.Value.ConfigureAwait(false);
-                await depProcess.Save().ConfigureAwait(false);
+                deploymentProcess.Value.Save();
             }
             if (triggers.IsValueCreated)
             {
-                await triggers.Value.SaveAll().ConfigureAwait(false);
+                triggers.Value.SaveAll();
             }
             if (variables.IsValueCreated)
             {
-                var vars = await variables.Value.ConfigureAwait(false);
-                await vars.Save().ConfigureAwait(false);
+                variables.Value.Save();
             }
             return this;
         }

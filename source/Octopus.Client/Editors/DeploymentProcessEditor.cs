@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
-namespace Octopus.Client.Editors.DeploymentProcess
+namespace Octopus.Client.Editors
 {
     public class DeploymentProcessEditor : IResourceEditor<DeploymentProcessResource, DeploymentProcessEditor>
     {
@@ -17,9 +15,9 @@ namespace Octopus.Client.Editors.DeploymentProcess
 
         public DeploymentProcessResource Instance { get; private set; }
 
-        public async Task<DeploymentProcessEditor> Load(string id)
+        public DeploymentProcessEditor Load(string id)
         {
-            Instance = await repository.Get(id).ConfigureAwait(false);
+            Instance = repository.Get(id);
             return this;
         }
 
@@ -51,9 +49,9 @@ namespace Octopus.Client.Editors.DeploymentProcess
             return this;
         }
 
-        public async Task<DeploymentProcessEditor> Save()
+        public DeploymentProcessEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

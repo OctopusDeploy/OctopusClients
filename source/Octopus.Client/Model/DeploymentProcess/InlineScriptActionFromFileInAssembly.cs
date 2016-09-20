@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Octopus.Client.Model;
 
-namespace Octopus.Client.Editors.DeploymentProcess
+namespace Octopus.Client.Model.DeploymentProcess
 {
     public class InlineScriptActionFromFileInAssembly : ScriptAction
     {

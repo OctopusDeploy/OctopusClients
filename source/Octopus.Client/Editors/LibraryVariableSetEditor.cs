@@ -1,67 +1,65 @@
 using System;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
     public class LibraryVariableSetEditor : IResourceEditor<LibraryVariableSetResource, LibraryVariableSetEditor>
     {
         private readonly ILibraryVariableSetRepository repository;
-        private readonly Lazy<Task<VariableSetEditor>> variables;
+        private readonly Lazy<VariableSetEditor> variables;
 
         public LibraryVariableSetEditor(ILibraryVariableSetRepository repository, IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
-            variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
+            variables = new Lazy<VariableSetEditor>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
 
         public LibraryVariableSetResource Instance { get; private set; }
 
-        public Task<VariableSetEditor> Variables => variables.Value;
+        public VariableSetEditor Variables => variables.Value;
 
         public IVariableTemplateContainerEditor<LibraryVariableSetResource> VariableTemplates => Instance;
 
-        public async Task<LibraryVariableSetEditor> CreateOrModify(string name)
+        public LibraryVariableSetEditor CreateOrModify(string name)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new LibraryVariableSetResource
+                Instance = repository.Create(new LibraryVariableSetResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
+        public LibraryVariableSetEditor CreateOrModify(string name, string description)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new LibraryVariableSetResource
+                Instance = repository.Create(new LibraryVariableSetResource
                 {
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -73,13 +71,12 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<LibraryVariableSetEditor> Save()
+        public LibraryVariableSetEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             if (variables.IsValueCreated)
             {
-                var vars = await variables.Value.ConfigureAwait(false);
-                await vars.Save().ConfigureAwait(false);
+                variables.Value.Save();
             }
             return this;
         }

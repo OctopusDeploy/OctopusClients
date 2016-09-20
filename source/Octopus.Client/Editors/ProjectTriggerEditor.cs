@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -19,14 +16,14 @@ namespace Octopus.Client.Editors
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
         {
             var conditionsCsv = string.Join(",", conditions.Select(x => x.ToString()).ToArray());
 
-            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
+            var existing = repository.FindByName(project, name);
             if (existing == null)
             {
-                Instance = await repository.Create(new ProjectTriggerResource
+                Instance = repository.Create(new ProjectTriggerResource
                 {
                     Name = name,
                     ProjectId = project.Id,
@@ -35,14 +32,14 @@ namespace Octopus.Client.Editors
                     {
                         {"Octopus.ProjectTriggerCondition.Events", new PropertyValueResource(conditionsCsv)}
                     }
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
                 existing.Type = type;
                 existing.Properties["Octopus.ProjectTriggerCondition.Events"] = new PropertyValueResource(conditionsCsv);
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -54,9 +51,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<ProjectTriggerEditor> Save()
+        public ProjectTriggerEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

@@ -8,6 +8,16 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusClientFactory
     {
+#if SYNC_CLIENT
+        /// <summary>
+        /// Creates an appropriate <see cref="IOctopusClient" /> for the provided <see cref="OctopusServerEndpoint" />.
+        /// </summary>
+        /// <param name="serverEndpoint">The endpoint to create a client for.</param>
+        /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
+        [Obsolete("Use CreateAsyncClient(OctopusServerEndpoint) instead")]
+        IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint);
+#endif
+
         /// <summary>
         /// Creates an appropriate <see cref="IOctopusAsyncClient" /> for the provided <see cref="OctopusServerEndpoint" />.
         /// </summary>

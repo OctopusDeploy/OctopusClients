@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Octopus.Client.Editors;
-using Octopus.Client.Model;
-using Octopus.Client.Model.Accounts;
-using Octopus.Client.Model.Endpoints;
-using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
+﻿using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {

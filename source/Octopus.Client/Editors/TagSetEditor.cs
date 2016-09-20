@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -18,39 +15,39 @@ namespace Octopus.Client.Editors
 
         public TagSetResource Instance { get; private set; }
 
-        public async Task<TagSetEditor> CreateOrModify(string name)
+        public TagSetEditor CreateOrModify(string name)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = await repository.Create(new TagSetResource
+                Instance = repository.Create(new TagSetResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<TagSetEditor> CreateOrModify(string name, string description)
+        public TagSetEditor CreateOrModify(string name, string description)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = await repository.Create(new TagSetResource
+                Instance = repository.Create(new TagSetResource
                 {
                     Name = name,
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Description = description;
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -83,9 +80,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<TagSetEditor> Save()
+        public TagSetEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

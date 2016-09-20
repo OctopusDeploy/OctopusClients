@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Octopus.Client.Editors;
+using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async

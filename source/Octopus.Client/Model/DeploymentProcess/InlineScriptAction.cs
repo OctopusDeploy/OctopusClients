@@ -1,7 +1,6 @@
 using System;
-using Octopus.Client.Model;
 
-namespace Octopus.Client.Editors.DeploymentProcess
+namespace Octopus.Client.Model.DeploymentProcess
 {
     public class InlineScriptAction : ScriptAction
     {

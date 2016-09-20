@@ -70,6 +70,21 @@ namespace Octopus.Client.Operations
 
         Uri SubscriptionId { get; set; }
 
+#if SYNC_CLIENT
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        [Obsolete("Use ExecuteAsync instead")]
+        void Execute(OctopusServerEndpoint serverEndpoint);
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy repository.</param>
+        [Obsolete("Use ExecuteAsync instead")]
+        void Execute(OctopusRepository repository);
+#endif
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>

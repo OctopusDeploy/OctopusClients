@@ -1,6 +1,6 @@
 using System;
 
-namespace Octopus.Client.Editors.DeploymentProcess
+namespace Octopus.Client.Model.DeploymentProcess
 {
     public enum ScriptTarget
     {

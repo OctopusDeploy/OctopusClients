@@ -1,8 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -17,47 +15,47 @@ namespace Octopus.Client.Editors
 
         public ChannelResource Instance { get; private set; }
 
-        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name)
+        public ChannelEditor CreateOrModify(ProjectResource project, string name)
         {
-            var existing = await repository.FindByName(project, name);
+            var existing = repository.FindByName(project, name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new ChannelResource
+                Instance = repository.Create(new ChannelResource
                 {
                     ProjectId = project.Id,
                     Name = name
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description)
+        public ChannelEditor CreateOrModify(ProjectResource project, string name, string description)
         {
-            var existing = await repository.FindByName(project, name);
+            var existing = repository.FindByName(project, name);
 
             if (existing == null)
             {
-                Instance = await repository.Create(new ChannelResource
+                Instance = repository.Create(new ChannelResource
                 {
                     ProjectId = project.Id,
                     Name = name,
                     Description = description
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -117,9 +115,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<ChannelEditor> Save()
+        public ChannelEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

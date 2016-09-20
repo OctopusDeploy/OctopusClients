@@ -1,9 +1,6 @@
 using System;
-using System.Threading.Tasks;
-using Octopus.Client.Editors.DeploymentProcess;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors
 {
@@ -20,9 +17,9 @@ namespace Octopus.Client.Editors
 
         public TenantVariableResource Instance { get; private set; }
 
-        public async Task<TenantVariablesEditor> Load()
+        public TenantVariablesEditor Load()
         {
-            Instance = await repository.GetVariables(tenant).ConfigureAwait(false);
+            Instance = repository.GetVariables(tenant);
             return this;
         }
 
@@ -32,9 +29,9 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public async Task<TenantVariablesEditor> Save()
+        public TenantVariablesEditor Save()
         {
-            Instance = await repository.ModifyVariables(tenant, Instance).ConfigureAwait(false);
+            Instance = repository.ModifyVariables(tenant, Instance);
             return this;
         }
     }
