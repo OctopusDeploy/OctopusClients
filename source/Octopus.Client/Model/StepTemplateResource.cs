@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public class StepResource : IResource
+    public class StepTemplateResource : IResource
     {
         public string Id { get; set; }
         public string Type { get; set; }
