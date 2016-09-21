@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -19,7 +20,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldGetListOfProjects()
+        public async Task ShouldGetListOfProjects()
         {
             Repository.Projects.FindAll().Returns(new List<ProjectResource>
             {
@@ -27,7 +28,7 @@ namespace Octopus.Cli.Tests.Commands
                 new ProjectResource {Name = "ProjectB", Id = "projectbid"}
             });
 
-            listProjectsCommand.Execute(CommandLineArgs.ToArray());
+            await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Projects: 2");
             Log.Received().Information(" - {0} (ID: {1})", "ProjectA", "projectaid");

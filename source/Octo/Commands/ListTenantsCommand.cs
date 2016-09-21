@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
 
         protected override async Task Execute()
         {
-            var tenants = await Repository.Tenants.FindAll();
+            var tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
             Log.Information("Tenants: " + tenants.Count);
 
             foreach (var tenant in tenants.OrderBy(m => m.Name))

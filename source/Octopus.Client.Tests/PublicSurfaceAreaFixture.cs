@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if HAS_APPROVAL_TESTS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -130,3 +131,4 @@ namespace Octopus.Client.Tests
         }
     }
 }
+#endif
