@@ -32,6 +32,7 @@ namespace Octopus.Client
         readonly IMachineRepository machines;
         readonly IMachineRoleRepository machineRoles;
         readonly IMachinePolicyRepository machinePolicies;
+        readonly ISubscriptionRepository subscriptions;
         readonly IEnvironmentRepository environments;
         readonly IEventRepository events;
         readonly IFeaturesConfigurationRepository featuresConfiguration;
@@ -76,6 +77,7 @@ namespace Octopus.Client
             machines = new MachineRepository(client);
             machineRoles = new MachineRoleRepository(client);
             machinePolicies = new MachinePolicyRepository(client);
+            subscriptions = new SubscriptionRepository(client);
             environments = new EnvironmentRepository(client);
             events = new EventRepository(client);
             featuresConfiguration = new FeaturesConfigurationRepository(client);
@@ -158,6 +160,11 @@ namespace Octopus.Client
         public IMachinePolicyRepository MachinePolicies
         {
             get { return machinePolicies; }
+        }
+
+        public ISubscriptionRepository Subscriptions
+        {
+            get { return subscriptions; }
         }
 
         public ILifecyclesRepository Lifecycles
@@ -593,6 +600,18 @@ namespace Octopus.Client
         {
             public MachinePolicyRepository(IOctopusClient client) : base(client, "MachinePolicies")
             {
+            }
+        }
+
+        class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
+        {
+            public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions")
+            {
+            }
+
+            public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
+            {
+                return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
             }
         }
 
