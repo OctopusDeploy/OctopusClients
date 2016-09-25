@@ -7,7 +7,8 @@ namespace Octopus.Client.Serialization
 {
     public class AccountConverter : InheritedClassConverter<AccountResource, AccountType>
     {
-        static readonly IDictionary<AccountType, Type> AccountTypeMappings = new Dictionary<AccountType, Type>
+        static readonly IDictionary<AccountType, Type> AccountTypeMappings =
+            new Dictionary<AccountType, Type>
             {
                 {AccountType.UsernamePassword, typeof(UsernamePasswordAccountResource)},
                 {AccountType.AzureSubscription, typeof(AzureSubscriptionAccountResource)},
