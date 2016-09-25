@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using NUnit.Framework;
@@ -11,18 +12,19 @@ namespace Octopus.Client.Tests
 {
     public class PublicSurfaceAreaFixture
     {
-        [Test]
+        //[Test]
         //[UseReporter(typeof(DiffReporter))]
-        public void ThePublicSurfaceAreaShouldNotRegress()
-        {
-            //var lines = typeof(OctopusRequest).Assembly
-            //    .ExportedTypes
-            //    .GroupBy(t => t.Namespace)
-            //    .OrderBy(g => g.Key)
-            //    .SelectMany(g => FormatNamespace(g.Key, g))
-            //    .ToArray();
-            //Approvals.Verify(string.Join("\r\n", lines));
-        }
+        //[MethodImpl(MethodImplOptions.NoInlining)]
+        //public void ThePublicSurfaceAreaShouldNotRegress()
+        //{
+        //    var lines = typeof(OctopusRequest).Assembly
+        //        .ExportedTypes
+        //        .GroupBy(t => t.Namespace)
+        //        .OrderBy(g => g.Key)
+        //        .SelectMany(g => FormatNamespace(g.Key, g))
+        //        .ToArray();
+        //    Approvals.Verify(string.Join("\r\n", lines));
+        //}
 
         IEnumerable<object> FormatNamespace(string name, IEnumerable<Type> types)
         {
