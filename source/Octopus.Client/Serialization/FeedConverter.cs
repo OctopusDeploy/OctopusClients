@@ -9,11 +9,15 @@ namespace Octopus.Client.Serialization
         static readonly IDictionary<FeedType, Type> FeedTypeMappings =
             new Dictionary<FeedType, Type>
             {
-                { FeedType.NuGet, typeof(NuGetFeedResource) },
-                { FeedType.Docker, typeof(DockerFeedResource) }
+                {FeedType.NuGet, typeof(NuGetFeedResource)},
+                {FeedType.Docker, typeof(DockerFeedResource)}
             };
+
+        static readonly Type defaultType = typeof(NuGetFeedResource);
 
         protected override IDictionary<FeedType, Type> DerivedTypeMappings => FeedTypeMappings;
         protected override string TypeDesignatingPropertyName => "FeedType";
+
+        protected override Type DefaultType { get; } = defaultType;
     }
 }

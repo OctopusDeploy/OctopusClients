@@ -25,26 +25,38 @@ namespace Octopus.Client.Serialization
             writer.WriteEndObject();
         }
 
+        protected virtual Type DefaultType { get; } = null;
+
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
 
             var jo = JObject.Load(reader);
-            var typeDesignatingProperty = jo.GetValue(TypeDesignatingPropertyName);
-
+            var designatingProperty = jo.GetValue(TypeDesignatingPropertyName);
             Type type;
-            if (typeDesignatingProperty == null)
+            if (designatingProperty == null)
             {
-                type = typeof(TBaseResource);
+                if (DefaultType == null)
+                {
+                    throw new Exception($"Unable to determine type to deserialize. Missing property `{TypeDesignatingPropertyName}`");
+                }
+                type = DefaultType;
             }
             else
             {
-                var derivedType = typeDesignatingProperty.ToObject<string>();
-                 type = DerivedTypeMappings[(TEnumType) Enum.Parse(typeof(TEnumType), derivedType)];
+
+                var derivedType = designatingProperty.ToObject<string>();
+                var enumType = (TEnumType)Enum.Parse(typeof(TEnumType), derivedType);
+                if (!DerivedTypeMappings.ContainsKey(enumType))
+                {
+                    throw new Exception($"Unable to determine type to deserialize. {TypeDesignatingPropertyName} `{enumType}` does not map to a known type");
+                }
+
+                type = DerivedTypeMappings[enumType];
             }
 
-            var ctor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();            
+            var ctor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
             var args = ctor.GetParameters().Select(p =>
                 jo.GetValue(char.ToUpper(p.Name[0]) + p.Name.Substring(1))
                     .ToObject(p.ParameterType, serializer)).ToArray();
@@ -69,4 +81,5 @@ namespace Octopus.Client.Serialization
 
         protected abstract string TypeDesignatingPropertyName { get; }
     }
+
 }
