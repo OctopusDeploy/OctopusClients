@@ -40,7 +40,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void PostFile()
+        public async Task PostFile()
         {
             using (var ms = new MemoryStream(SharedBytes))
             {
@@ -50,8 +50,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     FileName = "foo.txt"
                 };
                 _recieved = false;
-                Func<Task> post = () => Client.Post("~/", file);
-                post.ShouldNotThrow();
+                await Client.Post("~/", file);
                 _recieved.Should().BeTrue();
             }
         }
