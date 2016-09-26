@@ -141,7 +141,7 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
-    var portablePublishDir = Path.Combine(publishDir, "portable");
+    var portablePublishDir = Path.Combine(octoPublishFolder, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
         Configuration = configuration,
@@ -160,7 +160,7 @@ Task("__Publish")
             {
                 Configuration = configuration,
                 Runtime = runtime,
-                OutputDirectory = octoPublishFolder
+                OutputDirectory = Path.Combine(octoPublishFolder, runtime)
             });
     } 
 });
@@ -219,22 +219,6 @@ private void TarGzip(string path, string outputFile)
 }
 
 
-Task("__MergeOctoExe")
-    .Does(() => {
-        CreateDirectory(octoMergedFolder);
-        ILRepack(
-            Path.Combine(octoMergedFolder, "Octo.exe"),
-            Path.Combine(octoPublishFolder, "Octo.exe"),
-            IO.Directory.EnumerateFiles(octoPublishFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
-                Libs = new List<FilePath>() { octoPublishFolder }
-            }
-        );
-        DeleteFile(Path.Combine(octoMergedFolder, "Octo.pdb"));
-        CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
-    });
-
 Task("__PackNuget")
     .IsDependentOn("__Publish")
     .IsDependentOn("__PackOctopusToolsNuget")
@@ -249,12 +233,11 @@ Task("__PackClientNuget")
     });
 
 Task("__PackOctopusToolsNuget")
-    .IsDependentOn("__MergeOctoExe")
     .Does(() => {
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
         
-        CopyDirectory(octoMergedFolder, nugetPackDir);
+        CopyDirectory(Path.Combine(octoPublishFolder, winBinary), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
 
