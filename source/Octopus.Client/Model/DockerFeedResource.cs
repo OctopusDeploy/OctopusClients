@@ -8,5 +8,8 @@
 
         [Writeable]
         public string ApiVersion { get; set; }
+
+        [Writeable]
+        public string RegistryPath { get; set; }
     }
 }
