@@ -14,23 +14,6 @@ namespace Octopus.Client.Tests.Serialization
     public class FeedResourceConverterFixture
     {
         [Test]
-        public void MissingFeedTypeDeserializesAsFeedResource()
-        {
-            var input = new
-            {
-                Name = "Blah",
-                FeedUri = "http://example.com"
-            };
-
-            var result = Execute<FeedResource>(input);
-
-            Assert.AreEqual(input.Name, result.Name);
-            Assert.AreEqual(input.FeedUri, result.FeedUri);
-            Assert.AreEqual(FeedType.None, result.FeedType);
-            Assert.IsAssignableFrom(typeof(FeedResource), result);
-        }
-
-        [Test]
         public void DockerFeedTypesDeserialize()
         {
             var input = new
@@ -54,6 +37,20 @@ namespace Octopus.Client.Tests.Serialization
             {
                 Name = "Blah",
                 FeedType = FeedType.NuGet
+            };
+
+            var result = Execute<FeedResource>(input);
+
+            Assert.AreEqual(FeedType.NuGet, result.FeedType);
+            Assert.IsAssignableFrom(typeof(NuGetFeedResource), result);
+        }
+
+        [Test]
+        public void MissingFeedTypeDeserializesAsFeedNuGet()
+        {
+            var input = new
+            {
+                Name = "Blah",
             };
 
             var result = Execute<FeedResource>(input);
