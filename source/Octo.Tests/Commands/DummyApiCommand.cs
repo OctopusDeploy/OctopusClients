@@ -20,7 +20,6 @@ namespace Octopus.Cli.Tests.Commands
 
         protected override void Execute()
         {
-            Assert.Pass();
         }
     }
 }
