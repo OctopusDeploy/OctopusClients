@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace Octopus.Client.Tests
     {
         [Test]
         [UseReporter(typeof(DiffReporter))]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void ThePublicSurfaceAreaShouldNotRegress()
         {
             var lines = typeof(OctopusRequest).Assembly

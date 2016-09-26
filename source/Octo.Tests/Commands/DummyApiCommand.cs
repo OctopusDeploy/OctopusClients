@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
 
         protected override Task Execute()
         {
-            return Task.Run(() => Assert.Pass());
+            return Task.CompletedTask;
         }
     }
 }
