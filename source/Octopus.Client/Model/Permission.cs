@@ -188,6 +188,14 @@ namespace Octopus.Client.Model
 
         [Description("Edit proxies")] ProxyEdit,
 
-        [Description("Delete proxies")] ProxyDelete
+        [Description("Delete proxies")] ProxyDelete,
+
+        [Description("Create subscriptions")] SubscriptionCreate,
+
+        [Description("View subscriptions")] SubscriptionView,
+
+        [Description("Edit subscriptions")] SubscriptionEdit,
+
+        [Description("Delete subscriptions")] SubscriptionDelete,
     }
 }
