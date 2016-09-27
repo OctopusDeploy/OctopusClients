@@ -9,7 +9,7 @@ using Octopus.Client.Extensions;
 
 namespace Octopus.Client.Tests.Conventions
 {
-    public class RepositoryConventions
+    public class RepositorySymetryConventions
     {
         [Test]
         public void IOctopusAsyncRepositoryExposesTheSamePropertiesAsIOctopusRepository()
@@ -42,13 +42,15 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> SyncRepositories()
         {
             return from p in typeof(IOctopusRepository).GetProperties()
+                   where p.Name != "Client"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Sync)");
         }
 
         public static IEnumerable<TestCaseData> AsyncRepositories()
         {
-            return from p in typeof(IOctopusRepository).GetProperties()
+            return from p in typeof(IOctopusAsyncRepository).GetProperties()
+                   where p.Name != "Client"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Async)");
         }
@@ -67,12 +69,13 @@ namespace Octopus.Client.Tests.Conventions
                            let parameters = a.GetParameters().Select(p => p.ParameterType).ToArray()
                            let s = syncRepository.GetMethod(a.Name, parameters)
                            where s == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
+                           where !(asyncRepository.Name == "ITaskRepository" && a.Name == "WaitForCompletion")
                            select $"{a.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
 
             var missing = missingQ.ToArray();
 
             if (missing.Any())
-                Assert.Fail($"The following methods are present on the sync {asyncRepository.Name} but not on the async one:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following methods are present on the sync {syncRepository.Name} but not on the async one, or have different return types:\r\n{missing.NewLineSeperate()}");
 
         }
 
@@ -90,17 +93,17 @@ namespace Octopus.Client.Tests.Conventions
                            let parameters = s.GetParameters().Select(p => p.ParameterType).ToArray()
                            let a = asyncRepository.GetMethod(s.Name, parameters)
                            where a == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
-                           select $"{a.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
+                           select $"{s.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
 
             var missing = missingQ.ToArray();
             if (missing.Any())
-                Assert.Fail($"The following methods are present on the async {asyncRepository.Name} but not on the async one:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following methods are present on the async {asyncRepository.Name} but not on the sync one, or have different return types:\r\n{missing.NewLineSeperate()}");
 
         }
 
         bool IsEquivalentReturnType(Type asyncType, Type syncType)
         {
-            if (asyncType == syncType)
+            if (asyncType.Name == syncType.Name)
                 return true;
             if (asyncType == typeof(Task) && syncType == typeof(void))
                 return true;
@@ -109,7 +112,7 @@ namespace Octopus.Client.Tests.Conventions
             var generic = asyncType.GetGenericTypeDefinition();
             if (generic != typeof(Task<>))
                 return false;
-            return syncType == asyncType.GetGenericArguments()[0];
+            return syncType.Name == asyncType.GetGenericArguments()[0].Name;
         }
     }
 }

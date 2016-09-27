@@ -63,6 +63,7 @@ namespace Octopus.Client
             Channels = new ChannelRepository(client);
             ProjectTriggers = new ProjectTriggerRepository(client);
             Schedulers = new SchedulerRepository(client);
+            Subscriptions = new SubscriptionRepository(client);
             Tenants = new TenantRepository(client);
             TagSets = new TagSetRepository(client);
             BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(client);
@@ -109,6 +110,8 @@ namespace Octopus.Client
         public IProjectRepository Projects { get; }
 
         public IProxyRepository Proxies { get; }
+
+        public ISubscriptionRepository Subscriptions { get; }
 
         public ITaskRepository Tasks { get; }
 

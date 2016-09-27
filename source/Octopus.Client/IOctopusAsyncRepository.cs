@@ -39,6 +39,7 @@ namespace Octopus.Client
         IProxyRepository Proxies { get; }
         IServerStatusRepository ServerStatus { get; }
         ISchedulerRepository Schedulers { get; }
+        ISubscriptionRepository Subscriptions { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
         ITagSetRepository TagSets { get; }
