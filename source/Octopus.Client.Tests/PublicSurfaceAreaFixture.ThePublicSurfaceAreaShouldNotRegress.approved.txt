@@ -4168,7 +4168,7 @@ Octopus.Client.Repositories.Async
   }
   interface IMachineRoleRepository
   {
-    Task<IReadOnlyList<String>> GetAllRoleNames()
+    Task<List<String>> GetAllRoleNames()
   }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.Async.IModify<OctopusServerNodeResource>
