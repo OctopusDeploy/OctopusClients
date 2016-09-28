@@ -1,4 +1,8 @@
-﻿namespace Octopus.Client.Model
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace Octopus.Client.Model
 {
     public class LibraryStepTemplateResource : IResource
     {
@@ -8,6 +12,12 @@
         public string IconUrl { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
 
         public LinkCollection Links { get; set; }
     }
