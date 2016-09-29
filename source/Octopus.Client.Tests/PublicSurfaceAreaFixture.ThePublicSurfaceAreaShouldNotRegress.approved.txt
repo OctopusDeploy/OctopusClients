@@ -77,6 +77,7 @@
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
@@ -156,6 +157,7 @@
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
@@ -343,6 +345,16 @@ Octopus.Client.Editors
     Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
     Octopus.Client.Editors.ProjectTriggersEditor Delete(String)
     Octopus.Client.Editors.ProjectTriggersEditor SaveAll()
+  }
+  class SubscriptionEditor
+    Octopus.Client.Editors.IResourceEditor<SubscriptionResource, SubscriptionEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ISubscriptionRepository)
+    Octopus.Client.Model.SubscriptionResource Instance { get; }
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor Customize(Action<SubscriptionResource>)
+    Octopus.Client.Editors.SubscriptionEditor Save()
   }
   class TagSetEditor
     Octopus.Client.Editors.IResourceEditor<TagSetResource, TagSetEditor>
@@ -1177,6 +1189,28 @@ Octopus.Client.Model
     Int32 SortOrder { get; set; }
     Boolean UseGuidedFailure { get; set; }
   }
+  class EventNotificationSubscription
+  {
+    .ctor()
+    Nullable<DateTimeOffset> EmailDigestLastProcessed { get; set; }
+    TimeSpan EmailFrequencyPeriod { get; set; }
+    Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
+    Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
+    Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
+    Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
+    String WebhookURI { get; set; }
+  }
+  class EventNotificationSubscriptionFilter
+  {
+    .ctor()
+    IList<String> Environments { get; set; }
+    IList<String> EventCategories { get; set; }
+    IList<String> EventGroups { get; set; }
+    IList<String> Projects { get; set; }
+    IList<String> Tags { get; set; }
+    IList<String> Tenants { get; set; }
+    IList<String> Users { get; set; }
+  }
   class EventReference
   {
     .ctor(String, Int32, Int32)
@@ -1719,6 +1753,10 @@ Octopus.Client.Model
       ProxyView = 86
       ProxyEdit = 87
       ProxyDelete = 88
+      SubscriptionCreate = 89
+      SubscriptionView = 90
+      SubscriptionEdit = 91
+      SubscriptionDelete = 92
   }
   class PermissionDescription
   {
@@ -2221,6 +2259,21 @@ Octopus.Client.Model
     _Attribute
   {
     .ctor()
+  }
+  class SubscriptionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.INamedResource
+  {
+    .ctor()
+    Octopus.Client.Model.EventNotificationSubscription EventNotificationSubscription { get; set; }
+    Boolean IsDisabled { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.SubscriptionType Type { get; set; }
+  }
+  SubscriptionType
+  {
+      Event = 0
   }
   class SupportsRestrictionAttribute
     _Attribute
@@ -3452,6 +3505,16 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
+  }
+  interface ISubscriptionRepository
+    Octopus.Client.Repositories.IFindByName<SubscriptionResource>
+    Octopus.Client.Repositories.IPaginate<SubscriptionResource>
+    Octopus.Client.Repositories.ICreate<SubscriptionResource>
+    Octopus.Client.Repositories.IModify<SubscriptionResource>
+    Octopus.Client.Repositories.IGet<SubscriptionResource>
+    Octopus.Client.Repositories.IDelete<SubscriptionResource>
+  {
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.ICreate<TagSetResource>
