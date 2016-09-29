@@ -26,7 +26,6 @@ namespace Octopus.Client.Serialization
                     new ControlConverter(),
                     new EndpointConverter(),
                     new AccountConverter(),
-                    new FeedConverter(),
                     new HrefConverter(null),
                     new PropertyValueResource.PropertyValueJsonConverter()
                 }

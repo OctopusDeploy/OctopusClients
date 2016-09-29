@@ -12,7 +12,7 @@ namespace Octopus.Cli.Util
 
         public static FeedResource CustomExpressionFeedWithId(string id)
         {
-            var feed = new NuGetFeedResource()
+            var feed = new FeedResource()
             {
                 Id = id,
                 Name = FeedCustomExpressionHelper.CustomExpressionFeedName

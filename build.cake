@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine"
+#tool "nuget:?package=GitVersion.CommandLine&prerelease"
 #tool "nuget:?package=ILRepack"
 #addin "nuget:?package=Newtonsoft.Json"
 #addin "nuget:?package=SharpCompress"
