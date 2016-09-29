@@ -27,6 +27,7 @@ namespace Octopus.Client
     {
         readonly IOctopusClient client;
         readonly IAccountRepository accounts;
+        readonly IActionTemplateRepository actionTemplates;
         readonly IFeedRepository feeds;
         readonly IBackupRepository backups;
         readonly IMachineRepository machines;
@@ -110,6 +111,7 @@ namespace Octopus.Client
             tenants = new TenantRepository(client);
             tagSets = new TagSetRepository(client);
             builtInPackageRepositoryRepository = new BuiltInPackageRepositoryRepository(client);
+            actionTemplates = new ActionTemplateRepository(client);
         }
 
         public IOctopusClient Client
@@ -140,6 +142,11 @@ namespace Octopus.Client
         public IAccountRepository Accounts
         {
             get { return accounts; }
+        }
+
+        public IActionTemplateRepository ActionTemplates
+        {
+            get {  return actionTemplates; }
         }
 
         public IBackupRepository Backups
@@ -521,6 +528,13 @@ namespace Octopus.Client
         {
             public AccountRepository(IOctopusClient client)
                 : base(client, "Accounts")
+            {
+            }
+        }
+
+        class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
+        {
+            public ActionTemplateRepository(IOctopusClient client) : base(client, "ActionTemplates")
             {
             }
         }

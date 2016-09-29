@@ -46,6 +46,7 @@
   interface IOctopusRepository
   {
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -125,6 +126,7 @@
     .ctor(Octopus.Client.OctopusServerEndpoint)
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -3206,6 +3208,16 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<AccountResource>
     Octopus.Client.Repositories.IFindByName<AccountResource>
     Octopus.Client.Repositories.IPaginate<AccountResource>
+  {
+  }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
+    Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
   {
   }
   interface IArtifactRepository
