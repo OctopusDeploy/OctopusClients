@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
@@ -14,14 +16,14 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public ListReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public ListReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             var projectResources = new List<ProjectResource>();
             var projectsFilter = new string[0];
@@ -29,15 +31,14 @@ namespace Octopus.Cli.Commands
             {
                 Log.Debug("Loading projects...");
                 //var test = Repository.Projects.FindByNames(projects.ToArray());
-                projectResources = Repository.Projects.FindByNames(projects.ToArray());
+                projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
                 projectsFilter = projectResources.Select(p => p.Id).ToArray();
             }
 
             Log.Debug("Loading releases...");
-            var releases = Repository.Releases.FindMany(x =>
-                {
-                    return projectsFilter.Contains(x.ProjectId);
-                });
+            var releases = await Repository.Releases
+                .FindMany(x => projectsFilter.Contains(x.ProjectId))
+                .ConfigureAwait(false);
 
             Log.Information("Releases: {0}", releases.Count);
 

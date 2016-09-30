@@ -32,7 +32,7 @@ namespace Octopus.Client.Model
 
         public override string ToString()
         {
-            return "Projects: " + (RestrictedToProjectIds ?? new ReferenceCollection()) + "; " + "Environments: " + (RestrictedToEnvironmentIds ?? new ReferenceCollection()) + "; " + "Tenants: " + (RestrictedToTenantIds ?? new ReferenceCollection()); ;
+            return "Projects: " + (RestrictedToProjectIds ?? new ReferenceCollection()) + "; " + "Environments: " + (RestrictedToEnvironmentIds ?? new ReferenceCollection()) + "; " + "Tenants: " + (RestrictedToTenantIds ?? new ReferenceCollection());
         }
 
         public sealed class Comparer : IEqualityComparer<UserPermissionRestriction>

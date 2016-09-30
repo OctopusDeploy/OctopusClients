@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
@@ -11,8 +13,8 @@ namespace Octopus.Cli.Commands
     [Command("create-autodeployoverride", Description = "Override the release that auto deploy will use")]
     public class CreateAutoDeployOverrideCommand : ApiCommand
     {
-        public CreateAutoDeployOverrideCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem) :
-            base(repositoryFactory, log, fileSystem)
+        public CreateAutoDeployOverrideCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) :
+            base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Auto deploy release override");
             options.Add("project=", "Name of the project", v => ProjectName = v);
@@ -57,14 +59,16 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
-            var project = RepositoryCommonQueries.GetProjectByName(ProjectName);
-            var release = RepositoryCommonQueries.GetReleaseByVersion(ReleaseVersionNumber, project, null);
-            var tenants = RepositoryCommonQueries.FindTenants(TenantNames, TenantTags);
+            var project = await RepositoryCommonQueries.GetProjectByName(ProjectName).ConfigureAwait(false);
+            var releaseTask = RepositoryCommonQueries.GetReleaseByVersion(ReleaseVersionNumber, project, null).ConfigureAwait(false);
+            var tenants = await RepositoryCommonQueries.FindTenants(TenantNames, TenantTags).ConfigureAwait(false);
+            var release = await releaseTask;
+
             foreach (var environmentName in EnvironmentNames)
             {
-                var environment = RepositoryCommonQueries.GetEnvironmentByName(environmentName);
+                var environment = await RepositoryCommonQueries.GetEnvironmentByName(environmentName).ConfigureAwait(false);
 
                 if (!tenants.Any())
                 {
@@ -78,7 +82,7 @@ namespace Octopus.Cli.Commands
                     }
                 }
             }
-            Repository.Projects.Modify(project);
+            await Repository.Projects.Modify(project).ConfigureAwait(false);
         }
 
         void AddOverrideForEnvironment(ProjectResource project, EnvironmentResource environment, ReleaseResource release)

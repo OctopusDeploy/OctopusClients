@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
@@ -11,34 +12,34 @@ namespace Octopus.Cli.Repositories
 {
     public class OctopusRepositoryCommonQueries
     {
-        readonly IOctopusRepository repository;
+        readonly IOctopusAsyncRepository repository;
         readonly ILogger log;
 
-        public OctopusRepositoryCommonQueries(IOctopusRepository repository, ILogger log)
+        public OctopusRepositoryCommonQueries(IOctopusAsyncRepository repository, ILogger log)
         {
             this.repository = repository;
             this.log = log;
         }
 
-        public ProjectResource GetProjectByName(string projectName)
+        public async Task<ProjectResource> GetProjectByName(string projectName)
         {
             log.Debug("Finding project: " + projectName);
-            var project = repository.Projects.FindByName(projectName);
+            var project = await repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
             return project;
         }
 
-        public EnvironmentResource GetEnvironmentByName(string environmentName)
+        public async Task<EnvironmentResource> GetEnvironmentByName(string environmentName)
         {
             log.Debug("Finding environment: " + environmentName);
-            var environment = repository.Environments.FindByName(environmentName);
+            var environment = await repository.Environments.FindByName(environmentName).ConfigureAwait(false);
             if (environment == null)
                 throw new CouldNotFindException("an environment named", environmentName);
             return environment;
         }
 
-        public ReleaseResource GetReleaseByVersion(string versionNumber, ProjectResource project, ChannelResource channel)
+        public async Task<ReleaseResource> GetReleaseByVersion(string versionNumber, ProjectResource project, ChannelResource channel)
         {
             string message;
             ReleaseResource releaseToPromote = null;
@@ -50,33 +51,37 @@ namespace Octopus.Cli.Repositories
 
                 log.Debug($"Finding {message}");
 
+                var releases = await repository
+                    .Projects
+                    .GetReleases(project)
+                    .ConfigureAwait(false);
+
                 if (channel == null)
                 {
-                    releaseToPromote = repository
-                        .Projects
-                        .GetReleases(project)
+                    releaseToPromote = releases
                         .Items // We only need the first page
                         .OrderByDescending(r => SemanticVersion.Parse(r.Version))
                         .FirstOrDefault();
                 }
                 else
                 {
-                    repository.Projects.GetReleases(project).Paginate(repository, page =>
+                    await releases.Paginate(repository, page =>
                     {
                         releaseToPromote = page.Items
                             .OrderByDescending(r => SemanticVersion.Parse(r.Version))
                             .FirstOrDefault(r => r.ChannelId == channel.Id);
 
-                        // If we haven't found one yet, keep paginating
-                        return releaseToPromote == null;
-                    });
+                       // If we haven't found one yet, keep paginating
+                       return releaseToPromote == null;
+                    })
+                    .ConfigureAwait(false);
                 }
             }
             else
             {
                 message = $"release {versionNumber}";
                 log.Debug($"Finding {message}");
-                releaseToPromote = repository.Projects.GetReleaseByVersion(project, versionNumber);
+                releaseToPromote = await repository.Projects.GetReleaseByVersion(project, versionNumber).ConfigureAwait(false);
             }
 
             if (releaseToPromote == null)
@@ -86,7 +91,7 @@ namespace Octopus.Cli.Repositories
             return releaseToPromote;
         }
 
-        public IReadOnlyList<TenantResource> FindTenants(IReadOnlyList<string> tenantNames, IReadOnlyList<string> tenantTags)
+        public async Task<IReadOnlyList<TenantResource>> FindTenants(IReadOnlyList<string> tenantNames, IReadOnlyList<string> tenantTags)
         {
             if (!tenantNames.Any() && !tenantTags.Any())
             {
@@ -99,10 +104,11 @@ namespace Octopus.Cli.Repositories
                     "Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
             }
 
-            var tenantsByName = FindTenantsByName(tenantNames);
-            var tenantsByTags = FindTenantsByTags(tenantTags);
+            var tenantsByName = FindTenantsByName(tenantNames).ConfigureAwait(false);
+            var tenantsByTags = FindTenantsByTags(tenantTags).ConfigureAwait(false);
 
-            var distinctTenants = tenantsByTags.Concat(tenantsByName)
+            var distinctTenants = (await tenantsByTags)
+                .Concat(await tenantsByName)
                 .GroupBy(t => t.Id)
                 .Select(g => g.First())
                 .ToList();
@@ -110,7 +116,7 @@ namespace Octopus.Cli.Repositories
             return distinctTenants;
         }
 
-        private IEnumerable<TenantResource> FindTenantsByName(IReadOnlyList<string> tenantNames)
+        private async Task<IEnumerable<TenantResource>> FindTenantsByName(IReadOnlyList<string> tenantNames)
         {
             if (!tenantNames.Any())
             {
@@ -119,15 +125,15 @@ namespace Octopus.Cli.Repositories
 
             if (tenantNames.Contains("*"))
             {
-                return repository.Tenants.FindAll();
+                return await repository.Tenants.FindAll().ConfigureAwait(false);
             }
 
-            var tenantsByName = repository.Tenants.FindByNames(tenantNames);
+            var tenantsByName = await repository.Tenants.FindByNames(tenantNames).ConfigureAwait(false);
             var missing = tenantsByName == null || !tenantsByName.Any()
                 ? tenantNames.ToArray()
                 : tenantNames.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
-            var tenantsById = repository.Tenants.Get(missing);
+            var tenantsById = await repository.Tenants.Get(missing).ConfigureAwait(false);
 
             missing = tenantsById == null || !tenantsById.Any()
                 ? missing
@@ -151,14 +157,14 @@ namespace Octopus.Cli.Repositories
             return allTenants;
         }
 
-        private IEnumerable<TenantResource> FindTenantsByTags(IReadOnlyList<string> tenantTags)
+        private async Task<IEnumerable<TenantResource>> FindTenantsByTags(IReadOnlyList<string> tenantTags)
         {
             if (!tenantTags.Any())
             {
                 return Enumerable.Empty<TenantResource>();
             }
 
-            var tenantsByTag = repository.Tenants.FindAll(null, tenantTags.ToArray());
+            var tenantsByTag = await repository.Tenants.FindAll(null, tenantTags.ToArray()).ConfigureAwait(false);
 
             if (!tenantsByTag.Any())
             {

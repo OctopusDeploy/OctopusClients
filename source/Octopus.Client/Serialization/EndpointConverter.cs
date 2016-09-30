@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Octopus.Client.Model;
-using Octopus.Client.Model.Accounts;
 using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Serialization

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -13,7 +15,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            createChannelCommand = new CreateChannelCommand(RepositoryFactory, Log, FileSystem);
+            createChannelCommand = new CreateChannelCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         CreateChannelCommand createChannelCommand;
@@ -21,7 +23,8 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldThrowBecauseOfMissingParameters()
         {
-            Assert.Throws<CommandException>(() => createChannelCommand.Execute(CommandLineArgs.ToArray()));
+            Func<Task> exec = () => createChannelCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>();
         }
 
         [Test]
@@ -36,11 +39,12 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--project={$"Project-{Guid.NewGuid()}"}");
             CommandLineArgs.Add($"--lifecycle={$"Lifecycle-{Guid.NewGuid()}"}");
 
-            Assert.Throws<CommandException>(() => createChannelCommand.Execute(CommandLineArgs.ToArray()));
+            Func<Task> exec = () => createChannelCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>();
         }
 
         [Test]
-        public void ShouldCreateNewChannel()
+        public async Task ShouldCreateNewChannel()
         {
             Repository.Client.RootDocument.Returns(new RootResource
             {
@@ -65,13 +69,13 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--project={projectName}");
             CommandLineArgs.Add($"--lifecycle={lifecycleName}");
 
-            createChannelCommand.Execute(CommandLineArgs.ToArray());
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Channel {0} created", channelName);
         }
 
         [Test]
-        public void ShouldUpdateExistingChannel()
+        public async Task ShouldUpdateExistingChannel()
         {
             Repository.Client.RootDocument.Returns(new RootResource
             {
@@ -104,7 +108,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--lifecycle={lifecycleName}");
             CommandLineArgs.Add("--update-existing");
 
-            createChannelCommand.Execute(CommandLineArgs.ToArray());
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Channel {0} updated", channelName);
         }

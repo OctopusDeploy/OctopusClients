@@ -1,4 +1,5 @@
-﻿using Octopus.Cli.Model;
+﻿using System.Threading.Tasks;
+using Octopus.Cli.Model;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -7,7 +8,7 @@ namespace Octopus.Cli.Commands
 {
     public class ChannelVersionRuleTester : IChannelVersionRuleTester
     {
-        public ChannelVersionRuleTestResult Test(IOctopusRepository repository, ChannelVersionRuleResource rule, string packageVersion)
+        public async Task<ChannelVersionRuleTestResult> Test(IOctopusAsyncRepository repository, ChannelVersionRuleResource rule, string packageVersion)
         {
             if (rule == null)
             {
@@ -28,7 +29,7 @@ namespace Octopus.Cli.Commands
                 ? repository.Client.Post<object, ChannelVersionRuleTestResult>(link, resource)
                 : repository.Client.Get<ChannelVersionRuleTestResult>(link, resource);
 
-            return response;
+            return await response.ConfigureAwait(false);
         }
     }
 }

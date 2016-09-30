@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
     {
         public DeploymentResource()
         {
-            FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            FormValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         [Required(ErrorMessage = "Please specify the release to deploy.")]

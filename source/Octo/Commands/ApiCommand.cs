@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
@@ -17,75 +19,61 @@ namespace Octopus.Cli.Commands
 {
     public abstract class ApiCommand : ICommand
     {
-        readonly ILogger log;
-        readonly IOctopusRepositoryFactory repositoryFactory;
-        readonly IOctopusFileSystem fileSystem;
+        readonly IOctopusClientFactory clientFactory;
+        readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;
         bool enableDebugging;
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
         bool ignoreSslErrors;
+#endif
         string password;
-        IOctopusRepository repository;
-        string serverBaseUrl;
         string username;
-        readonly Options optionGroups = new Options();
-        private OctopusRepositoryCommonQueries repositoryCommonQueries;
+        IOctopusAsyncClient client;
 
-        protected ApiCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
         {
+            this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
-            this.log = log;
-            this.fileSystem = fileSystem;
+            this.Log = log;
+            this.FileSystem = fileSystem;
 
-            var options = optionGroups.For("Common options");
-            options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => serverBaseUrl = v);
+            var options = Options.For("Common options");
+            options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
             options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
+#endif
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
         }
 
-        protected Options Options { get { return optionGroups; } }
+        protected Options Options { get; } = new Options();
 
-        protected ILogger Log
-        {
-            get { return log; }
-        }
+        protected ILogger Log { get; }
 
-        protected string ServerBaseUrl
-        {
-            get { return serverBaseUrl; }
-        }
+        protected string ServerBaseUrl { get; private set; }
 
-        protected IOctopusRepository Repository
-        {
-            get { return repository; }
-        }
+        protected IOctopusAsyncRepository Repository { get; private set; }
 
-        protected OctopusRepositoryCommonQueries RepositoryCommonQueries
-        {
-            get { return repositoryCommonQueries; }
-        }
+        protected OctopusRepositoryCommonQueries RepositoryCommonQueries { get; private set; }
 
-        protected IOctopusFileSystem FileSystem
-        {
-            get {  return fileSystem; }
-        }
+        protected IOctopusFileSystem FileSystem { get; }
 
         public void GetHelp(TextWriter writer)
         {
-            optionGroups.WriteOptionDescriptions(writer);
+            Options.WriteOptionDescriptions(writer);
         }
 
-        public void Execute(string[] commandLineArguments)
+        public async Task Execute(string[] commandLineArguments)
         {
-            var remainingArguments = optionGroups.Parse(commandLineArguments);
+            var remainingArguments = Options.Parse(commandLineArguments);
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized command arguments: " + string.Join(", ", remainingArguments));
 
-            if (string.IsNullOrWhiteSpace(serverBaseUrl))
+            if (string.IsNullOrWhiteSpace(ServerBaseUrl))
                 throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/");
 
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -93,56 +81,39 @@ namespace Octopus.Cli.Commands
 
             var credentials = ParseCredentials(username, password);
 
-            var endpoint = new OctopusServerEndpoint(serverBaseUrl, apiKey, credentials);
+            var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
 
-            repository = repositoryFactory.CreateRepository(endpoint);
-            repositoryCommonQueries = new OctopusRepositoryCommonQueries(repository, log);
+            client = await clientFactory.CreateAsyncClient(endpoint, new OctopusClientOptions()
+            {
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+                IgnoreSslErrors = ignoreSslErrors
+#endif
+            }).ConfigureAwait(false);
+            Repository = repositoryFactory.CreateRepository(client);
+            RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
 
             if (enableDebugging)
             {
-                repository.Client.SendingOctopusRequest += request => log.Debug(request.Method + " " + request.Uri);
+                Repository.Client.SendingOctopusRequest += request => Log.Debug(request.Method + " " + request.Uri);
             }
 
-            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
-            {
-                if (errors == SslPolicyErrors.None)
-                {
-                    return true;
-                }
+            Log.Debug("Handshaking with Octopus server: " + ServerBaseUrl);
+            var root = Repository.Client.RootDocument;
+            Log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
 
-                var certificate2 = (X509Certificate2) certificate;
-                var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine +
-                                 "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine +
-                                 "Certificate thumbprint:   " + ((X509Certificate2) certificate).Thumbprint;
-
-                if (ignoreSslErrors)
-                {
-                    log.Warning(warning);
-                    log.Warning("Because --ignoreSslErrors was set, this will be ignored.");
-                    return true;
-                }
-
-                log.Error(warning);
-                return false;
-            };
-
-            log.Debug("Handshaking with Octopus server: " + serverBaseUrl);
-            var root = repository.Client.RootDocument;
-            log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
-
-            var user = repository.Users.GetCurrent();
+            var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
             {
-                log.Debug("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                Log.Debug("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
-            Execute();
+            await Execute().ConfigureAwait(false);
         }
 
         protected virtual void ValidateParameters() { }
 
-        protected abstract void Execute();
+        protected abstract Task Execute();
 
         static NetworkCredential ParseCredentials(string username, string password)
         {
@@ -172,17 +143,17 @@ namespace Octopus.Cli.Commands
 
         protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
-            configFile = fileSystem.GetFullPath(configFile);
+            configFile = FileSystem.GetFullPath(configFile);
 
-            log.Debug("Loading additional arguments from config file: " + configFile);
+            Log.Debug("Loading additional arguments from config file: " + configFile);
 
-            if (!fileSystem.FileExists(configFile))
+            if (!FileSystem.FileExists(configFile))
             {
                 throw new CommandException("Unable to find config file " + configFile);
             }
 
             var results = new List<string>();
-            using (var fileStream = fileSystem.OpenFile(configFile, FileAccess.Read))
+            using (var fileStream = FileSystem.OpenFile(configFile, FileAccess.Read))
             using (var file = new StreamReader(fileStream))
             {
                 string line;
@@ -195,7 +166,7 @@ namespace Octopus.Cli.Commands
                 }
             }
 
-            var remainingArguments = optionGroups.Parse(results);
+            var remainingArguments = Options.Parse(results);
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized arguments in configuration file: " + string.Join(", ", remainingArguments));
 
@@ -205,7 +176,7 @@ namespace Octopus.Cli.Commands
         protected string GetPortalUrl(string path)
         {
             if (!path.StartsWith("/")) path = '/' + path;
-            var uri = new Uri(serverBaseUrl + path);
+            var uri = new Uri(ServerBaseUrl + path);
             return uri.AbsoluteUri;
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SYNC_CLIENT
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,6 +24,7 @@ namespace Octopus.Client
     /// var repository = new OctopusRepository(new OctopusServerEndpoint("http://myoctopus/"));
     /// </code>
     /// </remarks>
+    [Obsolete("Use IOctopusAsyncRepository instead")]
     public class OctopusRepository : IOctopusRepository
     {
         readonly IOctopusClient client;
@@ -1434,3 +1436,4 @@ namespace Octopus.Client
         }
     }
 }
+#endif

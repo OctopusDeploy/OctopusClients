@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
@@ -12,8 +14,8 @@ namespace Octopus.Cli.Commands
     [Command("delete-releases", Description = "Deletes a range of releases")]
     public class DeleteReleasesCommand : ApiCommand
     {
-        public DeleteReleasesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public DeleteReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Deletion");
             options.Add("project=", "Name of the project", v => ProjectName = v);
@@ -29,7 +31,7 @@ namespace Octopus.Cli.Commands
         public List<string> ChannelNames { get; } = new List<string>();
         public bool WhatIf { get; set; }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             if (ChannelNames.Any() && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel arguments.");
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
@@ -39,12 +41,14 @@ namespace Octopus.Cli.Commands
             var min = SemanticVersion.Parse(MinVersion);
             var max = SemanticVersion.Parse(MaxVersion);
 
-            var project = GetProject();
-            var channels = GetChannelIds(project);
+            var project = await GetProject().ConfigureAwait(false);
+            var channelsTask = GetChannelIds(project);
+            var releases = await Repository.Projects.GetReleases(project).ConfigureAwait(false);
+            var channels = await channelsTask.ConfigureAwait(false);
 
             Log.Debug("Finding releases for project...");
             var toDelete = new List<string>();
-            Repository.Projects.GetReleases(project).Paginate(Repository, page =>
+            await releases.Paginate(Repository, page =>
             {
                 foreach (var release in page.Items)
                 {
@@ -68,39 +72,41 @@ namespace Octopus.Cli.Commands
 
                 // We need to consider all releases
                 return true;
-            });
+            })
+            .ConfigureAwait(false);
 
             // Don't do anything else for WhatIf
             if (WhatIf) return;
 
             foreach (var release in toDelete)
             {
-                Repository.Client.Delete(release);
+                await Repository.Client.Delete(release).ConfigureAwait(false);
             }
         }
 
-        private HashSet<string> GetChannelIds(ProjectResource project)
+        private async Task<HashSet<string>> GetChannelIds(ProjectResource project)
         {
             if (ChannelNames.None())
                 return new HashSet<string>();
 
             Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
 
-            var channels = Repository.Projects.GetChannels(project).GetAllPages(Repository)
-                .Where(c => ChannelNames.Contains(c.Name, StringComparer.InvariantCultureIgnoreCase))
+            var firstChannelPage = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+            var allChannels = await firstChannelPage.GetAllPages(Repository).ConfigureAwait(false);
+            var channels = allChannels.Where(c => ChannelNames.Contains(c.Name, StringComparer.CurrentCultureIgnoreCase))
                 .ToArray();
 
-            var notFoundChannels = ChannelNames.Except(channels.Select(c => c.Name), StringComparer.InvariantCultureIgnoreCase).ToArray();
-            if(notFoundChannels.Any())
+            var notFoundChannels = ChannelNames.Except(channels.Select(c => c.Name), StringComparer.CurrentCultureIgnoreCase).ToArray();
+            if (notFoundChannels.Any())
                 throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
 
             return channels.Select(c => c.Id).ToHashSet();
         }
 
-        private ProjectResource GetProject()
+        private async Task<ProjectResource> GetProject()
         {
             Log.Debug("Finding project: " + ProjectName);
-            var project = Repository.Projects.FindByName(ProjectName);
+            var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
             return project;

@@ -39,6 +39,12 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 });
 
 var nugetVersion = gitVersionInfo.NuGetVersion;
+var winBinary = "win7-x64"; 
+var runtimes = new[] { 
+    winBinary,
+    "osx.10.10-x64",
+    "ubuntu.16.04-x64"
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -63,6 +69,7 @@ Task("__Default")
     .IsDependentOn("__UpdateAssemblyVersionInformation")
     .IsDependentOn("__Build")
     .IsDependentOn("__Test")
+    .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__PackNuget");
 
@@ -131,6 +138,46 @@ Task("__UpdateProjectJsonVersion")
     ModifyJson(projectToPublishProjectJson, json => json["version"] = nugetVersion);
 });
 
+Task("__Publish")
+    .Does(() =>
+{
+    var portablePublishDir = Path.Combine(octoPublishFolder, "portable");
+    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = portablePublishDir
+    });
+    CopyFileToDirectory(Path.Combine(assetDir, "Octo"), portablePublishDir);
+    CopyFileToDirectory(Path.Combine(assetDir, "Octo.cmd"), portablePublishDir);
+
+    using(new AutoRestoreFile(projectToPublishProjectJson))
+    {
+        ConvertToJsonOutput(projectToPublishProjectJson);
+        DotNetCoreRestore();
+
+        foreach(var runtime in runtimes)
+            DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+            {
+                Configuration = configuration,
+                Runtime = runtime,
+                OutputDirectory = Path.Combine(octoPublishFolder, runtime)
+            });
+    } 
+});
+
+private void ConvertToJsonOutput(string projectJson)
+{
+    ModifyJson(projectJson, json => {
+        var deps = (JObject)json["dependencies"];
+        deps.Remove("Microsoft.NETCore.App");
+        deps["Microsoft.NETCore.Runtime.CoreCLR"] = new JValue("1.0.4");
+        deps["Microsoft.NETCore.DotNetHostPolicy"] = new JValue("1.0.1");
+        json["runtimes"] = new JObject();
+        foreach (var runtime in runtimes)
+            json["runtimes"][runtime] = new JObject();
+    });
+}
+
 private void ModifyJson(string jsonFile, Action<JObject> modify)
 {
     var json = JsonConvert.DeserializeObject<JObject>(IO.File.ReadAllText(jsonFile));
@@ -138,32 +185,39 @@ private void ModifyJson(string jsonFile, Action<JObject> modify)
     IO.File.WriteAllText(jsonFile, JsonConvert.SerializeObject(json, Formatting.Indented));
 }
 
-
-Task("__Publish")
-    .Does(() =>
+private class AutoRestoreFile : IDisposable
 {
-    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = octoPublishFolder
-    });
-});
+	private byte[] _contents;
+	private string _filename;
+	public AutoRestoreFile(string filename)
+	{
+		_filename = filename;
+		_contents = IO.File.ReadAllBytes(filename);
+	}
 
-Task("__MergeOctoExe")
-    .Does(() => {
-        CreateDirectory(octoMergedFolder);
-        ILRepack(
-            Path.Combine(octoMergedFolder, "Octo.exe"),
-            Path.Combine(octoPublishFolder, "Octo.exe"),
-            IO.Directory.EnumerateFiles(octoPublishFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
-                Libs = new List<FilePath>() { octoPublishFolder }
-            }
-        );
-        DeleteFile(Path.Combine(octoMergedFolder, "Octo.pdb"));
-        CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
-    });
+	public void Dispose() => IO.File.WriteAllBytes(_filename, _contents);
+}
+
+private void TarGzip(string path, string outputFile)
+{
+    var outFile = $"{outputFile}.tar.gz";
+    Information("Creating TGZ file {0} from {1}", outFile, path);
+    using (var tarMemStream = new MemoryStream())
+    {
+        using (var tar = WriterFactory.Open(tarMemStream, ArchiveType.Tar, CompressionType.None, true))
+        {
+            tar.WriteAll(path, "*", SearchOption.AllDirectories);
+        }
+
+        tarMemStream.Seek(0, SeekOrigin.Begin);
+
+        using (Stream stream = IO.File.Open(outFile, FileMode.Create))
+        using (var zip = WriterFactory.Open(stream, ArchiveType.GZip, CompressionType.GZip))
+            zip.Write($"{outputFile}.tar", tarMemStream);
+    }
+    Information("Successfully created TGZ file: {0}", outFile);
+}
+
 
 Task("__PackNuget")
     .IsDependentOn("__Publish")
@@ -179,12 +233,11 @@ Task("__PackClientNuget")
     });
 
 Task("__PackOctopusToolsNuget")
-    .IsDependentOn("__MergeOctoExe")
     .Does(() => {
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
         
-        CopyDirectory(octoMergedFolder, nugetPackDir);
+        CopyDirectory(Path.Combine(octoPublishFolder, winBinary), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
 

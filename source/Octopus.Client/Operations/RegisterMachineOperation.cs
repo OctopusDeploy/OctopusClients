@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
@@ -92,12 +93,14 @@ namespace Octopus.Client.Operations
 
         public Uri SubscriptionId { get; set; }
 
+#if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
+        [Obsolete("Use ExecuteAsync instead")]
         public void Execute(OctopusServerEndpoint serverEndpoint)
         {
             using (var client = clientFactory.CreateClient(serverEndpoint))
@@ -114,6 +117,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
+        [Obsolete("Use ExecuteAsync instead")]
         public void Execute(OctopusRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository);
@@ -130,6 +134,7 @@ namespace Octopus.Client.Operations
                 repository.Machines.Create(machine);
         }
 
+        [Obsolete]
         List<TenantResource> GetTenants(OctopusRepository repository)
         {
             if (Tenants == null || !Tenants.Any())
@@ -149,6 +154,7 @@ namespace Octopus.Client.Operations
             return tenantsById.Concat(tenantsByName).ToList();
         }
 
+        [Obsolete]
         void ValidateTenantTags(OctopusRepository repository)
         {
             if (TenantTags == null || !TenantTags.Any())
@@ -162,6 +168,7 @@ namespace Octopus.Client.Operations
         }
 
 
+        [Obsolete]
         List<EnvironmentResource> GetEnvironments(OctopusRepository repository)
         {
             var selectedEnvironments = repository.Environments.FindByNames(EnvironmentNames);
@@ -174,6 +181,7 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
+        [Obsolete]
         MachinePolicyResource GetMachinePolicy(OctopusRepository repository)
         {
 
@@ -187,6 +195,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
+        [Obsolete]
         MachineResource GetMachine(OctopusRepository repository)
         {
             var existing = default(MachineResource);
@@ -201,8 +210,118 @@ namespace Octopus.Client.Operations
             }
             return existing ?? new MachineResource();
         }
+#endif
 
-#pragma warning disable 618
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        public async Task ExecuteAsync(OctopusServerEndpoint serverEndpoint)
+        {
+            using (var client = await clientFactory.CreateAsyncClient(serverEndpoint).ConfigureAwait(false))
+            {
+                var repository = new OctopusAsyncRepository(client);
+
+                await ExecuteAsync(repository).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Executes the operation against the specified Octopus Deploy server.
+        /// </summary>
+        /// <param name="repository">The Octopus Deploy server repository.</param>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
+        public async Task ExecuteAsync(OctopusAsyncRepository repository)
+        {
+            var selectedEnvironments = GetEnvironments(repository).ConfigureAwait(false);
+            var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
+            var machineTask = GetMachine(repository).ConfigureAwait(false);
+            var tenants = GetTenants(repository).ConfigureAwait(false);
+            await ValidateTenantTags(repository).ConfigureAwait(false);
+
+            var machine = await machineTask;
+            ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants);
+
+            if (machine.Id != null)
+                await repository.Machines.Modify(machine).ConfigureAwait(false);
+            else
+                await repository.Machines.Create(machine).ConfigureAwait(false);
+        }
+
+        async Task<List<TenantResource>> GetTenants(OctopusAsyncRepository repository)
+        {
+            if (Tenants == null || !Tenants.Any())
+            {
+                return new List<TenantResource>();
+            }
+            var tenantsByName = await repository.Tenants.FindByNames(Tenants).ConfigureAwait(false);
+            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+
+            var tenantsById = await repository.Tenants.Get(missing).ConfigureAwait(false);
+            missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missing.Any())
+                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+
+            return tenantsById.Concat(tenantsByName).ToList();
+        }
+
+        async Task ValidateTenantTags(OctopusAsyncRepository repository)
+        {
+            if (TenantTags == null || !TenantTags.Any())
+                return;
+
+            var tagSets = await repository.TagSets.FindAll().ConfigureAwait(false);
+            var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
+
+            if (missingTags.Any())
+                throw new ArgumentException($"Could not find the {"tag" + (missingTags.Count == 1 ? "" : "s")} {string.Join(", ", missingTags)} on the Octopus server.");
+        }
+
+        async Task<List<EnvironmentResource>> GetEnvironments(OctopusAsyncRepository repository)
+        {
+            var selectedEnvironments = await repository.Environments.FindByNames(EnvironmentNames).ConfigureAwait(false);
+
+            var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
+
+            if (missing.Any())
+                throw new ArgumentException($"Could not find the {"environment" + (missing.Count == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+
+            return selectedEnvironments;
+        }
+
+        async Task<MachinePolicyResource> GetMachinePolicy(OctopusAsyncRepository repository)
+        {
+
+            var machinePolicy = default(MachinePolicyResource);
+            if (!string.IsNullOrEmpty(MachinePolicy))
+            {
+                machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy).ConfigureAwait(false);
+                if (machinePolicy == null)
+                    throw new ArgumentException($"Could not find a machine policy named {MachinePolicy}.");
+            }
+            return machinePolicy;
+        }
+
+        async Task<MachineResource> GetMachine(OctopusAsyncRepository repository)
+        {
+            var existing = default(MachineResource);
+            try
+            {
+                existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
+                if (!AllowOverwrite && existing?.Id != null)
+                    throw new ArgumentException(string.Format("A machine named '{0}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.", MachineName));
+            }
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            {
+            }
+            return existing ?? new MachineResource();
+        }
+
         void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants)
         {
             machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());

@@ -14,7 +14,7 @@ namespace Octopus.Client.Serialization
         {
             writer.WriteStartObject();
 
-            foreach (var property in value.GetType()
+            foreach (var property in value.GetType().GetTypeInfo()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty)
                 .Where(p => p.CanRead))
             {
@@ -56,12 +56,13 @@ namespace Octopus.Client.Serialization
                 type = DerivedTypeMappings[enumType];
             }
 
-            var ctor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
+            var ctor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
             var args = ctor.GetParameters().Select(p =>
                 jo.GetValue(char.ToUpper(p.Name[0]) + p.Name.Substring(1))
                     .ToObject(p.ParameterType, serializer)).ToArray();
             var instance = ctor.Invoke(args);
             foreach (var prop in type
+                .GetTypeInfo()
                 .GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
                 .Where(p => p.CanWrite))
             {
@@ -74,7 +75,7 @@ namespace Octopus.Client.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(TBaseResource).IsAssignableFrom(objectType);
+            return typeof(TBaseResource).GetTypeInfo().IsAssignableFrom(objectType);
         }
 
         protected abstract IDictionary<TEnumType, Type> DerivedTypeMappings { get; }

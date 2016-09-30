@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Serilog;
 using NSubstitute;
@@ -13,6 +14,21 @@ namespace Octopus.Cli.Tests.Commands
 {
     public abstract class ApiCommandFixtureBase
     {
+        private static string _previousCurrentDirectory;
+
+        [OneTimeSetUp]
+        public static void OneTimeSetUp()
+        {
+            _previousCurrentDirectory = Directory.GetCurrentDirectory();
+            Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+        }
+
+        [OneTimeTearDown]
+        public static void OneTimeTearDown()
+        {
+            Directory.SetCurrentDirectory(_previousCurrentDirectory);
+        }
+
         [SetUp]
         public void BaseSetup()
         {
@@ -23,11 +39,12 @@ namespace Octopus.Cli.Tests.Commands
             rootDocument.Version = "2.0";
             rootDocument.Links.Add("Tenants", "http://tenants.org");
 
-            Repository = Substitute.For<IOctopusRepository>();
+            Repository = Substitute.For<IOctopusAsyncRepository>();
             Repository.Client.RootDocument.Returns(rootDocument);
 
+            ClientFactory = Substitute.For<IOctopusClientFactory>();
 
-            RepositoryFactory = Substitute.For<IOctopusRepositoryFactory>();
+            RepositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();
             RepositoryFactory.CreateRepository(null).ReturnsForAnyArgs(Repository);
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
@@ -39,11 +56,13 @@ namespace Octopus.Cli.Tests.Commands
             }; 
         }
 
+        public IOctopusClientFactory ClientFactory { get; set; }
+
         public ILogger Log { get; set; }
 
-        public IOctopusRepositoryFactory RepositoryFactory { get; set; }
+        public IOctopusAsyncRepositoryFactory RepositoryFactory { get; set; }
 
-        public IOctopusRepository Repository { get; set; }
+        public IOctopusAsyncRepository Repository { get; set; }
 
         public IOctopusFileSystem FileSystem { get; set; }
 

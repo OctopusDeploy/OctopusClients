@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SYNC_CLIENT
+using System;
 using System.IO;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -8,6 +9,7 @@ namespace Octopus.Client
     /// <summary>
     /// Contract for a client to the Octopus Deploy HTTP API.
     /// </summary>
+    [Obsolete("Use IOctopusAsyncClient instead")]
     public interface IOctopusClient : IDisposable
     {
         /// <summary>
@@ -283,3 +285,4 @@ namespace Octopus.Client
         RootResource RefreshRootDocument();
     }
 }
+#endif

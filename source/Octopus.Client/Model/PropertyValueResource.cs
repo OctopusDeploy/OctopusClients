@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace Octopus.Client.Model
 {
@@ -87,7 +88,7 @@ namespace Octopus.Client.Model
 
             public override bool CanConvert(Type objectType)
             {
-                return typeof(PropertyValueResource).IsAssignableFrom(objectType);
+                return typeof(PropertyValueResource).GetTypeInfo().IsAssignableFrom(objectType);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -7,42 +8,45 @@ namespace Octopus.Cli.Repositories
 {
     public class ActionTemplateRepository : IActionTemplateRepository
     {
-        private readonly IOctopusClient client;
-        private readonly string templatesPath;
+        private readonly IOctopusAsyncClient client;
 
-        public ActionTemplateRepository(IOctopusClient client)
+        public ActionTemplateRepository(IOctopusAsyncClient client)
         {
             this.client = client;
-            templatesPath = client.RootDocument.Link("ActionTemplates");
+            
         }
 
-        public ActionTemplateResource Get(string idOrHref)
+        public async Task<ActionTemplateResource> Get(string idOrHref)
         {
             if (string.IsNullOrWhiteSpace(idOrHref)) return null;
-            return client.Get<ActionTemplateResource>(templatesPath, new { id = idOrHref });
+            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            return await client.Get<ActionTemplateResource>(templatesPath, new { id = idOrHref }).ConfigureAwait(false);
         }
 
-        public ActionTemplateResource Create(ActionTemplateResource resource)
+        public async Task<ActionTemplateResource> Create(ActionTemplateResource resource)
         {
-            return client.Create(templatesPath, resource);
+            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            return await client.Create(templatesPath, resource).ConfigureAwait(false);
         }
 
-        public ActionTemplateResource Modify(ActionTemplateResource resource)
+        public Task<ActionTemplateResource> Modify(ActionTemplateResource resource)
         {
             return client.Update(resource.Links["Self"], resource);
         }
 
-        public ActionTemplateResource FindByName(string name)
+        public async Task<ActionTemplateResource> FindByName(string name)
         {
             ActionTemplateResource template = null;
 
             name = (name ?? string.Empty).Trim();
-            client.Paginate<ActionTemplateResource>(templatesPath, page =>
+            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            await client.Paginate<ActionTemplateResource>(templatesPath, page =>
             {
                 template = page.Items.FirstOrDefault(t => string.Equals((t.Name ?? string.Empty), name, StringComparison.OrdinalIgnoreCase));
                 // If no matching template was found, then we need to try the next page.
                 return (template == null);
-            });
+            })
+            .ConfigureAwait(false);
 
             return template;
         }

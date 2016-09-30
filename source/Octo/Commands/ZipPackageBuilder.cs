@@ -42,7 +42,7 @@ namespace Octopus.Cli.Commands
                     foreach (var file in PathResolver.PerformWildcardSearch(basePath, pattern))
                     {
                         var fullFilePath = fileSystem.GetFullPath(file);
-                        if (string.Equals(fullFilePath, output, StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(fullFilePath, output, StringComparison.CurrentCultureIgnoreCase))
                             continue;
 
                         var relativePath = UseCrossPlatformDirectorySeparator(

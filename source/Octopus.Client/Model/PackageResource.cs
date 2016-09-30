@@ -4,7 +4,7 @@ namespace Octopus.Client.Model
 {
     public class PackageResource : Resource
     {
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "PackageId")]
+        [Obsolete("Replaced by PackageId")]
         public string NuGetPackageId
         {
             get { return PackageId; }
@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         }
         public string PackageId { get; set; }
 
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "FeedId")]
+        [Obsolete("Replaced by FeedId")]
         public string NuGetFeedId
         {
             get { return FeedId; }

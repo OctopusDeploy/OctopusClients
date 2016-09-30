@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -15,11 +16,11 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listEnvironmentsCommand = new ListEnvironmentsCommand(RepositoryFactory, Log, FileSystem);
+            listEnvironmentsCommand = new ListEnvironmentsCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         [Test]
-        public void ShouldGetListOfEnvironments()
+        public async Task ShouldGetListOfEnvironments()
         {
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
@@ -27,7 +28,7 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource() {Name = "Prod", Id = "prodenvid"}
             });
 
-            listEnvironmentsCommand.Execute(CommandLineArgs.ToArray());
+            await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Environments: 2");
             Log.Received().Information(" - {0} (ID: {1})", "Dev", "devenvid");

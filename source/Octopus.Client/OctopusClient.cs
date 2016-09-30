@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SYNC_CLIENT
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +17,7 @@ namespace Octopus.Client
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
+    [Obsolete("Use OctopusAsyncClient instead")]
     public class OctopusClient : IHttpOctopusClient
     {
         readonly object rootDocumentLock = new object();
@@ -545,3 +547,4 @@ namespace Octopus.Client
         }
     }
 }
+#endif

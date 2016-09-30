@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Octopus.Client.Model.Versioning;
 
+// ReSharper disable once CheckNamespace
 namespace Octopus.Client.Model
 {
     public partial class SemanticVersion

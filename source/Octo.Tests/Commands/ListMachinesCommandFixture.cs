@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,13 +22,13 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listMachinesCommand = new ListMachinesCommand(RepositoryFactory, Log, FileSystem);
+            listMachinesCommand = new ListMachinesCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         ListMachinesCommand listMachinesCommand;
 
         [Test]
-        public void ShouldGetListOfMachinesWithEnvironmentAndStatusArgs()
+        public async Task ShouldGetListOfMachinesWithEnvironmentAndStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
@@ -62,7 +63,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 2");
             Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development");
@@ -71,7 +72,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldGetListOfMachinesWithEnvironmentArgs()
+        public async Task ShouldGetListOfMachinesWithEnvironmentArgs()
         {
             CommandLineArgs.Add("-environment=Development");
 
@@ -91,7 +92,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 1");
             Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
@@ -100,7 +101,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldGetListOfMachinesWithNoArgs()
+        public async Task ShouldGetListOfMachinesWithNoArgs()
         {
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
@@ -125,14 +126,14 @@ namespace Octopus.Cli.Tests.Commands
                 }
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
             Log.Received().Information("Machines: 2");
             Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
             Log.Received().Information(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development");
         }
 
         [Test]
-        public void ShouldGetListOfMachinesWithOfflineStatusArgs()
+        public async Task ShouldGetListOfMachinesWithOfflineStatusArgs()
         {
             CommandLineArgs.Add("-status=Offline");
 
@@ -162,7 +163,7 @@ namespace Octopus.Cli.Tests.Commands
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 1");
             Log.DidNotReceive().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");
@@ -171,7 +172,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldGetListOfMachinesWithMachineHealthStatusArgs()
+        public async Task ShouldGetListOfMachinesWithMachineHealthStatusArgs()
         {
             CommandLineArgs.Add("--health-status=HasWarnings");
             Repository.Client.RootDocument.Version = "3.5.0";
@@ -204,14 +205,14 @@ namespace Octopus.Cli.Tests.Commands
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 1");
             Log.Received().Information(MachineLogFormat, "PC01466", MachineModelHealthStatus.HasWarnings.ToString(), "Machines-002", "Development");
         }
 
         [Test]
-        public void ShouldLogWarningIfUsingStatusOn34Repo()
+        public async Task ShouldLogWarningIfUsingStatusOn34Repo()
         {
             CommandLineArgs.Add("--status=Online");
             Repository.Client.RootDocument.Version = "3.4.0";
@@ -244,14 +245,14 @@ namespace Octopus.Cli.Tests.Commands
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
             Log.Received().Information("Machines: 2");
         }
 
         [Test]
-        public void ShouldSupportStateFilters()
+        public async Task ShouldSupportStateFilters()
         {
             CommandLineArgs.Add("--health-status=Healthy");
             CommandLineArgs.Add("--calamari-outdated=false");
@@ -305,7 +306,7 @@ namespace Octopus.Cli.Tests.Commands
                     EnvironmentIds = new ReferenceCollection("Environments-001")}
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 1");
             Log.Received().Information(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "Development");
@@ -317,13 +318,13 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--health-status=Online");
             Repository.Client.RootDocument.Version = "3.1.0";
 
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()
-              .WithMessage("The `--health-status` parameter is only available on Octopus Server instances from 3.4.0 onwards.");
+                .WithMessage("The `--health-status` parameter is only available on Octopus Server instances from 3.4.0 onwards.");
         }
 
         [Test]
-        public void ShouldGetListOfMachinesWithStatusArgs()
+        public async Task ShouldGetListOfMachinesWithStatusArgs()
         {
             CommandLineArgs.Add("-status=Online");
 
@@ -354,7 +355,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             });
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             Log.Received().Information("Machines: 2");
             Log.Received().Information(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development");

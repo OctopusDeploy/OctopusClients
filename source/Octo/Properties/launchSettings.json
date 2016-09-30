@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Octo": {
+      "commandName": "Project",
+      "commandLineArgs": "list-environments --server=http://foo.localtest.me --apiKey==API-04KOLMZJ2EKBF3XDPDU37WZ7TO"
+    }
+  }
+}

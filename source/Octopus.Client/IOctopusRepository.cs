@@ -1,3 +1,4 @@
+#if SYNC_CLIENT
 using System;
 using Octopus.Client.Repositories;
 
@@ -8,6 +9,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusRepository.Client" />.
     /// </summary>
+    [Obsolete("Use IOctopusAsyncRepository instead")]
     public interface IOctopusRepository
     {
         /// <summary>
@@ -56,3 +58,4 @@ namespace Octopus.Client
 
     }
 }
+#endif

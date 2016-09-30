@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 
 namespace Octopus.Cli.Commands
 {
@@ -12,8 +14,8 @@ namespace Octopus.Cli.Commands
     {
         readonly IExporterLocator exporterLocator;
 
-        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log)
-            : base(repositoryFactory, log, fileSystem)
+        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             this.exporterLocator = exporterLocator;
 
@@ -31,18 +33,21 @@ namespace Octopus.Cli.Commands
         public string Name { get; set; }
         public string ReleaseVersion { get; set; }
 
-        protected override void Execute()
+        protected override Task Execute()
         {
-            if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type to export using the parameter: --type=XYZ");
-            if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
+            return Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type to export using the parameter: --type=XYZ");
+                if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding exporter '" + Type + "'");
-            var exporter = exporterLocator.Find(Type, Repository, FileSystem, Log);
-            if (exporter == null)
-                throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
+                Log.Debug("Finding exporter '" + Type + "'");
+                var exporter = exporterLocator.Find(Type, Repository, FileSystem, Log);
+                if (exporter == null)
+                    throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
 
-            Log.Debug("Beginning the export");
-            exporter.Export(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("Name={0}", Name), string.Format("ReleaseVersion={0}", ReleaseVersion));
+                Log.Debug("Beginning the export");
+                exporter.Export(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("Name={0}", Name), string.Format("ReleaseVersion={0}", ReleaseVersion));
+            });
         }
     }
 }
