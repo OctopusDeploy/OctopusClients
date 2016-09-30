@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&prerelease"
-#tool "nuget:?package=ILRepack"
-#addin "nuget:?package=Newtonsoft.Json"
-#addin "nuget:?package=SharpCompress"
+#tool "nuget:?package=GitVersion.CommandLine&prerelease&version=4.0.0-beta0007"
+#tool "nuget:?package=ILRepack&version=2.0.11"
+#addin "nuget:?package=Newtonsoft.Json&version=9.0.1"
+#addin "nuget:?package=SharpCompress&version=0.12.4"
 
 using Path = System.IO.Path;
 using Newtonsoft.Json;
