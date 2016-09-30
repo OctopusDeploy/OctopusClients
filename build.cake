@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&prerelease"
-#tool "nuget:?package=ILRepack"
-#addin "nuget:?package=Newtonsoft.Json"
-#addin "nuget:?package=SharpCompress"
+#tool "nuget:?package=GitVersion.CommandLine&prerelease&version=4.0.0-beta0007"
+#tool "nuget:?package=ILRepack&version=2.0.11"
+#addin "nuget:?package=Newtonsoft.Json&version=9.0.1"
+#addin "nuget:?package=SharpCompress&version=0.12.4"
 
 using Path = System.IO.Path;
 using Newtonsoft.Json;
@@ -112,7 +112,7 @@ Task("__Test")
 {
     GetFiles("**/*Tests/project.json")
         .ToList()
-        .ForEach(testProjectFile => 
+        .ForEach(testProjectFile =>
         {
             DotNetCoreTest(testProjectFile.ToString(), new DotNetCoreTestSettings
             {
@@ -156,8 +156,8 @@ Task("__MergeOctoExe")
             Path.Combine(octoMergedFolder, "Octo.exe"),
             Path.Combine(octoPublishFolder, "Octo.exe"),
             IO.Directory.EnumerateFiles(octoPublishFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
+            new ILRepackSettings {
+                Internalize = true,
                 Libs = new List<FilePath>() { octoPublishFolder }
             }
         );
@@ -183,7 +183,7 @@ Task("__PackOctopusToolsNuget")
     .Does(() => {
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
-        
+
         CopyDirectory(octoMergedFolder, nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
