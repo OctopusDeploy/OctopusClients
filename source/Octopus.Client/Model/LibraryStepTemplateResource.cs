@@ -10,9 +10,7 @@ namespace Octopus.Client.Model
         public string Type { get; set; }
         public string Name { get; set; }
         public string Author { get; set; }
-        public string IconUrl { get; set; }
         public string Description { get; set; }
-        public string Category { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
