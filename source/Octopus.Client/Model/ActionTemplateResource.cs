@@ -21,8 +21,10 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string ActionType { get; set; }
 
+        [Writeable]
         public int Version { get; set; }
 
+        [Writeable]
         public string LibraryStepTemplateId { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
