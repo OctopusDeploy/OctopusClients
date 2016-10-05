@@ -10,9 +10,11 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
         public string Author { get; set; }
         public string Website { get; set; }
-        public bool HasUpdate { get; set; }
         public bool IsInstalled { get; set; }
         public bool IsBuiltIn { get; set; }
+
+        public string LibraryStepTemplateId { get; set; }
+        public bool HasUpdate { get; set; }
 
         public LinkCollection Links { get; set; }
     }
