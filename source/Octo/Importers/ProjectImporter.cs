@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Serilog;
@@ -147,6 +148,8 @@ namespace Octopus.Cli.Importers
                     ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles)
                         .ToDictionary(k => k.Key, v => v.Value);
 
+                MapReleaseCreationStrategyChannel(importedProject, importedChannels);
+
                 ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels);
 
                 ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed);
@@ -165,6 +168,14 @@ namespace Octopus.Cli.Importers
                     }
                 }
             }
+        }
+
+        void MapReleaseCreationStrategyChannel(ProjectResource importedProject, Dictionary<string, ChannelResource> channelMap)
+        {
+            if (importedProject.ReleaseCreationStrategy?.ChannelId == null)
+                return;
+            importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
+            Repository.Projects.Modify(importedProject);
         }
 
         protected LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
