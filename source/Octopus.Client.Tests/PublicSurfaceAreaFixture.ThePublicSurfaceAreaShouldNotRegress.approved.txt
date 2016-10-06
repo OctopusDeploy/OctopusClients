@@ -1312,6 +1312,7 @@ Octopus.Client.Model
     .ctor()
     String Author { get; set; }
     String Description { get; set; }
+    String HistoryUrl { get; set; }
     String Id { get; set; }
     Octopus.Client.Model.LinkCollection Links { get; set; }
     String Name { get; set; }
