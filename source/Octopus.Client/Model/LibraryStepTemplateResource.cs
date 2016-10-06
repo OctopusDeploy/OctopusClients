@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
         public int Version { get; set; }
         public string Website { get; set; }
+        public string HistoryUrl { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
