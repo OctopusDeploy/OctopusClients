@@ -15,6 +15,7 @@ namespace Octopus.Client.Model
 
         public string LibraryStepTemplateId { get; set; }
         public bool HasUpdate { get; set; }
+        public string HistoryUrl { get; set; }
 
         public LinkCollection Links { get; set; }
     }
