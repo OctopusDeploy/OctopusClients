@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 
@@ -36,7 +35,6 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        [Ignore("Temp Ignore to get build working.")] 
         public void ShouldNotThrowIfCustomOptionsAreAddedByCommand()
         {
             CommandLineArgs.Add("--pill=red");
@@ -44,11 +42,9 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        [Ignore("Temp Ignore to get build working.")]
         public void ShouldExecuteCommandWhenCorrectCommandLineParametersArePassed()
         {
             apiCommand.Execute(CommandLineArgs.ToArray());
         }
-
     }
 }
