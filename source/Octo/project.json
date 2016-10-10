@@ -20,7 +20,7 @@
     "Octopus.Client": {
       "target": "project"
     },
-    "Octostache": "2.0.0-dnc0027",
+    "Octostache": "2.0.0-dnc0033",
     "Serilog": "2.1.0",
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.Trace": "2.0.0",
