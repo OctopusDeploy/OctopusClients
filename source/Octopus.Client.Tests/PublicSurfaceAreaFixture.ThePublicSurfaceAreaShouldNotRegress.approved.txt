@@ -1219,6 +1219,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    Boolean IsCommunityStepTemplatesEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
