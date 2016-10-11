@@ -782,6 +782,10 @@ Octopus.Client.Model
     {
       static System.String Name
     }
+    abstract class SynchronizeLibrarySteps
+    {
+      static System.String Name
+    }
     abstract class SystemIntegrityCheck
     {
       static System.String Name
@@ -2708,6 +2712,10 @@ Octopus.Client.Model
     }
   }
   abstract class SystemIntegrityCheck
+  {
+    static System.String Name
+  }
+  abstract class SynchronizeLibrarySteps
   {
     static System.String Name
   }

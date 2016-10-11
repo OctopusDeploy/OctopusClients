@@ -122,5 +122,10 @@ namespace Octopus.Client.Model
         {
             public const string Name = "SystemIntegrityCheck";
         }
+
+        public static class SynchronizeLibrarySteps
+        {
+            public const string Name = "SynchronizeLibrarySteps";
+        }
     }
 }
