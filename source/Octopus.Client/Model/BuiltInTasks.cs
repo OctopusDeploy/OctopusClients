@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
         public static string[] TasksThatCanBeQueuedByUsers()
         {
             // Everything except "Deploy" and "Delete"
-            return new[] {Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name};
+            return new[] {Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name, SynchronizeLibrarySteps.Name};
         }
 
         public static class AutoDeploy
