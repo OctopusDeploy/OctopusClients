@@ -15,13 +15,16 @@ namespace Octopus.Client
         /// </summary>
         IOctopusClient Client { get; }
 
+        IAccountRepository Accounts { get; }
         IArtifactRepository Artifacts { get; }
         IActionTemplateRepository ActionTemplates { get; }
-        ICertificateRepository Certificates { get; }
         IBackupRepository Backups { get; }
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+        ICertificateRepository Certificates { get; }
+        IChannelRepository Channels { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
+        IDefectsRepository Defects { get; }
         IDeploymentProcessRepository DeploymentProcesses { get; }
         IDeploymentRepository Deployments { get; }
         IEnvironmentRepository Environments { get; }
@@ -34,12 +37,14 @@ namespace Octopus.Client
         IMachineRepository Machines { get; }
         IMachineRoleRepository MachineRoles { get; }
         IMachinePolicyRepository MachinePolicies { get; }
+        IOctopusServerNodeRepository OctopusServerNodes { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IReleaseRepository Releases { get; }
         IProxyRepository Proxies { get; }
         IServerStatusRepository ServerStatus { get; }
         ISchedulerRepository Schedulers { get; }
+        ISubscriptionRepository Subscriptions { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
         ITagSetRepository TagSets { get; }
@@ -47,12 +52,8 @@ namespace Octopus.Client
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
-        IChannelRepository Channels { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
-        IAccountRepository Accounts { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
-        IDefectsRepository Defects { get; }
-        IOctopusServerNodeRepository OctopusServerNodes { get; }
 
     }
 }
