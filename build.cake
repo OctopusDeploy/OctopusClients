@@ -42,10 +42,11 @@ var nugetVersion = gitVersionInfo.NuGetVersion;
 var winBinary = "win7-x64"; 
 var runtimes = new[] { 
     winBinary,
+    "win7-x86",
     "osx.10.10-x64",
     "ubuntu.14.04-x64",
     "ubuntu.16.04-x64",
-    "rhel.7.0-x64",
+    "rhel.7-x64",
     "debian.8-x64",
     "fedora.23-x64",
     "opensuse.13.2-x64",
