@@ -987,10 +987,23 @@ namespace Octopus.Client
             }
 
             public ResourceCollection<EventResource> List(int skip = 0,
+                string filterByUserId = null,
+                string regardingDocumentId = null,
+                bool includeInternalEvents = false)
+            {
+                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new { skip,
+                    user = filterByUserId,
+                    regarding = regardingDocumentId,
+                    @internal = includeInternalEvents.ToString() });
+            }
+
+            public ResourceCollection<EventResource> List(int skip = 0,
                 string from = null,
                 string to = null,
                 string regarding = null,
                 string regardingAny = null,
+                bool includeInternalEvents = true,
+                string user = null,
                 string users = null,
                 string projects = null,
                 string environments = null,
@@ -1004,6 +1017,8 @@ namespace Octopus.Client
                     to = to,
                     regarding = regarding,
                     regardingAny = regardingAny,
+                    @internal = includeInternalEvents,
+                    user = user,
                     users = users,
                     projects = projects,
                     environments = environments,
