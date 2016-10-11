@@ -43,7 +43,13 @@ var winBinary = "win7-x64";
 var runtimes = new[] { 
     winBinary,
     "osx.10.10-x64",
-    "ubuntu.16.04-x64"
+    "ubuntu.14.04-x64",
+    "ubuntu.16.04-x64",
+    "rhel.7.0-x64",
+    "debian.8-x64",
+    "fedora.23-x64",
+    "opensuse.13.2-x64",
+    "linuxmint.17-x64",
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,6 +77,7 @@ Task("__Default")
     .IsDependentOn("__Test")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
+    .IsDependentOn("__Zip")
     .IsDependentOn("__PackNuget");
 
 Task("__Clean")
@@ -218,6 +225,19 @@ private void TarGzip(string path, string outputFile)
     Information("Successfully created TGZ file: {0}", outFile);
 }
 
+Task("__Zip")
+    .IsDependentOn("__Publish")
+    .Does(() => {
+        foreach(var dir in IO.Directory.EnumerateDirectories(octoPublishFolder))
+        {
+            var dirName = Path.GetFileName(dir);
+            var outFile = Path.Combine(artifactsDir, $"Octo.exe.{dirName}");
+            if(dirName.StartsWith("win") || dirName == "portable")
+                Zip(dir, outFile + ".zip");
+            if(!dirName.StartsWith("win"))
+                TarGzip(dir, outFile);
+        }
+    });
 
 Task("__PackNuget")
     .IsDependentOn("__Publish")
