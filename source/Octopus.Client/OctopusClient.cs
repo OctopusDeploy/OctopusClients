@@ -17,7 +17,7 @@ namespace Octopus.Client
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
-    [Obsolete("Use OctopusAsyncClient instead")]
+    // [Obsolete("Use OctopusAsyncClient instead")]
     public class OctopusClient : IHttpOctopusClient
     {
         readonly object rootDocumentLock = new object();

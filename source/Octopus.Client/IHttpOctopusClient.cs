@@ -7,7 +7,7 @@ namespace Octopus.Client
     /// <summary>
     /// Implemented by an <see cref="IOctopusClient" /> that uses HTTP to communicate.
     /// </summary>
-    [Obsolete("Use IOctopusAsyncClient instead")]
+    // [Obsolete("Use IOctopusAsyncClient instead")]
     public interface IHttpOctopusClient : IOctopusClient
     {
         /// <summary>

@@ -24,7 +24,7 @@ namespace Octopus.Client
     /// var repository = new OctopusRepository(new OctopusServerEndpoint("http://myoctopus/"));
     /// </code>
     /// </remarks>
-    [Obsolete("Use IOctopusAsyncRepository instead")]
+    // [Obsolete("Use IOctopusAsyncRepository instead")]
     public class OctopusRepository : IOctopusRepository
     {
         readonly IOctopusClient client;

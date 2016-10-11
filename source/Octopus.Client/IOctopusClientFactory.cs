@@ -14,7 +14,7 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="serverEndpoint">The endpoint to create a client for.</param>
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
-        [Obsolete("Use CreateAsyncClient(OctopusServerEndpoint) instead")]
+        // [Obsolete("Use CreateAsyncClient(OctopusServerEndpoint) instead")]
         IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint);
 #endif
 

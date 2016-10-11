@@ -100,7 +100,7 @@ namespace Octopus.Client.Operations
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        [Obsolete("Use ExecuteAsync instead")]
+       // [Obsolete("Use ExecuteAsync instead")]
         public void Execute(OctopusServerEndpoint serverEndpoint)
         {
             using (var client = clientFactory.CreateClient(serverEndpoint))
@@ -117,7 +117,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        [Obsolete("Use ExecuteAsync instead")]
+       // [Obsolete("Use ExecuteAsync instead")]
         public void Execute(OctopusRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository);
@@ -134,7 +134,7 @@ namespace Octopus.Client.Operations
                 repository.Machines.Create(machine);
         }
 
-        [Obsolete]
+      //  [Obsolete]
         List<TenantResource> GetTenants(OctopusRepository repository)
         {
             if (Tenants == null || !Tenants.Any())
@@ -154,7 +154,7 @@ namespace Octopus.Client.Operations
             return tenantsById.Concat(tenantsByName).ToList();
         }
 
-        [Obsolete]
+       // [Obsolete]
         void ValidateTenantTags(OctopusRepository repository)
         {
             if (TenantTags == null || !TenantTags.Any())
@@ -168,7 +168,7 @@ namespace Octopus.Client.Operations
         }
 
 
-        [Obsolete]
+       // [Obsolete]
         List<EnvironmentResource> GetEnvironments(OctopusRepository repository)
         {
             var selectedEnvironments = repository.Environments.FindByNames(EnvironmentNames);
@@ -181,7 +181,7 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
-        [Obsolete]
+       // [Obsolete]
         MachinePolicyResource GetMachinePolicy(OctopusRepository repository)
         {
 
@@ -195,7 +195,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
-        [Obsolete]
+      //  [Obsolete]
         MachineResource GetMachine(OctopusRepository repository)
         {
             var existing = default(MachineResource);

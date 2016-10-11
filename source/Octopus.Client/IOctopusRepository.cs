@@ -9,7 +9,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusRepository.Client" />.
     /// </summary>
-    [Obsolete("Use IOctopusAsyncRepository instead")]
+    // [Obsolete("Use IOctopusAsyncRepository instead")]
     public interface IOctopusRepository
     {
         /// <summary>
