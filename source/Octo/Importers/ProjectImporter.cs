@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -144,6 +145,8 @@ namespace Octopus.Cli.Importers
                     (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
                         .ToDictionary(k => k.Key, v => v.Value);
 
+                await MapReleaseCreationStrategyChannel(importedProject, importedChannels);
+
                 await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels).ConfigureAwait(false);
 
                 await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
@@ -162,6 +165,14 @@ namespace Octopus.Cli.Importers
                     }
                 }
             }
+        }
+
+        Task MapReleaseCreationStrategyChannel(ProjectResource importedProject, Dictionary<string, ChannelResource> channelMap)
+        {
+            if (importedProject.ReleaseCreationStrategy?.ChannelId == null)
+                return Task.CompletedTask;
+            importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
+            return Repository.Projects.Modify(importedProject);
         }
 
         protected async Task<LifecycleResource> CheckProjectLifecycle(ReferenceDataItem lifecycle)

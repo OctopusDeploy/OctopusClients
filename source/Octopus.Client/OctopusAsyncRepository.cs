@@ -31,6 +31,7 @@ namespace Octopus.Client
             this.Client = client;
             Feeds = new FeedRepository(client);
             Backups = new BackupRepository(client);
+            ActionTemplates = new ActionTemplateRepository(client);
             Machines = new MachineRepository(client);
             MachineRoles = new MachineRoleRepository(client);
             MachinePolicies = new MachinePolicyRepository(client);
@@ -71,6 +72,7 @@ namespace Octopus.Client
 
         public IOctopusAsyncClient Client { get; }
 
+        public IActionTemplateRepository ActionTemplates { get; }
         public IDashboardRepository Dashboards { get; }
 
         public IDashboardConfigurationRepository DashboardConfigurations { get; }

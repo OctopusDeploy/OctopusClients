@@ -43,6 +43,7 @@
   interface IOctopusAsyncRepository
   {
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -73,6 +74,7 @@
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
@@ -111,6 +113,7 @@
   interface IOctopusRepository
   {
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -185,6 +188,7 @@
   {
     .ctor(Octopus.Client.IOctopusAsyncClient)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -215,6 +219,7 @@
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
@@ -268,6 +273,7 @@
     .ctor(Octopus.Client.OctopusServerEndpoint)
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -725,6 +731,16 @@ Octopus.Client.Editors.Async
     Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
+  }
+  class SubscriptionEditor
+    Octopus.Client.Editors.Async.IResourceEditor<SubscriptionResource, SubscriptionEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
+    Octopus.Client.Model.SubscriptionResource Instance { get; }
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
+    Task<SubscriptionEditor> Save()
   }
   class TagSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<TagSetResource, TagSetEditor>
@@ -1518,6 +1534,16 @@ Octopus.Client.Model
       TentacleActive = 1
       Ssh = 2
   }
+  class DockerFeedResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.INamedResource
+  {
+    .ctor()
+    String ApiVersion { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String RegistryPath { get; set; }
+  }
   class DocumentIdFormatException
     ISerializable
     _Exception
@@ -1620,10 +1646,17 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
   {
     .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
     String FeedUri { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
+  }
+  FeedType
+  {
+      None = 0
+      NuGet = 1
+      Docker = 2
   }
   class FileUpload
   {
@@ -1970,6 +2003,14 @@ Octopus.Client.Model
     _Attribute
   {
     .ctor()
+  }
+  class NuGetFeedResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.INamedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   class NumericReportData
   {
@@ -3617,6 +3658,16 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<AccountResource>
   {
   }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
+    Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
+  {
+  }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
     Octopus.Client.Repositories.IGet<ArtifactResource>
@@ -3715,6 +3766,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<EventResource>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -4099,6 +4151,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
+    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -4114,6 +4167,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<FeedResource>
   {
     Task<List<PackageResource>> GetVersions(Octopus.Client.Model.FeedResource, String[])
+  }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
+  {
   }
   interface ICreate`1
   {
@@ -4295,6 +4358,16 @@ Octopus.Client.Repositories.Async
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
+  interface ISubscriptionRepository
+    Octopus.Client.Repositories.Async.IFindByName<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IPaginate<SubscriptionResource>
+    Octopus.Client.Repositories.Async.ICreate<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
+  {
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+  }
   interface ITagSetRepository
     Octopus.Client.Repositories.Async.ICreate<TagSetResource>
     Octopus.Client.Repositories.Async.IModify<TagSetResource>
@@ -4386,13 +4459,24 @@ Octopus.Client.Serialization
   class AccountConverter
   {
     .ctor()
-    Boolean CanConvert(Type)
-    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
-    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
+  class EndpointConverter
+  {
+    .ctor()
+  }
+  class FeedConverter
+  {
+    .ctor()
   }
   class HrefConverter
   {
     .ctor(Func<String>)
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
+  abstract class InheritedClassConverter`2
+  {
     Boolean CanConvert(Type)
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)

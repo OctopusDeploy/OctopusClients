@@ -43,7 +43,6 @@ namespace Octopus.Client.Tests.Conventions
         {
             return from p in typeof(IOctopusRepository).GetProperties()
                    where p.Name != "Client"
-                   where p.Name != "Events" // TODO: Fix this Asymetry
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Sync)");
         }
@@ -52,7 +51,6 @@ namespace Octopus.Client.Tests.Conventions
         {
             return from p in typeof(IOctopusAsyncRepository).GetProperties()
                    where p.Name != "Client"
-                   where p.Name != "Events" // TODO: Fix this Asymetry
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Async)");
         }

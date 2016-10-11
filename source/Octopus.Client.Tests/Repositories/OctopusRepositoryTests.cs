@@ -11,8 +11,8 @@ namespace Octopus.Client.Tests.Repositories
         [Test]
         public void AllPropertiesAreNotNull()
         {
-            var repository = new OctopusAsyncRepository(Substitute.For<IOctopusAsyncClient>());
-            var nullPropertiesQ = from p in typeof(OctopusAsyncRepository).GetProperties()
+            var repository = new OctopusRepository(Substitute.For<IOctopusClient>());
+            var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
                 where p.GetMethod.Invoke(repository, new object[0]) == null
                 select p.Name;
 

@@ -19,6 +19,7 @@ namespace Octopus.Client
 
         IAccountRepository Accounts { get; }
         IArtifactRepository Artifacts { get; }
+        IActionTemplateRepository ActionTemplates { get; }
         IBackupRepository Backups { get; }
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         ICertificateRepository Certificates { get; }
