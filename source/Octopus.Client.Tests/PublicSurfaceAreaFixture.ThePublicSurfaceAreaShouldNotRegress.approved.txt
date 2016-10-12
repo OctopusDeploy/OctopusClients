@@ -572,7 +572,7 @@ Octopus.Client.Model
     .ctor()
     String ActionType { get; set; }
     String Description { get; set; }
-    Boolean IsBuiltin { get; set; }
+    Boolean IsBuiltIn { get; set; }
     String LibraryStepTemplateId { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
