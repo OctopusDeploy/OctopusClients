@@ -115,7 +115,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>A fresh copy of the root document.</returns>
         public async Task<RootResource> RefreshRootDocument()
         {
-            var RootDocument = await Get<RootResource>("~/api").ConfigureAwait(false);
+            RootDocument = await Get<RootResource>("~/api").ConfigureAwait(false);
             return RootDocument;
         }
 
