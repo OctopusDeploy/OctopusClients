@@ -24,8 +24,6 @@ namespace Octopus.Client.Model
         [Writeable]
         public int Version { get; set; }
 
-        public bool IsBuiltIn { get; set; }
-
         [Writeable]
         public string LibraryStepTemplateId { get; set; }
 
