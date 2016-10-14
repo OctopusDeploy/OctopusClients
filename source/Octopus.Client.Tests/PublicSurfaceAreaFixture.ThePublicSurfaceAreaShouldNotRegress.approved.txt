@@ -1638,8 +1638,8 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
-    Boolean IsMultiTenancyEnabled { get; set; }
     Boolean IsDockerEnabled { get; set; }
+    Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Model.IResource
