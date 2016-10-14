@@ -1639,6 +1639,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsMultiTenancyEnabled { get; set; }
+    Boolean IsDockerEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Model.IResource
