@@ -42,6 +42,7 @@ namespace Octopus.Client
         OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options)
         {
             options = options ?? new OctopusClientOptions();
+            Repository = new OctopusAsyncRepository(this);
 
             this.serverEndpoint = serverEndpoint;
             var handler = new HttpClientHandler()
@@ -150,6 +151,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
             return response.ResponseResource;
         }
+
+        public IOctopusAsyncRepository Repository { get; }
 
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be

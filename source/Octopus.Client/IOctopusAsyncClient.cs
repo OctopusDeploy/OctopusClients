@@ -47,6 +47,11 @@ namespace Octopus.Client
         event Action<HttpRequestMessage> BeforeSendingHttpRequest;
 
         /// <summary>
+        /// A simplified interface to commonly-used parts of the API.
+        /// </summary>
+        IOctopusAsyncRepository Repository { get; }
+
+        /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
         /// limited in size (pagination) and links to the next page of data is available in the <see cref="Resource.Links" />
         /// property.
