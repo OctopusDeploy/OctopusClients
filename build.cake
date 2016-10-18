@@ -26,6 +26,7 @@ var configuration = Argument("configuration", "Release");
 var publishDir = "./publish";
 var artifactsDir = "./artifacts";
 var assetDir = "./BuildAssets";
+var localPackagesDir = "../LocalPackages";
 var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
 var projectToPublish = "./source/Octo";
 var projectToPublishProjectJson = Path.Combine(projectToPublish, "project.json");
@@ -33,6 +34,7 @@ var octopusClientFolder = "./source/Octopus.Client";
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 var octoPublishFolder = Path.Combine(publishDir, "Octo");
 var octoMergedFolder = Path.Combine(publishDir, "OctoMerged");
+var cleanups = new List<IDisposable>(); 
 
 var gitVersionInfo = GitVersion(new GitVersionSettings {
     OutputType = GitVersionOutput.Json
@@ -63,7 +65,11 @@ Setup(context =>
 
 Teardown(context =>
 {
-    Information("Finished running tasks.");
+    Information("Cleaning up");
+    foreach(var item in cleanups)
+        item.Dispose();
+
+    Information("Finished running tasks for build v{0}", nugetVersion);
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -79,7 +85,8 @@ Task("__Default")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Publish")
     .IsDependentOn("__Zip")
-    .IsDependentOn("__PackNuget");
+    .IsDependentOn("__PackNuget")
+    .IsDependentOn("__CopyToLocalPackages");
 
 Task("__Clean")
     .Does(() =>
@@ -138,11 +145,15 @@ Task("__Test")
 });
 
 Task("__UpdateProjectJsonVersion")
-    .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
     Information("Updating {0} version -> {1}", projectToPublishProjectJson, nugetVersion);
-    ModifyJson(Path.Combine(octopusClientFolder, "project.json"), json => json["version"] = nugetVersion);
+
+    var octopusClientProjectJson = Path.Combine(octopusClientFolder, "project.json");
+    cleanups.Add(new AutoRestoreFile(octopusClientProjectJson));
+    ModifyJson(octopusClientProjectJson, json => json["version"] = nugetVersion);
+    
+    cleanups.Add(new AutoRestoreFile(projectToPublishProjectJson));
     ModifyJson(projectToPublishProjectJson, json => json["version"] = nugetVersion);
 });
 
@@ -267,6 +278,14 @@ Task("__PackOctopusToolsNuget")
             OutputDirectory = artifactsDir
         });
     });
+
+Task("__CopyToLocalPackages")
+    .IsDependentOn("__PackClientNuget")
+    .Does(() =>
+{
+    CreateDirectory(localPackagesDir);
+    CopyFileToDirectory(Path.Combine(artifactsDir, $"Octopus.Client.{nugetVersion}.nupkg"), localPackagesDir);
+});
 
 
 //////////////////////////////////////////////////////////////////////
