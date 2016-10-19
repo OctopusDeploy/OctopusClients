@@ -280,6 +280,7 @@ Task("__PackOctopusToolsNuget")
     });
 
 Task("__CopyToLocalPackages")
+    .WithCriteria(BuildSystem.IsLocalBuild)
     .IsDependentOn("__PackClientNuget")
     .Does(() =>
 {
