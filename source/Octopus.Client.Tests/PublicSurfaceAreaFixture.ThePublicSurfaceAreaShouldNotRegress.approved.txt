@@ -3200,6 +3200,7 @@ Octopus.Client.Repositories
   {
   }
   interface IActionTemplateRepository
+    Octopus.Client.Repositories.ICreate<ActionTemplateResource>
     Octopus.Client.Repositories.IModify<ActionTemplateResource>
     Octopus.Client.Repositories.IDelete<ActionTemplateResource>
     Octopus.Client.Repositories.IGet<ActionTemplateResource>

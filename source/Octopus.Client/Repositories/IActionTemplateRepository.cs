@@ -2,7 +2,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IActionTemplateRepository : IModify<ActionTemplateResource>, IDelete<ActionTemplateResource>, IGet<ActionTemplateResource>, IFindByName<ActionTemplateResource>
+    public interface IActionTemplateRepository : ICreate<ActionTemplateResource>, IModify<ActionTemplateResource>, IDelete<ActionTemplateResource>, IGet<ActionTemplateResource>, IFindByName<ActionTemplateResource>
     {
         
     }
