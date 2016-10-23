@@ -16,7 +16,7 @@ For:
 - Octopus Server 3.4 use Octopus Client 3.4 or newer [release notes](https://octopus.com/downloads/3.4.0)
 
 ## Versioning
-As of `3.5.0` we started using semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
+As of `3.5.0` we started using [semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
 
 The [semantic versioning][6] applies to the command line interface of `Octo.exe` and the public api exposed by `Octopus.Client`. The `minor` version will be increased on feature additions, and `major` on breaking changes.
 
