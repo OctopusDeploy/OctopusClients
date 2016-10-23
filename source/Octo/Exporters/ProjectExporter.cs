@@ -15,12 +15,9 @@ namespace Octopus.Cli.Exporters
     [Exporter("project", "ProjectWithDependencies", Description = "Exports a project as JSON to a file")]
     public class ProjectExporter : BaseExporter
     {
-        readonly ActionTemplateRepository actionTemplateRepository;
-
         public ProjectExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
-            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override void Export(Dictionary<string, string> parameters)
@@ -111,7 +108,7 @@ namespace Octopus.Cli.Exporters
                     if (action.Properties.TryGetValue("Octopus.Action.Template.Id", out templateId))
                     {
                         Log.Debug("Finding action template for step " + step.Name);
-                        var template = actionTemplateRepository.Get(templateId.Value);
+                        var template = Repository.ActionTemplates.Get(templateId.Value);
                         if (template == null)
                             throw new CouldNotFindException("action template for step", step.Name);
                         if (actionTemplates.All(t => t.Id != templateId.Value))

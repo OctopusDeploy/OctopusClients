@@ -27,6 +27,7 @@ namespace Octopus.Client
     {
         readonly IOctopusClient client;
         readonly IAccountRepository accounts;
+        readonly IActionTemplateRepository actionTemplates;
         readonly IFeedRepository feeds;
         readonly IBackupRepository backups;
         readonly IMachineRepository machines;
@@ -71,6 +72,7 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client)
         {
             this.client = client;
+            actionTemplates = new ActionTemplateRepository(client);
             feeds = new FeedRepository(client);
             backups = new BackupRepository(client);
             machines = new MachineRepository(client);
@@ -113,6 +115,11 @@ namespace Octopus.Client
         public IOctopusClient Client
         {
             get { return client; }
+        }
+
+        public IActionTemplateRepository ActionTemplates
+        {
+            get { return actionTemplates; }
         }
 
         public IDashboardRepository Dashboards
@@ -514,6 +521,14 @@ namespace Octopus.Client
         {
             public AccountRepository(IOctopusClient client)
                 : base(client, "Accounts")
+            {
+            }
+        }
+
+        class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
+        {
+            public ActionTemplateRepository(IOctopusClient client)
+                : base(client, "ActionTemplates")
             {
             }
         }

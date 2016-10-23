@@ -16,7 +16,6 @@ namespace Octopus.Cli.Importers
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
-        readonly protected ActionTemplateRepository actionTemplateRepository;
         ValidatedImportSettings validatedImportSettings;
 
         public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
@@ -42,7 +41,6 @@ namespace Octopus.Cli.Importers
         public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
-            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override bool Validate(Dictionary<string, string> paramDictionary)
@@ -560,7 +558,7 @@ namespace Octopus.Cli.Importers
             var dependencies = new CheckedReferences<ActionTemplateResource>();
             foreach (var actionTemplate in actionTemplates)
             {
-                var template = actionTemplateRepository.FindByName(actionTemplate.Name);
+                var template = Repository.ActionTemplates.FindByName(actionTemplate.Name);
                 dependencies.Register(actionTemplate.Name, actionTemplate.Id, template);
             }
             return dependencies;
