@@ -23,7 +23,8 @@
     "Serilog.Sinks.ColoredConsole": "2.0.0",
     "Serilog.Sinks.Trace": "2.0.0",
     "Sprache": "2.1.0",
-    "Serilog": "2.3.0"
+    "Serilog": "2.3.0",
+    "Autofac": "4.1.1"
   },
   "frameworks": {
     "netcoreapp1.0": {

@@ -502,7 +502,6 @@ namespace Octopus.Cli.Commands
         }
     }
 
-    [Serializable]
     public class OptionException : Exception
     {
         public OptionException()
