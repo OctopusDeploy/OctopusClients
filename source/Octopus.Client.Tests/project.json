@@ -1,19 +1,19 @@
 {
   "version": "0.0.0-*",
   "dependencies": {
-    "Serilog": "2.1.0",
     "Octopus.Client": {
       "target": "project"
     },
-    "NUnit": "3.4.1",
+    "NUnit": "3.5.0",
     "dotnet-test-nunit": "3.4.0-beta-2",
     "NSubstitute": "2.0.0-rc",
-    "FluentAssertions": "4.12.0",
-    "Autofac": "4.1.0",
     "Nancy": "2.0.0-barneyrubble",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
-    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
-    "Microsoft.AspNetCore.Owin": "1.0.0"
+    "Microsoft.AspNetCore.Owin": "1.0.0",
+    "Autofac": "4.1.1",
+    "FluentAssertions": "4.15.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
+    "Serilog": "2.3.0"
   },
   "testRunner": "nunit",
   "buildOptions": {
@@ -22,9 +22,9 @@
   "frameworks": {
     "net452": {
       "dependencies": {
-        "Best.Conventional": "1.3.0.118",
-        "ApprovalTests": "3.0.11",
-        "ApprovalUtilities": "3.0.11"
+        "ApprovalTests": "3.0.13",
+        "ApprovalUtilities": "3.0.13",
+        "Best.Conventional": "1.3.0.122"
       },
       "buildOptions": {
         "define": [
@@ -38,7 +38,7 @@
       "imports": "dnxcore50",
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.0",
+          "version": "1.0.1",
           "type": "platform"
         }
       },
