@@ -4044,6 +4044,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<UserRoleResource>
     Octopus.Client.Repositories.IPaginate<UserRoleResource>
     Octopus.Client.Repositories.IGet<UserRoleResource>
+    Octopus.Client.Repositories.ICreate<UserRoleResource>
+    Octopus.Client.Repositories.IModify<UserRoleResource>
   {
   }
   interface IVariableSetRepository
