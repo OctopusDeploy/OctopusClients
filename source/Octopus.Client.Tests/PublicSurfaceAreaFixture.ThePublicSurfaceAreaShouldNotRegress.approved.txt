@@ -46,6 +46,7 @@
   interface IOctopusRepository
   {
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -124,6 +125,7 @@
     .ctor(Octopus.Client.OctopusServerEndpoint)
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
@@ -732,8 +734,10 @@ Octopus.Client.Model
       static System.String Name
       abstract class Arguments
       {
+        static System.String ActionTemplateId
         static System.String EnvironmentIds
         static System.String MachineIds
+        static System.String Properties
         static System.String ScriptBody
         static System.String Syntax
         static System.String TargetRoles
@@ -2659,8 +2663,10 @@ Octopus.Client.Model
     static System.String Name
     abstract class Arguments
     {
+      static System.String ActionTemplateId
       static System.String EnvironmentIds
       static System.String MachineIds
+      static System.String Properties
       static System.String ScriptBody
       static System.String Syntax
       static System.String TargetRoles
@@ -2801,8 +2807,10 @@ Octopus.Client.Model
   }
   abstract class Arguments
   {
+    static System.String ActionTemplateId
     static System.String EnvironmentIds
     static System.String MachineIds
+    static System.String Properties
     static System.String ScriptBody
     static System.String Syntax
     static System.String TargetRoles
@@ -3197,6 +3205,15 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<AccountResource>
   {
   }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
+  {
+  }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
     Octopus.Client.Repositories.IGet<ArtifactResource>
@@ -3502,6 +3519,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICreate<TaskResource>
   {
     void Cancel(Octopus.Client.Model.TaskResource)
+    Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
     Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String)
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
     Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])

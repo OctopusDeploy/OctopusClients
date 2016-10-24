@@ -15,6 +15,7 @@ namespace Octopus.Client
         /// </summary>
         IOctopusClient Client { get; }
 
+        IActionTemplateRepository ActionTemplates { get; }
         IArtifactRepository Artifacts { get; }
         ICertificateRepository Certificates { get; }
         IBackupRepository Backups { get; }
