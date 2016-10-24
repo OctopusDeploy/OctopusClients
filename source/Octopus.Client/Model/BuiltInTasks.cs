@@ -59,6 +59,8 @@ namespace Octopus.Client.Model
                 public const string MachineIds = "MachineIds";
                 public const string ScriptBody = "ScriptBody";
                 public const string Syntax = "Syntax";
+                public const string ActionTemplateId = "ActionTemplateId";
+                public const string Properties = "Properties";
             }
         }
 
