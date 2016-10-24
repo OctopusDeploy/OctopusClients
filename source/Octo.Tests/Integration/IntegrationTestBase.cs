@@ -48,9 +48,12 @@ namespace Octopus.Cli.Tests.Integration
                 {
                     Console.Error.WriteLine(ex);
                 }
-            });
-        }
 
+            });
+            var applicationLifetime = (IApplicationLifetime)_currentHost.Services.GetService(typeof(IApplicationLifetime));
+            applicationLifetime.ApplicationStarted.WaitHandle.WaitOne();
+
+        }
 
 
         [OneTimeTearDown]

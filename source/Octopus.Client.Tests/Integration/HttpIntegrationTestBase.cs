@@ -38,16 +38,19 @@ namespace Octopus.Client.Tests.Integration
         [OneTimeSetUp]
         public static void OneTimeSetup()
         {
+            Console.WriteLine("HttpIntegrationTestBase OneTimeSetup");
             currentHost = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel(o => o.UseHttps(GetCert()))
                 .UseStartup<Startup>()
                 .UseUrls(HostBaseUri, HostBaseSslUri)
                 .Build();
+
             Task.Run(() =>
             {
                 try
                 {
+                    Console.WriteLine("Running Host");
                     currentHost.Run();
                 }
                 catch (Exception ex)
@@ -55,6 +58,8 @@ namespace Octopus.Client.Tests.Integration
                     Console.Error.WriteLine(ex);
                 }
             });
+            var applicationLifetime = (IApplicationLifetime) currentHost.Services.GetService(typeof(IApplicationLifetime));
+            applicationLifetime.ApplicationStarted.WaitHandle.WaitOne();
         }
 
         private static X509Certificate2 GetCert()
@@ -71,6 +76,7 @@ namespace Octopus.Client.Tests.Integration
         [OneTimeTearDown]
         public static void OneTimeTearDown()
         {
+            Console.WriteLine("HttpIntegrationTestBase OneTimeTearDown");
             currentHost?.Dispose();
         }
 
