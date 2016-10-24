@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.NETCore.App": { // The build will replace this for platform specific publishes
       "type": "platform",
-      "version": "1.0.1"
+      "version": "1.0.0"
     },
     "System.ComponentModel.TypeConverter": "4.1.0",
     "System.Xml.ReaderWriter": "4.0.11",
