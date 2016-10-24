@@ -1,3 +1,5 @@
+Version 4.0 is currently on the [`develop`][8] branch until Octopus 3.5 ships. This branch (`master`) is for patch releases until then.
+
 This repository contains the command line tool (`Octo.exe`) and .NET Client Library (`Octopus.Client`) for [Octopus Deploy][1], an automated deployment server for professional .NET developers. You can use them to create and deploy releases, create and push packages, and manage environments.
 
 `Octo.exe` can be [downloaded from the Octopus downloads page][2], while `Octopus.Client` is [available on nuget.org][3]
@@ -25,3 +27,4 @@ The [semantic versioning][6] applies to the command line interface of `Octo.exe`
 [5]: http://docs.octopusdeploy.com/display/OD/Octopus.Client
 [6]: http://semver.org/
 [7]: http://docs.octopusdeploy.com/display/OD/Compatibility
+[8]: https://github.com/OctopusDeploy/OctopusClients/tree/develop
