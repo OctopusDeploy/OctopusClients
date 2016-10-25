@@ -60,7 +60,7 @@ namespace Octopus.Cli.Importers
                     throw new CommandException("Unable to find a lifecycle to assign to this project.");
                 }
 
-                Log.Debug("Found lifecycle '{0}'", existingLifecycle.Name);
+                Log.Debug("Found lifecycle '{Lifecycle:l}'", existingLifecycle.Name);
                 project.LifecycleId = existingLifecycle.Id;
             }
 
@@ -138,7 +138,7 @@ namespace Octopus.Cli.Importers
         {
             if (ReadyToImport)
             {
-                Log.Debug("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
+                Log.Debug("Beginning import of project '{Project:l}'", validatedImportSettings.Project.Name);
 
                 var importedProject = await ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets).ConfigureAwait(false);
                 var importedChannels =
@@ -151,7 +151,7 @@ namespace Octopus.Cli.Importers
 
                 await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
 
-                Log.Debug("Successfully imported project '{0}'", validatedImportSettings.Project.Name);
+                Log.Debug("Successfully imported project '{Project:l}'", validatedImportSettings.Project.Name);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace Octopus.Cli.Importers
                     Log.Error("The following issues were found with the provided import file:");
                     foreach (var error in validatedImportSettings.ErrorList)
                     {
-                        Log.Error(" {0}", error);
+                        Log.Error(" {Error:l}", error);
                     }
                 }
             }
@@ -186,11 +186,11 @@ namespace Octopus.Cli.Importers
             LifecycleResource existingLifecycle = null;
             if (lifecycle != null)
             {
-                Log.Debug("Checking that lifecycle {0} exists", lifecycle.Name);
+                Log.Debug("Checking that lifecycle {Lifecycle:l} exists", lifecycle.Name);
                 existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
                 if (existingLifecycle == null)
                 {
-                    Log.Debug("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
+                    Log.Debug("Lifecycle {Lifecycle:l} does not exist, default lifecycle will be used instead", lifecycle.Name);
                 }
             }
 
@@ -338,7 +338,7 @@ namespace Octopus.Cli.Importers
             {
                 if (variable.IsSensitive)
                 {
-                    Log.Warning("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
+                    Log.Warning("{Variable} is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
                     variable.Value = String.Empty;
                 }
                 foreach (var scopeValue in variable.Scope)

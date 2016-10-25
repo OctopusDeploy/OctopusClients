@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using Serilog;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,7 +33,10 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void BaseSetup()
         {
-            Log = Substitute.For<ILogger>();
+            LogOutput = new StringBuilder();
+            Log = new LoggerConfiguration()
+                .WriteTo.TextWriter(new StringWriter(LogOutput), outputTemplate: "[{Level}] {Message}{NewLine}{Exception}", formatProvider: new StringFormatter(null))
+                .CreateLogger();
 
             RootResource rootDocument = Substitute.For<RootResource>();
             rootDocument.ApiVersion = "2.0";
@@ -53,8 +57,11 @@ namespace Octopus.Cli.Tests.Commands
             {
                 "--server=http://the-server",
                 "--apiKey=ABCDEF123456789"
-            }; 
+            };
         }
+
+        public StringBuilder LogOutput { get; set; }
+        public string[] LogLines => LogOutput.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
         public IOctopusClientFactory ClientFactory { get; set; }
 
@@ -68,5 +75,22 @@ namespace Octopus.Cli.Tests.Commands
 
         public List<string> CommandLineArgs { get; set; }
 
+        class StringFormatter : IFormatProvider
+        {
+            readonly IFormatProvider basedOn;
+            public StringFormatter(IFormatProvider basedOn)
+            {
+                this.basedOn = basedOn;
+            }
+
+            public object GetFormat(Type formatType)
+            {
+                if (formatType == typeof(string))
+                {
+                    return "s";
+                }
+                return this.basedOn;
+            }
+        }
     }
 }

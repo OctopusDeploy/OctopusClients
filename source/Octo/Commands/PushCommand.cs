@@ -30,7 +30,7 @@ namespace Octopus.Cli.Commands
 
             foreach (var package in Packages)
             {
-                Log.Debug("Pushing package: {0}...", package);
+                Log.Debug("Pushing package: {Package:l}...", package);
 
                 using (var fileStream = FileSystem.OpenFile(package, FileAccess.Read))
                 {

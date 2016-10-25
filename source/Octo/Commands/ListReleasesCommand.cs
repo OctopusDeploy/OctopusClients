@@ -40,11 +40,11 @@ namespace Octopus.Cli.Commands
                 .FindMany(x => projectsFilter.Contains(x.ProjectId))
                 .ConfigureAwait(false);
 
-            Log.Information("Releases: {0}", releases.Count);
+            Log.Information("Releases: {Count}", releases.Count);
 
             foreach (var project in projectResources)
             {
-                Log.Information(" - Project: {0}", project.Name);
+                Log.Information(" - Project: {Project:l}", project.Name);
                 
                 foreach (var release in releases.Where(x => x.ProjectId == project.Id))
                 {
@@ -52,7 +52,7 @@ namespace Octopus.Cli.Commands
                     propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(release));
                     foreach (var property in propertiesToLog)
                     {
-                        Log.Information("    {0}", property);
+                        Log.Information("    {Property:l}", property);
                     }
                     Log.Information("");
                 }

@@ -40,7 +40,7 @@ namespace Octopus.Cli.Commands
                 if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type to export using the parameter: --type=XYZ");
                 if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
 
-                Log.Debug("Finding exporter '" + Type + "'");
+                Log.Debug("Finding exporter '{Type:l}'", Type);
                 var exporter = exporterLocator.Find(Type, Repository, FileSystem, Log);
                 if (exporter == null)
                     throw new CommandException("Error: Unrecognized exporter '" + Type + "'");

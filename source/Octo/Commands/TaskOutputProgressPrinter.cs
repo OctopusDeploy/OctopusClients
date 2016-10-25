@@ -80,7 +80,7 @@ namespace Octopus.Cli.Commands
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
 
-                log.Information("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
+                Console.WriteLine("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
                 Console.ResetColor();
             }
 
@@ -121,11 +121,11 @@ namespace Octopus.Cli.Commands
             if (!IsPrintable(element))
                 return;
 
-            log.Information($"{indent}         {element.Status}: {element.Name}");
+            log.Information("{Indent:l}         {Status:l}: {Name:l}", indent, element.Status, element.Name);
 
             foreach (var logEntry in element.LogElements)
             {
-                log.Information($"{logEntry.Category,-8}{indent}   {logEntry.MessageText}");
+                log.Information("{Category,-8:l}{Indent:l}   {Message:l}", logEntry.Category, logEntry.MessageText);
             }
 
             foreach (var child in element.Children)

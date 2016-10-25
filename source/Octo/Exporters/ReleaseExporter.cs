@@ -26,7 +26,7 @@ namespace Octopus.Cli.Exporters
             var projectName = paramDictionary["Project"];
             var releaseVersion = paramDictionary["ReleaseVersion"];
 
-            Log.Debug("Finding project: " + projectName);
+            Log.Debug("Finding project: {Project:l}", projectName);
             var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
@@ -72,7 +72,7 @@ namespace Octopus.Cli.Exporters
                     var version = SemanticVersion.Parse(release.Version);
                     if (minVersionToExport <= version && version <= maxVersionToExport)
                     {
-                        Log.Debug("Found release " + version);
+                        Log.Debug("Found release {Version:l}", version);
                         releasesToExport.Add(release);
 
                         if (minVersionToExport == maxVersionToExport)

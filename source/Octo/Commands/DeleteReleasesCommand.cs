@@ -61,12 +61,12 @@ namespace Octopus.Cli.Commands
 
                     if (WhatIf)
                     {
-                        Log.Information("[Whatif] Version {0} would have been deleted", version);
+                        Log.Information("[Whatif] Version {Version:l} would have been deleted", version);
                     }
                     else
                     {
                         toDelete.Add(release.Link("Self"));
-                        Log.Information("Deleting version {0}", version);
+                        Log.Information("Deleting version {Version:l}", version);
                     }
                 }
 
@@ -89,7 +89,7 @@ namespace Octopus.Cli.Commands
             if (ChannelNames.None())
                 return new HashSet<string>();
 
-            Log.Debug("Finding channels: " + ChannelNames.CommaSeperate());
+            Log.Debug("Finding channels: {Channels:l}", ChannelNames.CommaSeperate());
 
             var firstChannelPage = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
             var allChannels = await firstChannelPage.GetAllPages(Repository).ConfigureAwait(false);
@@ -105,7 +105,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<ProjectResource> GetProject()
         {
-            Log.Debug("Finding project: " + ProjectName);
+            Log.Debug("Finding project: {Project:l}", ProjectName);
             var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);

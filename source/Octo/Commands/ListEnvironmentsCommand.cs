@@ -20,11 +20,11 @@ namespace Octopus.Cli.Commands
         protected override async Task Execute()
         {
             var environments = await Repository.Environments.FindAll().ConfigureAwait(false);
-            Log.Information("Environments: " + environments.Count);
+            Log.Information("Environments: {Count}", environments.Count);
 
             foreach (var environment in environments)
             {
-                Log.Information(" - {0} (ID: {1})", environment.Name, environment.Id);
+                Log.Information(" - {Environment:l} (ID: {Id:l})", environment.Name, environment.Id);
             }
         }
     }

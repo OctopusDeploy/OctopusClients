@@ -47,10 +47,10 @@ namespace Octopus.Cli.Commands
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();
-            Log.Information("Machines: " + orderedMachines.Count);
+            Log.Information("Machines: {Count}", orderedMachines.Count);
             foreach (var machine in orderedMachines)
             {
-                Log.Information(" - {0} {1} (ID: {2}) in {3}", machine.Name, provider.GetStatus(machine), machine.Id,
+                Log.Information(" - {Machine:l} {Status:l} (ID: {MachineId:l}) in {Environments:l}", machine.Name, provider.GetStatus(machine), machine.Id,
                     string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
             }
         }
@@ -97,7 +97,7 @@ namespace Octopus.Cli.Commands
             Log.Debug("Loading machines...");
             if (environmentFilter.Count > 0)
             {
-                Log.Debug("Loading machines from {0}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
+                Log.Debug("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
                 return
                      Repository.Machines.FindMany(
                         x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });

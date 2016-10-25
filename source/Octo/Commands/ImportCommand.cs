@@ -35,7 +35,7 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type of object to import using the paramter: --type=XYZ");
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to import using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding importer '" + Type + "'");
+            Log.Debug("Finding importer '{Type:l}'", Type);
             var importer = importerLocator.Find(Type, Repository, FileSystem, Log);
             if (importer == null)
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");

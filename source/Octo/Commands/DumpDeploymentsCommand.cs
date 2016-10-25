@@ -63,7 +63,7 @@ namespace Octopus.Cli.Commands
                         xml.WriteElementString("Id", current.Id);
                         xml.WriteEndElement();
                     }
-                    Log.Information("Wrote {0:n0} of {1:n0} deployments...", seenBefore.Count, page.TotalResults);
+                    Log.Information("Wrote {Count:n0} of {Total:n0} deployments...", seenBefore.Count, page.TotalResults);
                     return true;
                 })
                 .ConfigureAwait(false);

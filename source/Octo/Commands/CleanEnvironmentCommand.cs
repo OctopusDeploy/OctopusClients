@@ -53,11 +53,11 @@ namespace Octopus.Cli.Commands
 
         private void CleanUpEnvironment(List<MachineResource> filteredMachines, EnvironmentResource environmentResource)
         {
-            Log.Information("Found {0} machines in {1} with the status {2}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
+            Log.Information("Found {MachineCount} machines in {Environment:l} with the status {Status:l}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
 
             if (filteredMachines.Any(m => m.EnvironmentIds.Count > 1))
             {
-                Log.Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", environmentResource.Name);
+                Log.Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {Environment:l} environment.", environmentResource.Name);
             }
 
             foreach (var machine in filteredMachines)
@@ -65,14 +65,14 @@ namespace Octopus.Cli.Commands
                 // If the machine belongs to more than one environment, we should remove the machine from the environment rather than delete it altogether.
                 if (machine.EnvironmentIds.Count > 1)
                 {
-                    Log.Information("Removing {0} {1} (ID: {2}) from {3}", machine.Name, machine.Status, machine.Id,
+                    Log.Information("Removing {Machine:l} {Status} (ID: {Id:l}) from {Environment:l}", machine.Name, machine.Status, machine.Id,
                         environmentResource.Name);
                     machine.EnvironmentIds.Remove(environmentResource.Id);
                     Repository.Machines.Modify(machine);
                 }
                 else
                 {
-                    Log.Information("Deleting {0} {1} (ID: {2})", machine.Name, machine.Status, machine.Id);
+                    Log.Information("Deleting {Machine:l} {Status} (ID: {Id:l})", machine.Name, machine.Status, machine.Id);
                     Repository.Machines.Delete(machine);
                 }
             }

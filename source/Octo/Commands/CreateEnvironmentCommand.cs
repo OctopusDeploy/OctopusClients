@@ -32,17 +32,17 @@ namespace Octopus.Cli.Commands
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Information("The environment " + env.Name + " (ID " + env.Id + ") already exists");
+                    Log.Information("The environment {Environment:l} (ID {Id:l}) already exists", env.Name, env.Id);
                     return;
                 }
 
                 throw new CommandException("The environment " + env.Name + " (ID " + env.Id + ") already exists");
             }
 
-            Log.Information("Creating environment: " + EnvironmentName);
+            Log.Information("Creating environment: {Environment:l}", EnvironmentName);
             env = await Repository.Environments.Create(new EnvironmentResource {Name = EnvironmentName}).ConfigureAwait(false);
 
-            Log.Information("Environment created. ID: " + env.Id);
+            Log.Information("Environment created. ID: {Id:l}", env.Id);
         }
     }
 }

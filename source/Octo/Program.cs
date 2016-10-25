@@ -28,7 +28,7 @@ namespace Octopus.Cli
 
         internal static int Run(string[] args)
         {
-            Log.Information("Octopus Deploy Command Line Tool, version " + typeof(Program).GetInformationalVersion());
+            Log.Information("Octopus Deploy Command Line Tool, version {Version:l}", typeof(Program).GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Information(string.Empty);
 
@@ -144,7 +144,8 @@ namespace Octopus.Cli
             var octo = ex as OctopusException;
             if (octo != null)
             {
-                Log.Error("Error from Octopus server (HTTP " + octo.HttpStatusCode + "): " + octo.Message);
+                Log.Information("{HttpErrorMessage:l}", octo.Message);
+                Log.Error("Error from Octopus server (HTTP {StatusCode} {StatusDescription})", octo.HttpStatusCode, (HttpStatusCode) octo.HttpStatusCode);
                 return -7;
             }
 

@@ -28,7 +28,7 @@ namespace Octopus.Cli.Exporters
 
             fileSystem.WriteAllBytes(filePath, Encoding.UTF8.GetBytes(serializedObject));
 
-            log.Debug("Export file {0} successfully created.", filePath);
+            log.Debug("Export file {Path} successfully created.", filePath);
         }
     }
 }

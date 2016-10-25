@@ -94,17 +94,17 @@ namespace Octopus.Cli.Commands
 
             if (enableDebugging)
             {
-                Repository.Client.SendingOctopusRequest += request => Log.Debug(request.Method + " " + request.Uri);
+                Repository.Client.SendingOctopusRequest += request => Log.Debug("{Method:l} {Uri:l}", request.Method,request.Uri);
             }
 
-            Log.Debug("Handshaking with Octopus server: " + ServerBaseUrl);
+            Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
             var root = Repository.Client.RootDocument;
-            Log.Debug("Handshake successful. Octopus version: " + root.Version + "; API version: " + root.ApiVersion);
+            Log.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
             {
-                Log.Debug("Authenticated as: {0} <{1}> {2}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                Log.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
@@ -145,7 +145,7 @@ namespace Octopus.Cli.Commands
         {
             configFile = FileSystem.GetFullPath(configFile);
 
-            Log.Debug("Loading additional arguments from config file: " + configFile);
+            Log.Debug("Loading additional arguments from config file: {ConfigFile:l}", configFile);
 
             if (!FileSystem.FileExists(configFile))
             {

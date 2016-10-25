@@ -33,7 +33,7 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --name=XYZ");
             if (string.IsNullOrWhiteSpace(LifecycleName)) throw new CommandException("Please specify a lifecycle name using the parameter: --lifecycle=XYZ");
 
-            Log.Information("Finding project group: " + ProjectGroupName);
+            Log.Information("Finding project group: {Group:l}", ProjectGroupName);
             var group = await Repository.ProjectGroups.FindByName(ProjectGroupName).ConfigureAwait(false);
             if (group == null)
             {
@@ -41,27 +41,27 @@ namespace Octopus.Cli.Commands
                 group = await Repository.ProjectGroups.Create(new ProjectGroupResource {Name = ProjectGroupName}).ConfigureAwait(false);
             }
 
-            Log.Information("Finding lifecycle: " + LifecycleName);
+            Log.Information("Finding lifecycle: {Lifecycle:l}", LifecycleName);
             var lifecycle = await Repository.Lifecycles.FindOne(l => l.Name.Equals(LifecycleName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
             if (lifecycle == null)
-                throw new CommandException("The lifecycle " + LifecycleName + " does not exist.");
+                throw new CommandException($"The lifecycle {LifecycleName} does not exist.");
 
             var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project != null)
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Information("The project " + project.Name + " (ID " + project.Id + ") already exists");
+                    Log.Information("The project {Project:l} (ID {Id:l}) already exists", project.Name, project.Id);
                     return;
                 }
 
-                throw new CommandException("The project " + project.Name + " (ID " + project.Id + ") already exists in this project group.");
+                throw new CommandException($"The project {project.Name} (ID {project.Id}) already exists in this project group.");
             }
             
-            Log.Information("Creating project: " + ProjectName);
+            Log.Information("Creating project: {Project:l}", ProjectName);
             project = await Repository.Projects.Create(new ProjectResource {Name = ProjectName, ProjectGroupId = @group.Id, IsDisabled = false, LifecycleId = lifecycle.Id}).ConfigureAwait(false);
 
-            Log.Information("Project created. ID: " + project.Id);
+            Log.Information("Project created. ID: {Id:l}", project.Id);
         }
     }
 }

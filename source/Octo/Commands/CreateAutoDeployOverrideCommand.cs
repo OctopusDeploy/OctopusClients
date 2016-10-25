@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -88,24 +89,24 @@ namespace Octopus.Cli.Commands
         void AddOverrideForEnvironment(ProjectResource project, EnvironmentResource environment, ReleaseResource release)
         {
             project.AddAutoDeployReleaseOverride(environment, release);
-            Log.Information($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name}");
+            Log.Information("Auto deploy will deploy version {Version:l} of the project {Project:l} to the environment {Environment:l}", release.Version, project.Name, environment.Name);
         }
 
         void AddOverrideForTenant(ProjectResource project, EnvironmentResource environment, TenantResource tenant, ReleaseResource release)
         {
             if (!tenant.ProjectEnvironments.ContainsKey(project.Id))
             {
-                Log.Warning($"The tenant {tenant.Name} was skipped because it has not been connected to the project {project.Name}");
+                Log.Warning("The tenant {Tenant:l} was skipped because it has not been connected to the project {Project:l}", tenant.Name, project.Name);
                 return;
             }
             if (!tenant.ProjectEnvironments[project.Id].Contains(environment.Id))
             {
-                Log.Warning($"The tenant {tenant.Name} was skipped because it has not been connected to the environment {environment.Name}");
+                Log.Warning("The tenant {Tenant:l} was skipped because it has not been connected to the environment {Environment:l}", tenant.Name, environment.Name);
                 return;
             }
 
             project.AddAutoDeployReleaseOverride(environment, tenant, release);
-            Log.Information($"Auto deploy will deploy version {release.Version} of the project {project.Name} to the environment {environment.Name} for the tenant {tenant.Name}");
+            Log.Information("Auto deploy will deploy version {Version:l} of the project {Project:l} to the environment {Environment:l} for the tenant {Tenant:l}", release.Version, project.Name, environment.Name, tenant.Name);
         }
     }
 }

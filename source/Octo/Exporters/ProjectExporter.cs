@@ -33,7 +33,7 @@ namespace Octopus.Cli.Exporters
 
             var projectName = parameters["Name"];
 
-            Log.Debug("Finding project: " + projectName);
+            Log.Debug("Finding project: {Project:l}", projectName);
             var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
@@ -85,7 +85,7 @@ namespace Octopus.Cli.Exporters
                     PropertyValueResource nugetFeedId;
                     if (action.Properties.TryGetValue("Octopus.Action.Package.NuGetFeedId", out nugetFeedId))
                     {
-                        Log.Debug("Finding NuGet feed for step " + step.Name);
+                        Log.Debug("Finding NuGet feed for step {StepName:l}", step.Name);
                         FeedResource feed = null;
                         if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeedId.Value))
                             feed = await Repository.Feeds.Get(nugetFeedId.Value).ConfigureAwait(false);
@@ -112,7 +112,7 @@ namespace Octopus.Cli.Exporters
                     PropertyValueResource templateId;
                     if (action.Properties.TryGetValue("Octopus.Action.Template.Id", out templateId))
                     {
-                        Log.Debug("Finding action template for step " + step.Name);
+                        Log.Debug("Finding action template for step {StepName:l}", step.Name);
                         var template = await actionTemplateRepository.Get(templateId.Value).ConfigureAwait(false);
                         if (template == null)
                             throw new CouldNotFindException("action template for step", step.Name);
@@ -141,7 +141,7 @@ namespace Octopus.Cli.Exporters
                 lifecycle = await Repository.Lifecycles.Get(project.LifecycleId).ConfigureAwait(false);
                 if (lifecycle == null)
                 {
-                    throw new CouldNotFindException("lifecycle with Id " + project.LifecycleId + " for project ", project.Name);
+                    throw new CouldNotFindException($"lifecycle with Id {project.LifecycleId} for project ", project.Name);
                 }
             }
             

@@ -54,7 +54,7 @@ namespace Octopus.Cli.Commands
             var channel = default(ChannelResource);
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Debug("Finding channel: " + ChannelName);
+                Log.Debug("Finding channel: {Channel:l}", ChannelName);
                 var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
                 channel = await channels
                     .FindOne(Repository, c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);

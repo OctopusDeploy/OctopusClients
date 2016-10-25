@@ -60,13 +60,13 @@ namespace Octopus.Cli.Commands
             var propertiesToLog = new List<string>();
             propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(await task));
             propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(await release));
-            Log.Information(" - Environment: {0}", nameOfDeploymentEnvironment);
+            Log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
             foreach (var property in propertiesToLog)
             {
                 if (property == "State: Failed")
-                    Log.Error("   {0}", property);
+                    Log.Error("   {Property:l}", property);
                 else
-                    Log.Information("   {0}", property);
+                    Log.Information("   {Property:l}", property);
             }
             Log.Information("");
         }

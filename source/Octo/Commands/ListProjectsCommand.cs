@@ -20,11 +20,11 @@ namespace Octopus.Cli.Commands
         {
             var projects = await Repository.Projects.FindAll().ConfigureAwait(false);
 
-            Log.Information("Projects: " + projects.Count);
+            Log.Information("Projects: {Count}", projects.Count);
 
             foreach (var project in projects)
             {
-                Log.Information(" - {0} (ID: {1})", project.Name, project.Id);
+                Log.Information(" - {Project:l} (ID: {Id:l})", project.Name, project.Id);
             }
         }
     }

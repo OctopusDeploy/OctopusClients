@@ -94,7 +94,7 @@ namespace Octopus.Cli.Commands
                 if (!string.IsNullOrWhiteSpace(releaseNotesFile))
                 {
                     if (!File.Exists(releaseNotesFile))
-                        log.Warning("The release notes file '{0}' could not be found", releaseNotesFile);
+                        log.Warning("The release notes file '{Path:l}' could not be found", releaseNotesFile);
                     else
                         allReleaseNotes = fileSystem.ReadFile(releaseNotesFile);
                 }
@@ -121,7 +121,7 @@ namespace Octopus.Cli.Commands
                 if (!string.IsNullOrWhiteSpace(title))
                     metadata.Title = title;
 
-                log.Information("Packing {0} version {1}...", id, version);
+                log.Information("Packing {PackageId:l} version {Version}...", id, version);
 
                 packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite);
 

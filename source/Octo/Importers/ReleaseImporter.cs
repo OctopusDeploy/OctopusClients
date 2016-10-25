@@ -60,7 +60,7 @@ namespace Octopus.Cli.Importers
                 Log.Error("The following issues were found with the provided input:");
                 foreach (var error in validatedImportSettings.ErrorList)
                 {
-                    Log.Error(" {0}", error);
+                    Log.Error(" {Error:l}", error);
                 }
             }
             else
@@ -90,7 +90,7 @@ namespace Octopus.Cli.Importers
                     {
                         if (releasesToImport.Any(r => r.Version == existingRelease.Version))
                         {
-                            Log.Debug("Release '" + existingRelease.Version + "' already exists for project " + validatedImportSettings.Project.Name);
+                            Log.Debug("Release '{Version:l}' already exists for project {Project:l}", existingRelease.Version , validatedImportSettings.Project.Name);
                             releasesToImport.RemoveWhere(r => r.Version == existingRelease.Version);
                         }
                     }
@@ -103,11 +103,11 @@ namespace Octopus.Cli.Importers
                 foreach (var release in releasesToImport)
                 {
                     release.ProjectId = validatedImportSettings.Project.Id;
-                    Log.Debug("Creating new release '" + release.Version + "' for project " + validatedImportSettings.Project.Name);
+                    Log.Debug("Creating new release '{Version:l}' for project {Project:l}", release.Version, validatedImportSettings.Project.Name);
                     await Repository.Releases.Create(release).ConfigureAwait(false);
                 }
 
-                Log.Debug("Successfully imported releases for project " + validatedImportSettings.Project.Name);
+                Log.Debug("Successfully imported releases for project {Project:l}", validatedImportSettings.Project.Name);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace Octopus.Cli.Importers
                     Log.Error("The following issues were found with the provided input:");
                     foreach (var error in validatedImportSettings.ErrorList)
                     {
-                        Log.Error(" {0}", error);
+                        Log.Error(" {Error:l}", error);
                     }
                 }
             }

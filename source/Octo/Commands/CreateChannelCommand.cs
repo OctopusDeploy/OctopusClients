@@ -37,7 +37,7 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
 
-            Log.Debug("Loading project {0}...", projectName);
+            Log.Debug("Loading project {Project:l}...", projectName);
             var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null) throw new CouldNotFindException("project named", projectName);
 
@@ -48,7 +48,7 @@ namespace Octopus.Cli.Commands
             }
             else
             {
-                Log.Debug("Loading lifecycle {0}...", lifecycleName);
+                Log.Debug("Loading lifecycle {Lifecycle:l}...", lifecycleName);
                 lifecycle = await Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0).ConfigureAwait(false);
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
             }
@@ -69,9 +69,9 @@ namespace Octopus.Cli.Commands
                     Rules = new List<ChannelVersionRuleResource>(),
                 };
 
-                Log.Debug("Creating channel {0}", channelName);
+                Log.Debug("Creating channel {Channel:l}", channelName);
                 await Repository.Channels.Create(channel).ConfigureAwait(false);
-                Log.Information("Channel {0} created", channelName);
+                Log.Information("Channel {Channel:l} created", channelName);
                 return;
             }
 
@@ -80,21 +80,25 @@ namespace Octopus.Cli.Commands
             var updateRequired = false;
             if (channel.LifecycleId != lifecycle?.Id)
             {
-                Log.Information("Updating this channel to {0}", lifecycle != null ? $"use lifecycle {lifecycle.Name} for promoting releases" : "inherit the project lifecycle for promoting releases");
+                if(lifecycle == null)
+                    Log.Information("Updating this channel to inherit the project lifecycle for promoting releases");
+                else
+                    Log.Information("Updating this channel to use lifecycle {Lifecycle:l} for promoting releases", lifecycle.Name);
+
                 channel.LifecycleId = lifecycle?.Id;
                 updateRequired = true;
             }
 
             if (!channel.IsDefault && makeDefaultChannel == true)
             {
-                Log.Information("Making this the default channel for {0}", project.Name);
+                Log.Information("Making this the default channel for {Project:l}", project.Name);
                 channel.IsDefault = makeDefaultChannel ?? channel.IsDefault;
                 updateRequired = true;
             }
 
             if (!string.IsNullOrWhiteSpace(channelDescription) && channel.Description != channelDescription)
             {
-                Log.Information("Updating channel description to '{0}'", channelDescription);
+                Log.Information("Updating channel description to '{Description:l}'", channelDescription);
                 channel.Description = channelDescription ?? channel.Description;
                 updateRequired = true;
             }
@@ -105,9 +109,9 @@ namespace Octopus.Cli.Commands
                 return;
             }
 
-            Log.Debug("Updating channel {0}", channelName);
+            Log.Debug("Updating channel {Channel:l}", channelName);
             await Repository.Channels.Modify(channel).ConfigureAwait(false);
-            Log.Information("Channel {0} updated", channelName);
+            Log.Information("Channel {Channel:l} updated", channelName);
         }
     }
 }

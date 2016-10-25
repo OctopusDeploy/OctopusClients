@@ -35,12 +35,12 @@ namespace Octopus.Cli.Commands
 
         protected override async Task Execute()
         {
-            Log.Debug("Finding project: " + ProjectName);
+            Log.Debug("Finding project: {Project:l}", ProjectName);
             var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
-            Log.Debug("Finding environment: " + FromEnvironmentName);
+            Log.Debug("Finding environment: {Environment:l}", FromEnvironmentName);
             var environment = await Repository.Environments.FindByName(FromEnvironmentName).ConfigureAwait(false);
             if (environment == null)
                 throw new CouldNotFindException("an environment named", FromEnvironmentName);
@@ -55,7 +55,7 @@ namespace Octopus.Cli.Commands
                 throw new CouldNotFindException("latest deployment of the project for this environment. Please check that a deployment for this project/environment exists on the dashboard.");
             }
 
-            Log.Debug("Finding release details for release " + dashboardItem.ReleaseVersion);
+            Log.Debug("Finding release details for release {Version:l}", dashboardItem.ReleaseVersion);
             var release = await Repository.Projects.GetReleaseByVersion(project, dashboardItem.ReleaseVersion).ConfigureAwait(false);
 
             await DeployRelease(project, release).ConfigureAwait(false);

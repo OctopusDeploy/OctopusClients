@@ -43,14 +43,14 @@ namespace Octopus.Cli.Commands
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        log.Error("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        log.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
                         continue;
                     }
 
                     if (!string.IsNullOrEmpty(versionPreReleaseTag))
-                        log.Debug("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, versionPreReleaseTag);
+                        log.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.StepName);
                     else
-                        log.Debug("Finding latest package for step: {0}", unresolved.StepName);
+                        log.Debug("Finding latest package for step: {StepName:l}", unresolved.StepName);
 
                     var feed = await repository.Feeds.Get(unresolved.PackageFeedId).ConfigureAwait(false);
                     if (feed == null)
@@ -66,11 +66,11 @@ namespace Octopus.Cli.Commands
 
                     if (latestPackage == null)
                     {
-                        log.Error("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
+                        log.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.FeedUri);
                     }
                     else
                     {
-                        log.Debug("Selected '{0}' version '{1}' for '{2}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
+                        log.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }

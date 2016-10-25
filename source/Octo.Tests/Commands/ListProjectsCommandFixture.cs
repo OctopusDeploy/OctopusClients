@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
+using FluentAssertions;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -29,9 +30,9 @@ namespace Octopus.Cli.Tests.Commands
 
             await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Projects: 2");
-            Log.Received().Information(" - {0} (ID: {1})", "ProjectA", "projectaid");
-            Log.Received().Information(" - {0} (ID: {1})", "ProjectB", "projectbid");
+            LogLines.Should().Contain("[Information] Projects: 2");
+            LogLines.Should().Contain("[Information]  - ProjectA (ID: projectaid)");
+            LogLines.Should().Contain("[Information]  - ProjectB (ID: projectbid)");
         }
     }
 }

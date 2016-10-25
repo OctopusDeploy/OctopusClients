@@ -82,12 +82,12 @@ namespace Octopus.Cli.Commands
 
             if (autoDeployOverride == null)
             {
-                Log.Warning($"Did not find an auto deploy override for the project {project.Name} and environment {environment.Name}");
+                Log.Warning("Did not find an auto deploy override for the project {Project:l} and environment {Environment:l}", project.Name, environment.Name);
             }
             else
             {
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Information($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name}");
+                Log.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l}", project.Name, environment.Name);
             }
         }
 
@@ -98,12 +98,12 @@ namespace Octopus.Cli.Commands
 
             if (autoDeployOverride == null)
             {
-                Log.Warning($"Did not find an auto deploy override for the project {project.Name}, environment {environment.Name} and tenant {tenant.Name}");
+                Log.Warning("Did not find an auto deploy override for the project {Project:l}, environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
             }
             else
             {
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Information($"Deleted auto deploy release override for the project {project.Name} to the environment {environment.Name} and tenant {tenant.Name}");
+                Log.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
             }
         }
     }

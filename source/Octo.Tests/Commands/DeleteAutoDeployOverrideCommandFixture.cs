@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
+using FluentAssertions;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -74,7 +75,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production");
+            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -90,7 +91,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -106,7 +107,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }

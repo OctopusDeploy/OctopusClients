@@ -71,7 +71,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Channel {0} created", channelName);
+            LogLines.Should().Contain($"[Information] Channel {channelName} created");
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Channel {0} updated", channelName);
+            LogLines.Should().Contain($"[Information] Channel {channelName} updated");
         }
     }
 }

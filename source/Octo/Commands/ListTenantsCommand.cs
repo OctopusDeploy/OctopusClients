@@ -21,11 +21,11 @@ namespace Octopus.Cli.Commands
         protected override async Task Execute()
         {
             var tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
-            Log.Information("Tenants: " + tenants.Count);
+            Log.Information("Tenants: {Count}", tenants.Count);
 
             foreach (var tenant in tenants.OrderBy(m => m.Name))
             {
-                Log.Information(" - {0} (ID: {1})", tenant.Name, tenant.Id);
+                Log.Information(" - {Tenant:l} (ID: {Count})", tenant.Name, tenant.Id);
             }
         }
     }
