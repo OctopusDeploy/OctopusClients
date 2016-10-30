@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public class StepTemplateResource : IResource
+    public class ActionTemplateSearchResource : IResource
     {
         public string Id { get; set; }
         public string Type { get; set; }
@@ -13,7 +13,7 @@ namespace Octopus.Client.Model
         public bool IsInstalled { get; set; }
         public bool IsBuiltIn { get; set; }
 
-        public string LibraryStepTemplateId { get; set; }
+        public string CommunityActionTemplateId { get; set; }
         public bool HasUpdate { get; set; }
 
         public LinkCollection Links { get; set; }

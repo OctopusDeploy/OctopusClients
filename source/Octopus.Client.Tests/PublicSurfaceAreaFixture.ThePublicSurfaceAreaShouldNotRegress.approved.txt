@@ -573,12 +573,28 @@ Octopus.Client.Model
   {
     .ctor()
     String ActionType { get; set; }
+    String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
-    String LibraryStepTemplateId { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Int32 Version { get; set; }
+  }
+  class ActionTemplateSearchResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String CommunityActionTemplateId { get; set; }
+    String Description { get; set; }
+    Boolean HasUpdate { get; set; }
+    String Id { get; set; }
+    Boolean IsBuiltIn { get; set; }
+    Boolean IsInstalled { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    String Type { get; set; }
+    String Website { get; set; }
   }
   class ActionTemplateUsageResource
     Octopus.Client.Model.IResource
@@ -878,6 +894,22 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+  }
+  class CommunityActionTemplateResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String Description { get; set; }
+    String HistoryUrl { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    IList<ActionTemplateParameterResource> Parameters { get; }
+    IDictionary<String, PropertyValueResource> Properties { get; }
+    String Type { get; set; }
+    Int32 Version { get; set; }
+    String Website { get; set; }
   }
   class DashboardConfigurationResource
     Octopus.Client.Model.IResource
@@ -1227,7 +1259,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
-    Boolean IsCommunityStepTemplatesEnabled { get; set; }
+    Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
@@ -1314,22 +1346,6 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
-  }
-  class LibraryStepTemplateResource
-    Octopus.Client.Model.IResource
-  {
-    .ctor()
-    String Author { get; set; }
-    String Description { get; set; }
-    String HistoryUrl { get; set; }
-    String Id { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
-    String Name { get; set; }
-    IList<ActionTemplateParameterResource> Parameters { get; }
-    IDictionary<String, PropertyValueResource> Properties { get; }
-    String Type { get; set; }
-    Int32 Version { get; set; }
-    String Website { get; set; }
   }
   class LibraryVariableSetResource
     Octopus.Client.Model.IResource
@@ -2245,22 +2261,6 @@ Octopus.Client.Model
     _Attribute
   {
     .ctor()
-  }
-  class StepTemplateResource
-    Octopus.Client.Model.IResource
-  {
-    .ctor()
-    String Author { get; set; }
-    String Description { get; set; }
-    Boolean HasUpdate { get; set; }
-    String Id { get; set; }
-    Boolean IsBuiltIn { get; set; }
-    Boolean IsInstalled { get; set; }
-    String LibraryStepTemplateId { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
-    String Name { get; set; }
-    String Type { get; set; }
-    String Website { get; set; }
   }
   class SupportsRestrictionAttribute
     _Attribute

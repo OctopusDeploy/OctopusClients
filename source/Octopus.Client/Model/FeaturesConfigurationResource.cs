@@ -5,6 +5,6 @@
         [Writeable]
         public bool IsMultiTenancyEnabled { get; set; }
         [Writeable]
-        public bool IsCommunityStepTemplatesEnabled { get; set; }
+        public bool IsCommunityActionTemplatesEnabled { get; set; }
     }
 }
