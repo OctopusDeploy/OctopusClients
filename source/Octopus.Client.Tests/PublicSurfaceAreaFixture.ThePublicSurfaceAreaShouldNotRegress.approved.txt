@@ -802,7 +802,7 @@ Octopus.Client.Model
     {
       static System.String Name
     }
-    abstract class SyncLibrarySteps
+    abstract class SyncCommunityActionTemplates
     {
       static System.String Name
     }
@@ -2721,7 +2721,7 @@ Octopus.Client.Model
   {
     static System.String Name
   }
-  abstract class SyncLibrarySteps
+  abstract class SyncCommunityActionTemplates
   {
     static System.String Name
   }
