@@ -127,7 +127,7 @@ namespace Octopus.Client.Model
 
         public static class SyncCommunityActionTemplates
         {
-            public const string Name = "SyncCommActionTemplates";
+            public const string Name = "SyncCommunityActionTemplates";
         }
     }
 }
