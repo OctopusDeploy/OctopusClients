@@ -78,7 +78,9 @@ namespace Octopus.Cli.Commands
             if (version == null)
             {
                 var now = DateTime.Now;
-                version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
+                version = new SemanticVersion(
+                    $"{now.Year}.{now.Month.ToString("D2")}.{now.Day.ToString("D2")}.{now.Hour*10000 + now.Minute*100 + now.Second}"
+                );
             }
 
             if (authors.All(string.IsNullOrWhiteSpace))
