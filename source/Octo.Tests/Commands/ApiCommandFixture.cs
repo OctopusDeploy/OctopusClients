@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
@@ -13,7 +15,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            apiCommand = new DummyApiCommand(RepositoryFactory, Log, FileSystem);
+            apiCommand = new DummyApiCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         [Test]
@@ -32,20 +34,21 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldThrowIfInvalidCommandLineParametersArePassed()
         {
             CommandLineArgs.Add("--fail=epic");
-            Assert.Throws<CommandException>(() => apiCommand.Execute(CommandLineArgs.ToArray()));
+            Func<Task> exec = () => apiCommand.Execute(CommandLineArgs.ToArray());
+            exec.ShouldThrow<CommandException>();
         }
 
         [Test]
-        public void ShouldNotThrowIfCustomOptionsAreAddedByCommand()
+        public Task ShouldNotThrowIfCustomOptionsAreAddedByCommand()
         {
             CommandLineArgs.Add("--pill=red");
-            apiCommand.Execute(CommandLineArgs.ToArray());
+            return apiCommand.Execute(CommandLineArgs.ToArray());
         }
 
         [Test]
-        public void ShouldExecuteCommandWhenCorrectCommandLineParametersArePassed()
+        public Task ShouldExecuteCommandWhenCorrectCommandLineParametersArePassed()
         {
-            apiCommand.Execute(CommandLineArgs.ToArray());
+            return apiCommand.Execute(CommandLineArgs.ToArray());
         }
 
     }

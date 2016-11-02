@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SYNC_CLIENT
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,6 +24,7 @@ namespace Octopus.Client
     /// var repository = new OctopusRepository(new OctopusServerEndpoint("http://myoctopus/"));
     /// </code>
     /// </remarks>
+    // [Obsolete("Use IOctopusAsyncRepository instead")]
     public class OctopusRepository : IOctopusRepository
     {
         readonly IOctopusClient client;
@@ -33,6 +35,7 @@ namespace Octopus.Client
         readonly IMachineRepository machines;
         readonly IMachineRoleRepository machineRoles;
         readonly IMachinePolicyRepository machinePolicies;
+        readonly ISubscriptionRepository subscriptions;
         readonly IEnvironmentRepository environments;
         readonly IEventRepository events;
         readonly IFeaturesConfigurationRepository featuresConfiguration;
@@ -77,6 +80,7 @@ namespace Octopus.Client
             machines = new MachineRepository(client);
             machineRoles = new MachineRoleRepository(client);
             machinePolicies = new MachinePolicyRepository(client);
+            subscriptions = new SubscriptionRepository(client);
             environments = new EnvironmentRepository(client);
             events = new EventRepository(client);
             featuresConfiguration = new FeaturesConfigurationRepository(client);
@@ -165,6 +169,11 @@ namespace Octopus.Client
         public IMachinePolicyRepository MachinePolicies
         {
             get { return machinePolicies; }
+        }
+
+        public ISubscriptionRepository Subscriptions
+        {
+            get { return subscriptions; }
         }
 
         public ILifecyclesRepository Lifecycles
@@ -610,6 +619,18 @@ namespace Octopus.Client
             }
         }
 
+        class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
+        {
+            public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions")
+            {
+            }
+
+            public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
+            {
+                return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
+            }
+        }
+
         class ProjectsRepository : BasicRepository<ProjectResource>, IProjectRepository
         {
             public ProjectsRepository(IOctopusClient client)
@@ -979,9 +1000,47 @@ namespace Octopus.Client
             {
             }
 
-            public ResourceCollection<EventResource> List(int skip = 0, string filterByUserId = null, string regardingDocumentId = null, bool includeInternalEvents = false)
+            public ResourceCollection<EventResource> List(int skip = 0,
+                string filterByUserId = null,
+                string regardingDocumentId = null,
+                bool includeInternalEvents = false)
             {
-                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new {skip, user = filterByUserId, regarding = regardingDocumentId, @internal = includeInternalEvents.ToString()});
+                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new { skip,
+                    user = filterByUserId,
+                    regarding = regardingDocumentId,
+                    @internal = includeInternalEvents.ToString() });
+            }
+
+            public ResourceCollection<EventResource> List(int skip = 0,
+                string from = null,
+                string to = null,
+                string regarding = null,
+                string regardingAny = null,
+                bool includeInternalEvents = true,
+                string user = null,
+                string users = null,
+                string projects = null,
+                string environments = null,
+                string eventGroups = null,
+                string eventCategories = null,
+                string tenants = null,
+                string tags = null)
+            {
+                return Client.List<EventResource>(Client.RootDocument.Link("Events"), new {skip,
+                    from = from,
+                    to = to,
+                    regarding = regarding,
+                    regardingAny = regardingAny,
+                    @internal = includeInternalEvents,
+                    user = user,
+                    users = users,
+                    projects = projects,
+                    environments = environments,
+                    eventGroups = eventGroups,
+                    eventCategories = eventCategories,
+                    tenants = tenants,
+                    tags = tags
+                });
             }
         }
 
@@ -1406,3 +1465,4 @@ namespace Octopus.Client
         }
     }
 }
+#endif

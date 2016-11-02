@@ -1,26 +1,24 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Reflection;
 
-// ReSharper disable CheckNamespace
 namespace Octopus.Cli.Util
 {
     public static class AssemblyExtensions
-// ReSharper restore CheckNamespace
     {
         public static string FullLocalPath(this Assembly assembly)
         {
             var codeBase = assembly.CodeBase;
             var uri = new UriBuilder(codeBase);
             var root = Uri.UnescapeDataString(uri.Path);
-            root = root.Replace("/", "\\");
+            root = root.Replace('/',Path.DirectorySeparatorChar);
             return root;
         }
 
-        public static string GetInformationalVersion(this Assembly assembly)
+        public static string GetInformationalVersion(this Type type)
         {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fileVersionInfo.ProductVersion;
+            return type.GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         }
     }
 }

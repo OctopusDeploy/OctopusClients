@@ -24,7 +24,7 @@ namespace Octopus.Client.Model
         /// </summary>
         public TaskResource()
         {
-            Arguments = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            Arguments = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>

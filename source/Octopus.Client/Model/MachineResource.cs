@@ -17,14 +17,18 @@ namespace Octopus.Client.Model
         [Writeable]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Obsoleted as Server 3.4
+        /// </summary>
         [Trim]
         [Writeable]
-        [Obsolete] // TODO: [ObsoleteEx(Message = "The Thumbprint property is not supported by all deployment target types; for Tentacle-based deployment targets, use Endpoint.Thumbprint instead.", TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0")]
         public string Thumbprint { get; set; }
 
+        /// <summary>
+        /// Obsoleted as Server 3.4
+        /// </summary>
         [Trim]
         [Writeable]
-        [Obsolete] // TODO: [ObsoleteEx(Message = "The Uri property is not supported by all deployment target types; use corresponding properties of Endpoint instead.", TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0")]
         public string Uri { get; set; }
 
         [Writeable]
@@ -45,7 +49,10 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
 
-        [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "HealthStatus")]
+
+        /// <summary>
+        /// Obsoleted as Server 3.4
+        /// </summary>
         public MachineModelStatus Status { get; set; }
 
         public MachineModelHealthStatus HealthStatus { get; set; }

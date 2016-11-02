@@ -128,11 +128,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -155,15 +152,9 @@ namespace Octopus.Cli.Commands
             (values as ICollection).CopyTo(array, index);
         }
 
-        bool ICollection.IsSynchronized
-        {
-            get { return (values as ICollection).IsSynchronized; }
-        }
+        bool ICollection.IsSynchronized => (values as ICollection).IsSynchronized;
 
-        object ICollection.SyncRoot
-        {
-            get { return (values as ICollection).SyncRoot; }
-        }
+        object ICollection.SyncRoot => (values as ICollection).SyncRoot;
 
         #endregion
 
@@ -174,15 +165,9 @@ namespace Octopus.Cli.Commands
             values.Clear();
         }
 
-        public int Count
-        {
-            get { return values.Count; }
-        }
+        public int Count => values.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public void Add(string item)
         {
@@ -256,10 +241,7 @@ namespace Octopus.Cli.Commands
             (values as IList).RemoveAt(index);
         }
 
-        bool IList.IsFixedSize
-        {
-            get { return false; }
-        }
+        bool IList.IsFixedSize => false;
 
         object IList.this[int index]
         {
@@ -301,12 +283,10 @@ namespace Octopus.Cli.Commands
             if (c.Option == null)
                 throw new InvalidOperationException("OptionContext.Option is null.");
             if (index >= c.Option.MaxValueCount)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             if (c.Option.OptionValueType == OptionValueType.Required &&
                 index >= values.Count)
-                throw new OptionException(string.Format(
-                    c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."), c.OptionName),
-                    c.OptionName);
+                throw new OptionException($"Missing required value for option '{c.OptionName}'.", c.OptionName);
         }
 
         #endregion
@@ -329,13 +309,10 @@ namespace Octopus.Cli.Commands
 
     public class OptionContext
     {
-        readonly OptionValueCollection c;
-        readonly OptionSet set;
-
         public OptionContext(OptionSet set)
         {
-            this.set = set;
-            c = new OptionValueCollection(this);
+            this.OptionSet = set;
+            OptionValues = new OptionValueCollection(this);
         }
 
         public Option Option { get; set; }
@@ -344,15 +321,9 @@ namespace Octopus.Cli.Commands
 
         public int OptionIndex { get; set; }
 
-        public OptionSet OptionSet
-        {
-            get { return set; }
-        }
+        public OptionSet OptionSet { get; }
 
-        public OptionValueCollection OptionValues
-        {
-            get { return c; }
-        }
+        public OptionValueCollection OptionValues { get; }
     }
 
     public enum OptionValueType
@@ -365,12 +336,6 @@ namespace Octopus.Cli.Commands
     public abstract class Option
     {
         static readonly char[] NameTerminator = {'=', ':'};
-        readonly int count;
-        readonly string description;
-        readonly string[] names;
-        readonly string prototype;
-        readonly OptionValueType type;
-        string[] separators;
 
         protected Option(string prototype, string description)
             : this(prototype, description, 1)
@@ -380,75 +345,57 @@ namespace Octopus.Cli.Commands
         protected Option(string prototype, string description, int maxValueCount)
         {
             if (prototype == null)
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             if (prototype.Length == 0)
-                throw new ArgumentException("Cannot be the empty string.", "prototype");
+                throw new ArgumentException("Cannot be the empty string.", nameof(prototype));
             if (maxValueCount < 0)
-                throw new ArgumentOutOfRangeException("maxValueCount");
+                throw new ArgumentOutOfRangeException(nameof(maxValueCount));
 
-            this.prototype = prototype;
-            names = prototype.Split('|');
-            this.description = description;
-            count = maxValueCount;
-            type = ParsePrototype();
+            this.Prototype = prototype;
+            Names = prototype.Split('|');
+            this.Description = description;
+            MaxValueCount = maxValueCount;
+            OptionValueType = ParsePrototype();
 
-            if (count == 0 && type != OptionValueType.None)
+            if (MaxValueCount == 0 && OptionValueType != OptionValueType.None)
                 throw new ArgumentException(
                     "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
                     "OptionValueType.Optional.",
-                    "maxValueCount");
-            if (type == OptionValueType.None && maxValueCount > 1)
+                    nameof(maxValueCount));
+            if (OptionValueType == OptionValueType.None && maxValueCount > 1)
                 throw new ArgumentException(
                     string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
-                    "maxValueCount");
-            if (Array.IndexOf(names, "<>") >= 0 &&
-                ((names.Length == 1 && type != OptionValueType.None) ||
-                 (names.Length > 1 && MaxValueCount > 1)))
+                    nameof(maxValueCount));
+            if (Array.IndexOf(Names, "<>") >= 0 &&
+                ((Names.Length == 1 && OptionValueType != OptionValueType.None) ||
+                 (Names.Length > 1 && MaxValueCount > 1)))
                 throw new ArgumentException(
                     "The default option handler '<>' cannot require values.",
-                    "prototype");
+                    nameof(prototype));
         }
 
-        public string Prototype
-        {
-            get { return prototype; }
-        }
+        public string Prototype { get; }
 
-        public string Description
-        {
-            get { return description; }
-        }
+        public string Description { get; }
 
-        public OptionValueType OptionValueType
-        {
-            get { return type; }
-        }
+        public OptionValueType OptionValueType { get; }
 
-        public int MaxValueCount
-        {
-            get { return count; }
-        }
+        public int MaxValueCount { get; }
 
-        internal string[] Names
-        {
-            get { return names; }
-        }
+        internal string[] Names { get; }
 
-        internal string[] ValueSeparators
-        {
-            get { return separators; }
-        }
+        internal string[] ValueSeparators { get; private set; }
 
         public string[] GetNames()
         {
-            return (string[]) names.Clone();
+            return (string[]) Names.Clone();
         }
 
         public string[] GetValueSeparators()
         {
-            if (separators == null)
+            if (ValueSeparators == null)
                 return new string[0];
-            return (string[]) separators.Clone();
+            return (string[]) ValueSeparators.Clone();
         }
 
         protected static T Parse<T>(string value, OptionContext c)
@@ -462,11 +409,7 @@ namespace Octopus.Cli.Commands
             }
             catch (Exception e)
             {
-                throw new OptionException(
-                    string.Format(
-                        c.OptionSet.MessageLocalizer("Could not convert string `{0}' to type {1} for option `{2}'."),
-                        value, typeof (T).Name, c.OptionName),
-                    c.OptionName, e);
+                throw new OptionException($"Could not convert string `{value}' to type {typeof(T).Name} for option `{c.OptionName}'.", c.OptionName, e);
             }
             return t;
         }
@@ -475,16 +418,16 @@ namespace Octopus.Cli.Commands
         {
             var c = '\0';
             var seps = new List<string>();
-            for (var i = 0; i < names.Length; ++i)
+            for (var i = 0; i < Names.Length; ++i)
             {
-                var name = names[i];
+                var name = Names[i];
                 if (name.Length == 0)
                     throw new ArgumentException("Empty option names are not supported.");
 
                 var end = name.IndexOfAny(NameTerminator);
                 if (end == -1)
                     continue;
-                names[i] = name.Substring(0, end);
+                Names[i] = name.Substring(0, end);
                 if (c == '\0' || c == name[end])
                     c = name[end];
                 else
@@ -496,17 +439,17 @@ namespace Octopus.Cli.Commands
             if (c == '\0')
                 return OptionValueType.None;
 
-            if (count <= 1 && seps.Count != 0)
+            if (MaxValueCount <= 1 && seps.Count != 0)
                 throw new ArgumentException(
-                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", count));
-            if (count > 1)
+                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", MaxValueCount));
+            if (MaxValueCount > 1)
             {
                 if (seps.Count == 0)
-                    separators = new[] {":", "="};
+                    ValueSeparators = new[] {":", "="};
                 else if (seps.Count == 1 && seps[0].Length == 0)
-                    separators = null;
+                    ValueSeparators = null;
                 else
-                    separators = seps.ToArray();
+                    ValueSeparators = seps.ToArray();
             }
 
             return c == '=' ? OptionValueType.Required : OptionValueType.Optional;
@@ -534,7 +477,7 @@ namespace Octopus.Cli.Commands
                         break;
                     default:
                         if (start == -1)
-                            seps.Add(name[i].ToString(CultureInfo.InvariantCulture));
+                            seps.Add(name[i].ToString());
                         break;
                 }
             }
@@ -559,11 +502,8 @@ namespace Octopus.Cli.Commands
         }
     }
 
-    [Serializable]
     public class OptionException : Exception
     {
-        readonly string option;
-
         public OptionException()
         {
         }
@@ -571,61 +511,33 @@ namespace Octopus.Cli.Commands
         public OptionException(string message, string optionName)
             : base(message)
         {
-            option = optionName;
+            OptionName = optionName;
         }
 
         public OptionException(string message, string optionName, Exception innerException)
             : base(message, innerException)
         {
-            option = optionName;
+            OptionName = optionName;
         }
 
-        protected OptionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            option = info.GetString("OptionName");
-        }
-
-        public string OptionName
-        {
-            get { return option; }
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue("OptionName", option);
-        }
+        public string OptionName { get; }
     }
 
-    public delegate void OptionAction<TKey, TValue>(TKey key, TValue value);
+    public delegate void OptionAction<in TKey, in TValue>(TKey key, TValue value);
 
     public class OptionSet : KeyedCollection<string, Option>
     {
         Action<string[]> leftovers;
 
         public OptionSet()
-            : this(delegate(string f) { return f; })
         {
         }
 
-        public OptionSet(Converter<string, string> localizer)
-        {
-            this.localizer = localizer;
-        }
-
-        readonly Converter<string, string> localizer;
-
-        public Converter<string, string> MessageLocalizer
-        {
-            get { return localizer; }
-        }
 
         protected override string GetKeyForItem(Option item)
         {
             if (item == null)
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             if (item.Names != null && item.Names.Length > 0)
                 return item.Names[0];
             // This should never happen, as it's invalid for Option to be
@@ -637,7 +549,7 @@ namespace Octopus.Cli.Commands
         protected Option GetOptionForName(string option)
         {
             if (option == null)
-                throw new ArgumentNullException("option");
+                throw new ArgumentNullException(nameof(option));
             try
             {
                 return base[option];
@@ -675,7 +587,7 @@ namespace Octopus.Cli.Commands
         void AddImpl(Option option)
         {
             if (option == null)
-                throw new ArgumentNullException("option");
+                throw new ArgumentNullException(nameof(option));
             var added = new List<string>(option.Names.Length);
             try
             {
@@ -708,7 +620,7 @@ namespace Octopus.Cli.Commands
                 : base(prototype, description, count)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -726,7 +638,7 @@ namespace Octopus.Cli.Commands
         public OptionSet Add(string prototype, string description, Action<string> action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             Option p = new ActionOption(prototype, description, 1,
                 delegate(OptionValueCollection v) { action(v[0]); });
             base.Add(p);
@@ -741,7 +653,7 @@ namespace Octopus.Cli.Commands
         public OptionSet Add(string prototype, string description, OptionAction<string, string> action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             Option p = new ActionOption(prototype, description, 2,
                 delegate(OptionValueCollection v) { action(v[0], v[1]); });
             base.Add(p);
@@ -756,7 +668,7 @@ namespace Octopus.Cli.Commands
                 : base(prototype, description, 1)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -774,7 +686,7 @@ namespace Octopus.Cli.Commands
                 : base(prototype, description, 2)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -870,13 +782,12 @@ namespace Octopus.Cli.Commands
             @"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
 
 #pragma warning disable 649
-        bool waitForExit;
 #pragma warning restore 649
 
         protected bool GetOptionParts(string argument, out string flag, out string name, out string sep, out string value)
         {
             if (argument == null)
-                throw new ArgumentNullException("argument");
+                throw new ArgumentNullException(nameof(argument));
 
             flag = name = sep = value = null;
             var m = ValueOption.Match(argument);
@@ -906,7 +817,7 @@ namespace Octopus.Cli.Commands
             if (!GetOptionParts(argument, out f, out n, out s, out v))
                 return false;
 
-            var p = this.FirstOrDefault(x => x.Names.Any(y => string.Equals(y, n, StringComparison.InvariantCultureIgnoreCase)));
+            var p = this.FirstOrDefault(x => x.Names.Any(y => string.Equals(y, n, StringComparison.OrdinalIgnoreCase)));
             if (p != null)
             {
                 c.OptionName = f + n;
@@ -935,10 +846,7 @@ namespace Octopus.Cli.Commands
             return false;
         }
 
-        public bool ShouldWaitForExit
-        {
-            get { return waitForExit; }
-        }
+        public bool ShouldWaitForExit { get; }
 
         void ParseValue(string option, OptionContext c)
         {
@@ -954,21 +862,17 @@ namespace Octopus.Cli.Commands
                 c.Option.Invoke(c);
             else if (c.OptionValues.Count > c.Option.MaxValueCount)
             {
-                throw new OptionException(localizer(string.Format(
-                    "Error: Found {0} option values when expecting {1}.",
-                    c.OptionValues.Count, c.Option.MaxValueCount)),
-                    c.OptionName);
+                throw new OptionException($"Error: Found {c.OptionValues.Count} option values when expecting {c.Option.MaxValueCount}.", c.OptionName);
             }
         }
 
         bool ParseBool(string option, string n, OptionContext c)
         {
-            Option p;
             string rn;
             if (n.Length >= 1 && (n[n.Length - 1] == '+' || n[n.Length - 1] == '-') &&
                 Contains((rn = n.Substring(0, n.Length - 1))))
             {
-                p = this[rn];
+                var p = this[rn];
                 var v = n[n.Length - 1] == '+' ? option : null;
                 c.OptionName = option;
                 c.Option = p;
@@ -985,17 +889,15 @@ namespace Octopus.Cli.Commands
                 return false;
             for (var i = 0; i < n.Length; ++i)
             {
-                Option p;
                 var opt = f + n[i];
-                var rn = n[i].ToString(CultureInfo.InvariantCulture);
+                var rn = n[i].ToString();
                 if (!Contains(rn))
                 {
                     if (i == 0)
                         return false;
-                    throw new OptionException(string.Format(localizer(
-                        "Cannot bundle unregistered option '{0}'."), opt), opt);
+                    throw new OptionException($"Cannot bundle unregistered option '{opt}'.", opt);
                 }
-                p = this[rn];
+                var p = this[rn];
                 switch (p.OptionValueType)
                 {
                     case OptionValueType.None:
@@ -1043,7 +945,7 @@ namespace Octopus.Cli.Commands
                     o.Write(new string(' ', OptionWidth));
                 }
 
-                var lines = GetLines(localizer(GetDescription(p.Description)));
+                var lines = GetLines(GetDescription(p.Description));
                 o.WriteLine(lines[0]);
                 var prefix = new string(' ', OptionWidth);
                 for (var i = 1; i < lines.Count; ++i)
@@ -1087,19 +989,19 @@ namespace Octopus.Cli.Commands
             {
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, localizer("["));
+                    Write(o, ref written, "[");
                 }
-                Write(o, ref written, localizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
+                Write(o, ref written, "=" + GetArgumentName(0, p.MaxValueCount, p.Description));
                 var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
                     ? p.ValueSeparators[0]
                     : " ";
                 for (var c = 1; c < p.MaxValueCount; ++c)
                 {
-                    Write(o, ref written, localizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
+                    Write(o, ref written, sep + GetArgumentName(c, p.MaxValueCount, p.Description));
                 }
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, localizer("]"));
+                    Write(o, ref written, "]");
                 }
             }
             return true;

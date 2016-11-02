@@ -1,5 +1,6 @@
 ﻿using NuGet.Versioning;
 
+// ReSharper disable once CheckNamespace
 namespace Octopus.Client.Model
 {
     public partial class SemanticVersion

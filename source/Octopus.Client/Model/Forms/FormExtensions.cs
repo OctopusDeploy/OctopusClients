@@ -11,7 +11,7 @@ namespace Octopus.Client.Model.Forms
             if (form == null) throw new ArgumentNullException("form");
             if (name == null) throw new ArgumentNullException("name");
             if (element == null) throw new ArgumentNullException("element");
-            if (form.Elements.Any(e => e.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            if (form.Elements.Any(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException("The form already contains an element '" + name + "'");
 
             form.Elements.Add(new FormElement(name, element, isValueRequired));
@@ -29,7 +29,7 @@ namespace Octopus.Client.Model.Forms
         static FormElement GetElement(this Form form, string name)
         {
             if (form == null) throw new ArgumentNullException("form");
-            var element = form.Elements.SingleOrDefault(e => e.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            var element = form.Elements.SingleOrDefault(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (element == null)
                 throw new InvalidOperationException("The form does not contain element '" + name + "'");
             return element;

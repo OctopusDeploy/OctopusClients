@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Octopus.Client.Editors.DeploymentProcess;
+using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 

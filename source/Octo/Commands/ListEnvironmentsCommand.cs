@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 
 namespace Octopus.Cli.Commands
 {
@@ -10,19 +12,19 @@ namespace Octopus.Cli.Commands
     public class ListEnvironmentsCommand : ApiCommand
     {
 
-        public ListEnvironmentsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public ListEnvironmentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
-            var environments = Repository.Environments.FindAll();
-            Log.Information("Environments: " + environments.Count);
+            var environments = await Repository.Environments.FindAll().ConfigureAwait(false);
+            Log.Information("Environments: {Count}", environments.Count);
 
             foreach (var environment in environments)
             {
-                Log.Information(" - {0} (ID: {1})", environment.Name, environment.Id);
+                Log.Information(" - {Environment:l} (ID: {Id:l})", environment.Name, environment.Id);
             }
         }
     }

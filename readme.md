@@ -1,4 +1,4 @@
-Version 4.0 is currently on the [`develop`][8] branch until Octopus 3.5 ships. This branch (`master`) is for patch releases until then.
+[![Build status](https://ci.appveyor.com/api/projects/status/kbtxml9x2kcdgkju?svg=true)](https://ci.appveyor.com/project/OctopusDeploy/octo-exe)
 
 This repository contains the command line tool (`Octo.exe`) and .NET Client Library (`Octopus.Client`) for [Octopus Deploy][1], an automated deployment server for professional .NET developers. You can use them to create and deploy releases, create and push packages, and manage environments.
 
@@ -14,17 +14,13 @@ Please see [Contributing](CONTRIBUTING.md)
 ## Compatibility
 See the [Compatibility][7] page in our docs
 
-## Versioning
-As of `3.5.0` we started using [semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
-
-The [semantic versioning][6] applies to the command line interface of `Octo.exe` and the public api exposed by `Octopus.Client`. The `minor` version will be increased on feature additions, and `major` on breaking changes.
-
+## Async, Versioning and Compatibility
+See the [Octopus.Client goes Open Source][6] blog post
 
 [1]: https://octopus.com
 [2]: https://octopus.com/downloads
 [3]: https://www.nuget.org/packages/Octopus.Client
 [4]: http://docs.octopusdeploy.com/display/OD/Octo.exe+Command+Line
 [5]: http://docs.octopusdeploy.com/display/OD/Octopus.Client
-[6]: http://semver.org/
+[6]: https://octopus.com/blog/octopus-client-goes-open-source
 [7]: http://docs.octopusdeploy.com/display/OD/Compatibility
-[8]: https://github.com/OctopusDeploy/OctopusClients/tree/develop

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
+using FluentAssertions;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -15,11 +17,11 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listReleasesCommand = new ListReleasesCommand(RepositoryFactory, Log, FileSystem);
+            listReleasesCommand = new ListReleasesCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         [Test]
-        public void ShouldGetListOfReleases()
+        public async Task ShouldGetListOfReleases()
         {
             Repository.Projects.FindByNames(Arg.Any<IEnumerable<string>>()).Returns(new List<ProjectResource>
                 {
@@ -35,18 +37,18 @@ namespace Octopus.Cli.Tests.Commands
 
             CommandLineArgs.Add("--project=ProjectA");
 
-            listReleasesCommand.Execute(CommandLineArgs.ToArray());
+            await listReleasesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            Log.Received().Information("Releases: {0}", 2);
-            Log.Received().Information(" - Project: {0}", "ProjectA");
-            Log.Received().Information("    {0}", "Version: 1.0");
-            Log.Received().Information("    {0}", "Assembled: " + DateTimeOffset.MinValue);
-            Log.Received().Information("    {0}", "Package Versions: ");
-            Log.Received().Information("    {0}", "Release Notes: Release Notes 1");
-            Log.Received().Information("    {0}", "Version: 2.0");
-            Log.Received().Information("    {0}", "Assembled: " + DateTimeOffset.MaxValue);
-            Log.Received().Information("    {0}", "Package Versions: ");
-            Log.Received().Information("    {0}", "Release Notes: Release Notes 2");
+            LogLines.Should().Contain(string.Format("[Information] Releases: {0}", 2));
+            LogLines.Should().Contain(string.Format("[Information]  - Project: {0}", "ProjectA"));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Version: 1.0"));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Assembled: " + DateTimeOffset.MinValue));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Package Versions: "));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Release Notes: Release Notes 1"));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Version: 2.0"));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Assembled: " + DateTimeOffset.MaxValue));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Package Versions: "));
+            LogLines.Should().Contain(string.Format("[Information]     {0}", "Release Notes: Release Notes 2"));
         }
     }
 }

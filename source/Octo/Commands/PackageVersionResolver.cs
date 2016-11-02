@@ -22,10 +22,10 @@ namespace Octopus.Cli.Commands
 
         public void AddFolder(string folderPath)
         {
-            log.Debug("Using package versions from folder: " + folderPath);
+            log.Debug("Using package versions from folder: {FolderPath:l}", folderPath);
             foreach (var file in Directory.GetFiles(folderPath, "*.nupkg", SearchOption.AllDirectories))
             {
-                log.Debug("Package file: " + file);
+                log.Debug("Package file: {File:l}", file);
 
                 PackageIdentity packageIdentity;
                 if (TryReadPackageIdentity(file, out packageIdentity))
@@ -113,7 +113,7 @@ namespace Octopus.Cli.Commands
             }
             catch (Exception ex)
             {
-               log.Warning("Could not read manifest from '{0}': {1}", packageFile, ex); 
+               log.Warning(ex, "Could not read manifest from '{PackageFile:l}'", packageFile); 
             }
 
             return false;

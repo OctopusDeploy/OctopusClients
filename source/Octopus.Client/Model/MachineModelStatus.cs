@@ -2,7 +2,9 @@
 
 namespace Octopus.Client.Model
 {
-    [Obsolete] // TODO: [ObsoleteEx(TreatAsErrorFromVersion = "4.0", RemoveInVersion = "4.0", ReplacementTypeOrMember = "MachineModelHealthStatus")]
+    /// <summary>
+    /// Obsoleted as Server 3.4
+    /// </summary>
     public enum MachineModelStatus
     {
         Online,

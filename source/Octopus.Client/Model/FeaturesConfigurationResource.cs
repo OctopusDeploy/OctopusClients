@@ -10,5 +10,8 @@ namespace Octopus.Client.Model
     {
         [Writeable]
         public bool IsMultiTenancyEnabled { get; set; }
+
+        [Writeable]
+        public bool IsDockerEnabled { get; set; }
     }
 }

@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 
 namespace Octopus.Cli.Commands
 {
     [Command("push", Description = "Pushes a package (.nupkg, .zip, .tar.gz, etc.) package to the built-in NuGet repository in an Octopus server.")]
     public class PushCommand : ApiCommand
     {
-        public PushCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public PushCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Package pushing");
             options.Add("package=", "Package file to push. Specify multiple packages by specifying this argument multiple times: \n--package package1 --package package2", package => Packages.Add(EnsurePackageExists(fileSystem, package)));
@@ -22,17 +24,17 @@ namespace Octopus.Cli.Commands
         public HashSet<string> Packages { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase); 
         public bool ReplaceExisting { get; set; }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             if (Packages.Count == 0) throw new CommandException("Please specify a package to push");
 
             foreach (var package in Packages)
             {
-                Log.Debug("Pushing package: {0}...", package);
+                Log.Debug("Pushing package: {Package:l}...", package);
 
                 using (var fileStream = FileSystem.OpenFile(package, FileAccess.Read))
                 {
-                    Repository.BuiltInPackageRepository.PushPackage(Path.GetFileName(package), fileStream, ReplaceExisting);
+                    await Repository.BuiltInPackageRepository.PushPackage(Path.GetFileName(package), fileStream, ReplaceExisting).ConfigureAwait(false);
                 }
             }
 

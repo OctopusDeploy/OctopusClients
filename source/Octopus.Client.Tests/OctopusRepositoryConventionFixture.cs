@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -12,9 +11,9 @@ namespace Octopus.Client.Tests
         [Test]
         public void EnsureAllRepositoryPropertiesHaveBeenAdded()
         {
-            var i = typeof(IOctopusRepository);
+            var i = typeof(IOctopusAsyncRepository);
             var interfaceProps = i.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
-            var t = typeof(OctopusRepository);
+            var t = typeof(OctopusAsyncRepository);
             var implementationProps = t.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
 
             Assert.That(interfaceProps.Count(), Is.EqualTo(implementationProps.Count()), GetDifferenceMessage(interfaceProps, implementationProps));
@@ -25,7 +24,7 @@ namespace Octopus.Client.Tests
 
             var ints = interfaceProps.Select(p => $"({p.PropertyType.Name}){p.Name}");
             var imps = implementationProps.Select(p => $"({p.PropertyType.Name}){p.Name}");
-            var msg = "IOctopusRepository and OctopusRepository repository properties are out-of-sync";
+            var msg = "IOctopusAsyncRepository and OctopusRepository repository properties are out-of-sync";
             var missingInInts = imps.Except(ints);
 
             if (missingInInts.Any())

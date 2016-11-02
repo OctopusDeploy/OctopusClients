@@ -4,6 +4,9 @@ namespace Octopus.Client.Model
 {
     public class FeedResource : Resource, INamedResource
     {
+        /// <summary>
+        /// The FeedResource type has been depricated on Octopus Deploy 3.5 servers. Use NuGetFeedResource instead")]
+        /// </summary>
         public FeedResource()
         {
             Password = new SensitiveValue();
@@ -20,5 +23,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public SensitiveValue Password { get; set; }
+
+        [WriteableOnCreate]
+        public virtual FeedType FeedType { get; }
     }
 }

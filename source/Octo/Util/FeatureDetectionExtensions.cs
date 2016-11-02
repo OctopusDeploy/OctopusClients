@@ -5,7 +5,7 @@ namespace Octopus.Cli.Util
 {
     public static class FeatureDetectionExtensions
     {
-        public static bool SupportsChannels(this IOctopusRepository repository)
+        public static bool SupportsChannels(this IOctopusAsyncRepository repository)
         {
             return repository?.Client?.RootDocument.SupportsChannels() == true;
         }
@@ -15,7 +15,7 @@ namespace Octopus.Cli.Util
             return source?.HasLink("Channels") == true;
         }
 
-        public static bool SupportsTenants(this IOctopusRepository repository)
+        public static bool SupportsTenants(this IOctopusAsyncRepository repository)
         {
             return repository?.Client?.RootDocument.SupportsTenants() == true;
         }

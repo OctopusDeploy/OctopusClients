@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
@@ -10,8 +12,8 @@ namespace Octopus.Cli.Commands
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-        public DeployReleaseCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(repositoryFactory, log, fileSystem, clientFactory)
         {
 
             DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
@@ -38,23 +40,24 @@ namespace Octopus.Cli.Commands
             base.ValidateParameters();
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
-            var project = RepositoryCommonQueries.GetProjectByName(ProjectName);
-            var channel = GetChannel(project);
-            var releaseToPromote = RepositoryCommonQueries.GetReleaseByVersion(VersionNumber, project, channel);
+            var project = await RepositoryCommonQueries.GetProjectByName(ProjectName).ConfigureAwait(false);
+            var channel = await GetChannel(project).ConfigureAwait(false);
+            var releaseToPromote = await RepositoryCommonQueries.GetReleaseByVersion(VersionNumber, project, channel).ConfigureAwait(false);
 
-            DeployRelease(project, releaseToPromote);
+            await DeployRelease(project, releaseToPromote).ConfigureAwait(false);
         }
 
-        private ChannelResource GetChannel(ProjectResource project)
+        private async Task<ChannelResource> GetChannel(ProjectResource project)
         {
             var channel = default(ChannelResource);
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Debug("Finding channel: " + ChannelName);
-                channel = Repository.Projects.GetChannels(project)
-                    .FindOne(Repository, c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase));
+                Log.Debug("Finding channel: {Channel:l}", ChannelName);
+                var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+                channel = await channels
+                    .FindOne(Repository, c => string.Equals(c.Name, ChannelName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
 
                 if (channel == null)
                     throw new CouldNotFindException("a channel named", ChannelName);

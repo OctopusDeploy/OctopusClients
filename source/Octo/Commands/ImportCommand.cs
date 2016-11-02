@@ -1,8 +1,10 @@
-﻿using Serilog;
+﻿using System.Threading.Tasks;
+using Serilog;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 
 namespace Octopus.Cli.Commands
 {
@@ -11,8 +13,8 @@ namespace Octopus.Cli.Commands
     {
         readonly IImporterLocator importerLocator;
 
-        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusRepositoryFactory repositoryFactory, ILogger log)
-            : base(repositoryFactory, log, fileSystem)
+        public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             this.importerLocator = importerLocator;
 
@@ -28,22 +30,22 @@ namespace Octopus.Cli.Commands
         public string FilePath { get; set; }
         public string Project { get; set; }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type of object to import using the paramter: --type=XYZ");
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to import using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding importer '" + Type + "'");
+            Log.Debug("Finding importer '{Type:l}'", Type);
             var importer = importerLocator.Find(Type, Repository, FileSystem, Log);
             if (importer == null)
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 
             Log.Debug("Validating the import");
-            var validationResult = importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project));
+            var validationResult = await importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
             if (validationResult && !DryRun)
             {
                 Log.Debug("Beginning the import");
-                importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project));
+                await importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
             }
         }
     }
