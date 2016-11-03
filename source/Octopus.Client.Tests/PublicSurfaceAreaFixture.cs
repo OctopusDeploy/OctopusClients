@@ -1,11 +1,10 @@
-﻿#if HAS_APPROVAL_TESTS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using ApprovalTests;
-using ApprovalTests.Reporters;
+using System.Runtime.InteropServices;
+using Assent;
 using NUnit.Framework;
 using Octopus.Client.Tests.Extensions;
 
@@ -14,20 +13,25 @@ namespace Octopus.Client.Tests
     public class PublicSurfaceAreaFixture
     {
         [Test]
-        [UseReporter(typeof(DiffReporter))]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void ThePublicSurfaceAreaShouldNotRegress()
         {
-            var lines = typeof(OctopusRequest).Assembly
+            var lines = typeof(OctopusRequest).GetTypeInfo().Assembly
                 .ExportedTypes
+                .Select(t => t.GetTypeInfo())
                 .GroupBy(t => t.Namespace)
                 .OrderBy(g => g.Key)
                 .SelectMany(g => FormatNamespace(g.Key, g))
                 .ToArray();
-            Approvals.Verify(string.Join("\r\n", lines));
+
+            var framework = string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
+            this.Assent(
+                string.Join("\r\n", lines),
+                new Configuration().UsingNamer(new PostfixNamer(framework))
+            );
         }
 
-        IEnumerable<object> FormatNamespace(string name, IEnumerable<Type> types)
+        IEnumerable<object> FormatNamespace(string name, IEnumerable<TypeInfo> types)
         {
             return name.InArray()
                 .Concat("{".InArray())
@@ -35,13 +39,13 @@ namespace Octopus.Client.Tests
                 .Concat("}".InArray());
         }
 
-        IEnumerable<string> FormatType(Type type)
+        IEnumerable<string> FormatType(TypeInfo type)
         {
             if (type.IsEnum)
             {
                 return $"{type.Name}".InArray()
                         .Concat("{")
-                        .Concat(Enum.GetValues(type).Cast<Enum>().Select(v => $"    {v} = {(int)(object)v}"))
+                        .Concat(Enum.GetValues(type.AsType()).Cast<Enum>().Select(v => $"    {v} = {(int)(object)v}"))
                         .Concat("}");
             }
 
@@ -61,7 +65,7 @@ namespace Octopus.Client.Tests
             var properties = members.OfType<PropertyInfo>().ToArray();
             var events = members.OfType<EventInfo>().ToArray();
             var methods = members.OfType<MethodInfo>().ToArray();
-            var types = members.OfType<Type>().ToArray();
+            var types = members.OfType<TypeInfo>().ToArray();
             var other = members.Except(methods).Except(properties).Except(fields).Except(ctors).Except(events).Except(types).ToArray();
 
             var body = fields.Select(f => $"{Static(f.IsStatic)}{f.FieldType} {f.Name}")
@@ -124,7 +128,7 @@ namespace Octopus.Client.Tests
             if (!shortName && type.Namespace.StartsWith("Octopus"))
                 name = type.Namespace + "." + name;
 
-            if (!type.IsGenericType)
+            if (!type.GetTypeInfo().IsGenericType)
                 return name;
 
             name = name.Substring(0, name.IndexOf('`'));
@@ -133,4 +137,3 @@ namespace Octopus.Client.Tests
         }
     }
 }
-#endif

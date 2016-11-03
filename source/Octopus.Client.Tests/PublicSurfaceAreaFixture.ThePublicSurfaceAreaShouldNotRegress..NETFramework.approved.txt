@@ -1,4 +1,4 @@
-﻿Octopus.Client
+Octopus.Client
 {
   class DefaultLinkResolver
     Octopus.Client.ILinkResolver

@@ -13,7 +13,8 @@
     "FluentAssertions": "4.15.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
-    "Serilog": "2.3.0"
+    "Serilog": "2.3.0",
+    "Assent": "0.1.1" 
   },
   "testRunner": "nunit",
   "buildOptions": {
@@ -22,15 +23,12 @@
   "frameworks": {
     "net452": {
       "dependencies": {
-        "ApprovalTests": "3.0.13",
-        "ApprovalUtilities": "3.0.13",
         "Best.Conventional": "1.3.0.122"
       },
       "buildOptions": {
         "define": [
           "HAS_BEST_CONVENTIONAL",
-          "SYNC_CLIENT",
-          "HAS_APPROVAL_TESTS"
+          "SYNC_CLIENT"
         ]
       }
     },
