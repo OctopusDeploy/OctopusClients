@@ -3,6 +3,8 @@ configuration: Release
 platform: Any CPU
 build_script:
 - cmd: build.cmd
+environment:
+  AssentNonInteractive: true
 artifacts:
 - path: artifacts\**\*.*
 cache:
