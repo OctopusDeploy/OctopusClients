@@ -15,13 +15,13 @@
     "NuGet.Versioning": "3.4.3",
     "Serilog": "2.3.0",
     "Serilog.Sinks.TextWriter": "2.0.0",
-    "NUnit": "3.4.1",
+    "NUnit": "3.5.0",
     "dotnet-test-nunit": "3.4.0-beta-2",
     "NSubstitute": "2.0.0-rc",
-    "FluentAssertions": "4.12.0",
+    "FluentAssertions": "4.15.0",
     "Nancy": "2.0.0-barneyrubble",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
-    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
     "Microsoft.AspNetCore.Owin": "1.0.0",
     "Octopus.Client": {
       "target": "project"
