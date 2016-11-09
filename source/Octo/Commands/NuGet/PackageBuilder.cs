@@ -198,53 +198,17 @@ namespace Octopus.Cli.Commands.NuGet
             set;
         }
 
-        IEnumerable<string> IPackageMetadata.Authors
-        {
-            get
-            {
-                return Authors;
-            }
-        }
+        IEnumerable<string> IPackageMetadata.Authors => Authors;
 
-        IEnumerable<string> IPackageMetadata.Owners
-        {
-            get
-            {
-                return Owners;
-            }
-        }
+        IEnumerable<string> IPackageMetadata.Owners => Owners;
 
-        string IPackageMetadata.Tags
-        {
-            get
-            {
-                return String.Join(" ", Tags);
-            }
-        }
+        string IPackageMetadata.Tags => String.Join(" ", Tags);
 
-        IEnumerable<PackageReferenceSet> IPackageMetadata.PackageAssemblyReferences
-        {
-            get
-            {
-                return PackageAssemblyReferences;
-            }
-        }
+        IEnumerable<PackageReferenceSet> IPackageMetadata.PackageAssemblyReferences => PackageAssemblyReferences;
 
-        IEnumerable<PackageDependencyGroup> IPackageMetadata.DependencyGroups
-        {
-            get
-            {
-                return DependencyGroups;
-            }
-        }
+        IEnumerable<PackageDependencyGroup> IPackageMetadata.DependencyGroups => DependencyGroups;
 
-        IEnumerable<FrameworkAssemblyReference> IPackageMetadata.FrameworkReferences
-        {
-            get
-            {
-                return FrameworkReferences;
-            }
-        }
+        IEnumerable<FrameworkAssemblyReference> IPackageMetadata.FrameworkReferences => FrameworkReferences;
 
         public Version MinClientVersion
         {
@@ -286,9 +250,6 @@ namespace Octopus.Cli.Commands.NuGet
             List<string> creatorInfo = new List<string>();
             var assembly = typeof(PackageBuilder).GetTypeInfo().Assembly;
             creatorInfo.Add(assembly.FullName);
-#if !DNXCORE50 // CORECLR_TODO: Environment.OSVersion
-            creatorInfo.Add(Environment.OSVersion.ToString());
-#endif
 
             var attribute = assembly.GetCustomAttributes<System.Runtime.Versioning.TargetFrameworkAttribute>().FirstOrDefault();
             if (attribute != null)

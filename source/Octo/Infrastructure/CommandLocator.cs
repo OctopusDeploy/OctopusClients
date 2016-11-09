@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Autofac;
 
 namespace Octopus.Cli.Infrastructure
@@ -15,20 +16,25 @@ namespace Octopus.Cli.Infrastructure
 
         public ICommandMetadata[] List()
         {
+            var iCommandType = typeof(ICommand).GetTypeInfo();
             return
-                (from t in typeof (CommandLocator).Assembly.GetTypes()
-                    where typeof (ICommand).IsAssignableFrom(t)
-                    let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
-                    where attribute != null
-                    select attribute).ToArray();
+            (from t in typeof(CommandLocator).GetTypeInfo().Assembly.GetTypes()
+                where iCommandType.IsAssignableFrom(t)
+                let attribute =
+                (ICommandMetadata) t.GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
+                where attribute != null
+                select attribute).ToArray();
         }
 
         public ICommand Find(string name)
         {
             name = name.Trim().ToLowerInvariant();
-            var found = (from t in typeof (CommandLocator).Assembly.GetTypes()
-                where typeof (ICommand).IsAssignableFrom(t)
-                let attribute = (ICommandMetadata) t.GetCustomAttributes(typeof (CommandAttribute), true).FirstOrDefault()
+            var iCommandType = typeof(ICommand).GetTypeInfo();
+
+            var found = (from t in typeof(CommandLocator).GetTypeInfo().Assembly.GetTypes()
+                where iCommandType.IsAssignableFrom(t)
+                let attribute =
+                (ICommandMetadata) t.GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
                 where attribute != null
                 where attribute.Name == name || attribute.Aliases.Any(a => a == name)
                 select t).FirstOrDefault();

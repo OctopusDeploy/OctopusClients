@@ -10,10 +10,7 @@ namespace Octopus.Cli.Importers
         public IDictionary<string, T> FoundDependencies { get; set; }
         public ICollection<string> MissingDependencyNames { get; set; }
 
-        public List<string> FoundDependencyIds
-        {
-            get { return FoundDependencies.Keys.ToList(); }
-        }
+        public List<string> FoundDependencyIds => FoundDependencies.Keys.ToList();
 
         public IEnumerable<string> MissingDependencyErrors
         {

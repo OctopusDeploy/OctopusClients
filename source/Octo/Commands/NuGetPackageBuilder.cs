@@ -31,7 +31,7 @@ namespace Octopus.Cli.Commands
             if (fileSystem.FileExists(output) && !overwrite)
                 throw new CommandException("The package file already exists and --overwrite was not specified");
 
-            log.Information("Saving {0} to {1}...", filename, outFolder);
+            log.Information("Saving {Filename} to {OutFolder}...", filename, outFolder);
 
             fileSystem.EnsureDirectoryExists(outFolder);
 

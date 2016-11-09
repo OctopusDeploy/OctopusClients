@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
@@ -8,31 +9,18 @@ namespace Octopus.Cli.Exporters
 {
     public abstract class BaseExporter : IExporter
     {
-        readonly FileSystemExporter fileSystemExporter;
-        readonly ILogger log;
-        readonly IOctopusRepository repository;
-
-        protected BaseExporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        protected BaseExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
         {
-            this.log = log;
-            this.repository = repository;
-            fileSystemExporter = new FileSystemExporter(fileSystem, log);
+            this.Log = log;
+            this.Repository = repository;
+            FileSystemExporter = new FileSystemExporter(fileSystem, log);
         }
 
-        public ILogger Log
-        {
-            get { return log; }
-        }
+        public ILogger Log { get; }
 
-        public IOctopusRepository Repository
-        {
-            get { return repository; }
-        }
+        public IOctopusAsyncRepository Repository { get; }
 
-        public FileSystemExporter FileSystemExporter
-        {
-            get { return fileSystemExporter; }
-        }
+        public FileSystemExporter FileSystemExporter { get; }
 
         public string FilePath { get; protected set; }
 
@@ -44,8 +32,9 @@ namespace Octopus.Cli.Exporters
             Export(parameterDictionary);
         }
 
-        protected virtual void Export(Dictionary<string, string> paramDictionary)
+        protected virtual Task Export(Dictionary<string, string> paramDictionary)
         {
+            return Task.CompletedTask;
         }
 
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)

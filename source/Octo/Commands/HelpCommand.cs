@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Octopus.Cli.Commands
 {
@@ -20,32 +22,35 @@ namespace Octopus.Cli.Commands
         {
         }
 
-        public void Execute(string[] commandLineArguments)
+        public Task Execute(string[] commandLineArguments)
         {
-            var executable = Path.GetFileNameWithoutExtension(typeof (HelpCommand).Assembly.FullLocalPath());
-
-            var commandName = commandLineArguments.FirstOrDefault();
-
-            if (string.IsNullOrEmpty(commandName))
+            return Task.Run(() =>
             {
-                PrintGeneralHelp(executable);
-            }
-            else
-            {
-                var command = commands.Find(commandName);
+                var executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
 
-                if (command == null)
+                var commandName = commandLineArguments.FirstOrDefault();
+
+                if (string.IsNullOrEmpty(commandName))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Command '{0}' is not supported", commandName);
-                    Console.ResetColor();
                     PrintGeneralHelp(executable);
                 }
                 else
                 {
-                    PrintCommandHelp(executable, command, commandName);
+                    var command = commands.Find(commandName);
+
+                    if (command == null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Command '{0}' is not supported", commandName);
+                        Console.ResetColor();
+                        PrintGeneralHelp(executable);
+                    }
+                    else
+                    {
+                        PrintCommandHelp(executable, command, commandName);
+                    }
                 }
-            }
+            });
         }
 
         void PrintCommandHelp(string executable, ICommand command, string commandName)

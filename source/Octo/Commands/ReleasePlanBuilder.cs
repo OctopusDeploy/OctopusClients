@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Model;
@@ -22,16 +23,16 @@ namespace Octopus.Cli.Commands
             this.versionRuleTester = versionRuleTester;
         }
 
-        public ReleasePlan Build(IOctopusRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag)
+        public async Task<ReleasePlan> Build(IOctopusAsyncRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag)
         {
             if (repository == null) throw new ArgumentNullException(nameof(repository));
             if (project == null) throw new ArgumentNullException(nameof(project));
 
             log.Debug("Finding deployment process...");
-            var deploymentProcess = repository.DeploymentProcesses.Get(project.DeploymentProcessId);
+            var deploymentProcess = await repository.DeploymentProcesses.Get(project.DeploymentProcessId).ConfigureAwait(false);
 
             log.Debug("Finding release template...");
-            var releaseTemplate = repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel);
+            var releaseTemplate = await repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel).ConfigureAwait(false);
 
             var plan = new ReleasePlan(project, channel, releaseTemplate, versionResolver);
 
@@ -42,16 +43,16 @@ namespace Octopus.Cli.Commands
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        log.Error("The version number for step '{0}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        log.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
                         continue;
                     }
 
                     if (!string.IsNullOrEmpty(versionPreReleaseTag))
-                        log.Debug("Finding latest package with pre-release '{1}' for step: {0}", unresolved.StepName, versionPreReleaseTag);
+                        log.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.StepName);
                     else
-                        log.Debug("Finding latest package for step: {0}", unresolved.StepName);
+                        log.Debug("Finding latest package for step: {StepName:l}", unresolved.StepName);
 
-                    var feed = repository.Feeds.Get(unresolved.PackageFeedId);
+                    var feed = await repository.Feeds.Get(unresolved.PackageFeedId).ConfigureAwait(false);
                     if (feed == null)
                         throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.PackageFeedId));
 
@@ -60,16 +61,16 @@ namespace Octopus.Cli.Commands
                     if (!string.IsNullOrWhiteSpace(versionPreReleaseTag))
                         filters["preReleaseTag"] = versionPreReleaseTag;
 
-                    var packages = repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), filters);
+                    var packages = await repository.Client.Get<List<PackageResource>>(feed.Link("SearchTemplate"), filters).ConfigureAwait(false);
                     var latestPackage = packages.FirstOrDefault();
 
                     if (latestPackage == null)
                     {
-                        log.Error("Could not find any packages with ID '{0}' in the feed '{1}'", unresolved.PackageId, feed.FeedUri);
+                        log.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.FeedUri);
                     }
                     else
                     {
-                        log.Debug("Selected '{0}' version '{1}' for '{2}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
+                        log.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }
@@ -82,7 +83,7 @@ namespace Octopus.Cli.Commands
                 {
                     // Note the rule can be null, meaning: anything goes
                     var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.StepName, StringComparison.OrdinalIgnoreCase)));
-                    var result = versionRuleTester.Test(repository, rule, step.Version);
+                    var result = await versionRuleTester.Test(repository, rule, step.Version).ConfigureAwait(false);
                     step.SetChannelVersionRuleTestResult(result);
                 }
             }

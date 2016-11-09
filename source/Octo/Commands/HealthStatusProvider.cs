@@ -22,7 +22,7 @@ namespace Octopus.Cli.Commands
         public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
-        public HealthStatusProvider(IOctopusRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses)
+        public HealthStatusProvider(IOctopusAsyncRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses)
         {
             this.log = log;
             this.statuses = statuses;

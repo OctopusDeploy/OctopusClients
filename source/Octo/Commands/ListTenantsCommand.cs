@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 
 namespace Octopus.Cli.Commands
 {
@@ -11,19 +13,19 @@ namespace Octopus.Cli.Commands
     public class ListTenantsCommand : ApiCommand
     {
 
-        public ListTenantsCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public ListTenantsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
         }
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
-            var tenants = Repository.Tenants.FindAll();
-            Log.Information("Tenants: " + tenants.Count);
+            var tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
+            Log.Information("Tenants: {Count}", tenants.Count);
 
             foreach (var tenant in tenants.OrderBy(m => m.Name))
             {
-                Log.Information(" - {0} (ID: {1})", tenant.Name, tenant.Id);
+                Log.Information(" - {Tenant:l} (ID: {Count})", tenant.Name, tenant.Id);
             }
         }
     }

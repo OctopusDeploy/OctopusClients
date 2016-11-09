@@ -11,9 +11,10 @@ using Octopus.Cli.Exporters;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using Octopus.Client.Exceptions;
 using System.Net;
 using Octopus.Cli.Repositories;
+using Octopus.Client;
+using Octopus.Client.Exceptions;
 
 namespace Octopus.Cli
 {
@@ -22,15 +23,14 @@ namespace Octopus.Cli
         static int Main(string[] args)
         {
             ConfigureLogger();
-            Log.Information("Octopus Deploy Command Line Tool, version " + typeof (Program).Assembly.GetInformationalVersion());
+            return Run(args);
+        }
+
+        internal static int Run(string[] args)
+        {
+            Log.Information("Octopus Deploy Command Line Tool, version {Version:l}", typeof(Program).GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
             Log.Information(string.Empty);
-
-            ServicePointManager.SecurityProtocol =
-                SecurityProtocolType.Ssl3
-                | SecurityProtocolType.Tls
-                | SecurityProtocolType.Tls11
-                | SecurityProtocolType.Tls12;
 
             try
             {
@@ -38,7 +38,7 @@ namespace Octopus.Cli
                 var commandLocator = container.Resolve<ICommandLocator>();
                 var first = GetFirstArgument(args);
                 var command = GetCommand(first, commandLocator);
-                command.Execute(args.Skip(1).ToArray());
+                command.Execute(args.Skip(1).ToArray()).GetAwaiter().GetResult();
                 return 0;
             }
             catch (Exception exception)
@@ -61,7 +61,7 @@ namespace Octopus.Cli
         static IContainer BuildContainer()
         {
             var builder = new ContainerBuilder();
-            var thisAssembly = typeof (Program).Assembly;
+            var thisAssembly = typeof (Program).GetTypeInfo().Assembly;
 
             builder.RegisterModule(new LoggingModule());
 
@@ -77,7 +77,8 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
-            builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusRepositoryFactory>();
+            builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
+            builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
 
@@ -135,13 +136,6 @@ namespace Octopus.Cli
                 foreach (var loaderException in reflex.LoaderExceptions)
                 {
                     Log.Error(loaderException, "");
-
-                    var exFileNotFound = loaderException as FileNotFoundException;
-                    if (exFileNotFound != null &&
-                        !string.IsNullOrEmpty(exFileNotFound.FusionLog))
-                    {
-                        Log.Error("Fusion log: {0}", exFileNotFound.FusionLog);
-                    }
                 }
 
                 return -43;
@@ -150,7 +144,8 @@ namespace Octopus.Cli
             var octo = ex as OctopusException;
             if (octo != null)
             {
-                Log.Error("Error from Octopus server (HTTP " + octo.HttpStatusCode + "): " + octo.Message);
+                Log.Information("{HttpErrorMessage:l}", octo.Message);
+                Log.Error("Error from Octopus server (HTTP {StatusCode} {StatusDescription})", octo.HttpStatusCode, (HttpStatusCode) octo.HttpStatusCode);
                 return -7;
             }
 

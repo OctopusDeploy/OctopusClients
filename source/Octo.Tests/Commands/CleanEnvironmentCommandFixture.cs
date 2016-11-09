@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -16,7 +17,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, Log, FileSystem);
+            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
         }
 
         CleanEnvironmentCommand listMachinesCommand;
@@ -51,14 +52,14 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
-            Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
+            LogLines.Should().Contain(string.Format("[Information] Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString()));
 
-            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id);
+            LogLines.Should().Contain(string.Format("[Information] Deleting {0} {1} (ID: {2})", machineList[0].Name, machineList[0].Status, machineList[0].Id));
             Repository.Machines.Received().Delete(machineList[0]);
 
-            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
+            LogLines.Should().Contain(string.Format("[Information] Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id));
             Repository.Machines.Received().Delete(machineList[1]);
         }
 
@@ -92,23 +93,23 @@ namespace Octopus.Cli.Tests.Commands
 
             Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
 
-            listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
-            Log.Received().Information("Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString());
-            Log.Received().Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {0} environment.", "Development");
+            LogLines.Should().Contain(string.Format("[Information] Found {0} machines in {1} with the status {2}", machineList.Count, "Development", MachineModelStatus.Offline.ToString()));
+            LogLines.Should().Contain("[Information] Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the Development environment.");
 
-            Log.Received().Information("Removing {0} {1} (ID: {2}) from {3}", machineList[0].Name, machineList[0].Status, machineList[0].Id, "Development");
+            LogLines.Should().Contain($"[Information] Removing {machineList[0].Name} {machineList[0].Status} (ID: {machineList[0].Id}) from Development");
             Assert.That(machineList[0].EnvironmentIds.Count, Is.EqualTo(1), "The machine should have been removed from the Development environment.");
             Repository.Machines.Received().Modify(machineList[0]);
 
-            Log.Received().Information("Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id);
+            LogLines.Should().Contain(string.Format("[Information] Deleting {0} {1} (ID: {2})", machineList[1].Name, machineList[1].Status, machineList[1].Id));
             Repository.Machines.Received().Delete(machineList[1]);
         }
 
         [Test]
         public void ShouldNotCleanEnvironmentWithMissingEnvironmentArgs()
         {
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()
                 .WithMessage("Please specify an environment name using the parameter: --environment=XYZ");
         }
@@ -117,7 +118,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldNotCleanEnvironmentWithMissingStatusArgs()
         {
             CommandLineArgs.Add("-environment=Development");
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()
               .WithMessage("Please specify a status using the parameter: --status or --health-status");
         }
@@ -128,7 +129,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("-environment=Development");
             CommandLineArgs.Add("-status=Offline");
 
-            Action exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
+            Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CouldNotFindException>()
               .WithMessage("Could not find the specified environment; either it does not exist or you lack permissions to view it.");
         }

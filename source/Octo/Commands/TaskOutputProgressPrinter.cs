@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Util;
@@ -13,9 +14,9 @@ namespace Octopus.Cli.Commands
     {
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public void Render(IOctopusRepository repository, ILogger log, TaskResource resource)
+        public async Task Render(IOctopusAsyncRepository repository, ILogger log, TaskResource resource)
         {
-            var details = repository.Tasks.GetDetails(resource);
+            var details = await repository.Tasks.GetDetails(resource).ConfigureAwait(false);
 
             if (details.ActivityLogs != null)
             {
@@ -79,7 +80,7 @@ namespace Octopus.Cli.Commands
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
 
-                log.Information("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
+                Console.WriteLine("{0}{1,-8}   {2}", indent, logEntry.Category, LineSplitter.Split(indent + new string(' ', 11), logEntry.MessageText));
                 Console.ResetColor();
             }
 
@@ -120,11 +121,11 @@ namespace Octopus.Cli.Commands
             if (!IsPrintable(element))
                 return;
 
-            log.Information($"{indent}         {element.Status}: {element.Name}");
+            log.Information("{Indent:l}         {Status:l}: {Name:l}", indent, element.Status, element.Name);
 
             foreach (var logEntry in element.LogElements)
             {
-                log.Information($"{logEntry.Category,-8}{indent}   {logEntry.MessageText}");
+                log.Information("{Category,-8:l}{Indent:l}   {Message:l}", logEntry.Category, logEntry.MessageText);
             }
 
             foreach (var child in element.Children)

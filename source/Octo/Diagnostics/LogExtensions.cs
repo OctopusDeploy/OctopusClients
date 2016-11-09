@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Serilog;
 using Octopus.Client.Model;
 
@@ -46,7 +47,7 @@ namespace Octopus.Cli.Diagnostics
             buildEnvironment = (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
                 ? string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")) ? BuildEnvironment.NoneOrUnknown : BuildEnvironment.TeamCity
                 : BuildEnvironment.TeamFoundationBuild;
-            log.Information("Build environment is {0}", buildEnvironment);
+            log.Information("Build environment is {Environment:l}", buildEnvironment);
         }
 
         public static void DisableServiceMessages(this ILogger log)
@@ -71,11 +72,11 @@ namespace Octopus.Cli.Diagnostics
 
             if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
-                log.Information($"##teamcity[{messageName} {EscapeValue(value)}]");
+                log.Information("##teamcity[{MessageName:l} {Value:l}]", messageName, EscapeValue(value));
             }
             else
             {
-                log.Information($"{messageName} {EscapeValue(value)}");
+                log.Information("{MessageName:l} {Value:l}", messageName, EscapeValue(value));
             }
         }
 
@@ -87,11 +88,11 @@ namespace Octopus.Cli.Diagnostics
             var valueSummary = string.Join(" ", values.Select(v => $"{v.Key}='{EscapeValue(v.Value)}'"));
             if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
-                log.Information($"##teamcity[{messageName} {valueSummary}]");
+                log.Information("##teamcity[{MessageName:l} {ValueSummary:l}]", messageName, valueSummary);
             }
             else
             {
-                log.Information($"{messageName} {valueSummary}");
+                log.Information("{MessageName:l} {ValueSummary:l}", messageName, valueSummary);
             }
         }
 
@@ -118,12 +119,12 @@ namespace Octopus.Cli.Diagnostics
                 return;
             if (buildEnvironment == BuildEnvironment.TeamFoundationBuild || buildEnvironment == BuildEnvironment.NoneOrUnknown)
             {
-                var workingDirectory = Environment.GetEnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY") ?? new System.IO.FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).DirectoryName;
+                var workingDirectory = Environment.GetEnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY") ?? new System.IO.FileInfo(typeof(LogExtensions).GetTypeInfo().Assembly.Location).DirectoryName;
                 var selflink = new Uri(new Uri(serverBaseUrl), release.Links["Web"].AsString());
                 var markdown = $"[Release {release.Version} created for '{project.Name}']({selflink})";
                 var markdownFile = System.IO.Path.Combine(workingDirectory, Guid.NewGuid() + ".md");
                 System.IO.File.WriteAllText(markdownFile, markdown);
-                log.Information($"##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{markdownFile}");
+                log.Information("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{MarkdownFile:l}", markdownFile);
             }
         }
 

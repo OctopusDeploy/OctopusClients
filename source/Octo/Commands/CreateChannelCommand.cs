@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
@@ -11,7 +13,7 @@ namespace Octopus.Cli.Commands
     [Command("create-channel", Description = "Creates a channel for a project")]
     public class CreateChannelCommand : ApiCommand
     {
-        public CreateChannelCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem) : base(repositoryFactory, log, fileSystem)
+        public CreateChannelCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory) : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Create");
             options.Add("project=", "The name of the project in which to create the channel", p => projectName = p);
@@ -29,14 +31,14 @@ namespace Octopus.Cli.Commands
         bool updateExisting;
         bool? makeDefaultChannel;
 
-        protected override void Execute()
+        protected override async Task Execute()
         {
             if (!Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server to start using channels.");
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
 
-            Log.Debug("Loading project {0}...", projectName);
-            var project = Repository.Projects.FindByName(projectName);
+            Log.Debug("Loading project {Project:l}...", projectName);
+            var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null) throw new CouldNotFindException("project named", projectName);
 
             LifecycleResource lifecycle = null;
@@ -46,13 +48,14 @@ namespace Octopus.Cli.Commands
             }
             else
             {
-                Log.Debug("Loading lifecycle {0}...", lifecycleName);
-                lifecycle = Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0);
+                Log.Debug("Loading lifecycle {Lifecycle:l}...", lifecycleName);
+                lifecycle = await Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0).ConfigureAwait(false);
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
             }
 
-            var channel = Repository.Projects.GetChannels(project)
-                .FindOne(Repository, ch => string.Equals(ch.Name, channelName, StringComparison.OrdinalIgnoreCase));
+            var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+            var channel = await channels
+                .FindOne(Repository, ch => string.Equals(ch.Name, channelName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
 
             if (channel == null)
             {
@@ -66,9 +69,9 @@ namespace Octopus.Cli.Commands
                     Rules = new List<ChannelVersionRuleResource>(),
                 };
 
-                Log.Debug("Creating channel {0}", channelName);
-                Repository.Channels.Create(channel);
-                Log.Information("Channel {0} created", channelName);
+                Log.Debug("Creating channel {Channel:l}", channelName);
+                await Repository.Channels.Create(channel).ConfigureAwait(false);
+                Log.Information("Channel {Channel:l} created", channelName);
                 return;
             }
 
@@ -77,21 +80,25 @@ namespace Octopus.Cli.Commands
             var updateRequired = false;
             if (channel.LifecycleId != lifecycle?.Id)
             {
-                Log.Information("Updating this channel to {0}", lifecycle != null ? $"use lifecycle {lifecycle.Name} for promoting releases" : "inherit the project lifecycle for promoting releases");
+                if(lifecycle == null)
+                    Log.Information("Updating this channel to inherit the project lifecycle for promoting releases");
+                else
+                    Log.Information("Updating this channel to use lifecycle {Lifecycle:l} for promoting releases", lifecycle.Name);
+
                 channel.LifecycleId = lifecycle?.Id;
                 updateRequired = true;
             }
 
             if (!channel.IsDefault && makeDefaultChannel == true)
             {
-                Log.Information("Making this the default channel for {0}", project.Name);
+                Log.Information("Making this the default channel for {Project:l}", project.Name);
                 channel.IsDefault = makeDefaultChannel ?? channel.IsDefault;
                 updateRequired = true;
             }
 
             if (!string.IsNullOrWhiteSpace(channelDescription) && channel.Description != channelDescription)
             {
-                Log.Information("Updating channel description to '{0}'", channelDescription);
+                Log.Information("Updating channel description to '{Description:l}'", channelDescription);
                 channel.Description = channelDescription ?? channel.Description;
                 updateRequired = true;
             }
@@ -102,9 +109,9 @@ namespace Octopus.Cli.Commands
                 return;
             }
 
-            Log.Debug("Updating channel {0}", channelName);
-            Repository.Channels.Modify(channel);
-            Log.Information("Channel {0} updated", channelName);
+            Log.Debug("Updating channel {Channel:l}", channelName);
+            await Repository.Channels.Modify(channel).ConfigureAwait(false);
+            Log.Information("Channel {Channel:l} updated", channelName);
         }
     }
 }

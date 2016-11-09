@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
@@ -18,8 +20,8 @@ namespace Octopus.Cli.Importers
     {
         ValidatedImportSettings validatedImportSettings;
 
-        public bool ReadyToImport { get { return validatedImportSettings != null && !validatedImportSettings.ErrorList.Any(); } }
-        public IEnumerable<string> ErrorList { get { return validatedImportSettings.ErrorList; } }
+        public bool ReadyToImport => validatedImportSettings != null && !validatedImportSettings.ErrorList.Any();
+        public IEnumerable<string> ErrorList => validatedImportSettings.ErrorList;
         public bool KeepExistingProjectChannels { get; set; }
 
         class ValidatedImportSettings : BaseValidatedImportSettings
@@ -34,29 +36,29 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, FeedResource> Feeds { get; set; }
             public IDictionary<string, ActionTemplateResource> Templates { get; set; }
             public VariableSetResource VariableSet { get; set; }
-            public IEnumerable<ChannelResource> Channels { get; set; } 
+            public IEnumerable<ChannelResource> Channels { get; set; }
             public IDictionary<string, LifecycleResource> ChannelLifecycles { get; set; }
         }
 
-        public ProjectImporter(IOctopusRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public ProjectImporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
         }
 
-        protected override bool Validate(Dictionary<string, string> paramDictionary)
+        protected override async Task<bool> Validate(Dictionary<string, string> paramDictionary)
         {
             var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
             {
-                var existingLifecycle = CheckProjectLifecycle(importedObject.Lifecycle);
+                var existingLifecycle = await CheckProjectLifecycle(importedObject.Lifecycle).ConfigureAwait(false);
                 if (existingLifecycle == null)
                 {
                     throw new CommandException("Unable to find a lifecycle to assign to this project.");
                 }
 
-                Log.Debug("Found lifecycle '{0}'", existingLifecycle.Name);
+                Log.Debug("Found lifecycle '{Lifecycle:l}'", existingLifecycle.Name);
                 project.LifecycleId = existingLifecycle.Id;
             }
 
@@ -71,25 +73,21 @@ namespace Octopus.Cli.Importers
 
             var scopeValuesUsed = GetScopeValuesUsed(variableSet.Variables, deploymentProcess.Steps, variableSet.ScopeValues);
 
-            // Check Environments
-            var environmentChecks = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]);
+            var environmentChecksTask = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]).ConfigureAwait(false);
+            var machineChecksTask = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]).ConfigureAwait(false);
+            var feedChecksTask = CheckNuGetFeedsExist(nugetFeeds).ConfigureAwait(false);
+            var templateChecksTask = CheckActionTemplates(actionTemplates).ConfigureAwait(false);
+            var libraryVariableSetChecksTask = CheckLibraryVariableSets(libVariableSets).ConfigureAwait(false);
+            var projectGroupChecksTask = CheckProjectGroup(projectGroup).ConfigureAwait(false);
+            var channelLifecycleChecksTask = CheckChannelLifecycles(channelLifecycles).ConfigureAwait(false);
 
-            // Check Machines
-            var machineChecks = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]);
-
-            // Check NuGet Feeds
-            var feedChecks = CheckNuGetFeedsExist(nugetFeeds);
-
-            // Check Action Templates
-            var templateChecks = CheckActionTemplates(actionTemplates);
-
-            // Check Libary Variable Sets
-            var libraryVariableSetChecks = CheckLibraryVariableSets(libVariableSets);
-
-            // Check Project Group
-            var projectGroupChecks = CheckProjectGroup(projectGroup);
-
-            var channelLifecycleChecks = CheckChannelLifecycles(channelLifecycles);
+            var environmentChecks = await environmentChecksTask;
+            var machineChecks = await machineChecksTask;
+            var feedChecks = await feedChecksTask;
+            var templateChecks = await templateChecksTask;
+            var libraryVariableSetChecks = await libraryVariableSetChecksTask;
+            var projectGroupChecks = await projectGroupChecksTask;
+            var channelLifecycleChecks = await channelLifecycleChecksTask;
 
             var errorList = new List<string>();
 
@@ -134,22 +132,24 @@ namespace Octopus.Cli.Importers
             return !validatedImportSettings.HasErrors;
         }
 
-        protected override void Import(Dictionary<string, string> paramDictionary)
+        protected override async Task Import(Dictionary<string, string> paramDictionary)
         {
             if (ReadyToImport)
             {
-                Log.Debug("Beginning import of project '{0}'", validatedImportSettings.Project.Name);
+                Log.Debug("Beginning import of project '{Project:l}'", validatedImportSettings.Project.Name);
 
-                var importedProject = ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets);
+                var importedProject = await ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets).ConfigureAwait(false);
                 var importedChannels =
-                    ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles)
+                    (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
                         .ToDictionary(k => k.Key, v => v.Value);
 
-                ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels);
+                await MapReleaseCreationStrategyChannel(importedProject, importedChannels);
 
-                ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed);
+                await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels).ConfigureAwait(false);
 
-                Log.Debug("Successfully imported project '{0}'", validatedImportSettings.Project.Name);
+                await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
+
+                Log.Debug("Successfully imported project '{Project:l}'", validatedImportSettings.Project.Name);
             }
             else
             {
@@ -159,15 +159,23 @@ namespace Octopus.Cli.Importers
                     Log.Error("The following issues were found with the provided import file:");
                     foreach (var error in validatedImportSettings.ErrorList)
                     {
-                        Log.Error(" {0}", error);
+                        Log.Error(" {Error:l}", error);
                     }
                 }
             }
         }
 
-        protected LifecycleResource CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        Task MapReleaseCreationStrategyChannel(ProjectResource importedProject, Dictionary<string, ChannelResource> channelMap)
         {
-            var existingLifecycles = Repository.Lifecycles.FindAll();
+            if (importedProject.ReleaseCreationStrategy?.ChannelId == null)
+                return Task.CompletedTask;
+            importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
+            return Repository.Projects.Modify(importedProject);
+        }
+
+        protected async Task<LifecycleResource> CheckProjectLifecycle(ReferenceDataItem lifecycle)
+        {
+            var existingLifecycles = await Repository.Lifecycles.FindAll().ConfigureAwait(false);
             if (existingLifecycles.Count == 0)
             {
                 return null;
@@ -176,11 +184,11 @@ namespace Octopus.Cli.Importers
             LifecycleResource existingLifecycle = null;
             if (lifecycle != null)
             {
-                Log.Debug("Checking that lifecycle {0} exists", lifecycle.Name);
+                Log.Debug("Checking that lifecycle {Lifecycle:l} exists", lifecycle.Name);
                 existingLifecycle = existingLifecycles.Find(lc => lc.Name == lifecycle.Name);
                 if (existingLifecycle == null)
                 {
-                    Log.Debug("Lifecycle {0} does not exist, default lifecycle will be used instead", lifecycle.Name);
+                    Log.Debug("Lifecycle {Lifecycle:l} does not exist, default lifecycle will be used instead", lifecycle.Name);
                 }
             }
 
@@ -265,7 +273,7 @@ namespace Octopus.Cli.Importers
             return usedScopeValues;
         }
 
-        void ImportVariableSets(VariableSetResource variableSet,
+        async Task ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
             IDictionary<string, MachineResource> machines,
@@ -273,7 +281,7 @@ namespace Octopus.Cli.Importers
             IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             Log.Debug("Importing the Projects Variable Set");
-            var existingVariableSet = Repository.VariableSets.Get(importedProject.VariableSetId);
+            var existingVariableSet = await Repository.VariableSets.Get(importedProject.VariableSetId).ConfigureAwait(false);
 
             var variables = UpdateVariables(variableSet, environments, machines, channels);
             existingVariableSet.Variables.Clear();
@@ -290,7 +298,7 @@ namespace Octopus.Cli.Importers
             existingVariableSet.ScopeValues.Roles.AddRange(scopeValues.Roles);
             existingVariableSet.ScopeValues.Machines.AddRange(scopeValues.Machines);
 
-            Repository.VariableSets.Modify(existingVariableSet);
+            await Repository.VariableSets.Modify(existingVariableSet).ConfigureAwait(false);
         }
 
         VariableScopeValues UpdateScopeValues(IDictionary<string, EnvironmentResource> environments, IDictionary<string, MachineResource> machines, IDictionary<string, ChannelResource> channels, IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
@@ -328,7 +336,7 @@ namespace Octopus.Cli.Importers
             {
                 if (variable.IsSensitive)
                 {
-                    Log.Warning("'{0}' is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
+                    Log.Warning("{Variable} is a sensitive variable and it's value will be reset to a blank string, once the import has completed you will have to update it's value from the UI", variable.Name);
                     variable.Value = String.Empty;
                 }
                 foreach (var scopeValue in variable.Scope)
@@ -374,7 +382,7 @@ namespace Octopus.Cli.Importers
             return variables;
         }
 
-        void ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
+        async Task ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
             IDictionary<string, FeedResource> nugetFeeds,
@@ -382,7 +390,7 @@ namespace Octopus.Cli.Importers
             IDictionary<string, ChannelResource> channels)
         {
             Log.Debug("Importing the Projects Deployment Process");
-            var existingDeploymentProcess = Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId);
+            var existingDeploymentProcess = await Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId).ConfigureAwait(false);
             var steps = deploymentProcess.Steps;
             foreach (var step in steps)
             {
@@ -426,22 +434,25 @@ namespace Octopus.Cli.Importers
             existingDeploymentProcess.Steps.Clear();
             existingDeploymentProcess.Steps.AddRange(steps);
 
-            Repository.DeploymentProcesses.Modify(existingDeploymentProcess);
+            await Repository.DeploymentProcesses.Modify(existingDeploymentProcess).ConfigureAwait(false);
         }
 
-        IEnumerable<KeyValuePair<string, ChannelResource>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
+        async Task<IReadOnlyList<KeyValuePair<string, ChannelResource>>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
         {
             Log.Debug("Importing the channels for the project");
-            var projectChannels = Repository.Projects.GetChannels(importedProject).GetAllPages(Repository).ToArray();
-            var defaultChannel = projectChannels.FirstOrDefault(c => c.IsDefault);
+            var allChannels = await Repository.Projects.GetChannels(importedProject).ConfigureAwait(false);
+            var projectChannels = (await allChannels.GetAllPages(Repository).ConfigureAwait(false)).ToArray();
+            var defaultChannel = projectChannels.ToArray().FirstOrDefault(c => c.IsDefault);
             var newDefaultChannel = channels.FirstOrDefault(nc => nc.IsDefault);
             var defaultChannelUpdated = false;
+
+            var results = new List<KeyValuePair<string, ChannelResource>>();
 
             foreach (var channel in channels)
             {
                 var existingChannel =
                     projectChannels.FirstOrDefault(c => c.Name.Equals(channel.Name, StringComparison.OrdinalIgnoreCase));
-                
+
                 if (existingChannel != null)
                 {
                     Log.Debug("Channel already exists, channel will be updated with new settings");
@@ -462,8 +473,8 @@ namespace Octopus.Cli.Importers
                     {
                         defaultChannelUpdated = true;
                     }
-                    yield return
-                        new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Modify(existingChannel));
+                    var modified = await Repository.Channels.Modify(existingChannel).ConfigureAwait(false);
+                    results.Add(new KeyValuePair<string, ChannelResource>(channel.Id, modified));
                 }
                 else
                 {
@@ -474,21 +485,24 @@ namespace Octopus.Cli.Importers
                         channel.LifecycleId = channelLifecycles[channel.LifecycleId].Id;
                     }
 
-                    yield return
-                        new KeyValuePair<string, ChannelResource>(channel.Id, Repository.Channels.Create(channel));
+                    var created = await Repository.Channels.Create(channel).ConfigureAwait(false);
+                    results.Add(new KeyValuePair<string, ChannelResource>(channel.Id, created));
                 }
+
             }
 
             if (!KeepExistingProjectChannels && !defaultChannelUpdated)
             {
-                Repository.Channels.Delete(defaultChannel);
+                await Repository.Channels.Delete(defaultChannel).ConfigureAwait(false);
             }
+
+            return results;
         }
 
-        ProjectResource ImportProject(ProjectResource project, string projectGroupId, IDictionary<string, LibraryVariableSetResource> libraryVariableSets)
+        async Task<ProjectResource> ImportProject(ProjectResource project, string projectGroupId, IDictionary<string, LibraryVariableSetResource> libraryVariableSets)
         {
             Log.Debug("Importing Project");
-            var existingProject = Repository.Projects.FindByName(project.Name);
+            var existingProject = await Repository.Projects.FindByName(project.Name).ConfigureAwait(false);
             if (existingProject != null)
             {
                 KeepExistingProjectChannels = true;
@@ -503,30 +517,30 @@ namespace Octopus.Cli.Importers
                 existingProject.VersioningStrategy.DonorPackageStepId = project.VersioningStrategy.DonorPackageStepId;
                 existingProject.VersioningStrategy.Template = project.VersioningStrategy.Template;
 
-                return Repository.Projects.Modify(existingProject);
+                return await Repository.Projects.Modify(existingProject).ConfigureAwait(false);
             }
             Log.Debug("Project does not exist, a new project will be created");
             project.ProjectGroupId = projectGroupId;
             project.IncludedLibraryVariableSetIds.Clear();
             project.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets.Values.Select(v => v.Id));
 
-            return Repository.Projects.Create(project);
+            return await Repository.Projects.Create(project).ConfigureAwait(false);
         }
-       
-        protected CheckedReferences<ProjectGroupResource> CheckProjectGroup(ReferenceDataItem projectGroup)
+
+        protected async Task<CheckedReferences<ProjectGroupResource>> CheckProjectGroup(ReferenceDataItem projectGroup)
         {
             Log.Debug("Checking that the Project Group exist");
             var dependencies = new CheckedReferences<ProjectGroupResource>();
-            var group = Repository.ProjectGroups.FindByName(projectGroup.Name);
+            var group = await Repository.ProjectGroups.FindByName(projectGroup.Name).ConfigureAwait(false);
             dependencies.Register(projectGroup.Name, projectGroup.Id, group);
             return dependencies;
         }
 
-        protected CheckedReferences<LibraryVariableSetResource> CheckLibraryVariableSets(List<ReferenceDataItem> libraryVariableSets)
+        protected async Task<CheckedReferences<LibraryVariableSetResource>> CheckLibraryVariableSets(List<ReferenceDataItem> libraryVariableSets)
         {
             Log.Debug("Checking that all Library Variable Sets exist");
             var dependencies = new CheckedReferences<LibraryVariableSetResource>();
-            var allVariableSets = Repository.LibraryVariableSets.FindAll();
+            var allVariableSets = await Repository.LibraryVariableSets.FindAll().ConfigureAwait(false);
             foreach (var libraryVariableSet in libraryVariableSets)
             {
                 var variableSet = allVariableSets.Find(avs => avs.Name == libraryVariableSet.Name);
@@ -535,7 +549,7 @@ namespace Octopus.Cli.Importers
             return dependencies;
         }
 
-        protected CheckedReferences<FeedResource> CheckNuGetFeedsExist(List<ReferenceDataItem> nugetFeeds)
+        protected async Task<CheckedReferences<FeedResource>> CheckNuGetFeedsExist(List<ReferenceDataItem> nugetFeeds)
         {
             Log.Debug("Checking that all NuGet Feeds exist");
             var dependencies = new CheckedReferences<FeedResource>();
@@ -543,7 +557,7 @@ namespace Octopus.Cli.Importers
             {
                 FeedResource feed = null;
                 if (FeedCustomExpressionHelper.IsRealFeedId(nugetFeed.Id))
-                    feed = Repository.Feeds.FindByName(nugetFeed.Name);
+                    feed = await Repository.Feeds.FindByName(nugetFeed.Name).ConfigureAwait(false);
                 else
                     feed = FeedCustomExpressionHelper.CustomExpressionFeedWithId(nugetFeed.Id);
 
@@ -552,50 +566,50 @@ namespace Octopus.Cli.Importers
             return dependencies;
         }
 
-        protected CheckedReferences<ActionTemplateResource> CheckActionTemplates(List<ReferenceDataItem> actionTemplates)
+        protected async Task<CheckedReferences<ActionTemplateResource>> CheckActionTemplates(List<ReferenceDataItem> actionTemplates)
         {
             Log.Debug("Checking that all Action Templates exist");
             var dependencies = new CheckedReferences<ActionTemplateResource>();
             foreach (var actionTemplate in actionTemplates)
             {
-                var template = Repository.ActionTemplates.FindByName(actionTemplate.Name);
+                var template = await actionTemplateRepository.FindByName(actionTemplate.Name).ConfigureAwait(false);
                 dependencies.Register(actionTemplate.Name, actionTemplate.Id, template);
             }
             return dependencies;
         }
 
-        protected CheckedReferences<MachineResource> CheckMachinesExist(List<ReferenceDataItem> machineList)
+        protected async Task<CheckedReferences<MachineResource>> CheckMachinesExist(List<ReferenceDataItem> machineList)
         {
             Log.Debug("Checking that all machines exist");
             var dependencies = new CheckedReferences<MachineResource>();
             foreach (var m in machineList)
             {
-                var machine = Repository.Machines.FindByName(m.Name);
+                var machine = await Repository.Machines.FindByName(m.Name).ConfigureAwait(false);
                 dependencies.Register(m.Name, m.Id, machine);
             }
             return dependencies;
         }
 
-        protected CheckedReferences<EnvironmentResource> CheckEnvironmentsExist(List<ReferenceDataItem> environmentList)
+        protected async Task<CheckedReferences<EnvironmentResource>> CheckEnvironmentsExist(List<ReferenceDataItem> environmentList)
         {
             Log.Debug("Checking that all environments exist");
             var dependencies = new CheckedReferences<EnvironmentResource>();
             foreach (var env in environmentList)
             {
-                var environment = Repository.Environments.FindByName(env.Name);
+                var environment = await Repository.Environments.FindByName(env.Name).ConfigureAwait(false);
                 dependencies.Register(env.Name, env.Id, environment);
             }
             return dependencies;
         }
 
-        protected CheckedReferences<LifecycleResource> CheckChannelLifecycles(List<ReferenceDataItem> channelLifecycles)
+        protected async Task<CheckedReferences<LifecycleResource>> CheckChannelLifecycles(List<ReferenceDataItem> channelLifecycles)
         {
             Log.Debug("Checking that all channel lifecycles exist");
             var dependencies = new CheckedReferences<LifecycleResource>();
-            
+
             foreach (var channelLifecycle in channelLifecycles)
             {
-                var lifecycle = Repository.Lifecycles.FindOne(lc => lc.Name == channelLifecycle.Name);
+                var lifecycle = await Repository.Lifecycles.FindOne(lc => lc.Name == channelLifecycle.Name).ConfigureAwait(false);
                 dependencies.Register(channelLifecycle.Name, channelLifecycle.Id, lifecycle);
             }
             return dependencies;

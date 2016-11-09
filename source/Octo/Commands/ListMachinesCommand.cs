@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -20,8 +22,8 @@ namespace Octopus.Cli.Commands
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListMachinesCommand(IOctopusRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
-            : base(repositoryFactory, log, fileSystem)
+        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+            : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
@@ -32,11 +34,11 @@ namespace Octopus.Cli.Commands
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to filter. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
         
-        protected override void Execute()
+        protected override async Task Execute()
         {
             var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
-            var environmentResources = GetEnvironments();
-            var environmentMachines = FilterByEnvironments(environmentResources);
+            var environmentResources = await GetEnvironments().ConfigureAwait(false);
+            IEnumerable<MachineResource> environmentMachines = await FilterByEnvironments(environmentResources).ConfigureAwait(false);
             environmentMachines = FilterByState(environmentMachines, provider);
 
             LogFilteredMachines(environmentMachines, provider, environmentResources);
@@ -45,19 +47,18 @@ namespace Octopus.Cli.Commands
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();
-            Log.Information("Machines: " + orderedMachines.Count);
+            Log.Information("Machines: {Count}", orderedMachines.Count);
             foreach (var machine in orderedMachines)
             {
-                Log.Information(" - {0} {1} (ID: {2}) in {3}", machine.Name, provider.GetStatus(machine), machine.Id,
+                Log.Information(" - {Machine:l} {Status:l} (ID: {MachineId:l}) in {Environments:l}", machine.Name, provider.GetStatus(machine), machine.Id,
                     string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
             }
         }
 
-        private List<EnvironmentResource> GetEnvironments()
+        private Task<List<EnvironmentResource>> GetEnvironments()
         {
             Log.Debug("Loading environments...");
-            var environmentResources = Repository.Environments.FindAll();
-            return environmentResources;
+            return Repository.Environments.FindAll();
         }
 
         private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider)
@@ -83,7 +84,7 @@ namespace Octopus.Cli.Commands
             return environmentMachines;
         }
 
-        private IEnumerable<MachineResource> FilterByEnvironments(List<EnvironmentResource> environmentResources)
+        private  Task<List<MachineResource>> FilterByEnvironments(List<EnvironmentResource> environmentResources)
         {
             var environmentsToInclude = environmentResources.Where(e => environments.Contains(e.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             var missingEnvironments = environments.Except(environmentsToInclude.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
@@ -94,20 +95,18 @@ namespace Octopus.Cli.Commands
             var environmentFilter = environmentsToInclude.Select(p => p.Id).ToList();
 
             Log.Debug("Loading machines...");
-            IEnumerable<MachineResource> environmentMachines;
             if (environmentFilter.Count > 0)
             {
-                Log.Debug("Loading machines from {0}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
-                environmentMachines =
-                    Repository.Machines.FindMany(
+                Log.Debug("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
+                return
+                     Repository.Machines.FindMany(
                         x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });
             }
             else
             {
                 Log.Debug("Loading machines from all environments...");
-                environmentMachines = Repository.Machines.FindAll();
+                return  Repository.Machines.FindAll();
             }
-            return environmentMachines;
         }
     }
 }

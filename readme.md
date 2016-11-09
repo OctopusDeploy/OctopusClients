@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/kbtxml9x2kcdgkju?svg=true)](https://ci.appveyor.com/project/OctopusDeploy/octo-exe)
+
 This repository contains the command line tool (`Octo.exe`) and .NET Client Library (`Octopus.Client`) for [Octopus Deploy][1], an automated deployment server for professional .NET developers. You can use them to create and deploy releases, create and push packages, and manage environments.
 
 `Octo.exe` can be [downloaded from the Octopus downloads page][2], while `Octopus.Client` is [available on nuget.org][3]
@@ -10,22 +12,15 @@ This repository contains the command line tool (`Octo.exe`) and .NET Client Libr
 Please see [Contributing](CONTRIBUTING.md)
 
 ## Compatibility
-For:
-- Octopus Server 3.0-3.2 use Octopus Client 3.0-3.2 (newer is better)
-- Octopus Server 3.3 use Octopus Client 3.3 or newer [release notes](https://octopus.com/downloads/3.3.0)
-- Octopus Server 3.4 use Octopus Client 3.4 or newer [release notes](https://octopus.com/downloads/3.4.0)
+See the [Compatibility][7] page in our docs
 
-## Versioning
-As of `3.5.0` we started using semantic versioning][6] for the client library, breaking away from the practice of syncing the version to Octopus Server.
-
-The [semantic versioning][6] applies to the command line interface of `Octo.exe` and the public api exposed by `Octopus.Client`. The `minor` version will be increased on feature additions, and `major` on breaking changes.
-
-## vNext
-As of Version 4, network operations in `Octopus.Client` will be `async`. We will continue to support version 3 for some time once version 4 is released, but may not add all new features.
+## Async, Versioning and Compatibility
+See the [Octopus.Client goes Open Source][6] blog post
 
 [1]: https://octopus.com
 [2]: https://octopus.com/downloads
 [3]: https://www.nuget.org/packages/Octopus.Client
 [4]: http://docs.octopusdeploy.com/display/OD/Octo.exe+Command+Line
 [5]: http://docs.octopusdeploy.com/display/OD/Octopus.Client
-[6]: http://semver.org/
+[6]: https://octopus.com/blog/octopus-client-goes-open-source
+[7]: http://docs.octopusdeploy.com/display/OD/Compatibility

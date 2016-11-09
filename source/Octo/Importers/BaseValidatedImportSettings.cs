@@ -12,6 +12,6 @@ namespace Octopus.Cli.Importers
         }
 
         public IEnumerable<string> ErrorList { get; set; }
-        public bool HasErrors { get { return ErrorList.Any(); } }
+        public bool HasErrors => ErrorList.Any();
     }
 }

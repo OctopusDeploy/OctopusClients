@@ -215,7 +215,7 @@ namespace Octopus.Cli.Util
 
         static string GetTempBasePath()
         {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var path = Environment.GetEnvironmentVariable("LocalAppData");
             path = Path.Combine(path, Assembly.GetEntryAssembly() != null ? Assembly.GetEntryAssembly().GetName().Name : "Octopus");
             path = Path.Combine(path, "Temp");
             if (!Directory.Exists(path))
@@ -236,10 +236,10 @@ namespace Octopus.Cli.Util
         {
             var backup = originalFile + ".backup" + Guid.NewGuid();
 
-            if (!File.Exists(originalFile))
-                File.Copy(temporaryReplacement, originalFile, true);
-            else
-                File.Replace(temporaryReplacement, originalFile, backup);
+            if (File.Exists(originalFile))
+                File.Move(originalFile, backup);
+
+            File.Copy(temporaryReplacement, originalFile, true);
 
             File.Delete(temporaryReplacement);
             if (File.Exists(backup))
@@ -367,7 +367,7 @@ namespace Octopus.Cli.Util
         {
             if (!Path.IsPathRooted(relativeOrAbsoluteFilePath))
             {
-                relativeOrAbsoluteFilePath = Path.Combine(Environment.CurrentDirectory, relativeOrAbsoluteFilePath);
+                relativeOrAbsoluteFilePath = Path.GetFullPath(relativeOrAbsoluteFilePath);
             }
 
             relativeOrAbsoluteFilePath = Path.GetFullPath(relativeOrAbsoluteFilePath);
@@ -468,7 +468,7 @@ namespace Octopus.Cli.Util
             return true;
         }
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
             out ulong lpFreeBytesAvailable,

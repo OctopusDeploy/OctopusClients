@@ -28,7 +28,7 @@ namespace Octopus.Cli.Commands
             if (fileSystem.FileExists(output) && !overwrite)
                 throw new CommandException("The package file already exists and --overwrite was not specified");
 
-            log.Information("Saving {0} to {1}...", filename, outFolder);
+            log.Information("Saving {Filename} to {OutFolder}...", filename, outFolder);
 
             fileSystem.EnsureDirectoryExists(outFolder);
 
@@ -38,16 +38,16 @@ namespace Octopus.Cli.Commands
             {
                 foreach (var pattern in includes)
                 {
-                    log.Debug("Adding files from '{0}' matching pattern '{1}'", basePath, pattern);
+                    log.Debug("Adding files from {Path} matching pattern {Pattern}", basePath, pattern);
                     foreach (var file in PathResolver.PerformWildcardSearch(basePath, pattern))
                     {
                         var fullFilePath = fileSystem.GetFullPath(file);
-                        if (string.Equals(fullFilePath, output, StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(fullFilePath, output, StringComparison.CurrentCultureIgnoreCase))
                             continue;
 
                         var relativePath = UseCrossPlatformDirectorySeparator(
                             fullFilePath.Substring(basePathLength).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-                        log.Debug("Adding file: " + relativePath);
+                        log.Debug("Adding file: {Path}", relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
                         entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTimeUtc);

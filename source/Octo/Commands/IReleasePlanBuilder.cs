@@ -1,10 +1,11 @@
-﻿using Octopus.Client;
+﻿using System.Threading.Tasks;
+using Octopus.Client;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands
 {
     public interface IReleasePlanBuilder
     {
-        ReleasePlan Build(IOctopusRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag);
+        Task<ReleasePlan> Build(IOctopusAsyncRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag);
     }
 }
