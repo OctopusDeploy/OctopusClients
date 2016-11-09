@@ -8,6 +8,6 @@
         [Writeable]
         public bool IsDockerEnabled { get; set; }
         [Writeable]
-        public bool IsCommunityStepTemplatesEnabled { get; set; }
+        public bool IsCommunityActionTemplatesEnabled { get; set; }
     }
 }

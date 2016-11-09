@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Octopus.Client.Model
 {
-    public class LibraryStepTemplateResource : IResource
+    public class CommunityActionTemplateResource : IResource
     {
         public string Id { get; set; }
         public string Type { get; set; }

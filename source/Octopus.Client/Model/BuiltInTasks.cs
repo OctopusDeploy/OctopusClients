@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
         public static string[] TasksThatCanBeQueuedByUsers()
         {
             // Everything except "Deploy" and "Delete"
-            return new[] {Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name, SyncLibrarySteps.Name};
+            return new[] {Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name, SyncCommunityActionTemplates.Name};
         }
 
         public static class AutoDeploy
@@ -125,9 +125,9 @@ namespace Octopus.Client.Model
             public const string Name = "SystemIntegrityCheck";
         }
 
-        public static class SyncLibrarySteps
+        public static class SyncCommunityActionTemplates
         {
-            public const string Name = "SyncLibrarySteps";
+            public const string Name = "SyncCommunityActionTemplates";
         }
     }
 }
