@@ -134,7 +134,7 @@ Task("__Test")
 {
     GetFiles("**/*Tests/project.json")
         .ToList()
-        .ForEach(testProjectFile =>
+        .ForEach(testProjectFile => 
         {
             DotNetCoreTest(testProjectFile.ToString(), new DotNetCoreTestSettings
             {
@@ -240,18 +240,15 @@ private void TarGzip(string path, string outputFile)
 Task("__Zip")
     .IsDependentOn("__Publish")
     .Does(() => {
-        CreateDirectory(octoMergedFolder);
-        ILRepack(
-            Path.Combine(octoMergedFolder, "Octo.exe"),
-            Path.Combine(octoPublishFolder, "Octo.exe"),
-            IO.Directory.EnumerateFiles(octoPublishFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
-                Libs = new List<FilePath>() { octoPublishFolder }
-            }
-        );
-        DeleteFile(Path.Combine(octoMergedFolder, "Octo.pdb"));
-        CopyFileToDirectory(Path.Combine(octoPublishFolder, "Octo.exe.config"), octoMergedFolder);
+        foreach(var dir in IO.Directory.EnumerateDirectories(octoPublishFolder))
+        {
+            var dirName = Path.GetFileName(dir);
+            var outFile = Path.Combine(artifactsDir, $"Octo.exe.{dirName}");
+            if(dirName.StartsWith("win") || dirName == "portable")
+                Zip(dir, outFile + ".zip");
+            if(!dirName.StartsWith("win"))
+                TarGzip(dir, outFile);
+        }
     });
 
 Task("__PackNuget")
