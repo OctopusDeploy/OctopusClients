@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -10,6 +11,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteBackup(string description = null);
         TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null);
         TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
+        TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskDetailsResource GetDetails(TaskResource resource);
         string GetRawOutputLog(TaskResource resource);
         void Rerun(TaskResource resource);
