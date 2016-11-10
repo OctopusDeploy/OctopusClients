@@ -34,7 +34,7 @@ var octopusClientFolder = "./source/Octopus.Client";
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 var octoPublishFolder = Path.Combine(publishDir, "Octo");
 var octoMergedFolder = Path.Combine(publishDir, "OctoMerged");
-var cleanups = new List<IDisposable>(); 
+var cleanups = new List<Action>(); 
 
 var gitVersionInfo = GitVersion(new GitVersionSettings {
     OutputType = GitVersionOutput.Json
@@ -66,8 +66,8 @@ Setup(context =>
 Teardown(context =>
 {
     Information("Cleaning up");
-    foreach(var item in cleanups)
-        item.Dispose();
+    foreach(var cleanup in cleanups)
+        cleanup();
 
     Information("Finished running tasks for build v{0}", nugetVersion);
 });
@@ -147,14 +147,12 @@ Task("__Test")
 Task("__UpdateProjectJsonVersion")
     .Does(() =>
 {
-    Information("Updating {0} version -> {1}", projectToPublishProjectJson, nugetVersion);
-
-    var octopusClientProjectJson = Path.Combine(octopusClientFolder, "project.json");
-    cleanups.Add(new AutoRestoreFile(octopusClientProjectJson));
-    ModifyJson(octopusClientProjectJson, json => json["version"] = nugetVersion);
-    
-    cleanups.Add(new AutoRestoreFile(projectToPublishProjectJson));
-    ModifyJson(projectToPublishProjectJson, json => json["version"] = nugetVersion);
+    foreach(var projectJson in GetFiles("**/project.json").Select(p => p.FullPath))
+    {
+        RestoreFileOnCleanup(projectJson);
+        Information("Updating {0} version -> {1}", projectJson, nugetVersion);
+        ModifyJson(projectJson, json => json["version"] = nugetVersion);
+    }
 });
 
 Task("__Publish")
@@ -169,19 +167,26 @@ Task("__Publish")
     CopyFileToDirectory(Path.Combine(assetDir, "Octo"), portablePublishDir);
     CopyFileToDirectory(Path.Combine(assetDir, "Octo.cmd"), portablePublishDir);
 
-    using(new AutoRestoreFile(projectToPublishProjectJson))
-    {
-        ConvertToJsonOutput(projectToPublishProjectJson);
-        DotNetCoreRestore();
+    ConvertToJsonOutput(projectToPublishProjectJson);
+    DotNetCoreRestore();
 
-        foreach(var runtime in runtimes)
-            DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-            {
-                Configuration = configuration,
-                Runtime = runtime,
-                OutputDirectory = Path.Combine(octoPublishFolder, runtime)
-            });
-    } 
+    foreach(var runtime in runtimes)
+        DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+        {
+            Configuration = configuration,
+            Runtime = runtime,
+            OutputDirectory = Path.Combine(octoPublishFolder, runtime)
+        });
+
+    var ucrtDir = $"{EnvironmentVariable("ProgramFiles(x86)")}/Windows Kits/10/Redist/ucrt/DLLs";
+    if(!DirectoryExists(ucrtDir))
+        throw new Exception($"The directory {ucrtDir} does not exist");
+     
+    CopyFiles($"{ucrtDir}/x64/*crt*.dll", $"{octoPublishFolder}/win7-x64");
+    CopyFiles($"{ucrtDir}/x86/*crt*.dll", $"{octoPublishFolder}/win7-x86");
+
+    if(GetFiles($"{octoPublishFolder}/win7-x*/*crt*.dll").Count != 32)
+        throw new Exception("Not all 16 ucrt DLLs (per runtime) where copied");
 });
 
 private void ConvertToJsonOutput(string projectJson)
@@ -204,17 +209,13 @@ private void ModifyJson(string jsonFile, Action<JObject> modify)
     IO.File.WriteAllText(jsonFile, JsonConvert.SerializeObject(json, Formatting.Indented));
 }
 
-private class AutoRestoreFile : IDisposable
+private void RestoreFileOnCleanup(string file)
 {
-	private byte[] _contents;
-	private string _filename;
-	public AutoRestoreFile(string filename)
-	{
-		_filename = filename;
-		_contents = IO.File.ReadAllBytes(filename);
-	}
-
-	public void Dispose() => IO.File.WriteAllBytes(_filename, _contents);
+    var contents = System.IO.File.ReadAllBytes(file);
+    cleanups.Add(() => {
+        Information("Restoring {0}", file);
+        System.IO.File.WriteAllBytes(file, contents);
+    });
 }
 
 private void TarGzip(string path, string outputFile)
