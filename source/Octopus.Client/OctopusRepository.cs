@@ -75,7 +75,6 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client)
         {
             this.client = client;
-            actionTemplates = new ActionTemplateRepository(client);
             feeds = new FeedRepository(client);
             backups = new BackupRepository(client);
             machines = new MachineRepository(client);
@@ -120,11 +119,6 @@ namespace Octopus.Client
         public IOctopusClient Client
         {
             get { return client; }
-        }
-
-        public IActionTemplateRepository ActionTemplates
-        {
-            get { return actionTemplates; }
         }
 
         public IDashboardRepository Dashboards
@@ -1176,25 +1170,6 @@ namespace Octopus.Client
                     {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
                     {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
                     {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
-                };
-                return Create(resource);
-            }
-
-            public TaskResource ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
-                string[] environmentIds = null, string[] targetRoles = null, string description = null)
-            {
-                if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
-
-                var resource = new TaskResource();
-                resource.Name = BuiltInTasks.AdHocScript.Name;
-                resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
-                resource.Arguments = new Dictionary<string, object>
-                {
-                    {BuiltInTasks.AdHocScript.Arguments.EnvironmentIds, environmentIds},
-                    {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
-                    {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
-                    {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
-                    {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
                 };
                 return Create(resource);
             }

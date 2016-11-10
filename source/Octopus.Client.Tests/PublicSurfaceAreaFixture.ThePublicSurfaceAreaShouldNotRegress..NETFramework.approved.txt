@@ -961,11 +961,28 @@ Octopus.Client.Model
   {
     .ctor()
     String ActionType { get; set; }
+    String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Int32 Version { get; set; }
+  }
+  class ActionTemplateSearchResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String CommunityActionTemplateId { get; set; }
+    String Description { get; set; }
+    Boolean HasUpdate { get; set; }
+    String Id { get; set; }
+    Boolean IsBuiltIn { get; set; }
+    Boolean IsInstalled { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    String Type { get; set; }
+    String Website { get; set; }
   }
   class ActionTemplateUsageResource
     Octopus.Client.Model.IResource
@@ -1121,8 +1138,10 @@ Octopus.Client.Model
       static System.String Name
       abstract class Arguments
       {
+        static System.String ActionTemplateId
         static System.String EnvironmentIds
         static System.String MachineIds
+        static System.String Properties
         static System.String ScriptBody
         static System.String Syntax
         static System.String TargetRoles
@@ -1168,6 +1187,10 @@ Octopus.Client.Model
       }
     }
     abstract class Retention
+    {
+      static System.String Name
+    }
+    abstract class SyncCommunityActionTemplates
     {
       static System.String Name
     }
@@ -1259,6 +1282,22 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+  }
+  class CommunityActionTemplateResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String Description { get; set; }
+    String HistoryUrl { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    IList<ActionTemplateParameterResource> Parameters { get; }
+    IDictionary<String, PropertyValueResource> Properties { get; }
+    String Type { get; set; }
+    Int32 Version { get; set; }
+    String Website { get; set; }
   }
   class DashboardConfigurationResource
     Octopus.Client.Model.IResource
@@ -1640,6 +1679,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsDockerEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
@@ -3078,8 +3118,10 @@ Octopus.Client.Model
     static System.String Name
     abstract class Arguments
     {
+      static System.String ActionTemplateId
       static System.String EnvironmentIds
       static System.String MachineIds
+      static System.String Properties
       static System.String ScriptBody
       static System.String Syntax
       static System.String TargetRoles
@@ -3131,6 +3173,10 @@ Octopus.Client.Model
     }
   }
   abstract class SystemIntegrityCheck
+  {
+    static System.String Name
+  }
+  abstract class SyncCommunityActionTemplates
   {
     static System.String Name
   }
@@ -3216,8 +3262,10 @@ Octopus.Client.Model
   }
   abstract class Arguments
   {
+    static System.String ActionTemplateId
     static System.String EnvironmentIds
     static System.String MachineIds
+    static System.String Properties
     static System.String ScriptBody
     static System.String Syntax
     static System.String TargetRoles

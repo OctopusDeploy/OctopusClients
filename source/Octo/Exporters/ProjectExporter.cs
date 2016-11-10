@@ -21,6 +21,7 @@ namespace Octopus.Cli.Exporters
         public ProjectExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
+            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override async Task Export(Dictionary<string, string> parameters)

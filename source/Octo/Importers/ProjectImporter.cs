@@ -18,6 +18,7 @@ namespace Octopus.Cli.Importers
     [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
     public class ProjectImporter : BaseImporter
     {
+        readonly protected ActionTemplateRepository actionTemplateRepository;
         ValidatedImportSettings validatedImportSettings;
 
         public bool ReadyToImport => validatedImportSettings != null && !validatedImportSettings.ErrorList.Any();
@@ -43,6 +44,7 @@ namespace Octopus.Cli.Importers
         public ProjectImporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
             : base(repository, fileSystem, log)
         {
+            actionTemplateRepository = new ActionTemplateRepository(repository.Client);
         }
 
         protected override async Task<bool> Validate(Dictionary<string, string> paramDictionary)
