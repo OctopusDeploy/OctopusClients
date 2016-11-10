@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests
         {
             return name.InArray()
                 .Concat("{".InArray())
-                .Concat(types.SelectMany(FormatType).Select(l => "  " + l))
+                .Concat(types.OrderBy(t => t.Name).SelectMany(FormatType).Select(l => "  " + l))
                 .Concat("}".InArray());
         }
 
