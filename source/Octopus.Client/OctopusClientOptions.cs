@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Security.Authentication;
+using Octopus.Client.Model;
 
 namespace Octopus.Client
 {
@@ -10,6 +12,8 @@ namespace Octopus.Client
     {
         public OctopusClientOptions()
         {
+            Timeout = TimeSpan.FromMilliseconds(ApiConstants.DefaultClientRequestTimeout);
+
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             SslProtocols = SslProtocols.Tls
                | SslProtocols.Tls11
@@ -28,5 +32,6 @@ namespace Octopus.Client
         public bool IgnoreSslErrors { get; set; }
 
 #endif
+        public TimeSpan Timeout { get; set; }
     }
 }

@@ -101,9 +101,13 @@ namespace Octopus.Client.Tests.Integration
         [SetUp]
         public async Task Setup()
         {
-            Client = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath)).ConfigureAwait(false);
+            Client = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
         }
 
+        protected virtual OctopusClientOptions GetClientOptions()
+        {
+            return new OctopusClientOptions();
+        }
 
         public void TearDown()
         {
