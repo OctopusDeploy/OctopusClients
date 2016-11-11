@@ -31,7 +31,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var sw = Stopwatch.StartNew();
             Func<Task> get = () => Client.Get<string>("~/");
-            get.ShouldThrow<TaskCanceledException>();
+            get.ShouldThrow<TimeoutException>();
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(4));
         }
 
