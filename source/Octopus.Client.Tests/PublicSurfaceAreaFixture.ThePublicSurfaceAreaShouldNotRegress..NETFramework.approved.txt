@@ -181,10 +181,6 @@ Octopus.Client
     Task<RootResource> RefreshRootDocument()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
-  abstract class OctopusRepositoryExtensions
-  {
-    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient)
-  }
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
   {
@@ -268,6 +264,7 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    TimeSpan Timeout { get; set; }
   }
   class OctopusRepository
     Octopus.Client.IOctopusRepository
@@ -315,17 +312,16 @@ Octopus.Client
     Octopus.Client.Repositories.IUserRepository Users { get; }
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
   }
+  abstract class OctopusRepositoryExtensions
+  {
+    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient)
+  }
   class OctopusRequest
   {
     .ctor(String, Uri, Object)
     String Method { get; }
     Object RequestResource { get; }
     Uri Uri { get; }
-  }
-  class OctopusResponse`1
-  {
-    .ctor(Octopus.Client.OctopusRequest, HttpStatusCode, String, Octopus.Client.TResponseResource)
-    Octopus.Client.TResponseResource ResponseResource { get; }
   }
   class OctopusResponse
   {
@@ -334,6 +330,11 @@ Octopus.Client
     Octopus.Client.OctopusRequest Request { get; }
     Object ResponseResource { get; }
     HttpStatusCode StatusCode { get; }
+  }
+  class OctopusResponse`1
+  {
+    .ctor(Octopus.Client.OctopusRequest, HttpStatusCode, String, Octopus.Client.TResponseResource)
+    Octopus.Client.TResponseResource ResponseResource { get; }
   }
   class OctopusServerEndpoint
   {
@@ -406,15 +407,15 @@ Octopus.Client.Editors
     Octopus.Client.Editors.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Octopus.Client.Editors.EnvironmentEditor Save()
   }
+  interface IResourceBuilder
+  {
+  }
   interface IResourceEditor`2
     Octopus.Client.Editors.IResourceBuilder
   {
     Octopus.Client.Editors.TResource Instance { get; }
     Octopus.Client.Editors.TResourceBuilder Customize(Action<TResource>)
     Octopus.Client.Editors.TResourceBuilder Save()
-  }
-  interface IResourceBuilder
-  {
   }
   class LibraryVariableSetEditor
     Octopus.Client.Editors.IResourceEditor<LibraryVariableSetResource, LibraryVariableSetEditor>
@@ -632,15 +633,15 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
   }
+  interface IResourceBuilder
+  {
+  }
   interface IResourceEditor`2
     Octopus.Client.Editors.Async.IResourceBuilder
   {
     Octopus.Client.Editors.Async.TResource Instance { get; }
     Octopus.Client.Editors.Async.TResourceBuilder Customize(Action<TResource>)
     Task<TResourceBuilder> Save()
-  }
-  interface IResourceBuilder
-  {
   }
   class LibraryVariableSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<LibraryVariableSetResource, LibraryVariableSetEditor>
@@ -821,6 +822,14 @@ Octopus.Client.Exceptions
     .ctor(Int32, String)
     .ctor(Int32, String, Exception)
   }
+  class OctopusErrorsContract
+  {
+    .ctor()
+    String ErrorMessage { get; set; }
+    String[] Errors { get; set; }
+    String FullException { get; set; }
+    String HelpText { get; set; }
+  }
   abstract class OctopusException
     ISerializable
     _Exception
@@ -880,14 +889,6 @@ Octopus.Client.Exceptions
   {
     .ctor(String)
   }
-  class OctopusErrorsContract
-  {
-    .ctor()
-    String ErrorMessage { get; set; }
-    String[] Errors { get; set; }
-    String FullException { get; set; }
-    String HelpText { get; set; }
-  }
 }
 Octopus.Client.Extensions
 {
@@ -911,6 +912,12 @@ Octopus.Client.Extensions
 }
 Octopus.Client.Logging
 {
+  interface ILogProvider
+  {
+    Octopus.Client.Logging.Logger GetLogger(String)
+    IDisposable OpenMappedContext(String, String)
+    IDisposable OpenNestedContext(String)
+  }
   class Logger
     ICloneable
     ISerializable
@@ -928,12 +935,6 @@ Octopus.Client.Logging
       Warn = 3
       Error = 4
       Fatal = 5
-  }
-  interface ILogProvider
-  {
-    Octopus.Client.Logging.Logger GetLogger(String)
-    IDisposable OpenMappedContext(String, String)
-    IDisposable OpenNestedContext(String)
   }
   abstract class LogProvider
   {
@@ -1013,6 +1014,18 @@ Octopus.Client.Model
       SuccessWithWarning = 5
       Canceled = 6
   }
+  abstract class AdHocScript
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String EnvironmentIds
+      static System.String MachineIds
+      static System.String ScriptBody
+      static System.String Syntax
+      static System.String TargetRoles
+    }
+  }
   class AlertResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1054,6 +1067,50 @@ Octopus.Client.Model
     _Attribute
   {
   }
+  abstract class Arguments
+  {
+    static System.String MachineIds
+  }
+  abstract class Arguments
+  {
+    static System.String DocumentId
+  }
+  abstract class Arguments
+  {
+    static System.String EnvironmentId
+    static System.String MachineIds
+    static System.String MachineTimeout
+    static System.String Timeout
+  }
+  abstract class Arguments
+  {
+    static System.String EnvironmentIds
+    static System.String MachineIds
+    static System.String ScriptBody
+    static System.String Syntax
+    static System.String TargetRoles
+  }
+  abstract class Arguments
+  {
+    static System.String EnvironmentId
+    static System.String MachineIds
+  }
+  abstract class Arguments
+  {
+    static System.String MachineIds
+  }
+  abstract class Arguments
+  {
+    static System.String DeploymentId
+  }
+  abstract class Arguments
+  {
+    static System.String EmailAddress
+  }
+  abstract class Arguments
+  {
+    static System.String AccountId
+  }
   class ArtifactResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1069,6 +1126,14 @@ Octopus.Client.Model
       UsernamePassword = 0
       Domain = 1
   }
+  abstract class AutoDeploy
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String MachineIds
+    }
+  }
   class AutoDeployReleaseOverrideResource
   {
     .ctor(String, String)
@@ -1083,6 +1148,10 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+  }
+  abstract class Backup
+  {
+    static System.String Name
   }
   class BackupConfigurationResource
     Octopus.Client.Model.IResource
@@ -1209,6 +1278,12 @@ Octopus.Client.Model
       }
     }
   }
+  CalamariUpdateBehavior
+  {
+      UpdateOnDeployment = 0
+      UpdateOnNewMachine = 1
+      UpdateAlways = 2
+  }
   class CertificateResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1259,6 +1334,13 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+  }
+  class Comparer
+    IEqualityComparer<UserPermissionRestriction>
+  {
+    .ctor()
+    Boolean Equals(Octopus.Client.Model.UserPermissionRestriction, Octopus.Client.Model.UserPermissionRestriction)
+    Int32 GetHashCode(Octopus.Client.Model.UserPermissionRestriction)
   }
   class DashboardConfigurationResource
     Octopus.Client.Model.IResource
@@ -1368,6 +1450,27 @@ Octopus.Client.Model
   {
       Unresolved = 0
       Resolved = 1
+  }
+  abstract class Delete
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String DocumentId
+    }
+  }
+  DeleteMachinesBehavior
+  {
+      DoNotDelete = 0
+      DeleteUnavailableMachines = 1
+  }
+  abstract class Deploy
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String DeploymentId
+    }
   }
   class DeploymentActionResource
     Octopus.Client.Model.IResource
@@ -1667,6 +1770,32 @@ Octopus.Client.Model
     Stream Contents { get; set; }
     String FileName { get; set; }
   }
+  abstract class Health
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String EnvironmentId
+      static System.String MachineIds
+      static System.String MachineTimeout
+      static System.String Timeout
+    }
+  }
+  HealthCheckErrorHandling
+  {
+      TreatExceptionsAsErrors = 0
+      TreatExceptionsAsWarnings = 1
+  }
+  HealthCheckIncludeMachinesInDeployment
+  {
+      DoNotAlterMachines = 0
+      IncludeCheckedMachines = 1
+  }
+  HealthCheckType
+  {
+      FullHealthCheck = 0
+      ConnectionTest = 1
+  }
   class Href
     IEquatable<Href>
   {
@@ -1734,6 +1863,15 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
+  }
+  class Library
+  {
+    .ctor(String)
+    String LibraryVariableSetId { get; }
+    String LibraryVariableSetName { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    List<ActionTemplateParameterResource> Templates { get; set; }
+    Dictionary<String, PropertyValueResource> Variables { get; set; }
   }
   class LibraryVariableSetResource
     Octopus.Client.Model.IResource
@@ -1819,11 +1957,6 @@ Octopus.Client.Model
     String Password { get; set; }
     Boolean RememberMe { get; set; }
     String Username { get; set; }
-  }
-  DeleteMachinesBehavior
-  {
-      DoNotDelete = 0
-      DeleteUnavailableMachines = 1
   }
   class MachineCleanupPolicy
   {
@@ -1939,27 +2072,16 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineResource RemoveTenant(Octopus.Client.Model.TenantResource)
     Octopus.Client.Model.MachineResource RemoveTenantTag(Octopus.Client.Model.TagResource)
   }
-  MachineScriptPolicyRunType
-  {
-      InheritFromDefault = 0
-      Inline = 1
-  }
   class MachineScriptPolicy
   {
     .ctor()
     Octopus.Client.Model.MachineScriptPolicyRunType RunType { get; set; }
     String ScriptBody { get; set; }
   }
-  CalamariUpdateBehavior
+  MachineScriptPolicyRunType
   {
-      UpdateOnDeployment = 0
-      UpdateOnNewMachine = 1
-      UpdateAlways = 2
-  }
-  TentacleUpdateBehavior
-  {
-      NeverUpdate = 0
-      Update = 1
+      InheritFromDefault = 0
+      Inline = 1
   }
   class MachineUpdatePolicy
   {
@@ -1973,6 +2095,16 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
+  }
+  class MissingVariableResource
+  {
+    .ctor()
+    String EnvironmentId { get; set; }
+    String LibraryVariableSetId { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String ProjectId { get; set; }
+    String VariableTemplateId { get; set; }
+    String VariableTemplateName { get; set; }
   }
   class NamedReferenceItem
   {
@@ -2222,10 +2354,14 @@ Octopus.Client.Model
     List<ReferenceDataItem> Environments { get; set; }
     List<ReleaseProgressionResource> Releases { get; set; }
   }
-  SkipMachineBehavior
+  class Project
   {
-      None = 0
-      SkipUnavailableMachines = 1
+    .ctor(String)
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String ProjectId { get; }
+    String ProjectName { get; set; }
+    List<ActionTemplateParameterResource> Templates { get; set; }
+    Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
   }
   class ProjectConnectivityPolicy
   {
@@ -2310,6 +2446,13 @@ Octopus.Client.Model
   ProjectTriggerType
   {
       DeploymentTarget = 0
+  }
+  class PropertyValueJsonConverter
+  {
+    .ctor()
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
   }
   class PropertyValueResource
   {
@@ -2464,6 +2607,10 @@ Octopus.Client.Model
     String ItemType { get; }
     Int32 TotalResults { get; set; }
   }
+  abstract class Retention
+  {
+    static System.String Name
+  }
   class RetentionPeriod
     IEquatable<RetentionPeriod>
   {
@@ -2589,6 +2736,35 @@ Octopus.Client.Model
     String StepName { get; set; }
     String Version { get; set; }
   }
+  class SemanticVersion
+    IFormattable
+    IComparable
+    IComparable<StrictSemanticVersion>
+    IEquatable<StrictSemanticVersion>
+  {
+    .ctor(String)
+    .ctor(Octopus.Client.Model.SemanticVersion)
+    .ctor(Version, String, String)
+    .ctor(Int32, Int32, Int32)
+    .ctor(Int32, Int32, Int32, String)
+    .ctor(Int32, Int32, Int32, String, String)
+    .ctor(Int32, Int32, Int32, IEnumerable<String>, String)
+    .ctor(Int32, Int32, Int32, Int32)
+    .ctor(Int32, Int32, Int32, Int32, String, String)
+    .ctor(Int32, Int32, Int32, Int32, IEnumerable<String>, String)
+    .ctor(Version, IEnumerable<String>, String, String, Boolean)
+    Boolean IsLegacyVersion { get; }
+    Boolean IsSemVer2 { get; }
+    Int32 Revision { get; }
+    Version Version { get; }
+    static Octopus.Client.Model.SemanticVersion FromNuGetVersion(NuGetVersion)
+    static String IncrementRelease(String)
+    static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
+    NuGetVersion ToNuGetVersion()
+    String ToString()
+    static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
+    static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
+  }
   class SemanticVersionComparer
     IComparer<String>
   {
@@ -2645,6 +2821,11 @@ Octopus.Client.Model
     String MaximumAvailableVersion { get; set; }
     String MaximumAvailableVersionCoveredByLicense { get; set; }
   }
+  SkipMachineBehavior
+  {
+      None = 0
+      SkipUnavailableMachines = 1
+  }
   class SmtpConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2660,6 +2841,24 @@ Octopus.Client.Model
   class SquidAttribute
     _Attribute
   {
+    .ctor()
+  }
+  class StandardColor
+  {
+    static System.String DarkBlue
+    static System.String DarkCyan
+    static System.String DarkGreen
+    static System.String DarkGrey
+    static System.String DarkPurple
+    static System.String DarkRed
+    static System.String DarkYellow
+    static System.String LightBlue
+    static System.String LightCyan
+    static System.String LightGreen
+    static System.String LightGrey
+    static System.String LightPurple
+    static System.String LightRed
+    static System.String LightYellow
     .ctor()
   }
   class SubscriptionResource
@@ -2695,6 +2894,10 @@ Octopus.Client.Model
     TimeSpan Uptime { get; set; }
     String Version { get; set; }
     Int64 WorkingSetBytes { get; set; }
+  }
+  abstract class SystemIntegrityCheck
+  {
+    static System.String Name
   }
   class TagResource
     Octopus.Client.Model.INamedResource
@@ -2806,23 +3009,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     Octopus.Client.Model.ReferenceCollection UserRoleIds { get; set; }
   }
-  class TenantsMissingVariablesResource
-  {
-    .ctor(String)
-    Octopus.Client.Model.LinkCollection Links { get; }
-    IEnumerable<MissingVariableResource> MissingVariables { get; set; }
-    String TenantId { get; }
-  }
-  class MissingVariableResource
-  {
-    .ctor()
-    String EnvironmentId { get; set; }
-    String LibraryVariableSetId { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
-    String ProjectId { get; set; }
-    String VariableTemplateId { get; set; }
-    String VariableTemplateName { get; set; }
-  }
   class TenantProjectEnvironmentMappingResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2844,6 +3030,13 @@ Octopus.Client.Model
     Octopus.Client.Model.TenantResource ClearTags()
     Octopus.Client.Model.TenantResource ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.TenantResource WithTag(Octopus.Client.Model.TagResource)
+  }
+  class TenantsMissingVariablesResource
+  {
+    .ctor(String)
+    Octopus.Client.Model.LinkCollection Links { get; }
+    IEnumerable<MissingVariableResource> MissingVariables { get; set; }
+    String TenantId { get; }
   }
   class TenantVariableResource
     Octopus.Client.Model.IResource
@@ -2873,15 +3066,53 @@ Octopus.Client.Model
       Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
     }
   }
+  TentacleUpdateBehavior
+  {
+      NeverUpdate = 0
+      Update = 1
+  }
   class TentacleUpgradeSupportedAttribute
     _Attribute
   {
     .ctor()
   }
+  abstract class TestAzureAccount
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String AccountId
+    }
+  }
+  abstract class TestEmail
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String EmailAddress
+    }
+  }
   class TrimAttribute
     _Attribute
   {
     .ctor()
+  }
+  abstract class UpdateCalamari
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String MachineIds
+    }
+  }
+  abstract class Upgrade
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String EnvironmentId
+      static System.String MachineIds
+    }
   }
   class UserPermissionRestriction
   {
@@ -3012,236 +3243,6 @@ Octopus.Client.Model
     _Attribute
   {
     .ctor()
-  }
-  class SemanticVersion
-    IFormattable
-    IComparable
-    IComparable<StrictSemanticVersion>
-    IEquatable<StrictSemanticVersion>
-  {
-    .ctor(String)
-    .ctor(Octopus.Client.Model.SemanticVersion)
-    .ctor(Version, String, String)
-    .ctor(Int32, Int32, Int32)
-    .ctor(Int32, Int32, Int32, String)
-    .ctor(Int32, Int32, Int32, String, String)
-    .ctor(Int32, Int32, Int32, IEnumerable<String>, String)
-    .ctor(Int32, Int32, Int32, Int32)
-    .ctor(Int32, Int32, Int32, Int32, String, String)
-    .ctor(Int32, Int32, Int32, Int32, IEnumerable<String>, String)
-    .ctor(Version, IEnumerable<String>, String, String, Boolean)
-    Boolean IsLegacyVersion { get; }
-    Boolean IsSemVer2 { get; }
-    Int32 Revision { get; }
-    Version Version { get; }
-    static Octopus.Client.Model.SemanticVersion FromNuGetVersion(NuGetVersion)
-    static String IncrementRelease(String)
-    static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
-    NuGetVersion ToNuGetVersion()
-    String ToString()
-    static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
-    static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
-  }
-  abstract class AutoDeploy
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String MachineIds
-    }
-  }
-  abstract class Backup
-  {
-    static System.String Name
-  }
-  abstract class Delete
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String DocumentId
-    }
-  }
-  abstract class Health
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String EnvironmentId
-      static System.String MachineIds
-      static System.String MachineTimeout
-      static System.String Timeout
-    }
-  }
-  abstract class AdHocScript
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String EnvironmentIds
-      static System.String MachineIds
-      static System.String ScriptBody
-      static System.String Syntax
-      static System.String TargetRoles
-    }
-  }
-  abstract class Retention
-  {
-    static System.String Name
-  }
-  abstract class Upgrade
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String EnvironmentId
-      static System.String MachineIds
-    }
-  }
-  abstract class UpdateCalamari
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String MachineIds
-    }
-  }
-  abstract class Deploy
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String DeploymentId
-    }
-  }
-  abstract class TestEmail
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String EmailAddress
-    }
-  }
-  abstract class TestAzureAccount
-  {
-    static System.String Name
-    abstract class Arguments
-    {
-      static System.String AccountId
-    }
-  }
-  abstract class SystemIntegrityCheck
-  {
-    static System.String Name
-  }
-  HealthCheckType
-  {
-      FullHealthCheck = 0
-      ConnectionTest = 1
-  }
-  HealthCheckErrorHandling
-  {
-      TreatExceptionsAsErrors = 0
-      TreatExceptionsAsWarnings = 1
-  }
-  HealthCheckIncludeMachinesInDeployment
-  {
-      DoNotAlterMachines = 0
-      IncludeCheckedMachines = 1
-  }
-  class PropertyValueJsonConverter
-  {
-    .ctor()
-    Boolean CanConvert(Type)
-    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
-    void WriteJson(JsonWriter, Object, JsonSerializer)
-  }
-  class StandardColor
-  {
-    static System.String DarkBlue
-    static System.String DarkCyan
-    static System.String DarkGreen
-    static System.String DarkGrey
-    static System.String DarkPurple
-    static System.String DarkRed
-    static System.String DarkYellow
-    static System.String LightBlue
-    static System.String LightCyan
-    static System.String LightGreen
-    static System.String LightGrey
-    static System.String LightPurple
-    static System.String LightRed
-    static System.String LightYellow
-    .ctor()
-  }
-  class Project
-  {
-    .ctor(String)
-    Octopus.Client.Model.LinkCollection Links { get; set; }
-    String ProjectId { get; }
-    String ProjectName { get; set; }
-    List<ActionTemplateParameterResource> Templates { get; set; }
-    Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
-  }
-  class Library
-  {
-    .ctor(String)
-    String LibraryVariableSetId { get; }
-    String LibraryVariableSetName { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
-    List<ActionTemplateParameterResource> Templates { get; set; }
-    Dictionary<String, PropertyValueResource> Variables { get; set; }
-  }
-  class Comparer
-    IEqualityComparer<UserPermissionRestriction>
-  {
-    .ctor()
-    Boolean Equals(Octopus.Client.Model.UserPermissionRestriction, Octopus.Client.Model.UserPermissionRestriction)
-    Int32 GetHashCode(Octopus.Client.Model.UserPermissionRestriction)
-  }
-  abstract class Arguments
-  {
-    static System.String MachineIds
-  }
-  abstract class Arguments
-  {
-    static System.String DocumentId
-  }
-  abstract class Arguments
-  {
-    static System.String EnvironmentId
-    static System.String MachineIds
-    static System.String MachineTimeout
-    static System.String Timeout
-  }
-  abstract class Arguments
-  {
-    static System.String EnvironmentIds
-    static System.String MachineIds
-    static System.String ScriptBody
-    static System.String Syntax
-    static System.String TargetRoles
-  }
-  abstract class Arguments
-  {
-    static System.String EnvironmentId
-    static System.String MachineIds
-  }
-  abstract class Arguments
-  {
-    static System.String MachineIds
-  }
-  abstract class Arguments
-  {
-    static System.String DeploymentId
-  }
-  abstract class Arguments
-  {
-    static System.String EmailAddress
-  }
-  abstract class Arguments
-  {
-    static System.String AccountId
   }
 }
 Octopus.Client.Model.Accounts
@@ -4066,6 +4067,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<AccountResource>
   {
   }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
+    Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
+  {
+  }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>
     Octopus.Client.Repositories.Async.IGet<ArtifactResource>
@@ -4107,6 +4118,10 @@ Octopus.Client.Repositories.Async
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<ChannelResource> FindByName(Octopus.Client.Model.ProjectResource, String)
   }
+  interface ICreate`1
+  {
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource)
+  }
   interface IDashboardConfigurationRepository
   {
     Task<DashboardConfigurationResource> GetDashboardConfiguration()
@@ -4122,6 +4137,10 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<DefectResource>> GetDefects(Octopus.Client.Model.ReleaseResource)
     Task RaiseDefect(Octopus.Client.Model.ReleaseResource, String)
     Task ResolveDefect(Octopus.Client.Model.ReleaseResource)
+  }
+  interface IDelete`1
+  {
+    Task Delete(Octopus.Client.Repositories.Async.TResource)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
@@ -4173,24 +4192,6 @@ Octopus.Client.Repositories.Async
   {
     Task<List<PackageResource>> GetVersions(Octopus.Client.Model.FeedResource, String[])
   }
-  interface IActionTemplateRepository
-    Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IModify<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IDelete<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IGet<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IFindByName<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
-    Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
-  {
-  }
-  interface ICreate`1
-  {
-    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource)
-  }
-  interface IDelete`1
-  {
-    Task Delete(Octopus.Client.Repositories.Async.TResource)
-  }
   interface IFindByName`1
     Octopus.Client.Repositories.Async.IPaginate<TResource>
   {
@@ -4207,10 +4208,6 @@ Octopus.Client.Repositories.Async
   {
     Task<List<TResource>> GetAll()
   }
-  interface IModify`1
-  {
-    Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
-  }
   interface IInterruptionRepository
     Octopus.Client.Repositories.Async.IGet<InterruptionResource>
   {
@@ -4218,39 +4215,6 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<InterruptionResource>> List(Int32, Boolean, String)
     Task Submit(Octopus.Client.Model.InterruptionResource)
     Task TakeResponsibility(Octopus.Client.Model.InterruptionResource)
-  }
-  interface IPaginate`1
-  {
-    Task<List<TResource>> FindAll(String, Object)
-    Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object)
-    Task<TResource> FindOne(Func<TResource, Boolean>, String, Object)
-    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
-  }
-  interface IProjectRepository
-    Octopus.Client.Repositories.Async.IFindByName<ProjectResource>
-    Octopus.Client.Repositories.Async.IPaginate<ProjectResource>
-    Octopus.Client.Repositories.Async.IGet<ProjectResource>
-    Octopus.Client.Repositories.Async.ICreate<ProjectResource>
-    Octopus.Client.Repositories.Async.IModify<ProjectResource>
-    Octopus.Client.Repositories.Async.IDelete<ProjectResource>
-    Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
-  {
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
-    Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
-    Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
-    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32)
-    Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
-    Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
-  }
-  interface IProxyRepository
-    Octopus.Client.Repositories.Async.IGet<ProxyResource>
-    Octopus.Client.Repositories.Async.ICreate<ProxyResource>
-    Octopus.Client.Repositories.Async.IModify<ProxyResource>
-    Octopus.Client.Repositories.Async.IDelete<ProxyResource>
-    Octopus.Client.Repositories.Async.IFindByName<ProxyResource>
-    Octopus.Client.Repositories.Async.IPaginate<ProxyResource>
-  {
   }
   interface ILibraryVariableSetRepository
     Octopus.Client.Repositories.Async.ICreate<LibraryVariableSetResource>
@@ -4301,6 +4265,10 @@ Octopus.Client.Repositories.Async
   {
     Task<List<String>> GetAllRoleNames()
   }
+  interface IModify`1
+  {
+    Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
+  }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.Async.IModify<OctopusServerNodeResource>
     Octopus.Client.Repositories.Async.IDelete<OctopusServerNodeResource>
@@ -4308,6 +4276,13 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<OctopusServerNodeResource>
     Octopus.Client.Repositories.Async.IPaginate<OctopusServerNodeResource>
   {
+  }
+  interface IPaginate`1
+  {
+    Task<List<TResource>> FindAll(String, Object)
+    Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object)
+    Task<TResource> FindOne(Func<TResource, Boolean>, String, Object)
+    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>
@@ -4322,6 +4297,23 @@ Octopus.Client.Repositories.Async
     Task<ProjectGroupEditor> CreateOrModify(String, String)
     Task<List<ProjectResource>> GetProjects(Octopus.Client.Model.ProjectGroupResource)
   }
+  interface IProjectRepository
+    Octopus.Client.Repositories.Async.IFindByName<ProjectResource>
+    Octopus.Client.Repositories.Async.IPaginate<ProjectResource>
+    Octopus.Client.Repositories.Async.IGet<ProjectResource>
+    Octopus.Client.Repositories.Async.ICreate<ProjectResource>
+    Octopus.Client.Repositories.Async.IModify<ProjectResource>
+    Octopus.Client.Repositories.Async.IDelete<ProjectResource>
+    Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
+  {
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
+    Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
+    Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32)
+    Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
+    Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
+  }
   interface IProjectTriggerRepository
     Octopus.Client.Repositories.Async.ICreate<ProjectTriggerResource>
     Octopus.Client.Repositories.Async.IModify<ProjectTriggerResource>
@@ -4330,6 +4322,15 @@ Octopus.Client.Repositories.Async
   {
     Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType)
     Task<ProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+  }
+  interface IProxyRepository
+    Octopus.Client.Repositories.Async.IGet<ProxyResource>
+    Octopus.Client.Repositories.Async.ICreate<ProxyResource>
+    Octopus.Client.Repositories.Async.IModify<ProxyResource>
+    Octopus.Client.Repositories.Async.IDelete<ProxyResource>
+    Octopus.Client.Repositories.Async.IFindByName<ProxyResource>
+    Octopus.Client.Repositories.Async.IPaginate<ProxyResource>
+  {
   }
   interface IReleaseRepository
     Octopus.Client.Repositories.Async.IGet<ReleaseResource>

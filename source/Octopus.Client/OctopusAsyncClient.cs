@@ -60,6 +60,7 @@ namespace Octopus.Client
                 handler.Proxy = serverEndpoint.Proxy;
             
             client = new HttpClient(handler, true);
+            client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
         }
@@ -446,28 +447,31 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     if (request.RequestResource != null)
                         message.Content = GetContent(request);
 
-                    var ct = new CancellationToken(); // TODO
                     var completionOption = readResponse
                         ? HttpCompletionOption.ResponseContentRead
                         : HttpCompletionOption.ResponseHeadersRead;
-
-                    using (var response = await client.SendAsync(message, completionOption, ct).ConfigureAwait(false))
+                    try
                     {
-                        //   throw new TimeoutException($"Timeout after {ApiConstants.DefaultClientRequestTimeout}ms getting response");
+                        using (var response = await client.SendAsync(message, completionOption).ConfigureAwait(false))
+                        {
+                            if (!response.IsSuccessStatusCode)
+                                throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
 
-                        if (!response.IsSuccessStatusCode)
-                            throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
+                            var resource = readResponse
+                                ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
+                                : default(TResponseResource);
 
-                        var resource = readResponse
-                            ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
-                            : default(TResponseResource);
+                            var locationHeader = response.Headers.Location?.ToString();
+                            var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
+                                locationHeader, resource);
+                            ReceivedOctopusResponse?.Invoke(octopusResponse);
 
-                        var locationHeader = response.Headers.Location?.ToString();
-                        var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
-                            locationHeader, resource);
-                        ReceivedOctopusResponse?.Invoke(octopusResponse);
-
-                        return octopusResponse;
+                            return octopusResponse;
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        throw new TimeoutException($"Timeout getting response, client timeout is set to {client.Timeout}.");
                     }
                 }
 #if COREFX_ISSUE_11456_EXISTS
