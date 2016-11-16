@@ -5,7 +5,6 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "NuGet.CommandLine": "3.5.0-octopus-35842",
     "NuGet.Common": "3.5.0-octopus-35842",
     "NuGet.Frameworks": "3.5.0-octopus-35842",
     "NuGet.Packaging": "3.5.0-octopus-35842",
