@@ -17,9 +17,9 @@ namespace Octopus.Client.Editors
             this.owner = owner;
         }
 
-        public ProjectTriggerEditor CreateOrModify(string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public ProjectTriggerEditor CreateOrModify(string name, ProjectTriggerType type, IProjectTriggerFilterResource filter, IProjectTriggerActionResource action)
         {
-            var projectTriggerBuilder = new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, conditions);
+            var projectTriggerBuilder = new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, filter, action);
             trackedProjectTriggerBuilders.Add(projectTriggerBuilder);
             return projectTriggerBuilder;
         }

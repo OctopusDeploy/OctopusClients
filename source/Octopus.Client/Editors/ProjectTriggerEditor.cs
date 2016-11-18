@@ -16,10 +16,8 @@ namespace Octopus.Client.Editors
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, IProjectTriggerFilterResource filter, IProjectTriggerActionResource action)
         {
-            var conditionsCsv = string.Join(",", conditions.Select(x => x.ToString()).ToArray());
-
             var existing = repository.FindByName(project, name);
             if (existing == null)
             {
@@ -28,17 +26,16 @@ namespace Octopus.Client.Editors
                     Name = name,
                     ProjectId = project.Id,
                     Type = type,
-                    Properties =
-                    {
-                        {"Octopus.ProjectTriggerCondition.Events", new PropertyValueResource(conditionsCsv)}
-                    }
+                    Filter = filter,
+                    Action = action
                 });
             }
             else
             {
                 existing.Name = name;
                 existing.Type = type;
-                existing.Properties["Octopus.ProjectTriggerCondition.Events"] = new PropertyValueResource(conditionsCsv);
+                existing.Filter = filter;
+                existing.Action = action;
                 Instance = repository.Modify(existing);
             }
 

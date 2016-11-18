@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -17,10 +16,8 @@ namespace Octopus.Client.Editors.Async
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, IProjectTriggerFilterResource filter, IProjectTriggerActionResource action)
         {
-            var conditionsCsv = string.Join(",", conditions.Select(x => x.ToString()).ToArray());
-
             var existing = await repository.FindByName(project, name).ConfigureAwait(false);
             if (existing == null)
             {
@@ -29,17 +26,16 @@ namespace Octopus.Client.Editors.Async
                     Name = name,
                     ProjectId = project.Id,
                     Type = type,
-                    Properties =
-                    {
-                        {"Octopus.ProjectTriggerCondition.Events", new PropertyValueResource(conditionsCsv)}
-                    }
+                    Filter = filter,
+                    Action = action
                 }).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
                 existing.Type = type;
-                existing.Properties["Octopus.ProjectTriggerCondition.Events"] = new PropertyValueResource(conditionsCsv);
+                existing.Filter = filter;
+                existing.Action = action;
                 Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 

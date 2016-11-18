@@ -8,7 +8,9 @@ namespace Octopus.Client.Repositories.Async
     public interface IProjectTriggerRepository : ICreate<ProjectTriggerResource>, IModify<ProjectTriggerResource>, IGet<ProjectTriggerResource>, IDelete<ProjectTriggerResource>
     {
         Task<ProjectTriggerResource> FindByName(ProjectResource project, string name);
-        Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type);
+
+        Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type,
+            IProjectTriggerFilterResource filter, IProjectTriggerActionResource action);
     }
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
@@ -23,9 +25,9 @@ namespace Octopus.Client.Repositories.Async
             return FindByName(name, path: project.Link("Triggers"));
         }
 
-        public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
+        public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, IProjectTriggerFilterResource filter, IProjectTriggerActionResource action)
         {
-            return new ProjectTriggerEditor(this).CreateOrModify(project, name, type);
+            return new ProjectTriggerEditor(this).CreateOrModify(project, name, type, filter, action);
         }
     }
 }
