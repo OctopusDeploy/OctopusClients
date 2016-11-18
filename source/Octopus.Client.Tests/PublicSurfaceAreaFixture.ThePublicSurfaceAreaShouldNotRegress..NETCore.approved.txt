@@ -351,14 +351,14 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository)
     Octopus.Client.Model.ProjectTriggerResource Instance { get; }
-    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
+    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.IProjectTriggerFilterResource, Octopus.Client.Model.IProjectTriggerActionResource)
     Octopus.Client.Editors.Async.ProjectTriggerEditor Customize(Action<ProjectTriggerResource>)
     Task<ProjectTriggerEditor> Save()
   }
   class ProjectTriggersEditor
   {
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository, Octopus.Client.Model.ProjectResource)
-    Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
+    Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.IProjectTriggerFilterResource, Octopus.Client.Model.IProjectTriggerActionResource)
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
   }
@@ -1456,6 +1456,12 @@ Octopus.Client.Model
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
   }
+  interface IProjectTriggerActionResource
+  {
+  }
+  interface IProjectTriggerFilterResource
+  {
+  }
   interface IResource
   {
     String Id { get; }
@@ -2040,10 +2046,19 @@ Octopus.Client.Model
       TenantedOrUntenanted = 1
       Tenanted = 2
   }
-  ProjectTriggerConditionEvent
+  class ProjectTriggerAutoDeployActionResource
+    Octopus.Client.Model.IProjectTriggerActionResource
   {
-      NewDeploymentTargetBecomesAvailable = 0
-      ExistingDeploymentTargetChangesState = 1
+    .ctor()
+  }
+  class ProjectTriggerMachineFilterResource
+    Octopus.Client.Model.IProjectTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; }
+    Octopus.Client.Model.ReferenceCollection EventCategories { get; }
+    Octopus.Client.Model.ReferenceCollection EventGroups { get; }
+    Octopus.Client.Model.ReferenceCollection Roles { get; }
   }
   class ProjectTriggerResource
     Octopus.Client.Model.IResource
@@ -2051,9 +2066,10 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
   {
     .ctor()
+    Octopus.Client.Model.IProjectTriggerActionResource Action { get; set; }
+    Octopus.Client.Model.IProjectTriggerFilterResource Filter { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
-    IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ProjectTriggerType Type { get; set; }
   }
   ProjectTriggerType
@@ -3518,7 +3534,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<ProjectTriggerResource>
     Octopus.Client.Repositories.Async.IDelete<ProjectTriggerResource>
   {
-    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType)
+    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.IProjectTriggerFilterResource, Octopus.Client.Model.IProjectTriggerActionResource)
     Task<ProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
   }
   interface IProxyRepository
