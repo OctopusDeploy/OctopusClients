@@ -3539,6 +3539,15 @@ Octopus.Client.Model.Triggers
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
   }
+  class MachineFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; }
+    Octopus.Client.Model.ReferenceCollection EventCategories { get; }
+    Octopus.Client.Model.ReferenceCollection EventGroups { get; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Octopus.Client.Model.ReferenceCollection Roles { get; }
+  }
   abstract class TriggerActionResource
   {
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
@@ -3554,15 +3563,6 @@ Octopus.Client.Model.Triggers
   TriggerFilterType
   {
       MachineFilter = 0
-  }
-  class TriggerMachineFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; }
-    Octopus.Client.Model.ReferenceCollection EventCategories { get; }
-    Octopus.Client.Model.ReferenceCollection EventGroups { get; }
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Octopus.Client.Model.ReferenceCollection Roles { get; }
   }
 }
 Octopus.Client.Model.Versioning
