@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model
+﻿using Octopus.Client.Model.Triggers;
+
+namespace Octopus.Client.Model
 {
     public class ProjectTriggerResource : Resource, INamedResource
     {
@@ -12,9 +14,9 @@
         public ProjectTriggerType Type { get; set; }
 
         [Writeable]
-        public IProjectTriggerFilterResource Filter { get; set; }
+        public TriggerFilterResource Filter { get; set; }
 
         [Writeable]
-        public IProjectTriggerActionResource Action { get; set; }
+        public TriggerActionResource Action { get; set; }
     }
 }

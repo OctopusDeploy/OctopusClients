@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -10,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ProjectTriggerResource> FindByName(ProjectResource project, string name);
 
         Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type,
-            IProjectTriggerFilterResource filter, IProjectTriggerActionResource action);
+            TriggerFilterResource filter, TriggerActionResource action);
     }
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
@@ -25,7 +26,7 @@ namespace Octopus.Client.Repositories.Async
             return FindByName(name, path: project.Link("Triggers"));
         }
 
-        public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, IProjectTriggerFilterResource filter, IProjectTriggerActionResource action)
+        public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, TriggerFilterResource filter, TriggerActionResource action)
         {
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, type, filter, action);
         }
