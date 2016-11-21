@@ -2,8 +2,8 @@
 {
     public class MachineFilterResource : TriggerFilterResource
     {
-        [Writeable]
         public override TriggerFilterType FilterType => TriggerFilterType.MachineFilter;
+
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; } = new ReferenceCollection();
         [Writeable]
