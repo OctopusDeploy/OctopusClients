@@ -183,11 +183,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </param>
         public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
-            var page = await List<TResource>(path, pathParameters).ConfigureAwait(true);
+            var page = await List<TResource>(path, pathParameters).ConfigureAwait(false);
 
             while (getNextPage(page) && page.Items.Count > 0 && page.HasLink("Page.Next"))
             {
-                page = await List<TResource>(page.Link("Page.Next")).ConfigureAwait(true);
+                page = await List<TResource>(page.Link("Page.Next")).ConfigureAwait(false);
             }
         }
 
@@ -220,8 +220,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(true);
-            return await Get<TResource>(response.Location).ConfigureAwait(true);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
+            return await Get<TResource>(response.Location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
-            var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(true);
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
             return response.ResponseResource;
         }
 
@@ -373,7 +373,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             while (true)
             {
-                if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
+                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
                 {
                     if (lastError == null)
                     {
@@ -385,12 +385,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                 try
                 {
-                    server = await Get<RootResource>("~/api").ConfigureAwait(true);
+                    server = await Get<RootResource>("~/api").ConfigureAwait(false);
                     break;
                 }
-                catch (WebException ex)
+                catch (HttpRequestException ex)
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                     lastError = ex;
                 }
                 catch (OctopusServerException ex)
@@ -401,7 +401,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                         throw;
                     }
 
-                    Thread.Sleep(500);
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));
                     lastError = ex;
                 }
                 retries--;
@@ -415,7 +415,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var current = SemanticVersion.Parse(server.ApiVersion);
 
             if (current < min || current > max)
-                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
+                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({server.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
 
             return server;
         }
