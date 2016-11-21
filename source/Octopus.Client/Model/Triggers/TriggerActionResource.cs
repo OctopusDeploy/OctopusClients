@@ -5,7 +5,7 @@
         AutoDeploy
     }
 
-    public abstract class TriggerActionResource
+    public abstract class TriggerActionResource : Resource
     {
         public abstract TriggerActionType ActionType { get; }
     }

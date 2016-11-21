@@ -5,7 +5,7 @@
         MachineFilter
     }
 
-    public abstract class TriggerFilterResource
+    public abstract class TriggerFilterResource : Resource
     {
         public abstract TriggerFilterType FilterType { get; }
     }
