@@ -4,6 +4,7 @@ namespace Octopus.Client.Model
 {
     public class ProjectTriggerResource : Resource, INamedResource
     {
+        [Trim]
         [Writeable]
         public string Name { get; set; }
 
