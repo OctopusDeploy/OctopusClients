@@ -5,12 +5,12 @@
         [Writeable]
         public override TriggerFilterType FilterType => TriggerFilterType.MachineFilter;
         [Writeable]
-        public ReferenceCollection EnvironmentIds { get; } = new ReferenceCollection();
+        public ReferenceCollection EnvironmentIds { get; set; } = new ReferenceCollection();
         [Writeable]
-        public ReferenceCollection Roles { get; } = new ReferenceCollection();
+        public ReferenceCollection Roles { get; set; } = new ReferenceCollection();
         [Writeable]
-        public ReferenceCollection EventGroups { get; } = new ReferenceCollection();
+        public ReferenceCollection EventGroups { get; set; } = new ReferenceCollection();
         [Writeable]
-        public ReferenceCollection EventCategories { get; } = new ReferenceCollection();
+        public ReferenceCollection EventCategories { get; set; } = new ReferenceCollection();
     }
 }
