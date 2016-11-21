@@ -17,7 +17,7 @@ namespace Octopus.Client.Editors.Async
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, TriggerFilterResource filter, TriggerActionResource action)
+        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
             var existing = await repository.FindByName(project, name).ConfigureAwait(false);
             if (existing == null)
@@ -26,7 +26,6 @@ namespace Octopus.Client.Editors.Async
                 {
                     Name = name,
                     ProjectId = project.Id,
-                    Type = type,
                     Filter = filter,
                     Action = action
                 }).ConfigureAwait(false);
@@ -34,7 +33,6 @@ namespace Octopus.Client.Editors.Async
             else
             {
                 existing.Name = name;
-                existing.Type = type;
                 existing.Filter = filter;
                 existing.Action = action;
                 Instance = await repository.Modify(existing).ConfigureAwait(false);

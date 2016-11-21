@@ -17,7 +17,7 @@ namespace Octopus.Client.Editors
 
         public ProjectTriggerResource Instance { get; private set; }
 
-        public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, TriggerFilterResource filter, TriggerActionResource action)
+        public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
             var existing = repository.FindByName(project, name);
             if (existing == null)
@@ -26,7 +26,6 @@ namespace Octopus.Client.Editors
                 {
                     Name = name,
                     ProjectId = project.Id,
-                    Type = type,
                     Filter = filter,
                     Action = action
                 });
@@ -34,7 +33,6 @@ namespace Octopus.Client.Editors
             else
             {
                 existing.Name = name;
-                existing.Type = type;
                 existing.Filter = filter;
                 existing.Action = action;
                 Instance = repository.Modify(existing);

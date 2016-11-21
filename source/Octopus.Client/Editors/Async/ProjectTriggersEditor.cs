@@ -20,9 +20,9 @@ namespace Octopus.Client.Editors.Async
             this.owner = owner;
         }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(string name, ProjectTriggerType type, TriggerFilterResource filter, TriggerActionResource action)
+        public async Task<ProjectTriggerEditor> CreateOrModify(string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            var projectTriggerBuilder = await new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, filter, action).ConfigureAwait(false);
+            var projectTriggerBuilder = await new ProjectTriggerEditor(repository).CreateOrModify(owner, name, filter, action).ConfigureAwait(false);
             trackedProjectTriggerBuilders.Add(projectTriggerBuilder);
             return projectTriggerBuilder;
         }

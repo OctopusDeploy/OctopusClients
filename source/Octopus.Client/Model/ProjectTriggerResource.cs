@@ -12,9 +12,6 @@ namespace Octopus.Client.Model
         public string ProjectId { get; set; }
 
         [Writeable]
-        public ProjectTriggerType Type { get; set; }
-
-        [Writeable]
         public TriggerFilterResource Filter { get; set; }
 
         [Writeable]

@@ -1359,9 +1359,9 @@ namespace Octopus.Client
                 return FindByName(name, path: project.Link("Triggers"));
             }
 
-            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type, TriggerFilterResource filter, TriggerActionResource action)
+            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
             {
-                return new ProjectTriggerEditor(this).CreateOrModify(project, name, type, filter, action);
+                return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
             }
         }
 
