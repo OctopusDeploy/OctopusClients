@@ -3535,11 +3535,15 @@ Octopus.Client.Model.Forms
 Octopus.Client.Model.Triggers
 {
   class AutoDeployActionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
   }
   class MachineFilterResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; }
@@ -3549,6 +3553,8 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.ReferenceCollection Roles { get; }
   }
   abstract class TriggerActionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
   {
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
   }
@@ -3557,6 +3563,8 @@ Octopus.Client.Model.Triggers
       AutoDeploy = 0
   }
   abstract class TriggerFilterResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
   {
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
   }
@@ -4519,6 +4527,14 @@ Octopus.Client.Serialization
   abstract class JsonSerialization
   {
     static JsonSerializerSettings GetDefaultSerializerSettings()
+  }
+  class TriggerActionConverter
+  {
+    .ctor()
+  }
+  class TriggerFilterConverter
+  {
+    .ctor()
   }
 }
 Octopus.Client.Util
