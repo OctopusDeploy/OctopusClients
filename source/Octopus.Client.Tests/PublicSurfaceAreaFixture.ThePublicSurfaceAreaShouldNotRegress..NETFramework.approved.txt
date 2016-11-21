@@ -264,6 +264,7 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    TimeSpan Timeout { get; set; }
   }
   class OctopusRepository
     Octopus.Client.IOctopusRepository

@@ -163,6 +163,7 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    TimeSpan Timeout { get; set; }
   }
   abstract class OctopusRepositoryExtensions
   {
