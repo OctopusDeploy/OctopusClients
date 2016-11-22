@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Cli.Exporters
 {
     public interface IExporter
     {
-        void Export(params string[] parameters);
+        Task Export(params string[] parameters);
     }
 }
