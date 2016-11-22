@@ -3142,6 +3142,7 @@ Octopus.Client.Model.Triggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
   }
   class MachineFilterResource
     Octopus.Client.Model.IResource
