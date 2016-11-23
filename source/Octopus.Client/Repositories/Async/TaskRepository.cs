@@ -17,6 +17,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         Task<TaskDetailsResource> GetDetails(TaskResource resource);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
+        Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         Task<string> GetRawOutputLog(TaskResource resource);
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
@@ -112,6 +113,15 @@ namespace Octopus.Client.Repositories.Async
                     {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
                     {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
                 };
+            return Create(resource);
+        }
+
+        public Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null)
+        {
+            var resource = new TaskResource();
+            resource.Name = BuiltInTasks.SyncCommunityActionTemplates.Name;
+            resource.Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name;
+
             return Create(resource);
         }
 

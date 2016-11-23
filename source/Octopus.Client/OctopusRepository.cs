@@ -30,6 +30,7 @@ namespace Octopus.Client
         readonly IOctopusClient client;
         readonly IAccountRepository accounts;
         readonly IActionTemplateRepository actionTemplates;
+        readonly ICommunityActionTemplateRepository communityActionTemplates;
         readonly IFeedRepository feeds;
         readonly IBackupRepository backups;
         readonly IMachineRepository machines;
@@ -114,6 +115,7 @@ namespace Octopus.Client
             tagSets = new TagSetRepository(client);
             builtInPackageRepositoryRepository = new BuiltInPackageRepositoryRepository(client);
             actionTemplates = new ActionTemplateRepository(client);
+            communityActionTemplates = new CommunityActionTemplateRepository(client);
         }
 
         public IOctopusClient Client
@@ -149,6 +151,11 @@ namespace Octopus.Client
         public IActionTemplateRepository ActionTemplates
         {
             get {  return actionTemplates; }
+        }
+
+        public ICommunityActionTemplateRepository CommunityActionTemplates
+        {
+            get { return communityActionTemplates; }
         }
 
         public IBackupRepository Backups
@@ -537,6 +544,13 @@ namespace Octopus.Client
         class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
         {
             public ActionTemplateRepository(IOctopusClient client) : base(client, "ActionTemplates")
+            {
+            }
+        }
+
+        class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
+        {
+            public CommunityActionTemplateRepository(IOctopusClient client) : base(client, "CommunityActionTemplates")
             {
             }
         }
@@ -1190,6 +1204,15 @@ namespace Octopus.Client
                     {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
                     {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
                 };
+                return Create(resource);
+            }
+
+            public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)
+            {
+                var resource = new TaskResource();
+                resource.Name = BuiltInTasks.SyncCommunityActionTemplates.Name;
+                resource.Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name;
+
                 return Create(resource);
             }
 

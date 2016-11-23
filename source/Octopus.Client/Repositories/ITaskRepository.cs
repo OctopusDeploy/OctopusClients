@@ -12,6 +12,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null);
         TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
+        TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         TaskDetailsResource GetDetails(TaskResource resource);
         string GetRawOutputLog(TaskResource resource);
         void Rerun(TaskResource resource);
