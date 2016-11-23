@@ -244,7 +244,7 @@ Task("__Zip")
         foreach(var dir in IO.Directory.EnumerateDirectories(octoPublishFolder))
         {
             var dirName = Path.GetFileName(dir);
-            var outFile = Path.Combine(artifactsDir, $"Octo.exe.{dirName}");
+            var outFile = Path.Combine(artifactsDir, $"OctopusTools.{nugetVersion}.{dirName.Replace("win7","win")}");
             if(dirName.StartsWith("win") || dirName == "portable")
                 Zip(dir, outFile + ".zip");
             if(!dirName.StartsWith("win"))
