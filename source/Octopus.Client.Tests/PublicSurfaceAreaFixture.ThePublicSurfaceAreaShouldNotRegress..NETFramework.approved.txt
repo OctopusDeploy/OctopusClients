@@ -3723,6 +3723,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
   {
+    List<ActionTemplateSearchResource> Search()
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
@@ -4134,6 +4135,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
+    Task<List<ActionTemplateSearchResource>> Search()
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>
