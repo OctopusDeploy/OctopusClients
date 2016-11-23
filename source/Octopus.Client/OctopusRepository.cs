@@ -546,6 +546,11 @@ namespace Octopus.Client
             public ActionTemplateRepository(IOctopusClient client) : base(client, "ActionTemplates")
             {
             }
+
+            public List<ActionTemplateSearchResource> Search()
+            {
+                return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+            }
         }
 
         class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
