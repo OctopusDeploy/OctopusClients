@@ -100,6 +100,13 @@ namespace Octopus.Cli.Commands
                 var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
                 Log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
+
+            if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
+            {
+                var channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
+                Log.Information(" - Channel: {Channel:l}", channel.Name);
+            }
+
             Log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
             Log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
 
