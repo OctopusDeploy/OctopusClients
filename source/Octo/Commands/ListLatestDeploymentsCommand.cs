@@ -36,11 +36,6 @@ namespace Octopus.Cli.Commands
             Log.Debug("Loading dashboard...");
             var dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
 
-            Log.Debug("Loading deployments...");
-            var deployments = await Repository.Deployments.Get(dashboard.Items.Select(d => d.DeploymentId).ToArray()).ConfigureAwait(false);
-
-            var deploymentsById = deployments.ToDictionary(p => p.Id, p => p);
-
             var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
 
             if (!dashboard.Items.Any())
@@ -50,7 +45,7 @@ namespace Octopus.Cli.Commands
 
             foreach (var item in dashboard.Items)
             {
-                await LogDeploymentInfo(deploymentsById[item.DeploymentId], environmentsById, projectsById, tenantsById).ConfigureAwait(false);
+                await LogDeploymentInfo(item, environmentsById, projectsById, tenantsById).ConfigureAwait(false);
             }
         }
 
@@ -92,41 +87,37 @@ namespace Octopus.Cli.Commands
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        public async Task LogDeploymentInfo(DeploymentResource deployment, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
+        public async Task LogDeploymentInfo(DashboardItemResource dashboardItem, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
         {
-            var nameOfDeploymentEnvironment = environmentsById[deployment.EnvironmentId];
-            var nameOfDeploymentProject = projectedById[deployment.ProjectId];
-            var task = Repository.Tasks.Get(deployment.Link("Task")).ConfigureAwait(false);
-            var release = Repository.Releases.Get(deployment.Link("Release")).ConfigureAwait(false);
+            var nameOfDeploymentEnvironment = environmentsById[dashboardItem.EnvironmentId];
+            var nameOfDeploymentProject = projectedById[dashboardItem.ProjectId];
+            var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
 
-            var propertiesToLog = new List<string>();
-            propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(await task));
-            propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(await release));
             Log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
             Log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
-            if (!string.IsNullOrEmpty(deployment.TenantId))
+            if (!string.IsNullOrEmpty(dashboardItem.TenantId))
             {
-                var nameOfDeploymentTenant = tenantsById[deployment.TenantId];
+                var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
                 Log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
-            foreach (var property in propertiesToLog)
-            {
-                if (property == "State: Failed")
-                    Log.Error("   {Property:l}", property);
-                else
-                    Log.Information("   {Property:l}", property);
-            }
-            Log.Information("");
-        }
+            Log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
+            Log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
 
-        static IEnumerable<string> FormatTaskPropertiesAsStrings(TaskResource task)
-        {
-            return new List<string>
+            if (dashboardItem.State == TaskState.Failed)
             {
-                "Date: " + task.QueueTime,
-                "Duration: " + task.Duration,
-                "State: " + task.State
-            };
+                Log.Error("   State: {$State:l}", dashboardItem.State);
+            }
+            else
+            {
+                Log.Information("   State: {$State:l}", dashboardItem.State);
+            }
+
+            Log.Information("   Version: {Version:l}", release.Version);
+            Log.Information("   Assembled: {$Assembled:l}", release.Assembled);
+            Log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            Log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
+
+            Log.Information("");
         }
     }
 }
