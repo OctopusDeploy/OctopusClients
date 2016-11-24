@@ -2362,12 +2362,11 @@ Octopus.Client.Model
     .ctor(Version, IEnumerable<String>, String, String, Boolean)
     Boolean IsLegacyVersion { get; }
     Boolean IsSemVer2 { get; }
+    String OriginalString { get; }
     Int32 Revision { get; }
     Version Version { get; }
-    static Octopus.Client.Model.SemanticVersion FromNuGetVersion(NuGetVersion)
     static String IncrementRelease(String)
     static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
-    NuGetVersion ToNuGetVersion()
     String ToString()
     static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
     static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
