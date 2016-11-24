@@ -27,38 +27,25 @@ namespace Octopus.Cli.Commands
 
         protected override async Task Execute()
         {
-            var projectsFilter = new string[0];
-            var projectsById = new Dictionary<string, string>();
-            if (projects.Count > 0)
-            {
-                Log.Debug("Loading projects...");
-                var projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
-                projectsFilter = projectResources.Select(p => p.Id).ToArray();
-                projectsById = projectResources.ToDictionary(p => p.Id, p => p.Name);
-            }
-            else
-            {
-                projectsById = (await Repository.Projects.FindAll().ConfigureAwait(false)).ToDictionary(p => p.Id, p => p.Name);
-            }
+            var projectsById = await LoadProjects();
+            var projectsFilter = projectsById.Keys.ToArray();
 
             var environmentsById = await LoadEnvironments();
+            var environmentsFilter = environmentsById.Keys.ToArray();
 
             Log.Debug("Loading dashboard...");
-            var dashboardItems =
-                await
-                    Repository.Dashboards.GetDynamicDashboard(projectsFilter,
-                            environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] {})
-                        .ConfigureAwait(false);
+            var dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
 
             Log.Debug("Loading deployments...");
-            var deployments =
-                await Repository.Deployments.Get(dashboardItems.Items.Select(d => d.DeploymentId).ToArray()).ConfigureAwait(false);
+            var deployments = await Repository.Deployments.Get(dashboard.Items.Select(d => d.DeploymentId).ToArray()).ConfigureAwait(false);
 
             var deploymentsById = deployments.ToDictionary(p => p.Id, p => p);
 
-            foreach (var item in dashboardItems.Items)
+            var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
+
+            foreach (var item in dashboard.Items)
             {
-                await LogDeploymentInfo(deploymentsById[item.DeploymentId], environmentsById, projectsById).ConfigureAwait(false);
+                await LogDeploymentInfo(deploymentsById[item.DeploymentId], environmentsById, projectsById, tenantsById).ConfigureAwait(false);
             }
         }
 
@@ -86,7 +73,7 @@ namespace Octopus.Cli.Commands
             return (await environmentResources.ConfigureAwait(false)).ToDictionary(p => p.Id, p => p.Name);
         }
 
-        public async Task LogDeploymentInfo(DeploymentResource deployment, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById)
+        public async Task LogDeploymentInfo(DeploymentResource deployment, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[deployment.EnvironmentId];
             var nameOfDeploymentProject = projectedById[deployment.ProjectId];
@@ -98,6 +85,11 @@ namespace Octopus.Cli.Commands
             propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(await release));
             Log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
             Log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
+            if (!string.IsNullOrEmpty(deployment.TenantId))
+            {
+                var nameOfDeploymentTenant = tenantsById[deployment.TenantId];
+                Log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
+            }
             foreach (var property in propertiesToLog)
             {
                 if (property == "State: Failed")
