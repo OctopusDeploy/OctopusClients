@@ -43,6 +43,11 @@ namespace Octopus.Cli.Commands
 
             var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
 
+            if (!dashboard.Items.Any())
+            {
+                Log.Information("Did not find any releases matching the search criteria.");
+            }
+
             foreach (var item in dashboard.Items)
             {
                 await LogDeploymentInfo(deploymentsById[item.DeploymentId], environmentsById, projectsById, tenantsById).ConfigureAwait(false);
@@ -52,25 +57,39 @@ namespace Octopus.Cli.Commands
         async Task<IDictionary<string, string>> LoadProjects()
         {
             Log.Debug("Loading projects...");
+            var projectQuery = projects.Any()
+                ? Repository.Projects.FindByNames(projects.ToArray())
+                : Repository.Projects.FindAll();
 
-            if (projects.Any())
+            var projectResources = await projectQuery.ConfigureAwait(false);
+
+            var missingProjects = projects.Except(projectResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missingProjects.Any())
             {
-                var projectResources = Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
-                return (await projectResources).ToDictionary(p => p.Id, p => p.Name);
+                throw new CommandException("Could not find projects: " + string.Join(",", missingProjects));
             }
 
-            var allProjects = Repository.Projects.FindAll().ConfigureAwait(false);
-            return (await allProjects).ToDictionary(p => p.Id, p => p.Name);
+            return projectResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
         async Task<IDictionary<string, string>> LoadEnvironments()
         {
             Log.Debug("Loading environments...");
-            var environmentResources = environments.Count > 0
+            var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
 
-            return (await environmentResources.ConfigureAwait(false)).ToDictionary(p => p.Id, p => p.Name);
+            var environmentResources = await environmentQuery.ConfigureAwait(false);
+
+            var missingEnvironments = environments.Except(environmentResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missingEnvironments.Any())
+            {
+                throw new CommandException("Could not find environments: " + string.Join(",", missingEnvironments));
+            }
+
+            return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
         public async Task LogDeploymentInfo(DeploymentResource deployment, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
