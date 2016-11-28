@@ -204,6 +204,9 @@ namespace Octopus.Client
         /// </exception>
         public string Resolve()
         {
+            if(template == null)
+                throw new ArgumentException("template is null");
+
             var currentState = States.CopyingLiterals;
             result = new StringBuilder();
             StringBuilder currentExpression = null;
