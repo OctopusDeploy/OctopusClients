@@ -1480,6 +1480,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
