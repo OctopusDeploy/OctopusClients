@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite)
         {
-            var nugetPkgBuilder = new NuGet.PackageBuilder();
+            var nugetPkgBuilder = new PackageBuilder();
 
             nugetPkgBuilder.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
             nugetPkgBuilder.Populate(metadata);

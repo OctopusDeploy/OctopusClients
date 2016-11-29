@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using NuGet.Versioning;
 using Octopus.Client.Model.Versioning;
 
 // ReSharper disable once CheckNamespace
@@ -202,6 +201,11 @@ namespace Octopus.Client.Model
         public bool IsSemVer2
         {
             get { return this.ReleaseLabels.Count() > 1 || this.HasMetadata; }
+        }
+
+        public string OriginalString
+        {
+            get { return _originalString; }
         }
 
         public static string IncrementRelease(string release)
