@@ -24,11 +24,12 @@ namespace Octopus.Cli.Commands
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Version number of the release to deploy. Or specify --version=latest for the latest release.", v => VersionNumber = v);
             options.Add("channel=", "[Optional] Channel to use when getting the release to deploy", v => ChannelName = v);
+            options.Add("updateVariables", "Overwrite the variable snapshot for the release by re-importing the variables from the project", v => UpdateVariableSnapshot = true);
         }
 
-        
         public string VersionNumber { get; set; }
         public string ChannelName { get; set; }
+        public bool UpdateVariableSnapshot { get; set; }
 
 
         protected override void ValidateParameters()
@@ -45,6 +46,12 @@ namespace Octopus.Cli.Commands
             var project = await RepositoryCommonQueries.GetProjectByName(ProjectName).ConfigureAwait(false);
             var channel = await GetChannel(project).ConfigureAwait(false);
             var releaseToPromote = await RepositoryCommonQueries.GetReleaseByVersion(VersionNumber, project, channel).ConfigureAwait(false);
+
+            if (UpdateVariableSnapshot)
+            {
+                Log.Debug("Updating the release variable snapshot with variables from the project");
+                await Repository.Releases.SnapshotVariables(releaseToPromote);
+            }
 
             await DeployRelease(project, releaseToPromote).ConfigureAwait(false);
         }
