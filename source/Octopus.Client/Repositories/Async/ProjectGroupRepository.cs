@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories.Async
         {
             var resources = new List<ProjectResource>();
 
-            await Client.Paginate<ProjectResource>(projectGroup.Link("ProjectGroups"), new { }, page =>
+            await Client.Paginate<ProjectResource>(projectGroup.Link("Projects"), new { }, page =>
             {
                 resources.AddRange(page.Items);
                 return true;
