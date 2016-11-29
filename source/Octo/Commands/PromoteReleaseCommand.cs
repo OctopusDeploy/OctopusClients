@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Infrastructure;
@@ -21,9 +19,11 @@ namespace Octopus.Cli.Commands
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("from=", "Name of the environment to get the current deployment from, e.g., Staging", v => FromEnvironmentName = v);
             options.Add("to=|deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("updateVariables", "Overwrite the variable snapshot for the release by re-importing the variables from the project", v => UpdateVariableSnapshot = true);
         }
 
         public string FromEnvironmentName { get; set; }
+        public bool UpdateVariableSnapshot { get; set; }
 
         protected override void ValidateParameters()
         {
@@ -57,6 +57,12 @@ namespace Octopus.Cli.Commands
 
             Log.Debug("Finding release details for release {Version:l}", dashboardItem.ReleaseVersion);
             var release = await Repository.Projects.GetReleaseByVersion(project, dashboardItem.ReleaseVersion).ConfigureAwait(false);
+
+            if (UpdateVariableSnapshot)
+            {
+                Log.Debug("Updating the release variable snapshot with variables from the project");
+                await Repository.Releases.SnapshotVariables(release);
+            }
 
             await DeployRelease(project, release).ConfigureAwait(false);
         }
