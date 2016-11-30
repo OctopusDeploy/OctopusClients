@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -28,57 +27,104 @@ namespace Octopus.Cli.Commands
 
         protected override async Task Execute()
         {
-            var projectsFilter = new string[0];
-            if (projects.Count > 0)
+            var projectsById = await LoadProjects();
+            var projectsFilter = projectsById.Keys.ToArray();
+
+            var environmentsById = await LoadEnvironments();
+            var environmentsFilter = environmentsById.Keys.ToArray();
+
+            Log.Debug("Loading dashboard...");
+            var dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
+
+            var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
+
+            if (!dashboard.Items.Any())
             {
-                Log.Debug("Loading projects...");
-                var projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
-                projectsFilter = projectResources.Select(p => p.Id).ToArray();
+                Log.Information("Did not find any releases matching the search criteria.");
             }
 
+            foreach (var item in dashboard.Items)
+            {
+                await LogDeploymentInfo(item, environmentsById, projectsById, tenantsById).ConfigureAwait(false);
+            }
+        }
+
+        async Task<IDictionary<string, string>> LoadProjects()
+        {
+            Log.Debug("Loading projects...");
+            var projectQuery = projects.Any()
+                ? Repository.Projects.FindByNames(projects.ToArray())
+                : Repository.Projects.FindAll();
+
+            var projectResources = await projectQuery.ConfigureAwait(false);
+
+            var missingProjects = projects.Except(projectResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missingProjects.Any())
+            {
+                throw new CommandException("Could not find projects: " + string.Join(",", missingProjects));
+            }
+
+            return projectResources.ToDictionary(p => p.Id, p => p.Name);
+        }
+
+        async Task<IDictionary<string, string>> LoadEnvironments()
+        {
             Log.Debug("Loading environments...");
-            var environmentResources = environments.Count > 0
+            var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
 
-            var environmentsById = (await environmentResources.ConfigureAwait(false)).ToDictionary(p => p.Id, p => p.Name);
+            var environmentResources = await environmentQuery.ConfigureAwait(false);
 
-            var deployments = await Repository.Deployments.FindAll(projectsFilter, environments.Count > 0 ? environmentsById.Keys.ToArray() : new string[] { }).ConfigureAwait(false);
+            var missingEnvironments = environments.Except(environmentResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
-            foreach (var deployment in deployments.Items)
+            if (missingEnvironments.Any())
             {
-                await LogDeploymentInfo(deployment, environmentsById).ConfigureAwait(false);
+                throw new CommandException("Could not find environments: " + string.Join(",", missingEnvironments));
             }
+
+            return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        public async Task LogDeploymentInfo(DeploymentResource deployment, Dictionary<string, string> environmentsById)
+        public async Task LogDeploymentInfo(DashboardItemResource dashboardItem, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
         {
-            var nameOfDeploymentEnvironment = environmentsById[deployment.EnvironmentId];
-            var task = Repository.Tasks.Get(deployment.Link("Task")).ConfigureAwait(false);
-            var release = Repository.Releases.Get(deployment.Link("Release")).ConfigureAwait(false);
+            var nameOfDeploymentEnvironment = environmentsById[dashboardItem.EnvironmentId];
+            var nameOfDeploymentProject = projectedById[dashboardItem.ProjectId];
+            var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
 
-            var propertiesToLog = new List<string>();
-            propertiesToLog.AddRange(FormatTaskPropertiesAsStrings(await task));
-            propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(await release));
+            Log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
             Log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
-            foreach (var property in propertiesToLog)
+            if (!string.IsNullOrEmpty(dashboardItem.TenantId))
             {
-                if (property == "State: Failed")
-                    Log.Error("   {Property:l}", property);
-                else
-                    Log.Information("   {Property:l}", property);
+                var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
+                Log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
-            Log.Information("");
-        }
 
-        static IEnumerable<string> FormatTaskPropertiesAsStrings(TaskResource task)
-        {
-            return new List<string>
+            if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
             {
-                "Date: " + task.QueueTime,
-                "Duration: " + task.Duration,
-                "State: " + task.State
-            };
+                var channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
+                Log.Information(" - Channel: {Channel:l}", channel.Name);
+            }
+
+            Log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
+            Log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
+
+            if (dashboardItem.State == TaskState.Failed)
+            {
+                Log.Error("   State: {$State:l}", dashboardItem.State);
+            }
+            else
+            {
+                Log.Information("   State: {$State:l}", dashboardItem.State);
+            }
+
+            Log.Information("   Version: {Version:l}", release.Version);
+            Log.Information("   Assembled: {$Assembled:l}", release.Assembled);
+            Log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            Log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
+
+            Log.Information("");
         }
     }
 }

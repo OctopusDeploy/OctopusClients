@@ -1096,6 +1096,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
@@ -2353,12 +2354,11 @@ Octopus.Client.Model
     .ctor(Version, IEnumerable<String>, String, String, Boolean)
     Boolean IsLegacyVersion { get; }
     Boolean IsSemVer2 { get; }
+    String OriginalString { get; }
     Int32 Revision { get; }
     Version Version { get; }
-    static Octopus.Client.Model.SemanticVersion FromNuGetVersion(NuGetVersion)
     static String IncrementRelease(String)
     static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
-    NuGetVersion ToNuGetVersion()
     String ToString()
     static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
     static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
