@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Model.Triggers;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
@@ -19,9 +20,9 @@ namespace Octopus.Client.Editors.Async
             this.owner = owner;
         }
 
-        public async Task<ProjectTriggerEditor> CreateOrModify(string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public async Task<ProjectTriggerEditor> CreateOrModify(string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            var projectTriggerBuilder = await new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, conditions).ConfigureAwait(false);
+            var projectTriggerBuilder = await new ProjectTriggerEditor(repository).CreateOrModify(owner, name, filter, action).ConfigureAwait(false);
             trackedProjectTriggerBuilders.Add(projectTriggerBuilder);
             return projectTriggerBuilder;
         }

@@ -10,6 +10,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories;
+using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client
 {
@@ -1358,9 +1359,9 @@ namespace Octopus.Client
                 return FindByName(name, path: project.Link("Triggers"));
             }
 
-            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
+            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
             {
-                return new ProjectTriggerEditor(this).CreateOrModify(project, name, type);
+                return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
             }
         }
 

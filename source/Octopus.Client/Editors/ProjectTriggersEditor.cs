@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Octopus.Client.Model;
+using Octopus.Client.Model.Triggers;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
@@ -17,9 +18,9 @@ namespace Octopus.Client.Editors
             this.owner = owner;
         }
 
-        public ProjectTriggerEditor CreateOrModify(string name, ProjectTriggerType type, params ProjectTriggerConditionEvent[] conditions)
+        public ProjectTriggerEditor CreateOrModify(string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            var projectTriggerBuilder = new ProjectTriggerEditor(repository).CreateOrModify(owner, name, type, conditions);
+            var projectTriggerBuilder = new ProjectTriggerEditor(repository).CreateOrModify(owner, name, filter, action);
             trackedProjectTriggerBuilders.Add(projectTriggerBuilder);
             return projectTriggerBuilder;
         }
