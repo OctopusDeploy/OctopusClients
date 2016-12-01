@@ -13,6 +13,7 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<UserResource> Register(RegisterCommand registerCommand);
         Task SignIn(LoginCommand loginCommand);
+        Task SignIn(string username, string password, bool rememberMe = false);
         Task SignOut();
         Task<UserResource> GetCurrent();
         Task<UserPermissionSetResource> GetPermissions(UserResource user);
@@ -42,6 +43,11 @@ namespace Octopus.Client.Repositories.Async
         public Task SignIn(LoginCommand loginCommand)
         {
             return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+        }
+
+        public Task SignIn(string username, string password, bool rememberMe = false)
+        {
+            return SignIn(new LoginCommand() {Username = username, Password = password, RememberMe = rememberMe});
         }
 
         public Task SignOut()

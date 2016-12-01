@@ -1260,6 +1260,11 @@ namespace Octopus.Client
                 Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
             }
 
+            public void SignIn(string username, string password, bool rememberMe = false)
+            {
+                SignIn(new LoginCommand() { Username = username, Password = password, RememberMe = rememberMe });
+            }
+
             public void SignOut()
             {
                 Client.Post(Client.RootDocument.Link("SignOut"));

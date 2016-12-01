@@ -4072,6 +4072,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
     void RevokeApiKey(Octopus.Client.Model.ApiKeyResource)
     void SignIn(Octopus.Client.Model.LoginCommand)
+    void SignIn(String, String, Boolean)
     void SignOut()
   }
   interface IUserRolesRepository
@@ -4478,6 +4479,7 @@ Octopus.Client.Repositories.Async
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)
     Task RevokeApiKey(Octopus.Client.Model.ApiKeyResource)
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignIn(String, String, Boolean)
     Task SignOut()
   }
   interface IUserRolesRepository

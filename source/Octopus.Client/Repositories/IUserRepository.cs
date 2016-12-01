@@ -12,6 +12,7 @@ namespace Octopus.Client.Repositories
     {
         UserResource Register(RegisterCommand registerCommand);
         void SignIn(LoginCommand loginCommand);
+        void SignIn(string username, string password, bool rememberMe = false);
         void SignOut();
         UserResource GetCurrent();
         UserPermissionSetResource GetPermissions(UserResource user);
