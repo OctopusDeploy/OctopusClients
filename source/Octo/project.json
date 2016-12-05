@@ -33,6 +33,9 @@
     "net45": {
       "FrameworkAssemblies": {
         "System.Xml.ReaderWriter": "*"
+      },
+      "buildOptions": {
+        "platform": "anycpu32bitpreferred"
       }
     }
   },
