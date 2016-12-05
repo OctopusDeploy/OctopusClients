@@ -300,7 +300,8 @@ namespace Octopus.Client.Tests.Conventions
                 typeof (IEventRepository).GetTypeInfo(),
                 typeof (IVariableSetRepository).GetTypeInfo(),
                 typeof (IChannelRepository).GetTypeInfo(),
-                typeof (IProjectTriggerRepository).GetTypeInfo()
+                typeof (IProjectTriggerRepository).GetTypeInfo(),
+                typeof (ICommunityActionTemplateRepository).GetTypeInfo()
             };
 
             var missing = AsyncRepositoryInterfaceTypes
@@ -326,7 +327,8 @@ namespace Octopus.Client.Tests.Conventions
                 typeof (Sync.IEventRepository).GetTypeInfo(),
                 typeof (Sync.IVariableSetRepository).GetTypeInfo(),
                 typeof (Sync.IChannelRepository).GetTypeInfo(),
-                typeof (Sync.IProjectTriggerRepository).GetTypeInfo()
+                typeof (Sync.IProjectTriggerRepository).GetTypeInfo(),
+                typeof (Sync.ICommunityActionTemplateRepository).GetTypeInfo()
             };
 
             var missing = SyncRepositoryInterfaceTypes

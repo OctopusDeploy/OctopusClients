@@ -23,6 +23,8 @@ namespace Octopus.Client.Model
 
         public int Version { get; set; }
 
+        public string CommunityActionTemplateId { get; set; }
+
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties
         {

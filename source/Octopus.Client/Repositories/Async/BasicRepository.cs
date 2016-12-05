@@ -6,7 +6,6 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-
         // ReSharper disable MemberCanBePrivate.Local
         // ReSharper disable UnusedMember.Local
         // ReSharper disable MemberCanBeProtected.Local

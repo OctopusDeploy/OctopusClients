@@ -16,6 +16,8 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         Task<TaskDetailsResource> GetDetails(TaskResource resource);
+        Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
+        Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         Task<string> GetRawOutputLog(TaskResource resource);
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
@@ -95,6 +97,34 @@ namespace Octopus.Client.Repositories.Async
             return Create(resource);
         }
 
+        public Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
+                                                        string[] environmentIds = null, string[] targetRoles = null, string description = null)
+        {
+            if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
+
+            var resource = new TaskResource();
+            resource.Name = BuiltInTasks.AdHocScript.Name;
+            resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
+            resource.Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.AdHocScript.Arguments.EnvironmentIds, environmentIds},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
+                    {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
+                    {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
+                    {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
+                };
+            return Create(resource);
+        }
+
+        public Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null)
+        {
+            var resource = new TaskResource();
+            resource.Name = BuiltInTasks.SyncCommunityActionTemplates.Name;
+            resource.Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name;
+
+            return Create(resource);
+        }
+
         public Task<TaskDetailsResource> GetDetails(TaskResource resource)
         {
             return Client.Get<TaskDetailsResource>(resource.Link("Details"));
@@ -109,7 +139,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Post(resource.Link("Rerun"), (TaskResource)null);
         }
-
+        
         public Task Cancel(TaskResource resource)
         {
             return Client.Post(resource.Link("Cancel"), (TaskResource)null);

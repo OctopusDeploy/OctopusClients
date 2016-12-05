@@ -212,6 +212,22 @@ namespace Octopus.Client
         void Put<TResource>(string path, TResource resource);
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the container resource.</param>
+        void Put(string path);
+
+        /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
         /// </summary>

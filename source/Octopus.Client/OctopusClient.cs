@@ -246,6 +246,27 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the container resource.</param>
+        public void Put(string path)
+        {
+            var uri = QualifyUri(path);
+
+            DispatchRequest<string>(new OctopusRequest("PUT", uri), false);
+        }
+
+        /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>

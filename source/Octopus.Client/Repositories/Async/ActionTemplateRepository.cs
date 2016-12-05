@@ -1,4 +1,6 @@
-﻿using Octopus.Client.Model;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -6,6 +8,11 @@ namespace Octopus.Client.Repositories.Async
     {
         public ActionTemplateRepository(IOctopusAsyncClient client) : base(client, "ActionTemplates")
         {
+        }
+
+        public Task<List<ActionTemplateSearchResource>> Search()
+        {
+            return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
         }
     }
 }
