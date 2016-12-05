@@ -30,6 +30,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -105,6 +106,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -3403,6 +3405,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface ICreate`1
   {

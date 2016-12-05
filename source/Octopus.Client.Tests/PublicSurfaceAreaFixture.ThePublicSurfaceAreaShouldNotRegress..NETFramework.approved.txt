@@ -36,6 +36,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -102,6 +103,7 @@ Octopus.Client
     Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
     void Post(String)
     void Put(String, Octopus.Client.TResource)
+    void Put(String)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Octopus.Client.Model.RootResource RefreshRootDocument()
@@ -178,6 +180,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -252,6 +255,7 @@ Octopus.Client
     Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
     void Post(String)
     void Put(String, Octopus.Client.TResource)
+    void Put(String)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Octopus.Client.Model.RootResource RefreshRootDocument()
@@ -3802,6 +3806,9 @@ Octopus.Client.Repositories
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
   {
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface ICreate`1
   {
@@ -4215,6 +4222,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface ICreate`1
   {

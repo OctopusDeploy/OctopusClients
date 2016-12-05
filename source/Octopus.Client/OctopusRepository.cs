@@ -559,6 +559,21 @@ namespace Octopus.Client
             public CommunityActionTemplateRepository(IOctopusClient client) : base(client, "CommunityActionTemplates")
             {
             }
+
+            public void Install(CommunityActionTemplateResource resource)
+            {
+                Client.Post(resource.Links["Installation"]);
+            }
+
+            public void UpdateInstallation(CommunityActionTemplateResource resource)
+            {
+                Client.Put(resource.Links["Installation"]);
+            }
+
+            public ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource)
+            {
+                return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"]);
+            }
         }
 
         class FeedRepository : BasicRepository<FeedResource>, IFeedRepository
