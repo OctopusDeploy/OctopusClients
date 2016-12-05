@@ -41,10 +41,7 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 });
 
 var nugetVersion = gitVersionInfo.NuGetVersion;
-var winBinary = "win7-x64"; 
 var runtimes = new[] { 
-    winBinary,
-    "win7-x86",
     "osx.10.10-x64",
     "ubuntu.14.04-x64",
     "ubuntu.16.04-x64",
@@ -158,9 +155,17 @@ Task("__UpdateProjectJsonVersion")
 Task("__Publish")
     .Does(() =>
 {
+    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
+    {
+        Framework = "net45",
+        Configuration = configuration,
+        OutputDirectory = $"{octoPublishFolder}/netfx"
+    });
+
     var portablePublishDir = Path.Combine(octoPublishFolder, "portable");
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
+        Framework = "netcoreapp1.0",
         Configuration = configuration,
         OutputDirectory = portablePublishDir
     });
@@ -173,26 +178,17 @@ Task("__Publish")
     foreach(var runtime in runtimes)
         DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
         {
+            Framework = "netcoreapp1.0",
             Configuration = configuration,
             Runtime = runtime,
             OutputDirectory = Path.Combine(octoPublishFolder, runtime)
         });
-
-    var ucrtDir = $"{EnvironmentVariable("ProgramFiles(x86)")}/Windows Kits/10/Redist/ucrt/DLLs";
-    if(!DirectoryExists(ucrtDir))
-        throw new Exception($"The directory {ucrtDir} does not exist");
-     
-    CopyFiles($"{ucrtDir}/x64/*crt*.dll", $"{octoPublishFolder}/win7-x64");
-    CopyFiles($"{ucrtDir}/x86/*crt*.dll", $"{octoPublishFolder}/win7-x86");
-
-    if(GetFiles($"{octoPublishFolder}/win7-x*/*crt*.dll").Count != 32)
-        throw new Exception("Not all 16 ucrt DLLs (per runtime) where copied");
 });
 
 private void ConvertToJsonOutput(string projectJson)
 {
     ModifyJson(projectJson, json => {
-        var deps = (JObject)json["dependencies"];
+        var deps = (JObject)json["frameworks"]["netcoreapp1.0"]["dependencies"];
         deps.Remove("Microsoft.NETCore.App");
         deps["Microsoft.NETCore.Runtime.CoreCLR"] = new JValue("1.0.4");
         deps["Microsoft.NETCore.DotNetHostPolicy"] = new JValue("1.0.1");
@@ -238,21 +234,52 @@ private void TarGzip(string path, string outputFile)
     Information("Successfully created TGZ file: {0}", outFile);
 }
 
+Task("__MergeOctoExe")
+    .Does(() => {
+        var inputFolder = $"{octoPublishFolder}/netfx";
+        var outputFolder = $"{octoPublishFolder}/netfx-merged";
+        CreateDirectory(outputFolder);
+        ILRepack(
+            $"{outputFolder}/Octo.exe",
+            $"{inputFolder}/Octo.exe",
+            IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            new ILRepackSettings { 
+                Internalize = true, 
+                Libs = new List<FilePath>() { inputFolder }
+            }
+        );
+    });
+
 Task("__Zip")
+    .IsDependentOn("__MergeOctoExe")
     .IsDependentOn("__Publish")
     .Does(() => {
+
+
         foreach(var dir in IO.Directory.EnumerateDirectories(octoPublishFolder))
         {
             var dirName = Path.GetFileName(dir);
-            var outFile = Path.Combine(artifactsDir, $"OctopusTools.{nugetVersion}.{dirName.Replace("win7","win")}");
-            if(dirName.StartsWith("win") || dirName == "portable")
-                Zip(dir, outFile + ".zip");
-            if(!dirName.StartsWith("win"))
+
+            if(dirName == "netfx")
+                continue;
+
+            if(dirName == "netfx-merged")
+            {
+                Zip(dir, $"{artifactsDir}/OctopusTools.{nugetVersion}.zip");
+            }
+            else
+            {
+                var outFile = $"{artifactsDir}/OctopusTools.{nugetVersion}.{dirName}";
+                if(dirName == "portable")
+                    Zip(dir, outFile + ".zip");
+            
                 TarGzip(dir, outFile);
+            }
         }
     });
 
 Task("__PackNuget")
+    .IsDependentOn("__MergeOctoExe")
     .IsDependentOn("__Publish")
     .IsDependentOn("__PackOctopusToolsNuget")
     .IsDependentOn("__PackClientNuget");
@@ -270,7 +297,7 @@ Task("__PackOctopusToolsNuget")
         var nugetPackDir = Path.Combine(publishDir, "nuget");
         var nuspecFile = "OctopusTools.nuspec";
         
-        CopyDirectory(Path.Combine(octoPublishFolder, winBinary), nugetPackDir);
+        CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
         CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
 

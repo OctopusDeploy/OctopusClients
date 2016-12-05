@@ -34,7 +34,7 @@ namespace Octopus.Cli.Exporters
 
         protected virtual Task Export(Dictionary<string, string> paramDictionary)
         {
-            return Task.CompletedTask;
+            return Task.WhenAll();
         }
 
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)

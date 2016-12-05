@@ -451,7 +451,7 @@ namespace Octopus.Cli.Commands
         private Task CancelDeploymentOnTimeoutIfRequested(IReadOnlyList<TaskResource> deploymentTasks)
         {
             if (!CancelOnTimeout)
-                return Task.CompletedTask;
+                return Task.WhenAll();
 
             var tasks = deploymentTasks.Select(async task => {
                 Log.Warning("Cancelling deployment task '{Task:l}'", task.Description);

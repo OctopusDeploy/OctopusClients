@@ -10,6 +10,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories;
+using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client
 {
@@ -1306,6 +1307,11 @@ namespace Octopus.Client
                 Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
             }
 
+            public void SignIn(string username, string password, bool rememberMe = false)
+            {
+                SignIn(new LoginCommand() { Username = username, Password = password, RememberMe = rememberMe });
+            }
+
             public void SignOut()
             {
                 Client.Post(Client.RootDocument.Link("SignOut"));
@@ -1405,9 +1411,9 @@ namespace Octopus.Client
                 return FindByName(name, path: project.Link("Triggers"));
             }
 
-            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
+            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
             {
-                return new ProjectTriggerEditor(this).CreateOrModify(project, name, type);
+                return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
             }
         }
 

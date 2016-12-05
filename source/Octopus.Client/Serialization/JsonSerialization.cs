@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Octopus.Client.Model;
 
@@ -28,7 +27,9 @@ namespace Octopus.Client.Serialization
                     new AccountConverter(),
                     new FeedConverter(),
                     new HrefConverter(null),
-                    new PropertyValueResource.PropertyValueJsonConverter()
+                    new PropertyValueResource.PropertyValueJsonConverter(),
+                    new TriggerActionConverter(),
+                    new TriggerFilterConverter()
                 }
             };
         }
