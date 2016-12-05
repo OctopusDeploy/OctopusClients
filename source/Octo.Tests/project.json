@@ -43,7 +43,10 @@
       "imports": [
         "dnxcore50",
         "portable-net45+win8"
-      ]
+      ],
+      "buildOptions": {
+        "define": [ "HAS_APP_CONTEXT" ]
+      }
     },
     "net452": {}
   }
