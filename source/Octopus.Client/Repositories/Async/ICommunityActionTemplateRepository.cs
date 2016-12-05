@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ICommunityActionTemplateRepository : IGet<CommunityActionTemplateResource>
+    public interface ICommunityActionTemplateRepository : IGet<CommunityActionTemplateResource> 
     {
     }
 }
