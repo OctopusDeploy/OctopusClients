@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Octopus.Client.Model;
+using Octopus.Client.Model; 
 
 namespace Octopus.Client.Repositories.Async
 {
