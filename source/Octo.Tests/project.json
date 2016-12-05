@@ -1,10 +1,6 @@
 {
   "version": "0.0.0-*",
   "dependencies": {
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.0"
-    },
     "NuGet.Common": "3.5.0-octopus-35842",
     "NuGet.Frameworks": "3.5.0-octopus-35842",
     "NuGet.Packaging": "3.5.0-octopus-35842",
@@ -30,16 +26,25 @@
   },
   "buildOptions": {
     "copyToOutput": {
-      "include": [ "Commands/Resources/**" ]
+      "include": [
+        "Commands/Resources/**"
+      ]
     }
   },
   "testRunner": "nunit",
   "frameworks": {
     "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
       "imports": [
         "dnxcore50",
         "portable-net45+win8"
       ]
-    }
+    },
+    "net462": {}
   }
 }

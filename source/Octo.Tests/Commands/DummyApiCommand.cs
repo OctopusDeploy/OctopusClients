@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
 
         protected override Task Execute()
         {
-            return Task.CompletedTask;
+            return Task.WhenAll();
         }
     }
 }
