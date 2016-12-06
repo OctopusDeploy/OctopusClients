@@ -1,7 +1,6 @@
 {
   "version": "0.0.0-*",
   "dependencies": {
-    "Newtonsoft.Json": "9.0.1"
   },
   "buildOptions": {
     "debugType": "portable",
@@ -21,11 +20,12 @@
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
-        "System.ComponentModel.DataAnnotations": "",
-        "System.Numerics": ""
+        "System.ComponentModel.DataAnnotations": "*",
+        "System.Numerics": "*",
+        "System.Net.Http": "*"
       },
       "dependencies": {
-        "System.Net.Http": "4.0.0"
+        "Newtonsoft.Json": "7.0.1"
       },
       "buildOptions": {
         "define": ["SYNC_CLIENT"]
@@ -46,7 +46,8 @@
         "System.Globalization": "4.0.11",
         "System.Runtime.Numerics": "4.0.1",
         "Microsoft.NETCore.Portable.Compatibility": "1.0.2",
-        "System.Net.Http": "4.1.0"
+        "System.Net.Http": "4.1.0",
+        "Newtonsoft.Json": "9.0.1"
       },
       "buildOptions": {
         "define": [
