@@ -1118,7 +1118,7 @@ namespace Octopus.Client
             {
                 var resources = new List<ProjectResource>();
 
-                Client.Paginate<ProjectResource>(projectGroup.Link("ProjectGroups"), new {}, page =>
+                Client.Paginate<ProjectResource>(projectGroup.Link("Projects"), new {}, page =>
                 {
                     resources.AddRange(page.Items);
                     return true;
