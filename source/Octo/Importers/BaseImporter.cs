@@ -42,7 +42,7 @@ namespace Octopus.Cli.Importers
 
         protected virtual Task Import(Dictionary<string, string> paramDictionary)
         {
-            return Task.CompletedTask;
+            return Task.WhenAll();
         }
 
         protected virtual Task<bool> Validate(Dictionary<string, string> paramDictionary)

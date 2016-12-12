@@ -50,6 +50,5 @@ namespace Octopus.Cli.Tests.Commands
         {
             return apiCommand.Execute(CommandLineArgs.ToArray());
         }
-
     }
 }
