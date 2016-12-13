@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip });
         }
 
-        public async Task<List<ReleaseResource>> GetReleases(ProjectResource project)
+        public async Task<List<ReleaseResource>> GetAllReleases(ProjectResource project)
         {
             var resources = new List<ReleaseResource>();
 

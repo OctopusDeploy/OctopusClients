@@ -643,7 +643,7 @@ namespace Octopus.Client
                 return Client.List<ReleaseResource>(project.Link("Releases"), new {skip});
             }
 
-            public List<ReleaseResource> GetReleases(ProjectResource project)
+            public List<ReleaseResource> GetAllReleases(ProjectResource project)
             {
                 var resources = new List<ReleaseResource>();
 
