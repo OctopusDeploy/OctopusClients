@@ -643,6 +643,19 @@ namespace Octopus.Client
                 return Client.List<ReleaseResource>(project.Link("Releases"), new {skip});
             }
 
+            public List<ReleaseResource> GetReleases(ProjectResource project)
+            {
+                var resources = new List<ReleaseResource>();
+
+                Client.Paginate<ReleaseResource>(project.Link("Releases"), new { }, page =>
+                {
+                    resources.AddRange(page.Items);
+                    return true;
+                });
+
+                return resources;
+            }
+
             public ReleaseResource GetReleaseByVersion(ProjectResource project, string version)
             {
                 return Client.Get<ReleaseResource>(project.Link("Releases"), new {version});
