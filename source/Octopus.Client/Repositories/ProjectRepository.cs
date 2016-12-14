@@ -18,9 +18,9 @@ namespace Octopus.Client.Repositories
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description);
     }
     
-    class ProjectsRepository : BasicRepository<ProjectResource>, IProjectRepository
+    class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        public ProjectsRepository(IOctopusClient client)
+        public ProjectRepository(IOctopusClient client)
             : base(client, "Projects")
         {
         }

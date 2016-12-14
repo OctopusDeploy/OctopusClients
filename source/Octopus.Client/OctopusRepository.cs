@@ -148,3 +148,4 @@ namespace Octopus.Client
         public ITenantRepository Tenants { get; }
     }
 }
+#endif
