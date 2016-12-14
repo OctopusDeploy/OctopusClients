@@ -678,6 +678,19 @@ namespace Octopus.Client
                 return Client.List<ReleaseResource>(project.Link("Releases"), new {skip});
             }
 
+            public List<ReleaseResource> GetAllReleases(ProjectResource project)
+            {
+                var resources = new List<ReleaseResource>();
+
+                Client.Paginate<ReleaseResource>(project.Link("Releases"), new { }, page =>
+                {
+                    resources.AddRange(page.Items);
+                    return true;
+                });
+
+                return resources;
+            }
+
             public ReleaseResource GetReleaseByVersion(ProjectResource project, string version)
             {
                 return Client.Get<ReleaseResource>(project.Link("Releases"), new {version});
@@ -1255,6 +1268,19 @@ namespace Octopus.Client
             public void Cancel(TaskResource resource)
             {
                 Client.Post(resource.Link("Cancel"), (TaskResource)null);
+            }
+
+            public List<TaskResource> GetQueuedBehindTasks(TaskResource resource)
+            {
+                var resources = new List<TaskResource>();
+
+                Client.Paginate<TaskResource>(resource.Link("QueuedBehind"), new { }, page =>
+                {
+                    resources.AddRange(page.Items);
+                    return true;
+                });
+
+                return resources;
             }
 
             public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
