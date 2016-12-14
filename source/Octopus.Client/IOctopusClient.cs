@@ -10,7 +10,6 @@ namespace Octopus.Client
     /// <summary>
     /// Contract for a client to the Octopus Deploy HTTP API.
     /// </summary>
-    // [Obsolete("Use IOctopusAsyncClient instead")]
     public interface IOctopusClient : IDisposable
     {
         /// <summary>
