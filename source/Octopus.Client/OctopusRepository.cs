@@ -10,6 +10,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories;
+using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client
 {
@@ -30,6 +31,7 @@ namespace Octopus.Client
         readonly IOctopusClient client;
         readonly IAccountRepository accounts;
         readonly IActionTemplateRepository actionTemplates;
+        readonly ICommunityActionTemplateRepository communityActionTemplates;
         readonly IFeedRepository feeds;
         readonly IBackupRepository backups;
         readonly IMachineRepository machines;
@@ -114,6 +116,7 @@ namespace Octopus.Client
             tagSets = new TagSetRepository(client);
             builtInPackageRepositoryRepository = new BuiltInPackageRepositoryRepository(client);
             actionTemplates = new ActionTemplateRepository(client);
+            communityActionTemplates = new CommunityActionTemplateRepository(client);
         }
 
         public IOctopusClient Client
@@ -149,6 +152,11 @@ namespace Octopus.Client
         public IActionTemplateRepository ActionTemplates
         {
             get {  return actionTemplates; }
+        }
+
+        public ICommunityActionTemplateRepository CommunityActionTemplates
+        {
+            get { return communityActionTemplates; }
         }
 
         public IBackupRepository Backups
@@ -538,6 +546,33 @@ namespace Octopus.Client
         {
             public ActionTemplateRepository(IOctopusClient client) : base(client, "ActionTemplates")
             {
+            }
+
+            public List<ActionTemplateSearchResource> Search()
+            {
+                return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+            }
+        }
+
+        class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
+        {
+            public CommunityActionTemplateRepository(IOctopusClient client) : base(client, "CommunityActionTemplates")
+            {
+            }
+
+            public void Install(CommunityActionTemplateResource resource)
+            {
+                Client.Post(resource.Links["Installation"]);
+            }
+
+            public void UpdateInstallation(CommunityActionTemplateResource resource)
+            {
+                Client.Put(resource.Links["Installation"]);
+            }
+
+            public ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource)
+            {
+                return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"]);
             }
         }
 
@@ -1187,6 +1222,34 @@ namespace Octopus.Client
                 return Create(resource);
             }
 
+          public TaskResource ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
+                                                    string[] environmentIds = null, string[] targetRoles = null, string description = null)
+            {
+                if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
+
+                var resource = new TaskResource();
+                resource.Name = BuiltInTasks.AdHocScript.Name;
+                resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
+                resource.Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.AdHocScript.Arguments.EnvironmentIds, environmentIds},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
+                    {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
+                    {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
+                    {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
+                };
+                return Create(resource);
+            }
+
+            public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)
+            {
+                var resource = new TaskResource();
+                resource.Name = BuiltInTasks.SyncCommunityActionTemplates.Name;
+                resource.Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name;
+
+                return Create(resource);
+            }
+
             public TaskDetailsResource GetDetails(TaskResource resource)
             {
                 return Client.Get<TaskDetailsResource>(resource.Link("Details"));
@@ -1270,6 +1333,11 @@ namespace Octopus.Client
             public void SignIn(LoginCommand loginCommand)
             {
                 Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+            }
+
+            public void SignIn(string username, string password, bool rememberMe = false)
+            {
+                SignIn(new LoginCommand() { Username = username, Password = password, RememberMe = rememberMe });
             }
 
             public void SignOut()
@@ -1371,9 +1439,9 @@ namespace Octopus.Client
                 return FindByName(name, path: project.Link("Triggers"));
             }
 
-            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, ProjectTriggerType type)
+            public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
             {
-                return new ProjectTriggerEditor(this).CreateOrModify(project, name, type);
+                return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
             }
         }
 

@@ -21,7 +21,12 @@ namespace Octopus.Cli.Tests.Commands
         public static void OneTimeSetUp()
         {
             _previousCurrentDirectory = Directory.GetCurrentDirectory();
+#if HAS_APP_CONTEXT
             Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+#else   
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+#endif
+            
         }
 
         [OneTimeTearDown]

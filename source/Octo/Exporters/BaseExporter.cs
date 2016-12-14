@@ -24,17 +24,17 @@ namespace Octopus.Cli.Exporters
 
         public string FilePath { get; protected set; }
 
-        public void Export(params string[] parameters)
+        public Task Export(params string[] parameters)
         {
             var parameterDictionary = ParseParameters(parameters);
             FilePath = parameterDictionary["FilePath"];
 
-            Export(parameterDictionary);
+            return Export(parameterDictionary);
         }
 
         protected virtual Task Export(Dictionary<string, string> paramDictionary)
         {
-            return Task.CompletedTask;
+            return Task.WhenAll();
         }
 
         Dictionary<string, string> ParseParameters(IEnumerable<string> parameters)

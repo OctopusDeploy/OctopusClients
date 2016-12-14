@@ -24,6 +24,7 @@ namespace Octopus.Client
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates {get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
@@ -56,7 +57,6 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
-
     }
 }
 #endif

@@ -170,7 +170,7 @@ namespace Octopus.Cli.Importers
         Task MapReleaseCreationStrategyChannel(ProjectResource importedProject, Dictionary<string, ChannelResource> channelMap)
         {
             if (importedProject.ReleaseCreationStrategy?.ChannelId == null)
-                return Task.CompletedTask;
+                return Task.WhenAll();
             importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
             return Repository.Projects.Modify(importedProject);
         }

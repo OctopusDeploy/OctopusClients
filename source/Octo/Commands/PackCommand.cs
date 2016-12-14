@@ -5,9 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using NuGet.Packaging;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using Octopus.Client.Model;
+using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands
 {
@@ -112,7 +113,7 @@ namespace Octopus.Cli.Commands
                     Id = id,
                     Authors = authors,
                     Description = description,
-                    Version = version.ToNuGetVersion(),
+                    Version = NuGetVersion.Parse(version.OriginalString)
                 };
 
                 if (!string.IsNullOrWhiteSpace(allReleaseNotes))

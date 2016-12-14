@@ -30,6 +30,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -45,6 +46,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
+    Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
@@ -104,6 +106,7 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
     Task Post(String)
     Task Put(String, Octopus.Client.TResource)
+    Task Put(String)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
@@ -121,6 +124,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
+    Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
@@ -351,14 +355,14 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository)
     Octopus.Client.Model.ProjectTriggerResource Instance { get; }
-    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
+    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Octopus.Client.Editors.Async.ProjectTriggerEditor Customize(Action<ProjectTriggerResource>)
     Task<ProjectTriggerEditor> Save()
   }
   class ProjectTriggersEditor
   {
     .ctor(Octopus.Client.Repositories.Async.IProjectTriggerRepository, Octopus.Client.Model.ProjectResource)
-    Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.ProjectTriggerType, Octopus.Client.Model.ProjectTriggerConditionEvent[])
+    Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
   }
@@ -578,11 +582,28 @@ Octopus.Client.Model
   {
     .ctor()
     String ActionType { get; set; }
+    String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Int32 Version { get; set; }
+  }
+  class ActionTemplateSearchResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String CommunityActionTemplateId { get; set; }
+    String Description { get; set; }
+    Boolean HasUpdate { get; set; }
+    String Id { get; set; }
+    Boolean IsBuiltIn { get; set; }
+    Boolean IsInstalled { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    String Type { get; set; }
+    String Website { get; set; }
   }
   class ActionTemplateUsageResource
     Octopus.Client.Model.IResource
@@ -635,8 +656,10 @@ Octopus.Client.Model
     static System.String Name
     abstract class Arguments
     {
+      static System.String ActionTemplateId
       static System.String EnvironmentIds
       static System.String MachineIds
+      static System.String Properties
       static System.String ScriptBody
       static System.String Syntax
       static System.String TargetRoles
@@ -700,8 +723,10 @@ Octopus.Client.Model
   }
   abstract class Arguments
   {
+    static System.String ActionTemplateId
     static System.String EnvironmentIds
     static System.String MachineIds
+    static System.String Properties
     static System.String ScriptBody
     static System.String Syntax
     static System.String TargetRoles
@@ -806,8 +831,10 @@ Octopus.Client.Model
       static System.String Name
       abstract class Arguments
       {
+        static System.String ActionTemplateId
         static System.String EnvironmentIds
         static System.String MachineIds
+        static System.String Properties
         static System.String ScriptBody
         static System.String Syntax
         static System.String TargetRoles
@@ -853,6 +880,10 @@ Octopus.Client.Model
       }
     }
     abstract class Retention
+    {
+      static System.String Name
+    }
+    abstract class SyncCommunityActionTemplates
     {
       static System.String Name
     }
@@ -950,6 +981,22 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+  }
+  class CommunityActionTemplateResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Author { get; set; }
+    String Description { get; set; }
+    String HistoryUrl { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    String Name { get; set; }
+    IList<ActionTemplateParameterResource> Parameters { get; }
+    IDictionary<String, PropertyValueResource> Properties { get; }
+    String Type { get; set; }
+    Int32 Version { get; set; }
+    String Website { get; set; }
   }
   class Comparer
     IEqualityComparer<UserPermissionRestriction>
@@ -1096,6 +1143,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
@@ -1358,6 +1406,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsDockerEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
@@ -2040,25 +2089,16 @@ Octopus.Client.Model
       TenantedOrUntenanted = 1
       Tenanted = 2
   }
-  ProjectTriggerConditionEvent
-  {
-      NewDeploymentTargetBecomesAvailable = 0
-      ExistingDeploymentTargetChangesState = 1
-  }
   class ProjectTriggerResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
   {
     .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionResource Action { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterResource Filter { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
-    IDictionary<String, PropertyValueResource> Properties { get; }
-    Octopus.Client.Model.ProjectTriggerType Type { get; set; }
-  }
-  ProjectTriggerType
-  {
-      DeploymentTarget = 0
   }
   class PropertyValueJsonConverter
   {
@@ -2362,12 +2402,11 @@ Octopus.Client.Model
     .ctor(Version, IEnumerable<String>, String, String, Boolean)
     Boolean IsLegacyVersion { get; }
     Boolean IsSemVer2 { get; }
+    String OriginalString { get; }
     Int32 Revision { get; }
     Version Version { get; }
-    static Octopus.Client.Model.SemanticVersion FromNuGetVersion(NuGetVersion)
     static String IncrementRelease(String)
     static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
-    NuGetVersion ToNuGetVersion()
     String ToString()
     static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
     static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
@@ -2489,6 +2528,10 @@ Octopus.Client.Model
     .ctor(String[])
     Boolean ExplicitTenantScopeRequired { get; set; }
     IList<String> Scopes { get; }
+  }
+  abstract class SyncCommunityActionTemplates
+  {
+    static System.String Name
   }
   class SystemInfoResource
     Octopus.Client.Model.IResource
@@ -3143,6 +3186,48 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
 }
+Octopus.Client.Model.Triggers
+{
+  class AutoDeployActionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
+  }
+  class MachineFilterResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection EventCategories { get; set; }
+    Octopus.Client.Model.ReferenceCollection EventGroups { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
+  }
+  abstract class TriggerActionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+  {
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+  }
+  TriggerActionType
+  {
+      AutoDeploy = 0
+  }
+  abstract class TriggerFilterResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+  {
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+  }
+  TriggerFilterType
+  {
+      MachineFilter = 0
+  }
+}
 Octopus.Client.Model.Versioning
 {
   interface IVersionComparer
@@ -3274,6 +3359,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
+    Task<List<ActionTemplateSearchResource>> Search()
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>
@@ -3315,6 +3401,13 @@ Octopus.Client.Repositories.Async
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String)
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<ChannelResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+  }
+  interface ICommunityActionTemplateRepository
+    Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
+  {
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface ICreate`1
   {
@@ -3518,7 +3611,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<ProjectTriggerResource>
     Octopus.Client.Repositories.Async.IDelete<ProjectTriggerResource>
   {
-    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ProjectTriggerType)
+    Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Task<ProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
   }
   interface IProxyRepository
@@ -3591,9 +3684,11 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICreate<TaskResource>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
+    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
     Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String)
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])
+    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
     Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[])
     Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[])
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource)
@@ -3643,6 +3738,7 @@ Octopus.Client.Repositories.Async
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)
     Task RevokeApiKey(Octopus.Client.Model.ApiKeyResource)
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignIn(String, String, Boolean)
     Task SignOut()
   }
   interface IUserRolesRepository
@@ -3688,6 +3784,14 @@ Octopus.Client.Serialization
   abstract class JsonSerialization
   {
     static JsonSerializerSettings GetDefaultSerializerSettings()
+  }
+  class TriggerActionConverter
+  {
+    .ctor()
+  }
+  class TriggerFilterConverter
+  {
+    .ctor()
   }
 }
 Octopus.Client.Util
