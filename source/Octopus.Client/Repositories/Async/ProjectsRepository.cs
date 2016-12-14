@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
@@ -16,6 +17,19 @@ namespace Octopus.Client.Repositories.Async
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0)
         {
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip });
+        }
+
+        public async Task<List<ReleaseResource>> GetAllReleases(ProjectResource project)
+        {
+            var resources = new List<ReleaseResource>();
+
+            await Client.Paginate<ReleaseResource>(project.Link("Releases"), new { }, page =>
+            {
+                resources.AddRange(page.Items);
+                return true;
+            }).ConfigureAwait(false);
+
+            return resources;
         }
 
         public Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version)

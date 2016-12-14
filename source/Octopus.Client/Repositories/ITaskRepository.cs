@@ -17,6 +17,7 @@ namespace Octopus.Client.Repositories
         string GetRawOutputLog(TaskResource resource);
         void Rerun(TaskResource resource);
         void Cancel(TaskResource resource);
+        List<TaskResource> GetQueuedBehindTasks(TaskResource resource);
         void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
         void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
     }
