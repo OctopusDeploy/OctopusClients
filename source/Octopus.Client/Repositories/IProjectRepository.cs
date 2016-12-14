@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0);
-        List<ReleaseResource> GetAllReleases(ProjectResource project);
+        IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
         ResourceCollection<ChannelResource> GetChannels(ProjectResource project);
         ResourceCollection<ProjectTriggerResource> GetTriggers(ProjectResource project);
