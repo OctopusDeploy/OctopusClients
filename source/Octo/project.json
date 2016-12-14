@@ -2,12 +2,12 @@
   "version": "0.0.0-*",
   "dependencies": {
     "Newtonsoft.Json": "9.0.1",
-    "NuGet.Common": "3.5.0-octopus-35842",
-    "NuGet.Frameworks": "3.5.0-octopus-35842",
-    "NuGet.Packaging": "3.5.0-octopus-35842",
-    "NuGet.Packaging.Core": "3.5.0-octopus-35842",
-    "NuGet.Packaging.Core.Types": "3.5.0-octopus-35842",
-    "NuGet.Versioning": "3.5.0-octopus-35842",
+    "NuGet.Common": "3.5.0-octopus-44558",
+    "NuGet.Frameworks": "3.5.0-octopus-44558",
+    "NuGet.Packaging": "3.5.0-octopus-44558",
+    "NuGet.Packaging.Core": "3.5.0-octopus-44558",
+    "NuGet.Packaging.Core.Types": "3.5.0-octopus-44558",
+    "NuGet.Versioning": "3.5.0-octopus-44558",
     "Octopus.Client": {
       "target": "project"
     },

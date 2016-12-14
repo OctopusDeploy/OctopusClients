@@ -40,7 +40,7 @@ namespace Octopus.Client
             Events = new EventRepository(client);
             FeaturesConfiguration = new FeaturesConfigurationRepository(client);
             ProjectGroups = new ProjectGroupRepository(client);
-            Projects = new ProjectsRepository(client);
+            Projects = new ProjectRepository(client);
             Proxies = new ProxyRepository(client);
             Tasks = new TaskRepository(client);
             Users = new UserRepository(client);

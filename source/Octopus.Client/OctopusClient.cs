@@ -17,7 +17,6 @@ namespace Octopus.Client
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
-    // [Obsolete("Use OctopusAsyncClient instead")]
     public class OctopusClient : IHttpOctopusClient
     {
         readonly object rootDocumentLock = new object();
@@ -128,6 +127,27 @@ namespace Octopus.Client
         public ResourceCollection<TResource> List<TResource>(string path, object pathParameters = null)
         {
             return Get<ResourceCollection<TResource>>(path, pathParameters);
+        }
+
+        /// <summary>
+        /// Fetches a collection of resources from the server using the HTTP GET verb. All pages will be retrieved.
+        /// property.
+        /// </summary>
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="path">The path from which to fetch the resources.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <returns>
+        /// The collection of resources from the server.
+        /// </returns>
+        public IReadOnlyList<TResource> ListAll<TResource>(string path, object pathParameters = null)
+        {
+            var resources = new List<TResource>();
+            Paginate<TResource>(path, pathParameters, r =>
+            {
+                resources.AddRange(r.Items);
+                return true;
+            });
+            return resources;
         }
 
         /// <summary>

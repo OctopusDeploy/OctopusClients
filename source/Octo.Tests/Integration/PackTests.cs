@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using FluentAssertions;
+using NuGet.Common;
 using NUnit.Framework;
 
 namespace Octopus.Cli.Tests.Integration
@@ -55,6 +57,54 @@ namespace Octopus.Cli.Tests.Integration
                 //var extractedFiles = Directory.GetFiles(extractedDirectory.FullName, "*", SearchOption.AllDirectories).Select(x => x.Replace(extractedDirectory.FullName, ""));
                 //var inputFiles = Directory.GetFiles(inputDirectory.FullName, "*", SearchOption.AllDirectories).Select(x => x.Replace(inputDirectory.FullName, ""));
                 //extractedFiles.ShouldAllBeEquivalentTo(inputFiles);
+            }
+            finally
+            {
+                Directory.Delete(tempFolder, true);
+            }
+        }
+
+        [TestCase("nupkg", "2016.02.01.09", Description = "NuGet should retain modified date")]
+        [TestCase("zip", "2016.02.01.09", Description = "Zip should retain modified date")]
+        public void CheckModifiedDate(string format, string version)
+        {
+            var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            try
+            {
+                var rootDirectory = Directory.CreateDirectory(tempFolder);
+                var inputDirectory = Directory.CreateDirectory(Path.Combine(rootDirectory.FullName, "input"));
+                var packagedDirectory = Directory.CreateDirectory(Path.Combine(rootDirectory.FullName, "packaged"));
+                var inputFile = Path.Combine(inputDirectory.FullName, "Test.txt");
+                File.WriteAllText(inputFile, "Test");
+                var lastModified = File.GetLastWriteTime(inputFile);
+
+                // sleep a few seconds so our last modified time is not the same as the package creation time
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+
+                var result = Program.Run(
+                    new[]
+                    {
+                        "pack",
+                        "--id=TestPackage",
+                        $"--basePath={inputDirectory.FullName}",
+                        $"--outFolder={packagedDirectory.FullName}",
+                        $"--version={version}",
+                        $"--format={format}"
+                    }
+                );
+
+                result.Should().Be(0);
+                var expectedOutputFilePath = Path.Combine(packagedDirectory.FullName, $"TestPackage.{version}.{format}");
+                File.Exists(expectedOutputFilePath)
+                    .Should()
+                    .BeTrue("the package should have been given the right name.");
+
+                using (var stream = new FileStream(expectedOutputFilePath, FileMode.Open))
+                using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+                {
+                    var entry = archive.GetEntry("Test.txt");
+                    (entry.LastWriteTime - lastModified).Duration().Should().BeLessThan(TimeSpan.FromSeconds(2), "the file should keep its modified date");
+                }
             }
             finally
             {
