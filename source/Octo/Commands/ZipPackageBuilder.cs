@@ -50,7 +50,8 @@ namespace Octopus.Cli.Commands
                         log.Debug("Adding file: {Path}", relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
-                        entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTimeUtc);
+                        entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTime);
+
                         using (var entryStream = entry.Open())
                         using (var sourceStream = File.OpenRead(file))
                         {
