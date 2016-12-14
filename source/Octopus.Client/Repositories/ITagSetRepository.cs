@@ -10,4 +10,26 @@ namespace Octopus.Client.Repositories
         TagSetEditor CreateOrModify(string name);
         TagSetEditor CreateOrModify(string name, string description);
     }
+    
+    class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
+    {
+        public TagSetRepository(IOctopusClient client) : base(client, "TagSets")
+        {
+        }
+
+        public void Sort(string[] tagSetIdsInOrder)
+        {
+            Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
+        }
+
+        public TagSetEditor CreateOrModify(string name)
+        {
+            return new TagSetEditor(this).CreateOrModify(name);
+        }
+
+        public TagSetEditor CreateOrModify(string name, string description)
+        {
+            return new TagSetEditor(this).CreateOrModify(name, description);
+        }
+    }
 }

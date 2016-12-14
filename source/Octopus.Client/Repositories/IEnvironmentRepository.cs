@@ -12,4 +12,40 @@ namespace Octopus.Client.Repositories
         EnvironmentEditor CreateOrModify(string name);
         EnvironmentEditor CreateOrModify(string name, string description);
     }
+    
+    class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
+    {
+        public EnvironmentRepository(IOctopusClient client)
+            : base(client, "Environments")
+        {
+        }
+
+        public List<MachineResource> GetMachines(EnvironmentResource environment)
+        {
+            var resources = new List<MachineResource>();
+
+            Client.Paginate<MachineResource>(environment.Link("Machines"), new { }, page =>
+            {
+                resources.AddRange(page.Items);
+                return true;
+            });
+
+            return resources;
+        }
+
+        public void Sort(string[] environmentIdsInOrder)
+        {
+            Client.Put(Client.RootDocument.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+        }
+
+        public EnvironmentEditor CreateOrModify(string name)
+        {
+            return new EnvironmentEditor(this).CreateOrModify(name);
+        }
+
+        public EnvironmentEditor CreateOrModify(string name, string description)
+        {
+            return new EnvironmentEditor(this).CreateOrModify(name, description);
+        }
+    }
 }

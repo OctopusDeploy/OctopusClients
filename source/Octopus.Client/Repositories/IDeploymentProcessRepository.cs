@@ -7,4 +7,17 @@ namespace Octopus.Client.Repositories
     {
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
     }
+    
+    class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
+    {
+        public DeploymentProcessRepository(IOctopusClient client)
+            : base(client, "DeploymentProcesses")
+        {
+        }
+
+        public ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
+        {
+            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id });
+        }
+    }
 }

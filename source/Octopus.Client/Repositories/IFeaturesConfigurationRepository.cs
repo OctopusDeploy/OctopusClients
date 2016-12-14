@@ -8,4 +8,24 @@ namespace Octopus.Client.Repositories
         FeaturesConfigurationResource GetFeaturesConfiguration();
         FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource);
     }
+    
+    class FeaturesConfigurationRepository : IFeaturesConfigurationRepository
+    {
+        readonly IOctopusClient client;
+
+        public FeaturesConfigurationRepository(IOctopusClient client)
+        {
+            this.client = client;
+        }
+
+        public FeaturesConfigurationResource GetFeaturesConfiguration()
+        {
+            return client.Get<FeaturesConfigurationResource>(client.RootDocument.Link("FeaturesConfiguration"));
+        }
+
+        public FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
+        {
+            return client.Update(client.RootDocument.Link("FeaturesConfiguration"), resource);
+        }
+    }
 }

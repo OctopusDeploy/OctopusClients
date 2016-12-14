@@ -8,4 +8,16 @@ namespace Octopus.Client.Repositories
     {
         List<PackageResource> GetVersions(FeedResource feed, string[] packageIds);
     }
+    
+    class FeedRepository : BasicRepository<FeedResource>, IFeedRepository
+    {
+        public FeedRepository(IOctopusClient client) : base(client, "Feeds")
+        {
+        }
+
+        public List<PackageResource> GetVersions(FeedResource feed, string[] packageIds)
+        {
+            return Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = packageIds });
+        }
+    }
 }

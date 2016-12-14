@@ -14,4 +14,22 @@ namespace Octopus.Client.Repositories
         LibraryVariableSetEditor CreateOrModify(string name);
         LibraryVariableSetEditor CreateOrModify(string name, string description);
     }
+    
+    class LibraryVariableSetRepository : BasicRepository<LibraryVariableSetResource>, ILibraryVariableSetRepository
+    {
+        public LibraryVariableSetRepository(IOctopusClient client)
+            : base(client, "LibraryVariables")
+        {
+        }
+
+        public LibraryVariableSetEditor CreateOrModify(string name)
+        {
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name);
+        }
+
+        public LibraryVariableSetEditor CreateOrModify(string name, string description)
+        {
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name, description);
+        }
+    }
 }

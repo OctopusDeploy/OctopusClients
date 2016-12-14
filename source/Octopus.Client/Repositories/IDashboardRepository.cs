@@ -8,4 +8,24 @@ namespace Octopus.Client.Repositories
         DashboardResource GetDashboard();
         DashboardResource GetDynamicDashboard(string[] projects, string[] environments);
     }
+    
+    class DashboardRepository : IDashboardRepository
+    {
+        readonly IOctopusClient client;
+
+        public DashboardRepository(IOctopusClient client)
+        {
+            this.client = client;
+        }
+
+        public DashboardResource GetDashboard()
+        {
+            return client.Get<DashboardResource>(client.RootDocument.Link("Dashboard"));
+        }
+
+        public DashboardResource GetDynamicDashboard(string[] projects, string[] environments)
+        {
+            return client.Get<DashboardResource>(client.RootDocument.Link("DashboardDynamic"), new { projects, environments });
+        }
+    }
 }

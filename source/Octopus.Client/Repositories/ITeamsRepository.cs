@@ -11,4 +11,12 @@ namespace Octopus.Client.Repositories
         IGet<TeamResource>
     {
     }
+    
+    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
+    {
+        public TeamsRepository(IOctopusClient client)
+            : base(client, "Teams")
+        {
+        }
+    }
 }
