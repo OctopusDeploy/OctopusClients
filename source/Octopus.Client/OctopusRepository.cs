@@ -1270,6 +1270,19 @@ namespace Octopus.Client
                 Client.Post(resource.Link("Cancel"), (TaskResource)null);
             }
 
+            public List<TaskResource> GetQueuedBehindTasks(TaskResource resource)
+            {
+                var resources = new List<TaskResource>();
+
+                Client.Paginate<TaskResource>(resource.Link("QueuedBehind"), new { }, page =>
+                {
+                    resources.AddRange(page.Items);
+                    return true;
+                });
+
+                return resources;
+            }
+
             public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
             {
                 WaitForCompletion(new[] {task}, pollIntervalSeconds, timeoutAfterMinutes, interval);
