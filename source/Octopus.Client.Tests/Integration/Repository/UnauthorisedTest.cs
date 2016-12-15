@@ -14,8 +14,6 @@ namespace Octopus.Client.Tests.Integration.Repository
         const string ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again.";
         public UnauthorisedTest()
         {
-
-           
             Get($"{TestRootPath}api/users/me", p =>
             {
                 var response = Response.AsJson(

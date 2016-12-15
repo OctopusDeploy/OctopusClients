@@ -58,7 +58,7 @@ namespace Octopus.Client
 
             if (serverEndpoint.Proxy != null)
                 handler.Proxy = serverEndpoint.Proxy;
-            
+
             client = new HttpClient(handler, true);
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -468,65 +468,54 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
-#if COREFX_ISSUE_11456_EXISTS
-            try
+            using (var message = new HttpRequestMessage())
             {
-#endif
-                using (var message = new HttpRequestMessage())
+                message.RequestUri = request.Uri;
+                message.Method = new HttpMethod(request.Method);
+
+                if (request.Method == "PUT" || request.Method == "DELETE")
                 {
-                    message.RequestUri = request.Uri;
-                    message.Method = new HttpMethod(request.Method);
+                    message.Method = HttpMethod.Post;
+                    message.Headers.Add("X-HTTP-Method-Override", request.Method);
+                }
 
-                    if (request.Method == "PUT" || request.Method == "DELETE")
+                var requestHandler = SendingOctopusRequest;
+                requestHandler?.Invoke(request);
+
+                var webRequestHandler = BeforeSendingHttpRequest;
+                webRequestHandler?.Invoke(message);
+
+
+                if (request.RequestResource != null)
+                    message.Content = GetContent(request);
+
+                var completionOption = readResponse
+                    ? HttpCompletionOption.ResponseContentRead
+                    : HttpCompletionOption.ResponseHeadersRead;
+                try
+                {
+                    using (var response = await client.SendAsync(message, completionOption).ConfigureAwait(false))
                     {
-                        message.Method = HttpMethod.Post;
-                        message.Headers.Add("X-HTTP-Method-Override", request.Method);
-                    }
+                        if (!response.IsSuccessStatusCode)
+                            throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
 
-                    var requestHandler = SendingOctopusRequest;
-                    requestHandler?.Invoke(request);
+                        var resource = readResponse
+                            ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
+                            : default(TResponseResource);
 
-                    var webRequestHandler = BeforeSendingHttpRequest;
-                    webRequestHandler?.Invoke(message);
+                        var locationHeader = response.Headers.Location?.ToString();
+                        var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
+                            locationHeader, resource);
+                        ReceivedOctopusResponse?.Invoke(octopusResponse);
 
-
-                    if (request.RequestResource != null)
-                        message.Content = GetContent(request);
-
-                    var completionOption = readResponse
-                        ? HttpCompletionOption.ResponseContentRead
-                        : HttpCompletionOption.ResponseHeadersRead;
-                    try
-                    {
-                        using (var response = await client.SendAsync(message, completionOption).ConfigureAwait(false))
-                        {
-                            if (!response.IsSuccessStatusCode)
-                                throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
-
-                            var resource = readResponse
-                                ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
-                                : default(TResponseResource);
-
-                            var locationHeader = response.Headers.Location?.ToString();
-                            var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
-                                locationHeader, resource);
-                            ReceivedOctopusResponse?.Invoke(octopusResponse);
-
-                            return octopusResponse;
-                        }
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        throw new TimeoutException($"Timeout getting response, client timeout is set to {client.Timeout}.");
+                        return octopusResponse;
                     }
                 }
-#if COREFX_ISSUE_11456_EXISTS
+                catch (TaskCanceledException)
+                {
+                    throw new TimeoutException($"Timeout getting response, client timeout is set to {client.Timeout}.");
+                }
             }
-            catch (HttpRequestException hre) when (hre.InnerException?.Message == "The operation identifier is not valid")
-            {
-                throw new OctopusSecurityException(401, "You must be logged in to perform this action. Please provide a valid API key or log in again.");
-            }
-#endif
         }
 
         private HttpContent GetContent(OctopusRequest request)
