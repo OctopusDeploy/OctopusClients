@@ -1,6 +1,8 @@
 ﻿#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
 using System;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
@@ -15,20 +17,29 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void InvalidSslCertificateIsRejected()
+        public async Task InvalidSslCertificateIsRejected()
         {
-            Action get = () => new Client.OctopusClient(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).Get<string>("~/");
-            get.ShouldThrow<HttpRequestException>().WithInnerMessage("A security error occurred");
+            try
+            {
+                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath));
+                Assert.Fail("Exception expected");
+            }
+            catch (Exception ex)
+            {
+                var e = ex.InnerException?.InnerException;
+                e.GetType().Name.Should().Be("WinHttpException");
+                e.Message.Should().Be("A security error occurred");
+            }
         }
 
         [Test]
-        public void InvalidSslCertificateIsIgnoredWhenTheOptionIsOn()
+        public async Task InvalidSslCertificateIsIgnoredWhenTheOptionIsOn()
         {
-            var result = new Client.OctopusClient(
+            var client = await OctopusAsyncClient.Create(
                 new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
                 new OctopusClientOptions() { IgnoreSslErrors = true }
-                )
-                .Get<string>("~/");
+            );
+            var result = await client.Get<string>("~/");
 
             result.Should().Be("Data");
         }

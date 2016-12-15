@@ -42,7 +42,7 @@
       },
       "buildOptions": {
         "define": [
-        //  "HTTP_CLIENT_SUPPORTS_SSL_OPTIONS"
+          "HTTP_CLIENT_SUPPORTS_SSL_OPTIONS"
         ]
       }
     }

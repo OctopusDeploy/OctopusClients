@@ -31,7 +31,7 @@ namespace Octopus.Client
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly bool ignoreSslErrors = false;
-
+        bool ignoreSslErrorMessageLogged = false;
 
 
         /// <summary>
@@ -78,8 +78,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             if (ignoreSslErrors)
             {
-                Logger.Warn(warning);
-                Logger.Warn("Because --ignoreSslErrors was set, this will be ignored.");
+                if (!ignoreSslErrorMessageLogged)
+                {
+                    Logger.Warn(warning);
+                    Logger.Warn("Because IgnoreSslErrors was set, this will be ignored.");
+                    ignoreSslErrorMessageLogged = true;
+                }
                 return true;
             }
 

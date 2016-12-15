@@ -14,6 +14,7 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using System.Diagnostics;
 
 namespace Octopus.Cli.Commands
 {
@@ -23,9 +24,7 @@ namespace Octopus.Cli.Commands
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;
         bool enableDebugging;
-#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
         bool ignoreSslErrors;
-#endif
         string password;
         string username;
         IOctopusAsyncClient client;
@@ -44,9 +43,7 @@ namespace Octopus.Cli.Commands
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
-#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
-#endif
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
         }
 
@@ -83,6 +80,10 @@ namespace Octopus.Cli.Commands
 
             var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
 
+#if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+#endif
+
             client = await clientFactory.CreateAsyncClient(endpoint, new OctopusClientOptions()
             {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -94,7 +95,7 @@ namespace Octopus.Cli.Commands
 
             if (enableDebugging)
             {
-                Repository.Client.SendingOctopusRequest += request => Log.Debug("{Method:l} {Uri:l}", request.Method,request.Uri);
+                Repository.Client.SendingOctopusRequest += request => Log.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
             }
 
             Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
@@ -110,6 +111,7 @@ namespace Octopus.Cli.Commands
             ValidateParameters();
             await Execute().ConfigureAwait(false);
         }
+
 
         protected virtual void ValidateParameters() { }
 
@@ -211,5 +213,29 @@ namespace Octopus.Cli.Commands
             }
             return packageVersionsAsString;
         }
+
+
+#if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+        private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)
+        {
+            if (errors == SslPolicyErrors.None)
+                return true;
+
+            var certificate2 = (X509Certificate2)certificate;
+            var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine +
+                             "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine +
+                             "Certificate thumbprint:   " + ((X509Certificate2)certificate).Thumbprint;
+
+            if (ignoreSslErrors)
+            {
+                Log.Warning(warning);
+                Log.Warning("Because --ignoreSslErrors was set, this will be ignored.");
+                return true;
+            }
+
+            Log.Error(warning);
+            return false;
+        }
+#endif
     }
 }

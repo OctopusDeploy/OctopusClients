@@ -26,8 +26,12 @@
           "type": "platform",
           "version": "1.0.0"
         },
+        "System.Net.Http": "4.3.0",
         "System.Xml.ReaderWriter": "4.0.11",
         "System.ComponentModel.TypeConverter": "4.1.0"
+      },
+      "buildOptions": {
+        "define": [ "HTTP_CLIENT_SUPPORTS_SSL_OPTIONS" ]
       }
     },
     "net45": {

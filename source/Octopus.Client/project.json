@@ -52,7 +52,7 @@
       "buildOptions": {
         "define": [
           "COREFX_ISSUE_11456_EXISTS",
-          //"HTTP_CLIENT_SUPPORTS_SSL_OPTIONS",
+          "HTTP_CLIENT_SUPPORTS_SSL_OPTIONS",
           "LIBLOG_PORTABLE"
         ],
         "compile": {
