@@ -46,13 +46,20 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task InvalidSslCertificateIsIgnoredWhenTheOptionIsOn()
         {
-            var client = await OctopusAsyncClient.Create(
-                new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
-                new OctopusClientOptions() { IgnoreSslErrors = true }
-            );
-            var result = await client.Get<string>("~/");
+            try
+            {
+                var client = await OctopusAsyncClient.Create(
+                    new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
+                    new OctopusClientOptions() {IgnoreSslErrors = true}
+                );
+                var result = await client.Get<string>("~/");
 
-            result.Should().Be("Data");
+                result.Should().Be("Data");
+            }
+            catch (Exception ex) when (ex.Message == "This platform does not support ignoring SSL certificate errors")
+            {
+                RuntimeInformation.OSDescription.Should().BeOneOf("Fedora");
+            }
         }
 
     }

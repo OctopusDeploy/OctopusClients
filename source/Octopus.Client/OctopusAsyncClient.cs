@@ -34,12 +34,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusAsyncClient" /> class.
-        /// </summary>
-        /// <param name="serverEndpoint">The server endpoint.</param>
-        /// <param name="options">The <see cref="OctopusClientOptions" /> used to configure the behavour of the client, may be null.</param>
-        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options)
+        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             options = options ?? new OctopusClientOptions();
             Repository = new OctopusAsyncRepository(this);
@@ -52,15 +47,10 @@ namespace Octopus.Client
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             handler.SslProtocols = options.SslProtocols;
-            try
+            if(addCertificateCallback)
             {
                 ignoreSslErrors = options.IgnoreSslErrors;
                 handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
-            }
-            catch(PlatformNotSupportedException ex)
-            {
-                if(ignoreSslErrors)
-                    throw new Exception("This platform does not support ignoring SSL errors", ex);
             }
 #endif
 
@@ -101,7 +91,25 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions());
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            try
+            {
+                return await Create(serverEndpoint, options, true);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                if (options?.IgnoreSslErrors ?? false)
+                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                return await Create(serverEndpoint, options, false);
+            }
+#else
+            return await Create(serverEndpoint, options, false);
+#endif
+        }
+
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        {
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
