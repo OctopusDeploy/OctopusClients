@@ -38,7 +38,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 else
                 {
                     e.GetType().Name.Should().Be("CurlException");
-                    e.Message.Should().Be("A security error occurred");
+                    e.Message.Should().Be("Peer certificate cannot be authenticated with given CA certificates");
                 }
             }
         }
