@@ -58,7 +58,15 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             }
             catch (Exception ex) when (ex.Message == "This platform does not support ignoring SSL certificate errors")
             {
-                RuntimeInformation.OSDescription.Should().BeOneOf("Fedora");
+                var os = RuntimeInformation.OSDescription;
+                if (
+                    os.StartsWith("Darwin") || // Mac
+                    os.Contains(".el7") || // Cent OS
+                    os.Contains("fc23") // Fedora 23
+                )
+                    return;
+
+                throw;
             }
         }
 
