@@ -169,6 +169,8 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    Boolean IgnoreSslErrors { get; set; }
+    SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
   abstract class OctopusRepositoryExtensions
