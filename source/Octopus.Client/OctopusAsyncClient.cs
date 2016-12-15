@@ -52,8 +52,16 @@ namespace Octopus.Client
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             handler.SslProtocols = options.SslProtocols;
-            ignoreSslErrors = options.IgnoreSslErrors;
-            handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
+            try
+            {
+                ignoreSslErrors = options.IgnoreSslErrors;
+                handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
+            }
+            catch(PlatformNotSupportedException ex)
+            {
+                if(ignoreSslErrors)
+                    throw new Exception("This platform does not support ignoring SSL errors", ex);
+            }
 #endif
 
             if (serverEndpoint.Proxy != null)
@@ -472,7 +480,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 message.RequestUri = request.Uri;
                 message.Method = new HttpMethod(request.Method);
-
+                
                 if (request.Method == "PUT" || request.Method == "DELETE")
                 {
                     message.Method = HttpMethod.Post;
@@ -488,7 +496,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                 if (request.RequestResource != null)
                     message.Content = GetContent(request);
-
+                
                 var completionOption = readResponse
                     ? HttpCompletionOption.ResponseContentRead
                     : HttpCompletionOption.ResponseHeadersRead;

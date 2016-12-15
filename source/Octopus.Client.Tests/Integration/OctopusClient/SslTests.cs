@@ -2,8 +2,11 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.DotNet.InternalAbstractions;
+using Microsoft.Extensions.PlatformAbstractions;
 using Nancy;
 using NUnit.Framework;
 
@@ -13,7 +16,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         public SslTests()
         {
-            Get(TestRootPath, p => Request.Url.IsSecure ? (object) "Data" : HttpStatusCode.UpgradeRequired);
+            Get(TestRootPath, p => Request.Url.IsSecure ? (object)"Data" : HttpStatusCode.UpgradeRequired);
         }
 
         [Test]
@@ -27,8 +30,16 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             catch (Exception ex)
             {
                 var e = ex.InnerException?.InnerException;
-                e.GetType().Name.Should().Be("WinHttpException");
-                e.Message.Should().Be("A security error occurred");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    e.GetType().Name.Should().Be("WinHttpException");
+                    e.Message.Should().Be("A security error occurred");
+                }
+                else
+                {
+                    e.GetType().Name.Should().Be("CurlException");
+                    e.Message.Should().Be("A security error occurred");
+                }
             }
         }
 
