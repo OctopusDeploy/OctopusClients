@@ -82,7 +82,7 @@ namespace Octopus.Cli.Commands
                 if (version == null)
                 {
                     var now = DateTime.Now;
-                    version = new SemanticVersion(now.Year, now.Month, now.Day, now.Hour*10000 + now.Minute*100 + now.Second);
+                    version = SemanticVersion.Parse($"{now.Year}.{now.Month}.{now.Day}.{now.Hour*10000 + now.Minute*100 + now.Second}");
                 }
 
                 if (authors.All(string.IsNullOrWhiteSpace))
@@ -106,6 +106,11 @@ namespace Octopus.Cli.Commands
                         allReleaseNotes += Environment.NewLine + releaseNotes;
                     else
                         allReleaseNotes = releaseNotes;
+                }
+
+                if (string.IsNullOrWhiteSpace(version.OriginalString))
+                {
+                    throw new Exception("Somehow we created a SemanticVersion without the OriginalString value being preserved. We want to use the OriginalString so we can preserve the version as intended by the caller.");
                 }
 
                 var metadata = new ManifestMetadata

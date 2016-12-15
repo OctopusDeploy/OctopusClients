@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -15,6 +17,8 @@ namespace Octopus.Cli.Tests.Integration
     public class PackTests
     {
         [Test]
+        [TestCase("nupkg", null, Description = "Should calculate a default version from the date")]
+        [TestCase("zip", null, Description = "Should calculate a default version from the date")]
         [TestCase("nupkg", "1.0.0.0", Description = "NuGet should retain four-part versions")]
         [TestCase("nupkg", "2016.02.01.09", Description = "NuGet should retain four-part versions with leading zeros")]
         [TestCase("zip", "1.0.0.0", Description = "Zip should retain four-part versions")]
@@ -31,23 +35,38 @@ namespace Octopus.Cli.Tests.Integration
                 File.WriteAllText(Path.Combine(inputDirectory.FullName, "Test.txt"), "Test");
                 File.WriteAllText(Path.Combine(inputDirectory.FullName, "Test[squarebrackets].txt"), "Test");
 
-                var result = Program.Run(
-                    new[]
-                    {
-                        "pack",
-                        "--id=TestPackage",
-                        $"--basePath={inputDirectory.FullName}",
-                        $"--outFolder={packagedDirectory.FullName}",
-                        $"--version={version}",
-                        $"--format={format}"
-                    }
-                );
+                var args = new List<string>
+                {
+                    "pack",
+                    "--id=TestPackage",
+                    $"--basePath={inputDirectory.FullName}",
+                    $"--outFolder={packagedDirectory.FullName}",
+                    $"--format={format}"
+                };
+
+                if (!string.IsNullOrWhiteSpace(version))
+                {
+                    args.Add($"--version={version}");
+                }
+
+                var now = DateTime.Now;
+                var result = Program.Run(args.ToArray());
 
                 result.Should().Be(0);
-                var expectedOutputFilePath = Path.Combine(packagedDirectory.FullName, $"TestPackage.{version}.{format}");
-                File.Exists(expectedOutputFilePath)
-                    .Should()
-                    .BeTrue("the package should have been given the right name.");
+
+                if (!string.IsNullOrWhiteSpace(version))
+                {
+                    var expectedOutputFilePath = Path.Combine(packagedDirectory.FullName, $"TestPackage.{version}.{format}");
+                    File.Exists(expectedOutputFilePath)
+                        .Should()
+                        .BeTrue("the package should have been given the right name.");
+                }
+                else
+                {
+                    var searchPattern = $"TestPackage.{now.Year}.{now.Month}.{now.Day}.*.{format}";
+                    var files = Directory.GetFiles(packagedDirectory.FullName, searchPattern, SearchOption.TopDirectoryOnly);
+                    files.Should().HaveCount(1, "There should be a package where the version is calculated from the date");
+                }
 
                 // TODO: It would be really nice to have a simple end-to-end test that proves we can pack/unpack files preserving filenames and timestamps etc...
                 //var calamariResult = SilentProcessRunner.ExecuteCommand(@"C:\dev\Calamari\source\Calamari\bin\Debug\netcoreapp1.0\win7-x64\Calamari.exe",
