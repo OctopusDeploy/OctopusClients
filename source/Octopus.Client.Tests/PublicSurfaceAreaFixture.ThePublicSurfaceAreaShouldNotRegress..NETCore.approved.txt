@@ -1209,6 +1209,7 @@ Octopus.Client.Model
     DateTimeOffset Created { get; set; }
     String DeploymentProcessId { get; set; }
     String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
