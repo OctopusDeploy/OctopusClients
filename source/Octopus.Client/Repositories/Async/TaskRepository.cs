@@ -18,6 +18,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskDetailsResource> GetDetails(TaskResource resource);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
+        Task<List<TaskResource>> GetAllActive();
         Task<string> GetRawOutputLog(TaskResource resource);
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
@@ -192,5 +193,7 @@ namespace Octopus.Client.Repositories.Async
                 Thread.Sleep(pollIntervalSeconds * 1000);
             }
         }
+
+        public Task<List<TaskResource>> GetAllActive() => FindAll(pathParameters: new {active = true});
     }
 }

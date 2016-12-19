@@ -16,6 +16,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
+        List<TaskResource> GetAllActive();
         TaskDetailsResource GetDetails(TaskResource resource);
         string GetRawOutputLog(TaskResource resource);
         void Rerun(TaskResource resource);
@@ -183,5 +184,7 @@ namespace Octopus.Client.Repositories
                 Thread.Sleep(pollIntervalSeconds * 1000);
             }
         }
+
+        public List<TaskResource> GetAllActive() => FindAll(pathParameters: new { active = true });
     }
 }
