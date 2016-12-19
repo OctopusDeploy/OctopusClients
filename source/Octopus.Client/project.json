@@ -25,7 +25,10 @@
         "System.Net.Http": "*"
       },
       "dependencies": {
-        "Newtonsoft.Json": "7.0.1"
+        "Newtonsoft.Json": {
+          "version": "9.0.1", 
+          "type": "build"
+        }
       },
       "buildOptions": {
         "define": ["SYNC_CLIENT"]
