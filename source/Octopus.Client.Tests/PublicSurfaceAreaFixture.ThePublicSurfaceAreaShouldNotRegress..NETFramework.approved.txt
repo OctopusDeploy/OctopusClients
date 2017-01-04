@@ -1617,6 +1617,7 @@ Octopus.Client.Model
       Success = 0
       Failure = 1
       Always = 2
+      Variable = 3
   }
   class DeploymentStepProperties
   {

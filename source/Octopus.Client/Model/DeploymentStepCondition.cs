@@ -6,6 +6,7 @@ namespace Octopus.Client.Model
     {
         Success,
         Failure,
-        Always
+        Always,
+        Variable
     }
 }
