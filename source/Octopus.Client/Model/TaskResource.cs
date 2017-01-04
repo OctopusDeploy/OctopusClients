@@ -73,9 +73,15 @@ namespace Octopus.Client.Model
         public DateTimeOffset QueueTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the time at which the task started executing.
+        /// Gets or sets the time at which the task will timeout if it has not started executing.
         /// </summary>
         [JsonProperty(Order = 8)]
+        public DateTimeOffset QueueTimeExpiry { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time at which the task started executing.
+        /// </summary>
+        [JsonProperty(Order = 9)]
         public DateTimeOffset? StartTime { get; set; }
 
         /// <summary>
@@ -83,19 +89,19 @@ namespace Octopus.Client.Model
         /// happen
         /// at least every couple of minutes.
         /// </summary>
-        [JsonProperty(Order = 9)]
+        [JsonProperty(Order = 10)]
         public DateTimeOffset? LastUpdatedTime { get; set; }
 
         /// <summary>
         /// Gets or sets the date/time that the task completed. Will be null if the task has not yet completed.
         /// </summary>
-        [JsonProperty(Order = 10)]
+        [JsonProperty(Order = 11)]
         public DateTimeOffset? CompletedTime { get; set; }
 
         /// <summary>
         /// Gets the ID of the Octopus server that created and will control this task.
         /// </summary>
-        [JsonProperty(Order = 11)]
+        [JsonProperty(Order = 15)]
         public string ServerNode { get; set; }
 
         /// <summary>
