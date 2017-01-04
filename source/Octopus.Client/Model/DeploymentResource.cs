@@ -73,6 +73,8 @@ namespace Octopus.Client.Model
         /// </summary>
         public DateTimeOffset? QueueTime { get; set; }
 
+        public DateTimeOffset? QueueTimeExpiry { get; set; }
+
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
     }
