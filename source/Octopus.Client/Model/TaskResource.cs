@@ -73,10 +73,10 @@ namespace Octopus.Client.Model
         public DateTimeOffset QueueTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the time at which the task will timeout if it has not started executing.
+        /// Gets or sets the time that can elapse after the QueueTime before the task will timeout if it has not started executing.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public DateTimeOffset QueueTimeExpiry { get; set; }
+        public TimeSpan QueueTimeExpiry { get; set; }
 
         /// <summary>
         /// Gets or sets the time at which the task started executing.
