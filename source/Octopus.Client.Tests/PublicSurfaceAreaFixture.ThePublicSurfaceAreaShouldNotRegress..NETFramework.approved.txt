@@ -3029,7 +3029,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
     String Name { get; set; }
     DateTimeOffset QueueTime { get; set; }
-    DateTimeOffset? QueueTimeExpiry { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ServerNode { get; set; }
     Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
