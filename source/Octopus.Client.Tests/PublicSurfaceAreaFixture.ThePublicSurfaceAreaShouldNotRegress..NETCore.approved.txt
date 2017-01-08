@@ -1217,6 +1217,7 @@ Octopus.Client.Model
     String Name { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ReleaseId { get; set; }
     Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
     Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
@@ -2632,6 +2633,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
     String Name { get; set; }
     DateTimeOffset QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ServerNode { get; set; }
     Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
