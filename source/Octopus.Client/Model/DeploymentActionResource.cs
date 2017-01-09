@@ -15,6 +15,9 @@ namespace Octopus.Client.Model
         public ReferenceCollection Environments { get; } = new ReferenceCollection();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public ReferenceCollection ExcludedEnvironments { get; } = new ReferenceCollection();
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ReferenceCollection Channels { get; } = new ReferenceCollection();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
@@ -27,6 +30,7 @@ namespace Octopus.Client.Model
         {
             Channels.Clear();
             Environments.Clear();
+            ExcludedEnvironments.Clear();
             TenantTags.Clear();
             return this;
         }
