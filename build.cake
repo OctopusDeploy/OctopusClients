@@ -41,7 +41,8 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
 });
 
 var nugetVersion = gitVersionInfo.NuGetVersion;
-var runtimes = new[] { 
+var runtimes = new[] {
+    "win7-x86", 
     "osx.10.10-x64",
     "ubuntu.14.04-x64",
     "ubuntu.16.04-x64",
@@ -258,10 +259,11 @@ Task("__Zip")
             else
             {
                 var outFile = $"{artifactsDir}/OctopusTools.{nugetVersion}.{dirName}";
-                if(dirName == "portable")
+                if(dirName == "portable" || dirName.Contains("win"))
                     Zip(dir, outFile + ".zip");
             
-                TarGzip(dir, outFile);
+                if(!dirName.Contains("win"))
+                    TarGzip(dir, outFile);
             }
         }
     });
