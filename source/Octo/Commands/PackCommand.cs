@@ -50,8 +50,8 @@ namespace Octopus.Cli.Commands
             basic.Add("id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v);
             basic.Add("format=", "Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward.", fmt => packageBuilder = SelectFormat(fmt));
             basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v));
-            basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => outFolder = v);
-            basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => basePath = v);
+            basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(outFolder)); outFolder = v;});
+            basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(basePath)); basePath = v;});
 
             packageBuilder = SelectFormat("nupkg");
         }
