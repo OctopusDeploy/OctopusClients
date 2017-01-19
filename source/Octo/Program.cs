@@ -22,6 +22,11 @@ namespace Octopus.Cli
     {
         static int Main(string[] args)
         {
+#if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                                                   | SecurityProtocolType.Tls11
+                                                   | SecurityProtocolType.Tls12;
+#endif
             ConfigureLogger();
             return Run(args);
         }
