@@ -27,6 +27,7 @@ namespace Octopus.Cli.Commands
         bool ignoreSslErrors;
         string password;
         string username;
+        int? timeOut;
         IOctopusAsyncClient client;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
@@ -45,6 +46,7 @@ namespace Octopus.Cli.Commands
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
+            options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => timeOut = int.Parse(v));
         }
 
         protected Options Options { get; } = new Options();
@@ -84,12 +86,18 @@ namespace Octopus.Cli.Commands
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
 
-            client = await clientFactory.CreateAsyncClient(endpoint, new OctopusClientOptions()
+            var options = new OctopusClientOptions()
             {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
                 IgnoreSslErrors = ignoreSslErrors
 #endif
-            }).ConfigureAwait(false);
+            };
+            if (timeOut.HasValue)
+            {
+                options.Timeout = TimeSpan.FromSeconds(timeOut.Value);
+            }
+
+            client = await clientFactory.CreateAsyncClient(endpoint, options).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
 
