@@ -5,7 +5,6 @@ namespace Octopus.Client.Repositories
 {
     public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>
     {
-        CertificateResource GetOctopusCertificate();
     }
     
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
@@ -13,11 +12,6 @@ namespace Octopus.Client.Repositories
         public CertificateRepository(IOctopusClient client)
             : base(client, "Certificates")
         {
-        }
-
-        public CertificateResource GetOctopusCertificate()
-        {
-            return Get("certificate-global");
         }
     }
 }

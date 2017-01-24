@@ -50,6 +50,7 @@ namespace Octopus.Client
             Releases = new ReleaseRepository(client);
             Deployments = new DeploymentRepository(client);
             Certificates = new CertificateRepository(client);
+            CertificateConfiguration = new CertificateConfigurationRepository(client);
             Dashboards = new DashboardRepository(client);
             DashboardConfigurations = new DashboardConfigurationRepository(client);
             Artifacts = new ArtifactRepository(client);
@@ -134,6 +135,8 @@ namespace Octopus.Client
         public IDeploymentProcessRepository DeploymentProcesses { get; }
 
         public ICertificateRepository Certificates { get; }
+
+        public ICertificateConfigurationRepository CertificateConfiguration { get; }
 
         public IArtifactRepository Artifacts { get; }
 

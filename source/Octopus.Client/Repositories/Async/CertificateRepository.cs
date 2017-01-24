@@ -6,7 +6,6 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>
     {
-        Task<CertificateResource> GetOctopusCertificate();
     }
 
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
@@ -14,11 +13,6 @@ namespace Octopus.Client.Repositories.Async
         public CertificateRepository(IOctopusAsyncClient client)
             : base(client, "Certificates")
         {
-        }
-
-        public Task<CertificateResource> GetOctopusCertificate()
-        {
-            return Get("certificate-global");
         }
     }
 }

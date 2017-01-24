@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Assent;
+using Assent.Namers;
 using NUnit.Framework;
 using Octopus.Client.Tests.Extensions;
 

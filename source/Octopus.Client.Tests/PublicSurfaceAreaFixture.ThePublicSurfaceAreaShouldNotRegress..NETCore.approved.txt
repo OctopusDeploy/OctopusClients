@@ -44,6 +44,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+    Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
@@ -123,6 +124,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+    Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
@@ -935,7 +937,7 @@ Octopus.Client.Model
       UpdateOnNewMachine = 1
       UpdateAlways = 2
   }
-  class CertificateResource
+  class CertificateConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
@@ -943,6 +945,43 @@ Octopus.Client.Model
     .ctor()
     String Name { get; set; }
     String Thumbprint { get; set; }
+  }
+  CertificateFormat
+  {
+      Pkcs12 = 0
+      Der = 1
+      Pem = 2
+  }
+  class CertificateResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.INamedResource
+  {
+    .ctor()
+    Nullable<DateTimeOffset> Archived { get; set; }
+    Octopus.Client.Model.SensitiveValue CertificateData { get; set; }
+    Octopus.Client.Model.CertificateFormat CertificateDataFormat { get; set; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Boolean HasPrivateKey { get; set; }
+    Boolean IsExpired { get; set; }
+    String IssuerCommonName { get; set; }
+    String IssuerDistinguishedName { get; set; }
+    String IssuerOrganization { get; set; }
+    String Name { get; set; }
+    DateTimeOffset NotAfter { get; set; }
+    DateTimeOffset NotBefore { get; set; }
+    String Notes { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    Boolean SelfSigned { get; set; }
+    String SerialNumber { get; set; }
+    String SignatureAlgorithmName { get; set; }
+    String SubjectCommonName { get; set; }
+    String SubjectDistinguishedName { get; set; }
+    String SubjectOrganization { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+    String Thumbprint { get; set; }
+    Int32 Version { get; set; }
   }
   class ChannelResource
     Octopus.Client.Model.IResource
@@ -3393,12 +3432,18 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
   }
+  interface ICertificateConfigurationRepository
+    Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>
+    Octopus.Client.Repositories.Async.IFindByName<CertificateConfigurationResource>
+    Octopus.Client.Repositories.Async.IPaginate<CertificateConfigurationResource>
+  {
+    Task<CertificateConfigurationResource> GetOctopusCertificate()
+  }
   interface ICertificateRepository
     Octopus.Client.Repositories.Async.IGet<CertificateResource>
     Octopus.Client.Repositories.Async.IFindByName<CertificateResource>
     Octopus.Client.Repositories.Async.IPaginate<CertificateResource>
   {
-    Task<CertificateResource> GetOctopusCertificate()
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>
