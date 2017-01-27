@@ -300,8 +300,9 @@ namespace Octopus.Client
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the resource to fetch.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>A stream containing the content of the resource.</returns>
-        Stream GetContent(string path);
+        Stream GetContent(string path, object pathParameters = null);
 
         /// <summary>
         /// Creates or updates the raw content of the resource at the specified path, using the PUT verb.

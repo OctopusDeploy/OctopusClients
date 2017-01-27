@@ -394,10 +394,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the resource to fetch.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>A stream containing the content of the resource.</returns>
-        public async Task<Stream> GetContent(string path)
+        public async Task<Stream> GetContent(string path, object pathParameters = null)
         {
-            var uri = QualifyUri(path);
+            var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
             return response.ResponseResource;
         }

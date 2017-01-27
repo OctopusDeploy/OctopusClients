@@ -388,7 +388,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllResourcePropertiesShouldHavePublicSetters()
         {
             ResourceTypes
-                .Except(new[] { typeof(LifecycleResource), typeof(DeploymentProcessResource) })
+                .Except(new[] { typeof(LifecycleResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
                 .MustConformTo(Convention.PropertiesMustHavePublicSetters)
                 .WithFailureAssertion(Assert.Fail);
         }

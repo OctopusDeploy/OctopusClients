@@ -28,7 +28,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     Task<TResource> Get(String, Object)
-    Task<Stream> GetContent(String)
+    Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -97,7 +97,7 @@ Octopus.Client
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     Octopus.Client.TResource Get(String, Object)
-    Stream GetContent(String)
+    Stream GetContent(String, Object)
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
     IReadOnlyList<TResource> ListAll(String, Object)
     void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -176,7 +176,7 @@ Octopus.Client
     Task Delete(String, Object)
     void Dispose()
     Task<TResource> Get(String, Object)
-    Task<Stream> GetContent(String)
+    Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
@@ -252,7 +252,7 @@ Octopus.Client
     void Delete(String, Object)
     void Dispose()
     Octopus.Client.TResource Get(String, Object)
-    Stream GetContent(String)
+    Stream GetContent(String, Object)
     void Initialize()
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
     IReadOnlyList<TResource> ListAll(String, Object)
@@ -1347,31 +1347,32 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
   {
-    .ctor()
-    Nullable<DateTimeOffset> Archived { get; set; }
+    .ctor(String, String)
+    .ctor(String, String, String)
+    Nullable<DateTimeOffset> Archived { get; }
     Octopus.Client.Model.SensitiveValue CertificateData { get; set; }
-    Octopus.Client.Model.CertificateFormat CertificateDataFormat { get; set; }
+    Octopus.Client.Model.CertificateFormat CertificateDataFormat { get; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Boolean HasPrivateKey { get; set; }
-    Boolean IsExpired { get; set; }
-    String IssuerCommonName { get; set; }
-    String IssuerDistinguishedName { get; set; }
-    String IssuerOrganization { get; set; }
+    Boolean HasPrivateKey { get; }
+    Boolean IsExpired { get; }
+    String IssuerCommonName { get; }
+    String IssuerDistinguishedName { get; }
+    String IssuerOrganization { get; }
     String Name { get; set; }
-    DateTimeOffset NotAfter { get; set; }
-    DateTimeOffset NotBefore { get; set; }
+    DateTimeOffset NotAfter { get; }
+    DateTimeOffset NotBefore { get; }
     String Notes { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
-    Boolean SelfSigned { get; set; }
-    String SerialNumber { get; set; }
-    String SignatureAlgorithmName { get; set; }
-    String SubjectCommonName { get; set; }
-    String SubjectDistinguishedName { get; set; }
-    String SubjectOrganization { get; set; }
+    Boolean SelfSigned { get; }
+    String SerialNumber { get; }
+    String SignatureAlgorithmName { get; }
+    String SubjectCommonName { get; }
+    String SubjectDistinguishedName { get; }
+    String SubjectOrganization { get; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
-    String Thumbprint { get; set; }
-    Int32 Version { get; set; }
+    String Thumbprint { get; }
+    Int32 Version { get; }
   }
   class ChannelResource
     Octopus.Client.Model.IResource
@@ -3846,7 +3847,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<CertificateResource>
     Octopus.Client.Repositories.IFindByName<CertificateResource>
     Octopus.Client.Repositories.IPaginate<CertificateResource>
+    Octopus.Client.Repositories.ICreate<CertificateResource>
+    Octopus.Client.Repositories.IModify<CertificateResource>
+    Octopus.Client.Repositories.IDelete<CertificateResource>
   {
+    Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
@@ -4271,7 +4276,11 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<CertificateResource>
     Octopus.Client.Repositories.Async.IFindByName<CertificateResource>
     Octopus.Client.Repositories.Async.IPaginate<CertificateResource>
+    Octopus.Client.Repositories.Async.ICreate<CertificateResource>
+    Octopus.Client.Repositories.Async.IModify<CertificateResource>
+    Octopus.Client.Repositories.Async.IDelete<CertificateResource>
   {
+    Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>

@@ -1,22 +1,20 @@
 using System;
 using System.IO;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Repositories
 {
     public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>, ICreate<CertificateResource>, IModify<CertificateResource>, IDelete<CertificateResource>
     {
-        /*
         /// <summary>
-        /// 
+        /// Exports the certificate data.
         /// </summary>
-        /// <param name="certificate"></param>
-        /// <param name="format"></param>
-        /// <param name="includePrivateKey"></param>
-        /// <returns></returns>
-        Stream Export(CertificateResource certificate, CertificateFormat? format = null, bool includePrivateKey = false);
-        */
+        /// <param name="certificate">The certificate to export.</param>
+        /// <param name="format">The format of the exported certificate. If null, the certificate will be exported exactly as it was originally uploaded (including with original password).</param>
+        /// <param name="password">Password for the exported file.  This value is only used if exporting to PCKS#12 or PEM formats.</param>
+        /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.  This value is only be used when exporting to PEM format.</param>
+        /// <returns>The exported certificate data.</returns>
+        Stream Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false);
     }
     
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
@@ -26,11 +24,10 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        /*
-        public Stream Export(CertificateResource certificate, CertificateFormat? format = null, bool includePrivateKey = false)
+        public Stream Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false)
         {
-            return Client.GetContent(certificate.Links("Export"));
+            var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
+            return Client.GetContent(certificate.Link("Export"), pathParameters);
         }
-        */
     }
 }
