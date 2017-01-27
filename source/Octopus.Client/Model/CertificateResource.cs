@@ -1,14 +1,31 @@
 using System;
+using Newtonsoft.Json;
 
 namespace Octopus.Client.Model
 {
     public class CertificateResource : Resource, INamedResource
     {
-        public CertificateResource()
+        [JsonConstructor]
+        protected CertificateResource()
         {
             EnvironmentIds = new ReferenceCollection();            
             TenantIds = new ReferenceCollection();
             TenantTags = new ReferenceCollection();
+        }
+
+        public CertificateResource(string name, string certificateData)
+            :this()
+        {
+            Name = name;
+            CertificateData = certificateData;
+        }
+
+        public CertificateResource(string name, string certificateData, string password)
+            :this()
+        {
+            Name = name;
+            CertificateData = certificateData;
+            Password = password;
         }
 
         [Writeable]
@@ -32,39 +49,56 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
 
-        public CertificateFormat CertificateDataFormat { get; set; }  
+        [JsonProperty]
+        public DateTimeOffset? Archived { get; private set; } 
 
-        public DateTimeOffset? Archived { get; set; } 
+        [JsonProperty]
+        public CertificateFormat CertificateDataFormat { get; private set; }  
 
-        public string SubjectDistinguishedName { get; set; }
+        [JsonProperty]
+        public string SubjectDistinguishedName { get; private set; }
 
-        public string SubjectCommonName { get; set; }
+        [JsonProperty]
+        public string SubjectCommonName { get; private set; }
 
-        public string SubjectOrganization { get; set; }
+        [JsonProperty]
+        public string SubjectOrganization { get; private set; }
 
-        public string IssuerDistinguishedName { get; set; }
+        [JsonProperty]
+        public string IssuerDistinguishedName { get; private set; }
 
-        public string IssuerCommonName { get; set; }
+        [JsonProperty]
+        public string IssuerCommonName { get; private set; }
 
-        public string IssuerOrganization { get; set; }
+        [JsonProperty]
+        public string IssuerOrganization { get; private set; }
 
-        public bool SelfSigned { get; set; }
+        [JsonProperty]
+        public bool SelfSigned { get; private set; }
 
-        public string Thumbprint { get; set; }
+        [JsonProperty]
+        public string Thumbprint { get; private set; }
 
-        public DateTimeOffset NotAfter { get; set; } 
+        [JsonProperty]
+        public DateTimeOffset NotAfter { get; private set; } 
 
-        public DateTimeOffset NotBefore { get; set; } 
+        [JsonProperty]
+        public DateTimeOffset NotBefore { get; private set; } 
 
-        public bool IsExpired { get; set; }
+        [JsonProperty]
+        public bool IsExpired { get; private set; }
 
-        public bool HasPrivateKey { get; set; }
+        [JsonProperty]
+        public bool HasPrivateKey { get; private set; }
 
-        public int Version { get; set; }
+        [JsonProperty]
+        public int Version { get; private set; }
 
-        public string SerialNumber { get; set; }
+        [JsonProperty]
+        public string SerialNumber { get; private set; }
 
-        public string SignatureAlgorithmName { get; set; }
+        [JsonProperty]
+        public string SignatureAlgorithmName { get; private set; }
 
     }
 }

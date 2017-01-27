@@ -4,7 +4,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>
+    public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>, ICreate<CertificateResource>, IModify<CertificateResource>, IDelete<CertificateResource>
     {
     }
 
