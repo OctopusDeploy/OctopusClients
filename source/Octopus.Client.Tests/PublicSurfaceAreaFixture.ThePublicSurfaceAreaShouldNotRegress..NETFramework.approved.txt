@@ -3851,7 +3851,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<CertificateResource>
     Octopus.Client.Repositories.IDelete<CertificateResource>
   {
+    void Archive(Octopus.Client.Model.CertificateResource)
     Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    void UnArchive(Octopus.Client.Model.CertificateResource)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
@@ -4280,7 +4282,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<CertificateResource>
     Octopus.Client.Repositories.Async.IDelete<CertificateResource>
   {
+    Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task UnArchive(Octopus.Client.Model.CertificateResource)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>

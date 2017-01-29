@@ -15,6 +15,17 @@ namespace Octopus.Client.Repositories
         /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.  This value is only be used when exporting to PEM format.</param>
         /// <returns>The exported certificate data.</returns>
         Stream Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false);
+
+        /// <summary>
+        /// Archive a certificate. 
+        /// Archiving makes a certificate unavailable for selection as the value of a variable. 
+        /// </summary>
+        void Archive(CertificateResource certificate);
+
+        /// <summary>
+        /// Unarchive a certificate. This makes the certificate again available for selection as the value of a variable.
+        /// </summary>
+        void UnArchive(CertificateResource certificate);
     }
     
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
@@ -28,6 +39,16 @@ namespace Octopus.Client.Repositories
         {
             var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
             return Client.GetContent(certificate.Link("Export"), pathParameters);
+        }
+
+        public void Archive(CertificateResource certificate)
+        {
+            Client.Post(certificate.Link("Archive"));
+        }
+
+        public void UnArchive(CertificateResource certificate)
+        {
+            Client.Post(certificate.Link("Unarchive"));
         }
     }
 }
