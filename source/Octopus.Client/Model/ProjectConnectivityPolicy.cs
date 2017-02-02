@@ -11,7 +11,7 @@
         public SkipMachineBehavior SkipMachineBehavior { get; set; }
         public ReferenceCollection TargetRoles { get; set; }
 
-        public bool AllowDeploymentsToEmptyEnvironments { get; set; }
+        public bool AllowDeploymentsToNoTargets { get; set; }
 
         public ProjectConnectivityPolicy()
         {

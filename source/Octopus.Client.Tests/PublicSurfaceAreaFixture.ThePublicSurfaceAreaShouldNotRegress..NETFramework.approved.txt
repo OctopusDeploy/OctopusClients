@@ -2427,7 +2427,7 @@ Octopus.Client.Model
   class ProjectConnectivityPolicy
   {
     .ctor()
-    Boolean AllowDeploymentsToEmptyEnvironments { get; set; }
+    Boolean AllowDeploymentsToNoTargets { get; set; }
     Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
