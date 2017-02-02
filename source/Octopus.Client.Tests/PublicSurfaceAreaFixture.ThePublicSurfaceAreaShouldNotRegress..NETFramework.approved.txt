@@ -2044,7 +2044,7 @@ Octopus.Client.Model
   class MachineConnectivityPolicy
   {
     .ctor()
-    bool AllowDeploymentsToEmptyEnvironments { get; set; }
+    Boolean AllowDeploymentsToEmptyEnvironments { get; set; }
     Octopus.Client.Model.MachineConnectivityBehavior MachineConnectivityBehavior { get; set; }
   }
   class MachineDeploymentPreview
