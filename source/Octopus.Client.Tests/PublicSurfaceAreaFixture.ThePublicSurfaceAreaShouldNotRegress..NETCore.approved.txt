@@ -1847,6 +1847,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    String Hash { get; set; }
     Nullable<Int64> PackageSizeBytes { get; set; }
   }
   class PackageResource
