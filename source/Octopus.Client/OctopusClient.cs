@@ -11,6 +11,7 @@ using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Octopus.Client
 {
@@ -22,7 +23,7 @@ namespace Octopus.Client
         readonly object rootDocumentLock = new object();
         RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
-        readonly CookieContainer cookies = new CookieContainer();
+        readonly CookieContainer cookieContainer = new CookieContainer();
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
 
         /// <summary>
@@ -426,7 +427,7 @@ namespace Octopus.Client
             {
                 webRequest.Proxy = serverEndpoint.Proxy;
             }
-            webRequest.CookieContainer = cookies;
+            webRequest.CookieContainer = cookieContainer;
             webRequest.Accept = "application/json";
             webRequest.ContentType = "application/json";
             webRequest.ReadWriteTimeout = ApiConstants.DefaultClientRequestTimeout;
@@ -445,6 +446,14 @@ namespace Octopus.Client
             {
                 webRequest.Headers["X-HTTP-Method-Override"] = "DELETE";
                 webRequest.Method = "POST";
+            }
+
+            var antiforgeryCookie = cookieContainer.GetCookies(serverEndpoint.OctopusServer.Resolve("/"))
+                .Cast<Cookie>()
+                .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
+            if (antiforgeryCookie != null)
+            {
+                webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
             }
 
             var requestHandler = SendingOctopusRequest;
@@ -551,8 +560,7 @@ namespace Octopus.Client
 
                 var locationHeader = webResponse.Headers.Get("Location");
                 var octopusResponse = new OctopusResponse<TResponseResource>(request, webResponse.StatusCode, locationHeader, resource);
-                var responseHandler = ReceivedOctopusResponse;
-                if (responseHandler != null) responseHandler(octopusResponse);
+                ReceivedOctopusResponse?.Invoke(octopusResponse);
 
                 return octopusResponse;
             }
