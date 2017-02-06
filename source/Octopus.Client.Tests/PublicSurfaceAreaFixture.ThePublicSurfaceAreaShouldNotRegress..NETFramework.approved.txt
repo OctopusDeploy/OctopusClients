@@ -2394,6 +2394,11 @@ Octopus.Client.Model
       SubscriptionView = 90
       SubscriptionEdit = 91
       SubscriptionDelete = 92
+      CertificateView = 93
+      CertificateCreate = 94
+      CertificateEdit = 95
+      CertificateDelete = 96
+      CertificateExportPrivateKey = 97
   }
   class PermissionDescription
   {
