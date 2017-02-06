@@ -197,5 +197,15 @@ namespace Octopus.Client.Model
         [Description("Edit subscriptions")] SubscriptionEdit,
 
         [Description("Delete subscriptions")] SubscriptionDelete,
+
+        [Description("View certificates")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateView,
+
+        [Description("Create certificates")] CertificateCreate,
+
+        [Description("Edit certificates")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateEdit,
+
+        [Description("Delete certificates")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateDelete,
+
+        [Description("Export certificate private-keys")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateExportPrivateKey,
     }
 }
