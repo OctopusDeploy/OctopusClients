@@ -39,8 +39,8 @@ namespace Octopus.Cli.Commands
 
             var options = Options.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
-            options.Add("apiKey=", "Your API key. Get this from the user profile page.", v => apiKey = v);
-            options.Add("user=", "[Optional] Username to use when authenticating with the server.", v => username = v);
+            options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password.", v => apiKey = v);
+            options.Add("user=", "[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
@@ -75,12 +75,15 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(ServerBaseUrl))
                 throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/");
 
-            if (string.IsNullOrWhiteSpace(apiKey))
-                throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
+            if (!string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(username))
+                throw new CommandException("Please provide an API Key OR a username and password, not both");
 
-            var credentials = ParseCredentials(username, password);
+            if (string.IsNullOrWhiteSpace(apiKey) && string.IsNullOrWhiteSpace(username))
+                throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789 OR a username and password. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
 
-            var endpoint = new OctopusServerEndpoint(ServerBaseUrl, apiKey, credentials);
+            var endpoint = string.IsNullOrWhiteSpace(apiKey)
+                ? new OctopusServerEndpoint(ServerBaseUrl)
+                : new OctopusServerEndpoint(ServerBaseUrl, apiKey);
 
 #if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
@@ -109,6 +112,11 @@ namespace Octopus.Cli.Commands
             Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
             var root = Repository.Client.RootDocument;
             Log.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
+
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                await Repository.Users.SignIn(username, password);
+            }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
