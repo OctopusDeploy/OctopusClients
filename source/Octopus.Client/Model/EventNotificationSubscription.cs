@@ -21,12 +21,18 @@ namespace Octopus.Client.Model
 
         public DateTimeOffset? EmailDigestLastProcessed { get; set; }
 
+        public int? EmailDigestLastProcessedEventAutoId { get; set; }
+
+        public string EmailShowDatesInTimeZoneId { get; set; }
+
 
         public string WebhookURI { get; set; }
 
         public ReferenceCollection WebhookTeams { get; set; }
 
         public DateTimeOffset? WebhookLastProcessed { get; set; }
+
+        public int? WebhookLastProcessedEventAutoId { get; set; }
     }
 
     public class EventNotificationSubscriptionFilter

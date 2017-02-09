@@ -1,4 +1,3 @@
-using System;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -23,7 +22,8 @@ namespace Octopus.Client.Repositories
                 string eventGroups = null,
                 string eventCategories = null,
                 string tenants = null,
-                string tags = null);
+                string tags = null,
+                int? fromAutoId = null);
     }
     
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -60,7 +60,8 @@ namespace Octopus.Client.Repositories
             string eventGroups = null,
             string eventCategories = null,
             string tenants = null,
-            string tags = null)
+            string tags = null,
+            int? fromAutoId = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -77,7 +78,8 @@ namespace Octopus.Client.Repositories
                 eventGroups = eventGroups,
                 eventCategories = eventCategories,
                 tenants = tenants,
-                tags = tags
+                tags = tags,
+                fromAutoId = fromAutoId
             });
         }
     }
