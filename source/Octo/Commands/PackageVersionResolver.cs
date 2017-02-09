@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
+using Octopus.Client.Model.Versioning;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands
@@ -14,6 +17,7 @@ namespace Octopus.Cli.Commands
         readonly Serilog.ILogger log;
         readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
         string defaultVersion;
+        readonly Regex zipNameRegex = new Regex(@"(?<Name>.+?)\.(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?\.zip$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
 
         public PackageVersionResolver(Serilog.ILogger log)
         {
@@ -29,6 +33,16 @@ namespace Octopus.Cli.Commands
 
                 PackageIdentity packageIdentity;
                 if (TryReadPackageIdentity(file, out packageIdentity))
+                {
+                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                }
+            }
+            foreach (var file in Directory.GetFiles(folderPath, "*.zip", SearchOption.AllDirectories))
+            {
+                log.Debug("Package file: {File:l}", file);
+
+                PackageIdentity packageIdentity;
+                if (TryReadZipIdentity(file, out packageIdentity))
                 {
                     Add(packageIdentity.Id, packageIdentity.Version.ToString());
                 }
@@ -116,6 +130,35 @@ namespace Octopus.Cli.Commands
                log.Warning(ex, "Could not read manifest from '{PackageFile:l}'", packageFile); 
             }
 
+            return false;
+        }
+
+        bool TryReadZipIdentity(string zipFile, out PackageIdentity packageIdentity)
+        {
+            try
+            {
+                string fileName = Path.GetFileName(zipFile);
+                var match = zipNameRegex.Match(fileName);
+                if (match.Success)
+                {
+                    string packageId = match.Groups["Name"].Value;
+                    string version = match.Groups["Version"].Value;
+                    string release = string.Empty;
+                    if (match.Groups["Release"] != null)
+                    {
+                        release = match.Groups["Release"].Value;
+                    }
+
+                    packageIdentity = new PackageIdentity(packageId, NuGetVersion.Parse(version + release));
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Warning(ex, "Could not determine package name and version from zip file '{PackageFile:l}'", zipFile);
+            }
+
+            packageIdentity = null;
             return false;
         }
     }
