@@ -10,20 +10,21 @@ namespace Octopus.Client.Repositories
             bool includeInternalEvents = false);
 
         ResourceCollection<EventResource> List(int skip = 0,
-                string from = null,
-                string to = null,
-                string regarding = null,
-                string regardingAny = null,
-                bool includeInternalEvents = true,
-                string user = null,
-                string users = null,
-                string projects = null,
-                string environments = null,
-                string eventGroups = null,
-                string eventCategories = null,
-                string tenants = null,
-                string tags = null,
-                int? fromAutoId = null);
+            string from = null,
+            string to = null,
+            string regarding = null,
+            string regardingAny = null,
+            bool includeInternalEvents = true,
+            string user = null,
+            string users = null,
+            string projects = null,
+            string environments = null,
+            string eventGroups = null,
+            string eventCategories = null,
+            string tenants = null,
+            string tags = null,
+            int? fromAutoId = null,
+            int? toAutoId = null);
     }
     
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -61,7 +62,8 @@ namespace Octopus.Client.Repositories
             string eventCategories = null,
             string tenants = null,
             string tags = null,
-            int? fromAutoId = null)
+            int? fromAutoId = null,
+            int? toAutoId = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -79,7 +81,8 @@ namespace Octopus.Client.Repositories
                 eventCategories = eventCategories,
                 tenants = tenants,
                 tags = tags,
-                fromAutoId = fromAutoId
+                fromAutoId = fromAutoId,
+                toAutoId = toAutoId
             });
         }
     }
