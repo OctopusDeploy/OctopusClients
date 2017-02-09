@@ -80,6 +80,11 @@ namespace Octopus.Client.Repositories
         public TResource FindByName(string name, string path = null, object pathParameters = null)
         {
             name = (name ?? string.Empty).Trim();
+
+            // Some endpoints allow a Name query param which greatly increases efficiency
+            if (pathParameters == null)
+                pathParameters = new {name = name};
+
             return FindOne(r =>
             {
                 var named = r as INamedResource;
