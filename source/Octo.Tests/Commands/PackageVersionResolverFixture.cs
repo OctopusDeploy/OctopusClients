@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Tests.Util;
+using Octopus.Cli.Util;
 using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
@@ -11,12 +14,14 @@ namespace Octopus.Cli.Tests.Commands
     public class PackageVersionResolverFixture
     {
         PackageVersionResolver resolver;
+        FakeOctopusFileSystem fileSystem;
 
         [SetUp]
         public void SetUp()
-        {
+        {  
             Program.ConfigureLogger();
-            resolver = new PackageVersionResolver(Log.Logger);
+            fileSystem = new FakeOctopusFileSystem();
+            resolver = new PackageVersionResolver(Log.Logger, fileSystem);
         }
 
         [Test]
@@ -92,23 +97,36 @@ namespace Octopus.Cli.Tests.Commands
         }
 
 
-        [Test]
-        public void ShouldDetermineVersionFromZipFile()
+        [TestCase("acme.1.2.0", "acme", "1.2.0", true)]
+        [TestCase("acme-1.2.0", "acme", "1.2.0", true)]
+        [TestCase("acme.1.2.0.10", "acme", "1.2.0.10", true)]
+        [TestCase("acme-1.2.0.10", "acme", "1.2.0.10", true)]
+        [TestCase("acme.1", "acme", "1", true)]
+        [TestCase("acme-1", "acme", "1", true)]
+        [TestCase("acme.1.2", "acme", "1.2", true)]
+        [TestCase("acme.web.1.2.56", "acme.web", "1.2.56", true)]
+        [TestCase("acme.web.1.2.0-alpha", "acme.web", "1.2.0-alpha", true)]
+        [TestCase("acme.web.1.2.0-alpha.1.22", "acme.web", "1.2.0-alpha.1.22", true)]
+        [TestCase("acme.web-1.2.0-alpha.1.22", "acme.web", "1.2.0-alpha.1.22", true)]
+        [TestCase("acme.web.1.2.0+build", "acme.web", "1.2.0+build", true)]
+        [TestCase("acme.web-1.2.0+build", "acme.web", "1.2.0+build", true)]
+        [TestCase("acme.web.1.2.0-alpha.1+build", "acme.web", "1.2.0-alpha.1+build", true)]
+        [TestCase("acme.web-1.2.0-alpha.1+build", "acme.web", "1.2.0-alpha.1+build", true)]
+        [TestCase("acme+web.1", "", "", false)]
+        [TestCase("acme+web-1", "", "", false)]
+        [TestCase("acme.web.1.0.0.0.0", "", "", false)]
+        [TestCase("acme.web-1.0.0.0.0", "", "", false)]
+        public void CanParseIdAndVersion(string input, string expectedPackageId, string expectedVersion, bool canParse)
         {
-            // create test files, content does not matter as only file name is used
-            var path = Path.Combine(Path.GetTempPath(), "octo-test-" + Guid.NewGuid());
-            Directory.CreateDirectory(path);
-            File.WriteAllText(Path.Combine(path, "Package.1.2.3.zip"), string.Empty);
-            File.WriteAllText(Path.Combine(path, "Package2.1.2.3-alpha-1.zip"), string.Empty);
-            File.WriteAllText(Path.Combine(path, "My.Package.2017.2.3.4-alpha-quality.zip"), string.Empty);
-            File.WriteAllText(Path.Combine(path, "Family_photos.zip"), string.Empty);
+            fileSystem.Files[$@"c:\temp\{input}.zip"] = "";
 
-            resolver.AddFolder(path);
+            resolver.AddFolder(@"c:\temp\");
 
-            Assert.That(resolver.ResolveVersion("Package"), Is.EqualTo("1.2.3"));
-            Assert.That(resolver.ResolveVersion("Package2"), Is.EqualTo("1.2.3-alpha-1"));
-            Assert.That(resolver.ResolveVersion("My.Package"), Is.EqualTo("2017.2.3.4-alpha-quality"));
-            Assert.That(resolver.ResolveVersion("Family_photos"), Is.Null);
+            var result = resolver.ResolveVersion(expectedPackageId);
+            if (canParse)
+                result.Should().Be(expectedVersion);
+            else
+                result.Should().BeNull();
         }
     }
 }
