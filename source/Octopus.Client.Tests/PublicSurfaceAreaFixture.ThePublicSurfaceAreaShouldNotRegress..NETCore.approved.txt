@@ -1965,6 +1965,10 @@ Octopus.Client.Model
       SubscriptionView = 90
       SubscriptionEdit = 91
       SubscriptionDelete = 92
+      TriggerCreate = 93
+      TriggerView = 94
+      TriggerEdit = 95
+      TriggerDelete = 96
   }
   class PermissionDescription
   {
