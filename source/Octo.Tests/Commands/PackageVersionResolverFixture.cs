@@ -118,9 +118,10 @@ namespace Octopus.Cli.Tests.Commands
         [TestCase("acme.web-1.0.0.0.0", "", "", false)]
         public void CanParseIdAndVersion(string input, string expectedPackageId, string expectedVersion, bool canParse)
         {
-            fileSystem.Files[$@"c:\temp\{input}.zip"] = "";
+            var filename = Path.Combine("temp", $"{input}.zip");
+            fileSystem.Files[filename] = "";
 
-            resolver.AddFolder(@"c:\temp\");
+            resolver.AddFolder(Path.GetDirectoryName(filename));
 
             var result = resolver.ResolveVersion(expectedPackageId);
             if (canParse)
