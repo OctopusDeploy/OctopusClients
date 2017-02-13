@@ -1353,13 +1353,13 @@ Octopus.Client.Model
   {
     .ctor()
     Nullable<DateTimeOffset> EmailDigestLastProcessed { get; set; }
-    Nullable<Int32> EmailDigestLastProcessedEventAutoId { get; set; }
+    Nullable<Int64> EmailDigestLastProcessedEventAutoId { get; set; }
     TimeSpan EmailFrequencyPeriod { get; set; }
     String EmailShowDatesInTimeZoneId { get; set; }
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
-    Nullable<Int32> WebhookLastProcessedEventAutoId { get; set; }
+    Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
     String WebhookURI { get; set; }
   }
@@ -3484,7 +3484,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int32>, Nullable<Int32>)
+    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>)
   }
   interface IFeaturesConfigurationRepository
   {
