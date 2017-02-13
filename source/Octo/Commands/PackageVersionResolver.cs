@@ -17,14 +17,12 @@ namespace Octopus.Cli.Commands
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {
-        static readonly string[] SupportedZipExtensions = { ".zip", ".tgz", ".tar.gz", ".tar.Z", ".tar.bz2", ".tar.bz", ".tbz", ".tar" };
-        static readonly string[] SupportedZipPatterns = SupportedZipExtensions.Select(s => "*" + s).ToArray();
+        static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
 
-        readonly Serilog.ILogger log;
+        readonly ILogger log;
         private readonly IOctopusFileSystem fileSystem;
         readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
         string defaultVersion;
-        readonly Regex zipNameRegex = new Regex(@"(?<Name>.+?)\.(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?\.zip$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
 
         public PackageVersionResolver(Serilog.ILogger log, IOctopusFileSystem fileSystem)
         {
@@ -45,7 +43,7 @@ namespace Octopus.Cli.Commands
                     Add(packageIdentity.Id, packageIdentity.Version.ToString());
                 }
             }
-            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipPatterns))
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipFilePatterns))
             {
                 log.Debug("Package file: {File:l}", file);
 
