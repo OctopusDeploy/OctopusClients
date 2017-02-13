@@ -21,7 +21,7 @@ namespace Octopus.Client.Model
 
         public DateTimeOffset? EmailDigestLastProcessed { get; set; }
 
-        public int? EmailDigestLastProcessedEventAutoId { get; set; }
+        public long? EmailDigestLastProcessedEventAutoId { get; set; }
 
         public string EmailShowDatesInTimeZoneId { get; set; }
 
@@ -32,7 +32,7 @@ namespace Octopus.Client.Model
 
         public DateTimeOffset? WebhookLastProcessed { get; set; }
 
-        public int? WebhookLastProcessedEventAutoId { get; set; }
+        public long? WebhookLastProcessedEventAutoId { get; set; }
     }
 
     public class EventNotificationSubscriptionFilter
