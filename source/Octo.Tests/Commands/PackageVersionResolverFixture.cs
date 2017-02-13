@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
@@ -97,29 +99,51 @@ namespace Octopus.Cli.Tests.Commands
         }
 
 
-        [TestCase("acme.1.2.0", "acme", "1.2.0", true)]
-        [TestCase("acme-1.2.0", "acme", "1.2.0", true)]
-        [TestCase("acme.1.2.0.10", "acme", "1.2.0.10", true)]
-        [TestCase("acme-1.2.0.10", "acme", "1.2.0.10", true)]
-        [TestCase("acme.1", "acme", "1", true)]
-        [TestCase("acme-1", "acme", "1", true)]
-        [TestCase("acme.1.2", "acme", "1.2", true)]
-        [TestCase("acme.web.1.2.56", "acme.web", "1.2.56", true)]
-        [TestCase("acme.web.1.2.0-alpha", "acme.web", "1.2.0-alpha", true)]
-        [TestCase("acme.web.1.2.0-alpha.1.22", "acme.web", "1.2.0-alpha.1.22", true)]
-        [TestCase("acme.web-1.2.0-alpha.1.22", "acme.web", "1.2.0-alpha.1.22", true)]
-        [TestCase("acme.web.1.2.0+build", "acme.web", "1.2.0+build", true)]
-        [TestCase("acme.web-1.2.0+build", "acme.web", "1.2.0+build", true)]
-        [TestCase("acme.web.1.2.0-alpha.1+build", "acme.web", "1.2.0-alpha.1+build", true)]
-        [TestCase("acme.web-1.2.0-alpha.1+build", "acme.web", "1.2.0-alpha.1+build", true)]
-        [TestCase("acme+web.1", "", "", false)]
-        [TestCase("acme+web-1", "", "", false)]
-        [TestCase("acme.web.1.0.0.0.0", "", "", false)]
-        [TestCase("acme.web-1.0.0.0.0", "", "", false)]
-        public void CanParseIdAndVersion(string input, string expectedPackageId, string expectedVersion, bool canParse)
+        public static IEnumerable<TestCaseData> CanParseIdAndVersionData()
         {
-            var filename = Path.Combine("temp", $"{input}.zip");
-            fileSystem.Files[filename] = "";
+            var extensions = new[] {".zip", ".tgz", ".tar.gz", ".tar.Z", ".tar.bz2", ".tar.bz", ".tbz", ".tar" };
+            foreach(var ext in extensions)
+            { 
+                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme", "1.2", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.56", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
+                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
+            }
+
+            var invalid = new[]
+            {
+                "acme+web.1.zip",
+                "acme.web.1.0.0.0.0.zip",
+                "acme.web-1.0.0.zip"
+            };
+                yield return new TestCaseData("acme+web.1.zip", false, "acme+web", null).SetName("acme+web.1.zip");
+                yield return new TestCaseData("acme.web.1.0.0.0.0.zip", false, "acme.web", null).SetName("acme.web.1.0.0.0.0.zip");
+                yield return new TestCaseData("acme.web-1.0.0.zip", false, "acme.web", null).SetName("acme.web-1.0.0.zip");
+        }
+
+        private static TestCaseData CreateCanParseIdAndVersionCase(string packageId, string version, string ext)
+        {
+            var filename = $"{packageId}.{version}{ext}";
+            return new TestCaseData(filename, true, packageId, version)
+                .SetName(filename);
+        }
+
+        [TestCaseSource(nameof(CanParseIdAndVersionData))]
+        public void CanParseIdAndVersion(string filename, bool canParse, string expectedPackageId, string expectedVersion)
+        {
+            var path = Path.Combine("temp", filename);
+            fileSystem.Files[path] = "";
 
             resolver.AddFolder(Path.GetDirectoryName(filename));
 

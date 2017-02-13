@@ -17,6 +17,9 @@ namespace Octopus.Cli.Commands
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {
+        static readonly string[] SupportedZipExtensions = { ".zip", ".tgz", ".tar.gz", ".tar.Z", ".tar.bz2", ".tar.bz", ".tbz", ".tar" };
+        static readonly string[] SupportedZipPatterns = SupportedZipExtensions.Select(s => "*" + s).ToArray();
+
         readonly Serilog.ILogger log;
         private readonly IOctopusFileSystem fileSystem;
         readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
@@ -32,7 +35,7 @@ namespace Octopus.Cli.Commands
         public void AddFolder(string folderPath)
         {
             log.Debug("Using package versions from folder: {FolderPath:l}", folderPath);
-            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, "*.nupkg"))
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, ".nupkg"))
             {
                 log.Debug("Package file: {File:l}", file);
 
@@ -42,7 +45,7 @@ namespace Octopus.Cli.Commands
                     Add(packageIdentity.Id, packageIdentity.Version.ToString());
                 }
             }
-            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, "*.zip"))
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipPatterns))
             {
                 log.Debug("Package file: {File:l}", file);
 
@@ -150,13 +153,15 @@ namespace Octopus.Cli.Commands
             packageIdentity = null;
 
             var idAndVersion = Path.GetFileNameWithoutExtension(filename) ?? "";
+            if (".tar".Equals(Path.GetExtension(idAndVersion), StringComparison.OrdinalIgnoreCase))
+                idAndVersion = Path.GetFileNameWithoutExtension(idAndVersion);
 
             const string packageIdPattern = @"(?<packageId>(\w+([_.-]\w+)*?))";
             const string semanticVersionPattern = @"(?<semanticVersion>(\d+(\.\d+){0,3}" // Major Minor Patch
                  + @"(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?)" // Pre-release identifiers
                  + @"(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?)"; // Build Metadata
 
-            var match = Regex.Match(idAndVersion, $@"^{packageIdPattern}[\.\-]{semanticVersionPattern}$");
+            var match = Regex.Match(idAndVersion, $@"^{packageIdPattern}\.{semanticVersionPattern}$");
             var packageIdMatch = match.Groups["packageId"];
             var versionMatch = match.Groups["semanticVersion"];
 
