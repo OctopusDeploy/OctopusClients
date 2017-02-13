@@ -1,34 +1,54 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
+using Octopus.Client.Model.Versioning;
+using Serilog;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {
-        readonly Serilog.ILogger log;
+        static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
+
+        readonly ILogger log;
+        private readonly IOctopusFileSystem fileSystem;
         readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
         string defaultVersion;
 
-        public PackageVersionResolver(Serilog.ILogger log)
+        public PackageVersionResolver(Serilog.ILogger log, IOctopusFileSystem fileSystem)
         {
             this.log = log;
+            this.fileSystem = fileSystem;
         }
 
         public void AddFolder(string folderPath)
         {
             log.Debug("Using package versions from folder: {FolderPath:l}", folderPath);
-            foreach (var file in Directory.GetFiles(folderPath, "*.nupkg", SearchOption.AllDirectories))
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, ".nupkg"))
             {
                 log.Debug("Package file: {File:l}", file);
 
                 PackageIdentity packageIdentity;
                 if (TryReadPackageIdentity(file, out packageIdentity))
+                {
+                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                }
+            }
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipFilePatterns))
+            {
+                log.Debug("Package file: {File:l}", file);
+
+                PackageIdentity packageIdentity;
+                if (TryParseZipIdAndVersion(file, out packageIdentity))
                 {
                     Add(packageIdentity.Id, packageIdentity.Version.ToString());
                 }
@@ -117,6 +137,43 @@ namespace Octopus.Cli.Commands
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Takes a string containing a concatenated package ID and version (e.g. a filename or database-key) and 
+        /// attempts to parse a package ID and semantic version.  
+        /// </summary>
+        /// <param name="filename">The filename of the package</param>
+        /// <param name="packageIdentity">The package identity</param>
+        /// <returns>True if parsing was successful, else False</returns>
+        static bool TryParseZipIdAndVersion(string filename, out PackageIdentity packageIdentity)
+        {
+            packageIdentity = null;
+
+            var idAndVersion = Path.GetFileNameWithoutExtension(filename) ?? "";
+            if (".tar".Equals(Path.GetExtension(idAndVersion), StringComparison.OrdinalIgnoreCase))
+                idAndVersion = Path.GetFileNameWithoutExtension(idAndVersion);
+
+            const string packageIdPattern = @"(?<packageId>(\w+([_.-]\w+)*?))";
+            const string semanticVersionPattern = @"(?<semanticVersion>(\d+(\.\d+){0,3}" // Major Minor Patch
+                 + @"(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?)" // Pre-release identifiers
+                 + @"(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?)"; // Build Metadata
+
+            var match = Regex.Match(idAndVersion, $@"^{packageIdPattern}\.{semanticVersionPattern}$");
+            var packageIdMatch = match.Groups["packageId"];
+            var versionMatch = match.Groups["semanticVersion"];
+
+            if (!packageIdMatch.Success || !versionMatch.Success)
+                return false;
+
+            var packageId = packageIdMatch.Value;
+
+            NuGetVersion version;
+            if (!NuGetVersion.TryParse(versionMatch.Value, out version))
+                return false;
+
+            packageIdentity = new PackageIdentity(packageId, version);
+            return true;
         }
     }
 }
