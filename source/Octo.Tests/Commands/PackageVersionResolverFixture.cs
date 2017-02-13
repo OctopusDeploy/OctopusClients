@@ -20,7 +20,7 @@ namespace Octopus.Cli.Tests.Commands
 
         [SetUp]
         public void SetUp()
-        {  
+        {
             Program.ConfigureLogger();
             fileSystem = new FakeOctopusFileSystem();
             resolver = new PackageVersionResolver(Log.Logger, fileSystem);
@@ -101,24 +101,24 @@ namespace Octopus.Cli.Tests.Commands
 
         public static IEnumerable<TestCaseData> CanParseIdAndVersionData()
         {
-            var extensions = new[] {".zip", ".tgz", ".tar.gz", ".tar.Z", ".tar.bz2", ".tar.bz", ".tbz", ".tar" };
-            foreach(var ext in extensions)
-            { 
-                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme", "1.2", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.56", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
-                    yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
+            var extensions = new[] { ".zip", ".tgz", ".tar.gz", ".tar.Z", ".tar.bz2", ".tar.bz", ".tbz", ".tar" };
+            foreach (var ext in extensions)
+            {
+                yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1.2.0", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1.2.0.10", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1", ext);
+                yield return CreateCanParseIdAndVersionCase("acme", "1.2", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.56", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1.22", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0+build", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
+                yield return CreateCanParseIdAndVersionCase("acme.web", "1.2.0-alpha.1+build", ext);
             }
 
             var invalid = new[]
@@ -127,9 +127,9 @@ namespace Octopus.Cli.Tests.Commands
                 "acme.web.1.0.0.0.0.zip",
                 "acme.web-1.0.0.zip"
             };
-                yield return new TestCaseData("acme+web.1.zip", false, "acme+web", null).SetName("acme+web.1.zip");
-                yield return new TestCaseData("acme.web.1.0.0.0.0.zip", false, "acme.web", null).SetName("acme.web.1.0.0.0.0.zip");
-                yield return new TestCaseData("acme.web-1.0.0.zip", false, "acme.web", null).SetName("acme.web-1.0.0.zip");
+            yield return new TestCaseData("acme+web.1.zip", false, "acme+web", null).SetName("acme+web.1.zip");
+            yield return new TestCaseData("acme.web.1.0.0.0.0.zip", false, "acme.web", null).SetName("acme.web.1.0.0.0.0.zip");
+            yield return new TestCaseData("acme.web-1.0.0.zip", false, "acme.web", null).SetName("acme.web-1.0.0.zip");
         }
 
         private static TestCaseData CreateCanParseIdAndVersionCase(string packageId, string version, string ext)
