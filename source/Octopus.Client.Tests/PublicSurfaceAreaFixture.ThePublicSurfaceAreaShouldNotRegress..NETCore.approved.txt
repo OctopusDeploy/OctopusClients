@@ -572,7 +572,7 @@ Octopus.Client.Model
   class ActionTemplateParameterResource
   {
     .ctor()
-    PropertyValueResource DefaultValue { get; set; }
+    Octopus.Client.Model.PropertyValueResource DefaultValue { get; set; }
     IDictionary<String, String> DisplaySettings { get; set; }
     String HelpText { get; set; }
     String Id { get; set; }
