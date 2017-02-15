@@ -23,6 +23,18 @@ namespace Octopus.Client.Model.Accounts
 
         [Trim]
         [Writeable]
-        public SensitiveValue Password { get; set; } 
+        public SensitiveValue Password { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string AzureEnvironment { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ResourceManagementEndpointBaseUri { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ActiveDirectoryEndpointBaseUri { get; set; }
     }
 }
