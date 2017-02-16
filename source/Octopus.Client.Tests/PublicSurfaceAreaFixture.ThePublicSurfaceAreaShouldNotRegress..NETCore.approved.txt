@@ -222,6 +222,57 @@ Octopus.Client
     void SetParameter(String, IDictionary<String, String>)
   }
 }
+Octopus.Client.Declarative
+{
+  ApplyAction
+  {
+      Detect = 0
+      Commit = 1
+  }
+  class ConfigurationResult
+  {
+    .ctor(IEnumerable<Difference>)
+    IReadOnlyCollection<Difference> Differences { get; }
+    Boolean WereDifferencesDetected()
+  }
+  abstract class DeclarativeResource
+    Octopus.Client.Declarative.IDeclarativeResource
+  {
+  }
+  class Difference
+  {
+    .ctor(String)
+    String Summary { get; }
+    String ToString()
+  }
+  interface IApplyContext
+  {
+    Octopus.Client.Declarative.ApplyAction Action { get; }
+    void ReportDifference(Octopus.Client.Declarative.IDeclarativeResource, String)
+  }
+  interface IDeclarativeResource
+  {
+    Task Apply(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Declarative.IApplyContext)
+  }
+  class OctopusConfiguration
+  {
+    .ctor()
+    Task<ConfigurationResult> Apply(Octopus.Client.IOctopusAsyncRepository)
+    Octopus.Client.Declarative.OctopusConfiguration Ensure()
+    Octopus.Client.Declarative.OctopusConfiguration Ensure(Octopus.Client.Declarative.T)
+    Task<ConfigurationResult> Test(Octopus.Client.IOctopusAsyncRepository)
+  }
+  class ScriptStepTemplate
+    Octopus.Client.Declarative.IDeclarativeResource
+  {
+    .ctor()
+    String Body { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.DeploymentProcess.ScriptTarget ScriptTarget { get; set; }
+    Octopus.Client.Model.ScriptSyntax Syntax { get; set; }
+    String FromFile(String)
+  }
+}
 Octopus.Client.Editors.Async
 {
   class ChannelEditor
