@@ -54,10 +54,10 @@ namespace Octopus.Cli.Commands
                     $"The following status value is unknown: {string.Join(", ", missingStatuses)}. Please choose from {string.Join(", ", StatusNames)}");
 
 
-            var unknownStatuses = healthStatuses.Where(s => !HealthStatusNames.Contains(s, StringComparer.OrdinalIgnoreCase)).ToList();
-            if (unknownStatuses.Any())
+            var missingHealthStatuses = healthStatuses.Where(s => !HealthStatusNames.Contains(s, StringComparer.OrdinalIgnoreCase)).ToList();
+            if (missingHealthStatuses.Any())
                 throw new CommandException(
-                    $"The following health status value is unknown: {string.Join(", ", missingStatuses)}. Please choose from {string.Join(", ", unknownStatuses)}");
+                    $"The following health status value is unknown: {string.Join(", ", missingHealthStatuses)}. Please choose from {string.Join(", ", HealthStatusNames)}");
         }
 
         public string GetStatus(MachineResource machineResource)
