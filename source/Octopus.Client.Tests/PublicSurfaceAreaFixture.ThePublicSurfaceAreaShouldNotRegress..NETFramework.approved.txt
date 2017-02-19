@@ -1363,6 +1363,7 @@ Octopus.Client.Model
     DateTimeOffset NotBefore { get; }
     String Notes { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String ReplacedBy { get; }
     Boolean SelfSigned { get; }
     String SerialNumber { get; }
     String SignatureAlgorithmName { get; }

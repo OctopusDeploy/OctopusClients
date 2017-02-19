@@ -53,6 +53,9 @@ namespace Octopus.Client.Model
         public DateTimeOffset? Archived { get; private set; } 
 
         [JsonProperty]
+        public string ReplacedBy { get; private set; }
+
+        [JsonProperty]
         public CertificateFormat CertificateDataFormat { get; private set; }  
 
         [JsonProperty]
