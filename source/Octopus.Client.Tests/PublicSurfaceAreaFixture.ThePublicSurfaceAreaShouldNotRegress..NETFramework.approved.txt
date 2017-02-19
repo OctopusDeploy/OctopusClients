@@ -3858,6 +3858,7 @@ Octopus.Client.Repositories
   {
     void Archive(Octopus.Client.Model.CertificateResource)
     Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
     void UnArchive(Octopus.Client.Model.CertificateResource)
   }
   interface IChannelRepository
@@ -4289,6 +4290,7 @@ Octopus.Client.Repositories.Async
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
   }
   interface IChannelRepository

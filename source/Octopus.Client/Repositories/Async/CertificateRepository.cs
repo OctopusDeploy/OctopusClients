@@ -17,6 +17,17 @@ namespace Octopus.Client.Repositories.Async
         Task<Stream> Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false);
 
         /// <summary>
+        /// Replace with a new certificate.  
+        /// The certificate is replaced "in-place"; it will retain the same ID and other user properties (Name, Notes, Environments, etc...).
+        /// A backup will be made of the replaced certificate; it will have a new ID and will be archived.  
+        /// </summary>
+        /// <param name="certificate">The certificate to be replaced</param>
+        /// <param name="certificateData">The new base64-encoded certificate-data</param>
+        /// <param name="password">The new password</param>
+        /// <returns>The replaced certificate. The ReplacedBy property will contain the ID of the new certificate (which will be the previous ID of the replaced certificate).</returns>
+        Task<CertificateResource> Replace(CertificateResource certificate, string certificateData, string password);
+
+        /// <summary>
         /// Archive a certificate. 
         /// Archiving makes a certificate unavailable for selection as the value of a variable. 
         /// </summary>
@@ -39,6 +50,11 @@ namespace Octopus.Client.Repositories.Async
         {
             var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
             return Client.GetContent(certificate.Link("Export"), pathParameters);
+        }
+
+        public Task<CertificateResource> Replace(CertificateResource certificate, string certificateData, string password)
+        {
+            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new {CertificateData = certificateData, Password = password});
         }
 
         public Task Archive(CertificateResource certificate)

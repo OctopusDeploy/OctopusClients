@@ -14,7 +14,7 @@
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
     "Serilog": "2.3.0",
-    "Assent": "0.5.0"
+    "Assent": "0.8.0"
   },
   "testRunner": "nunit",
   "buildOptions": {
