@@ -54,7 +54,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<CertificateResource> Replace(CertificateResource certificate, string certificateData, string password)
         {
-            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new {CertificateData = certificateData, Password = password});
+            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new {certificateData = certificateData, password = password});
         }
 
         public Task Archive(CertificateResource certificate)
