@@ -3294,6 +3294,7 @@ Octopus.Client.Model
     String Name { get; set; }
     Octopus.Client.Model.VariablePromptOptions Prompt { get; set; }
     Octopus.Client.Model.ScopeSpecification Scope { get; set; }
+    Octopus.Client.Model.VariableType Type { get; set; }
     String Value { get; set; }
   }
   class VariableScopeValues
@@ -3340,6 +3341,12 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
+  }
+  VariableType
+  {
+      String = 0
+      Sensitive = 1
+      Certificate = 2
   }
   class VersioningStrategyResource
   {
