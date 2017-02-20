@@ -24,7 +24,7 @@ namespace Octopus.Client.Model
         public string HelpText { get; set; }
 
         [Writeable]
-        public string DefaultValue { get; set; }
+        public PropertyValueResource DefaultValue { get; set; }
 
         [Writeable]
         public IDictionary<string, string> DisplaySettings { get; set; }

@@ -30,6 +30,10 @@ namespace Octopus.Client.Model.Accounts
 
         [Trim]
         [Writeable]
-        public string ManagementEndpoint { get; set; }
+        public string AzureEnvironment { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ServiceManagementEndpointBaseUri { get; set; }
     }
 }

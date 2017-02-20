@@ -1,4 +1,3 @@
-using System;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -11,19 +10,21 @@ namespace Octopus.Client.Repositories
             bool includeInternalEvents = false);
 
         ResourceCollection<EventResource> List(int skip = 0,
-                string from = null,
-                string to = null,
-                string regarding = null,
-                string regardingAny = null,
-                bool includeInternalEvents = true,
-                string user = null,
-                string users = null,
-                string projects = null,
-                string environments = null,
-                string eventGroups = null,
-                string eventCategories = null,
-                string tenants = null,
-                string tags = null);
+            string from = null,
+            string to = null,
+            string regarding = null,
+            string regardingAny = null,
+            bool includeInternalEvents = true,
+            string user = null,
+            string users = null,
+            string projects = null,
+            string environments = null,
+            string eventGroups = null,
+            string eventCategories = null,
+            string tenants = null,
+            string tags = null,
+            long? fromAutoId = null,
+            long? toAutoId = null);
     }
     
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -60,7 +61,9 @@ namespace Octopus.Client.Repositories
             string eventGroups = null,
             string eventCategories = null,
             string tenants = null,
-            string tags = null)
+            string tags = null,
+            long? fromAutoId = null,
+            long? toAutoId = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -77,7 +80,9 @@ namespace Octopus.Client.Repositories
                 eventGroups = eventGroups,
                 eventCategories = eventCategories,
                 tenants = tenants,
-                tags = tags
+                tags = tags,
+                fromAutoId = fromAutoId,
+                toAutoId = toAutoId
             });
         }
     }

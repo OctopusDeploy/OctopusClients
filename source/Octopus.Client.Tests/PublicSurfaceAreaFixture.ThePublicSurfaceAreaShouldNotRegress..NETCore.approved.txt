@@ -574,7 +574,7 @@ Octopus.Client.Model
   class ActionTemplateParameterResource
   {
     .ctor()
-    String DefaultValue { get; set; }
+    Octopus.Client.Model.PropertyValueResource DefaultValue { get; set; }
     IDictionary<String, String> DisplaySettings { get; set; }
     String HelpText { get; set; }
     String Id { get; set; }
@@ -1394,10 +1394,13 @@ Octopus.Client.Model
   {
     .ctor()
     Nullable<DateTimeOffset> EmailDigestLastProcessed { get; set; }
+    Nullable<Int64> EmailDigestLastProcessedEventAutoId { get; set; }
     TimeSpan EmailFrequencyPeriod { get; set; }
+    String EmailShowDatesInTimeZoneId { get; set; }
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
+    Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
     String WebhookURI { get; set; }
   }
@@ -1888,6 +1891,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    String Hash { get; set; }
     Nullable<Int64> PackageSizeBytes { get; set; }
   }
   class PackageResource
@@ -2002,11 +2006,15 @@ Octopus.Client.Model
       SubscriptionView = 90
       SubscriptionEdit = 91
       SubscriptionDelete = 92
-      CertificateView = 93
-      CertificateCreate = 94
-      CertificateEdit = 95
-      CertificateDelete = 96
-      CertificateExportPrivateKey = 97
+      TriggerCreate = 93
+      TriggerView = 94
+      TriggerEdit = 95
+      TriggerDelete = 96
+      CertificateView = 97
+      CertificateCreate = 98
+      CertificateEdit = 99
+      CertificateDelete = 100
+      CertificateExportPrivateKey = 101
   }
   class PermissionDescription
   {
@@ -2082,6 +2090,7 @@ Octopus.Client.Model
   class ProjectConnectivityPolicy
   {
     .ctor()
+    Boolean AllowDeploymentsToNoTargets { get; set; }
     Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
@@ -2979,8 +2988,11 @@ Octopus.Client.Model.Accounts
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String ActiveDirectoryEndpointBaseUri { get; set; }
+    String AzureEnvironment { get; set; }
     String ClientId { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
     String TenantId { get; set; }
   }
@@ -2991,9 +3003,10 @@ Octopus.Client.Model.Accounts
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String AzureEnvironment { get; set; }
     Octopus.Client.Model.SensitiveValue CertificateBytes { get; set; }
     String CertificateThumbprint { get; set; }
-    String ManagementEndpoint { get; set; }
+    String ServiceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
   }
   class SshKeyPairAccountResource
@@ -3534,7 +3547,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String)
+    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>)
   }
   interface IFeaturesConfigurationRepository
   {

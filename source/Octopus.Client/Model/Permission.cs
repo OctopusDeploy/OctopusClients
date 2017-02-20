@@ -198,6 +198,14 @@ namespace Octopus.Client.Model
 
         [Description("Delete subscriptions")] SubscriptionDelete,
 
+        [Description("Create triggers")] [SupportsRestriction(PermissionScope.Projects)] TriggerCreate,
+
+        [Description("View triggers")] [SupportsRestriction(PermissionScope.Projects)] TriggerView,
+
+        [Description("Edit triggers")] [SupportsRestriction(PermissionScope.Projects)] TriggerEdit,
+
+        [Description("Delete triggers")] [SupportsRestriction(PermissionScope.Projects)] TriggerDelete,
+
         [Description("View certificates")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateView,
 
         [Description("Create certificates")] CertificateCreate,

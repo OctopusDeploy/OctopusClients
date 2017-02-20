@@ -48,10 +48,10 @@ namespace Octopus.Cli.Commands
             IEnumerable<MachineResource> machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
-            CleanUpEnvironment(machines.ToList(), environmentResource);
+            await CleanUpEnvironment(machines.ToList(), environmentResource);
         }
 
-        private void CleanUpEnvironment(List<MachineResource> filteredMachines, EnvironmentResource environmentResource)
+        private async Task CleanUpEnvironment(List<MachineResource> filteredMachines, EnvironmentResource environmentResource)
         {
             Log.Information("Found {MachineCount} machines in {Environment:l} with the status {Status:l}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
 
@@ -68,12 +68,12 @@ namespace Octopus.Cli.Commands
                     Log.Information("Removing {Machine:l} {Status} (ID: {Id:l}) from {Environment:l}", machine.Name, machine.Status, machine.Id,
                         environmentResource.Name);
                     machine.EnvironmentIds.Remove(environmentResource.Id);
-                    Repository.Machines.Modify(machine);
+                    await Repository.Machines.Modify(machine).ConfigureAwait(false);
                 }
                 else
                 {
                     Log.Information("Deleting {Machine:l} {Status} (ID: {Id:l})", machine.Name, machine.Status, machine.Id);
-                    Repository.Machines.Delete(machine);
+                    await Repository.Machines.Delete(machine).ConfigureAwait(false);
                 }
             }
         }
