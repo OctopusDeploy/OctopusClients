@@ -24,6 +24,7 @@ namespace Octopus.Client
         RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
         readonly CookieContainer cookieContainer = new CookieContainer();
+        readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
 
         /// <summary>
@@ -33,6 +34,7 @@ namespace Octopus.Client
         public OctopusClient(OctopusServerEndpoint serverEndpoint)
         {
             this.serverEndpoint = serverEndpoint;
+            cookieOriginUri = BuildCookieUri(serverEndpoint);
         }
 
         /// <summary>
@@ -96,6 +98,15 @@ namespace Octopus.Client
         {
             // Force the Lazy instance to be loaded
             RootDocument.Link("Self");
+        }
+
+        private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
+        {
+            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
+            // From what I can see it uses the Uri.Authority value - which contains the port number
+            // We need to clear the port in order to successfully get cookies for the same origin
+            var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) { Port = 0 };
+            return uriBuilder.Uri;
         }
 
         /// <summary>
@@ -448,12 +459,12 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            var antiforgeryCookie = cookieContainer.GetCookies(serverEndpoint.OctopusServer.Resolve("/"))
+            var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                 .Cast<Cookie>()
                 .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
             if (antiforgeryCookie != null)
             {
-                webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
+                //webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
             }
 
             var requestHandler = SendingOctopusRequest;

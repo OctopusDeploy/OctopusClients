@@ -32,6 +32,7 @@ namespace Octopus.Client
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
+        private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
 
@@ -42,6 +43,7 @@ namespace Octopus.Client
             Repository = new OctopusAsyncRepository(this);
 
             this.serverEndpoint = serverEndpoint;
+            cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
             {
                 CookieContainer = cookieContainer,
@@ -64,6 +66,15 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+        }
+
+        private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
+        {
+            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
+            // From what I can see it uses the Uri.Authority value - which contains the port number
+            // We need to clear the port in order to successfully get cookies for the same origin
+            var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) {Port = 0};
+            return uriBuilder.Uri;
         }
 
         private bool IgnoreServerCertificateCallback(HttpRequestMessage message, X509Certificate2 certificate, X509Chain chain, SslPolicyErrors errors)
@@ -499,7 +510,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                var antiforgeryCookie = cookieContainer.GetCookies(serverEndpoint.OctopusServer.Resolve("/"))
+                var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
                     .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
 
