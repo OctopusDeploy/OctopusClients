@@ -1,1 +1,1 @@
-dotnet Octo.dll
+dotnet Octo.dll %*
