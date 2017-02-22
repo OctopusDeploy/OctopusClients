@@ -10,13 +10,23 @@ namespace Octopus.Client.Repositories.Async
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
     {
-        public CertificateConfigurationRepository(IOctopusAsyncClient client) : base(client, "CertificateConfiguration")
+        public CertificateConfigurationRepository(IOctopusAsyncClient client) : base(client, DetermineCollectionLinkName(client))
         {
         }
 
         public Task<CertificateConfigurationResource> GetOctopusCertificate()
         {
             return Get("certificate-global");
+        }
+
+        static string DetermineCollectionLinkName(IOctopusAsyncClient client)
+        {
+            // For backwards compatibility. 
+            // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
+            // This allows pre-3.11 clients to still work.
+            return client.RootDocument == null || client.RootDocument.Links.ContainsKey("CertificateConfiguration")
+                ? "CertificateConfiguration"
+                : "Certificates";
         }
     }
 }
