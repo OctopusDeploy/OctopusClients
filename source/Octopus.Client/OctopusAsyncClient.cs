@@ -10,6 +10,7 @@ using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
@@ -30,6 +31,8 @@ namespace Octopus.Client
         readonly OctopusServerEndpoint serverEndpoint;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
+        private readonly CookieContainer cookieContainer = new CookieContainer();
+        private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
 
@@ -40,8 +43,10 @@ namespace Octopus.Client
             Repository = new OctopusAsyncRepository(this);
 
             this.serverEndpoint = serverEndpoint;
-            var handler = new HttpClientHandler()
+            cookieOriginUri = BuildCookieUri(serverEndpoint);
+            var handler = new HttpClientHandler
             {
+                CookieContainer = cookieContainer,
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
@@ -61,6 +66,15 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+        }
+
+        private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
+        {
+            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
+            // From what I can see it uses the Uri.Authority value - which contains the port number
+            // We need to clear the port in order to successfully get cookies for the same origin
+            var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) {Port = 0};
+            return uriBuilder.Uri;
         }
 
         private bool IgnoreServerCertificateCallback(HttpRequestMessage message, X509Certificate2 certificate, X509Chain chain, SslPolicyErrors errors)
@@ -496,12 +510,20 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
+                var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
+                    .Cast<Cookie>()
+                    .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
+
+                if (antiforgeryCookie != null)
+                {
+                    message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
+                }
+
                 var requestHandler = SendingOctopusRequest;
                 requestHandler?.Invoke(request);
 
                 var webRequestHandler = BeforeSendingHttpRequest;
                 webRequestHandler?.Invoke(message);
-
 
                 if (request.RequestResource != null)
                     message.Content = GetContent(request);
