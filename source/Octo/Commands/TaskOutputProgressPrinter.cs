@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
 
             if (details.ActivityLogs != null)
             {
-                foreach (var item in details.ActivityLogs)
+                foreach (var item in details.ActivityLogs.SelectMany(a => a.Children))
                 {
                     if (log.ServiceMessagesEnabled())
                     {

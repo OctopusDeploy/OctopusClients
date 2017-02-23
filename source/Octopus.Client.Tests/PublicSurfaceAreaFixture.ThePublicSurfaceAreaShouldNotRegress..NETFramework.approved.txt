@@ -3058,6 +3058,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
   {
     .ctor()
+    Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
     IList<ActivityElement> ActivityLogs { get; set; }
     Octopus.Client.Model.TaskProgress Progress { get; set; }
     Octopus.Client.Model.TaskResource Task { get; set; }

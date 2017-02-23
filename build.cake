@@ -113,7 +113,6 @@ Task("__Build")
 });
 
 Task("__Test")
-    .WithCriteria(false)
     .Does(() =>
 {
     GetFiles("**/*Tests/project.json")
