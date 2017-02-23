@@ -464,7 +464,7 @@ namespace Octopus.Client
                 .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
             if (antiforgeryCookie != null)
             {
-                //webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
+                webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
             }
 
             var requestHandler = SendingOctopusRequest;
