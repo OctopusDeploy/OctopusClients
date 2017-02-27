@@ -27,8 +27,7 @@ namespace Octopus.Cli.Commands
         bool ignoreSslErrors;
         string password;
         string username;
-        int? timeOut;
-        IOctopusAsyncClient client;
+        readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
         {
@@ -39,14 +38,17 @@ namespace Octopus.Cli.Commands
 
             var options = Options.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
-            options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password.", v => apiKey = v);
+            options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
-            options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => timeOut = int.Parse(v));
+            options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => clientOptions.Timeout = TimeSpan.FromSeconds(int.Parse(v)));
+            options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
+            options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
+            options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
         }
 
         protected Options Options { get; } = new Options();
@@ -85,22 +87,14 @@ namespace Octopus.Cli.Commands
                 ? new OctopusServerEndpoint(ServerBaseUrl)
                 : new OctopusServerEndpoint(ServerBaseUrl, apiKey);
 
-#if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            clientOptions.IgnoreSslErrors = ignoreSslErrors;
+#else
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
+            
 
-            var options = new OctopusClientOptions()
-            {
-#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
-                IgnoreSslErrors = ignoreSslErrors
-#endif
-            };
-            if (timeOut.HasValue)
-            {
-                options.Timeout = TimeSpan.FromSeconds(timeOut.Value);
-            }
-
-            client = await clientFactory.CreateAsyncClient(endpoint, options).ConfigureAwait(false);
+            var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
 

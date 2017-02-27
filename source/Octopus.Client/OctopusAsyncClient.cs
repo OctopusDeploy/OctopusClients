@@ -50,6 +50,12 @@ namespace Octopus.Client
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
+            if (options.Proxy != null)
+            {
+                handler.UseProxy = true;
+                handler.Proxy = new ClientProxy(options.Proxy, options.ProxyUsername, options.ProxyPassword);
+            }
+
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             handler.SslProtocols = options.SslProtocols;
             if(addCertificateCallback)
