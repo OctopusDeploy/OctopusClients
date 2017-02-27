@@ -1804,6 +1804,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.CalamariUpdateBehavior CalamariUpdateBehavior { get; set; }
+    String TentacleUpdateAccountId { get; set; }
     Octopus.Client.Model.TentacleUpdateBehavior TentacleUpdateBehavior { get; set; }
   }
   class MaintenanceConfigurationResource
