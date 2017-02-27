@@ -278,6 +278,9 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    String Proxy { get; set; }
+    String ProxyPassword { get; set; }
+    String ProxyUsername { get; set; }
     TimeSpan Timeout { get; set; }
   }
   class OctopusRepository

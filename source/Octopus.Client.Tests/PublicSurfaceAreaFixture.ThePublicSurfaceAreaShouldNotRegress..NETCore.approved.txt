@@ -172,6 +172,9 @@ Octopus.Client
   {
     .ctor()
     Boolean IgnoreSslErrors { get; set; }
+    String Proxy { get; set; }
+    String ProxyPassword { get; set; }
+    String ProxyUsername { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
