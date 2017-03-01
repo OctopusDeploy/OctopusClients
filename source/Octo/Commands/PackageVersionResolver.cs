@@ -33,7 +33,7 @@ namespace Octopus.Cli.Commands
         public void AddFolder(string folderPath)
         {
             log.Debug("Using package versions from folder: {FolderPath:l}", folderPath);
-            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, ".nupkg"))
+            foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, "*.nupkg"))
             {
                 log.Debug("Package file: {File:l}", file);
 
