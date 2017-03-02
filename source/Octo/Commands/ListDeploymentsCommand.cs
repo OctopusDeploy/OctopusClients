@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
     [Command("list-deployments", Description = "List a number of releases deployments by project or by environment")]
     public class ListDeploymentsCommand : ApiCommand
     {
-        const int NumberDefault = 30;
+        const int DefaultReturnAmount = 30;
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private int? numberOfResults;
@@ -26,7 +26,7 @@ namespace Octopus.Cli.Commands
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
-            options.Add("number=", $"[Optional] number of results to return, default is {NumberDefault}", v => numberOfResults = int.Parse(v));
+            options.Add("number=", $"[Optional] number of results to return, default is {DefaultReturnAmount}", v => numberOfResults = int.Parse(v));
         }
 
         protected override async Task Execute()
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Commands
 
             Log.Debug("Loading deployments...");
             var deploymentResources = new List<DeploymentResource>();
-            var maxResults = (numberOfResults ?? NumberDefault);
+            var maxResults = numberOfResults ?? DefaultReturnAmount;
             await Repository.Deployments
                 .Paginate(projectsFilter, environmentsFilter, delegate(ResourceCollection<DeploymentResource> page)
                 {
@@ -54,7 +54,7 @@ namespace Octopus.Cli.Commands
 
             if (!deploymentResources.Any())
             {
-                Log.Information("Did not find any deplouments matching the search criteria.");
+                Log.Information("Did not find any deployments matching the search criteria.");
             }
 
             Log.Debug($"Showing {deploymentResources.Count} results...");
