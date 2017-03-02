@@ -8,7 +8,8 @@ namespace Octopus.Client.Repositories
         IPaginate<UserResource>,
         IGet<UserResource>,
         IModify<UserResource>,
-        IDelete<UserResource>
+        IDelete<UserResource>,
+        ICreate<UserResource>
     {
         UserResource Register(RegisterCommand registerCommand);
         void SignIn(LoginCommand loginCommand);

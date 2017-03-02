@@ -9,7 +9,8 @@ namespace Octopus.Client.Repositories.Async
         IPaginate<UserResource>,
         IGet<UserResource>,
         IModify<UserResource>,
-        IDelete<UserResource>
+        IDelete<UserResource>,
+        ICreate<UserResource>
     {
         Task<UserResource> Register(RegisterCommand registerCommand);
         Task SignIn(LoginCommand loginCommand);
