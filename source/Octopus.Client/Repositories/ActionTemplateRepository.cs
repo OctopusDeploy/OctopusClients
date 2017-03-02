@@ -7,6 +7,7 @@ namespace Octopus.Client.Repositories
     public interface IActionTemplateRepository : ICreate<ActionTemplateResource>, IModify<ActionTemplateResource>, IDelete<ActionTemplateResource>, IGet<ActionTemplateResource>, IFindByName<ActionTemplateResource>, IGetAll<ActionTemplateResource>
     {
         List<ActionTemplateSearchResource> Search();
+        ActionTemplateVersionResource GetVersion(ActionTemplateResource resource, int version);
     }
     
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
@@ -18,6 +19,11 @@ namespace Octopus.Client.Repositories
         public List<ActionTemplateSearchResource> Search()
         {
             return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+        }
+
+        public ActionTemplateVersionResource GetVersion(ActionTemplateResource resource, int version)
+        {
+            return Client.Get<ActionTemplateVersionResource>(resource.Links["Version"], new {version});
         }
     }
 }

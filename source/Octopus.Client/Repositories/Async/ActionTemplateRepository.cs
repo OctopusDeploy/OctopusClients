@@ -7,6 +7,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IActionTemplateRepository : ICreate<ActionTemplateResource>, IModify<ActionTemplateResource>, IDelete<ActionTemplateResource>, IGet<ActionTemplateResource>, IFindByName<ActionTemplateResource>, IGetAll<ActionTemplateResource>
     {
         Task<List<ActionTemplateSearchResource>> Search();
+        Task<ActionTemplateVersionResource> GetVersion(ActionTemplateResource resource, int version);
     }
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
@@ -18,6 +19,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<ActionTemplateSearchResource>> Search()
         {
             return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+        }
+
+        public Task<ActionTemplateVersionResource> GetVersion(ActionTemplateResource resource, int version)
+        {
+            return Client.Get<ActionTemplateVersionResource>(resource.Links["Version"], new { version });
         }
     }
 }
