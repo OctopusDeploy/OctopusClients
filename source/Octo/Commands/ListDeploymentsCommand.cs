@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,18 +11,22 @@ using Serilog;
 
 namespace Octopus.Cli.Commands
 {
-    [Command("list-latestdeployments", Description = "List the releases last-deployed in each environment")]
-    public class ListLatestDeploymentsCommand : ApiCommand
+    [Command("list-deployments", Description = "List a number of releases deployments by project or by environment")]
+    public class ListDeploymentsCommand : ApiCommand
     {
+        const int NumberDefault = 30;
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private int? numberOfResults;
 
-        public ListLatestDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
+        public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log,
+            IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
+            options.Add("number=", $"[Optional] number of results to return, default is {NumberDefault}", v => numberOfResults = int.Parse(v));
         }
 
         protected override async Task Execute()
@@ -33,27 +37,48 @@ namespace Octopus.Cli.Commands
             var environmentsById = await LoadEnvironments();
             var environmentsFilter = environmentsById.Keys.ToArray();
 
-            Log.Debug("Loading dashboard...");
-            var dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
+            Log.Debug("Loading deployments...");
+            var deploymentResources = new List<DeploymentResource>();
+            var maxResults = (numberOfResults ?? NumberDefault);
+            await Repository.Deployments
+                .Paginate(projectsFilter, environmentsFilter, delegate(ResourceCollection<DeploymentResource> page)
+                {
+                    if(deploymentResources.Count < maxResults)
+                        deploymentResources.AddRange(page.Items.Take(maxResults - deploymentResources.Count));
 
-            var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
+                    return true;
+                })
+                .ConfigureAwait(false);
 
-            if (!dashboard.Items.Any())
+            var tenantIds = deploymentResources.Select(t => t.TenantId).ToArray();
+
+            if (!deploymentResources.Any())
             {
-                Log.Information("Did not find any releases matching the search criteria.");
+                Log.Information("Did not find any deplouments matching the search criteria.");
             }
 
-            foreach (var dashboardItem in dashboard.Items)
+            Log.Debug($"Showing {deploymentResources.Count} results...");
+            foreach (var item in deploymentResources)
             {
-                var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
+                var release = await Repository.Releases.Get(item.ReleaseId).ConfigureAwait(false);
                 ChannelResource channel = null;
 
-                if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
-                    channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(item.ChannelId))
+                    channel = await Repository.Channels.Get(item.ChannelId).ConfigureAwait(false);
 
-                LogDeploymentInfo(Log, dashboardItem, release, channel, environmentsById, projectsById, tenantsById);
+                var tenantResources = new List<TenantResource>();
+                if (tenantIds.Any())
+                {
+                    tenantResources = await Repository.Tenants.Get(tenantIds).ConfigureAwait(false);
+                }
+
+                LogDeploymentInfo(Log, item, release, channel, environmentsById, projectsById, tenantResources);
             }
+
+            if(numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
+                Log.Debug($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
         }
+
         private async Task<IDictionary<string, string>> LoadProjects()
         {
             Log.Debug("Loading projects...");
@@ -73,6 +98,7 @@ namespace Octopus.Cli.Commands
             return projectResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
+
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
             Log.Debug("Loading environments...");
@@ -82,7 +108,9 @@ namespace Octopus.Cli.Commands
 
             var environmentResources = await environmentQuery.ConfigureAwait(false);
 
-            var missingEnvironments = environments.Except(environmentResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+            var missingEnvironments =
+                environments.Except(environmentResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
 
             if (missingEnvironments.Any())
             {
@@ -92,36 +120,27 @@ namespace Octopus.Cli.Commands
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        private static void LogDeploymentInfo(ILogger log, DashboardItemResource dashboardItem, ReleaseResource release, ChannelResource channel,
-            IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
+        private static void LogDeploymentInfo(ILogger log, DeploymentResource deploymentItem, ReleaseResource release, ChannelResource channel,
+            IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IEnumerable<TenantResource> tenantResources)
         {
-            var nameOfDeploymentEnvironment = environmentsById[dashboardItem.EnvironmentId];
-            var nameOfDeploymentProject = projectedById[dashboardItem.ProjectId];
+            var nameOfDeploymentEnvironment = environmentsById[deploymentItem.EnvironmentId];
+            var nameOfDeploymentProject = projectedById[deploymentItem.ProjectId];
 
             log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
             log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
-            if (!string.IsNullOrEmpty(dashboardItem.TenantId))
+
+            if (!string.IsNullOrEmpty(deploymentItem.TenantId))
             {
-                var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
+                var nameOfDeploymentTenant = tenantResources.FirstOrDefault(t => t.Id == deploymentItem.TenantId)?.Name;
                 log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 
-            if(channel != null)
+            if (channel != null)
             {
                 log.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
-            log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
-
-            if (dashboardItem.State == TaskState.Failed)
-            {
-                log.Error("   State: {$State:l}", dashboardItem.State);
-            }
-            else
-            {
-                log.Information("   State: {$State:l}", dashboardItem.State);
-            }
+            log.Information("   Date: {$Date:l}", deploymentItem.QueueTime);
 
             log.Information("   Version: {Version:l}", release.Version);
             log.Information("   Assembled: {$Assembled:l}", release.Assembled);
