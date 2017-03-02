@@ -980,13 +980,7 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
   {
     .ctor()
-    String ActionType { get; set; }
     String CommunityActionTemplateId { get; set; }
-    String Description { get; set; }
-    String Name { get; set; }
-    IList<ActionTemplateParameterResource> Parameters { get; }
-    IDictionary<String, PropertyValueResource> Properties { get; }
-    Int32 Version { get; set; }
   }
   class ActionTemplateSearchResource
     Octopus.Client.Model.IResource
@@ -1019,6 +1013,18 @@ Octopus.Client.Model
     String StepId { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
+  }
+  class ActionTemplateVersionResource
+    Octopus.Client.Model.IResource
+    Octopus.Client.Model.IAuditedResource
+  {
+    .ctor()
+    String ActionType { get; set; }
+    String Description { get; set; }
+    String Name { get; set; }
+    IList<ActionTemplateParameterResource> Parameters { get; }
+    IDictionary<String, PropertyValueResource> Properties { get; }
+    Int32 Version { get; set; }
   }
   class ActivityElement
   {
@@ -3844,6 +3850,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
   {
+    Octopus.Client.Model.ActionTemplateVersionResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     List<ActionTemplateSearchResource> Search()
   }
   interface IArtifactRepository
@@ -4228,6 +4235,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<UserResource>
     Octopus.Client.Repositories.IModify<UserResource>
     Octopus.Client.Repositories.IDelete<UserResource>
+    Octopus.Client.Repositories.ICreate<UserResource>
   {
     Octopus.Client.Model.ApiKeyResource CreateApiKey(Octopus.Client.Model.UserResource, String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -4276,6 +4284,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
+    Task<ActionTemplateVersionResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<List<ActionTemplateSearchResource>> Search()
   }
   interface IArtifactRepository
@@ -4661,6 +4670,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<UserResource>
     Octopus.Client.Repositories.Async.IModify<UserResource>
     Octopus.Client.Repositories.Async.IDelete<UserResource>
+    Octopus.Client.Repositories.Async.ICreate<UserResource>
   {
     Task<ApiKeyResource> CreateApiKey(Octopus.Client.Model.UserResource, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -4678,6 +4688,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<UserRoleResource>
     Octopus.Client.Repositories.Async.IPaginate<UserRoleResource>
     Octopus.Client.Repositories.Async.IGet<UserRoleResource>
+    Octopus.Client.Repositories.Async.ICreate<UserRoleResource>
+    Octopus.Client.Repositories.Async.IModify<UserRoleResource>
   {
   }
   interface IVariableSetRepository
