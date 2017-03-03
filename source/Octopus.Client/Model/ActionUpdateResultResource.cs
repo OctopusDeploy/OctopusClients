@@ -5,6 +5,11 @@ namespace Octopus.Client.Model
 {
     public class ActionUpdateResultResource : IResource
     {
+        public ActionUpdateResultResource()
+        {
+            Links = new LinkCollection();
+        }
+
         public string Id { get; set; }
         public ActionUpdateOutcome Outcome { get; set; }
         public IDictionary<string, string[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
