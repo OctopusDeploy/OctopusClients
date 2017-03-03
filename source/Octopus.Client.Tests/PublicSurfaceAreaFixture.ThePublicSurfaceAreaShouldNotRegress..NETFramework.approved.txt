@@ -964,6 +964,16 @@ Octopus.Client.Logging
 }
 Octopus.Client.Model
 {
+  class ActionsUpdateResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    Dictionary<String, String[]> ActionIdsByProcessId { get; set; }
+    Dictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Int32 Version { get; set; }
+  }
   class ActionTemplateParameterResource
   {
     .ctor()
@@ -1025,6 +1035,22 @@ Octopus.Client.Model
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Int32 Version { get; set; }
+  }
+  ActionUpdateOutcome
+  {
+      Success = 0
+      ManualMergeRequired = 1
+      DefaultParamterValueMissing = 2
+  }
+  class ActionUpdateResultResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    IDictionary<String, String[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
+    String[] NamesOfNewParametersMissingDefaultValue { get; set; }
+    Octopus.Client.Model.ActionUpdateOutcome Outcome { get; set; }
   }
   class ActivityElement
   {
@@ -3852,6 +3878,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.ActionTemplateVersionResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     List<ActionTemplateSearchResource> Search()
+    Octopus.Client.Model.ActionUpdateResultResource[] UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
@@ -4286,6 +4313,7 @@ Octopus.Client.Repositories.Async
   {
     Task<ActionTemplateVersionResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<List<ActionTemplateSearchResource>> Search()
+    Task<ActionUpdateResultResource[]> UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>

@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories
     {
         List<ActionTemplateSearchResource> Search();
         ActionTemplateVersionResource GetVersion(ActionTemplateResource resource, int version);
+        ActionUpdateResultResource[] UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update);
     }
     
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
@@ -24,6 +25,11 @@ namespace Octopus.Client.Repositories
         public ActionTemplateVersionResource GetVersion(ActionTemplateResource resource, int version)
         {
             return Client.Get<ActionTemplateVersionResource>(resource.Links["Version"], new {version});
+        }
+
+        public ActionUpdateResultResource[] UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update)
+        {
+            return Client.Post<ActionsUpdateResource, ActionUpdateResultResource[]>(actionTemplate.Links["ActionsUpdate"], update, new { actionTemplate.Id });
         }
     }
 }
