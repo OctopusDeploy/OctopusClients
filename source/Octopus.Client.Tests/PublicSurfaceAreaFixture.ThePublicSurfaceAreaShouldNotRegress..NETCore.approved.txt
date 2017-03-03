@@ -578,8 +578,8 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
   {
     .ctor()
-    Dictionary<String, String[]> ActionIdsByProcessId { get; set; }
-    Dictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
+    IDictionary<String, String[]> ActionIdsByProcessId { get; set; }
+    IDictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
     String Id { get; set; }
     Octopus.Client.Model.LinkCollection Links { get; set; }
     Int32 Version { get; set; }
