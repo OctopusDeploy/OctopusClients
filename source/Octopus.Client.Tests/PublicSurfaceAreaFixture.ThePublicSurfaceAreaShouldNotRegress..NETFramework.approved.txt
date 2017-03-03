@@ -1651,6 +1651,7 @@ Octopus.Client.Model
     Boolean ForcePackageDownload { get; set; }
     Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
+    Boolean IsFirst { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
