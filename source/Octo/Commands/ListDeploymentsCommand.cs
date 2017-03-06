@@ -17,6 +17,7 @@ namespace Octopus.Cli.Commands
         const int DefaultReturnAmount = 30;
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        readonly HashSet<string> tenants = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private int? numberOfResults;
 
         public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log,
@@ -26,6 +27,7 @@ namespace Octopus.Cli.Commands
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
+            options.Add("tenant=", "Name of a tenant to filter by. Can be specified many times.", v => tenants.Add(v));
             options.Add("number=", $"[Optional] number of results to return, default is {DefaultReturnAmount}", v => numberOfResults = int.Parse(v));
         }
 
@@ -37,11 +39,14 @@ namespace Octopus.Cli.Commands
             var environmentsById = await LoadEnvironments();
             var environmentsFilter = environmentsById.Keys.ToArray();
 
+            var tenantsById = await LoadTenants();
+            var tenantsFilter = tenantsById.Keys.ToArray();
+
             Log.Debug("Loading deployments...");
             var deploymentResources = new List<DeploymentResource>();
             var maxResults = numberOfResults ?? DefaultReturnAmount;
             await Repository.Deployments
-                .Paginate(projectsFilter, environmentsFilter, delegate(ResourceCollection<DeploymentResource> page)
+                .Paginate(projectsFilter, environmentsFilter, tenantsFilter, delegate (ResourceCollection<DeploymentResource> page)
                 {
                     if(deploymentResources.Count < maxResults)
                         deploymentResources.AddRange(page.Items.Take(maxResults - deploymentResources.Count));
@@ -49,8 +54,6 @@ namespace Octopus.Cli.Commands
                     return true;
                 })
                 .ConfigureAwait(false);
-
-            var tenantIds = deploymentResources.Select(t => t.TenantId).ToArray();
 
             if (!deploymentResources.Any())
             {
@@ -66,13 +69,7 @@ namespace Octopus.Cli.Commands
                 if (!string.IsNullOrEmpty(item.ChannelId))
                     channel = await Repository.Channels.Get(item.ChannelId).ConfigureAwait(false);
 
-                var tenantResources = new List<TenantResource>();
-                if (tenantIds.Any())
-                {
-                    tenantResources = await Repository.Tenants.Get(tenantIds).ConfigureAwait(false);
-                }
-
-                LogDeploymentInfo(Log, item, release, channel, environmentsById, projectsById, tenantResources);
+                LogDeploymentInfo(Log, item, release, channel, environmentsById, projectsById, tenantsById);
             }
 
             if(numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
@@ -98,7 +95,6 @@ namespace Octopus.Cli.Commands
             return projectResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
             Log.Debug("Loading environments...");
@@ -119,19 +115,37 @@ namespace Octopus.Cli.Commands
 
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
+        private async Task<IDictionary<string, string>> LoadTenants()
+        {
+            Log.Debug("Loading tenants...");
+            var tenantsQuery = tenants.Any()
+                ? Repository.Tenants.FindByNames(tenants.ToArray())
+                : Repository.Tenants.FindAll();
+
+            var tenantsResources = await tenantsQuery.ConfigureAwait(false);
+
+            var missingTenants = tenants.Except(tenantsResources.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+
+            if (missingTenants.Any())
+            {
+                throw new CommandException("Could not find tenants: " + string.Join(",", missingTenants));
+            }
+
+            return tenantsResources.ToDictionary(p => p.Id, p => p.Name);
+        }
 
         private static void LogDeploymentInfo(ILogger log, DeploymentResource deploymentItem, ReleaseResource release, ChannelResource channel,
-            IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IEnumerable<TenantResource> tenantResources)
+            IDictionary<string, string> environmentsById, IDictionary<string, string> projectsById, IDictionary<string, string> tenantsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[deploymentItem.EnvironmentId];
-            var nameOfDeploymentProject = projectedById[deploymentItem.ProjectId];
+            var nameOfDeploymentProject = projectsById[deploymentItem.ProjectId];
 
             log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
             log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
 
             if (!string.IsNullOrEmpty(deploymentItem.TenantId))
             {
-                var nameOfDeploymentTenant = tenantResources.FirstOrDefault(t => t.Id == deploymentItem.TenantId)?.Name;
+                var nameOfDeploymentTenant = tenantsById[deploymentItem.TenantId];
                 log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 

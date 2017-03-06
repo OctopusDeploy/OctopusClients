@@ -21,7 +21,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public async Task ShouldGetListOfProjects()
+        public async Task ShouldGetListOfDeployments()
         {
             var deploymentResources = new ResourceCollection<DeploymentResource>(
                 new List<DeploymentResource>
@@ -31,7 +31,7 @@ namespace Octopus.Cli.Tests.Commands
                 }, new LinkCollection());
 
             Repository.Deployments
-                .When(x => x.Paginate(Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<Func<ResourceCollection<DeploymentResource>, bool>>()))
+                .When(x => x.Paginate(Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<Func<ResourceCollection<DeploymentResource>, bool>>()))
                 .Do(r => r.Arg<Func<ResourceCollection<DeploymentResource>, bool>>()(deploymentResources));
 
             Repository.Projects.FindAll()
@@ -49,6 +49,9 @@ namespace Octopus.Cli.Tests.Commands
                         new EnvironmentResource {Name = "EnvA", Id = "environmentid1"},
                         new EnvironmentResource {Name = "EnvB", Id = "environmentid2"}
                     }));
+
+            Repository.Tenants.FindAll()
+                .Returns(Task.FromResult(new List<TenantResource>()));
 
             Repository.Releases.Get(Arg.Any<string>()).ReturnsForAnyArgs(new ReleaseResource {Version = "0.0.1"});
 
