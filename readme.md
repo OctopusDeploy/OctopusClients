@@ -23,4 +23,4 @@ See the [Octopus.Client goes Open Source][6] blog post
 [4]: https://octopus.com/docs/api-and-integration/octo.exe-command-line
 [5]: https://octopus.com/docs/api-and-integration/octopus.client
 [6]: https://octopus.com/blog/octopus-client-goes-open-source
-[7]: https://octopus.com/docs/administration/upgrading#Upgrading-HowweversionOctopusDeploy
+[7]: https://octopus.com/docs/api-and-integration/compatibility
