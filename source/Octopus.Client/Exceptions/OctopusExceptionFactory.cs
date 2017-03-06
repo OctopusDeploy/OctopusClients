@@ -55,7 +55,10 @@ namespace Octopus.Client.Exceptions
             if (statusCode == 400 || statusCode == 409) // Bad request: usually validation error 
             {
                 var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                return new OctopusValidationException(statusCode, errors.ErrorMessage, errors.Errors) {HelpText = errors.HelpText};
+                return new OctopusValidationException(statusCode, errors.ErrorMessage, errors.Errors, errors.Details)
+                {
+                    HelpText = errors.HelpText
+                };
             }
 
             if (statusCode == 401 || statusCode == 403) // Forbidden, usually no API key or permissions
@@ -153,6 +156,12 @@ namespace Octopus.Client.Exceptions
             /// </summary>
             /// <value>The help text, or null.</value>
             public string HelpText { get; set; }
+
+            /// <summary>
+            /// Gets or sets the details regarding the error
+            /// </summary>
+            /// <value>Structured information about the error.</value>
+            public dynamic Details { get; set; }
         }
     }
 }

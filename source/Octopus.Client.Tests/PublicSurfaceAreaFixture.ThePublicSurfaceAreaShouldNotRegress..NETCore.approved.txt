@@ -464,6 +464,7 @@ Octopus.Client.Exceptions
   class OctopusErrorsContract
   {
     .ctor()
+    Object Details { get; set; }
     String ErrorMessage { get; set; }
     String[] Errors { get; set; }
     String FullException { get; set; }
@@ -481,6 +482,7 @@ Octopus.Client.Exceptions
     class OctopusErrorsContract
     {
       .ctor()
+      Object Details { get; set; }
       String ErrorMessage { get; set; }
       String[] Errors { get; set; }
       String FullException { get; set; }
@@ -512,8 +514,11 @@ Octopus.Client.Exceptions
   {
     .ctor(String, ICollection<String>)
     .ctor(Int32, String, ICollection<String>)
+    .ctor(Int32, String, ICollection<String>, Object)
+    Object Details { get; }
     String ErrorMessage { get; }
     ReadOnlyCollection<String> Errors { get; }
+    Octopus.Client.Exceptions.TDetails DetailsAs()
   }
   class UnsupportedApiVersionException
     _Exception
