@@ -20,7 +20,7 @@ See the [Octopus.Client goes Open Source][6] blog post
 [1]: https://octopus.com
 [2]: https://octopus.com/downloads
 [3]: https://www.nuget.org/packages/Octopus.Client
-[4]: http://docs.octopusdeploy.com/display/OD/Octo.exe+Command+Line
-[5]: http://docs.octopusdeploy.com/display/OD/Octopus.Client
+[4]: https://octopus.com/docs/api-and-integration/octo.exe-command-line
+[5]: https://octopus.com/docs/api-and-integration/octopus.client
 [6]: https://octopus.com/blog/octopus-client-goes-open-source
-[7]: http://docs.octopusdeploy.com/display/OD/Compatibility
+[7]: https://octopus.com/docs/administration/upgrading#Upgrading-HowweversionOctopusDeploy
