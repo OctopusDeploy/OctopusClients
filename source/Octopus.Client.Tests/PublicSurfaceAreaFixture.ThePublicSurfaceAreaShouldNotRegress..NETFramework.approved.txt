@@ -3947,6 +3947,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32)
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.DeploymentResource)
     void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+    void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindByName<EnvironmentResource>
@@ -4379,6 +4380,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32)
     Task<TaskResource> GetTask(Octopus.Client.Model.DeploymentResource)
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+    Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
