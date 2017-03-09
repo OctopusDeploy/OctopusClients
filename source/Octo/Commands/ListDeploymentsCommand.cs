@@ -115,12 +115,14 @@ namespace Octopus.Cli.Commands
 
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
+
         private async Task<IDictionary<string, string>> LoadTenants()
         {
             Log.Debug("Loading tenants...");
             var tenantsQuery = tenants.Any()
                 ? Repository.Tenants.FindByNames(tenants.ToArray())
                 : Repository.Tenants.FindAll();
+
 
             var tenantsResources = await tenantsQuery.ConfigureAwait(false);
 
@@ -154,7 +156,10 @@ namespace Octopus.Cli.Commands
                 log.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            log.Information("   Date: {$Date:l}", deploymentItem.QueueTime);
+            log.Information("   Created: {$Date:l}", deploymentItem.Created);
+
+            // Date will have to be fetched from Tasks (they need to be loaded) it doesn't come down with the DeploymentResource
+            //log.Information("   Date: {$Date:l}", deploymentItem.QueueTime);
 
             log.Information("   Version: {Version:l}", release.Version);
             log.Information("   Assembled: {$Assembled:l}", release.Assembled);
