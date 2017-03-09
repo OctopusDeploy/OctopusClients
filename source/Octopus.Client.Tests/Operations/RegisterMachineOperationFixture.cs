@@ -48,7 +48,17 @@ namespace Octopus.Client.Tests.Operations
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment Atlantis on the Octopus server.");
+            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus server. Ensure the environment exists and you have permission to access it.");
+        }
+
+        [Test]
+        public void ShouldThrowIfAnyEnvironmentNotFound()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            operation.EnvironmentNames = new[] {"Production", "Atlantis", "Hyperborea"};
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus server.Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]
