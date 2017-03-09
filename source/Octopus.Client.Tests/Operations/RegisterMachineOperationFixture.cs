@@ -58,7 +58,7 @@ namespace Octopus.Client.Tests.Operations
 
             operation.EnvironmentNames = new[] {"Production", "Atlantis", "Hyperborea"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus server.Ensure the environments exist and you have permission to access them.");
+            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus server. Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]
