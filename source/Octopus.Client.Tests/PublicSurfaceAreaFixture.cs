@@ -14,7 +14,6 @@ namespace Octopus.Client.Tests
     public class PublicSurfaceAreaFixture
     {
         [Test]
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public void ThePublicSurfaceAreaShouldNotRegress()
         {
             var lines = typeof(OctopusRequest).GetTypeInfo().Assembly

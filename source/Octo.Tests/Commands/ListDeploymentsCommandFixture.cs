@@ -26,12 +26,27 @@ namespace Octopus.Cli.Tests.Commands
             var deploymentResources = new ResourceCollection<DeploymentResource>(
                 new List<DeploymentResource>
                 {
-                    new DeploymentResource {Name = "", Id = "deploymentid1", ProjectId = "projectaid", EnvironmentId = "environmentid1"},
-                    new DeploymentResource {Name = "", Id = "deploymentid2", ProjectId = "projectbid", EnvironmentId = "environmentid2"},
+                    new DeploymentResource
+                    {
+                        Name = "",
+                        Id = "deploymentid1",
+                        ProjectId = "projectaid",
+                        EnvironmentId = "environmentid1"
+                    },
+                    new DeploymentResource
+                    {
+                        Name = "",
+                        Id = "deploymentid2",
+                        ProjectId = "projectbid",
+                        EnvironmentId = "environmentid2"
+                    },
                 }, new LinkCollection());
 
             Repository.Deployments
-                .When(x => x.Paginate(Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<Func<ResourceCollection<DeploymentResource>, bool>>()))
+                .When(
+                    x =>
+                        x.Paginate(Arg.Any<string[]>(), Arg.Any<string[]>(), Arg.Any<string[]>(),
+                            Arg.Any<Func<ResourceCollection<DeploymentResource>, bool>>()))
                 .Do(r => r.Arg<Func<ResourceCollection<DeploymentResource>, bool>>()(deploymentResources));
 
             Repository.Projects.FindAll()

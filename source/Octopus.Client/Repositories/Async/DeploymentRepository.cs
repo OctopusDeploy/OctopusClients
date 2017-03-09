@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
         {
-            return Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0] }, getNextPage);
+            return Paginate(projects, environments, new string[0], getNextPage);
         }
 
         public Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)

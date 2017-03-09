@@ -40,7 +40,7 @@ namespace Octopus.Cli.Commands
             var environmentsFilter = environmentsById.Keys.ToArray();
 
             var tenantsById = await LoadTenants();
-            var tenantsFilter = tenantsById.Keys.ToArray();
+            var tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
 
             Log.Debug("Loading deployments...");
             var deploymentResources = new List<DeploymentResource>();
