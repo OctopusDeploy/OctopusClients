@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
             this.log = log;
         }
 
-        public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite)
+        public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
         {
             var filename = metadata.Id + "." + metadata.Version + ".zip";
             var output = fileSystem.GetFullPath(Path.Combine(outFolder, filename));
@@ -47,7 +47,11 @@ namespace Octopus.Cli.Commands
 
                         var relativePath = UseCrossPlatformDirectorySeparator(
                             fullFilePath.Substring(basePathLength).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-                        log.Debug("Adding file: {Path}", relativePath);
+
+                        if (verboseInfo)
+                            log.Information("Adding file: {Path}", relativePath);
+                        else
+                            log.Debug("Adding file: {Path}", relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
                         entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTime);
