@@ -171,7 +171,18 @@ namespace Octopus.Cli.Importers
         {
             if (importedProject.ReleaseCreationStrategy?.ChannelId == null)
                 return Task.WhenAll();
-            importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
+
+            if (channelMap.ContainsKey(importedProject.ReleaseCreationStrategy.ChannelId))
+            {
+                importedProject.ReleaseCreationStrategy.ChannelId = channelMap[importedProject.ReleaseCreationStrategy.ChannelId].Id;
+            }
+            else
+            {
+                Log.Warning(
+                    $"ReleaseCreationStrategy used channel ID '{importedProject.ReleaseCreationStrategy.ChannelId}' which was not found in imported channels. Using project default channel instead.");
+                importedProject.ReleaseCreationStrategy.ChannelId = channelMap.Values.First(c => c.IsDefault).Id;
+            }
+
             return Repository.Projects.Modify(importedProject);
         }
 
@@ -457,7 +468,7 @@ namespace Octopus.Cli.Importers
 
                 if (existingChannel != null)
                 {
-                    Log.Debug("Channel already exists, channel will be updated with new settings");
+                    Log.Debug($"Channel '{existingChannel.Name}' already exists, channel will be updated with new settings");
                     existingChannel.Name = channel.Name;
                     existingChannel.Description = channel.Description;
                     existingChannel.IsDefault = channel.IsDefault;
@@ -480,7 +491,7 @@ namespace Octopus.Cli.Importers
                 }
                 else
                 {
-                    Log.Debug("Channel does not exist, a new channel will be created");
+                    Log.Debug($"Channel `{channel.Name}` does not exist, a new channel will be created");
                     channel.ProjectId = importedProject.Id;
                     if (channel.LifecycleId != null)
                     {
@@ -490,7 +501,6 @@ namespace Octopus.Cli.Importers
                     var created = await Repository.Channels.Create(channel).ConfigureAwait(false);
                     results.Add(new KeyValuePair<string, ChannelResource>(channel.Id, created));
                 }
-
             }
 
             if (!KeepExistingProjectChannels && !defaultChannelUpdated)
