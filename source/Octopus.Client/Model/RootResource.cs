@@ -9,6 +9,7 @@ namespace Octopus.Client.Model
         public string Application { get; set; }
         public string Version { get; set; }
         public string ApiVersion { get; set; }
+        public Guid InstallationId { get; set; }
 
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
