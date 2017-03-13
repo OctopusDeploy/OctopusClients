@@ -4233,7 +4233,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<UserResource>
     Octopus.Client.Repositories.ICreate<UserResource>
   {
+    Octopus.Client.Model.UserResource Create(String, String, String, String)
     Octopus.Client.Model.ApiKeyResource CreateApiKey(Octopus.Client.Model.UserResource, String)
+    Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
     Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource)
@@ -4668,7 +4670,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<UserResource>
     Octopus.Client.Repositories.Async.ICreate<UserResource>
   {
+    Task<UserResource> Create(String, String, String, String)
     Task<ApiKeyResource> CreateApiKey(Octopus.Client.Model.UserResource, String)
+    Task<UserResource> CreateServiceAccount(String, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
     Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource)
