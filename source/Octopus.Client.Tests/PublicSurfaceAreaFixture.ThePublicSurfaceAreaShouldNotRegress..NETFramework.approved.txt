@@ -4231,6 +4231,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<UserResource>
     Octopus.Client.Repositories.IModify<UserResource>
     Octopus.Client.Repositories.IDelete<UserResource>
+    Octopus.Client.Repositories.ICreate<UserResource>
   {
     Octopus.Client.Model.ApiKeyResource CreateApiKey(Octopus.Client.Model.UserResource, String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -4665,6 +4666,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<UserResource>
     Octopus.Client.Repositories.Async.IModify<UserResource>
     Octopus.Client.Repositories.Async.IDelete<UserResource>
+    Octopus.Client.Repositories.Async.ICreate<UserResource>
   {
     Task<ApiKeyResource> CreateApiKey(Octopus.Client.Model.UserResource, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -4682,6 +4684,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<UserRoleResource>
     Octopus.Client.Repositories.Async.IPaginate<UserRoleResource>
     Octopus.Client.Repositories.Async.IGet<UserRoleResource>
+    Octopus.Client.Repositories.Async.ICreate<UserRoleResource>
+    Octopus.Client.Repositories.Async.IModify<UserRoleResource>
   {
   }
   interface IVariableSetRepository
