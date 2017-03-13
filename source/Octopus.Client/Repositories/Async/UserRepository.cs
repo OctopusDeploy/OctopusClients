@@ -9,8 +9,11 @@ namespace Octopus.Client.Repositories.Async
         IPaginate<UserResource>,
         IGet<UserResource>,
         IModify<UserResource>,
-        IDelete<UserResource>
+        IDelete<UserResource>,
+        ICreate<UserResource>
     {
+        Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null);
+        Task<UserResource> CreateServiceAccount(string username, string displayName);
         Task<UserResource> Register(RegisterCommand registerCommand);
         Task SignIn(LoginCommand loginCommand);
         Task SignIn(string username, string password, bool rememberMe = false);
@@ -32,6 +35,30 @@ namespace Octopus.Client.Repositories.Async
             : base(client, "Users")
         {
             invitations = new InvitationRepository(client);
+        }
+
+        public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
+        {
+            return Create(new UserResource
+            {
+                Username = username,
+                DisplayName = displayName,
+                Password = password,
+                EmailAddress = emailAddress,
+                IsActive = true,
+                IsService = false
+            });
+        }
+
+        public Task<UserResource> CreateServiceAccount(string username, string displayName)
+        {
+            return Create(new UserResource
+            {
+                Username = username,
+                DisplayName = displayName,
+                IsActive = true,
+                IsService = true
+            });
         }
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)

@@ -8,8 +8,11 @@ namespace Octopus.Client.Repositories
         IPaginate<UserResource>,
         IGet<UserResource>,
         IModify<UserResource>,
-        IDelete<UserResource>
+        IDelete<UserResource>,
+        ICreate<UserResource>
     {
+        UserResource Create(string username, string displayName, string password = null, string emailAddress = null);
+        UserResource CreateServiceAccount(string username, string displayName);
         UserResource Register(RegisterCommand registerCommand);
         void SignIn(LoginCommand loginCommand);
         void SignIn(string username, string password, bool rememberMe = false);
@@ -33,6 +36,29 @@ namespace Octopus.Client.Repositories
             invitations = new InvitationRepository(client);
         }
 
+        public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
+        {
+            return Create(new UserResource
+            {
+                Username = username,
+                DisplayName = displayName,
+                Password = password,
+                EmailAddress = emailAddress,
+                IsActive = true,
+                IsService = false
+            });
+        }
+
+        public UserResource CreateServiceAccount(string username, string displayName)
+        {
+            return Create(new UserResource
+            {
+                Username = username,
+                DisplayName = displayName,
+                IsActive = true,
+                IsService = true
+            });
+        }
         public UserResource Register(RegisterCommand registerCommand)
         {
             Client.Post(Client.RootDocument.Link("Register"), registerCommand);
