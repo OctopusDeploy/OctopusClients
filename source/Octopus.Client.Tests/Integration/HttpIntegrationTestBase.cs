@@ -30,6 +30,7 @@ namespace Octopus.Client.Tests.Integration
     {
         public static readonly string HostBaseUri = "http://foo.localtest.me:17358";
         public static readonly string HostBaseSslUri = "https://localhost:17359";
+        protected static readonly Guid InstallationId = Guid.NewGuid();
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         static IWebHost currentHost;
 
@@ -88,6 +89,7 @@ namespace Octopus.Client.Tests.Integration
                  new RootResource()
                  {
                      ApiVersion = "3.0.0",
+                     InstallationId = InstallationId,
                      Links = new LinkCollection()
                      {
                          { "CurrentUser",$"{TestRootPath}/api/users/me" }

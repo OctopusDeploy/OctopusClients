@@ -2372,6 +2372,7 @@ Octopus.Client.Model
     String Application { get; set; }
     Boolean FormsLoginEnabled { get; set; }
     Boolean GuestLoginEnabled { get; set; }
+    Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
   }

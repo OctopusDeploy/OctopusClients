@@ -459,12 +459,16 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
-                .Cast<Cookie>()
-                .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
-            if (antiforgeryCookie != null)
+            if (rootDocument != null)
             {
-                webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
+                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
+                var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
+                    .Cast<Cookie>()
+                    .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                if (antiforgeryCookie != null)
+                {
+                    webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
+                }
             }
 
             var requestHandler = SendingOctopusRequest;

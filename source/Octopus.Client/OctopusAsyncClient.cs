@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using Newtonsoft.Json;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -516,13 +514,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
-                    .Cast<Cookie>()
-                    .SingleOrDefault(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix));
-
-                if (antiforgeryCookie != null)
+                if (RootDocument != null)
                 {
-                    message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
+                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
+                    var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
+                        .Cast<Cookie>()
+                        .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                    if (antiforgeryCookie != null)
+                    {
+                        message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
+                    }
                 }
 
                 var requestHandler = SendingOctopusRequest;
