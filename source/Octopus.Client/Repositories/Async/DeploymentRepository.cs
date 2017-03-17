@@ -9,6 +9,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> GetTask(DeploymentResource resource);
         Task<ResourceCollection<DeploymentResource>> FindAll(string[] projects, string[] environments, int skip = 0);
         Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage);
+        Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage);
     }
 
     class DeploymentRepository : BasicRepository<DeploymentResource>, IDeploymentRepository
@@ -30,7 +31,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
         {
-            return Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0] }, getNextPage);
+            return Paginate(projects, environments, new string[0], getNextPage);
+        }
+
+        public Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
+        {
+            return Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
         }
     }
 }

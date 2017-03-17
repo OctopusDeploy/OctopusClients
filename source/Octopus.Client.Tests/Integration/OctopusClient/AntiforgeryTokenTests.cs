@@ -11,7 +11,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 {
     public class AntiforgeryTokenTests : HttpIntegrationTestBase
     {
-        private static readonly string InstanceId = Guid.NewGuid().ToString("N");
         private static readonly string AuthCookieValue = "54321";
         private static readonly string AntiforgeryCookieValue = "12345";
 
@@ -24,13 +23,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 return Response.AsJson(new TestDto {AntiforgeryTokenValue = antiforgeryHeaderValue})
                     .WithStatusCode(HttpStatusCode.OK)
                     .WithCookie(new NancyCookie(
-                        ApiConstants.AuthenticationCookiePrefix + InstanceId,
+                        $"{ApiConstants.AuthenticationCookiePrefix}_{InstallationId}",
                         AuthCookieValue,
                         httpOnly: true,
                         secure: Request.Url.IsSecure,
                         expires: DateTime.UtcNow.AddDays(1)))
                     .WithCookie(new NancyCookie(
-                        ApiConstants.AntiforgeryTokenCookiePrefix + InstanceId,
+                        $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{InstallationId}",
                         AntiforgeryCookieValue,
                         httpOnly: false,
                         secure: Request.Url.IsSecure,
@@ -57,6 +56,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void SyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
+            // Force the root document to load
+            var rootDocument = client.RootDocument;
             
             // Simulate getting the auth and antiforgery cookies
             var firstResponse = client.Get<TestDto>(TestRootPath);

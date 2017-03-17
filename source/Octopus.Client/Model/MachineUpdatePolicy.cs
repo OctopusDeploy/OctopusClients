@@ -17,5 +17,6 @@
     {
         public CalamariUpdateBehavior CalamariUpdateBehavior { get; set; }
         public TentacleUpdateBehavior TentacleUpdateBehavior { get; set; }
+        public string TentacleUpdateAccountId { get; set; }
     }
 }

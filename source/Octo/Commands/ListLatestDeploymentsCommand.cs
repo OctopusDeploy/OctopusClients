@@ -43,13 +43,18 @@ namespace Octopus.Cli.Commands
                 Log.Information("Did not find any releases matching the search criteria.");
             }
 
-            foreach (var item in dashboard.Items)
+            foreach (var dashboardItem in dashboard.Items)
             {
-                await LogDeploymentInfo(item, environmentsById, projectsById, tenantsById).ConfigureAwait(false);
+                var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
+                ChannelResource channel = null;
+
+                if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
+                    channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
+
+                LogDeploymentInfo(Log, dashboardItem, release, channel, environmentsById, projectsById, tenantsById);
             }
         }
-
-        async Task<IDictionary<string, string>> LoadProjects()
+        private async Task<IDictionary<string, string>> LoadProjects()
         {
             Log.Debug("Loading projects...");
             var projectQuery = projects.Any()
@@ -68,7 +73,7 @@ namespace Octopus.Cli.Commands
             return projectResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        async Task<IDictionary<string, string>> LoadEnvironments()
+        private async Task<IDictionary<string, string>> LoadEnvironments()
         {
             Log.Debug("Loading environments...");
             var environmentQuery = environments.Any()
@@ -87,44 +92,43 @@ namespace Octopus.Cli.Commands
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        public async Task LogDeploymentInfo(DashboardItemResource dashboardItem, IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
+        private static void LogDeploymentInfo(ILogger log, DashboardItemResource dashboardItem, ReleaseResource release, ChannelResource channel,
+            IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[dashboardItem.EnvironmentId];
             var nameOfDeploymentProject = projectedById[dashboardItem.ProjectId];
-            var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
 
-            Log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
-            Log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
+            log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
+            log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
             if (!string.IsNullOrEmpty(dashboardItem.TenantId))
             {
                 var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
-                Log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
+                log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 
-            if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
+            if(channel != null)
             {
-                var channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
-                Log.Information(" - Channel: {Channel:l}", channel.Name);
+                log.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            Log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
-            Log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
+            log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
+            log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
 
             if (dashboardItem.State == TaskState.Failed)
             {
-                Log.Error("   State: {$State:l}", dashboardItem.State);
+                log.Error("   State: {$State:l}", dashboardItem.State);
             }
             else
             {
-                Log.Information("   State: {$State:l}", dashboardItem.State);
+                log.Information("   State: {$State:l}", dashboardItem.State);
             }
 
-            Log.Information("   Version: {Version:l}", release.Version);
-            Log.Information("   Assembled: {$Assembled:l}", release.Assembled);
-            Log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            Log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
+            log.Information("   Version: {Version:l}", release.Version);
+            log.Information("   Assembled: {$Assembled:l}", release.Assembled);
+            log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
 
-            Log.Information("");
+            log.Information("");
         }
     }
 }

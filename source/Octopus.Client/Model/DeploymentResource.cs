@@ -77,5 +77,6 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
+        public bool IsFirst { get; set; }
     }
 }

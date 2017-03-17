@@ -146,7 +146,7 @@ namespace Octopus.Client.Operations
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -160,7 +160,7 @@ namespace Octopus.Client.Operations
             var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             if (missingTags.Any())
-                throw new ArgumentException($"Could not find the {"tag" + (missingTags.Count == 1 ? "" : "s")} {string.Join(", ", missingTags)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
 
@@ -171,7 +171,7 @@ namespace Octopus.Client.Operations
             var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException($"Could not find the {"environment" + (missing.Count == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("environment", missing.ToArray()));
 
             return selectedEnvironments;
         }
@@ -184,7 +184,7 @@ namespace Octopus.Client.Operations
             {
                 machinePolicy = repository.MachinePolicies.FindByName(MachinePolicy);
                 if (machinePolicy == null)
-                    throw new ArgumentException($"Could not find a machine policy named {MachinePolicy}.");
+                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
             }
             return machinePolicy;
         }
@@ -196,7 +196,7 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Machines.FindByName(MachineName);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException(string.Format("A machine named '{0}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.", MachineName));
+                    throw new ArgumentException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
@@ -258,7 +258,7 @@ namespace Octopus.Client.Operations
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -272,7 +272,7 @@ namespace Octopus.Client.Operations
             var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             if (missingTags.Any())
-                throw new ArgumentException($"Could not find the {"tag" + (missingTags.Count == 1 ? "" : "s")} {string.Join(", ", missingTags)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
         async Task<List<EnvironmentResource>> GetEnvironments(OctopusAsyncRepository repository)
@@ -282,7 +282,7 @@ namespace Octopus.Client.Operations
             var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException($"Could not find the {"environment" + (missing.Count == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                throw new ArgumentException(CouldNotFindMessage("environment", missing.ToArray()));
 
             return selectedEnvironments;
         }
@@ -295,7 +295,7 @@ namespace Octopus.Client.Operations
             {
                 machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy).ConfigureAwait(false);
                 if (machinePolicy == null)
-                    throw new ArgumentException($"Could not find a machine policy named {MachinePolicy}.");
+                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
             }
             return machinePolicy;
         }
@@ -307,7 +307,7 @@ namespace Octopus.Client.Operations
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException(string.Format("A machine named '{0}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.", MachineName));
+                    throw new ArgumentException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
@@ -338,6 +338,13 @@ namespace Octopus.Client.Operations
                 polling.Thumbprint = TentacleThumbprint;
                 machine.Endpoint = polling;
             }
+        }
+
+        static string CouldNotFindMessage(string modelType, params string[] missing)
+        {
+            return missing.Length == 1
+                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus server. Ensure the {modelType} exists and you have permission to access it."
+                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus server. Ensure the {modelType}s exist and you have permission to access them.";
         }
     }
 }
