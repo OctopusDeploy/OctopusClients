@@ -995,7 +995,13 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
   {
     .ctor()
+    String ActionType { get; set; }
     String CommunityActionTemplateId { get; set; }
+    String Description { get; set; }
+    String Name { get; set; }
+    IList<ActionTemplateParameterResource> Parameters { get; }
+    IDictionary<String, PropertyValueResource> Properties { get; }
+    Int32 Version { get; set; }
   }
   class ActionTemplateSearchResource
     Octopus.Client.Model.IResource
@@ -1028,18 +1034,6 @@ Octopus.Client.Model
     String StepId { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
-  }
-  class ActionTemplateVersionResource
-    Octopus.Client.Model.IResource
-    Octopus.Client.Model.IAuditedResource
-  {
-    .ctor()
-    String ActionType { get; set; }
-    String Description { get; set; }
-    String Name { get; set; }
-    IList<ActionTemplateParameterResource> Parameters { get; }
-    IDictionary<String, PropertyValueResource> Properties { get; }
-    Int32 Version { get; set; }
   }
   ActionUpdateOutcome
   {
@@ -3884,7 +3878,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
   {
-    Octopus.Client.Model.ActionTemplateVersionResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
+    Octopus.Client.Model.ActionTemplateResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     List<ActionTemplateSearchResource> Search()
     Octopus.Client.Model.ActionUpdateResultResource[] UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
@@ -4322,7 +4316,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
-    Task<ActionTemplateVersionResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
+    Task<ActionTemplateResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<List<ActionTemplateSearchResource>> Search()
     Task<ActionUpdateResultResource[]> UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
