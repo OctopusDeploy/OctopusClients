@@ -11,6 +11,7 @@ namespace Octopus.Client.Repositories
         MachineResource Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
         MachineConnectionStatus GetConnectionStatus(MachineResource machine);
         List<MachineResource> FindByThumbprint(string thumbprint);
+        List<TaskResource> GetTasks(MachineResource machine, int skip = 0);
 
         MachineEditor CreateOrModify(
             string name,
@@ -48,6 +49,21 @@ namespace Octopus.Client.Repositories
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
             return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
+        }
+
+        public List<TaskResource> GetTasks(MachineResource machine, int skip = 0)
+        {
+            if (machine == null) throw new ArgumentNullException(nameof(machine));
+
+            var resources = new List<TaskResource>();
+
+            Client.Paginate<TaskResource>(machine.Link("TasksTemplate"), new { skip }, page =>
+            {
+                resources.AddRange(page.Items);
+                return true;
+            });
+
+            return resources;
         }
 
         public MachineEditor CreateOrModify(
