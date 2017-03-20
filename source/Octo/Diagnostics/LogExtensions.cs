@@ -123,7 +123,16 @@ namespace Octopus.Cli.Diagnostics
                 var selflink = new Uri(new Uri(serverBaseUrl), release.Links["Web"].AsString());
                 var markdown = $"[Release {release.Version} created for '{project.Name}']({selflink})";
                 var markdownFile = System.IO.Path.Combine(workingDirectory, Guid.NewGuid() + ".md");
-                System.IO.File.WriteAllText(markdownFile, markdown);
+
+                try
+                {
+                    System.IO.File.WriteAllText(markdownFile, markdown);
+                }
+                catch (UnauthorizedAccessException uae)
+                {
+                    throw new UnauthorizedAccessException($"Could not write the TFS service message file '{markdownFile}'. Please make sure the SYSTEM_DEFAULTWORKINGDIRECTORY environment variable is set to a writeable directory. If this command is not being run on a build agent, ommit the --enableservicemessages parameter.", uae);
+                }
+
                 log.Information("##vso[task.addattachment type=Distributedtask.Core.Summary;name=Octopus Deploy;]{MarkdownFile:l}", markdownFile);
             }
         }
