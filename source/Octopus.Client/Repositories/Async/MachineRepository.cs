@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         Task<MachineResource> Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
         Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine);
         Task<List<MachineResource>> FindByThumbprint(string thumbprint);
-        Task<List<TaskResource>> GetTasks(MachineResource machine, int skip = 0);
+        Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine);
 
         Task<MachineEditor> CreateOrModify(
             string name,
@@ -52,19 +52,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
         }
 
-        public async Task<List<TaskResource>> GetTasks(MachineResource machine, int skip = 0)
+        public async Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine)
         {
             if (machine == null) throw new ArgumentNullException(nameof(machine));
-
-            var resources = new List<TaskResource>();
-
-            await Client.Paginate<TaskResource>(machine.Link("TasksTemplate"), new { skip }, page =>
-            {
-                resources.AddRange(page.Items);
-                return true;
-            }).ConfigureAwait(false);
-
-            return resources;
+            return await Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), new { skip = 0 }).ConfigureAwait(false);
         }
 
         public Task<MachineEditor> CreateOrModify(
