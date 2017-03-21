@@ -35,7 +35,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
 
-        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             options = options ?? new OctopusClientOptions();
             Repository = new OctopusAsyncRepository(this);
@@ -442,7 +442,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        async Task<RootResource> EstablishSession()
+        protected virtual async Task<RootResource> EstablishSession()
         {
             RootResource server;
 
@@ -501,7 +501,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return server;
         }
 
-        private async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
+        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             using (var message = new HttpRequestMessage())
             {
