@@ -15,6 +15,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     public class SslTests : HttpIntegrationTestBase
     {
         public SslTests()
+            : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Get(TestRootPath, p => Request.Url.IsSecure ? (object)"Data" : HttpStatusCode.UpgradeRequired);
         }
