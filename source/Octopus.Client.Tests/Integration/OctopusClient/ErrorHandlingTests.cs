@@ -10,7 +10,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 {
     public class ErrorHandlingTests : HttpIntegrationTestBase
     {
-        public ErrorHandlingTests()
+        public ErrorHandlingTests() : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Post(TestRootPath, p => Response.AsJson(new OctopusExceptionFactory.OctopusErrorsContract()
             {
@@ -21,9 +21,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void ShouldHandleValidationError()
+        public async Task ShouldHandleValidationError()
         {
-            Func<Task> post = () => Client.Post("~/");
+            Func<Task> post = async () => { await AsyncClient.Post("~/"); };
             post.ShouldThrow<OctopusValidationException>()
                 .And
                 .DetailsAs<string[]>().Single().Should().Be("Details");
