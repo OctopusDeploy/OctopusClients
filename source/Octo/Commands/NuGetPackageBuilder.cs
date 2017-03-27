@@ -18,12 +18,21 @@ namespace Octopus.Cli.Commands
             this.log = log;
         }
 
-        public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite)
+        public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
         {
             var nugetPkgBuilder = new PackageBuilder();
 
-            nugetPkgBuilder.PopulateFiles(basePath, includes.Select(i => new ManifestFile { Source = i }));
+            var manifestFiles = includes.Select(i => new ManifestFile {Source = i}).ToList();
+            nugetPkgBuilder.PopulateFiles(basePath, manifestFiles);
             nugetPkgBuilder.Populate(metadata);
+
+            if (verboseInfo)
+            {
+                foreach(var file in nugetPkgBuilder.Files)
+                {
+                    log.Information($"Added file: {file.Path}");
+                }
+            }
 
             var filename = metadata.Id + "." + metadata.Version + ".nupkg";
             var output = Path.Combine(outFolder, filename);

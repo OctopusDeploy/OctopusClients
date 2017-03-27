@@ -5,6 +5,6 @@ namespace Octopus.Cli.Commands
 {
     public interface IPackageBuilder
     {
-        void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite);
+        void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo);
     }
 }
