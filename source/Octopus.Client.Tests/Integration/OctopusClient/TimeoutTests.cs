@@ -11,6 +11,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     public class TimeoutTests : HttpIntegrationTestBase
     {
         public TimeoutTests()
+            : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Get(TestRootPath, p =>
             {
@@ -30,7 +31,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void ConfiguredTimeoutWorks()
         {
             var sw = Stopwatch.StartNew();
-            Func<Task> get = () => Client.Get<string>("~/");
+            Func<Task> get = () => AsyncClient.Get<string>("~/");
             get.ShouldThrow<TimeoutException>();
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(4));
         }

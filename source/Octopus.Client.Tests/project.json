@@ -18,7 +18,10 @@
   },
   "testRunner": "nunit",
   "buildOptions": {
-    "embed": [ "**/*.pfx"]
+    "embed": [
+      "**/*.pfx",
+      "CannedResponses/**/*.json"
+    ]
   },
   "frameworks": {
     "net452": {

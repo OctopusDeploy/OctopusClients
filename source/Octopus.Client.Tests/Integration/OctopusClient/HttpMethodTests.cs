@@ -14,6 +14,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         private static string _lastMethod;
 
         public HttpMethodTests()
+            : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Get(TestRootPath, p => Response.AsJson(new TestDto() { Value = "42" }));
 
@@ -44,7 +45,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public void GetReturnsAValue()
         {
-            var dto = Client.Get<TestDto>("~/").Result;
+            var dto = AsyncClient.Get<TestDto>("~/").Result;
             dto.Value.Should().Be("42");
         }
 
@@ -52,7 +53,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void PostingAObjectWorks()
         {
             _lastMethod = null;
-            Func<Task> post = () => Client.Post("~/", new TestDto { Value = "Foo" });
+            Func<Task> post = () => AsyncClient.Post("~/", new TestDto { Value = "Foo" });
             post.ShouldNotThrow();
             _lastMethod.Should().Be("Post");
         }
@@ -61,7 +62,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void PuttingAObjectWorks()
         {
             _lastMethod = null;
-            Func<Task> put = () => Client.Put("~/", new TestDto { Value = "Foo" });
+            Func<Task> put = () => AsyncClient.Put("~/", new TestDto { Value = "Foo" });
             put.ShouldNotThrow();
             _lastMethod.Should().Be("Put");
         }
@@ -70,7 +71,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void DeleteReachesTheServer()
         {
             _lastMethod = null;
-            Func<Task> delete = () => Client.Delete("~/");
+            Func<Task> delete = () => AsyncClient.Delete("~/");
             delete.ShouldNotThrow();
             _lastMethod.Should().Be("Delete");
         }

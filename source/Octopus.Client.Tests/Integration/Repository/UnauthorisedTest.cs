@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
-using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Integration.Repository
 {
@@ -13,6 +11,7 @@ namespace Octopus.Client.Tests.Integration.Repository
     {
         const string ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again.";
         public UnauthorisedTest()
+            : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Get($"{TestRootPath}api/users/me", p =>
             {
@@ -27,7 +26,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
-            var repo = new OctopusAsyncRepository(Client);
+            var repo = new OctopusAsyncRepository(AsyncClient);
             Func<Task> getUser = () => repo.Users.GetCurrent();
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
