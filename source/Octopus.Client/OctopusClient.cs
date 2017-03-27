@@ -372,7 +372,7 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        RootResource EstablishSession()
+        protected virtual RootResource EstablishSession()
         {
             RootResource server;
 
@@ -431,7 +431,7 @@ namespace Octopus.Client
             return server;
         }
 
-        OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
+        protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
             if (serverEndpoint.Proxy != null)

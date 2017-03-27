@@ -23,9 +23,16 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Nancy.Extensions;
 using Octopus.Client.Model;
+using Octopus.Client.Tests.Integration.Repository;
 
 namespace Octopus.Client.Tests.Integration
 {
+    public enum UrlPathPrefixBehaviour
+    {
+        UseClassNameAsUrlPathPrefix,
+        UseNoPrefix
+    }
+
     public abstract class HttpIntegrationTestBase : NancyModule
     {
         public static readonly string HostBaseUri = "http://foo.localtest.me:17358";
@@ -34,8 +41,10 @@ namespace Octopus.Client.Tests.Integration
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         static IWebHost currentHost;
 
-        protected IOctopusAsyncClient Client { get; private set; }
-
+        protected IOctopusAsyncClient AsyncClient { get; private set; }
+#if SYNC_CLIENT
+        protected IOctopusClient SyncClient { get; private set; }
+#endif
         [OneTimeSetUp]
         public static void OneTimeSetup()
         {
@@ -81,10 +90,12 @@ namespace Octopus.Client.Tests.Integration
             currentHost?.Dispose();
         }
 
-        protected HttpIntegrationTestBase()
+        protected HttpIntegrationTestBase(UrlPathPrefixBehaviour pathPrefixBehaviour)
         {
-            TestRootPath = $"/{GetType().Name}/";
-
+            TestRootPath = "/";
+            if (pathPrefixBehaviour == UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
+                TestRootPath = $"/{GetType().Name}/";
+            
             Get($"{TestRootPath}api", p => Response.AsJson(
                  new RootResource()
                  {
@@ -103,7 +114,10 @@ namespace Octopus.Client.Tests.Integration
         [SetUp]
         public async Task Setup()
         {
-            Client = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
+            AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
+#if SYNC_CLIENT
+            SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
+#endif
         }
 
         protected virtual OctopusClientOptions GetClientOptions()
@@ -113,7 +127,10 @@ namespace Octopus.Client.Tests.Integration
 
         public void TearDown()
         {
-            Client?.Dispose();
+            AsyncClient?.Dispose();
+#if SYNC_CLIENT
+            SyncClient?.Dispose();
+#endif
         }
 
         protected Response CreateErrorResponse(string message)
@@ -140,6 +157,47 @@ namespace Octopus.Client.Tests.Integration
             }
             return true;
         }
+
+
+        protected string GetCannedResponse(dynamic parameters)
+        {
+#if SYNC_CLIENT
+            var assembly = typeof(HttpIntegrationTestBase).Assembly;
+#else
+            var assembly = typeof(HttpIntegrationTestBase).GetTypeInfo().Assembly;
+#endif
+            var resourceName = GetResourceNameFromtRequestUri(parameters);
+
+            using (var responseStream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (responseStream == null)
+                {
+                    var validResources = assembly.GetManifestResourceNames();
+                    throw new Exception($"Didn't find a canned response '{resourceName}'.{Environment.NewLine}Valid resources names are: {Environment.NewLine}{string.Join(Environment.NewLine, validResources)}");
+                }
+
+                using (var reader = new StreamReader(responseStream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        private dynamic GetResourceNameFromtRequestUri(dynamic parameters)
+        {
+            var escapedUri = "/" + parameters.uri;
+            foreach (var param in Request.Query.ToDictionary())
+                escapedUri = escapedUri + "." + param.Key + "=" + param.Value;
+
+            escapedUri = escapedUri
+                .Replace("/api/", "")
+                .Replace("/", ".")
+                .Replace("?", ".")
+                .Replace("&", ".")
+                .Replace("-", "_");
+            return $"Octopus.Client.Tests.CannedResponses.{escapedUri}.{Request.Method}.json";
+        }
+
         public class Startup
         {
             public void Configure(IApplicationBuilder app)

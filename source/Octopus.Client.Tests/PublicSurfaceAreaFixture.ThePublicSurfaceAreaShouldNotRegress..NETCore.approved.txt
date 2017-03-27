@@ -3683,6 +3683,7 @@ Octopus.Client.Repositories.Async
     Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
+    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
   }
   interface IMachineRoleRepository
   {

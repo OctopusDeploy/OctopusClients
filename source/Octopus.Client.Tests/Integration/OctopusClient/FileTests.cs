@@ -14,6 +14,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         private static bool _recieved;
 
         public FileTests()
+            : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Post(TestRootPath, p =>
             {
@@ -50,7 +51,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     FileName = "foo.txt"
                 };
                 _recieved = false;
-                await Client.Post("~/", file);
+                await AsyncClient.Post("~/", file);
                 _recieved.Should().BeTrue();
             }
         }
