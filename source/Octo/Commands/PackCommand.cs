@@ -129,7 +129,9 @@ namespace Octopus.Cli.Commands
                 if (!string.IsNullOrWhiteSpace(title))
                     metadata.Title = title;
 
-                log.Information($"{(verbose ? "Verbose logging" : "")}");
+                
+                if (verbose)
+                    log.Information("Verbose logging");
                 log.Information("Packing {id:l} version {Version}...", id, version);
 
                 packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite, verbose);

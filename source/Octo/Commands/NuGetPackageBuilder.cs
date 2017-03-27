@@ -28,7 +28,10 @@ namespace Octopus.Cli.Commands
 
             if (verboseInfo)
             {
-                nugetPkgBuilder.Files.ToList().ForEach(f => log.Information("Adding file: {Path}", f.Path));
+                foreach(var file in nugetPkgBuilder.Files)
+                {
+                    log.Information($"Added file: {file.Path}");
+                }
             }
 
             var filename = metadata.Id + "." + metadata.Version + ".nupkg";
