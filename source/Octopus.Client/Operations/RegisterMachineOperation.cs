@@ -322,7 +322,8 @@ namespace Octopus.Client.Operations
             machine.TenantTags = new ReferenceCollection(TenantTags);
             machine.Roles = new ReferenceCollection(Roles);
             machine.Name = MachineName;
-            machine.MachinePolicyId = machinePolicy?.Id;
+            if (machinePolicy != null)
+                machine.MachinePolicyId = machinePolicy.Id;
 
             if (CommunicationStyle == CommunicationStyle.TentaclePassive)
             {
