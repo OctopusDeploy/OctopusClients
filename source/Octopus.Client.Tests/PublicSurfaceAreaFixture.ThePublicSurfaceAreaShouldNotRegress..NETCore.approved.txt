@@ -464,6 +464,7 @@ Octopus.Client.Exceptions
   class OctopusErrorsContract
   {
     .ctor()
+    Object Details { get; set; }
     String ErrorMessage { get; set; }
     String[] Errors { get; set; }
     String FullException { get; set; }
@@ -481,6 +482,7 @@ Octopus.Client.Exceptions
     class OctopusErrorsContract
     {
       .ctor()
+      Object Details { get; set; }
       String ErrorMessage { get; set; }
       String[] Errors { get; set; }
       String FullException { get; set; }
@@ -512,8 +514,11 @@ Octopus.Client.Exceptions
   {
     .ctor(String, ICollection<String>)
     .ctor(Int32, String, ICollection<String>)
+    .ctor(Int32, String, ICollection<String>, Object)
+    Object Details { get; }
     String ErrorMessage { get; }
     ReadOnlyCollection<String> Errors { get; }
+    Octopus.Client.Exceptions.TDetails DetailsAs()
   }
   class UnsupportedApiVersionException
     _Exception
@@ -574,6 +579,16 @@ Octopus.Client.Logging
 }
 Octopus.Client.Model
 {
+  class ActionsUpdateResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    IDictionary<String, String[]> ActionIdsByProcessId { get; set; }
+    IDictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Int32 Version { get; set; }
+  }
   class ActionTemplateParameterResource
   {
     .ctor()
@@ -629,6 +644,22 @@ Octopus.Client.Model
     String StepId { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
+  }
+  ActionUpdateOutcome
+  {
+      Success = 0
+      ManualMergeRequired = 1
+      DefaultParamterValueMissing = 2
+  }
+  class ActionUpdateResultResource
+    Octopus.Client.Model.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Model.LinkCollection Links { get; set; }
+    IDictionary<String, String[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
+    String[] NamesOfNewParametersMissingDefaultValue { get; set; }
+    Octopus.Client.Model.ActionUpdateOutcome Outcome { get; set; }
   }
   class ActivityElement
   {
@@ -3444,7 +3475,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<ActionTemplateResource>
     Octopus.Client.Repositories.Async.IGetAll<ActionTemplateResource>
   {
+    Task<ActionTemplateResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<List<ActionTemplateSearchResource>> Search()
+    Task<ActionUpdateResultResource[]> UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>

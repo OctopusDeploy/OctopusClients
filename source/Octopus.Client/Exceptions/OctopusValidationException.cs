@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Octopus.Client.Exceptions
 {
@@ -34,6 +35,29 @@ namespace Octopus.Client.Exceptions
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="OctopusValidationException" /> class.
+        /// </summary>
+        /// <param name="httpStatusCode">The HTTP status code.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="errors">The errors.</param>
+        /// <param name="details">The details of the error.</param>
+        public OctopusValidationException(int httpStatusCode, string message, ICollection<string> errors, dynamic details)
+            : this(httpStatusCode, message, errors)
+        {
+            Details = details;
+        }
+
+        /// <summary>
+        /// Converts untyped <see cref="Details" /> property to a known type.
+        /// </summary>
+        /// <typeparam name="TDetails"></typeparam>
+        /// <returns></returns>
+        public TDetails DetailsAs<TDetails>()
+        {
+            return Details == null ? default(TDetails) : ((JToken) Details).ToObject<TDetails>();
+        }
+
+        /// <summary>
         /// Gets the error message that was returned by the Octopus Server.
         /// </summary>
         public string ErrorMessage { get; private set; }
@@ -42,5 +66,10 @@ namespace Octopus.Client.Exceptions
         /// Gets a list of problems with the request that was returned by the Octopus Server.
         /// </summary>
         public ReadOnlyCollection<String> Errors { get; private set; }
+
+        /// <summary>
+        /// Gets detailed, structured information about the error. Use <see cref="DetailsAs{TDetails}" /> to convert the data to a known type.
+        /// </summary>
+        public dynamic Details { get; private set; }
     }
 }
