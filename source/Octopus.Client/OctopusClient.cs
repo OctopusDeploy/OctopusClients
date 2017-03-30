@@ -12,6 +12,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Extensions;
 
 namespace Octopus.Client
 {
@@ -446,6 +447,9 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
+            var userAgent = $"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}";
+            webRequest.UserAgent = userAgent;
+            webRequest.Headers[ApiConstants.OctopusUserAgentHeaderName] = userAgent;
             
             if (webRequest.Method == "PUT")
             {

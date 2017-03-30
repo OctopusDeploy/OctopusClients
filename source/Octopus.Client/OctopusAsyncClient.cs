@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
@@ -70,6 +71,9 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+            var userAgent = $"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}";
+            client.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            client.DefaultRequestHeaders.Add(ApiConstants.OctopusUserAgentHeaderName, userAgent);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)

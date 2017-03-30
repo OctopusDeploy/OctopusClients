@@ -911,6 +911,12 @@ Octopus.Client.Exceptions
 }
 Octopus.Client.Extensions
 {
+  abstract class AssemblyExtensions
+  {
+    static String FullLocalPath(Assembly)
+    static String GetInformationalVersion(Type)
+    static Octopus.Client.Model.SemanticVersion GetSemanticVersion(Type)
+  }
   abstract class StringExtensions
   {
     static String CommaSeperate(IEnumerable<Object>)
@@ -1090,6 +1096,7 @@ Octopus.Client.Model
     static System.String ApiKeyHttpHeaderName
     static System.String AuthenticationCookiePrefix
     static System.Int32 DefaultClientRequestTimeout
+    static System.String OctopusUserAgentHeaderName
     static System.String SupportedApiSchemaVersionMax
     static System.String SupportedApiSchemaVersionMin
     .ctor()
