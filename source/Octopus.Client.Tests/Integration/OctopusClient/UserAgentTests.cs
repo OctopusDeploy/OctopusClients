@@ -27,8 +27,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldProvideUserAgent_WithNameAndVersion()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
-            response.CustomUserAgentValue.Should().Be($"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
+            response.CustomUserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
         }
 
 #if SYNC_CLIENT
@@ -37,8 +37,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
-            response.CustomUserAgentValue.Should().Be($"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
+            response.CustomUserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
         }
 #endif
 

@@ -27,6 +27,7 @@ namespace Octopus.Client
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+        private readonly SemanticVersion clientVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -36,6 +37,7 @@ namespace Octopus.Client
         {
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
+            clientVersion = GetType().GetSemanticVersion();
         }
 
         /// <summary>
@@ -447,7 +449,10 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-            var userAgent = $"OctopusClient-dotnet/{GetType().GetSemanticVersion().ToNormalizedString()}";
+
+            // Add the User-Agent information to the HTTP request so the server can use it if required using http://www.ietf.org/rfc/rfc2616.txt as a guide
+            // Note we are adding two headers so there's a common header for this information - the JavaScript client cannot change its User-Agent: https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
+            var userAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
             webRequest.UserAgent = userAgent;
             webRequest.Headers[ApiConstants.OctopusUserAgentHeaderName] = userAgent;
             

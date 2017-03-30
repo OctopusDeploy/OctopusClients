@@ -5,7 +5,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Extensions
 {
-    public static class AssemblyExtensions
+    internal static class AssemblyExtensions
     {
         public static string FullLocalPath(this Assembly assembly)
         {
