@@ -34,8 +34,6 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
-        private readonly SemanticVersion clientVersion;
-
 
         protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
@@ -72,13 +70,7 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-
-            // Add the User-Agent information to the HTTP request so the server can use it if required using http://www.ietf.org/rfc/rfc2616.txt as a guide
-            // Note we are adding two headers so there's a common header for this information - the JavaScript client cannot change its User-Agent: https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
-            clientVersion = GetType().GetSemanticVersion();
-            var userAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
-            client.DefaultRequestHeaders.Add("User-Agent", userAgent);
-            client.DefaultRequestHeaders.Add(ApiConstants.OctopusUserAgentHeaderName, userAgent);
+            client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)

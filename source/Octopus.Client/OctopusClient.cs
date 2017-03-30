@@ -449,12 +449,7 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-
-            // Add the User-Agent information to the HTTP request so the server can use it if required using http://www.ietf.org/rfc/rfc2616.txt as a guide
-            // Note we are adding two headers so there's a common header for this information - the JavaScript client cannot change its User-Agent: https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
-            var userAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
-            webRequest.UserAgent = userAgent;
-            webRequest.Headers[ApiConstants.OctopusUserAgentHeaderName] = userAgent;
+            webRequest.UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
             
             if (webRequest.Method == "PUT")
             {

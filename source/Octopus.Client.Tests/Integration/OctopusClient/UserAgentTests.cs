@@ -16,9 +16,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             Get(TestRootPath, p =>
             {
                 var userAgentHeaderValue = Request.Headers["User-Agent"]?.FirstOrDefault();
-                var customUserAgentHeaderValue = Request.Headers[ApiConstants.OctopusUserAgentHeaderName]?.FirstOrDefault();
 
-                return Response.AsJson(new TestDto {UserAgentValue = userAgentHeaderValue, CustomUserAgentValue = customUserAgentHeaderValue})
+                return Response.AsJson(new TestDto {UserAgentValue = userAgentHeaderValue})
                     .WithStatusCode(HttpStatusCode.OK);
             });
         }
@@ -28,7 +27,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
-            response.CustomUserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
         }
 
 #if SYNC_CLIENT
@@ -38,14 +36,12 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
-            response.CustomUserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", $"We should set our custom {ApiConstants.OctopusUserAgentHeaderName} header");
         }
 #endif
 
         public class TestDto
         {
             public string UserAgentValue { get; set; }
-            public string CustomUserAgentValue { get; set; }
         }
     }
 }
