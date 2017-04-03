@@ -700,6 +700,7 @@ Octopus.Client.Model
     static System.String ApiKeyHttpHeaderName
     static System.String AuthenticationCookiePrefix
     static System.Int32 DefaultClientRequestTimeout
+    static System.String OctopusUserAgentProductName
     static System.String SupportedApiSchemaVersionMax
     static System.String SupportedApiSchemaVersionMin
     .ctor()
