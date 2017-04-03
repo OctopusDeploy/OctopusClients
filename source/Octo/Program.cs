@@ -20,7 +20,7 @@ namespace Octopus.Cli
 {
     public class Program
     {
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
 #if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
