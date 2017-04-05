@@ -50,7 +50,7 @@ namespace Octopus.Cli.Commands
                         var relativePath = UseCrossPlatformDirectorySeparator(
                             fullFilePath.Substring(basePathLength).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 
-                        log.Write(logLevel, "Added file: {relativePath}");
+                        log.Write(logLevel, $"Added file: {relativePath}");
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
                         entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTime);
