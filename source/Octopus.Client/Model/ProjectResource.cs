@@ -61,6 +61,15 @@ namespace Octopus.Client.Model
         public bool AutoCreateRelease { get; set; }
 
         /// <summary>
+        /// Treats releases of different channels to the same environment as a 
+        /// seperate deployment dimension. 'False' indicates a "hotfix"-style 
+        /// usage of channels (single release active per environment ignoring channels), 
+        /// whereas `True` indicates "microservice"-style usage (single release per environment per channel)
+        /// </summary>
+        [Writeable]
+        public bool DiscreteChannelRelease { get; set; }
+
+        /// <summary>
         /// Library variable sets included in the project. Sets are listed in order
         /// of precedence, with earlier items in the list overriding any variables
         /// with the same name and scope definition appearing later in the list.
