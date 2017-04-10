@@ -166,7 +166,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public event Action<HttpRequestMessage> BeforeSendingHttpRequest;
 
         /// <summary>
-        /// Occurs when a request is about to be sent.
+        /// Occurs when a response has been received.
         /// </summary>
         public event Action<HttpResponseMessage> AfterReceivedHttpResponse;
 

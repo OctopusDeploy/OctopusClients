@@ -11,6 +11,7 @@ Octopus.Client
     Octopus.Client.IOctopusClient
     IDisposable
   {
+    event Action<WebResponse> AfterReceivingHttpResponse
     event Action<WebRequest> BeforeSendingHttpRequest
   }
   interface ILinkResolver
@@ -166,6 +167,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncClient
     IDisposable
   {
+    event Action<HttpResponseMessage> AfterReceivedHttpResponse
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
@@ -243,6 +245,7 @@ Octopus.Client
     Octopus.Client.IOctopusClient
     IDisposable
   {
+    event Action<WebResponse> AfterReceivingHttpResponse
     event Action<WebRequest> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
