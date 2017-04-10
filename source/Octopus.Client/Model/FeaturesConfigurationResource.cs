@@ -7,7 +7,11 @@
 
         [Writeable]
         public bool IsDockerEnabled { get; set; }
+
         [Writeable]
         public bool IsCommunityActionTemplatesEnabled { get; set; }
+
+        [Writeable]
+        public bool IsBrowserCachingEnabled { get; set; }
     }
 }

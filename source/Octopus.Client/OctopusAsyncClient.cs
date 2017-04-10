@@ -166,6 +166,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public event Action<HttpRequestMessage> BeforeSendingHttpRequest;
 
         /// <summary>
+        /// Occurs when a response has been received.
+        /// </summary>
+        public event Action<HttpResponseMessage> AfterReceivedHttpResponse;
+
+        /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
         public event Action<OctopusRequest> SendingOctopusRequest;
@@ -527,15 +532,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     }
                 }
 
-                var requestHandler = SendingOctopusRequest;
-                requestHandler?.Invoke(request);
+                SendingOctopusRequest?.Invoke(request);
 
-                var webRequestHandler = BeforeSendingHttpRequest;
-                webRequestHandler?.Invoke(message);
+                BeforeSendingHttpRequest?.Invoke(message);
 
                 if (request.RequestResource != null)
                     message.Content = GetContent(request);
-                
+
                 var completionOption = readResponse
                     ? HttpCompletionOption.ResponseContentRead
                     : HttpCompletionOption.ResponseHeadersRead;
@@ -543,6 +546,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 {
                     using (var response = await client.SendAsync(message, completionOption).ConfigureAwait(false))
                     {
+                        AfterReceivedHttpResponse?.Invoke(response);
+
                         if (!response.IsSuccessStatusCode)
                             throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
 
