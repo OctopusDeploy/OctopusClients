@@ -21,6 +21,7 @@ Octopus.Client
   interface IOctopusAsyncClient
     IDisposable
   {
+    event Action<HttpResponseMessage> AfterReceivedHttpResponse
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
