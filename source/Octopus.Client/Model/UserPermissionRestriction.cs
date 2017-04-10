@@ -27,12 +27,20 @@ namespace Octopus.Client.Model
         /// </summary>
         public ReferenceCollection RestrictedToTenantIds { get; set; }
 
+        /// <summary>
+        /// Restrictions on the project groups to which the permission applies,
+        /// if any.
+        /// </summary>
+        public ReferenceCollection RestrictedToProjectGroupIds { get; set; }
 
         public static IEqualityComparer<UserPermissionRestriction> UserPermissionRestrictionComparer { get; } = new Comparer();
 
         public override string ToString()
         {
-            return "Projects: " + (RestrictedToProjectIds ?? new ReferenceCollection()) + "; " + "Environments: " + (RestrictedToEnvironmentIds ?? new ReferenceCollection()) + "; " + "Tenants: " + (RestrictedToTenantIds ?? new ReferenceCollection());
+            return "Projects: " + (RestrictedToProjectIds ?? new ReferenceCollection()) + "; " +
+                   "Environments: " + (RestrictedToEnvironmentIds ?? new ReferenceCollection()) + "; " +
+                   "Tenants: " + (RestrictedToTenantIds ?? new ReferenceCollection()) + "; " +
+                   "Project Groups: " + (RestrictedToProjectGroupIds ?? new ReferenceCollection());
         }
 
         public sealed class Comparer : IEqualityComparer<UserPermissionRestriction>
