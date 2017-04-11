@@ -22,6 +22,7 @@ namespace Octopus.Client.Repositories.Async
         Task<string> GetRawOutputLog(TaskResource resource);
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
+        Task ChangeState(TaskResource resource, TaskState newState, string reason);
         Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource);
         Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
         Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
@@ -147,9 +148,14 @@ namespace Octopus.Client.Repositories.Async
             return Client.Post(resource.Link("Cancel"), (TaskResource)null);
         }
 
+        public Task ChangeState(TaskResource resource, TaskState newState, string reason)
+        {
+            return Client.Post(resource.Link("State"), new { State = newState, Reason = reason });
+        }
+
         public Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource)
         {
-            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"));            
+            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"));
         }
 
         public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
