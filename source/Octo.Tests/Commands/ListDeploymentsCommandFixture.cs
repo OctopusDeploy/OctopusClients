@@ -42,6 +42,9 @@ namespace Octopus.Cli.Tests.Commands
                     },
                 }, new LinkCollection());
 
+            Repository.FeaturesConfiguration.GetFeaturesConfiguration()
+                .ReturnsForAnyArgs(new FeaturesConfigurationResource { });
+
             Repository.Deployments
                 .When(
                     x =>
