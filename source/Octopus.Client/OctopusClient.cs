@@ -85,6 +85,11 @@ namespace Octopus.Client
         public event Action<WebRequest> BeforeSendingHttpRequest;
 
         /// <summary>
+        /// Occurs when a response has been received.
+        /// </summary>
+        public event Action<WebResponse> AfterReceivingHttpResponse;
+
+        /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
         public event Action<OctopusRequest> SendingOctopusRequest;
@@ -475,13 +480,12 @@ namespace Octopus.Client
                 }
             }
 
-            var requestHandler = SendingOctopusRequest;
-            requestHandler?.Invoke(request);
+            SendingOctopusRequest?.Invoke(request);
 
-            var webRequestHandler = BeforeSendingHttpRequest;
-            webRequestHandler?.Invoke(webRequest);
+            BeforeSendingHttpRequest?.Invoke(webRequest);
 
             HttpWebResponse webResponse = null;
+
             try
             {
                 if (request.RequestResource == null) {
@@ -532,6 +536,7 @@ namespace Octopus.Client
                 }
 
                 webResponse = (HttpWebResponse)webRequest.GetResponse();
+                AfterReceivingHttpResponse?.Invoke(webResponse);
 
                 var resource = default(TResponseResource);
                 if (readResponse)

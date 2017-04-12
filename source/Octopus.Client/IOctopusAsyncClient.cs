@@ -48,6 +48,11 @@ namespace Octopus.Client
         event Action<HttpRequestMessage> BeforeSendingHttpRequest;
 
         /// <summary>
+        /// Occurs when a response has been received.
+        /// </summary>
+        event Action<HttpResponseMessage> AfterReceivedHttpResponse;
+
+        /// <summary>
         /// A simplified interface to commonly-used parts of the API.
         /// </summary>
         IOctopusAsyncRepository Repository { get; }
