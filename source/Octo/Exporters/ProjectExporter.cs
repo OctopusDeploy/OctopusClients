@@ -28,7 +28,7 @@ namespace Octopus.Cli.Exporters
         {
             if (string.IsNullOrWhiteSpace(parameters["Name"]))
             {
-                throw new CommandException("Please specify the name of the project to export using the paramater: --name=XYZ");
+                throw new CommandException("Please specify the name of the project to export using the parameter: --name=XYZ");
             }
 
             var projectName = parameters["Name"];
