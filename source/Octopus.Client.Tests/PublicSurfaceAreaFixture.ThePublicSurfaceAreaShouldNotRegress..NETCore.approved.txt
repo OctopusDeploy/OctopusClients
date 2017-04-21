@@ -3526,6 +3526,7 @@ Octopus.Client.Repositories.Async
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task<CertificateConfigurationResource> GetOctopusCertificate()
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
   }

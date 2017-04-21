@@ -37,6 +37,14 @@ namespace Octopus.Client.Repositories.Async
         /// Unarchive a certificate. This makes the certificate again available for selection as the value of a variable.
         /// </summary>
         Task UnArchive(CertificateResource certificate);
+
+        // For backwards compatibility.  
+        // The CertificateRepository was renamed to CertificateConfigurationRepository when the Certificates feature was 
+        // implemented. This method avoids breaking existing scripts and code.  
+        /// <summary>
+        /// Returns details of the certificate used by Octopus for communications.
+        /// </summary>
+        Task<CertificateConfigurationResource> GetOctopusCertificate();
     }
 
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
@@ -65,6 +73,11 @@ namespace Octopus.Client.Repositories.Async
         public Task UnArchive(CertificateResource certificate)
         {
             return Client.Post(certificate.Link("Unarchive"));
+        }
+
+        public Task<CertificateConfigurationResource> GetOctopusCertificate()
+        {
+            return Client.Repository.CertificateConfiguration.GetOctopusCertificate();
         }
     }
 }
