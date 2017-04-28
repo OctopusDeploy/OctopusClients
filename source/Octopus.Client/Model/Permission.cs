@@ -121,6 +121,8 @@ namespace Octopus.Client.Model
 
         [Description("Cancel server tasks")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskCancel,
 
+        [Description("Edit server tasks")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskEdit,
+
 
         [Description("View interruptions generated during deployments")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] InterruptionView,
 
