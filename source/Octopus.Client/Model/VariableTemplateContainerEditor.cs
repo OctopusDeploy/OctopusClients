@@ -48,7 +48,7 @@ namespace Octopus.Client.Model
                     Name = name,
                     Label = label,
                     DisplaySettings = displaySettings,
-                    DefaultValue = defaultValue,
+                    DefaultValue = new PropertyValueResource(defaultValue, IsSensitive(displaySettings)),
                     HelpText = helpText
                 };
 
@@ -59,38 +59,32 @@ namespace Octopus.Client.Model
                 existing.Name = name;
                 existing.Label = label;
                 existing.DisplaySettings = displaySettings;
-                existing.DefaultValue = defaultValue;
+                existing.DefaultValue = new PropertyValueResource(defaultValue, IsSensitive(displaySettings));
                 existing.HelpText = helpText;
             }
 
             return container;
         }
 
-        // ReSharper disable once StaticMemberInGenericType
-        private static readonly Dictionary<string, string> SingleLineTextTemplateDisplaySettings = new Dictionary<string, string>
+        bool IsSensitive(IDictionary<string, string> displaySettings)
         {
-            {"Octopus.ControlType", "SingleLineText"}
-        };
+            return displaySettings.Any(x => x.Key == ControlType.ControlTypeKey && x.Value == ControlType.Sensitive);
+        }
 
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly Dictionary<string, string> MultiLineTextTemplateDisplaySettings = new Dictionary<string, string>
-        {
-            {"Octopus.ControlType", "MultiLineText"}
-        };
+        static readonly Dictionary<string, string> SingleLineTextTemplateDisplaySettings = ControlType.AsDisplaySettings(ControlType.SingleLineText);
 
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly Dictionary<string, string> SensitiveTemplateDisplaySettings = new Dictionary<string, string>
-        {
-            {"Octopus.ControlType", "Sensitive"}
-        };
+        static readonly Dictionary<string, string> MultiLineTextTemplateDisplaySettings = ControlType.AsDisplaySettings(ControlType.MultiLineText);
 
-        private static Dictionary<string, string> BuildSelectTemplateDisplaySettings(IDictionary<string, string> options)
+        // ReSharper disable once StaticMemberInGenericType
+        static readonly Dictionary<string, string> SensitiveTemplateDisplaySettings = ControlType.AsDisplaySettings(ControlType.Sensitive);
+
+        static Dictionary<string, string> BuildSelectTemplateDisplaySettings(IDictionary<string, string> options)
         {
-            return new Dictionary<string, string>
-            {
-                {"Octopus.ControlType", "Select"},
-                {"Octopus.SelectOptions", string.Join(Environment.NewLine, options.Select(o => $"{o.Key}|{o.Value}"))}
-            };
+            var displaySetttings = ControlType.AsDisplaySettings(ControlType.Select);
+            displaySetttings["Octopus.SelectOptions"] = string.Join(Environment.NewLine, options.Select(o => $"{o.Key}|{o.Value}"));
+            return displaySetttings;
         }
 
         public TContainer AddOrUpdateSingleLineTextTemplate(string name, string label)

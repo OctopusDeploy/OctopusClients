@@ -28,5 +28,25 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public IDictionary<string, string> DisplaySettings { get; set; }
+
+        public bool IsCertificate()
+        {
+            return IsControlType(ControlType.Certificate);
+        }
+
+        public bool IsSensitive()
+        {
+            return IsControlType(ControlType.Sensitive);
+        }
+
+        public string GetControlType()
+        {
+            return DefaultValue != null && DisplaySettings.ContainsKey(ControlType.ControlTypeKey) ? DisplaySettings[ControlType.ControlTypeKey] : null;
+        }
+
+        public bool IsControlType(string controlType)
+        {
+            return GetControlType() == controlType;
+        }
     }
 }

@@ -600,6 +600,10 @@ Octopus.Client.Model
     String Id { get; set; }
     String Label { get; set; }
     String Name { get; set; }
+    String GetControlType()
+    Boolean IsCertificate()
+    Boolean IsControlType(String)
+    Boolean IsSensitive()
   }
   class ActionTemplateResource
     Octopus.Client.Model.IResource
@@ -1089,6 +1093,19 @@ Octopus.Client.Model
     .ctor()
     Boolean Equals(Octopus.Client.Model.UserPermissionRestriction, Octopus.Client.Model.UserPermissionRestriction)
     Int32 GetHashCode(Octopus.Client.Model.UserPermissionRestriction)
+  }
+  abstract class ControlType
+  {
+    static System.String AzureAccount
+    static System.String Certificate
+    static System.String Checkbox
+    static System.String ControlTypeKey
+    static System.String MultiLineText
+    static System.String Select
+    static System.String Sensitive
+    static System.String SingleLineText
+    static System.String StepName
+    static Dictionary<String, String> AsDisplaySettings(String)
   }
   class DashboardConfigurationResource
     Octopus.Client.Model.IResource
