@@ -174,7 +174,7 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException(
                     string.Format(
-                        "Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, b) the name is misspelled, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the lifecycle.",
+                        "Release '{0}' of project '{1}' cannot be deployed to {2} not in the list of environments that this release can be deployed to. This may be because a) the environment does not exist, is misspelled or the casing is not the same, b) The lifecycle has not reached this phase, possibly due to previous deployment failure, c) you don't have permission to deploy to this environment, or d) the environment is not in the list of environments defined by the lifecycle.",
                         release.Version,
                         project.Name,
                         unknownEnvironments.Count == 1
@@ -260,7 +260,7 @@ namespace Octopus.Cli.Commands
                     {
                         throw new CommandException(
                             string.Format(
-                                "Release '{0}' of project '{1}' cannot be deployed for tenant{2} {3} to environment '{4}'. This may be because a) the tenant{2} {5} not connected to this environment, a) The lifecycle has not reached this phase, b) the environment does not exist, b) the environment name is misspelled, c) you don't have permission to deploy to this environment, d) the environment is not in the list of environments defined by the lifecycle, or e) {6} unable to deploy to this channel.",
+                                "Release '{0}' of project '{1}' cannot be deployed for tenant{2} {3} to environment '{4}'. This may be because a) the tenant{2} {5} not connected to this environment, a) the environment does not exist, is misspelled or the casing is not the same, b) The lifecycle has not reached this phase, possibly due to previous deployment failure,  c) you don't have permission to deploy to this environment, d) the environment is not in the list of environments defined by the lifecycle, or e) {6} unable to deploy to this channel.",
                                 release.Version,
                                 project.Name,
                                 unDeployableTenants.Count == 1 ? "" : "s",

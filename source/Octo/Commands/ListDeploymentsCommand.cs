@@ -7,11 +7,12 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 using Serilog;
 
 namespace Octopus.Cli.Commands
 {
-    [Command("list-deployments", Description = "List a number of releases deployments by project or by environment")]
+    [Command("list-deployments", Description = "List a number of deployments by project, environment or by tenant")]
     public class ListDeploymentsCommand : ApiCommand
     {
         const int DefaultReturnAmount = 30;
@@ -25,9 +26,9 @@ namespace Octopus.Cli.Commands
             : base(clientFactory, repositoryFactory, log, fileSystem)
         {
             var options = Options.For("Listing");
-            options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
-            options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
-            options.Add("tenant=", "Name of a tenant to filter by. Can be specified many times.", v => tenants.Add(v));
+            options.Add("project=", "[Optional] Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
+            options.Add("environment=", "[Optional] Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
+            options.Add("tenant=", "[Optional] Name of a tenant to filter by. Can be specified many times.", v => tenants.Add(v));
             options.Add("number=", $"[Optional] number of results to return, default is {DefaultReturnAmount}", v => numberOfResults = int.Parse(v));
         }
 
@@ -39,8 +40,14 @@ namespace Octopus.Cli.Commands
             var environmentsById = await LoadEnvironments();
             var environmentsFilter = environmentsById.Keys.ToArray();
 
-            var tenantsById = await LoadTenants();
-            var tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
+            var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
+            var tenantsFilter = new string[0];
+            IDictionary<string, string> tenantsById = new Dictionary<string, string>();
+            if (features.IsMultiTenancyEnabled)
+            {
+                tenantsById = await LoadTenants();
+                tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
+            }
 
             Log.Debug("Loading deployments...");
             var deploymentResources = new List<DeploymentResource>();

@@ -39,6 +39,12 @@ namespace Octopus.Client.Model
         public ReferenceCollection UserRoleIds { get; set; }
 
         /// <summary>
+        /// The project groups that the team can exercise its roles for. Includes all projects in the groups.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection ProjectGroupIds { get; set; }
+        
+        /// <summary>
         /// The projects that the team can exercise its roles in. If empty,
         /// the team can exercise its roles in all projects.
         /// </summary>
