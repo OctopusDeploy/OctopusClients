@@ -4228,7 +4228,6 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICreate<TaskResource>
   {
     void Cancel(Octopus.Client.Model.TaskResource)
-    void ChangeState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
     Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String)
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
@@ -4240,6 +4239,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     String GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    void ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     void Rerun(Octopus.Client.Model.TaskResource)
     void WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
     void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
@@ -4668,7 +4668,6 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICreate<TaskResource>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
-    Task ChangeState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
     Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String)
     Task<TaskResource> ExecuteBackup(String)
@@ -4680,6 +4679,7 @@ Octopus.Client.Repositories.Async
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    Task ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     Task Rerun(Octopus.Client.Model.TaskResource)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
