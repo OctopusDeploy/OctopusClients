@@ -728,7 +728,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.ProjectEditor Customize(Action<ProjectResource>)
     Octopus.Client.Editors.Async.ProjectEditor IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
     Task<ProjectEditor> Save()
-    Octopus.Client.Editors.Async.ProjectEditor SetLogo(String)
+    Task<ProjectEditor> SetLogo(String)
   }
   class ProjectGroupEditor
     Octopus.Client.Editors.Async.IResourceEditor<ProjectGroupResource, ProjectGroupEditor>
@@ -795,7 +795,7 @@ Octopus.Client.Editors.Async
     Task<TenantEditor> CreateOrModify(String)
     Octopus.Client.Editors.Async.TenantEditor Customize(Action<TenantResource>)
     Task<TenantEditor> Save()
-    Octopus.Client.Editors.Async.TenantEditor SetLogo(String)
+    Task<TenantEditor> SetLogo(String)
     Octopus.Client.Editors.Async.TenantEditor WithTag(Octopus.Client.Model.TagResource)
   }
   class TenantVariablesEditor

@@ -40,11 +40,11 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public TenantEditor SetLogo(string logoFilePath)
+        public async Task<TenantEditor> SetLogo(string logoFilePath)
         {
             using (var stream = new FileStream(logoFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream);
+                await repository.SetLogo(Instance, Path.GetFileName(logoFilePath), stream).ConfigureAwait(false);
             }
 
             return this;
