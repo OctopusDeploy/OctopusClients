@@ -2108,8 +2108,8 @@ Octopus.Client.Model
     Boolean Blocked { get; set; }
     List<PhaseDeploymentResource> Deployments { get; set; }
     String Id { get; set; }
-    Boolean IsOptionalPhase { get; set; }
     Int32 MinimumEnvironmentsBeforePromotion { get; set; }
+    Boolean IsOptionalPhase { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection OptionalDeploymentTargets { get; set; }
     Octopus.Client.Model.PhaseProgress Progress { get; set; }
