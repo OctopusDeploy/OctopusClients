@@ -10,6 +10,7 @@ namespace Octopus.Client.Model
         {
             ActionIdsByProcessId = new Dictionary<string, string[]>();
             DefaultPropertyValues = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+            Overrides = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
             Links = new LinkCollection();
         }
 
@@ -19,6 +20,7 @@ namespace Octopus.Client.Model
         [Required]
         public IDictionary<string, string[]> ActionIdsByProcessId { get; set; }
         public IDictionary<string, PropertyValueResource> DefaultPropertyValues { get; set; }
+        public IDictionary<string, PropertyValueResource> Overrides { get; set; }
         public LinkCollection Links { get; set; }
     }
 }

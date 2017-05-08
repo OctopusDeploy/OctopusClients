@@ -981,6 +981,7 @@ Octopus.Client.Model
     IDictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
     String Id { get; set; }
     Octopus.Client.Model.LinkCollection Links { get; set; }
+    IDictionary<String, PropertyValueResource> Overrides { get; set; }
     Int32 Version { get; set; }
   }
   class ActionTemplateParameterResource
