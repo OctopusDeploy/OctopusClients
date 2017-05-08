@@ -555,7 +555,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                             ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
                             : default(TResponseResource);
 
-                        var locationHeader = response.Headers.Location?.ToString();
+                        var locationHeader = response.Headers.Location?.OriginalString;
                         var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
                             locationHeader, resource);
                         ReceivedOctopusResponse?.Invoke(octopusResponse);
