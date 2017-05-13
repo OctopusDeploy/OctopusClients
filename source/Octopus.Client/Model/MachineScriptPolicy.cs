@@ -5,6 +5,7 @@ namespace Octopus.Client.Model
     {
         InheritFromDefault = 0,
         Inline,
+        OnlyConnectivity
     }
 
     public class MachineScriptPolicy
