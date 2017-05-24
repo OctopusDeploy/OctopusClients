@@ -22,7 +22,7 @@ namespace Octopus.Cli.Commands
                     p.PackageId,
                     p.FeedId,
                     p.IsResolvable,
-                    versionResolver.ResolveVersion(p.StepName) ?? versionResolver.ResolveVersion(p.PackageId)))
+                    versionResolver.ResolveVersion(p.StepName, p.PackageId)))
                 .ToArray();
         }
 
