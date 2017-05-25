@@ -8,6 +8,6 @@ namespace Octopus.Cli.Commands
         void Add(string stepNameAndVersion);
         void Add(string stepName, string packageVersion);
         void Default(string packageVersion);
-        string ResolveVersion(params string[] stepNameOrPackageIds);
+        string ResolveVersion(string stepName, string packageId);
     }
 }

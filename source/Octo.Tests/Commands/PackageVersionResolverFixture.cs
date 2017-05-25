@@ -32,8 +32,8 @@ namespace Octopus.Cli.Tests.Commands
             resolver.Add("PackageA", "1.0.0");
             resolver.Add("PackageB", "1.1.0");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("PackageB"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -42,8 +42,8 @@ namespace Octopus.Cli.Tests.Commands
             resolver.Add("PackageA", "1.0.0");
             resolver.Add("packageA", "1.1.0");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("1.1.0"));
-            Assert.That(resolver.ResolveVersion("packagea"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "packagea"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace Octopus.Cli.Tests.Commands
             resolver.Add("PackageA", "1.1.0");
             resolver.Add("PackageA", "0.9.0");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace Octopus.Cli.Tests.Commands
         {
             resolver.Add("PackageA", "1.0.0");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("PackageZ"), Is.Null);
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageZ"), Is.Null);
         }
 
         [Test]
@@ -70,9 +70,9 @@ namespace Octopus.Cli.Tests.Commands
         {
             resolver.Default("2.91.0");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("2.91.0"));
-            Assert.That(resolver.ResolveVersion("PackageB"), Is.EqualTo("2.91.0"));
-            Assert.That(resolver.ResolveVersion("PackageC"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageC"), Is.EqualTo("2.91.0"));
         }
 
         [Test]
@@ -82,8 +82,8 @@ namespace Octopus.Cli.Tests.Commands
             resolver.Add("PackageB:1.0.0-alpha1");
             resolver.Add("PackageB=1.0.0-alpha1");
 
-            Assert.That(resolver.ResolveVersion("PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("PackageB"), Is.EqualTo("1.0.0-alpha1"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB"), Is.EqualTo("1.0.0-alpha1"));
         }
 
         [Test]
@@ -104,18 +104,17 @@ namespace Octopus.Cli.Tests.Commands
             resolver.Default("1.0.0");
             resolver.Add("StepName", "1.1.0");
             resolver.Add("PackageId", "1.2.0");
-
-            Assert.That(resolver.ResolveVersion("StepName"), Is.EqualTo("1.1.0"));
             Assert.That(resolver.ResolveVersion("StepName", "PackageId"), Is.EqualTo("1.1.0"));
         }
+
 
         [Test]
         public void ShouldPreferPackageIdToDefault()
         {
             resolver.Default("1.0.0");
+            resolver.Add("OtherStep", "1.1.0");
             resolver.Add("PackageId", "1.2.0");
 
-            Assert.That(resolver.ResolveVersion("StepName"), Is.EqualTo("1.0.0"));
             Assert.That(resolver.ResolveVersion("StepName", "PackageId"), Is.EqualTo("1.2.0"));
         }
 
@@ -168,7 +167,7 @@ namespace Octopus.Cli.Tests.Commands
 
             resolver.AddFolder(Path.GetDirectoryName(filename));
 
-            var result = resolver.ResolveVersion(expectedPackageId);
+            var result = resolver.ResolveVersion("SomeStep", expectedPackageId);
             if (canParse)
                 result.Should().Be(expectedVersion);
             else

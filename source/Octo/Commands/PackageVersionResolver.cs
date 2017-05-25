@@ -111,14 +111,15 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        public string ResolveVersion(params string[] stepNameOrPackageIds)
+        public string ResolveVersion(string stepName, string packageId)
         {
-            foreach (string stepNameOrPackageId in stepNameOrPackageIds)
-            {
-                string version;
-                if (stepNameToVersion.TryGetValue(stepNameOrPackageId, out version))
-                    return version;
-            }
+             string version;
+             if (stepNameToVersion.TryGetValue(stepName, out version))
+                 return version;
+           
+             if (stepNameToVersion.TryGetValue(packageId, out version))
+                 return version;
+           
             return defaultVersion;
         }
 
