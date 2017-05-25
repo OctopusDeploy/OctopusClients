@@ -1,5 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/kbtxml9x2kcdgkju?svg=true)](https://ci.appveyor.com/project/OctopusDeploy/octo-exe)
-
 This repository contains the command line tool (`Octo.exe`) and .NET Client Library (`Octopus.Client`) for [Octopus Deploy][1], an automated deployment server for professional .NET developers. You can use them to create and deploy releases, create and push packages, and manage environments.
 
 `Octo.exe` can be [downloaded from the Octopus downloads page][2], while `Octopus.Client` is [available on nuget.org][3]
