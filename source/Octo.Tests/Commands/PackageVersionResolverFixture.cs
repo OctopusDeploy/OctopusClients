@@ -98,6 +98,27 @@ namespace Octopus.Cli.Tests.Commands
             Assert.Throws<CommandException>(() => resolver.Add("PackageA=1.FRED.9"));
         }
 
+        [Test]
+        public void ShouldPreferStepNameToPackageId()
+        {
+            resolver.Default("1.0.0");
+            resolver.Add("StepName", "1.1.0");
+            resolver.Add("PackageId", "1.2.0");
+
+            Assert.That(resolver.ResolveVersion("StepName"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("StepName", "PackageId"), Is.EqualTo("1.1.0"));
+        }
+
+        [Test]
+        public void ShouldPreferPackageIdToDefault()
+        {
+            resolver.Default("1.0.0");
+            resolver.Add("PackageId", "1.2.0");
+
+            Assert.That(resolver.ResolveVersion("StepName"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("StepName", "PackageId"), Is.EqualTo("1.2.0"));
+        }
+
 
         public static IEnumerable<TestCaseData> CanParseIdAndVersionData()
         {
