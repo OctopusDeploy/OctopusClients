@@ -1466,6 +1466,7 @@ Octopus.Client.Model
   class EventNotificationSubscriptionFilter
   {
     .ctor()
+    IList<String> DocumentTypes { get; set; }
     IList<String> Environments { get; set; }
     IList<String> EventCategories { get; set; }
     IList<String> EventGroups { get; set; }
@@ -3626,7 +3627,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>)
+    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
   }
   interface IFeaturesConfigurationRepository
   {

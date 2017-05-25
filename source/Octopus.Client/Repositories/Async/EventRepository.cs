@@ -27,7 +27,8 @@ namespace Octopus.Client.Repositories.Async
             string tenants = null,
             string tags = null,
             long? fromAutoId = null,
-            long? toAutoId = null);
+            long? toAutoId = null,
+            string documentTypes = null);
     }
 
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -67,7 +68,8 @@ namespace Octopus.Client.Repositories.Async
             string tenants = null,
             string tags = null,
             long? fromAutoId = null,
-            long? toAutoId = null)
+            long? toAutoId = null,
+            string documentTypes = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -86,7 +88,8 @@ namespace Octopus.Client.Repositories.Async
                 tenants = tenants,
                 tags = tags,
                 fromAutoId = fromAutoId,
-                toAutoId = toAutoId
+                toAutoId = toAutoId,
+                documentTypes = documentTypes
             });
         }
     }
