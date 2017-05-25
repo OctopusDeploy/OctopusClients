@@ -46,6 +46,7 @@ namespace Octopus.Client.Model
             this.EventCategories = new List<string>();
             this.Tenants = new List<string>();
             this.Tags = new List<string>();
+            this.DocumentTypes = new List<string>();
         }
 
         public IList<string> Users { get; set; }
@@ -55,5 +56,6 @@ namespace Octopus.Client.Model
         public IList<string> EventCategories { get; set; }
         public IList<string> Tenants { get; set; }
         public IList<string> Tags { get; set; }
+        public IList<string> DocumentTypes { get; set; }
     }
 }
