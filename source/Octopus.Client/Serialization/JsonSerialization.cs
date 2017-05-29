@@ -33,5 +33,15 @@ namespace Octopus.Client.Serialization
                 }
             };
         }
+
+        /// <summary>
+        /// Serializes the object using the default Octopus.Client serializer
+        /// </summary>
+        public static string SerializeObject(object obj) => JsonConvert.SerializeObject(obj, GetDefaultSerializerSettings());
+
+        /// <summary>
+        /// Deserializes the object using the default Octopus.Client serializer
+        /// </summary>
+        public static T DeserializeObject<T>(string value) => JsonConvert.DeserializeObject<T>(value, GetDefaultSerializerSettings());
     }
 }
