@@ -4800,7 +4800,9 @@ Octopus.Client.Serialization
   }
   abstract class JsonSerialization
   {
+    static Octopus.Client.Serialization.T DeserializeObject(String)
     static JsonSerializerSettings GetDefaultSerializerSettings()
+    static String SerializeObject(Object)
   }
   class TriggerActionConverter
   {
