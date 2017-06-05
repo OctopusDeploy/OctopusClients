@@ -6,17 +6,23 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Octopus.Client</AssemblyName>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <RuntimeFrameworkVersion>1.6.1</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>Octopus.Client</PackageId>
+    <Authors>Octopus Deploy</Authors>
+    <Copyright>Octopus Deploy Pty Ltd</Copyright>
     <PackageIconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</PackageIconUrl>
     <PackageProjectUrl>http://octopusdeploy.com/</PackageProjectUrl>
     <PackageLicenseUrl>http://octopusdeploy.com/pricing</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/OctopusDeploy/OctopusClients</RepositoryUrl>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <RuntimeFrameworkVersion>1.6.1</RuntimeFrameworkVersion>
-  </PropertyGroup>
+    <Description>Octopus Deploy is a user-friendly automated deployment tool for .NET developers.
 
- 
+This package contains the client library for the HTTP API in Octopus.</Description>
+  </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <DefineConstants>$(DefineConstants);SYNC_CLIENT</DefineConstants>
