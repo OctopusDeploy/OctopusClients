@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.DotNet.Tools.Test;
 using Nancy;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;

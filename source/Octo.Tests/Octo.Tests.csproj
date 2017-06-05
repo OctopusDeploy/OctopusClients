@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.0;net452</TargetFrameworks>
+    <AssemblyName>Octo.Tests</AssemblyName>
+    <PackageId>Octo.Tests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <DefineConstants>$(DefineConstants);HAS_APP_CONTEXT</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <RuntimeIdentifier>win7-x86</RuntimeIdentifier> <!-- So that libuv is copied correctly -->
+    <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-- So that libuv is copied correctly -->
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Octopus.Client\Octopus.Client.csproj" />
+    <ProjectReference Include="..\Octo\Octo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.Sinks.TextWriter" Version="2.0.0" />
+    <PackageReference Include="NSubstitute" Version="2.0.3" />
+    <PackageReference Include="FluentAssertions" Version="4.15.0" />
+    <PackageReference Include="Nancy" Version="2.0.0-barneyrubble" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="1.0.3" />
+    <PackageReference Include="Libuv" Version="1.9.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="Commands\Resources\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+
+</Project>
