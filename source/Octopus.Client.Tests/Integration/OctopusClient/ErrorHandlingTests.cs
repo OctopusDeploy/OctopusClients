@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public async Task ShouldHandleValidationError()
+        public void ShouldHandleValidationError()
         {
             Func<Task> post = async () => { await AsyncClient.Post("~/"); };
             post.ShouldThrow<OctopusValidationException>()
