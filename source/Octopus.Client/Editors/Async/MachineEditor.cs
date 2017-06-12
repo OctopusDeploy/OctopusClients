@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
+using Octopus.Client.Model.Tenants;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
@@ -54,9 +55,16 @@ namespace Octopus.Client.Editors.Async
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags, 
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
+
+            var tenantedDeploymentParticipationNonNull =
+                tenantedDeploymentParticipation ?? (tenants.Any() || tenantTags.Any()
+                    ? TenantedDeploymentParticipation.IncludedInTenanted
+                    : TenantedDeploymentParticipation.Excluded);
+
             if (existing == null)
             {
                 Instance = await repository.Create(new MachineResource
@@ -66,7 +74,8 @@ namespace Octopus.Client.Editors.Async
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
-                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName))
+                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName)),
+                    TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull
                 }).ConfigureAwait(false);
             }
             else
@@ -77,6 +86,12 @@ namespace Octopus.Client.Editors.Async
                 existing.Roles.ReplaceAll(roles);
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
+
+                // Don't overwrite a TenantedDeploymentParticipation that has been explicitly set to IncludedAlways with a defaulted value
+                if (tenantedDeploymentParticipation.HasValue || existing.TenantedDeploymentParticipation != TenantedDeploymentParticipation.IncludedAlways)
+                {
+                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull;
+                }
 
                 Instance = await repository.Modify(existing).ConfigureAwait(false);
             }

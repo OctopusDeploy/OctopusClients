@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Newtonsoft.Json;
+using Octopus.Client.Model.Tenants;
 
 namespace Octopus.Client.Model
 {
@@ -42,6 +44,35 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; }
+
+        // Nullable backing-field is to support backwards-compatibility
+        TenantedDeploymentParticipation? tenantedDeploymentParticipation;
+
+        [Writeable]
+        public TenantedDeploymentParticipation TenantedDeploymentParticipation
+        {
+            get
+            {
+                if (tenantedDeploymentParticipation.HasValue)
+                    return tenantedDeploymentParticipation.Value;
+
+                // Responses from server versions before TenantedDeploymentParticipation was implemented will default
+                // to pre-existing behaviour 
+                return TenantIds.Any() || TenantTags.Any()
+                    ? TenantedDeploymentParticipation.IncludedInTenanted
+                    : TenantedDeploymentParticipation.Excluded;
+            }
+            set
+            {
+                tenantedDeploymentParticipation = value;
+
+                if (value == TenantedDeploymentParticipation.Excluded)
+                {
+                    TenantIds.Clear();
+                    TenantTags.Clear();
+                }
+            }
+        }
 
         [Writeable]
         public ReferenceCollection TenantIds { get; set; }

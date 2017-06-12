@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
+using Octopus.Client.Model.Tenants;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
@@ -53,9 +54,16 @@ namespace Octopus.Client.Editors
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags,
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation = null)
         {
             var existing = repository.FindByName(name);
+
+            var tenantedDeploymentParticipationNonNull =
+                tenantedDeploymentParticipation ?? (tenants.Any() || tenantTags.Any()
+                    ? TenantedDeploymentParticipation.IncludedInTenanted
+                    : TenantedDeploymentParticipation.Excluded);
+
             if (existing == null)
             {
                 Instance = repository.Create(new MachineResource
@@ -65,7 +73,8 @@ namespace Octopus.Client.Editors
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
-                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName))
+                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName)),
+                    TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull
                 });
             }
             else
@@ -76,6 +85,12 @@ namespace Octopus.Client.Editors
                 existing.Roles.ReplaceAll(roles);
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
+
+                // Don't overwrite a TenantedDeploymentParticipation that has been explicitly set to IncludedAlways with a defaulted value
+                if (tenantedDeploymentParticipation.HasValue || existing.TenantedDeploymentParticipation != TenantedDeploymentParticipation.IncludedAlways)
+                {
+                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull;
+                }
 
                 Instance = repository.Modify(existing);
             }

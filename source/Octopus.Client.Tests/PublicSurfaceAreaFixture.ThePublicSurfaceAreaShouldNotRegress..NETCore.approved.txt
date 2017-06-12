@@ -319,7 +319,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IMachineRepository)
     Octopus.Client.Model.MachineResource Instance { get; }
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[])
+    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentParticipation>)
     Octopus.Client.Editors.Async.MachineEditor Customize(Action<MachineResource>)
     Task<MachineEditor> Save()
   }
@@ -1025,6 +1025,7 @@ Octopus.Client.Model
     String SubjectCommonName { get; }
     String SubjectDistinguishedName { get; }
     String SubjectOrganization { get; }
+    Octopus.Client.Model.Tenants.TenantedDeploymentParticipation TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     String Thumbprint { get; }
@@ -1830,6 +1831,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
+    Octopus.Client.Model.Tenants.TenantedDeploymentParticipation TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     String Thumbprint { get; set; }
@@ -3046,6 +3048,7 @@ Octopus.Client.Model.Accounts
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.Tenants.TenantedDeploymentParticipation TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
   }
@@ -3328,6 +3331,15 @@ Octopus.Client.Model.Forms
     String Name { get; }
     Object CoerceValue(String)
     Type GetNativeValueType()
+  }
+}
+Octopus.Client.Model.Tenants
+{
+  TenantedDeploymentParticipation
+  {
+      Excluded = 0
+      IncludedInTenanted = 1
+      IncludedAlways = 2
   }
 }
 Octopus.Client.Model.Triggers
