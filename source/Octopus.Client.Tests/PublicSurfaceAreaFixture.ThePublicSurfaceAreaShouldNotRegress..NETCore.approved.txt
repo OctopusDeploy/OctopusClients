@@ -3736,7 +3736,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<MachineResource>
     Octopus.Client.Repositories.Async.IDelete<MachineResource>
   {
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[])
+    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentParticipation>)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
     Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
     Task<List<MachineResource>> FindByThumbprint(String)

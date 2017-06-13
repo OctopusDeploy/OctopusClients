@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
+using Octopus.Client.Model.Tenants;
 
 namespace Octopus.Client.Repositories
 {
@@ -19,7 +20,8 @@ namespace Octopus.Client.Repositories
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags);
+            TagResource[] tenantTags,
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation);
 
         MachineEditor CreateOrModify(
             string name,
@@ -63,9 +65,10 @@ namespace Octopus.Client.Repositories
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags,
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags);
+            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
         }
 
         public MachineEditor CreateOrModify(

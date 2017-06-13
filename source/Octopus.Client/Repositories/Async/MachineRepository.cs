@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
+using Octopus.Client.Model.Tenants;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -20,7 +21,8 @@ namespace Octopus.Client.Repositories.Async
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags);
+            TagResource[] tenantTags,
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation);
 
         Task<MachineEditor> CreateOrModify(
             string name,
@@ -64,9 +66,10 @@ namespace Octopus.Client.Repositories.Async
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags,
+            TenantedDeploymentParticipation? tenantedDeploymentParticipation)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags);
+            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
         }
 
         public Task<MachineEditor> CreateOrModify(
