@@ -1,19 +1,19 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octo", "Octo\Octo.xproj", "{D1BFD88F-FB8E-49EC-968F-F4D9A8A52519}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octo.Tests", "Octo.Tests\Octo.Tests.xproj", "{B05E3858-5607-46DB-876C-4E1F5728A4BB}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octopus.Client", "Octopus.Client\Octopus.Client.xproj", "{B22C7BE1-DDBB-4721-8C16-3CBA1F365B3D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Octopus.Client.Tests", "Octopus.Client.Tests\Octopus.Client.Tests.xproj", "{DE6C675D-64B0-4CA5-A6B0-BEE4E0E9A1B8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{193F466A-BECE-4809-A369-7CC061C31C82}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet.Config = NuGet.Config
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octo", "Octo\Octo.csproj", "{D1BFD88F-FB8E-49EC-968F-F4D9A8A52519}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octo.Tests", "Octo.Tests\Octo.Tests.csproj", "{B05E3858-5607-46DB-876C-4E1F5728A4BB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopus.Client", "Octopus.Client\Octopus.Client.csproj", "{B22C7BE1-DDBB-4721-8C16-3CBA1F365B3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopus.Client.Tests", "Octopus.Client.Tests\Octopus.Client.Tests.csproj", "{DE6C675D-64B0-4CA5-A6B0-BEE4E0E9A1B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3874,8 +3874,10 @@ Octopus.Client.Operations
     String TentacleThumbprint { get; set; }
     void Execute(Octopus.Client.OctopusServerEndpoint)
     void Execute(Octopus.Client.OctopusRepository)
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
   class RegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperation
@@ -3896,8 +3898,10 @@ Octopus.Client.Operations
     String TentacleThumbprint { get; set; }
     void Execute(Octopus.Client.OctopusServerEndpoint)
     void Execute(Octopus.Client.OctopusRepository)
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
 }
 Octopus.Client.Repositories

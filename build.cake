@@ -1,18 +1,14 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0007"
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0011"
 #tool "nuget:?package=ILRepack&version=2.0.11"
-#addin "nuget:?package=Newtonsoft.Json&version=9.0.1"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
 
-using Path = System.IO.Path;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using IO = System.IO;
 using SharpCompress;
 using SharpCompress.Common;
 using SharpCompress.Writer;
+using System.Xml;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -28,50 +24,34 @@ var artifactsDir = "./artifacts";
 var assetDir = "./BuildAssets";
 var localPackagesDir = "../LocalPackages";
 var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
-var projectToPublish = "./source/Octo";
-var projectToPublishProjectJson = Path.Combine(projectToPublish, "project.json");
+var projectToPublish = "./source/Octo/Octo.csproj";
 var octopusClientFolder = "./source/Octopus.Client";
-var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
-var octoPublishFolder = Path.Combine(publishDir, "Octo");
-var octoMergedFolder = Path.Combine(publishDir, "OctoMerged");
-var cleanups = new List<Action>(); 
+var octoPublishFolder = $"{publishDir}/Octo";
+var octoMergedFolder =  $"{publishDir}/OctoMerged";
 
-var gitVersionInfo = GitVersion(new GitVersionSettings {
-    OutputType = GitVersionOutput.Json
-});
+GitVersion gitVersionInfo;
+string nugetVersion;
 
-var nugetVersion = gitVersionInfo.NuGetVersion;
-var runtimes = new[] {
-    "win7-x86", 
-    "osx.10.10-x64",
-    "ubuntu.14.04-x64",
-    "ubuntu.16.04-x64",
-    "rhel.7-x64",
-    "debian.8-x64",
-    "fedora.23-x64",
-    "opensuse.13.2-x64",
-    "linuxmint.17-x64",
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
+     gitVersionInfo = GitVersion(new GitVersionSettings {
+        OutputType = GitVersionOutput.Json
+    });
+    nugetVersion = gitVersionInfo.NuGetVersion;
+
     if(BuildSystem.IsRunningOnTeamCity)
-        BuildSystem.TeamCity.SetBuildNumber(gitVersionInfo.NuGetVersion);
-    if(BuildSystem.IsRunningOnAppVeyor)
-        AppVeyor.UpdateBuildVersion(gitVersionInfo.NuGetVersion);
+        BuildSystem.TeamCity.SetBuildNumber(nugetVersion);
 
     Information("Building OctopusClients v{0}", nugetVersion);
+    Information("Informational Version {0}", gitVersionInfo.InformationalVersion);
 });
 
 Teardown(context =>
 {
-    Information("Cleaning up");
-    foreach(var cleanup in cleanups)
-        cleanup();
-
     Information("Finished running tasks for build v{0}", nugetVersion);
 });
 
@@ -79,66 +59,51 @@ Teardown(context =>
 //  PRIVATE TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("__Default")
-    .IsDependentOn("__Clean")
-    .IsDependentOn("__Restore")
-    .IsDependentOn("__Build")
-    .IsDependentOn("__Test")
-    .IsDependentOn("__UpdateProjectJsonVersion")
-    .IsDependentOn("__Publish")
-    .IsDependentOn("__Zip")
-    .IsDependentOn("__PackNuget")
-    .IsDependentOn("__CopyToLocalPackages");
-
-Task("__Clean")
+Task("Clean")
     .Does(() =>
 {
     CleanDirectory(artifactsDir);
     CleanDirectory(publishDir);
     CleanDirectories("./source/**/bin");
     CleanDirectories("./source/**/obj");
+    CleanDirectories("./source/**/TestResults");
 });
 
-Task("__Restore")
-    .Does(() => DotNetCoreRestore());
+Task("Restore")
+    .IsDependentOn("Clean")
+    .Does(() => DotNetCoreRestore("source"));
 
-Task("__Build")
-    .IsDependentOn("__UpdateProjectJsonVersion")
+Task("Build")
+    .IsDependentOn("Restore")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreBuild("**/project.json", new DotNetCoreBuildSettings
+    DotNetCoreBuild("./source", new DotNetCoreBuildSettings
     {
-        Configuration = configuration
+        Configuration = configuration,
+        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
 });
 
-Task("__Test")
+Task("Test")
+    .IsDependentOn("Build")
     .Does(() =>
-{
-    GetFiles("**/*Tests/project.json")
-        .ToList()
-        .ForEach(testProjectFile => 
-        {
-            DotNetCoreTest(testProjectFile.ToString(), new DotNetCoreTestSettings
-            {
-                Configuration = configuration,
-                WorkingDirectory = Path.GetDirectoryName(testProjectFile.ToString())
-            });
-        });
-});
-
-Task("__UpdateProjectJsonVersion")
-    .Does(() =>
-{
-    foreach(var projectJson in GetFiles("**/project.json").Select(p => p.FullPath))
     {
-        RestoreFileOnCleanup(projectJson);
-        Information("Updating {0} version -> {1}", projectJson, nugetVersion);
-        ModifyJson(projectJson, json => json["version"] = nugetVersion);
-    }
-});
+        GetFiles("**/**/*Tests.csproj")
+            .ToList()
+            .ForEach(testProjectFile => 
+            {
+                DotNetCoreTest(testProjectFile.FullPath, new DotNetCoreTestSettings
+                {
+                    Configuration = configuration,
+                    NoBuild = true,
+                    ArgumentCustomization = args => args.Append("-l trx")
+                });
+            });
+    });
 
-Task("__Publish")
+Task("DotnetPublish")
+    .IsDependentOn("Test")
     .Does(() =>
 {
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
@@ -148,79 +113,33 @@ Task("__Publish")
         OutputDirectory = $"{octoPublishFolder}/netfx"
     });
 
-    var portablePublishDir = Path.Combine(octoPublishFolder, "portable");
+    var portablePublishDir =  $"{octoPublishFolder}/portable";
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
         Framework = "netcoreapp1.0",
         Configuration = configuration,
         OutputDirectory = portablePublishDir
     });
-    CopyFileToDirectory(Path.Combine(assetDir, "Octo"), portablePublishDir);
-    CopyFileToDirectory(Path.Combine(assetDir, "Octo.cmd"), portablePublishDir);
+    CopyFileToDirectory($"{assetDir}/Octo", portablePublishDir);
+    CopyFileToDirectory($"{assetDir}/Octo.cmd", portablePublishDir);
 
-    ConvertToJsonOutput(projectToPublishProjectJson);
-    DotNetCoreRestore();
-
-    foreach(var runtime in runtimes)
+    var doc = new XmlDocument();
+    doc.Load(@".\source\Octo\Octo.csproj");
+    var rids = doc.SelectSingleNode("Project/PropertyGroup/RuntimeIdentifiers").InnerText;
+    foreach (var rid in rids.Split(';'))
+    {
         DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
         {
             Framework = "netcoreapp1.0",
             Configuration = configuration,
-            Runtime = runtime,
-            OutputDirectory = Path.Combine(octoPublishFolder, runtime)
+            Runtime = rid,
+            OutputDirectory = $"{octoPublishFolder}/{rid}"
         });
+    }
 });
 
-private void ConvertToJsonOutput(string projectJson)
-{
-    ModifyJson(projectJson, json => {
-        var deps = (JObject)json["frameworks"]["netcoreapp1.0"]["dependencies"];
-        deps.Remove("Microsoft.NETCore.App");
-        deps["Microsoft.NETCore.Runtime.CoreCLR"] = new JValue("1.0.4");
-        deps["Microsoft.NETCore.DotNetHostPolicy"] = new JValue("1.0.1");
-        json["runtimes"] = new JObject();
-        foreach (var runtime in runtimes)
-            json["runtimes"][runtime] = new JObject();
-    });
-}
-
-private void ModifyJson(string jsonFile, Action<JObject> modify)
-{
-    var json = JsonConvert.DeserializeObject<JObject>(IO.File.ReadAllText(jsonFile));
-    modify(json);
-    IO.File.WriteAllText(jsonFile, JsonConvert.SerializeObject(json, Formatting.Indented));
-}
-
-private void RestoreFileOnCleanup(string file)
-{
-    var contents = System.IO.File.ReadAllBytes(file);
-    cleanups.Add(() => {
-        Information("Restoring {0}", file);
-        System.IO.File.WriteAllBytes(file, contents);
-    });
-}
-
-private void TarGzip(string path, string outputFile)
-{
-    var outFile = $"{outputFile}.tar.gz";
-    Information("Creating TGZ file {0} from {1}", outFile, path);
-    using (var tarMemStream = new MemoryStream())
-    {
-        using (var tar = WriterFactory.Open(tarMemStream, ArchiveType.Tar, CompressionType.None, true))
-        {
-            tar.WriteAll(path, "*", SearchOption.AllDirectories);
-        }
-
-        tarMemStream.Seek(0, SeekOrigin.Begin);
-
-        using (Stream stream = IO.File.Open(outFile, FileMode.Create))
-        using (var zip = WriterFactory.Open(stream, ArchiveType.GZip, CompressionType.GZip))
-            zip.Write($"{outputFile}.tar", tarMemStream);
-    }
-    Information("Successfully created TGZ file: {0}", outFile);
-}
-
-Task("__MergeOctoExe")
+Task("MergeOctoExe")
+    .IsDependentOn("DotnetPublish")
     .Does(() => {
         var inputFolder = $"{octoPublishFolder}/netfx";
         var outputFolder = $"{octoPublishFolder}/netfx-merged";
@@ -228,7 +147,7 @@ Task("__MergeOctoExe")
         ILRepack(
             $"{outputFolder}/Octo.exe",
             $"{inputFolder}/Octo.exe",
-            IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
             new ILRepackSettings { 
                 Internalize = true, 
                 Libs = new List<FilePath>() { inputFolder }
@@ -238,15 +157,15 @@ Task("__MergeOctoExe")
 
 
 
-Task("__Zip")
-    .IsDependentOn("__MergeOctoExe")
-    .IsDependentOn("__Publish")
+Task("Zip")
+    .IsDependentOn("MergeOctoExe")
+    .IsDependentOn("DotnetPublish")
     .Does(() => {
 
 
-        foreach(var dir in IO.Directory.EnumerateDirectories(octoPublishFolder))
+        foreach(var dir in System.IO.Directory.EnumerateDirectories(octoPublishFolder))
         {
-            var dirName = Path.GetFileName(dir);
+            var dirName = System.IO.Path.GetFileName(dir);
 
             if(dirName == "netfx")
                 continue;
@@ -267,13 +186,9 @@ Task("__Zip")
         }
     });
 
-Task("__PackNuget")
-    .IsDependentOn("__PackClientNuget")
-    .IsDependentOn("__MergeOctoExe")
-    .IsDependentOn("__Publish")
-    .IsDependentOn("__PackOctopusToolsNuget");
 
-Task("__PackClientNuget")
+Task("PackClientNuget")
+    .IsDependentOn("Test")
     .Does(() => {
         var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
         var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
@@ -281,9 +196,10 @@ Task("__PackClientNuget")
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
-            IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
             new ILRepackSettings { 
-                Internalize = true, 
+                Internalize = true,
+                XmlDocs = true, 
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -291,42 +207,70 @@ Task("__PackClientNuget")
         MoveDirectory(outputFolder, inputFolder);
 
         DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
+            ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
             Configuration = configuration,
             OutputDirectory = artifactsDir,
             NoBuild = true
         });
     });
 
-Task("__PackOctopusToolsNuget")
+    
+
+Task("PackOctopusToolsNuget")
+    .IsDependentOn("MergeOctoExe")
     .Does(() => {
-        var nugetPackDir = Path.Combine(publishDir, "nuget");
+        var nugetPackDir = $"{publishDir}/nuget";
         var nuspecFile = "OctopusTools.nuspec";
         
         CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
-        CopyFileToDirectory(Path.Combine(assetDir, "init.ps1"), nugetPackDir);
-        CopyFileToDirectory(Path.Combine(assetDir, nuspecFile), nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
 
-        NuGetPack(Path.Combine(nugetPackDir, nuspecFile), new NuGetPackSettings {
+        NuGetPack($"{nugetPackDir}/{nuspecFile}", new NuGetPackSettings {
             Version = nugetVersion,
             OutputDirectory = artifactsDir
         });
     });
 
-Task("__CopyToLocalPackages")
+Task("CopyToLocalPackages")
     .WithCriteria(BuildSystem.IsLocalBuild)
-    .IsDependentOn("__PackClientNuget")
+    .IsDependentOn("PackClientNuget")
+    .IsDependentOn("PackOctopusToolsNuget")
+    .IsDependentOn("Zip")
     .Does(() =>
 {
     CreateDirectory(localPackagesDir);
-    CopyFileToDirectory(Path.Combine(artifactsDir, $"Octopus.Client.{nugetVersion}.nupkg"), localPackagesDir);
+    CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
 });
+
+
+private void TarGzip(string path, string outputFile)
+{
+    var outFile = $"{outputFile}.tar.gz";
+    Information("Creating TGZ file {0} from {1}", outFile, path);
+    using (var tarMemStream = new MemoryStream())
+    {
+        using (var tar = WriterFactory.Open(tarMemStream, ArchiveType.Tar, CompressionType.None, true))
+        {
+            tar.WriteAll(path, "*", SearchOption.AllDirectories);
+        }
+
+        tarMemStream.Seek(0, SeekOrigin.Begin);
+
+        using (Stream stream = System.IO.File.Open(outFile, FileMode.Create))
+        using (var zip = WriterFactory.Open(stream, ArchiveType.GZip, CompressionType.GZip))
+            zip.Write($"{outputFile}.tar", tarMemStream);
+    }
+    Information("Successfully created TGZ file: {0}", outFile);
+}
+
 
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 Task("Default")
-    .IsDependentOn("__Default");
+    .IsDependentOn("CopyToLocalPackages");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
