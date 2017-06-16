@@ -39,7 +39,7 @@ namespace Octopus.Client.Model.Accounts
                 // Responses from server versions before TenantedDeploymentParticipation was implemented will default
                 // to pre-existing behaviour 
                 return TenantIds.Any() || TenantTags.Any()
-                    ? TenantedDeploymentParticipation.IncludedInTenanted
+                    ? TenantedDeploymentParticipation.TenantedOnly
                     : TenantedDeploymentParticipation.Excluded;
             }
         }

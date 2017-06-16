@@ -10,11 +10,11 @@
         /// <summary>
         /// Eligible to be included only in tenanted deployments 
         /// </summary>
-        IncludedInTenanted,
+        TenantedOnly,
 
         /// <summary>
         /// Eligible to be included in tenanted or un-tenanted deployments 
         /// </summary>
-        IncludedAlways
+        TenantedAndUntenanted
     }
 }

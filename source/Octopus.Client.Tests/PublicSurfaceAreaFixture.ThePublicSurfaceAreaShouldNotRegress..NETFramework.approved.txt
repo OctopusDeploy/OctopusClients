@@ -3739,8 +3739,8 @@ Octopus.Client.Model.Tenants
   TenantedDeploymentParticipation
   {
       Excluded = 0
-      IncludedInTenanted = 1
-      IncludedAlways = 2
+      TenantedOnly = 1
+      TenantedAndUntenanted = 2
   }
 }
 Octopus.Client.Model.Triggers
