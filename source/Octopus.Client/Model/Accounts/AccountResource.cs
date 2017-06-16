@@ -29,6 +29,8 @@ namespace Octopus.Client.Model.Accounts
         [Writeable]
         public TenantedDeploymentParticipation TenantedDeploymentParticipation
         {
+            set => tenantedDeploymentParticipation = value;
+            
             get
             {
                 if (tenantedDeploymentParticipation.HasValue)
@@ -39,16 +41,6 @@ namespace Octopus.Client.Model.Accounts
                 return TenantIds.Any() || TenantTags.Any()
                     ? TenantedDeploymentParticipation.IncludedInTenanted
                     : TenantedDeploymentParticipation.Excluded;
-            }
-            set
-            {
-                tenantedDeploymentParticipation = value;
-
-                if (value == TenantedDeploymentParticipation.Excluded)
-                {
-                    TenantIds.Clear();
-                    TenantTags.Clear();
-                }
             }
         }
 

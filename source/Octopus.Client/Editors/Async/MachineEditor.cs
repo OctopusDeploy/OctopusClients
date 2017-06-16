@@ -59,15 +59,10 @@ namespace Octopus.Client.Editors.Async
             TenantedDeploymentParticipation? tenantedDeploymentParticipation = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
-
-            var tenantedDeploymentParticipationNonNull =
-                tenantedDeploymentParticipation ?? (tenants.Any() || tenantTags.Any()
-                    ? TenantedDeploymentParticipation.IncludedInTenanted
-                    : TenantedDeploymentParticipation.Excluded);
-
+            
             if (existing == null)
             {
-                Instance = await repository.Create(new MachineResource
+                var resource = new MachineResource
                 {
                     Name = name,
                     Endpoint = endpoint,
@@ -75,8 +70,14 @@ namespace Octopus.Client.Editors.Async
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
                     TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName)),
-                    TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull
-                }).ConfigureAwait(false);
+                };
+
+                if (tenantedDeploymentParticipation.HasValue)
+                {
+                    resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
+                }
+                
+                Instance = await repository.Create(resource).ConfigureAwait(false);
             }
             else
             {
@@ -87,10 +88,9 @@ namespace Octopus.Client.Editors.Async
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
 
-                // Don't overwrite a TenantedDeploymentParticipation that has been explicitly set to IncludedAlways with a defaulted value
-                if (tenantedDeploymentParticipation.HasValue || existing.TenantedDeploymentParticipation != TenantedDeploymentParticipation.IncludedAlways)
+                if (tenantedDeploymentParticipation.HasValue)
                 {
-                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipationNonNull;
+                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
                 }
 
                 Instance = await repository.Modify(existing).ConfigureAwait(false);
