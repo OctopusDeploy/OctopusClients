@@ -191,6 +191,6 @@ namespace Octopus.Client.Repositories
             }
         }
 
-        public List<TaskResource> GetAllActive() => FindAll(pathParameters: new { active = true });
+        public List<TaskResource> GetAllActive() => FindAll(pathParameters: new { active = true, take=int.MaxValue });
     }
 }

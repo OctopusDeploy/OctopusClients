@@ -10,7 +10,14 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
+        /// <returns></returns>
+        Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project);
@@ -27,9 +34,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0)
+        public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null)
         {
-            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip });
+            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take });
         }
 
         public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project)

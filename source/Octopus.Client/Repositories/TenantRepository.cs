@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories
 
         public List<TenantResource> FindAll(string name, string[] tags)
         {
-            return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags });
+            return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags, take = int.MaxValue });
         }
 
         public TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables)
