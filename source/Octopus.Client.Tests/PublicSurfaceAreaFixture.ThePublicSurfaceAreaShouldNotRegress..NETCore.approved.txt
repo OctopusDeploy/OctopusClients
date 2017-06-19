@@ -3634,7 +3634,7 @@ Octopus.Client.Repositories.Async
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
-    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, Boolean)
+    Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
     Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
   }
   interface IFeaturesConfigurationRepository
