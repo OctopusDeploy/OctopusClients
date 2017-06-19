@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -119,8 +120,12 @@ namespace Octopus.Client.Repositories.Async
                 if (actualIds.Length == 0) return new List<TResource>();
 
                 var resources = new List<TResource>();
+                var link = Client.RootDocument.Link(CollectionLinkName);
+                if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+                    link += "{?ids}";
+
                 await Client.Paginate<TResource>(
-                    Client.RootDocument.Link(CollectionLinkName) + "{?ids}",
+                    link,
                     new { ids = actualIds },
                     page =>
                     {
