@@ -1431,16 +1431,6 @@ Octopus.Client.Model
     Octopus.Client.Model.FeedType FeedType { get; }
     String RegistryPath { get; set; }
   }
-  class DocumentIdFormatException
-    ISerializable
-    _Exception
-  {
-    .ctor(String)
-  }
-  abstract class DocumentIdParser
-  {
-    static void Split(String, String&, String&)
-  }
   class EncryptedBytes
   {
     .ctor(Byte[], Byte[])
