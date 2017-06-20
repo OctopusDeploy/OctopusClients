@@ -4254,7 +4254,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
     Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[])
     Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[])
-    List<TaskResource> GetAllActive()
+    List<TaskResource> GetAllActive(Int32)
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     String GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -4282,7 +4282,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
-    List<TenantResource> FindAll(String, String[])
+    List<TenantResource> FindAll(String, String[], Int32)
     List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
     Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)
     Octopus.Client.Model.TenantVariableResource ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
@@ -4696,7 +4696,7 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
     Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[])
     Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[])
-    Task<List<TaskResource>> GetAllActive()
+    Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -4725,7 +4725,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
-    Task<List<TenantResource>> FindAll(String, String[])
+    Task<List<TenantResource>> FindAll(String, String[], Int32)
     Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String, String, String)
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
