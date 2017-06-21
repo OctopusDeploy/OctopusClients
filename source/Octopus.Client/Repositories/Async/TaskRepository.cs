@@ -18,7 +18,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskDetailsResource> GetDetails(TaskResource resource);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
-        Task<List<TaskResource>> GetAllActive();
+        Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);
         Task<string> GetRawOutputLog(TaskResource resource);
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
@@ -200,6 +200,11 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        public Task<List<TaskResource>> GetAllActive() => FindAll(pathParameters: new {active = true});
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
+        /// <returns></returns>
+        public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
     }
 }

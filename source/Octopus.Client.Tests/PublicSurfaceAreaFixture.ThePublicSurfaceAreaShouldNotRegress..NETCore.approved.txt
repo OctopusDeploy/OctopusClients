@@ -3611,7 +3611,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICreate<DeploymentResource>
     Octopus.Client.Repositories.Async.IPaginate<DeploymentResource>
   {
-    Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32)
+    Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
     Task<TaskResource> GetTask(Octopus.Client.Model.DeploymentResource)
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
@@ -3634,7 +3635,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<EventResource>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
+    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -3671,7 +3672,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<InterruptionResource>
   {
     Task<UserResource> GetResponsibleUser(Octopus.Client.Model.InterruptionResource)
-    Task<ResourceCollection<InterruptionResource>> List(Int32, Boolean, String)
+    Task<ResourceCollection<InterruptionResource>> List(Int32, Nullable<Int32>, Boolean, String)
     Task Submit(Octopus.Client.Model.InterruptionResource)
     Task TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
@@ -3771,7 +3772,7 @@ Octopus.Client.Repositories.Async
     Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
-    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32)
+    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
     Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
@@ -3801,8 +3802,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ReleaseResource>
   {
     Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean)
-    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32)
-    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
@@ -3861,7 +3862,7 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
     Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[])
     Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[])
-    Task<List<TaskResource>> GetAllActive()
+    Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -3890,7 +3891,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
-    Task<List<TenantResource>> FindAll(String, String[])
+    Task<List<TenantResource>> FindAll(String, String[], Int32)
     Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String, String, String)
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
