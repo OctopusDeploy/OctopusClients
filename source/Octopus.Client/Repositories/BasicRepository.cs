@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
+using System.Text.RegularExpressions;
 
 namespace Octopus.Client.Repositories
 {
@@ -124,8 +125,11 @@ namespace Octopus.Client.Repositories
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
+            var link = client.RootDocument.Link(CollectionLinkName);
+            if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+                link += "{?ids}";
             client.Paginate<TResource>(
-                client.RootDocument.Link(CollectionLinkName) + "{?ids}",
+                link,
                 new { ids = actualIds },
                 page =>
                 {
