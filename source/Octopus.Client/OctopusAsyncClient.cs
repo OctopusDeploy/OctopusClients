@@ -35,7 +35,8 @@ namespace Octopus.Client
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
 
-        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        // Use the Create method to instantiate
+        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             options = options ?? new OctopusClientOptions();
 
