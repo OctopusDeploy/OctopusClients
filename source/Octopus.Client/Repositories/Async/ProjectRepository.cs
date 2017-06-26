@@ -21,6 +21,7 @@ namespace Octopus.Client.Repositories.Async
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project);
+        Task<ProgressionResource> GetProgression(ProjectResource project);
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
@@ -52,6 +53,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project)
         {
             return Client.List<ChannelResource>(project.Link("Channels"));
+        }
+
+        public Task<ProgressionResource> GetProgression(ProjectResource project)
+        {
+            return Client.Get<ProgressionResource>(project.Link("Progression"));
         }
 
         public Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project)

@@ -2689,7 +2689,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ChannelResource Channel { get; set; }
-    Dictionary<String, IOrderedEnumerable<DashboardItemResource>> Deployments { get; set; }
+    Dictionary<String, IList<DashboardItemResource>> Deployments { get; set; }
     Boolean HasUnresolvedDefect { get; set; }
     Octopus.Client.Model.ReferenceCollection NextDeployments { get; set; }
     Octopus.Client.Model.ReleaseResource Release { get; set; }
@@ -4163,6 +4163,7 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
     IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
@@ -4605,6 +4606,7 @@ Octopus.Client.Repositories.Async
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
     Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
+    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
