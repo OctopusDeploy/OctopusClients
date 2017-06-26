@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
-using Octopus.Client.Model.Tenants;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
@@ -55,7 +54,7 @@ namespace Octopus.Client.Editors
             string[] roles,
             TenantResource[] tenants,
             TagResource[] tenantTags,
-            TenantedDeploymentParticipation? tenantedDeploymentParticipation = null)
+            TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
             var existing = repository.FindByName(name);
 

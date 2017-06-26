@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
-using Octopus.Client.Model.Tenants;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
@@ -56,7 +55,7 @@ namespace Octopus.Client.Editors.Async
             string[] roles,
             TenantResource[] tenants,
             TagResource[] tenantTags, 
-            TenantedDeploymentParticipation? tenantedDeploymentParticipation = null)
+            TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
             

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Octopus.Client.Model.Tenants;
+﻿using System.Linq;
 
 namespace Octopus.Client.Model.Accounts
 {
@@ -24,10 +22,10 @@ namespace Octopus.Client.Model.Accounts
         public ReferenceCollection EnvironmentIds { get; set; }
 
         // Nullable backing-field is to support backwards-compatibility
-        TenantedDeploymentParticipation? tenantedDeploymentParticipation;
+        TenantedDeploymentMode? tenantedDeploymentParticipation;
 
         [Writeable]
-        public TenantedDeploymentParticipation TenantedDeploymentParticipation
+        public TenantedDeploymentMode TenantedDeploymentParticipation
         {
             set => tenantedDeploymentParticipation = value;
             
@@ -39,8 +37,8 @@ namespace Octopus.Client.Model.Accounts
                 // Responses from server versions before TenantedDeploymentParticipation was implemented will default
                 // to pre-existing behaviour 
                 return TenantIds.Any() || TenantTags.Any()
-                    ? TenantedDeploymentParticipation.TenantedOnly
-                    : TenantedDeploymentParticipation.Excluded;
+                    ? TenantedDeploymentMode.Tenanted 
+                    : TenantedDeploymentMode.Untenanted;
             }
         }
 
