@@ -5,8 +5,22 @@ namespace Octopus.Client.Repositories
 {
     public interface IReleaseRepository : IGet<ReleaseResource>, ICreate<ReleaseResource>, IPaginate<ReleaseResource>, IModify<ReleaseResource>, IDelete<ReleaseResource>
     {
-        ResourceCollection<DeploymentResource> GetDeployments(ReleaseResource release, int skip = 0);
-        ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="release"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
+        /// <returns></returns>
+        ResourceCollection<DeploymentResource> GetDeployments(ReleaseResource release, int skip = 0, int? take = null);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="release"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
+        /// <returns></returns>
+        ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null);
         DeploymentTemplateResource GetTemplate(ReleaseResource release);
         DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         ReleaseResource SnapshotVariables(ReleaseResource release);    
@@ -21,14 +35,14 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public ResourceCollection<DeploymentResource> GetDeployments(ReleaseResource release, int skip = 0)
+        public ResourceCollection<DeploymentResource> GetDeployments(ReleaseResource release, int skip = 0, int? take = null)
         {
-            return Client.List<DeploymentResource>(release.Link("Deployments"), new { skip });
+            return Client.List<DeploymentResource>(release.Link("Deployments"), new { skip, take });
         }
 
-        public ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0)
+        public ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null)
         {
-            return Client.List<ArtifactResource>(release.Link("Artifacts"), new { skip });
+            return Client.List<ArtifactResource>(release.Link("Artifacts"), new { skip, take });
         }
 
         public DeploymentTemplateResource GetTemplate(ReleaseResource release)

@@ -1,15 +1,40 @@
 using Octopus.Client.Model;
+using System;
 
 namespace Octopus.Client.Repositories
 {
     public interface IEventRepository : IGet<EventResource>
     {
-        ResourceCollection<EventResource> List(int skip = 0,
+        [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
+        ResourceCollection<EventResource> List(int skip = 0, 
             string filterByUserId = null,
             string regardingDocumentId = null,
             bool includeInternalEvents = false);
 
-        ResourceCollection<EventResource> List(int skip = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="regarding"></param>
+        /// <param name="regardingAny"></param>
+        /// <param name="includeInternalEvents"></param>
+        /// <param name="user"></param>
+        /// <param name="users"></param>
+        /// <param name="projects"></param>
+        /// <param name="environments"></param>
+        /// <param name="eventGroups"></param>
+        /// <param name="eventCategories"></param>
+        /// <param name="tenants"></param>
+        /// <param name="tags"></param>
+        /// <param name="fromAutoId"></param>
+        /// <param name="toAutoId"></param>
+        /// <param name="documentTypes"></param>
+        /// <returns></returns>
+        ResourceCollection<EventResource> List(int skip = 0, 
+            int? take = null,
             string from = null,
             string to = null,
             string regarding = null,
@@ -35,7 +60,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public ResourceCollection<EventResource> List(int skip = 0,
+        [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
+        public ResourceCollection<EventResource> List(int skip = 0, 
             string filterByUserId = null,
             string regardingDocumentId = null,
             bool includeInternalEvents = false)
@@ -49,7 +75,8 @@ namespace Octopus.Client.Repositories
             });
         }
 
-        public ResourceCollection<EventResource> List(int skip = 0,
+        public ResourceCollection<EventResource> List(int skip = 0, 
+            int? take = null,
             string from = null,
             string to = null,
             string regarding = null,
@@ -70,6 +97,7 @@ namespace Octopus.Client.Repositories
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
                 skip,
+                take,
                 from = from,
                 to = to,
                 regarding = regarding,

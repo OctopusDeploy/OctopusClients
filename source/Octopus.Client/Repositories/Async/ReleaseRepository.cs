@@ -6,8 +6,22 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IReleaseRepository : IGet<ReleaseResource>, ICreate<ReleaseResource>, IPaginate<ReleaseResource>, IModify<ReleaseResource>, IDelete<ReleaseResource>
     {
-        Task<ResourceCollection<DeploymentResource>> GetDeployments(ReleaseResource release, int skip = 0);
-        Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="release"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
+        /// <returns></returns>
+        Task<ResourceCollection<DeploymentResource>> GetDeployments(ReleaseResource release, int skip = 0, int? take = null);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="release"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
+        /// <returns></returns>
+        Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null);
         Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release);
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release);    
@@ -22,14 +36,14 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<ResourceCollection<DeploymentResource>> GetDeployments(ReleaseResource release, int skip = 0)
+        public Task<ResourceCollection<DeploymentResource>> GetDeployments(ReleaseResource release, int skip = 0, int? take = null)
         {
-            return Client.List<DeploymentResource>(release.Link("Deployments"), new { skip });
+            return Client.List<DeploymentResource>(release.Link("Deployments"), new { skip, take });
         }
 
-        public Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0)
+        public Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null)
         {
-            return Client.List<ArtifactResource>(release.Link("Artifacts"), new { skip });
+            return Client.List<ArtifactResource>(release.Link("Artifacts"), new { skip, take });
         }
 
         public Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release)

@@ -6,7 +6,15 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IInterruptionRepository : IGet<InterruptionResource>
     {
-        Task<ResourceCollection<InterruptionResource>> List(int skip = 0, bool pendingOnly = false, string regardingDocumentId = null);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
+        /// <param name="pendingOnly"></param>
+        /// <param name="regardingDocumentId"></param>
+        /// <returns></returns>
+        Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null);
         Task Submit(InterruptionResource interruption);
         Task TakeResponsibility(InterruptionResource interruption);
         Task<UserResource> GetResponsibleUser(InterruptionResource interruption);
@@ -19,9 +27,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<ResourceCollection<InterruptionResource>> List(int skip = 0, bool pendingOnly = false, string regardingDocumentId = null)
+        public Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new { skip, pendingOnly, regarding = regardingDocumentId });
+            return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new { skip, take, pendingOnly, regarding = regardingDocumentId });
         }
 
         public Task Submit(InterruptionResource interruption)

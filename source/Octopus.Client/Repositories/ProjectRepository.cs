@@ -8,10 +8,18 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
+        /// <returns></returns>
+        ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
         ResourceCollection<ChannelResource> GetChannels(ProjectResource project);
+        ProgressionResource GetProgression(ProjectResource project);
         ResourceCollection<ProjectTriggerResource> GetTriggers(ProjectResource project);
         void SetLogo(ProjectResource project, string fileName, Stream contents);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
@@ -25,9 +33,9 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0)
+        public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null)
         {
-            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip });
+            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take });
         }
 
         public IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project)
@@ -43,6 +51,11 @@ namespace Octopus.Client.Repositories
         public ResourceCollection<ChannelResource> GetChannels(ProjectResource project)
         {
             return Client.List<ChannelResource>(project.Link("Channels"));
+        }
+
+        public ProgressionResource GetProgression(ProjectResource project)
+        {
+            return Client.Get<ProgressionResource>(project.Link("Progression"));
         }
 
         public ResourceCollection<ProjectTriggerResource> GetTriggers(ProjectResource project)

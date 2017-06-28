@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     {
         public ReleaseResource Release { get; set; }
         public ChannelResource Channel { get; set; }
-        public Dictionary<string, IOrderedEnumerable<DashboardItemResource>> Deployments { get; set; }
+        public Dictionary<string, IList<DashboardItemResource>> Deployments { get; set; }
         public ReferenceCollection NextDeployments { get; set; }
         public bool HasUnresolvedDefect { get; set; }
         public RetentionPeriod ReleaseRetentionPeriod { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -21,10 +22,13 @@ namespace Octopus.Client.Repositories.Async
 
         static string DetermineCollectionLinkName(IOctopusAsyncClient client)
         {
+            if (client.RootDocument == null)
+                throw new NullReferenceException("The client root document is null");
+
             // For backwards compatibility. 
             // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
             // This allows pre-3.11 clients to still work.
-            return client.RootDocument == null || client.RootDocument.Links.ContainsKey("CertificateConfiguration")
+            return client.RootDocument.Links.ContainsKey("CertificateConfiguration")
                 ? "CertificateConfiguration"
                 : "Certificates";
         }

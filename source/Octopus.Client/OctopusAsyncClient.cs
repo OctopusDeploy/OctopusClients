@@ -35,10 +35,10 @@ namespace Octopus.Client
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
 
-        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        // Use the Create method to instantiate
+        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             options = options ?? new OctopusClientOptions();
-            Repository = new OctopusAsyncRepository(this);
 
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
@@ -132,6 +132,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
+                client.Repository = new OctopusAsyncRepository(client);
                 return client;
             }
             catch
@@ -197,7 +198,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return response.ResponseResource;
         }
 
-        public IOctopusAsyncRepository Repository { get; }
+        public IOctopusAsyncRepository Repository { get; private set; }
 
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
