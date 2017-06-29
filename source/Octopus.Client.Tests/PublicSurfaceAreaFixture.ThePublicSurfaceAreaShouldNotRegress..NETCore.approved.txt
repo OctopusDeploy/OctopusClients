@@ -458,7 +458,6 @@ Octopus.Client.Editors.Async
 Octopus.Client.Exceptions
 {
   class OctopusDeserializationException
-    ISerializable
     _Exception
   {
     .ctor(Int32, String)
@@ -474,7 +473,6 @@ Octopus.Client.Exceptions
     String HelpText { get; set; }
   }
   abstract class OctopusException
-    ISerializable
     _Exception
   {
     String HelpText { get; }
@@ -494,31 +492,26 @@ Octopus.Client.Exceptions
     }
   }
   class OctopusMethodNotAllowedFoundException
-    ISerializable
     _Exception
   {
     .ctor(String)
   }
   class OctopusResourceNotFoundException
-    ISerializable
     _Exception
   {
     .ctor(String)
   }
   class OctopusSecurityException
-    ISerializable
     _Exception
   {
     .ctor(Int32, String)
   }
   class OctopusServerException
-    ISerializable
     _Exception
   {
     .ctor(Int32, String)
   }
   class OctopusValidationException
-    ISerializable
     _Exception
   {
     .ctor(String, ICollection<String>)
@@ -530,7 +523,6 @@ Octopus.Client.Exceptions
     Octopus.Client.Exceptions.TDetails DetailsAs()
   }
   class UnsupportedApiVersionException
-    ISerializable
     _Exception
   {
     .ctor(String)
@@ -565,8 +557,6 @@ Octopus.Client.Logging
     IDisposable OpenNestedContext(String)
   }
   class Logger
-    ICloneable
-    ISerializable
   {
     .ctor(Object, IntPtr)
     IAsyncResult BeginInvoke(Octopus.Client.Logging.LogLevel, Func<String>, Exception, Object[], AsyncCallback, Object)
@@ -1722,8 +1712,6 @@ Octopus.Client.Model
     ICollection
     IReadOnlyDictionary<String, Href>
     IReadOnlyCollection<KeyValuePair<String, Href>>
-    ISerializable
-    IDeserializationCallback
   {
     .ctor()
     Octopus.Client.Model.LinkCollection Add(String, Octopus.Client.Model.Href)
@@ -2459,8 +2447,6 @@ Octopus.Client.Model
     ICollection
     IReadOnlyDictionary<ScopeField, ScopeValue>
     IReadOnlyCollection<KeyValuePair<ScopeField, ScopeValue>>
-    ISerializable
-    IDeserializationCallback
     IEquatable<ScopeSpecification>
   {
     .ctor()
