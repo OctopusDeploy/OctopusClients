@@ -50,7 +50,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldCancelDeploymentOnTimeoutIfRequested()
         {
             Repository.Tasks
-                .When(x => x.WaitForCompletion(Arg.Any<TaskResource[]>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Func<TaskResource[], Task>>()))
+                .When(x => x.WaitForCompletion(Arg.Any<TaskResource[]>(), Arg.Any<int>(), TimeSpan.FromSeconds(1), Arg.Any<Func<TaskResource[], Task>>()))
                 .Do(x => { throw new TimeoutException(); });
 
             CommandLineArgs.Add("--project=" + ProjectName);
@@ -62,6 +62,7 @@ namespace Octopus.Cli.Tests.Commands
 
             Func<Task> exec = () => deployReleaseCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>();
+
             Repository.Tasks.Received().Cancel(taskResource).GetAwaiter().GetResult();
         }
 
@@ -69,7 +70,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldNotCancelDeploymentOnTimeoutIfNotRequested()
         {
             Repository.Tasks
-                .When(x => x.WaitForCompletion(Arg.Any<TaskResource[]>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Func<TaskResource[], Task>>()))
+                .When(x => x.WaitForCompletion(Arg.Any<TaskResource[]>(), Arg.Any<int>(), TimeSpan.FromSeconds(1), Arg.Any<Func<TaskResource[], Task>>()))
                 .Do(x =>{ throw new TimeoutException(); });
 
             CommandLineArgs.Add("--project=" + ProjectName);
