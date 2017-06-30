@@ -6,6 +6,7 @@
     <PackageId>Octo.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <RuntimeFrameworkVersion>2.0.0-preview1-005957</RuntimeFrameworkVersion>
   </PropertyGroup>
 
 
