@@ -51,9 +51,9 @@ namespace Octopus.Cli.Commands
         protected bool ForcePackageDownload { get; set; }
         protected bool? UseGuidedFailure { get; set; }
         protected bool WaitForDeployment { get; set; }
-        protected TimeSpan DeploymentTimeout { get; set; }
+        protected TimeSpan DeploymentTimeout { get; set; } = TimeSpan.FromMinutes(10);
         protected bool CancelOnTimeout { get; set; }
-        protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
+        protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; } = TimeSpan.FromSeconds(10);
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }

@@ -24,8 +24,6 @@ namespace Octopus.Cli.Commands
             : base(repositoryFactory, log, fileSystem, clientFactory)
         {
             this.releasePlanBuilder = releasePlanBuilder;
-            DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
-            DeploymentTimeout = TimeSpan.FromMinutes(10);
 
             var options = Options.For("Release creation");
             options.Add("project=", "Name of the project", v => ProjectName = v);
