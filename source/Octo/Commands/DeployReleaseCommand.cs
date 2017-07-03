@@ -15,10 +15,6 @@ namespace Octopus.Cli.Commands
         public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
             : base(repositoryFactory, log, fileSystem, clientFactory)
         {
-
-            DeploymentStatusCheckSleepCycle = TimeSpan.FromSeconds(10);
-            DeploymentTimeout = TimeSpan.FromMinutes(10);
-
             var options = Options.For("Deployment");
             options.Add("project=", "Name of the project", v => ProjectName = v);
             options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));

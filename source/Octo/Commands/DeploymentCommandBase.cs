@@ -51,9 +51,9 @@ namespace Octopus.Cli.Commands
         protected bool ForcePackageDownload { get; set; }
         protected bool? UseGuidedFailure { get; set; }
         protected bool WaitForDeployment { get; set; }
-        protected TimeSpan DeploymentTimeout { get; set; }
+        protected TimeSpan DeploymentTimeout { get; set; } = TimeSpan.FromMinutes(10);
         protected bool CancelOnTimeout { get; set; }
-        protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; }
+        protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; } = TimeSpan.FromSeconds(10);
         protected List<string> SpecificMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
@@ -381,7 +381,7 @@ namespace Octopus.Cli.Commands
             try
             {
                 Log.Information("Waiting for {NumberOfTasks} deployment(s) to complete....", deploymentTasks.Length);
-                await Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, (int)DeploymentTimeout.TotalMinutes, PrintTaskOutput).ConfigureAwait(false);
+                await Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout, PrintTaskOutput).ConfigureAwait(false);
                 var failed = false;
                 foreach (var deploymentTask in deploymentTasks)
                 {

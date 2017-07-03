@@ -93,6 +93,7 @@ namespace Octopus.Client.Tests.Conventions
                            let parameters = s.GetParameters().Select(p => p.ParameterType).ToArray()
                            let a = asyncRepository.GetMethod(s.Name, parameters)
                            where a == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
+                           where !(syncRepository.Name == "ITaskRepository" && s.Name == "WaitForCompletion")
                            select $"{s.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
 
             var missing = missingQ.ToArray();

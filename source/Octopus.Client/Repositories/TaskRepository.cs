@@ -25,8 +25,9 @@ namespace Octopus.Client.Repositories
         IReadOnlyList<TaskResource> GetQueuedBehindTasks(TaskResource resource);
         void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
         void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
+        void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Action<TaskResource[]> interval = null);
     }
-    
+
     class TaskRepository : BasicRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusClient client)
@@ -162,7 +163,10 @@ namespace Octopus.Client.Repositories
         }
 
         public void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
-        {
+            => WaitForCompletion(tasks, pollIntervalSeconds, TimeSpan.FromMinutes(timeoutAfterMinutes), interval);
+
+        public void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Action<TaskResource[]> interval = null)
+        { 
             var start = Stopwatch.StartNew();
             if (tasks == null || tasks.Length == 0)
                 return;
@@ -174,20 +178,17 @@ namespace Octopus.Client.Repositories
                     let currentStatus = Client.Get<TaskResource>(task.Link("Self"))
                     select currentStatus).ToArray();
 
-                if (interval != null)
-                {
-                    interval(stillRunning);
-                }
+                interval?.Invoke(stillRunning);
 
                 if (stillRunning.All(t => t.IsCompleted))
                     return;
 
-                if (timeoutAfterMinutes > 0 && start.Elapsed.TotalMinutes > timeoutAfterMinutes)
+                if (timeoutAfter.HasValue && timeoutAfter > TimeSpan.Zero && start.Elapsed > timeoutAfter)
                 {
                     throw new TimeoutException(string.Format("One or more tasks did not complete before the timeout was reached. We waited {0:n1} minutes for the tasks to complete.", start.Elapsed.TotalMinutes));
                 }
 
-                Thread.Sleep(pollIntervalSeconds * 1000);
+                Thread.Sleep(TimeSpan.FromSeconds(pollIntervalSeconds));
             }
         }
 

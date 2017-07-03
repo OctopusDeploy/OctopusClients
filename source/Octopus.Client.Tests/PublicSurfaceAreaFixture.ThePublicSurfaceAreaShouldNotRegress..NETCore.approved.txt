@@ -3861,6 +3861,7 @@ Octopus.Client.Repositories.Async
     Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Func<TaskResource[], Task>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Nullable<TimeSpan>, Func<TaskResource[], Task>)
   }
   interface ITeamsRepository
     Octopus.Client.Repositories.Async.ICreate<TeamResource>
