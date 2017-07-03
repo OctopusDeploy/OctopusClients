@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;net452</TargetFrameworks>
     <AssemblyName>Octo.Tests</AssemblyName>
-    <PackageId>Octo.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
   </PropertyGroup>
