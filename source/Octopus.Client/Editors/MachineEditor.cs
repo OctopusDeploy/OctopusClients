@@ -53,20 +53,29 @@ namespace Octopus.Client.Editors
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags,
+            TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
             var existing = repository.FindByName(name);
+
             if (existing == null)
             {
-                Instance = repository.Create(new MachineResource
+                var resource = new MachineResource
                 {
                     Name = name,
                     Endpoint = endpoint,
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
-                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName))
-                });
+                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName)),
+                };
+
+                if (tenantedDeploymentParticipation.HasValue)
+                {
+                    resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
+                }
+                
+                Instance = repository.Create(resource);
             }
             else
             {
@@ -76,6 +85,11 @@ namespace Octopus.Client.Editors
                 existing.Roles.ReplaceAll(roles);
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
+
+                if (tenantedDeploymentParticipation.HasValue)
+                {
+                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
+                }
 
                 Instance = repository.Modify(existing);
             }

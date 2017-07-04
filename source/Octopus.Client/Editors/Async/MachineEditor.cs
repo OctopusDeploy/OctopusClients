@@ -54,20 +54,29 @@ namespace Octopus.Client.Editors.Async
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags, 
+            TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
+            
             if (existing == null)
             {
-                Instance = await repository.Create(new MachineResource
+                var resource = new MachineResource
                 {
                     Name = name,
                     Endpoint = endpoint,
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles),
                     TenantIds = new ReferenceCollection(tenants.Select(t => t.Id)),
-                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName))
-                }).ConfigureAwait(false);
+                    TenantTags = new ReferenceCollection(tenantTags.Select(t => t.CanonicalTagName)),
+                };
+
+                if (tenantedDeploymentParticipation.HasValue)
+                {
+                    resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
+                }
+                
+                Instance = await repository.Create(resource).ConfigureAwait(false);
             }
             else
             {
@@ -77,6 +86,11 @@ namespace Octopus.Client.Editors.Async
                 existing.Roles.ReplaceAll(roles);
                 existing.TenantIds.ReplaceAll(tenants.Select(t => t.Id));
                 existing.TenantTags.ReplaceAll(tenantTags.Select(t => t.CanonicalTagName));
+
+                if (tenantedDeploymentParticipation.HasValue)
+                {
+                    existing.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
+                }
 
                 Instance = await repository.Modify(existing).ConfigureAwait(false);
             }

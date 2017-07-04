@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection EnvironmentIds { get; set; }
 
         [JsonIgnore]
-        public ProjectTenantedDeploymentMode TenantDeploymentMode { get; set; }
+        public TenantedDeploymentMode TenantDeploymentMode { get; set; }
         public bool CanPerformUntenantedDeployment { get; set; }
 
         public DashboardProjectResource Copy()

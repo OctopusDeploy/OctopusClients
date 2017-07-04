@@ -81,7 +81,7 @@ namespace Octopus.Client.Model
         public bool DefaultToSkipIfAlreadyInstalled { get; set; }
 
         [Writeable]
-        public ProjectTenantedDeploymentMode TenantedDeploymentMode { get; set; }
+        public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
 
         [Writeable]
         public VersioningStrategyResource VersioningStrategy { get; set; }

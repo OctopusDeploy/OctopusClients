@@ -19,7 +19,8 @@ namespace Octopus.Client.Repositories
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags);
+            TagResource[] tenantTags,
+            TenantedDeploymentMode? tenantedDeploymentParticipation);
 
         MachineEditor CreateOrModify(
             string name,
@@ -63,9 +64,10 @@ namespace Octopus.Client.Repositories
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags)
+            TagResource[] tenantTags,
+            TenantedDeploymentMode? tenantedDeploymentParticipation)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags);
+            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
         }
 
         public MachineEditor CreateOrModify(

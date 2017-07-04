@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -9,7 +8,6 @@
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <RuntimeFrameworkVersion>1.6.1</RuntimeFrameworkVersion>
   </PropertyGroup>
-
   <PropertyGroup>
     <PackageId>Octopus.Client</PackageId>
     <Authors>Octopus Deploy</Authors>
@@ -23,22 +21,17 @@
 
 This package contains the client library for the HTTP API in Octopus.</Description>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <DefineConstants>$(DefineConstants);SYNC_CLIENT</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS;LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <Compile Remove="Repositories\*.cs;Editors\*.cs" />
   </ItemGroup>
-
   <ItemGroup>
   </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1">
       <PrivateAssets>All</PrivateAssets>
@@ -49,7 +42,6 @@ This package contains the client library for the HTTP API in Octopus.</Descripti
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
@@ -63,5 +55,4 @@ This package contains the client library for the HTTP API in Octopus.</Descripti
     <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.0" />
   </ItemGroup>
-
 </Project>
