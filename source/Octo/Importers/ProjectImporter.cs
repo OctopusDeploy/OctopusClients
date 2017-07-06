@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Exporters;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -15,7 +16,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Importers
 {
-    [Importer("project", "ProjectWithDependencies", Description = "Imports a project from an export file")]
+    [Importer("project")]
     public class ProjectImporter : BaseImporter
     {
         readonly protected ActionTemplateRepository actionTemplateRepository;
@@ -49,7 +50,7 @@ namespace Octopus.Cli.Importers
 
         protected override async Task<bool> Validate(Dictionary<string, string> paramDictionary)
         {
-            var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, "ProjectWithDependencies");
 
             var project = importedObject.Project;
             if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))

@@ -20,12 +20,13 @@ namespace Octopus.Cli.Commands
             this.exporterLocator = exporterLocator;
 
             var options = Options.For("Export");
-            options.Add("type=", "The type to export", v => Type = v);
+            options.Add("type=", "The type to export, either Project, Release or Variables", v => Type = v);
             options.Add("filePath=", "The full path and name of the export file", v => FilePath = v);
-            options.Add("project=", "[Optional] Name of the project", v => Project = v);
-            options.Add("name=", "[Optional] Name of the item to export", v => Name = v);
-            options.Add("releaseVersion=", "[Optional] The version number, or range of version numbers to export", v => ReleaseVersion = v);
+            options.Add("name=", "Name of the item to export (only for --type=Project)", v => Name = v);
+            options.Add("project=", "Name of the project (only for --type=Release or --type=Variables)", v => Project = v);
+            options.Add("releaseVersion=", "The version number, or range of version numbers to export (only for --type=Release)", v => ReleaseVersion = v);
         }
+
 
         public string Type { get; set; }
         public string FilePath { get; set; }
@@ -44,7 +45,7 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
 
             Log.Debug("Beginning the export");
-            return exporter.Export(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("Name={0}", Name), string.Format("ReleaseVersion={0}", ReleaseVersion));
+            return exporter.Export($"FilePath={FilePath}", $"Project={Project}", $"Name={Name}", $"ReleaseVersion={ReleaseVersion}");
         }
     }
 }

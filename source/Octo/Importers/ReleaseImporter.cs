@@ -10,7 +10,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Importers
 {
-    [Importer("release", "List", Description = "Imports a projects releases from an export file")]
+    [Importer("release")]
     public class ReleaseImporter : BaseImporter
     {
         ValidatedImportSettings validatedImportSettings;
@@ -44,7 +44,7 @@ namespace Octopus.Cli.Importers
                     errorList.Add("Could not find project named '" + projectName + "'");
             }
 
-            var releases = FileSystemImporter.Import<List<ReleaseResource>>(FilePath, typeof(ReleaseImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
+            var releases = FileSystemImporter.Import<List<ReleaseResource>>(FilePath, "List");
             if (releases == null)
                 errorList.Add("Unable to deserialize the specified export file");
 

@@ -11,7 +11,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Exporters
 {
-    [Exporter("release", "List", Description = "Exports either a single release, or multiple releases")]
+    [Exporter("release")]
     public class ReleaseExporter : BaseExporter
     {
         public ReleaseExporter(IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log) :
@@ -92,7 +92,7 @@ namespace Octopus.Cli.Exporters
                 ExportedAt = DateTime.Now,
                 OctopusVersion = Repository.Client.RootDocument.Version,
                 Type = typeof (ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
-                ContainerType = typeof (ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
+                ContainerType = "List"
             };
             FileSystemExporter.Export(FilePath, metadata, releasesToExport);
         }

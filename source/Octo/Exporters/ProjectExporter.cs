@@ -13,7 +13,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Exporters
 {
-    [Exporter("project", "ProjectWithDependencies", Description = "Exports a project as JSON to a file")]
+    [Exporter("project")]
     public class ProjectExporter : BaseExporter
     {
         readonly ActionTemplateRepository actionTemplateRepository;
@@ -164,7 +164,7 @@ namespace Octopus.Cli.Exporters
                 ExportedAt = DateTime.Now,
                 OctopusVersion = Repository.Client.RootDocument.Version,
                 Type = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
-                ContainerType = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
+                ContainerType = "ProjectWithDependencies"
             };
             FileSystemExporter.Export(FilePath, metadata, export);
         }

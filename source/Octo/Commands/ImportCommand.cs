@@ -19,9 +19,9 @@ namespace Octopus.Cli.Commands
             this.importerLocator = importerLocator;
 
             var options = Options.For("Import");
-            options.Add("type=", "The Octopus object type to import", v => Type = v);
+            options.Add("type=", "The Octopus object type to import, either Project, Release or Variables", v => Type = v);
             options.Add("filePath=", "The full path and name of the exported file", v => FilePath = v);
-            options.Add("project=", "[Optional] The name of the project", v => Project = v);
+            options.Add("project=", "The name of the project (only for --type=Release or --type=Variables)", v => Project = v);
             options.Add("dryRun", "[Optional] Perform a dry run of the import", v => DryRun = true);
         }
 
@@ -41,11 +41,11 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 
             Log.Debug("Validating the import");
-            var validationResult = await importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
+            var validationResult = await importer.Validate($"FilePath={FilePath}", $"Project={Project}").ConfigureAwait(false);
             if (validationResult && !DryRun)
             {
                 Log.Debug("Beginning the import");
-                await importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
+                await importer.Import($"FilePath={FilePath}", $"Project={Project}").ConfigureAwait(false);
             }
         }
     }
