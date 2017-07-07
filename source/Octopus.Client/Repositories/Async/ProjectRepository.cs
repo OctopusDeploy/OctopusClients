@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, filter });
         }
 
-        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project)
+        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project) 
         {
             return Client.ListAll<ReleaseResource>(project.Link("Releases"));
         }
