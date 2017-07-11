@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
@@ -8,7 +7,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string filter = null);
+        ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
         ResourceCollection<ChannelResource> GetChannels(ProjectResource project);
@@ -26,9 +25,9 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string filter = null)
+        public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
         {
-            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, filter });
+            return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });
         }
 
         public IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project)
