@@ -3907,6 +3907,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.ActionTemplateResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     List<ActionTemplateSearchResource> Search()
+    void SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
     Octopus.Client.Model.ActionUpdateResultResource[] UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
   interface IArtifactRepository
@@ -4351,6 +4352,7 @@ Octopus.Client.Repositories.Async
   {
     Task<ActionTemplateResource> GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
     Task<List<ActionTemplateSearchResource>> Search()
+    Task SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
     Task<ActionUpdateResultResource[]> UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
   }
   interface IArtifactRepository

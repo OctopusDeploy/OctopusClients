@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -9,6 +10,7 @@ namespace Octopus.Client.Repositories.Async
         Task<List<ActionTemplateSearchResource>> Search();
         Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version);
         Task<ActionUpdateResultResource[]> UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update);
+        Task SetLogo(ActionTemplateResource resource, string fileName, Stream contents);
     }
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
@@ -30,6 +32,10 @@ namespace Octopus.Client.Repositories.Async
         public Task<ActionUpdateResultResource[]> UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update)
         {
             return Client.Post<ActionsUpdateResource, ActionUpdateResultResource[]>(actionTemplate.Links["ActionsUpdate"], update, new { actionTemplate.Id });
+        }
+        public Task SetLogo(ActionTemplateResource resource, string fileName, Stream contents)
+        {
+            return Client.Post(resource.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
         }
     }
 }
