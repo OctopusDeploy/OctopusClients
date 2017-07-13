@@ -43,8 +43,8 @@ namespace Octopus.Cli.Commands
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("v|variable=", "[Optional] Values for any prompted variables in the format Label:Value", ParseVariable);
             options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => ParseDeployAt(v));
-            options.Add("tenant=", "A tenant the deployment will be performed for; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to tenants able to deploy.", t => Tenants.Add(t));
-            options.Add("tenanttag=", "A tenant tag used to match tenants that the deployment will be performed for; specify this argument multiple times to add multiple tenant tags", tt => TenantTags.Add(tt));
+            options.Add("tenant=", "Create a deployment for this tenant; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to all tenants who are ready for this release (according to lifecycle).", t => Tenants.Add(t));
+            options.Add("tenanttag=", "Create a deployment for tenants matching this tag; specify this argument multiple times to build a query/filter with multiple tags, just like you can in the user interface.", tt => TenantTags.Add(tt));
         }
 
         protected bool ForcePackageRedeployment { get; set; }
