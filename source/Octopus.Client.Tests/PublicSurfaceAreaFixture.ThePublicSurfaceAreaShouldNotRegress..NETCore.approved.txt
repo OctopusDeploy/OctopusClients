@@ -3173,7 +3173,6 @@ Octopus.Client.Model.Endpoints
   {
     static System.String Linux64
     static System.String Osx64
-    static System.String Portable
   }
   class CloudRegionEndpointResource
     Octopus.Client.Model.IResource
@@ -3235,8 +3234,8 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     String AccountId { get; set; }
-    String CalamariDotNetCorePlatform { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DotNetCorePlatform { get; set; }
     String Fingerprint { get; set; }
     String Host { get; set; }
     Int32 Port { get; set; }
@@ -3246,7 +3245,6 @@ Octopus.Client.Model.Endpoints
     {
       static System.String Linux64
       static System.String Osx64
-      static System.String Portable
     }
   }
   class TentacleDetailsResource
