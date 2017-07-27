@@ -4321,6 +4321,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<UserRoleResource>
     Octopus.Client.Repositories.ICreate<UserRoleResource>
     Octopus.Client.Repositories.IModify<UserRoleResource>
+    Octopus.Client.Repositories.IDelete<UserRoleResource>
   {
   }
   interface IVariableSetRepository
@@ -4767,6 +4768,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<UserRoleResource>
     Octopus.Client.Repositories.Async.ICreate<UserRoleResource>
     Octopus.Client.Repositories.Async.IModify<UserRoleResource>
+    Octopus.Client.Repositories.Async.IDelete<UserRoleResource>
   {
   }
   interface IVariableSetRepository

@@ -9,7 +9,7 @@ using Octopus.Client.Extensions;
 
 namespace Octopus.Client.Tests.Conventions
 {
-    public class RepositorySymetryConventions
+    public class RepositorySymmetryConventions
     {
         [Test]
         public void IOctopusAsyncRepositoryExposesTheSamePropertiesAsIOctopusRepository()
@@ -99,6 +99,45 @@ namespace Octopus.Client.Tests.Conventions
             var missing = missingQ.ToArray();
             if (missing.Any())
                 Assert.Fail($"The following methods are present on the async {asyncRepository.Name} but not on the sync one, or have different return types:\r\n{missing.NewLineSeperate()}");
+
+        }
+
+        [TestCaseSource(nameof(AsyncRepositories))]
+        public void AllAsyncRepositoriesShouldImplementEquivalentInterfacesToTheSyncRepositories(Type asyncRepository)
+        {
+            var syncRepository = typeof(IOctopusAsyncRepository).Assembly
+                .GetExportedTypes()
+                .FirstOrDefault(t => t.Name == asyncRepository.Name && !t.Namespace.EndsWith("Async"));
+
+            if (syncRepository == null)
+                Assert.Fail("Sync repository not found");
+
+            var asyncInterfaces = asyncRepository.GetInterfaces().Select(i => i.ToString().Replace(i.Namespace, string.Empty).TrimStart('.')).ToArray();
+            var syncInterfaces = syncRepository.GetInterfaces().Select(i => i.ToString().Replace(i.Namespace, string.Empty).TrimStart('.')).ToArray();
+
+            var missing = syncInterfaces.Except(asyncInterfaces).ToArray();
+
+            if (missing.Any())
+                Assert.Fail($"The following interfaces are implemented on the sync {syncRepository.Name} but not on the async one:\r\n{missing.NewLineSeperate()}");
+        }
+
+        [TestCaseSource(nameof(SyncRepositories))]
+        public void AllSyncRepositoriesShouldImplementEquivalentInterfacesToTheAsyncRepositories(Type syncRepository)
+        {
+            var asyncRepository = typeof(IOctopusAsyncRepository).Assembly
+                .GetExportedTypes()
+                .FirstOrDefault(t => t.Name == syncRepository.Name && t.Namespace.EndsWith("Async"));
+
+            if (asyncRepository == null)
+                Assert.Fail("Async repository not found");
+
+            var asyncInterfaces = asyncRepository.GetInterfaces().Select(i => i.ToString().Replace(i.Namespace, string.Empty).TrimStart('.')).ToArray();
+            var syncInterfaces = syncRepository.GetInterfaces().Select(i => i.ToString().Replace(i.Namespace, string.Empty).TrimStart('.')).ToArray();
+
+            var missing = asyncInterfaces.Except(syncInterfaces).ToArray();
+
+            if (missing.Any())
+                Assert.Fail($"The following interfaces are implemented on the async {asyncRepository.Name} but not on the sync one:\r\n{missing.NewLineSeperate()}");
 
         }
 
