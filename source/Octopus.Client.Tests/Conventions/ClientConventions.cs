@@ -344,8 +344,113 @@ namespace Octopus.Client.Tests.Conventions
         }
 #endif
 
+        [Test]
+        public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
+        {
+            var ignored = new []
+            {
+                typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(ITaskRepository).GetTypeInfo()
+            };
 
+            var createsResources = AsyncRepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(ICreate<>)))
+                .ToArray();
 
+            var alsoImplementsModify = createsResources
+                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IModify<>))))
+                .ToArray();
+
+            var missingModify = createsResources.Except(alsoImplementsModify).ToArray();
+
+            if (missingModify.Any())
+            {
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+
+#if SYNC_CLIENT
+        [Test]
+        public void SyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
+        {
+            var ignored = new[]
+            {
+                typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.ITaskRepository).GetTypeInfo()
+            };
+
+            var createsResources = SyncRepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(ICreate<>)))
+                .ToArray();
+
+            var alsoImplementsModify = createsResources
+                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IModify<>))))
+                .ToArray();
+
+            var missingModify = createsResources.Except(alsoImplementsModify).ToArray();
+
+            if (missingModify.Any())
+            {
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+#endif
+
+        [Test]
+        public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
+        {
+            var ignored = new[]
+            {
+                typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(ITaskRepository).GetTypeInfo()
+            };
+
+            var createsResources = AsyncRepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(ICreate<>)))
+                .ToArray();
+
+            var alsoImplementsDelete = createsResources
+                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IDelete<>))))
+                .ToArray();
+
+            var missingDelete = createsResources.Except(alsoImplementsDelete).ToArray();
+
+            if (missingDelete.Any())
+            {
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+
+#if SYNC_CLIENT
+        [Test]
+        public void SyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
+        {
+            var ignored = new[]
+            {
+                typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.ITaskRepository).GetTypeInfo()
+            };
+
+            var createsResources = SyncRepositoryInterfaceTypes
+                .Except(ignored)
+                .Where(t => t.AsType().IsAssignableToGenericType(typeof(ICreate<>)))
+                .ToArray();
+
+            var alsoImplementsDelete = createsResources
+                .Where(t => t.GetInterfaces().Any(i => i.IsClosedTypeOf(typeof(IDelete<>))))
+                .ToArray();
+
+            var missingDelete = createsResources.Except(alsoImplementsDelete).ToArray();
+
+            if (missingDelete.Any())
+            {
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
+            }
+        }
+#endif
 
 #if HAS_BEST_CONVENTIONAL
 

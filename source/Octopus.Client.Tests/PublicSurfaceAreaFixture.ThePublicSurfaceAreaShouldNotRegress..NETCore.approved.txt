@@ -3927,6 +3927,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<UserRoleResource>
     Octopus.Client.Repositories.Async.ICreate<UserRoleResource>
     Octopus.Client.Repositories.Async.IModify<UserRoleResource>
+    Octopus.Client.Repositories.Async.IDelete<UserRoleResource>
   {
   }
   interface IVariableSetRepository
