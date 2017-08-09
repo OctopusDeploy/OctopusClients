@@ -461,7 +461,7 @@ namespace Octopus.Client
                 }
                 else
                 {
-                    result.Append(UriExtensions.HexEscape(c));
+                    result.Append(Uri.EscapeDataString(c.ToString()));
                 }
             }
 
