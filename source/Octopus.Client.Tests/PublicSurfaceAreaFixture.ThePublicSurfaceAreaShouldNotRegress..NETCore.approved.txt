@@ -434,8 +434,10 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IVariableSetRepository)
     Octopus.Client.Model.VariableSetResource Instance { get; }
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean)
+    Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean, String)
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification)
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String)
+    Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, String)
     Octopus.Client.Editors.Async.VariableSetEditor Customize(Action<VariableSetResource>)
     Task<VariableSetEditor> Load(String)
     Task<VariableSetEditor> Save()
@@ -2951,6 +2953,7 @@ Octopus.Client.Model
   class VariableResource
   {
     .ctor()
+    String Description { get; set; }
     String Id { get; set; }
     Boolean IsEditable { get; set; }
     Boolean IsSensitive { get; set; }
@@ -2986,8 +2989,10 @@ Octopus.Client.Model
     IList<VariableResource> Variables { get; set; }
     Int32 Version { get; set; }
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String)
+    Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, String)
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification)
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean)
+    Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean, String)
   }
   class VariableTemplateContainerEditor`1
     Octopus.Client.Model.IVariableTemplateContainerEditor<TContainer>

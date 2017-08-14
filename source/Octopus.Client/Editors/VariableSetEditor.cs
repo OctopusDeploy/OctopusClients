@@ -27,6 +27,12 @@ namespace Octopus.Client.Editors
             return this;
         }
 
+        public VariableSetEditor AddOrUpdateVariableValue(string name, string value, ScopeSpecification scope, bool isSensitive, string description)
+        {
+            Instance.AddOrUpdateVariableValue(name, value, scope, isSensitive, description);
+            return this;
+        }
+
         public VariableSetEditor AddOrUpdateVariableValue(string name, string value, ScopeSpecification scope)
         {
             Instance.AddOrUpdateVariableValue(name, value, scope);
@@ -36,6 +42,12 @@ namespace Octopus.Client.Editors
         public VariableSetEditor AddOrUpdateVariableValue(string name, string value)
         {
             Instance.AddOrUpdateVariableValue(name, value);
+            return this;
+        }
+
+        public VariableSetEditor AddOrUpdateVariableValue(string name, string value, string description)
+        {
+            Instance.AddOrUpdateVariableValue(name, value, description);
             return this;
         }
 
