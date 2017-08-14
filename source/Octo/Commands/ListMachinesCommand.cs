@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Octo.Commands;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -13,17 +15,20 @@ using Octopus.Client.Model.Endpoints;
 namespace Octopus.Cli.Commands
 {
     [Command("list-machines", Description = "Lists all machines")]
-    public class ListMachinesCommand : ApiCommand
+    public class ListMachinesCommand : ApiCommand, ISupportFormattedOutput
     {
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> healthStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private HealthStatusProvider provider;
+        List<EnvironmentResource> environmentResources;
+        IEnumerable<MachineResource> environmentMachines;
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
-            : base(clientFactory, repositoryFactory, log, fileSystem)
+        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
@@ -34,14 +39,36 @@ namespace Octopus.Cli.Commands
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to filter. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
         
-        protected override async Task Execute()
+        public async Task Query()
         {
-            var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
-            var environmentResources = await GetEnvironments().ConfigureAwait(false);
-            IEnumerable<MachineResource> environmentMachines = await FilterByEnvironments(environmentResources).ConfigureAwait(false);
-            environmentMachines = FilterByState(environmentMachines, provider);
+            provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
 
+            environmentResources = await GetEnvironments().ConfigureAwait(false);
+
+            environmentMachines = await FilterByEnvironments(environmentResources).ConfigureAwait(false);
+            environmentMachines = FilterByState(environmentMachines, provider);
+        }
+
+        public void PrintDefaultOutput()
+        {
             LogFilteredMachines(environmentMachines, provider, environmentResources);
+        }
+
+        public void PrintJsonOutput()
+        {
+            Log.Information(JsonConvert.SerializeObject(environmentMachines.Select(machine => new
+            {
+                machine.Name,
+                Status = provider.GetStatus(machine),
+                machine.Id,
+                Environments = machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)
+                    .ToArray()
+            }), Formatting.Indented));
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
 
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)

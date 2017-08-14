@@ -20,8 +20,8 @@ namespace Octopus.Cli.Commands
     {
         private readonly IReleasePlanBuilder releasePlanBuilder;
 
-        public CreateReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder, IOctopusClientFactory clientFactory)
-            : base(repositoryFactory, log, fileSystem, clientFactory)
+        public CreateReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
         {
             this.releasePlanBuilder = releasePlanBuilder;
 

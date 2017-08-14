@@ -58,6 +58,8 @@ namespace Octopus.Cli.Tests.Commands
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
 
+            CommandOutputProvider = Substitute.For<ICommandOutputProvider>();
+
             CommandLineArgs = new List<string>
             {
                 "--server=http://the-server",
@@ -77,6 +79,8 @@ namespace Octopus.Cli.Tests.Commands
         public IOctopusAsyncRepository Repository { get; set; }
 
         public IOctopusFileSystem FileSystem { get; set; }
+
+        public ICommandOutputProvider CommandOutputProvider { get; set; }
 
         public List<string> CommandLineArgs { get; set; }
 

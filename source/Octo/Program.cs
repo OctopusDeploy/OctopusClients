@@ -33,10 +33,9 @@ namespace Octopus.Cli
 
         internal static int Run(string[] args)
         {
-            Log.Information("Octopus Deploy Command Line Tool, version {Version:l}", typeof(Program).GetInformationalVersion());
+            
             Console.Title = "Octopus Deploy Command Line Tool";
-            Log.Information(string.Empty);
-
+            
             try
             {
                 var container = BuildContainer();
@@ -72,6 +71,8 @@ namespace Octopus.Cli
 
             builder.RegisterAssemblyTypes(thisAssembly).As<ICommand>().AsSelf();
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
+
+            builder.RegisterType<CommandOutputProvider>().As<ICommandOutputProvider>();
 
             builder.RegisterAssemblyTypes(thisAssembly).As<IExporter>().AsSelf();
             builder.RegisterAssemblyTypes(thisAssembly).As<IImporter>().AsSelf();

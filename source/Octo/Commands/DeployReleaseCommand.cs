@@ -12,8 +12,8 @@ namespace Octopus.Cli.Commands
     [Command("deploy-release", Description = "Deploys a release.")]
     public class DeployReleaseCommand : DeploymentCommandBase
     {
-        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
-            : base(repositoryFactory, log, fileSystem, clientFactory)
+        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
         {
             var options = Options.For("Deployment");
             options.Add("project=", "Name of the project", v => ProjectName = v);

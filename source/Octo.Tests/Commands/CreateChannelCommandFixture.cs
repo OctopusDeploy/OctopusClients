@@ -15,7 +15,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            createChannelCommand = new CreateChannelCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            createChannelCommand = new CreateChannelCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
         CreateChannelCommand createChannelCommand;

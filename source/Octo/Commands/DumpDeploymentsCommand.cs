@@ -18,8 +18,8 @@ namespace Octopus.Cli.Commands
     {
         string filePath;
 
-        public DumpDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
-            : base(clientFactory, repositoryFactory, log, fileSystem)
+        public DumpDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Dumper");
             options.Add("filePath=", "The full path and name of the export file", delegate(string v) { filePath = v; });

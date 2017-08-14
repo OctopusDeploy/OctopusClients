@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Octo.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -13,17 +15,23 @@ using Serilog;
 namespace Octopus.Cli.Commands
 {
     [Command("list-deployments", Description = "List a number of deployments by project, environment or by tenant")]
-    public class ListDeploymentsCommand : ApiCommand
+    public class ListDeploymentsCommand : ApiCommand, ISupportFormattedOutput
     {
         const int DefaultReturnAmount = 30;
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> tenants = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private int? numberOfResults;
+        IDictionary<string, string> projectsById;
+        IDictionary<string, string> environmentsById;
+        string[] projectsFilter;
+        string[] environmentsFilter;
+        IDictionary<string, string> tenantsById;
+        
+        private Dictionary<DeploymentResource, DeploymentRelatedResources> deploymentResources;
 
-        public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log,
-            IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
-            : base(clientFactory, repositoryFactory, log, fileSystem)
+        public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("project=", "[Optional] Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
@@ -32,55 +40,96 @@ namespace Octopus.Cli.Commands
             options.Add("number=", $"[Optional] number of results to return, default is {DefaultReturnAmount}", v => numberOfResults = int.Parse(v));
         }
 
-        protected override async Task Execute()
+        public async Task Query()
         {
-            var projectsById = await LoadProjects();
-            var projectsFilter = projectsById.Keys.ToArray();
-
-            var environmentsById = await LoadEnvironments();
-            var environmentsFilter = environmentsById.Keys.ToArray();
+            projectsById = await LoadProjects();
+            projectsFilter = projectsById.Keys.ToArray();
+            environmentsById = await LoadEnvironments();
+            environmentsFilter = environmentsById.Keys.ToArray();
 
             var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
             var tenantsFilter = new string[0];
-            IDictionary<string, string> tenantsById = new Dictionary<string, string>();
+
+            tenantsById = new Dictionary<string, string>();
             if (features.IsMultiTenancyEnabled)
             {
                 tenantsById = await LoadTenants();
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
             }
 
-            Log.Debug("Loading deployments...");
-            var deploymentResources = new List<DeploymentResource>();
+            if (ShouldWriteToLog)
+            {
+                Log.Debug("Loading deployments..."); 
+            }
+
+            deploymentResources = new Dictionary<DeploymentResource, DeploymentRelatedResources>();
             var maxResults = numberOfResults ?? DefaultReturnAmount;
             await Repository.Deployments
-                .Paginate(projectsFilter, environmentsFilter, tenantsFilter, delegate (ResourceCollection<DeploymentResource> page)
-                {
-                    if(deploymentResources.Count < maxResults)
-                        deploymentResources.AddRange(page.Items.Take(maxResults - deploymentResources.Count));
+                .Paginate(projectsFilter, environmentsFilter, tenantsFilter,
+                    delegate(ResourceCollection<DeploymentResource> page)
+                    {
+                        if (deploymentResources.Count < maxResults)
+                        {
+                            foreach (var dr in page.Items.Take(maxResults - deploymentResources.Count))
+                            {
+                                deploymentResources.Add(dr, new DeploymentRelatedResources());
+                            }
+                        }
 
-                    return true;
-                })
+                        return true;
+                    })
                 .ConfigureAwait(false);
 
+            foreach (var item in deploymentResources.Keys)
+            {
+                deploymentResources[item].ReleaseResource = await Repository.Releases.Get(item.ReleaseId).ConfigureAwait(false);
+
+                if (!string.IsNullOrEmpty(item.ChannelId))
+                    deploymentResources[item].ChannelResource = await Repository.Channels.Get(item.ChannelId).ConfigureAwait(false);
+            }
+        }
+
+        public void PrintDefaultOutput()
+        {
             if (!deploymentResources.Any())
             {
                 Log.Information("Did not find any deployments matching the search criteria.");
             }
 
             Log.Debug($"Showing {deploymentResources.Count} results...");
-            foreach (var item in deploymentResources)
+
+            foreach (var item in deploymentResources.Keys)
             {
-                var release = await Repository.Releases.Get(item.ReleaseId).ConfigureAwait(false);
-                ChannelResource channel = null;
-
-                if (!string.IsNullOrEmpty(item.ChannelId))
-                    channel = await Repository.Channels.Get(item.ChannelId).ConfigureAwait(false);
-
-                LogDeploymentInfo(Log, item, release, channel, environmentsById, projectsById, tenantsById);
-            }
-
-            if(numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
+                LogDeploymentInfo(Log, item, deploymentResources[item].ReleaseResource, deploymentResources[item].ChannelResource, environmentsById, projectsById, tenantsById);
+            }    
+            
+            if (numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
                 Log.Debug($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
+        }
+
+        public void PrintJsonOutput()
+        {
+            Log.Information(
+                JsonConvert.SerializeObject(
+                    deploymentResources.Select(dr => new
+                    {
+                        Project = projectsById[dr.Key.ProjectId],
+                        Environment = environmentsById[dr.Key.EnvironmentId],
+                        Tenant = !string.IsNullOrWhiteSpace(dr.Key.TenantId)
+                            ? tenantsById[dr.Key.TenantId]
+                            : string.Empty,
+                        Channel = dr.Value.ChannelResource != null ? dr.Value.ChannelResource.Name : string.Empty,
+                        dr.Key.Created,
+                        dr.Value.ReleaseResource.Version,
+                        dr.Value.ReleaseResource.Assembled,
+                        PackageVersions = GetPackageVersionsAsString(dr.Value.ReleaseResource.SelectedPackages),
+                        ReleaseNotes = GetReleaseNotes(dr.Value.ReleaseResource)
+                    }), Formatting.Indented));
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<IDictionary<string, string>> LoadProjects()
@@ -125,11 +174,14 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadTenants()
         {
-            Log.Debug("Loading tenants...");
+            if (ShouldWriteToLog)
+            {
+                Log.Debug("Loading tenants..."); 
+            }
+
             var tenantsQuery = tenants.Any()
                 ? Repository.Tenants.FindByNames(tenants.ToArray())
                 : Repository.Tenants.FindAll();
-
 
             var tenantsResources = await tenantsQuery.ConfigureAwait(false);
 
@@ -171,9 +223,22 @@ namespace Octopus.Cli.Commands
             log.Information("   Version: {Version:l}", release.Version);
             log.Information("   Assembled: {$Assembled:l}", release.Assembled);
             log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
+            log.Information("   Release Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
 
             log.Information("");
         }
+
+        private static string GetReleaseNotes(ReleaseResource release)
+        {
+            return release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "";
+        }
+
+        private class DeploymentRelatedResources
+        {
+            public ChannelResource ChannelResource { get; set; }
+            public ReleaseResource ReleaseResource { get; set; }
+        }
     }
+
+
 }

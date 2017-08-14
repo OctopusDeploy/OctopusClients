@@ -24,7 +24,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            createAutoDeployOverrideCommand = new CreateAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            createAutoDeployOverrideCommand = new CreateAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");

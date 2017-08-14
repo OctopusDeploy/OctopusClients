@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -14,7 +13,8 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using System.Diagnostics;
+using Octo.Commands;
+using Octo.Model;
 
 namespace Octopus.Cli.Commands
 {
@@ -22,20 +22,27 @@ namespace Octopus.Cli.Commands
     {
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
+        private readonly ICommandOutputProvider commandOutputProvider;
         string apiKey;
         bool enableDebugging;
         bool ignoreSslErrors;
+        private bool printHelp;
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
+        private readonly ISupportFormattedOutput formattedOutputInstance;
+        
 
-        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
+            this.commandOutputProvider = commandOutputProvider;
             this.Log = log;
             this.FileSystem = fileSystem;
 
+            formattedOutputInstance = this as ISupportFormattedOutput;
+            
             var options = Options.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
             options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used.", v => apiKey = v);
@@ -49,9 +56,19 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
+
+            if (formattedOutputInstance != null)
+            {
+                options.Add("output=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
+            }
+            
+            options.Add("help", "[Optional] Print help for a command", x => printHelp = true);
+            ShouldWriteToLog = OutputFormat == OutputFormat.Default || enableDebugging;
         }
 
         protected Options Options { get; } = new Options();
+
+        protected bool ShouldWriteToLog { get; }
 
         protected ILogger Log { get; }
 
@@ -62,6 +79,10 @@ namespace Octopus.Cli.Commands
         protected OctopusRepositoryCommonQueries RepositoryCommonQueries { get; private set; }
 
         protected IOctopusFileSystem FileSystem { get; }
+
+        public OutputFormat OutputFormat { get; set; }
+
+        
 
         public void GetHelp(TextWriter writer)
         {
@@ -92,7 +113,16 @@ namespace Octopus.Cli.Commands
 #else
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
-            
+
+            if (printHelp)
+            {
+                // TODO this.GetHelp();
+            }
+
+            if (OutputFormat == OutputFormat.Default)
+            {
+                commandOutputProvider.PrintHeader();
+            }
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
@@ -103,9 +133,17 @@ namespace Octopus.Cli.Commands
                 Repository.Client.SendingOctopusRequest += request => Log.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
             }
 
-            Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
+            if (ShouldWriteToLog)
+            {
+                Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
+            }
+
             var root = Repository.Client.RootDocument;
-            Log.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
+
+            if (ShouldWriteToLog)
+            {
+                Log.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
+            }
 
             if (!string.IsNullOrWhiteSpace(username))
             {
@@ -113,20 +151,54 @@ namespace Octopus.Cli.Commands
             }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
-            if (user != null)
+            if (user != null && ShouldWriteToLog)
             {
                 Log.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
+            // TODO PrintCommandIntroduction();
             await Execute().ConfigureAwait(false);
         }
 
-
         protected virtual void ValidateParameters() { }
 
-        protected abstract Task Execute();
+        // TODO protected virtual void PrintCommandIntroduction() { }
 
+        protected virtual async Task Execute()
+        {
+            ISupportFormattedOutput canDoFormattedOutput = this as ISupportFormattedOutput;
+            if (canDoFormattedOutput != null)
+            {
+                await canDoFormattedOutput.Query();
+
+                Respond(canDoFormattedOutput);
+            }
+            else
+            {
+                throw new Exception("Need to override the Execute method or implement the ISuportFormattedOutput interface");
+            }
+        }
+
+        private void Respond(ISupportFormattedOutput canDoFormattedOutput)
+        {
+            if (canDoFormattedOutput != null)
+            {
+                if (OutputFormat == OutputFormat.Json)
+                {
+                    canDoFormattedOutput.PrintJsonOutput();
+                }
+                else if (OutputFormat == OutputFormat.Xml)
+                {
+                    canDoFormattedOutput.PrintXmlOutput();
+                }
+                else
+                {
+                    canDoFormattedOutput.PrintDefaultOutput();
+                }
+            }
+        }
+        
         static NetworkCredential ParseCredentials(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -224,6 +296,11 @@ namespace Octopus.Cli.Commands
             return packageVersionsAsString;
         }
 
+        private void SetOutputFormat(string s)
+        {
+            OutputFormat outputFormat;
+            OutputFormat = Enum.TryParse(s, true, out outputFormat) ? outputFormat : OutputFormat.Default;
+        }
 
 #if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
         private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)

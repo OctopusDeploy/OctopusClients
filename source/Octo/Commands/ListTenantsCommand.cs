@@ -10,11 +10,11 @@ using Octopus.Client;
 namespace Octopus.Cli.Commands
 {
     [Command("list-tenants", Description = "List tenants")]
-    public class ListTenantsCommand : ApiCommand
+    public class ListTenantsCommand : ApiCommand 
     {
 
-        public ListTenantsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory)
-            : base(clientFactory, repositoryFactory, log, fileSystem)
+        public ListTenantsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory,ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
         }
 

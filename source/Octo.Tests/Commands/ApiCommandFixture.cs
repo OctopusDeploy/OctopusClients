@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using Octo.Commands;
+using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 
@@ -15,7 +17,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            apiCommand = new DummyApiCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            apiCommand = new DummyApiCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
         [Test]

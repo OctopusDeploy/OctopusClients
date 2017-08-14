@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Octo": {
+      "commandName": "Project",
+      "commandLineArgs": "list-machines --server http://localhost:8065 --apikey API-FKNEGXMBPKEMOU9HBYZCIFQIOE --format=json"
+    }
+  }
+}
