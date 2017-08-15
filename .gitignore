@@ -68,3 +68,4 @@ TestResult.xml
 TestResults/
 *.received.*
 .idea/
+**/Properties/launchSettings.json
