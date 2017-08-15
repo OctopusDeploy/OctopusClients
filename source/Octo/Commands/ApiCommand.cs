@@ -30,8 +30,7 @@ namespace Octopus.Cli.Commands
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
-        private readonly ISupportFormattedOutput formattedOutputInstance;
-        
+        readonly ISupportFormattedOutput formattedOutputInstance;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
@@ -41,8 +40,6 @@ namespace Octopus.Cli.Commands
             this.Log = log;
             this.FileSystem = fileSystem;
 
-            formattedOutputInstance = this as ISupportFormattedOutput;
-            
             var options = Options.For("Common options");
             options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
             options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used.", v => apiKey = v);
@@ -57,18 +54,18 @@ namespace Octopus.Cli.Commands
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
 
+            formattedOutputInstance = this as ISupportFormattedOutput;
             if (formattedOutputInstance != null)
             {
                 options.Add("output=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
             }
             
             options.Add("help", "[Optional] Print help for a command", x => printHelp = true);
-            ShouldWriteToLog = OutputFormat == OutputFormat.Default || enableDebugging;
         }
 
         protected Options Options { get; } = new Options();
 
-        protected bool ShouldWriteToLog { get; }
+        protected bool ShouldWriteToLog { get; set; }
 
         protected ILogger Log { get; }
 
@@ -81,8 +78,6 @@ namespace Octopus.Cli.Commands
         protected IOctopusFileSystem FileSystem { get; }
 
         public OutputFormat OutputFormat { get; set; }
-
-        
 
         public void GetHelp(TextWriter writer)
         {
@@ -114,6 +109,7 @@ namespace Octopus.Cli.Commands
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
 
+            ShouldWriteToLog = OutputFormat == OutputFormat.Default || enableDebugging;
             if (printHelp)
             {
                 // TODO this.GetHelp();
@@ -167,12 +163,11 @@ namespace Octopus.Cli.Commands
 
         protected virtual async Task Execute()
         {
-            ISupportFormattedOutput canDoFormattedOutput = this as ISupportFormattedOutput;
-            if (canDoFormattedOutput != null)
+            if (formattedOutputInstance != null)
             {
-                await canDoFormattedOutput.Query();
+                await formattedOutputInstance.Query();
 
-                Respond(canDoFormattedOutput);
+                Respond();
             }
             else
             {
@@ -180,21 +175,21 @@ namespace Octopus.Cli.Commands
             }
         }
 
-        private void Respond(ISupportFormattedOutput canDoFormattedOutput)
+        private void Respond()
         {
-            if (canDoFormattedOutput != null)
+            if (formattedOutputInstance != null)
             {
-                if (OutputFormat == OutputFormat.Json)
+                switch (OutputFormat)
                 {
-                    canDoFormattedOutput.PrintJsonOutput();
-                }
-                else if (OutputFormat == OutputFormat.Xml)
-                {
-                    canDoFormattedOutput.PrintXmlOutput();
-                }
-                else
-                {
-                    canDoFormattedOutput.PrintDefaultOutput();
+                    case OutputFormat.Json:
+                        formattedOutputInstance.PrintJsonOutput();
+                        break;
+                    case OutputFormat.Xml:
+                        formattedOutputInstance.PrintXmlOutput();
+                        break;
+                    default:
+                        formattedOutputInstance.PrintDefaultOutput();
+                        break;
                 }
             }
         }
