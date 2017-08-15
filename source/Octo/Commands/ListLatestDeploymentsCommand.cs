@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Octo.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -12,10 +14,17 @@ using Serilog;
 namespace Octopus.Cli.Commands
 {
     [Command("list-latestdeployments", Description = "List the releases last-deployed in each environment")]
-    public class ListLatestDeploymentsCommand : ApiCommand
+    public class ListLatestDeploymentsCommand : ApiCommand, ISupportFormattedOutput
     {
         readonly HashSet<string> environments = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> projects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        IDictionary<string, string> projectsById;
+        string[] projectsFilter;
+        IDictionary<string, string> environmentsById;
+        string[] environmentsFilter;
+        DashboardResource dashboard;
+        Dictionary<string, string> tenantsById;
+        private Dictionary<DashboardItemResource, DeploymentRelatedResources> dashboardRelatedResourceses;
 
         public ListLatestDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
@@ -24,40 +33,10 @@ namespace Octopus.Cli.Commands
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
         }
-
-        protected override async Task Execute()
-        {
-            var projectsById = await LoadProjects();
-            var projectsFilter = projectsById.Keys.ToArray();
-
-            var environmentsById = await LoadEnvironments();
-            var environmentsFilter = environmentsById.Keys.ToArray();
-
-            Log.Debug("Loading dashboard...");
-            var dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
-
-            var tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
-
-            if (!dashboard.Items.Any())
-            {
-                Log.Information("Did not find any releases matching the search criteria.");
-            }
-
-            foreach (var dashboardItem in dashboard.Items)
-            {
-                var release = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
-                ChannelResource channel = null;
-
-                if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
-                    channel = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
-
-                LogDeploymentInfo(Log, dashboardItem, release, channel, environmentsById, projectsById, tenantsById);
-            }
-        }
-
+        
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            Log.Debug("Loading projects...");
+            LogDebug("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -76,7 +55,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            Log.Debug("Loading environments...");
+            LogDebug("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
@@ -127,9 +106,87 @@ namespace Octopus.Cli.Commands
             log.Information("   Version: {Version:l}", release.Version);
             log.Information("   Assembled: {$Assembled:l}", release.Assembled);
             log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            log.Information("   Release Notes: {ReleaseNotes:l}", release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "");
+            log.Information("   Release Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
 
             log.Information("");
+        }
+
+        
+
+        public async Task Query()
+        {
+            projectsById = await LoadProjects();
+            projectsFilter = projectsById.Keys.ToArray();
+
+            environmentsById = await LoadEnvironments();
+            environmentsFilter = environmentsById.Keys.ToArray();
+
+            LogDebug("Loading dashboard...");
+
+            dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
+            tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
+
+            dashboardRelatedResourceses = new Dictionary<DashboardItemResource, DeploymentRelatedResources>();
+            foreach (var dashboardItem in dashboard.Items)
+            {
+                DeploymentRelatedResources drr = new DeploymentRelatedResources();
+                drr.ReleaseResource = await Repository.Releases.Get(dashboardItem.ReleaseId).ConfigureAwait(false);
+                
+                if (!string.IsNullOrEmpty(dashboardItem.ChannelId))
+                    drr.ChannelResource = await Repository.Channels.Get(dashboardItem.ChannelId).ConfigureAwait(false);
+
+                dashboardRelatedResourceses[dashboardItem] = drr;
+            }
+        }
+
+        public void PrintDefaultOutput()
+        {
+            if (!dashboard.Items.Any())
+            {
+                Log.Information("Did not find any releases matching the search criteria.");
+            }
+
+            foreach (var dashboardItem in dashboardRelatedResourceses.Keys)
+            {
+                LogDeploymentInfo(
+                    Log, 
+                    dashboardItem, 
+                    dashboardRelatedResourceses[dashboardItem].ReleaseResource,
+                    dashboardRelatedResourceses[dashboardItem].ChannelResource, 
+                    environmentsById, 
+                    projectsById,
+                    tenantsById);
+            }
+            
+        }
+
+        public void PrintJsonOutput()
+        {
+            Log.Information(JsonConvert.SerializeObject(dashboardRelatedResourceses.Keys.Select(dashboardItem => new
+            {
+                dashboardItem,
+                release = dashboardRelatedResourceses[dashboardItem].ReleaseResource,
+                channel = dashboardRelatedResourceses[dashboardItem].ChannelResource,
+            })
+            .Select(x => new
+            {
+                Project = projectsById[x.dashboardItem.ProjectId],
+                Environment = environmentsById[x.dashboardItem.EnvironmentId],
+                Tenant = !string.IsNullOrEmpty(x.dashboardItem.TenantId) ? tenantsById[x.dashboardItem.TenantId] : string.Empty,
+                Channel = x.channel != null ? x.channel.Name : string.Empty,
+                Date = x.dashboardItem.QueueTime,
+                x.dashboardItem.Duration,
+                x.dashboardItem.State,
+                x.release.Version,
+                x.release.Assembled,
+                PackageVersion = GetPackageVersionsAsString(x.release.SelectedPackages),
+                ReleaseNotes = GetReleaseNotes(x.release)
+            }), Formatting.Indented));
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }

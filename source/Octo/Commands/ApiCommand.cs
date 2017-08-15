@@ -282,8 +282,13 @@ namespace Octopus.Cli.Commands
                 "Version: " + release.Version,
                 "Assembled: " + release.Assembled,
                 "Package Versions: " + GetPackageVersionsAsString(release.SelectedPackages),
-                "Release Notes: " + ((release.ReleaseNotes != null) ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "")
+                "Release Notes: " + GetReleaseNotes(release)
             };
+        }
+
+        protected static string GetReleaseNotes(ReleaseResource release)
+        {
+            return release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "";
         }
 
         protected static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)

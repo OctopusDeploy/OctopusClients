@@ -57,10 +57,7 @@ namespace Octopus.Cli.Commands
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
             }
 
-            if (ShouldWriteToLog)
-            {
-                Log.Debug("Loading deployments..."); 
-            }
+            LogDebug("Loading deployments..."); 
 
             deploymentResources = new Dictionary<DeploymentResource, DeploymentRelatedResources>();
             var maxResults = numberOfResults ?? DefaultReturnAmount;
@@ -227,18 +224,5 @@ namespace Octopus.Cli.Commands
 
             log.Information("");
         }
-
-        private static string GetReleaseNotes(ReleaseResource release)
-        {
-            return release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "";
-        }
-
-        private class DeploymentRelatedResources
-        {
-            public ChannelResource ChannelResource { get; set; }
-            public ReleaseResource ReleaseResource { get; set; }
-        }
     }
-
-
 }

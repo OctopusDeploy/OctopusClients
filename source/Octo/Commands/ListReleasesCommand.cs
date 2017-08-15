@@ -78,7 +78,7 @@ namespace Octopus.Cli.Commands
                     r.Version,
                     r.Assembled,
                     PackageVersions = GetPackageVersionsAsString(r.SelectedPackages),
-                    ReleaseNotes = !string.IsNullOrEmpty(r.ReleaseNotes) ? r.ReleaseNotes.Replace(Environment.NewLine, @"\n") : string.Empty
+                    ReleaseNotes =  GetReleaseNotes(r)
 
                 })
             }), Formatting.Indented));
