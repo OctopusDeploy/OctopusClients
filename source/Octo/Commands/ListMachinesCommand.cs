@@ -84,7 +84,7 @@ namespace Octopus.Cli.Commands
 
         private Task<List<EnvironmentResource>> GetEnvironments()
         {
-            Log.Debug("Loading environments...");
+            LogDebug("Loading environments...");
             return Repository.Environments.FindAll();
         }
 
@@ -121,17 +121,17 @@ namespace Octopus.Cli.Commands
 
             var environmentFilter = environmentsToInclude.Select(p => p.Id).ToList();
 
-            Log.Debug("Loading machines...");
+            LogDebug("Loading machines...");
             if (environmentFilter.Count > 0)
             {
-                Log.Debug("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
+                LogDebug("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
                 return
                      Repository.Machines.FindMany(
                         x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });
             }
             else
             {
-                Log.Debug("Loading machines from all environments...");
+                LogDebug("Loading machines from all environments...");
                 return  Repository.Machines.FindAll();
             }
         }

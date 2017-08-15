@@ -220,6 +220,14 @@ namespace Octopus.Cli.Commands
             }
         }
 
+        protected void LogDebug(string s)
+        {
+            if (ShouldWriteToLog)
+            {
+                Log.Debug(s);
+            }
+        }
+
         protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
             configFile = FileSystem.GetFullPath(configFile);

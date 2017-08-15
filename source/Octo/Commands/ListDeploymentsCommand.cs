@@ -134,7 +134,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            Log.Debug("Loading projects...");
+            LogDebug("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -153,7 +153,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            Log.Debug("Loading environments...");
+            LogDebug("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
