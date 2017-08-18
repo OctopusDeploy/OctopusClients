@@ -12,10 +12,12 @@ namespace Octopus.Cli.Commands
 {
     public class TaskOutputProgressPrinter
     {
+        private ILogger log;
         readonly HashSet<string> printed = new HashSet<string>();
 
         public async Task Render(IOctopusAsyncRepository repository, ILogger log, TaskResource resource)
         {
+            this.log = log;
             var details = await repository.Tasks.GetDetails(resource).ConfigureAwait(false);
 
             if (details.ActivityLogs != null)

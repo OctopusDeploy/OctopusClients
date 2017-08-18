@@ -1,15 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Castle.Core.Logging;
 using Serilog;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using ILogger = Serilog.ILogger;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -39,10 +43,11 @@ namespace Octopus.Cli.Tests.Commands
         public void BaseSetup()
         {
             LogOutput = new StringBuilder();
-            Log = new LoggerConfiguration()
-                .WriteTo.TextWriter(new StringWriter(LogOutput), outputTemplate: "[{Level}] {Message}{NewLine}{Exception}", formatProvider: new StringFormatter(null))
-                .CreateLogger();
 
+            Log = new LoggerConfiguration()
+                .WriteTo.TextWriter(new StringWriter(LogOutput), outputTemplate: "{Message}{NewLine}{Exception}", formatProvider: new StringFormatter(null))
+                .CreateLogger();
+           
             RootResource rootDocument = Substitute.For<RootResource>();
             rootDocument.ApiVersion = "2.0";
             rootDocument.Version = "2.0";
@@ -58,13 +63,15 @@ namespace Octopus.Cli.Tests.Commands
 
             FileSystem = Substitute.For<IOctopusFileSystem>();
 
-            CommandOutputProvider = Substitute.For<ICommandOutputProvider>();
+            CommandOutputProvider = new CommandOutputProvider(Log);
 
             CommandLineArgs = new List<string>
             {
                 "--server=http://the-server",
                 "--apiKey=ABCDEF123456789"
             };
+
+
         }
 
         public StringBuilder LogOutput { get; set; }
@@ -73,6 +80,8 @@ namespace Octopus.Cli.Tests.Commands
         public IOctopusClientFactory ClientFactory { get; set; }
 
         public ILogger Log { get; set; }
+
+        public ILogger FormattedOutputLogger { get; set; }
 
         public IOctopusAsyncRepositoryFactory RepositoryFactory { get; set; }
 

@@ -39,16 +39,16 @@ namespace Octopus.Cli.Tests.Commands
 
             await listReleasesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain(string.Format("[Information] Releases: {0}", 2));
-            LogLines.Should().Contain(string.Format("[Information]  - Project: {0}", "ProjectA"));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Version: 1.0"));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Assembled: " + DateTimeOffset.MinValue));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Package Versions: "));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Release Notes: Release Notes 1"));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Version: 2.0"));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Assembled: " + DateTimeOffset.MaxValue));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Package Versions: "));
-            LogLines.Should().Contain(string.Format("[Information]     {0}", "Release Notes: Release Notes 2"));
+            LogLines.Should().Contain(string.Format("Releases: {0}", 2));
+            LogLines.Should().Contain(string.Format(" - Project: {0}", "ProjectA"));
+            LogLines.Should().Contain(string.Format("    {0}", "Version: 1.0"));
+            LogLines.Should().Contain(string.Format("    {0}", "Assembled: " + DateTimeOffset.MinValue));
+            LogLines.Should().Contain(string.Format("    {0}", "Package Versions: "));
+            LogLines.Should().Contain(string.Format("    {0}", "Release Notes: Release Notes 1"));
+            LogLines.Should().Contain(string.Format("    {0}", "Version: 2.0"));
+            LogLines.Should().Contain(string.Format("    {0}", "Assembled: " + DateTimeOffset.MaxValue));
+            LogLines.Should().Contain(string.Format("    {0}", "Package Versions: "));
+            LogLines.Should().Contain(string.Format("    {0}", "Release Notes: Release Notes 2"));
         }
     }
 }

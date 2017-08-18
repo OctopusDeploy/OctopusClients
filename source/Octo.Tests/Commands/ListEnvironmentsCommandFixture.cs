@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -23,17 +24,34 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public async Task ShouldGetListOfEnvironments()
         {
+            SetupEnvironments();
+
+            await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            LogLines.Should().Contain("Environments: 2");
+            LogLines.Should().Contain(" - Dev (ID: devenvid)");
+            LogLines.Should().Contain(" - Prod (ID: prodenvid)");
+        }
+
+        [Test]
+        public async Task JsonFormat_ShouldBeWellFormed()
+        {
+            SetupEnvironments();
+            
+            CommandLineArgs.Add("--output=json");
+            await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            var outputObject = JsonConvert.DeserializeObject(LogOutput.ToString());
+        }
+
+        private void SetupEnvironments()
+        {
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource() {Name = "Dev", Id = "devenvid"},
                 new EnvironmentResource() {Name = "Prod", Id = "prodenvid"}
             });
-
-            await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
-
-            LogLines.Should().Contain("[Information] Environments: 2");
-            LogLines.Should().Contain("[Information]  - Dev (ID: devenvid)");
-            LogLines.Should().Contain("[Information]  - Prod (ID: prodenvid)");
         }
+
     }
 }

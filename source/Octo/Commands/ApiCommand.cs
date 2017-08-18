@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Serilog;
@@ -15,29 +16,27 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Octo.Commands;
 using Octo.Model;
+using Serilog.Events;
 
 namespace Octopus.Cli.Commands
 {
-    public abstract class ApiCommand : ICommand
+    public abstract class ApiCommand : CommandBase, ICommand
     {
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
-        private readonly ICommandOutputProvider commandOutputProvider;
         string apiKey;
         bool enableDebugging;
         bool ignoreSslErrors;
-        private bool printHelp;
+        
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
         readonly ISupportFormattedOutput formattedOutputInstance;
 
-        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
         {
             this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
-            this.commandOutputProvider = commandOutputProvider;
-            this.Log = log;
             this.FileSystem = fileSystem;
 
             var options = Options.For("Common options");
@@ -45,10 +44,11 @@ namespace Octopus.Cli.Commands
             options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
+            
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
-            options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => log.EnableServiceMessages());
+            options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => Log.EnableServiceMessages());
             options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => clientOptions.Timeout = TimeSpan.FromSeconds(int.Parse(v)));
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
@@ -59,15 +59,7 @@ namespace Octopus.Cli.Commands
             {
                 options.Add("output=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
             }
-            
-            options.Add("help", "[Optional] Print help for a command", x => printHelp = true);
         }
-
-        protected Options Options { get; } = new Options();
-
-        protected bool ShouldWriteToLog { get; set; }
-
-        protected ILogger Log { get; }
 
         protected string ServerBaseUrl { get; private set; }
 
@@ -79,14 +71,17 @@ namespace Octopus.Cli.Commands
 
         public OutputFormat OutputFormat { get; set; }
 
-        public void GetHelp(TextWriter writer)
-        {
-            Options.WriteOptionDescriptions(writer);
-        }
-
         public async Task Execute(string[] commandLineArguments)
         {
             var remainingArguments = Options.Parse(commandLineArguments);
+
+            if (printHelp)
+            {
+                this.GetHelp(Console.Out, commandLineArguments);
+                
+                return;
+            }
+
             if (remainingArguments.Count > 0)
                 throw new CommandException("Unrecognized command arguments: " + string.Join(", ", remainingArguments));
 
@@ -108,17 +103,9 @@ namespace Octopus.Cli.Commands
 #else
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
-
-            ShouldWriteToLog = OutputFormat == OutputFormat.Default || enableDebugging;
-            if (printHelp)
-            {
-                // TODO this.GetHelp();
-            }
-
-            if (OutputFormat == OutputFormat.Default)
-            {
-                commandOutputProvider.PrintHeader();
-            }
+            
+            commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default || enableDebugging;
+            commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
@@ -126,20 +113,14 @@ namespace Octopus.Cli.Commands
 
             if (enableDebugging)
             {
-                Repository.Client.SendingOctopusRequest += request => Log.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
+                Repository.Client.SendingOctopusRequest += request => commandOutputProvider.PrintDebugMessage("{Method:l} {Uri:l}", request.Method, request.Uri);
             }
 
-            if (ShouldWriteToLog)
-            {
-                Log.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
-            }
+            commandOutputProvider.PrintDebugMessage("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
 
             var root = Repository.Client.RootDocument;
 
-            if (ShouldWriteToLog)
-            {
-                Log.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
-            }
+            commandOutputProvider.PrintDebugMessage("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
             if (!string.IsNullOrWhiteSpace(username))
             {
@@ -147,9 +128,9 @@ namespace Octopus.Cli.Commands
             }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
-            if (user != null && ShouldWriteToLog)
+            if (user != null)
             {
-                Log.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                commandOutputProvider.PrintDebugMessage("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
@@ -219,28 +200,12 @@ namespace Octopus.Cli.Commands
                 setter = tempBool;
             }
         }
-
-        protected void LogDebug(string s)
-        {
-            if (ShouldWriteToLog)
-            {
-                Log.Debug(s);
-            }
-        }
-
-        protected void LogDebug<T>(string s, T o)
-        {
-            if (ShouldWriteToLog)
-            {
-                Log.Debug(s, o);
-            }
-        }
-
+        
         protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
             configFile = FileSystem.GetFullPath(configFile);
 
-            Log.Debug("Loading additional arguments from config file: {ConfigFile:l}", configFile);
+            commandOutputProvider.PrintDebugMessage("Loading additional arguments from config file: {ConfigFile:l}", configFile);
 
             if (!FileSystem.FileExists(configFile))
             {

@@ -10,6 +10,7 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {

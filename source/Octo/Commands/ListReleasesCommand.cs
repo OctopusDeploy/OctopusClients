@@ -10,6 +10,7 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {
@@ -28,6 +29,7 @@ namespace Octopus.Cli.Commands
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
         }
 
+
         public async Task Query()
         {
             projectResources = new List<ProjectResource>();
@@ -35,13 +37,13 @@ namespace Octopus.Cli.Commands
 
             if (projects.Count > 0)
             {
-                LogDebug("Loading projects...");
+                commandOutputProvider.PrintDebugMessage("Loading projects...");
                 //var test = Repository.Projects.FindByNames(projects.ToArray());
                 projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
                 projectsFilter = projectResources.Select(p => p.Id).ToArray();
             }
 
-            LogDebug("Loading releases...");
+            commandOutputProvider.PrintDebugMessage("Loading releases...");
             
             releases = await Repository.Releases
                 .FindMany(x => projectsFilter.Contains(x.ProjectId))
@@ -70,7 +72,7 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            Log.Information(JsonConvert.SerializeObject(projectResources.Select(pr => new
+            commandOutputProvider.PrintJsonOutput(projectResources.Select(pr => new
             {
                 pr.Name,
                 Releases = releases.Where(r => r.ProjectId == pr.Id).Select(r => new
@@ -78,10 +80,10 @@ namespace Octopus.Cli.Commands
                     r.Version,
                     r.Assembled,
                     PackageVersions = GetPackageVersionsAsString(r.SelectedPackages),
-                    ReleaseNotes =  GetReleaseNotes(r)
+                    ReleaseNotes = GetReleaseNotes(r)
 
                 })
-            }), Formatting.Indented));
+            }));
         }
 
         public void PrintXmlOutput()

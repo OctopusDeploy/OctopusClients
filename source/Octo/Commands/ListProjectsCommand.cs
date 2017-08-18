@@ -9,6 +9,7 @@ using Octopus.Cli.Util;
 using Octopus.Client;
 using Newtonsoft.Json;
 using Octo.Commands;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {

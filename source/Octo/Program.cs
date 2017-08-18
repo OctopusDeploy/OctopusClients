@@ -15,6 +15,7 @@ using System.Net;
 using Octopus.Cli.Repositories;
 using Octopus.Client;
 using Octopus.Client.Exceptions;
+using Serilog.Core;
 
 namespace Octopus.Cli
 {
@@ -33,7 +34,6 @@ namespace Octopus.Cli
 
         internal static int Run(string[] args)
         {
-            
             Console.Title = "Octopus Deploy Command Line Tool";
             
             try
@@ -56,10 +56,10 @@ namespace Octopus.Cli
         public static void ConfigureLogger()
         {
             Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
-               .WriteTo.Trace()
-               .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
-               .CreateLogger();
+                .MinimumLevel.Debug()
+                .WriteTo.Trace()
+                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
+                .CreateLogger();
         }
 
         static IContainer BuildContainer()

@@ -30,9 +30,9 @@ namespace Octopus.Cli.Tests.Commands
 
             await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Projects: 2");
-            LogLines.Should().Contain("[Information]  - ProjectA (ID: projectaid)");
-            LogLines.Should().Contain("[Information]  - ProjectB (ID: projectbid)");
+            LogLines.Should().Contain("Projects: 2");
+            LogLines.Should().Contain(" - ProjectA (ID: projectaid)");
+            LogLines.Should().Contain(" - ProjectB (ID: projectbid)");
         }
     }
 }

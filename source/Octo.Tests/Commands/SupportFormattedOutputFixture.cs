@@ -20,7 +20,7 @@ namespace Octopus.Cli.Tests.Commands
                     CommandOutputProvider);
 
             // act
-            command.GetHelp(sw);
+            command.GetHelp(sw, new []{ "command" });
 
             // assert
             sw.ToString().Should().ContainEquivalentOf("--output");

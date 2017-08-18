@@ -10,6 +10,7 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {
@@ -25,7 +26,15 @@ namespace Octopus.Cli.Commands
 
         public async Task Query()
         {
-            tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
+            var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
+            if (features.IsMultiTenancyEnabled)
+            {
+                tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
+            }
+            else
+            {
+                throw new CommandException("Multi-Tenancy is not enabled");
+            }
         }
 
         public void PrintDefaultOutput()
@@ -40,12 +49,11 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            Log.Information(JsonConvert.SerializeObject(tenants.OrderBy(x => x.Name).Select(t => new
+            commandOutputProvider.PrintJsonOutput(tenants.OrderBy(x => x.Name).Select(t => new
             {
                 t.Name,
                 t.Id
-            }), Formatting.Indented));
-
+            }));
         }
 
         public void PrintXmlOutput()

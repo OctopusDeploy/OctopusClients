@@ -10,6 +10,7 @@ using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Serilog;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {
@@ -33,10 +34,10 @@ namespace Octopus.Cli.Commands
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
         }
-        
+
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            LogDebug("Loading projects...");
+            commandOutputProvider.PrintDebugMessage("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -55,7 +56,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            LogDebug("Loading environments...");
+            commandOutputProvider.PrintDebugMessage("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
@@ -121,7 +122,7 @@ namespace Octopus.Cli.Commands
             environmentsById = await LoadEnvironments();
             environmentsFilter = environmentsById.Keys.ToArray();
 
-            LogDebug("Loading dashboard...");
+            commandOutputProvider.PrintDebugMessage("Loading dashboard...");
 
             dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
             tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
@@ -162,26 +163,28 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            Log.Information(JsonConvert.SerializeObject(dashboardRelatedResourceses.Keys.Select(dashboardItem => new
-            {
-                dashboardItem,
-                release = dashboardRelatedResourceses[dashboardItem].ReleaseResource,
-                channel = dashboardRelatedResourceses[dashboardItem].ChannelResource,
-            })
-            .Select(x => new
-            {
-                Project = projectsById[x.dashboardItem.ProjectId],
-                Environment = environmentsById[x.dashboardItem.EnvironmentId],
-                Tenant = !string.IsNullOrEmpty(x.dashboardItem.TenantId) ? tenantsById[x.dashboardItem.TenantId] : string.Empty,
-                Channel = x.channel != null ? x.channel.Name : string.Empty,
-                Date = x.dashboardItem.QueueTime,
-                x.dashboardItem.Duration,
-                x.dashboardItem.State,
-                x.release.Version,
-                x.release.Assembled,
-                PackageVersion = GetPackageVersionsAsString(x.release.SelectedPackages),
-                ReleaseNotes = GetReleaseNotes(x.release)
-            }), Formatting.Indented));
+            commandOutputProvider.PrintJsonOutput(dashboardRelatedResourceses.Keys.Select(dashboardItem => new
+                {
+                    dashboardItem,
+                    release = dashboardRelatedResourceses[dashboardItem].ReleaseResource,
+                    channel = dashboardRelatedResourceses[dashboardItem].ChannelResource,
+                })
+                .Select(x => new
+                {
+                    Project = projectsById[x.dashboardItem.ProjectId],
+                    Environment = environmentsById[x.dashboardItem.EnvironmentId],
+                    Tenant = !string.IsNullOrEmpty(x.dashboardItem.TenantId)
+                        ? tenantsById[x.dashboardItem.TenantId]
+                        : string.Empty,
+                    Channel = x.channel != null ? x.channel.Name : string.Empty,
+                    Date = x.dashboardItem.QueueTime,
+                    x.dashboardItem.Duration,
+                    State = x.dashboardItem.State.ToString(),
+                    x.release.Version,
+                    x.release.Assembled,
+                    PackageVersion = GetPackageVersionsAsString(x.release.SelectedPackages),
+                    ReleaseNotes = GetReleaseNotes(x.release)
+                }));
         }
 
         public void PrintXmlOutput()

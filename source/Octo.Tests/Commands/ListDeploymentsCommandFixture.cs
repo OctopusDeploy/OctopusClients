@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -18,11 +20,7 @@ namespace Octopus.Cli.Tests.Commands
         public void SetUp()
         {
             listDeploymentsCommands = new ListDeploymentsCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
-        }
 
-        [Test]
-        public async Task ShouldGetListOfDeployments()
-        {
             var deploymentResources = new ResourceCollection<DeploymentResource>(
                 new List<DeploymentResource>
                 {
@@ -41,6 +39,7 @@ namespace Octopus.Cli.Tests.Commands
                         EnvironmentId = "environmentid2"
                     },
                 }, new LinkCollection());
+
 
             Repository.FeaturesConfiguration.GetFeaturesConfiguration()
                 .ReturnsForAnyArgs(new FeaturesConfigurationResource { });
@@ -71,8 +70,12 @@ namespace Octopus.Cli.Tests.Commands
             Repository.Tenants.FindAll()
                 .Returns(Task.FromResult(new List<TenantResource>()));
 
-            Repository.Releases.Get(Arg.Any<string>()).ReturnsForAnyArgs(new ReleaseResource {Version = "0.0.1"});
+            Repository.Releases.Get(Arg.Any<string>()).ReturnsForAnyArgs(new ReleaseResource { Version = "0.0.1" });
+        }
 
+        [Test]
+        public async Task ShouldGetListOfDeployments()
+        {
             var argsWithNumber = new List<string>(CommandLineArgs)
             {
                 "--number=1"
@@ -80,8 +83,18 @@ namespace Octopus.Cli.Tests.Commands
 
             await listDeploymentsCommands.Execute(argsWithNumber.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information]  - Project: ProjectA");
-            LogLines.Should().NotContain("[Information]  - Project: ProjectB");
+            LogLines.Should().Contain(" - Project: ProjectA");
+            LogLines.Should().NotContain(" - Project: ProjectB");
+        }
+
+        [Test]
+        public async Task JsonOutput_ShouldBeWellFormedJson()
+        {
+            CommandLineArgs.Add("--output=json");
+
+            await listDeploymentsCommands.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            Console.WriteLine(LogOutput.ToString());
+            var outputObject = JsonConvert.DeserializeObject(LogOutput.ToString());
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Octo.Commands;
+using Octo.Model;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -11,6 +12,7 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Serilog;
+using Serilog.Core;
 
 namespace Octopus.Cli.Commands
 {
@@ -57,7 +59,7 @@ namespace Octopus.Cli.Commands
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
             }
 
-            LogDebug("Loading deployments..."); 
+            commandOutputProvider.PrintDebugMessage("Loading deployments..."); 
 
             deploymentResources = new Dictionary<DeploymentResource, DeploymentRelatedResources>();
             var maxResults = numberOfResults ?? DefaultReturnAmount;
@@ -93,7 +95,7 @@ namespace Octopus.Cli.Commands
                 Log.Information("Did not find any deployments matching the search criteria.");
             }
 
-            Log.Debug($"Showing {deploymentResources.Count} results...");
+            commandOutputProvider.PrintDebugMessage($"Showing {deploymentResources.Count} results...");
 
             foreach (var item in deploymentResources.Keys)
             {
@@ -101,27 +103,26 @@ namespace Octopus.Cli.Commands
             }    
             
             if (numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
-                Log.Debug($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
+                commandOutputProvider.PrintDebugMessage($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
         }
 
         public void PrintJsonOutput()
         {
-            Log.Information(
-                JsonConvert.SerializeObject(
-                    deploymentResources.Select(dr => new
-                    {
-                        Project = projectsById[dr.Key.ProjectId],
-                        Environment = environmentsById[dr.Key.EnvironmentId],
-                        Tenant = !string.IsNullOrWhiteSpace(dr.Key.TenantId)
-                            ? tenantsById[dr.Key.TenantId]
-                            : string.Empty,
-                        Channel = dr.Value.ChannelResource != null ? dr.Value.ChannelResource.Name : string.Empty,
-                        dr.Key.Created,
-                        dr.Value.ReleaseResource.Version,
-                        dr.Value.ReleaseResource.Assembled,
-                        PackageVersions = GetPackageVersionsAsString(dr.Value.ReleaseResource.SelectedPackages),
-                        ReleaseNotes = GetReleaseNotes(dr.Value.ReleaseResource)
-                    }), Formatting.Indented));
+            commandOutputProvider.PrintJsonOutput(
+                deploymentResources.Select(dr => new
+                {
+                    Project = projectsById[dr.Key.ProjectId],
+                    Environment = environmentsById[dr.Key.EnvironmentId],
+                    Tenant = !string.IsNullOrWhiteSpace(dr.Key.TenantId)
+                        ? tenantsById[dr.Key.TenantId]
+                        : string.Empty,
+                    Channel = dr.Value.ChannelResource != null ? dr.Value.ChannelResource.Name : string.Empty,
+                    dr.Key.Created,
+                    dr.Value.ReleaseResource.Version,
+                    dr.Value.ReleaseResource.Assembled,
+                    PackageVersions = GetPackageVersionsAsString(dr.Value.ReleaseResource.SelectedPackages),
+                    ReleaseNotes = GetReleaseNotes(dr.Value.ReleaseResource)
+                }));
         }
 
         public void PrintXmlOutput()
@@ -131,7 +132,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            LogDebug("Loading projects...");
+            commandOutputProvider.PrintInfoMessage("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -150,7 +151,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            LogDebug("Loading environments...");
+            commandOutputProvider.PrintInfoMessage("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
@@ -171,10 +172,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadTenants()
         {
-            if (ShouldWriteToLog)
-            {
-                Log.Debug("Loading tenants..."); 
-            }
+            commandOutputProvider.PrintInfoMessage("Loading tenants..."); 
 
             var tenantsQuery = tenants.Any()
                 ? Repository.Tenants.FindByNames(tenants.ToArray())
@@ -212,17 +210,16 @@ namespace Octopus.Cli.Commands
                 log.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            log.Information("   Created: {$Date:l}", deploymentItem.Created);
+            log.Information("\tCreated: {$Date:l}", deploymentItem.Created);
 
             // Date will have to be fetched from Tasks (they need to be loaded) it doesn't come down with the DeploymentResource
             //log.Information("   Date: {$Date:l}", deploymentItem.QueueTime);
 
-            log.Information("   Version: {Version:l}", release.Version);
-            log.Information("   Assembled: {$Assembled:l}", release.Assembled);
-            log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            log.Information("   Release Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
-
-            log.Information("");
+            log.Information("\tVersion: {Version:l}", release.Version);
+            log.Information("\tAssembled: {$Assembled:l}", release.Assembled);
+            log.Information("\tPackage Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            log.Information("\tRelease Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
+            log.Information(string.Empty);
         }
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Serilog;
+using Castle.Core.Logging;
 using NUnit.Framework;
 using Octo.Commands;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using ILogger = Serilog.ILogger;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -18,7 +20,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             var options = Options.For("Dummy");
             options.Add("pill=", "Red or Blue. Blue, the story ends. Red, stay in Wonderland and see how deep the rabbit hole goes.", v => pill = v);
-            log.Debug("Pill: " + pill);
+            Log.Debug("Pill: " + pill);
         }
 
         protected override Task Execute()
@@ -36,6 +38,7 @@ namespace Octopus.Cli.Tests.Commands
 
         public DummyApiCommandWithFormattedOutputSupport(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
+            
         }
 
         public Task Query()

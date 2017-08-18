@@ -17,7 +17,7 @@ namespace Octopus.Cli.Tests.Commands
     [TestFixture]
     public class ListMachinesCommandFixture : ApiCommandFixtureBase
     {
-        const string MachineLogFormat = "[Information]  - {0} {1} (ID: {2}) in {3}";
+        const string MachineLogFormat = " - {0} {1} (ID: {2}) in {3}";
 
         [SetUp]
         public void SetUp()
@@ -65,7 +65,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 2");
+            LogLines.Should().Contain("Machines: 2");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", MachineModelStatus.Offline.ToString(), "Machines-002", "Development"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development"));
             LogLines.Should().NotContain(string.Format(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development"));
@@ -94,7 +94,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 1");
+            LogLines.Should().Contain("Machines: 1");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development"));
             LogLines.Should().NotContain(string.Format(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development"));
             LogLines.Should().NotContain(string.Format(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development"));
@@ -127,7 +127,7 @@ namespace Octopus.Cli.Tests.Commands
             });
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
-            LogLines.Should().Contain("[Information] Machines: 2");
+            LogLines.Should().Contain("Machines: 2");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development"));
         }
@@ -165,7 +165,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 1");
+            LogLines.Should().Contain("Machines: 1");
             LogLines.Should().NotContain(string.Format(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development"));
             LogLines.Should().NotContain(string.Format(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01996", MachineModelStatus.Offline.ToString(), "Machines-003", "Development"));
@@ -207,7 +207,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 1");
+            LogLines.Should().Contain("Machines: 1");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", MachineModelHealthStatus.HasWarnings.ToString(), "Machines-002", "Development"));
         }
 
@@ -247,8 +247,8 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Warning] The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
-            LogLines.Should().Contain("[Information] Machines: 2");
+            LogLines.Should().Contain("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+            LogLines.Should().Contain("Machines: 2");
         }
 
         [Test]
@@ -308,7 +308,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 1");
+            LogLines.Should().Contain("Machines: 1");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "Development"));
         }
 
@@ -357,7 +357,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Machines: 2");
+            LogLines.Should().Contain("Machines: 2");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01234", MachineModelStatus.Online.ToString(), "Machines-001", "Development"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", MachineModelStatus.Online.ToString(), "Machines-002", "Development"));
         }

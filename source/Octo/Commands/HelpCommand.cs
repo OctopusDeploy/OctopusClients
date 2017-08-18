@@ -12,13 +12,15 @@ namespace Octopus.Cli.Commands
     public class HelpCommand : ICommand
     {
         readonly ICommandLocator commands;
+        private readonly ICommandOutputProvider commandOutputProvider;
 
-        public HelpCommand(ICommandLocator commands)
+        public HelpCommand(ICommandLocator commands, ICommandOutputProvider commandOutputProvider)
         {
             this.commands = commands;
+            this.commandOutputProvider = commandOutputProvider;
         }
 
-        public void GetHelp(TextWriter writer)
+        public void GetHelp(TextWriter writer, string[] args)
         {
         }
 
@@ -47,31 +49,15 @@ namespace Octopus.Cli.Commands
                     }
                     else
                     {
-                        PrintCommandHelp(executable, command, commandName);
+                        PrintCommandHelp(command, commandLineArguments);
                     }
                 }
             });
         }
 
-        void PrintCommandHelp(string executable, ICommand command, string commandName)
+        void PrintCommandHelp(ICommand command, string[] args)
         {
-            Console.ResetColor();
-            Console.Write("Usage: ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(executable + " " + commandName + " [<options>]");
-            Console.ResetColor();
-            Console.WriteLine();
-            Console.WriteLine("Where [<options>] is any of: ");
-            Console.WriteLine();
-
-            command.GetHelp(Console.Out);
-
-            Console.WriteLine();
-            Console.Write("Or use ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(executable + " help <command>");
-            Console.ResetColor();
-            Console.WriteLine(" for more details.");
+            command.GetHelp(Console.Out, args);
         }
 
         void PrintGeneralHelp(string executable)
