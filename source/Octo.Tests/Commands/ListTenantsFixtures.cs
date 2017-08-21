@@ -52,7 +52,7 @@ namespace Octo.Tests.Commands
         [Test]
         public async Task JsonFormat_ShouldBeWellFormed()
         {
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
             await listTenantsCommand.Execute(CommandLineArgs.ToArray());
             var logoutput = LogOutput.ToString();
             JsonConvert.DeserializeObject(logoutput);

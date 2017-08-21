@@ -39,7 +39,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public async Task JsonFormat_ShouldBeWellFormed()
         {
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
             Repository.Projects.FindAll().Returns(new List<ProjectResource>
             {
                 new ProjectResource {Name = "ProjectA", Id = "projectaid"},

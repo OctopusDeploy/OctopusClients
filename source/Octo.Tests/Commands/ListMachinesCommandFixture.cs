@@ -366,7 +366,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public async Task JsonFormat_ShouldBeWellFormed()
         {
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
             CommandLineArgs.Add("-status=Online");
 
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>

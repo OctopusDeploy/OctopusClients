@@ -93,7 +93,7 @@ namespace Octopus.Cli.Tests.Commands
             });
 
             CommandLineArgs.Add("--project=ProjectA");
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
 
             await listReleasesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 

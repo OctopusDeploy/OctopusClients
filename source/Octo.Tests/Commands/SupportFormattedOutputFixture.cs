@@ -33,7 +33,7 @@ namespace Octopus.Cli.Tests.Commands
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem, CommandOutputProvider);
 
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
 
             // act
             await command.Execute(CommandLineArgs.ToArray());
@@ -49,7 +49,7 @@ namespace Octopus.Cli.Tests.Commands
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
                     CommandOutputProvider);
-            CommandLineArgs.Add("--output=xml");
+            CommandLineArgs.Add("--outputFormat=xml");
 
             // act
             await command.Execute(CommandLineArgs.ToArray());
@@ -65,7 +65,7 @@ namespace Octopus.Cli.Tests.Commands
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
                     CommandOutputProvider);
-            CommandLineArgs.Add("--output=blah");
+            CommandLineArgs.Add("--outputFormat=blah");
 
             // act
             await command.Execute(CommandLineArgs.ToArray());

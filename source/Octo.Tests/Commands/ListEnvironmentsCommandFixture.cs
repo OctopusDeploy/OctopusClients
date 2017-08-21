@@ -38,7 +38,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             SetupEnvironments();
             
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
             await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             var logoutput = LogOutput.ToString();

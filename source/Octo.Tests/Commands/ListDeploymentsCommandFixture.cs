@@ -90,7 +90,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public async Task JsonOutput_ShouldBeWellFormedJson()
         {
-            CommandLineArgs.Add("--output=json");
+            CommandLineArgs.Add("--outputFormat=json");
 
             await listDeploymentsCommands.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
