@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Octo.Commands;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -10,8 +11,12 @@ using Octopus.Client.Model;
 namespace Octopus.Cli.Commands
 {
     [Command("create-project", Description = "Creates a project")]
-    public class CreateProjectCommand : ApiCommand
+    public class CreateProjectCommand : ApiCommand, ISupportFormattedOutput
     {
+        ProjectResource project;
+        ProjectGroupResource projectGroup;
+        private bool projectGroupCreated = false;
+
         public CreateProjectCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
@@ -26,42 +31,71 @@ namespace Octopus.Cli.Commands
         public string ProjectGroupName { get; set; }
         public bool IgnoreIfExists { get; set; }
         public string LifecycleName { get; set; }
-
-        protected override async Task Execute()
+        
+        public async Task Request()
         {
             if (string.IsNullOrWhiteSpace(ProjectGroupName)) throw new CommandException("Please specify a project group name using the parameter: --projectGroup=XYZ");
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --name=XYZ");
             if (string.IsNullOrWhiteSpace(LifecycleName)) throw new CommandException("Please specify a lifecycle name using the parameter: --lifecycle=XYZ");
 
-            Log.Information("Finding project group: {Group:l}", ProjectGroupName);
-            var group = await Repository.ProjectGroups.FindByName(ProjectGroupName).ConfigureAwait(false);
-            if (group == null)
+            commandOutputProvider.Information("Finding project group: {Group:l}", ProjectGroupName);
+
+            projectGroup = await Repository.ProjectGroups.FindByName(ProjectGroupName).ConfigureAwait(false);
+            if (projectGroup == null)
             {
-                Log.Information("Project group does not exist, it will be created");
-                group = await Repository.ProjectGroups.Create(new ProjectGroupResource {Name = ProjectGroupName}).ConfigureAwait(false);
+                commandOutputProvider.Information("Project group does not exist, it will be created");
+                projectGroup = await Repository.ProjectGroups.Create(new ProjectGroupResource { Name = ProjectGroupName }).ConfigureAwait(false);
+                projectGroupCreated = true;
             }
 
-            Log.Information("Finding lifecycle: {Lifecycle:l}", LifecycleName);
+            commandOutputProvider.Information("Finding lifecycle: {Lifecycle:l}", LifecycleName);
             var lifecycle = await Repository.Lifecycles.FindOne(l => l.Name.Equals(LifecycleName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
             if (lifecycle == null)
                 throw new CommandException($"The lifecycle {LifecycleName} does not exist.");
 
-            var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
+            
+            project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project != null)
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Information("The project {Project:l} (ID {Id:l}) already exists", project.Name, project.Id);
+                    commandOutputProvider.Information("The project {Project:l} (ID {Id:l}) already exists", project.Name, project.Id);
                     return;
                 }
 
                 throw new CommandException($"The project {project.Name} (ID {project.Id}) already exists in this project group.");
             }
-            
-            Log.Information("Creating project: {Project:l}", ProjectName);
-            project = await Repository.Projects.Create(new ProjectResource {Name = ProjectName, ProjectGroupId = @group.Id, IsDisabled = false, LifecycleId = lifecycle.Id}).ConfigureAwait(false);
 
-            Log.Information("Project created. ID: {Id:l}", project.Id);
+            commandOutputProvider.Information("Creating project: {Project:l}", ProjectName);
+            project = await Repository.Projects.Create(new ProjectResource { Name = ProjectName, ProjectGroupId = projectGroup.Id, IsDisabled = false, LifecycleId = lifecycle.Id }).ConfigureAwait(false);
+        }
+
+        public void PrintDefaultOutput()
+        {
+            commandOutputProvider.Information("Project created. ID: {Id:l}", project.Id);
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(new
+            {
+                Project = new
+                {
+                    project.Id,
+                    project.Name
+                },
+                Group = new
+                {
+                    projectGroup.Id,
+                    projectGroup.Name,
+                    NewGroupCreated = projectGroupCreated
+                }
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }
