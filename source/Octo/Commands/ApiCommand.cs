@@ -134,13 +134,10 @@ namespace Octopus.Cli.Commands
             }
 
             ValidateParameters();
-            // TODO PrintCommandIntroduction();
             await Execute().ConfigureAwait(false);
         }
 
         protected virtual void ValidateParameters() { }
-
-        // TODO protected virtual void PrintCommandIntroduction() { }
 
         protected virtual async Task Execute()
         {
