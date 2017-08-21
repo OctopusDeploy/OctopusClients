@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
@@ -46,6 +47,87 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public async Task ShouldCreateNewChannel()
         {
+            var channelName = SetupNewChannel();
+
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            LogLines.Should().Contain($"Channel {channelName} created");
+        }
+
+        [Test]
+        public async Task ShouldUpdateExistingChannel()
+        {
+            var channelName = SetupExistingChannel();
+
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            LogLines.Should().Contain($"Channel {channelName} updated");
+        }
+
+        [Test]
+        public async Task JsonFormat_NewChannel()
+        {
+            var channelName = SetupNewChannel();
+            CommandLineArgs.Add("--outputFormat=json");
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain(channelName);
+            logoutput.Should().Contain("Created");
+        }
+
+        [Test]
+        public async Task JsonFormat_UpdatedChannel()
+        {
+            var channelName = SetupExistingChannel();
+            CommandLineArgs.Add("--outputFormat=json");
+            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain(channelName);
+            logoutput.Should().Contain("Updated");
+        }
+        
+        private string SetupExistingChannel()
+        {
+            Repository.Client.RootDocument.Returns(new RootResource
+            {
+                Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
+            });
+
+            var projectName = $"Project-{Guid.NewGuid()}";
+            var project = new ProjectResource()
+            {
+                Links = new LinkCollection()
+            };
+            project.Links.Add("Channels", "DOES_NOT_MATTER");
+            Repository.Projects.FindByName(projectName).Returns(project);
+
+            var lifecycleName = $"Lifecycle-{Guid.NewGuid()}";
+            Repository.Lifecycles.FindOne(Arg.Any<Func<LifecycleResource, bool>>())
+                .Returns(new LifecycleResource {Id = lifecycleName});
+
+            var channelName = $"Channel-{Guid.NewGuid()}";
+            var channel = new ChannelResource()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = channelName
+            };
+
+            Repository.Projects.GetChannels(Arg.Any<ProjectResource>())
+                .Returns(new ResourceCollection<ChannelResource>(new[] {channel}, new LinkCollection()));
+
+            CommandLineArgs.Add($"--channel={channelName}");
+            CommandLineArgs.Add($"--project={projectName}");
+            CommandLineArgs.Add($"--lifecycle={lifecycleName}");
+            CommandLineArgs.Add("--update-existing");
+            return channelName;
+        }
+
+        private string SetupNewChannel()
+        {
             Repository.Client.RootDocument.Returns(new RootResource
             {
                 Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
@@ -68,49 +150,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--channel={channelName}");
             CommandLineArgs.Add($"--project={projectName}");
             CommandLineArgs.Add($"--lifecycle={lifecycleName}");
-
-            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
-
-            LogLines.Should().Contain($"Channel {channelName} created");
-        }
-
-        [Test]
-        public async Task ShouldUpdateExistingChannel()
-        {
-            Repository.Client.RootDocument.Returns(new RootResource
-            {
-                Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
-            });
-
-            var projectName = $"Project-{Guid.NewGuid()}";
-            var project = new ProjectResource()
-            {
-                Links = new LinkCollection()
-            };
-            project.Links.Add("Channels", "DOES_NOT_MATTER");
-            Repository.Projects.FindByName(projectName).Returns(project);
-
-            var lifecycleName = $"Lifecycle-{Guid.NewGuid()}";
-            Repository.Lifecycles.FindOne(Arg.Any<Func<LifecycleResource, bool>>()).Returns(new LifecycleResource { Id = lifecycleName });
-
-            var channelName = $"Channel-{Guid.NewGuid()}";
-            var channel = new ChannelResource()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = channelName
-            };
-
-            Repository.Projects.GetChannels(Arg.Any<ProjectResource>())
-                .Returns(new ResourceCollection<ChannelResource>(new[] { channel }, new LinkCollection()));
-
-            CommandLineArgs.Add($"--channel={channelName}");
-            CommandLineArgs.Add($"--project={projectName}");
-            CommandLineArgs.Add($"--lifecycle={lifecycleName}");
-            CommandLineArgs.Add("--update-existing");
-
-            await createChannelCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
-
-            LogLines.Should().Contain($"Channel {channelName} updated");
+            return channelName;
         }
     }
 }

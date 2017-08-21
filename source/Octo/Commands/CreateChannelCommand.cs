@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Octo.Commands;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -11,7 +13,7 @@ using Octopus.Client.Model;
 namespace Octopus.Cli.Commands
 {
     [Command("create-channel", Description = "Creates a channel for a project")]
-    public class CreateChannelCommand : ApiCommand
+    public class CreateChannelCommand : ApiCommand, ISupportFormattedOutput
     {
         public CreateChannelCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider) 
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
@@ -31,35 +33,43 @@ namespace Octopus.Cli.Commands
         string channelDescription;
         bool updateExisting;
         bool? makeDefaultChannel;
+        private bool createdNewChannel = false;
+        bool channelUpdateRequired;
+        ProjectResource project;
+        LifecycleResource lifecycle;
+        ChannelResource channel;
 
-        protected override async Task Execute()
+        public async Task Request()
         {
             if (!Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server to start using channels.");
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
 
-            Log.Debug("Loading project {Project:l}...", projectName);
-            var project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
+            commandOutputProvider.Debug("Loading project {Project:l}...", projectName);
+            
+            project = await Repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null) throw new CouldNotFindException("project named", projectName);
 
-            LifecycleResource lifecycle = null;
+            lifecycle = null;
             if (string.IsNullOrWhiteSpace(lifecycleName))
             {
-                Log.Debug("No lifecycle specified. Going to inherit the project lifecycle...");
+                commandOutputProvider.Debug("No lifecycle specified. Going to inherit the project lifecycle...");
             }
             else
             {
-                Log.Debug("Loading lifecycle {Lifecycle:l}...", lifecycleName);
+                commandOutputProvider.Debug("Loading lifecycle {Lifecycle:l}...", lifecycleName);
                 lifecycle = await Repository.Lifecycles.FindOne(l => string.Compare(l.Name, lifecycleName, StringComparison.OrdinalIgnoreCase) == 0).ConfigureAwait(false);
                 if (lifecycle == null) throw new CouldNotFindException("lifecycle named", lifecycleName);
             }
 
             var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
-            var channel = await channels
+            
+            channel = await channels
                 .FindOne(Repository, ch => string.Equals(ch.Name, channelName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
 
             if (channel == null)
             {
+                createdNewChannel = true;
                 channel = new ChannelResource
                 {
                     ProjectId = project.Id,
@@ -70,49 +80,77 @@ namespace Octopus.Cli.Commands
                     Rules = new List<ChannelVersionRuleResource>(),
                 };
 
-                Log.Debug("Creating channel {Channel:l}", channelName);
+                commandOutputProvider.Debug("Creating channel {Channel:l}", channelName);
                 await Repository.Channels.Create(channel).ConfigureAwait(false);
-                Log.Information("Channel {Channel:l} created", channelName);
+                commandOutputProvider.Information("Channel {Channel:l} created", channelName);
                 return;
             }
 
             if (!updateExisting) throw new CommandException("This channel already exists. If you would like to update it, please use the parameter: --update-existing");
-
-            var updateRequired = false;
+            
+            channelUpdateRequired = false;
             if (channel.LifecycleId != lifecycle?.Id)
             {
                 if(lifecycle == null)
-                    Log.Information("Updating this channel to inherit the project lifecycle for promoting releases");
+                    commandOutputProvider.Information("Updating this channel to inherit the project lifecycle for promoting releases");
                 else
-                    Log.Information("Updating this channel to use lifecycle {Lifecycle:l} for promoting releases", lifecycle.Name);
+                    commandOutputProvider.Information("Updating this channel to use lifecycle {Lifecycle:l} for promoting releases", lifecycle.Name);
 
                 channel.LifecycleId = lifecycle?.Id;
-                updateRequired = true;
+                channelUpdateRequired = true;
             }
 
             if (!channel.IsDefault && makeDefaultChannel == true)
             {
-                Log.Information("Making this the default channel for {Project:l}", project.Name);
+                commandOutputProvider.Information("Making this the default channel for {Project:l}", project.Name);
                 channel.IsDefault = makeDefaultChannel ?? channel.IsDefault;
-                updateRequired = true;
+                channelUpdateRequired = true;
             }
 
             if (!string.IsNullOrWhiteSpace(channelDescription) && channel.Description != channelDescription)
             {
-                Log.Information("Updating channel description to '{Description:l}'", channelDescription);
+                commandOutputProvider.Information("Updating channel description to '{Description:l}'", channelDescription);
                 channel.Description = channelDescription ?? channel.Description;
-                updateRequired = true;
+                channelUpdateRequired = true;
             }
 
-            if (!updateRequired)
+            if (!channelUpdateRequired)
             {
-                Log.Information("The channel already looks exactly the way it should, no need to update it.");
+                commandOutputProvider.Information("The channel already looks exactly the way it should, no need to update it.");
                 return;
             }
 
-            Log.Debug("Updating channel {Channel:l}", channelName);
+            commandOutputProvider.Debug("Updating channel {Channel:l}", channelName);
             await Repository.Channels.Modify(channel).ConfigureAwait(false);
-            Log.Information("Channel {Channel:l} updated", channelName);
+            commandOutputProvider.Information("Channel {Channel:l} updated", channelName);
+        }
+
+       
+        public void PrintDefaultOutput()
+        {
+            return;
+        }
+
+        public void PrintJsonOutput()
+        {
+            string action = createdNewChannel ? "Created" : channelUpdateRequired ? "Updated" : "None";
+            commandOutputProvider.Json(new
+            {
+                Action = action,
+                Channel = new
+                {
+                    channel.Id,
+                    channel.Name,
+                    channel.Description,
+                    channel.ProjectId,
+                    channel.LifecycleId
+                }
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }
