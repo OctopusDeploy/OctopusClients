@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Octo.Commands;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -10,8 +11,10 @@ using Octopus.Client.Model;
 namespace Octopus.Cli.Commands
 {
     [Command("create-environment", Description = "Creates a deployment environment")]
-    public class CreateEnvironmentCommand : ApiCommand
+    public class CreateEnvironmentCommand : ApiCommand, ISupportFormattedOutput
     {
+        EnvironmentResource env;
+
         public CreateEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
@@ -23,26 +26,43 @@ namespace Octopus.Cli.Commands
         public string EnvironmentName { get; set; }
         public bool IgnoreIfExists { get; set; }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
             if (string.IsNullOrWhiteSpace(EnvironmentName)) throw new CommandException("Please specify an environment name using the parameter: --name=XYZ");
-
-            var env = await Repository.Environments.FindByName(EnvironmentName).ConfigureAwait(false);
+            
+            env = await Repository.Environments.FindByName(EnvironmentName).ConfigureAwait(false);
             if (env != null)
             {
                 if (IgnoreIfExists)
                 {
-                    Log.Information("The environment {Environment:l} (ID {Id:l}) already exists", env.Name, env.Id);
+                    commandOutputProvider.Information("The environment {Environment:l} (ID {Id:l}) already exists", env.Name, env.Id);
                     return;
                 }
 
                 throw new CommandException("The environment " + env.Name + " (ID " + env.Id + ") already exists");
             }
 
-            Log.Information("Creating environment: {Environment:l}", EnvironmentName);
+            commandOutputProvider.Information("Creating environment: {Environment:l}", EnvironmentName);
             env = await Repository.Environments.Create(new EnvironmentResource {Name = EnvironmentName}).ConfigureAwait(false);
+        }
+        
+        public void PrintDefaultOutput()
+        {
+            commandOutputProvider.Information("Environment created. ID: {Id:l}", env.Id);
+        }
 
-            Log.Information("Environment created. ID: {Id:l}", env.Id);
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(new
+            {
+                env.Id,
+                env.Name,
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }
