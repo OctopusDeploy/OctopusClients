@@ -73,7 +73,7 @@ namespace Octo.Tests.Commands
             logoutput
                 .Replace(Environment.NewLine, String.Empty)
                 .Replace(" ", string.Empty)
-                .Replace("\"", string.Empty).Should().Contain("NewGroupCreated=true");
+                .Replace("\"", string.Empty).Should().Contain("NewGroupCreated:true");
         }
 
         [Test]
