@@ -41,7 +41,7 @@ namespace Octopus.Cli.Tests.Commands
             
         }
 
-        public Task Query()
+        public Task Request()
         {
             QueryCalled = true;
             return Task.WhenAll();

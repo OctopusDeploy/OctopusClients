@@ -8,7 +8,7 @@ namespace Octo.Commands
 {
     public interface ISupportFormattedOutput
     {
-        Task Query();
+        Task Request();
 
         void PrintDefaultOutput();
 

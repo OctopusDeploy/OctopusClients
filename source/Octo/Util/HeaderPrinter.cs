@@ -24,17 +24,11 @@ namespace Octopus.Cli.Util
             if (PrintMessages)
             {
                 logger.Information("Octopus Deploy Command Line Tool, version {Version:l}",
-                    typeof(Program).GetInformationalVersion());
+                        typeof(Program).GetInformationalVersion());
                 logger.Information(string.Empty);
             }
         }
-
-        public void PrintError()
-        {
-            // TODO
-            throw new System.NotImplementedException();
-        }
-
+       
         public void PrintCommandHelpHeader(string executable, string commandName, TextWriter textWriter)
         {
             Console.ResetColor();
@@ -57,7 +51,7 @@ namespace Octopus.Cli.Util
             textWriter.WriteLine(" for more details.");
         }
 
-        public void PrintDebugMessage(string template, string propertyValue)
+        public void Debug(string template, string propertyValue)
         {
             if (PrintMessages)
             {
@@ -65,7 +59,7 @@ namespace Octopus.Cli.Util
             }
         }
 
-        public void PrintDebugMessage(string template, params object[] propertyValues)
+        public void Debug(string template, params object[] propertyValues)
         {
             if (PrintMessages)
             {
@@ -73,7 +67,7 @@ namespace Octopus.Cli.Util
             }
         }
 
-        public void PrintInfoMessage(string template, string propertyValue)
+        public void Information(string template, string propertyValue)
         {
             if (PrintMessages)
             {
@@ -81,7 +75,7 @@ namespace Octopus.Cli.Util
             }
         }
 
-        public void PrintInfoMessage(string template, params object[] propertyValues)
+        public void Information(string template, params object[] propertyValues)
         {
             if (PrintMessages)
             {
@@ -89,7 +83,7 @@ namespace Octopus.Cli.Util
             }
         }
 
-        public void PrintJsonOutput(object o)
+        public void Json(object o)
         {
             logger.Information(JsonConvert.SerializeObject(o, Formatting.Indented));
         }

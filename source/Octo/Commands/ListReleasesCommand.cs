@@ -30,20 +30,20 @@ namespace Octopus.Cli.Commands
         }
 
 
-        public async Task Query()
+        public async Task Request()
         {
             projectResources = new List<ProjectResource>();
             projectsFilter = new string[0];
 
             if (projects.Count > 0)
             {
-                commandOutputProvider.PrintDebugMessage("Loading projects...");
+                commandOutputProvider.Debug("Loading projects...");
                 //var test = Repository.Projects.FindByNames(projects.ToArray());
                 projectResources = await Repository.Projects.FindByNames(projects.ToArray()).ConfigureAwait(false);
                 projectsFilter = projectResources.Select(p => p.Id).ToArray();
             }
 
-            commandOutputProvider.PrintDebugMessage("Loading releases...");
+            commandOutputProvider.Debug("Loading releases...");
             
             releases = await Repository.Releases
                 .FindMany(x => projectsFilter.Contains(x.ProjectId))
@@ -72,7 +72,7 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.PrintJsonOutput(projectResources.Select(pr => new
+            commandOutputProvider.Json(projectResources.Select(pr => new
             {
                 pr.Name,
                 Releases = releases.Where(r => r.ProjectId == pr.Id).Select(r => new

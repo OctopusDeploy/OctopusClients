@@ -24,7 +24,7 @@ namespace Octopus.Cli.Commands
         {
         }
 
-        public async Task Query()
+        public async Task Request()
         {
             var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
             if (features.IsMultiTenancyEnabled)
@@ -49,7 +49,7 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.PrintJsonOutput(tenants.OrderBy(x => x.Name).Select(t => new
+            commandOutputProvider.Json(tenants.OrderBy(x => x.Name).Select(t => new
             {
                 t.Name,
                 t.Id

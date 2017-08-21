@@ -24,7 +24,7 @@ namespace Octopus.Cli.Commands
         {
         }
 
-        public async Task Query()
+        public async Task Request()
         {
             environments = await Repository.Environments.FindAll().ConfigureAwait(false);
         }

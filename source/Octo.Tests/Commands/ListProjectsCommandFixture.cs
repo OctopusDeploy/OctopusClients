@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -33,6 +34,25 @@ namespace Octopus.Cli.Tests.Commands
             LogLines.Should().Contain("Projects: 2");
             LogLines.Should().Contain(" - ProjectA (ID: projectaid)");
             LogLines.Should().Contain(" - ProjectB (ID: projectbid)");
+        }
+
+        [Test]
+        public async Task JsonFormat_ShouldBeWellFormed()
+        {
+            CommandLineArgs.Add("--output=json");
+            Repository.Projects.FindAll().Returns(new List<ProjectResource>
+            {
+                new ProjectResource {Name = "ProjectA", Id = "projectaid"},
+                new ProjectResource {Name = "ProjectB", Id = "projectbid"}
+            });
+
+            await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("projectaid");
+            logoutput.Should().Contain("projectbid");
+
         }
     }
 }

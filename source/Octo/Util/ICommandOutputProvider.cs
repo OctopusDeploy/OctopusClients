@@ -11,20 +11,18 @@ namespace Octopus.Cli.Util
 
         void PrintHeader();
 
-        void PrintError();
-        
         void PrintCommandHelpHeader(string executable, string commandName, TextWriter textWriter);
 
         void PrintCommandHelpFooter(string executable, string commandName, TextWriter textWriter);
 
-        void PrintDebugMessage(string template, string propertyValue);
+        void Debug(string template, string propertyValue);
 
-        void PrintDebugMessage(string template, params object[] propertyValues);
+        void Debug(string template, params object[] propertyValues);
 
-        void PrintInfoMessage(string template, string propertyValue);
+        void Information(string template, string propertyValue);
 
-        void PrintInfoMessage(string template, params object[] propertyValues);
+        void Information(string template, params object[] propertyValues);
 
-        void PrintJsonOutput(object o);
+        void Json(object o);
     }
 }

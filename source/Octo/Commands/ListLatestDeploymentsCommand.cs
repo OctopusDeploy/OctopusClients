@@ -37,7 +37,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            commandOutputProvider.PrintDebugMessage("Loading projects...");
+            commandOutputProvider.Debug("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -56,7 +56,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            commandOutputProvider.PrintDebugMessage("Loading environments...");
+            commandOutputProvider.Debug("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
@@ -114,7 +114,7 @@ namespace Octopus.Cli.Commands
 
         
 
-        public async Task Query()
+        public async Task Request()
         {
             projectsById = await LoadProjects();
             projectsFilter = projectsById.Keys.ToArray();
@@ -122,7 +122,7 @@ namespace Octopus.Cli.Commands
             environmentsById = await LoadEnvironments();
             environmentsFilter = environmentsById.Keys.ToArray();
 
-            commandOutputProvider.PrintDebugMessage("Loading dashboard...");
+            commandOutputProvider.Debug("Loading dashboard...");
 
             dashboard = await Repository.Dashboards.GetDynamicDashboard(projectsFilter, environmentsFilter).ConfigureAwait(false);
             tenantsById = dashboard.Tenants.ToDictionary(t => t.Id, t => t.Name);
@@ -163,7 +163,7 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.PrintJsonOutput(dashboardRelatedResourceses.Keys.Select(dashboardItem => new
+            commandOutputProvider.Json(dashboardRelatedResourceses.Keys.Select(dashboardItem => new
                 {
                     dashboardItem,
                     release = dashboardRelatedResourceses[dashboardItem].ReleaseResource,

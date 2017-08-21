@@ -93,8 +93,11 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--output=json");
 
             await listDeploymentsCommands.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
-            Console.WriteLine(LogOutput.ToString());
-            var outputObject = JsonConvert.DeserializeObject(LogOutput.ToString());
+
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("ProjectA");
+            logoutput.Should().Contain("ProjectB");
         }
     }
 }

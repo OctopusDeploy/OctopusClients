@@ -38,7 +38,7 @@ namespace Octopus.Cli.Commands
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to filter. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
 
-        public async Task Query()
+        public async Task Request()
         {
             provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
 
@@ -55,7 +55,7 @@ namespace Octopus.Cli.Commands
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.PrintJsonOutput(environmentMachines.Select(machine => new
+            commandOutputProvider.Json(environmentMachines.Select(machine => new
             {
                 machine.Name,
                 Status = provider.GetStatus(machine),
@@ -73,17 +73,17 @@ namespace Octopus.Cli.Commands
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();
-            commandOutputProvider.PrintInfoMessage("Machines: {Count}", orderedMachines.Count);
+            commandOutputProvider.Information("Machines: {Count}", orderedMachines.Count);
             foreach (var machine in orderedMachines)
             {
-                commandOutputProvider.PrintInfoMessage(" - {Machine:l} {Status:l} (ID: {MachineId:l}) in {Environments:l}", machine.Name, provider.GetStatus(machine), machine.Id,
+                commandOutputProvider.Information(" - {Machine:l} {Status:l} (ID: {MachineId:l}) in {Environments:l}", machine.Name, provider.GetStatus(machine), machine.Id,
                     string.Join(" and ", machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)));
             }
         }
 
         private Task<List<EnvironmentResource>> GetEnvironments()
         {
-            commandOutputProvider.PrintDebugMessage("Loading environments...");
+            commandOutputProvider.Debug("Loading environments...");
             return Repository.Environments.FindAll();
         }
 
@@ -120,17 +120,17 @@ namespace Octopus.Cli.Commands
 
             var environmentFilter = environmentsToInclude.Select(p => p.Id).ToList();
 
-            commandOutputProvider.PrintDebugMessage("Loading machines...");
+            commandOutputProvider.Debug("Loading machines...");
             if (environmentFilter.Count > 0)
             {
-                commandOutputProvider.PrintDebugMessage("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
+                commandOutputProvider.Debug("Loading machines from {Environments:l}...", string.Join(", ", environmentsToInclude.Select(e => e.Name)));
                 return
                      Repository.Machines.FindMany(
                         x => { return x.EnvironmentIds.Any(environmentId => environmentFilter.Contains(environmentId)); });
             }
             else
             {
-                commandOutputProvider.PrintDebugMessage("Loading machines from all environments...");
+                commandOutputProvider.Debug("Loading machines from all environments...");
                 return  Repository.Machines.FindAll();
             }
         }

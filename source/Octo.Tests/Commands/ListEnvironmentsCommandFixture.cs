@@ -41,7 +41,10 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--output=json");
             await listEnvironmentsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            var outputObject = JsonConvert.DeserializeObject(LogOutput.ToString());
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("devenvid");
+            logoutput.Should().Contain("prodenvid");
         }
 
         private void SetupEnvironments()

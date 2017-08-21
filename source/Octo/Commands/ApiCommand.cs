@@ -57,7 +57,7 @@ namespace Octopus.Cli.Commands
             formattedOutputInstance = this as ISupportFormattedOutput;
             if (formattedOutputInstance != null)
             {
-                options.Add("output=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
+                options.Add("outputFormat=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
             }
         }
 
@@ -113,14 +113,14 @@ namespace Octopus.Cli.Commands
 
             if (enableDebugging)
             {
-                Repository.Client.SendingOctopusRequest += request => commandOutputProvider.PrintDebugMessage("{Method:l} {Uri:l}", request.Method, request.Uri);
+                Repository.Client.SendingOctopusRequest += request => commandOutputProvider.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
             }
 
-            commandOutputProvider.PrintDebugMessage("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
+            commandOutputProvider.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
 
             var root = Repository.Client.RootDocument;
 
-            commandOutputProvider.PrintDebugMessage("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
+            commandOutputProvider.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
             if (!string.IsNullOrWhiteSpace(username))
             {
@@ -130,7 +130,7 @@ namespace Octopus.Cli.Commands
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
             {
-                commandOutputProvider.PrintDebugMessage("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             ValidateParameters();
@@ -146,7 +146,7 @@ namespace Octopus.Cli.Commands
         {
             if (formattedOutputInstance != null)
             {
-                await formattedOutputInstance.Query();
+                await formattedOutputInstance.Request();
 
                 Respond();
             }
@@ -205,7 +205,7 @@ namespace Octopus.Cli.Commands
         {
             configFile = FileSystem.GetFullPath(configFile);
 
-            commandOutputProvider.PrintDebugMessage("Loading additional arguments from config file: {ConfigFile:l}", configFile);
+            commandOutputProvider.Debug("Loading additional arguments from config file: {ConfigFile:l}", configFile);
 
             if (!FileSystem.FileExists(configFile))
             {

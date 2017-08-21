@@ -42,7 +42,7 @@ namespace Octopus.Cli.Commands
             options.Add("number=", $"[Optional] number of results to return, default is {DefaultReturnAmount}", v => numberOfResults = int.Parse(v));
         }
 
-        public async Task Query()
+        public async Task Request()
         {
             projectsById = await LoadProjects();
             projectsFilter = projectsById.Keys.ToArray();
@@ -59,7 +59,7 @@ namespace Octopus.Cli.Commands
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
             }
 
-            commandOutputProvider.PrintDebugMessage("Loading deployments..."); 
+            commandOutputProvider.Debug("Loading deployments..."); 
 
             deploymentResources = new Dictionary<DeploymentResource, DeploymentRelatedResources>();
             var maxResults = numberOfResults ?? DefaultReturnAmount;
@@ -95,7 +95,7 @@ namespace Octopus.Cli.Commands
                 Log.Information("Did not find any deployments matching the search criteria.");
             }
 
-            commandOutputProvider.PrintDebugMessage($"Showing {deploymentResources.Count} results...");
+            commandOutputProvider.Debug($"Showing {deploymentResources.Count} results...");
 
             foreach (var item in deploymentResources.Keys)
             {
@@ -103,12 +103,12 @@ namespace Octopus.Cli.Commands
             }    
             
             if (numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
-                commandOutputProvider.PrintDebugMessage($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
+                commandOutputProvider.Debug($"Please note you asked for {numberOfResults} results, but there were only {deploymentResources.Count} that matched your criteria");
         }
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.PrintJsonOutput(
+            commandOutputProvider.Json(
                 deploymentResources.Select(dr => new
                 {
                     Project = projectsById[dr.Key.ProjectId],
@@ -132,7 +132,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadProjects()
         {
-            commandOutputProvider.PrintInfoMessage("Loading projects...");
+            commandOutputProvider.Information("Loading projects...");
             var projectQuery = projects.Any()
                 ? Repository.Projects.FindByNames(projects.ToArray())
                 : Repository.Projects.FindAll();
@@ -151,7 +151,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadEnvironments()
         {
-            commandOutputProvider.PrintInfoMessage("Loading environments...");
+            commandOutputProvider.Information("Loading environments...");
             var environmentQuery = environments.Any()
                 ? Repository.Environments.FindByNames(environments.ToArray())
                 : Repository.Environments.FindAll();
@@ -172,7 +172,7 @@ namespace Octopus.Cli.Commands
 
         private async Task<IDictionary<string, string>> LoadTenants()
         {
-            commandOutputProvider.PrintInfoMessage("Loading tenants..."); 
+            commandOutputProvider.Information("Loading tenants..."); 
 
             var tenantsQuery = tenants.Any()
                 ? Repository.Tenants.FindByNames(tenants.ToArray())

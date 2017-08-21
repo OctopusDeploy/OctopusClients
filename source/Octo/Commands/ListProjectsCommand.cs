@@ -23,7 +23,7 @@ namespace Octopus.Cli.Commands
         {
         }
 
-        public async Task Query()
+        public async Task Request()
         {
             var projects = await Repository.Projects.FindAll().ConfigureAwait(false);
             _projectResources = projects;

@@ -54,8 +54,10 @@ namespace Octo.Tests.Commands
         {
             CommandLineArgs.Add("--output=json");
             await listTenantsCommand.Execute(CommandLineArgs.ToArray());
-            Console.WriteLine(LogOutput.ToString());
-            JsonConvert.DeserializeObject(LogOutput.ToString());
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("Tenant-1");
+            logoutput.Should().Contain("Tenant-2");
         }
     }
 }
