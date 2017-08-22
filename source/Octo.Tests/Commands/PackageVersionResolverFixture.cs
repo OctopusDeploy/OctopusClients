@@ -6,6 +6,7 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Util;
 using Serilog;

@@ -133,7 +133,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Infrastructure
 {
     public class OptionValueCollection : IList, IList<string>
     {

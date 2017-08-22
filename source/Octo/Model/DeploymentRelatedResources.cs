@@ -1,6 +1,6 @@
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Model
 {
     public class DeploymentRelatedResources
     {

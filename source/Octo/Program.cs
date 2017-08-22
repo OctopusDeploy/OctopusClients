@@ -5,6 +5,7 @@ using System.Net;
 using System.Reflection;
 using Autofac;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Importers;

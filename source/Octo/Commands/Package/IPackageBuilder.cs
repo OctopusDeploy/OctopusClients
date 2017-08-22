@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using ManifestMetadata = NuGet.Packaging.ManifestMetadata;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Package
 {
     public interface IPackageBuilder
     {

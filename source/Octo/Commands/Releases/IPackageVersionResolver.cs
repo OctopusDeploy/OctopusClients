@@ -1,4 +1,4 @@
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     public interface IPackageVersionResolver
     {

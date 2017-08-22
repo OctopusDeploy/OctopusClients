@@ -3,7 +3,7 @@ using Octopus.Cli.Model;
 using Octopus.Client;
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     public interface IChannelVersionRuleTester
     {

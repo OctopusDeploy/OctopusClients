@@ -7,7 +7,7 @@ using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Package
 {
     public class ZipPackageBuilder : IPackageBuilder
     {

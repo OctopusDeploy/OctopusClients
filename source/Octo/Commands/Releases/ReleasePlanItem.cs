@@ -1,6 +1,6 @@
 using Octopus.Cli.Model;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     public class ReleasePlanItem
     {

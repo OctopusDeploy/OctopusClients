@@ -8,7 +8,7 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Deployment
 {
     public class TaskOutputProgressPrinter
     {

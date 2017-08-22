@@ -5,7 +5,7 @@ using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Package
 {
     public class NuGetPackageBuilder : IPackageBuilder
     {
@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
         {
-            var nugetPkgBuilder = new PackageBuilder();
+            var nugetPkgBuilder = new NuGet.Packaging.PackageBuilder();
 
             var manifestFiles = includes.Select(i => new ManifestFile {Source = i}).ToList();
             nugetPkgBuilder.PopulateFiles(basePath, manifestFiles);

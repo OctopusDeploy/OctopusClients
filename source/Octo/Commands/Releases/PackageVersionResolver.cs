@@ -11,7 +11,7 @@ using Octopus.Cli.Util;
 using Serilog;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     public class PackageVersionResolver : IPackageVersionResolver
     {
