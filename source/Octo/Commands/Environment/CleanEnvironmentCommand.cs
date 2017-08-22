@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Octo.Commands;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
+using Serilog;
 
 #pragma warning disable 618
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Environment
 {
     [Command("clean-environment", Description = "Cleans all Offline Machines from an Environment")]
     public class CleanEnvironmentCommand : ApiCommand, ISupportFormattedOutput

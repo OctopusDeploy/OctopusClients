@@ -6,7 +6,6 @@ using NuGet.Common;
 using NuGet.Packaging;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using Serilog.Events;
 
 namespace Octopus.Cli.Commands
 {

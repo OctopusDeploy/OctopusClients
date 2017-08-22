@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Octo.Commands;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Channel
 {
     [Command("create-channel", Description = "Creates a channel for a project")]
     public class CreateChannelCommand : ApiCommand, ISupportFormattedOutput

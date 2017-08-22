@@ -4,10 +4,10 @@ using System.Text;
 using NSubstitute;
 using Octopus.Cli.Tests.Commands;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Octopus.Cli.Commands.Tenant;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 

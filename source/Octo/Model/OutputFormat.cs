@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Octo.Model
+﻿namespace Octopus.Cli.Model
 {
     public enum OutputFormat
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Octopus.Cli.Commands.Environment;
 
 namespace Octopus.Cli.Tests.Commands
 {

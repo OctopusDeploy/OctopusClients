@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Serilog.Core;
+﻿using System.Threading.Tasks;
 
-namespace Octo.Commands
+namespace Octopus.Cli.Commands
 {
     public interface ISupportFormattedOutput
     {

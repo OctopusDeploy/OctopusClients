@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
 #pragma warning disable 618
 namespace Octopus.Cli.Commands

@@ -2,19 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Octo.Commands;
-using Octo.Model;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
 using Serilog;
-using Serilog.Core;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Deployment
 {
     [Command("list-deployments", Description = "List a number of deployments by project, environment or by tenant")]
     public class ListDeploymentsCommand : ApiCommand, ISupportFormattedOutput

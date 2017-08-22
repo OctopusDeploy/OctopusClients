@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,7 +8,6 @@ using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
-using Octopus.Client.Model.Versioning;
 using Serilog;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 

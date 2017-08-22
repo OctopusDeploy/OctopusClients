@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using Autofac;
-using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
-using Octopus.Cli.Util;
-using System.Net;
 using Octopus.Cli.Repositories;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Exceptions;
-using Serilog.Core;
+using Serilog;
 
 namespace Octopus.Cli
 {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Serilog;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Diagnostics
 {

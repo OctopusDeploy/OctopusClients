@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Project;
 using Octopus.Cli.Tests.Commands;
 using Octopus.Client.Model;
 

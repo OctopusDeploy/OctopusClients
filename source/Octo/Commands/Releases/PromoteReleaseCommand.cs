@@ -1,13 +1,14 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Serilog;
+﻿using System.Threading.Tasks;
+using System.Linq;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
+using Octopus.Cli.Commands.Deployment;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     [Command("promote-release", Description = "Promotes a release.")]
     public class PromoteReleaseCommand : DeploymentCommandBase

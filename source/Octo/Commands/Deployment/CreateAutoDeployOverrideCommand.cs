@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Deployment
 {
     [Command("create-autodeployoverride", Description = "Override the release that auto deploy will use")]
     public class CreateAutoDeployOverrideCommand : ApiCommand

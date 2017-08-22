@@ -17,6 +17,7 @@ using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Octo;
 using Octopus.Client.Model;
 using Serilog;
 using Octopus.Client.Serialization;

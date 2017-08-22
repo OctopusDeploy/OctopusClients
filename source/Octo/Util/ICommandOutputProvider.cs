@@ -1,7 +1,4 @@
-using System;
 using System.IO;
-using Octo.Model;
-using Octopus.Cli.Infrastructure;
 
 namespace Octopus.Cli.Util
 {

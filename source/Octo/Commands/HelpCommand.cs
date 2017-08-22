@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using Octopus.Cli.Infrastructure;
-using Octopus.Cli.Util;
 using System.Reflection;
 using System.Threading.Tasks;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 
 namespace Octopus.Cli.Commands
 {

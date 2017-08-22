@@ -12,6 +12,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <RootNamespace>Octopus.Cli</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">

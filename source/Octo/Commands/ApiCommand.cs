@@ -4,19 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Octo.Commands;
-using Octo.Model;
-using Serilog.Events;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {
@@ -250,7 +247,7 @@ namespace Octopus.Cli.Commands
 
         protected static string GetReleaseNotes(ReleaseResource release)
         {
-            return release.ReleaseNotes != null ? release.ReleaseNotes.Replace(Environment.NewLine, @"\n") : "";
+            return release.ReleaseNotes != null ? release.ReleaseNotes.Replace(System.Environment.NewLine, @"\n") : "";
         }
 
         protected static string GetPackageVersionsAsString(IEnumerable<SelectedPackage> packages)
@@ -287,8 +284,8 @@ namespace Octopus.Cli.Commands
                 return true;
 
             var certificate2 = (X509Certificate2)certificate;
-            var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + Environment.NewLine +
-                             "Certificate subject name: " + certificate2.SubjectName.Name + Environment.NewLine +
+            var warning = "The following certificate errors were encountered when establishing the HTTPS connection to the server: " + errors + System.Environment.NewLine +
+                             "Certificate subject name: " + certificate2.SubjectName.Name + System.Environment.NewLine +
                              "Certificate thumbprint:   " + ((X509Certificate2)certificate).Thumbprint;
 
             if (ignoreSslErrors)

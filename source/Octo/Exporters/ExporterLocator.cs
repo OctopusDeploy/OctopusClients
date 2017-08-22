@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Autofac;
-using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Serilog;
 
 namespace Octopus.Cli.Exporters
 {

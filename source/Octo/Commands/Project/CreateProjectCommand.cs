@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Octo.Commands;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Project
 {
     [Command("create-project", Description = "Creates a project")]
     public class CreateProjectCommand : ApiCommand, ISupportFormattedOutput

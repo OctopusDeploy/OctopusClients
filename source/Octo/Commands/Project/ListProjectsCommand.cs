@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+using Newtonsoft.Json;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
-using Newtonsoft.Json;
-using Octo.Commands;
-using Serilog.Core;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Project
 {
     [Command("list-projects", Description = "Lists all projects")]
     public class ListProjectsCommand : ApiCommand, ISupportFormattedOutput
     {
-        private List<Client.Model.ProjectResource> _projectResources;
+        private List<Octopus.Client.Model.ProjectResource> _projectResources;
 
         public ListProjectsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)

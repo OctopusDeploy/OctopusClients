@@ -2,10 +2,10 @@
 using System.IO;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
-using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 using FluentAssertions;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Serilog;
 

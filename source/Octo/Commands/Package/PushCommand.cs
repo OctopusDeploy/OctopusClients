@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Package
 {
     [Command("push", Description = "Pushes a package (.nupkg, .zip, .tar.gz, etc.) package to the built-in NuGet repository in an Octopus server.")]
     public class PushCommand : ApiCommand

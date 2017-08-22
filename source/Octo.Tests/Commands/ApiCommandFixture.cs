@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Octo.Commands;
-using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 

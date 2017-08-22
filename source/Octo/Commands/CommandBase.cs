@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Serilog;
 
-namespace Octo.Commands
+namespace Octopus.Cli.Commands
 {
     public abstract class CommandBase
     {

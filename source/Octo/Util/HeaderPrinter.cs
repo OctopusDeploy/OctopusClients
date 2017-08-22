@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using Octo.Model;
-using Octopus.Cli.Infrastructure;
 using Serilog;
-using Serilog.Core;
 
 namespace Octopus.Cli.Util
 {

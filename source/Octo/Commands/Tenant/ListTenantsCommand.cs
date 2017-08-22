@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Octo.Commands;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Serilog.Core;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Tenant
 {
     [Command("list-tenants", Description = "List tenants")]
     public class ListTenantsCommand : ApiCommand, ISupportFormattedOutput 

@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using NuGet.Packaging;
 using NuGet.Versioning;
-using Octo.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
+using Serilog;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Package
 {
     [Command("pack", Description = "Creates a package (.nupkg or .zip) from files on disk, without needing a .nuspec or .csproj")]
     public class PackCommand : CommandBase, ICommand
@@ -89,7 +88,7 @@ namespace Octopus.Cli.Commands
                 }
 
                 if (authors.All(string.IsNullOrWhiteSpace))
-                    authors.Add(Environment.GetEnvironmentVariable("USERNAME") + "@" + Environment.GetEnvironmentVariable("USERDOMAIN"));
+                    authors.Add(System.Environment.GetEnvironmentVariable("USERNAME") + "@" + System.Environment.GetEnvironmentVariable("USERDOMAIN"));
 
                 if (string.IsNullOrWhiteSpace(description))
                     description = "A deployment package created from files on disk.";
@@ -106,7 +105,7 @@ namespace Octopus.Cli.Commands
                 if (!string.IsNullOrWhiteSpace(releaseNotes))
                 {
                     if (allReleaseNotes != null)
-                        allReleaseNotes += Environment.NewLine + releaseNotes;
+                        allReleaseNotes += System.Environment.NewLine + releaseNotes;
                     else
                         allReleaseNotes = releaseNotes;
                 }

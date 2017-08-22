@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
-using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Octopus.Cli.Commands.Environment;
+using Octopus.Cli.Infrastructure;
 
 #pragma warning disable 618
 

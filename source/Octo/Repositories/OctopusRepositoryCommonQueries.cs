@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Repositories
 {
@@ -67,8 +67,7 @@ namespace Octopus.Cli.Repositories
                 {
                     await releases.Paginate(repository, page =>
                     {
-                        releaseToPromote = page.Items
-                            .OrderByDescending(r => SemanticVersion.Parse(r.Version))
+                        releaseToPromote = Enumerable.OrderByDescending<ReleaseResource, SemanticVersion>(page.Items, r => SemanticVersion.Parse(r.Version))
                             .FirstOrDefault(r => r.ChannelId == channel.Id);
 
                        // If we haven't found one yet, keep paginating

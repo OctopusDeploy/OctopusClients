@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Serilog;
+﻿using System.Threading.Tasks;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {

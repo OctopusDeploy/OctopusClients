@@ -1,19 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Castle.Core.Logging;
 using Serilog;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using ILogger = Serilog.ILogger;
 
 namespace Octopus.Cli.Tests.Commands
 {

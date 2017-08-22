@@ -1,17 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Deployment
 {
     [Command("dump-deployments", new string[] {}, Description = "Writes deployments to an XML file that can be imported in Excel")]
     public class DumpDeploymentsCommand : ApiCommand

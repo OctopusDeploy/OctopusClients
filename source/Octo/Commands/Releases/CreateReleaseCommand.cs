@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+using Octopus.Cli.Commands.Deployment;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -11,9 +11,10 @@ using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Serilog;
 using Serilog.Events;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.Cli.Commands.Releases
 {
     [Command("create-release", Description = "Creates (and, optionally, deploys) a release.")]
     public class CreateReleaseCommand : DeploymentCommandBase
@@ -94,7 +95,7 @@ namespace Octopus.Cli.Commands
 
             Log.Write(
                 plan.IsViableReleasePlan() ? LogEventLevel.Information : LogEventLevel.Warning,
-                "Release plan for {Project:l} {Version:l}" + Environment.NewLine + "{Plan:l}",
+                "Release plan for {Project:l} {Version:l}" + System.Environment.NewLine + "{Plan:l}",
                 ProjectName, versionNumber, plan.FormatAsTable()
             );
 
@@ -213,7 +214,7 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException(
                     "There are no viable release plans in any channels using the provided arguments. The following release plans were considered:" +
-                    Environment.NewLine +
+                    System.Environment.NewLine +
                     $"{releasePlans.Select(p => p.FormatAsTable()).NewlineSeperate()}");
             }
 
@@ -233,11 +234,11 @@ namespace Octopus.Cli.Commands
 
             throw new CommandException(
                 $"There are {viablePlans.Length} viable release plans using the provided arguments so we cannot auto-select one. The viable release plans are:" +
-                Environment.NewLine +
+                System.Environment.NewLine +
                 $"{viablePlans.Select(p => p.FormatAsTable()).NewlineSeperate()}" +
-                Environment.NewLine +
+                System.Environment.NewLine +
                 "The unviable release plans are:" +
-                Environment.NewLine +
+                System.Environment.NewLine +
                 $"{releasePlans.Except(viablePlans).Select(p => p.FormatAsTable()).NewlineSeperate()}");
         }
 

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Castle.Core.Logging;
-using NUnit.Framework;
-using Octo.Commands;
+﻿using System.Threading.Tasks;
 using Octopus.Cli.Commands;
-using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
-using ILogger = Serilog.ILogger;
+using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
 {

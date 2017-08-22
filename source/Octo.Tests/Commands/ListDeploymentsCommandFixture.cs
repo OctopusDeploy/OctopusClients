@@ -5,9 +5,8 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Deployment;
 using Octopus.Client.Model;
-using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
 {

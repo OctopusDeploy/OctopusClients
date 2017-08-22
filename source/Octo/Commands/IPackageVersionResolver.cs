@@ -1,5 +1,3 @@
-using System;
-
 namespace Octopus.Cli.Commands
 {
     public interface IPackageVersionResolver

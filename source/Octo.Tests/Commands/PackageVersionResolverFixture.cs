@@ -8,7 +8,6 @@ using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Util;
-using Octopus.Cli.Util;
 using Serilog;
 
 namespace Octopus.Cli.Tests.Commands

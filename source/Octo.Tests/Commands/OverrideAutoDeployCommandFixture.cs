@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Octopus.Cli.Commands.Deployment;
 
 namespace Octopus.Cli.Tests.Commands
 {

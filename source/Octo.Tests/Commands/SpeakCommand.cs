@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Octo.Commands;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Util;
