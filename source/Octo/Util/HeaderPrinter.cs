@@ -90,7 +90,10 @@ namespace Octopus.Cli.Util
 
         public void Warning(string s)
         {
-            logger.Warning(s);
+            if (PrintMessages)
+            {
+                logger.Warning(s);
+            }
         }
     }
 }

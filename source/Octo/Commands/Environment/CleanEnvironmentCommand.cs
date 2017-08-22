@@ -29,6 +29,7 @@ namespace Octopus.Cli.Commands
         IEnumerable<MachineResource> machines;
         List<MachineResult> commandResults = new List<MachineResult>();
 
+
         public CleanEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {

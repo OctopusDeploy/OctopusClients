@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Octo.Commands;
-using Serilog;
+using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Commands
+namespace Octo.Commands.Environments
 {
     [Command("create-environment", Description = "Creates a deployment environment")]
     public class CreateEnvironmentCommand : ApiCommand, ISupportFormattedOutput

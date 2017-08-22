@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using Octopus.Cli.Tests.Commands;
 using NUnit.Framework;
+using Octo.Commands.Environments;
 using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 
