@@ -87,5 +87,10 @@ namespace Octopus.Cli.Util
         {
             logger.Information(JsonConvert.SerializeObject(o, Formatting.Indented));
         }
+
+        public void Warning(string s)
+        {
+            logger.Warning(s);
+        }
     }
 }

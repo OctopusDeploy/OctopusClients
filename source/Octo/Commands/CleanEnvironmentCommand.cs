@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Octo.Commands;
 using Serilog;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
@@ -16,7 +17,7 @@ using Octopus.Client.Model.Endpoints;
 namespace Octopus.Cli.Commands
 {
     [Command("clean-environment", Description = "Cleans all Offline Machines from an Environment")]
-    public class CleanEnvironmentCommand : ApiCommand
+    public class CleanEnvironmentCommand : ApiCommand, ISupportFormattedOutput
     {
         string environmentName;
         readonly HashSet<string> statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -24,6 +25,9 @@ namespace Octopus.Cli.Commands
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
+        EnvironmentResource environmentResource;
+        IEnumerable<MachineResource> machines;
+        List<MachineResult> commandResults = new List<MachineResult>();
 
         public CleanEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
@@ -37,15 +41,16 @@ namespace Octopus.Cli.Commands
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to clean up. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
             if (string.IsNullOrWhiteSpace(environmentName))
                 throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
             if (!healthStatuses.Any() && !statuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --status or --health-status");
-
-            var environmentResource = await GetEnvironment().ConfigureAwait(false);
-            IEnumerable<MachineResource> machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
+            
+            environmentResource = await GetEnvironment().ConfigureAwait(false);
+            
+            machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
             await CleanUpEnvironment(machines.ToList(), environmentResource);
@@ -53,34 +58,42 @@ namespace Octopus.Cli.Commands
 
         private async Task CleanUpEnvironment(List<MachineResource> filteredMachines, EnvironmentResource environmentResource)
         {
-            Log.Information("Found {MachineCount} machines in {Environment:l} with the status {Status:l}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
+            commandOutputProvider.Information("Found {MachineCount} machines in {Environment:l} with the status {Status:l}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
 
             if (filteredMachines.Any(m => m.EnvironmentIds.Count > 1))
             {
-                Log.Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {Environment:l} environment.", environmentResource.Name);
+                commandOutputProvider.Information("Note: Some of these machines belong to multiple environments. Instead of being deleted, these machines will be removed from the {Environment:l} environment.", environmentResource.Name);
             }
 
             foreach (var machine in filteredMachines)
             {
+                MachineResult result = new MachineResult
+                {
+                    Machine = machine
+                };
                 // If the machine belongs to more than one environment, we should remove the machine from the environment rather than delete it altogether.
                 if (machine.EnvironmentIds.Count > 1)
                 {
-                    Log.Information("Removing {Machine:l} {Status} (ID: {Id:l}) from {Environment:l}", machine.Name, machine.Status, machine.Id,
+                    commandOutputProvider.Information("Removing {Machine:l} {Status} (ID: {Id:l}) from {Environment:l}", machine.Name, machine.Status, machine.Id,
                         environmentResource.Name);
                     machine.EnvironmentIds.Remove(environmentResource.Id);
                     await Repository.Machines.Modify(machine).ConfigureAwait(false);
+                    result.Action = MachineAction.RemovedFromEnvironment;
                 }
                 else
                 {
-                    Log.Information("Deleting {Machine:l} {Status} (ID: {Id:l})", machine.Name, machine.Status, machine.Id);
+                    commandOutputProvider.Information("Deleting {Machine:l} {Status} (ID: {Id:l})", machine.Name, machine.Status, machine.Id);
                     await Repository.Machines.Delete(machine).ConfigureAwait(false);
+                    result.Action = MachineAction.Deleted;
                 }
+
+                this.commandResults.Add(result);
             }
         }
 
         private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines)
         {
-            var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
+            var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses, commandOutputProvider);
             environmentMachines = provider.Filter(environmentMachines);
 
             if (isDisabled.HasValue)
@@ -122,19 +135,53 @@ namespace Octopus.Cli.Commands
 
         private Task<List<MachineResource>> FilterByEnvironment(EnvironmentResource environmentResource)
         {
-            Log.Debug("Loading machines...");
+            commandOutputProvider.Debug("Loading machines...");
             return Repository.Machines.FindMany(x =>  x.EnvironmentIds.Any(environmentId => environmentId == environmentResource.Id));
         }
 
         private async Task<EnvironmentResource> GetEnvironment()
         {
-            Log.Debug("Loading environments...");
+            commandOutputProvider.Debug("Loading environments...");
             var environmentResource = await Repository.Environments.FindByName(environmentName).ConfigureAwait(false);
             if (environmentResource == null)
             {
                 throw new CouldNotFindException("the specified environment");
             }
             return environmentResource;
+        }
+        
+        public void PrintDefaultOutput()
+        {
+            
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(commandResults.Select(x =>new
+            {
+                MachineId = x.Machine.Id,
+                Name = x.Machine.Name,
+                Status = x.Machine.Status,
+                EnvironmentName = x.Action == MachineAction.RemovedFromEnvironment ? environmentResource.Name : string.Empty,
+                Action = x.Action.ToString()
+            }));
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
+        }
+
+        public enum MachineAction
+        {
+            RemovedFromEnvironment,
+            Deleted
+        }
+
+        private class MachineResult
+        {
+            public MachineResource Machine { get; set; }
+            public MachineAction Action { get; set; }
         }
     }
 }

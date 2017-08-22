@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Serilog;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -18,15 +19,17 @@ namespace Octopus.Cli.Commands
         private readonly ILogger log;
         private readonly HashSet<string> statuses;
         private readonly HashSet<string> healthStatuses;
+        private readonly ICommandOutputProvider commandOutputProvider;
 
         public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
-        public HealthStatusProvider(IOctopusAsyncRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses)
+        public HealthStatusProvider(IOctopusAsyncRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses, ICommandOutputProvider commandOutputProvider)
         {
             this.log = log;
             this.statuses = statuses;
             this.healthStatuses = healthStatuses;
+            this.commandOutputProvider = commandOutputProvider;
             IsHealthStatusPendingDeprication = (new SemanticVersion(repository.Client.RootDocument.Version).Version >= new SemanticVersion("3.4.0").Version);
             ValidateOptions();
         }
@@ -37,7 +40,7 @@ namespace Octopus.Cli.Commands
             {
                 if (statuses.Any())
                 {
-                    log.Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+                    commandOutputProvider.Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
                 }
             }
             else
@@ -87,7 +90,7 @@ namespace Octopus.Cli.Commands
             var statusFilter = new List<MachineModelStatus>();
             if (statuses.Count > 0)
             {
-                log.Debug("Loading statuses...");
+                commandOutputProvider.Debug("Loading statuses...");
                 foreach (var status in statuses)
                 {
                     MachineModelStatus result;
@@ -106,7 +109,7 @@ namespace Octopus.Cli.Commands
             var statusFilter = new List<MachineModelHealthStatus>();
             if (healthStatuses.Count > 0)
             {
-                log.Debug("Loading health statuses...");
+                commandOutputProvider.Debug("Loading health statuses...");
                 foreach (var status in healthStatuses)
                 {
                     MachineModelHealthStatus result;

@@ -40,7 +40,7 @@ namespace Octopus.Cli.Commands
 
         public async Task Request()
         {
-            provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses);
+            provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses, commandOutputProvider);
 
             environmentResources = await GetEnvironments().ConfigureAwait(false);
 

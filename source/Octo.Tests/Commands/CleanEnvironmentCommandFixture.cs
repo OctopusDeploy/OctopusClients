@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,6 +10,8 @@ using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
+
 #pragma warning disable 618
 
 namespace Octopus.Cli.Tests.Commands
@@ -132,6 +137,51 @@ namespace Octopus.Cli.Tests.Commands
             Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CouldNotFindException>()
               .WithMessage("Could not find the specified environment; either it does not exist or you lack permissions to view it.");
+        }
+
+        [Test]
+        public async Task JsonOutput_ShouldBeWellFormed()
+        {
+            var environmentResource = new EnvironmentResource { Name = "Development", Id = "Environments-001" };
+            Repository.Environments.FindByName("Development").Returns(environmentResource);
+            
+            CommandLineArgs.Add("--outputFormat=json");
+            CommandLineArgs.Add($"--environment={environmentResource.Name}");
+            CommandLineArgs.Add("-status=Offline");
+
+            var machineList = new List<MachineResource>
+            {
+                new MachineResource
+                {
+                    Name = "PC01466",
+                    Id = "Machines-002",
+                    Status = MachineModelStatus.Offline,
+                    EnvironmentIds = new ReferenceCollection(new [] {"Environments-001", "Environments-002"})
+                },
+                new MachineResource
+                {
+                    Name = "PC01996",
+                    Id = "Machines-003",
+                    Status = MachineModelStatus.Offline,
+                    EnvironmentIds = new ReferenceCollection("Environments-001")
+                }
+            };
+
+            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
+
+            await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            string logoutput = LogOutput.ToString();
+            Console.WriteLine(logoutput);
+            JsonConvert.DeserializeObject(logoutput);
+            Regex.Matches(logoutput, CleanEnvironmentCommand.MachineAction.Deleted.ToString()).Count.Should()
+                .Be(1, "should only have one deleted machine");
+            Regex.Matches(logoutput, CleanEnvironmentCommand.MachineAction.RemovedFromEnvironment.ToString()).Count.Should()
+                .Be(1, "should only have one machine removed from the environment");
+            logoutput.Should().Contain(machineList[0].Name);
+            logoutput.Should().Contain(machineList[0].Id);
+            logoutput.Should().Contain(machineList[1].Name);
+            logoutput.Should().Contain(machineList[1].Id);
         }
     }
 }

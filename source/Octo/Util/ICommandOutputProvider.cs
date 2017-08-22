@@ -24,5 +24,6 @@ namespace Octopus.Cli.Util
         void Information(string template, params object[] propertyValues);
 
         void Json(object o);
+        void Warning(string s);
     }
 }
