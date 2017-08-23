@@ -38,14 +38,12 @@ namespace Octopus.Cli.Commands.Project
 
         public void PrintJsonOutput()
         {
-            Log.Information(
-                JsonConvert.SerializeObject(
-                    _projectResources.Select(project => new
-                    {
-                        project.Id,
-                        project.Name
-                    }).ToArray(),
-                Formatting.Indented));
+            commandOutputProvider.Json(
+                _projectResources.Select(project => new
+                {
+                    project.Id,
+                    project.Name
+                }));
         }
 
         public void PrintXmlOutput()
