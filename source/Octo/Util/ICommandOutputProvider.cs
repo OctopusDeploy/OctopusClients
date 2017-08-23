@@ -1,5 +1,6 @@
 using System.IO;
 using Octopus.Cli.Infrastructure;
+using Octopus.Client.Model;
 
 namespace Octopus.Cli.Util
 {
@@ -25,5 +26,7 @@ namespace Octopus.Cli.Util
 
         void Json(object o);
         void Warning(string s);
+        void Warning(string template, params object[] propertyValues);
+        void Error(string template, params object[] propertyValues);
     }
 }

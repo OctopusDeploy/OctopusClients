@@ -114,5 +114,21 @@ namespace Octopus.Cli.Util
                 logger.Warning(s);
             }
         }
+
+        public void Warning(string template, params object[] propertyValues)
+        {
+            if (PrintMessages)
+            {
+                logger.Warning(template, propertyValues);
+            }
+        }
+
+        public void Error(string template, params object[] propertyValues)
+        {
+            if (PrintMessages)
+            {
+                logger.Error(template, propertyValues);
+            }
+        }
     }
 }
