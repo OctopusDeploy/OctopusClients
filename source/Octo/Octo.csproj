@@ -50,5 +50,9 @@
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Util\PackageBuilder\" />
+  </ItemGroup>
+
 
 </Project>

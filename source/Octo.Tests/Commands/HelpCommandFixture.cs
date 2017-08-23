@@ -30,7 +30,7 @@ namespace Octopus.Cli.Tests.Commands
 
             commandLocator = Substitute.For<ICommandLocator>();
             commandOutputProvider = new CommandOutputProvider(logger);
-            helpCommand = new HelpCommand(commandLocator, commandOutputProvider);
+            helpCommand = new HelpCommand(logger, commandLocator, commandOutputProvider);
             logger = new LoggerConfiguration().WriteTo.TextWriter(output).CreateLogger();
         }
 

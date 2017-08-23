@@ -28,7 +28,6 @@ namespace Octopus.Cli.Commands
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
-        readonly ISupportFormattedOutput formattedOutputInstance;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
         {
@@ -50,13 +49,7 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
-
-            formattedOutputInstance = this as ISupportFormattedOutput;
-            if (formattedOutputInstance != null)
-            {
-                options.Add("outputFormat=", "[Optional] Output format, valid options are json or xml", SetOutputFormat);
             }
-        }
 
         protected string ServerBaseUrl { get; private set; }
 
@@ -65,8 +58,6 @@ namespace Octopus.Cli.Commands
         protected OctopusRepositoryCommonQueries RepositoryCommonQueries { get; private set; }
 
         protected IOctopusFileSystem FileSystem { get; }
-
-        public OutputFormat OutputFormat { get; set; }
 
         public async Task Execute(string[] commandLineArguments)
         {
@@ -154,17 +145,13 @@ namespace Octopus.Cli.Commands
         {
             if (formattedOutputInstance != null)
             {
-                switch (OutputFormat)
+                if (OutputFormat == OutputFormat.Json)
                 {
-                    case OutputFormat.Json:
-                        formattedOutputInstance.PrintJsonOutput();
-                        break;
-                    case OutputFormat.Xml:
-                        formattedOutputInstance.PrintXmlOutput();
-                        break;
-                    default:
-                        formattedOutputInstance.PrintDefaultOutput();
-                        break;
+                    formattedOutputInstance.PrintJsonOutput();
+                }
+                else
+                {
+                    formattedOutputInstance.PrintDefaultOutput();
                 }
             }
         }
@@ -269,12 +256,6 @@ namespace Octopus.Cli.Commands
                 packageVersionsAsString += packageVersionAsString;
             }
             return packageVersionsAsString;
-        }
-
-        private void SetOutputFormat(string s)
-        {
-            OutputFormat outputFormat;
-            OutputFormat = Enum.TryParse(s, true, out outputFormat) ? outputFormat : OutputFormat.Default;
         }
 
 #if !HTTP_CLIENT_SUPPORTS_SSL_OPTIONS

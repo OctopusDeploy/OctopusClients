@@ -3,7 +3,6 @@
     public enum OutputFormat
     {
         Default,
-        Json,
-        Xml
+        Json
     }
 }

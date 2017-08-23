@@ -1,4 +1,5 @@
 using System.IO;
+using Octopus.Cli.Infrastructure;
 
 namespace Octopus.Cli.Util
 {
@@ -9,6 +10,8 @@ namespace Octopus.Cli.Util
         void PrintHeader();
 
         void PrintCommandHelpHeader(string executable, string commandName, TextWriter textWriter);
+
+        void PrintCommandOptions(Options options, TextWriter textWriter);
 
         void PrintCommandHelpFooter(string executable, string commandName, TextWriter textWriter);
 

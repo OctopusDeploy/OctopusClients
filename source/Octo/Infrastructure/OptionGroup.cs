@@ -8,40 +8,34 @@ namespace Octopus.Cli.Infrastructure
 {
     public class Options
     {
-        readonly List<Tuple<string, OptionSet>> options = new List<Tuple<string, OptionSet>>();
+        public Options()
+        {
+            OptionSets = new Dictionary<string, OptionSet>();
+        }
 
         public OptionSet For(string groupName)
         {
-            var val = options.FirstOrDefault(o => o.Item1 == groupName);
-            if (val == null)
+            if (!OptionSets.ContainsKey(groupName))
             {
                 var o = new OptionSet();
-                options.Add(new Tuple<string, OptionSet>(groupName, o));
+                OptionSets[groupName] = o;
                 return o;
             }
-            return val.Item2;
-        }
 
-        public void WriteOptionDescriptions(TextWriter o)
-        {
-            foreach (var group in options.ToArray().Reverse())
-            {
-                o.WriteLine(group.Item1 + ": ");
-                o.WriteLine();
-                group.Item2.WriteOptionDescriptions(o);
-                o.WriteLine();
-            }
+            return OptionSets[groupName];
         }
 
         public List<string> Parse(IEnumerable<string> arguments)
         {
             var combined = new OptionSet();
-            foreach (var group in options)
+            foreach (var group in OptionSets.Keys)
             {
-                combined.AddRange(group.Item2);
+                combined.AddRange(OptionSets[group]);
             }
 
             return combined.Parse(arguments);
         }
+
+        public Dictionary<string, OptionSet> OptionSets { get; private set; }
     }
 }

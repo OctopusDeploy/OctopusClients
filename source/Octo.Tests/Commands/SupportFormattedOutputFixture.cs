@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using Octopus.Cli.Tests.Helpers;
 using Serilog;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -41,27 +43,11 @@ namespace Octopus.Cli.Tests.Commands
             // assert
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(true);
         }
-
-        [Test]
-        public async Task FormattedOutput_FormatSetToXml()
-        {
-            // arrang
-            DummyApiCommandWithFormattedOutputSupport command =
-                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
-                    CommandOutputProvider);
-            CommandLineArgs.Add("--outputFormat=xml");
-
-            // act
-            await command.Execute(CommandLineArgs.ToArray());
-            
-            // assert
-            command.PrintXmlOutputCalled.ShouldBeEquivalentTo(true);
-        }
-
+        
         [Test]
         public async Task FormattedOutput_FormatInvalid()
         {
-            // arrang
+            // arrange
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
                     CommandOutputProvider);
@@ -74,6 +60,29 @@ namespace Octopus.Cli.Tests.Commands
             command.PrintXmlOutputCalled.ShouldBeEquivalentTo(false);
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(false);
             command.PrintDefaultOutputCalled.ShouldBeEquivalentTo(true);
+        }
+
+        [Test]
+        public async Task FormattedOutputHelp_ShouldBeWellFormed()
+        {
+            // arrange
+            DummyApiCommandWithFormattedOutputSupport command =
+                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
+                    CommandOutputProvider);
+
+            CommandLineArgs.Add("--outputFormat=json");
+            CommandLineArgs.Add("--help");
+
+            // act
+            await command.Execute(CommandLineArgs.ToArray());
+
+            // assert
+            var logoutput = LogOutput.ToString();
+            Console.WriteLine(logoutput);
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("--outputFormat=VALUE");
+            logoutput.Should().Contain("--help");
+
         }
 
     }
