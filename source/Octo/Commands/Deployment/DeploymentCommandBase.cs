@@ -18,7 +18,9 @@ namespace Octopus.Cli.Commands.Deployment
     public abstract class DeploymentCommandBase : ApiCommand
     {
         readonly VariableDictionary variables = new VariableDictionary();
-        IReadOnlyList<DeploymentResource> deployments;
+        protected IReadOnlyList<DeploymentResource> deployments;
+        protected List<DeploymentPromotionTarget> promotionTargets;
+        protected List<TenantResource> deploymentTenants;
 
         protected DeploymentCommandBase(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
@@ -28,6 +30,7 @@ namespace Octopus.Cli.Commands.Deployment
             DeployToEnvironmentNames = new List<string>();
             TenantTags = new List<string>();
             Tenants = new List<string>();
+            promotionTargets = new List<DeploymentPromotionTarget>();
 
             var options = Options.For("Deployment");
             options.Add("progress", "[Optional] Show progress of the deployment", v => { showProgress = true; WaitForDeployment = true; noRawLog = true; });
@@ -102,17 +105,19 @@ namespace Octopus.Cli.Commands.Deployment
             var environment = DeployToEnvironmentNames[0];
             var specificMachineIdsTask = GetSpecificMachines();
             var releaseTemplate = await Repository.Releases.GetTemplate(release).ConfigureAwait(false);
-            var deploymentTenants = await GetTenants(project, environment, release, releaseTemplate).ConfigureAwait(false);
+            
+            deploymentTenants = await GetTenants(project, environment, release, releaseTemplate).ConfigureAwait(false);
             var specificMachineIds = await specificMachineIdsTask.ConfigureAwait(false);
 
             LogScheduledDeployment();
-
+            
             var createTasks = deploymentTenants.Select(tenant =>
             {
                 var promotion =
                     releaseTemplate.TenantPromotions
                         .First(t => t.Id == tenant.Id).PromoteTo
                         .First(tt => tt.Name.Equals(environment, StringComparison.CurrentCultureIgnoreCase));
+                promotionTargets.Add(promotion);
                 return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
             });
 
@@ -298,7 +303,6 @@ namespace Octopus.Cli.Commands.Deployment
 
         private async Task<DeploymentResource> CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, TenantResource tenant = null)
         {
-            
             var preview = await Repository.Releases.GetPreview(promotionTarget).ConfigureAwait(false);
 
             // Validate skipped steps
@@ -349,6 +353,7 @@ namespace Octopus.Cli.Commands.Deployment
                 }
             }
 
+            promotionTargets.Add(promotionTarget);
             var deployment = await Repository.Deployments.Create(new DeploymentResource
             {
                 TenantId = tenant?.Id,

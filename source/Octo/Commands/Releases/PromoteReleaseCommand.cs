@@ -11,8 +11,12 @@ using Octopus.Cli.Commands.Deployment;
 namespace Octopus.Cli.Commands.Releases
 {
     [Command("promote-release", Description = "Promotes a release.")]
-    public class PromoteReleaseCommand : DeploymentCommandBase
+    public class PromoteReleaseCommand : DeploymentCommandBase, ISupportFormattedOutput
     {
+        ProjectResource project;
+        EnvironmentResource environment;
+        ReleaseResource release;
+
         public PromoteReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
         {
@@ -34,15 +38,17 @@ namespace Octopus.Cli.Commands.Releases
             base.ValidateParameters();
         }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
-            Log.Debug("Finding project: {Project:l}", ProjectName);
-            var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
+            commandOutputProvider.Debug("Finding project: {Project:l}", ProjectName);
+            
+            project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
-            Log.Debug("Finding environment: {Environment:l}", FromEnvironmentName);
-            var environment = await Repository.Environments.FindByName(FromEnvironmentName).ConfigureAwait(false);
+            commandOutputProvider.Debug("Finding environment: {Environment:l}", FromEnvironmentName);
+            
+            environment = await Repository.Environments.FindByName(FromEnvironmentName).ConfigureAwait(false);
             if (environment == null)
                 throw new CouldNotFindException("an environment named", FromEnvironmentName);
 
@@ -56,16 +62,59 @@ namespace Octopus.Cli.Commands.Releases
                 throw new CouldNotFindException("latest deployment of the project for this environment. Please check that a deployment for this project/environment exists on the dashboard.");
             }
 
-            Log.Debug("Finding release details for release {Version:l}", dashboardItem.ReleaseVersion);
-            var release = await Repository.Projects.GetReleaseByVersion(project, dashboardItem.ReleaseVersion).ConfigureAwait(false);
+            commandOutputProvider.Debug("Finding release details for release {Version:l}", dashboardItem.ReleaseVersion);
+            
+            release = await Repository.Projects.GetReleaseByVersion(project, dashboardItem.ReleaseVersion).ConfigureAwait(false);
 
             if (UpdateVariableSnapshot)
             {
-                Log.Debug("Updating the release variable snapshot with variables from the project");
+                commandOutputProvider.Debug("Updating the release variable snapshot with variables from the project");
                 await Repository.Releases.SnapshotVariables(release);
             }
 
             await DeployRelease(project, release).ConfigureAwait(false);
+        }
+        
+        public void PrintDefaultOutput()
+        {
+            
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(deployments.Select(d => new
+            {
+                DeploymentId = d.Id,
+                d.ReleaseId,
+                Environment = new
+                {
+                    d.EnvironmentId,
+                    EnvironmentName = promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
+                },
+                d.SkipActions,
+                d.SpecificMachineIds,
+                d.ExcludedMachineIds,
+                d.Created,
+                d.Name,
+                d.QueueTime,
+                Tenant = string.IsNullOrEmpty(d.TenantId)
+                    ? new {d.TenantId, TenantName = string.Empty}
+                    : new {d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name}
+            }));
+            //commandOutputProvider.Json(new
+            //{
+            //    ReleaseId = release.Id,
+            //    release.Version,
+            //    release.Assembled,
+            //    project.Name,
+            //    FromEnvironment = FromEnvironmentName,
+            //    DeployToEnvironmentNames,
+            //});
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
