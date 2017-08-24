@@ -12,8 +12,14 @@ using Serilog;
 namespace Octopus.Cli.Commands.Releases
 {
     [Command("delete-releases", Description = "Deletes a range of releases")]
-    public class DeleteReleasesCommand : ApiCommand
+    public class DeleteReleasesCommand : ApiCommand, ISupportFormattedOutput
     {
+        ProjectResource project;
+        HashSet<string> channels;
+        ResourceCollection<ReleaseResource> releases;
+        List<ReleaseResource> toDelete;
+        List<ReleaseResource> wouldDelete;
+
         public DeleteReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
         {
@@ -31,7 +37,7 @@ namespace Octopus.Cli.Commands.Releases
         public List<string> ChannelNames { get; } = new List<string>();
         public bool WhatIf { get; set; }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
             if (ChannelNames.Any() && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel arguments.");
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
@@ -41,13 +47,17 @@ namespace Octopus.Cli.Commands.Releases
             var min = SemanticVersion.Parse(MinVersion);
             var max = SemanticVersion.Parse(MaxVersion);
 
-            var project = await GetProject().ConfigureAwait(false);
+            
+            project = await GetProject().ConfigureAwait(false);
             var channelsTask = GetChannelIds(project);
-            var releases = await Repository.Projects.GetReleases(project).ConfigureAwait(false);
-            var channels = await channelsTask.ConfigureAwait(false);
+            releases = await Repository.Projects.GetReleases(project).ConfigureAwait(false);
+            
+            channels = await channelsTask.ConfigureAwait(false);
 
-            Log.Debug("Finding releases for project...");
-            var toDelete = new List<string>();
+            commandOutputProvider.Debug("Finding releases for project...");
+            
+            toDelete = new List<ReleaseResource>();
+            wouldDelete = new List<ReleaseResource>();
             await releases.Paginate(Repository, page =>
             {
                 foreach (var release in page.Items)
@@ -61,12 +71,13 @@ namespace Octopus.Cli.Commands.Releases
 
                     if (WhatIf)
                     {
-                        Log.Information("[Whatif] Version {Version:l} would have been deleted", version);
+                        commandOutputProvider.Information("[Whatif] Version {Version:l} would have been deleted", version);
+                        wouldDelete.Add(release);
                     }
                     else
                     {
-                        toDelete.Add(release.Link("Self"));
-                        Log.Information("Deleting version {Version:l}", version);
+                        toDelete.Add(release);
+                        commandOutputProvider.Information("Deleting version {Version:l}", version);
                     }
                 }
 
@@ -80,7 +91,7 @@ namespace Octopus.Cli.Commands.Releases
 
             foreach (var release in toDelete)
             {
-                await Repository.Client.Delete(release).ConfigureAwait(false);
+                await Repository.Client.Delete(release.Link("Self")).ConfigureAwait(false);
             }
         }
 
@@ -89,7 +100,7 @@ namespace Octopus.Cli.Commands.Releases
             if (ChannelNames.None())
                 return new HashSet<string>();
 
-            Log.Debug("Finding channels: {Channels:l}", ChannelNames.CommaSeperate());
+            commandOutputProvider.Debug("Finding channels: {Channels:l}", ChannelNames.CommaSeperate());
 
             var firstChannelPage = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
             var allChannels = await firstChannelPage.GetAllPages(Repository).ConfigureAwait(false);
@@ -105,11 +116,36 @@ namespace Octopus.Cli.Commands.Releases
 
         private async Task<ProjectResource> GetProject()
         {
-            Log.Debug("Finding project: {Project:l}", ProjectName);
+            commandOutputProvider.Debug("Finding project: {Project:l}", ProjectName);
             var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
             return project;
+        }
+
+        public void PrintDefaultOutput()
+        {
+
+        }
+
+        public void PrintJsonOutput()
+        {
+            List<ReleaseResource> affectedReleases = WhatIf ? wouldDelete : toDelete;
+            commandOutputProvider.Json(new
+            {
+                ProjectName = project.Name,
+                Releases = affectedReleases.Select(r => new
+                    {
+                        r.Version,
+                        Deleted = !WhatIf
+                    }
+                )
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }
