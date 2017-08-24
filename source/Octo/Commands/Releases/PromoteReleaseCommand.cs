@@ -82,25 +82,32 @@ namespace Octopus.Cli.Commands.Releases
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.Json(deployments.Select(d => new
+            commandOutputProvider.Json(new
             {
-                DeploymentId = d.Id,
-                d.ReleaseId,
-                Environment = new
+                ProjectName = project.Name,
+                FromEnvironment = environment.Name,
+                release.Version,
+                Deployments = deployments.Select(d => new
                 {
-                    d.EnvironmentId,
-                    EnvironmentName = promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
-                },
-                d.SkipActions,
-                d.SpecificMachineIds,
-                d.ExcludedMachineIds,
-                d.Created,
-                d.Name,
-                d.QueueTime,
-                Tenant = string.IsNullOrEmpty(d.TenantId)
-                    ? new {d.TenantId, TenantName = string.Empty}
-                    : new {d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name}
-            }));
+                    DeploymentId = d.Id,
+                    d.ReleaseId,
+                    Environment = new
+                    {
+                        d.EnvironmentId,
+                        EnvironmentName = promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
+                    },
+                    d.SkipActions,
+                    d.SpecificMachineIds,
+                    d.ExcludedMachineIds,
+                    d.Created,
+                    d.Name,
+                    d.QueueTime,
+                    Tenant = string.IsNullOrEmpty(d.TenantId)
+                        ? new {d.TenantId, TenantName = string.Empty}
+                        : new {d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name}
+                })
+            });
+
             //commandOutputProvider.Json(new
             //{
             //    ReleaseId = release.Id,
