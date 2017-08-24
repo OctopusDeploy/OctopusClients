@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
 using Serilog;
@@ -14,12 +15,14 @@ namespace Octopus.Cli.Commands.Releases
         private readonly ILogger log;
         private readonly IPackageVersionResolver versionResolver;
         private readonly IChannelVersionRuleTester versionRuleTester;
+        private readonly ICommandOutputProvider commandOutputProvider;
 
-        public ReleasePlanBuilder(ILogger log, IPackageVersionResolver versionResolver, IChannelVersionRuleTester versionRuleTester)
+        public ReleasePlanBuilder(ILogger log, IPackageVersionResolver versionResolver, IChannelVersionRuleTester versionRuleTester, ICommandOutputProvider commandOutputProvider)
         {
             this.log = log;
             this.versionResolver = versionResolver;
             this.versionRuleTester = versionRuleTester;
+            this.commandOutputProvider = commandOutputProvider;
         }
 
         public async Task<ReleasePlan> Build(IOctopusAsyncRepository repository, ProjectResource project, ChannelResource channel, string versionPreReleaseTag)
@@ -27,29 +30,29 @@ namespace Octopus.Cli.Commands.Releases
             if (repository == null) throw new ArgumentNullException(nameof(repository));
             if (project == null) throw new ArgumentNullException(nameof(project));
 
-            log.Debug("Finding deployment process...");
+            commandOutputProvider.Debug("Finding deployment process...");
             var deploymentProcess = await repository.DeploymentProcesses.Get(project.DeploymentProcessId).ConfigureAwait(false);
 
-            log.Debug("Finding release template...");
+            commandOutputProvider.Debug("Finding release template...");
             var releaseTemplate = await repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel).ConfigureAwait(false);
 
             var plan = new ReleasePlan(project, channel, releaseTemplate, versionResolver);
 
             if (plan.UnresolvedSteps.Any())
             {
-                log.Debug("The package version for some steps was not specified. Going to try and resolve those automatically...");
+                commandOutputProvider.Debug("The package version for some steps was not specified. Going to try and resolve those automatically...");
                 foreach (var unresolved in plan.UnresolvedSteps)
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        log.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        commandOutputProvider.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
                         continue;
                     }
 
                     if (!string.IsNullOrEmpty(versionPreReleaseTag))
-                        log.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.StepName);
+                        commandOutputProvider.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.StepName);
                     else
-                        log.Debug("Finding latest package for step: {StepName:l}", unresolved.StepName);
+                        commandOutputProvider.Debug("Finding latest package for step: {StepName:l}", unresolved.StepName);
 
                     var feed = await repository.Feeds.Get(unresolved.PackageFeedId).ConfigureAwait(false);
                     if (feed == null)
@@ -65,11 +68,11 @@ namespace Octopus.Cli.Commands.Releases
 
                     if (latestPackage == null)
                     {
-                        log.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.FeedUri);
+                        commandOutputProvider.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.FeedUri);
                     }
                     else
                     {
-                        log.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
+                        commandOutputProvider.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }

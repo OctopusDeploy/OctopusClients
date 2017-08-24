@@ -17,9 +17,14 @@ using Serilog.Events;
 namespace Octopus.Cli.Commands.Releases
 {
     [Command("create-release", Description = "Creates (and, optionally, deploys) a release.")]
-    public class CreateReleaseCommand : DeploymentCommandBase
+    public class CreateReleaseCommand : DeploymentCommandBase, ISupportFormattedOutput
     {
         private readonly IReleasePlanBuilder releasePlanBuilder;
+        ReleaseResource release;
+        ProjectResource project;
+        ReleasePlan plan;
+        string versionNumber;
+        ResourceCollection<ChannelResource> channels;
 
         public CreateReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
@@ -60,40 +65,41 @@ namespace Octopus.Cli.Commands.Releases
             base.ValidateParameters();
         }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
             var serverSupportsChannels = ServerSupportsChannels();
-            Log.Debug(serverSupportsChannels ? "This Octopus Server supports channels" : "This Octopus Server does not support channels");
+            commandOutputProvider.Debug(serverSupportsChannels ? "This Octopus Server supports channels" : "This Octopus Server does not support channels");
 
-            Log.Debug("Finding project: {Project:l}", ProjectName);
-            var project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
+            commandOutputProvider.Debug("Finding project: {Project:l}", ProjectName);
+            
+            project = await Repository.Projects.FindByName(ProjectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", ProjectName);
 
-            var plan = await BuildReleasePlan(project).ConfigureAwait(false);
+            plan = await BuildReleasePlan(project).ConfigureAwait(false);
 
-            string versionNumber;
+            
             if (!string.IsNullOrWhiteSpace(VersionNumber))
             {
                 versionNumber = VersionNumber;
-                Log.Debug("Using version number provided on command-line: {Version:l}", versionNumber);
+                commandOutputProvider.Debug("Using version number provided on command-line: {Version:l}", versionNumber);
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.NextVersionIncrement))
             {
                 versionNumber = plan.ReleaseTemplate.NextVersionIncrement;
-                Log.Debug("Using version number from release template: {Version:l}", versionNumber);
+                commandOutputProvider.Debug("Using version number from release template: {Version:l}", versionNumber);
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.VersioningPackageStepName))
             {
                 versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName);
-                Log.Debug("Using version number from package step: {Version:l}", versionNumber);
+                commandOutputProvider.Debug("Using version number from package step: {Version:l}", versionNumber);
             }
             else
             {
                 throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
 
-            Log.Write(
+            commandOutputProvider.Write(
                 plan.IsViableReleasePlan() ? LogEventLevel.Information : LogEventLevel.Warning,
                 "Release plan for {Project:l} {Version:l}" + System.Environment.NewLine + "{Plan:l}",
                 ProjectName, versionNumber, plan.FormatAsTable()
@@ -108,7 +114,7 @@ namespace Octopus.Cli.Commands.Releases
             {
                 if (IgnoreChannelRules)
                 {
-                    Log.Warning("At least one step violates the package version rules for the Channel '{Channel:l}'. Forcing the release to be created ignoring these rules...", plan.Channel.Name);
+                    commandOutputProvider.Warning("At least one step violates the package version rules for the Channel '{Channel:l}'. Forcing the release to be created ignoring these rules...", plan.Channel.Name);
                 }
                 else
                 {
@@ -118,20 +124,20 @@ namespace Octopus.Cli.Commands.Releases
 
             if (IgnoreIfAlreadyExists)
             {
-                Log.Debug("Checking for existing release for {Project:l} {Version:l} because you specified --ignoreexisting...", ProjectName, versionNumber);
+                commandOutputProvider.Debug("Checking for existing release for {Project:l} {Version:l} because you specified --ignoreexisting...", ProjectName, versionNumber);
                 try
                 {
                     var found = await Repository.Projects.GetReleaseByVersion(project, versionNumber).ConfigureAwait(false);
                     if (found != null)
                     {
-                        Log.Information("A release of {Project:l} with the number {Version:l} already exists, and you specified --ignoreexisting, so we won't even attempt to create the release.", ProjectName, versionNumber);
+                        commandOutputProvider.Information("A release of {Project:l} with the number {Version:l} already exists, and you specified --ignoreexisting, so we won't even attempt to create the release.", ProjectName, versionNumber);
                         return;
                     }
                 }
                 catch (OctopusResourceNotFoundException)
                 {
                     // Expected
-                    Log.Debug("No release exists - the coast is clear!");
+                    commandOutputProvider.Debug("No release exists - the coast is clear!");
                 }
             }
 
@@ -139,24 +145,25 @@ namespace Octopus.Cli.Commands.Releases
             {
                 // We were just doing a dry run - bail out here
                 if (DeployToEnvironmentNames.Any())
-                    Log.Information("[WhatIf] This release would have been created using the release plan and deployed to {Environments:l}", DeployToEnvironmentNames.CommaSeperate());
+                    commandOutputProvider.Information("[WhatIf] This release would have been created using the release plan and deployed to {Environments:l}", DeployToEnvironmentNames.CommaSeperate());
                 else
-                    Log.Information("[WhatIf] This release would have been created using the release plan");
+                    commandOutputProvider.Information("[WhatIf] This release would have been created using the release plan");
             }
             else
             {
                 // Actually create the release!
-                Log.Debug("Creating release...");
-                var release = await Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, plan.Channel?.Id)
-                {
-                    ReleaseNotes = ReleaseNotes,
-                    SelectedPackages = plan.GetSelections()
-                }, ignoreChannelRules: IgnoreChannelRules)
-                .ConfigureAwait(false);
+                commandOutputProvider.Debug("Creating release...");
+                
+                release = await Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, plan.Channel?.Id)
+                    {
+                        ReleaseNotes = ReleaseNotes,
+                        SelectedPackages = plan.GetSelections()
+                    }, ignoreChannelRules: IgnoreChannelRules)
+                    .ConfigureAwait(false);
 
-                Log.Information("Release {Version:l} created successfully!", release.Version);
-                Log.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
-                Log.TfsServiceMessage(ServerBaseUrl, project, release);
+                commandOutputProvider.Information("Release {Version:l} created successfully!", release.Version);
+                commandOutputProvider.ServiceMessage("setParameter", new { name = "octo.releaseNumber", value = release.Version });
+                commandOutputProvider.TfsServiceMessage(ServerBaseUrl, project, release);
 
                 await DeployRelease(project, release).ConfigureAwait(false);
             }
@@ -166,8 +173,9 @@ namespace Octopus.Cli.Commands.Releases
         {
             if (!string.IsNullOrWhiteSpace(ChannelName))
             {
-                Log.Information("Building release plan for channel '{Channel:l}'...", ChannelName);
-                var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+                commandOutputProvider.Information("Building release plan for channel '{Channel:l}'...", ChannelName);
+                
+                channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
                 var matchingChannel = await channels
                     .FindOne(Repository, c => c.Name.Equals(ChannelName, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
 
@@ -181,12 +189,12 @@ namespace Octopus.Cli.Commands.Releases
             // to select the most appropriate channel, or provide enough information to proceed from here
             if (ServerSupportsChannels())
             {
-                Log.Debug("Automatically selecting the best channel for this release...");
+                commandOutputProvider.Debug("Automatically selecting the best channel for this release...");
                 return await AutoSelectBestReleasePlanOrThrow(project).ConfigureAwait(false);
             }
             
             // Compatibility: this has to cater for Octopus before Channels existed
-            Log.Information("Building release plan without a channel for Octopus Server without channels support...");
+            commandOutputProvider.Information("Building release plan without a channel for Octopus Server without channels support...");
             return await releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag).ConfigureAwait(false);
         }
 
@@ -198,12 +206,12 @@ namespace Octopus.Cli.Commands.Releases
         async Task<ReleasePlan> AutoSelectBestReleasePlanOrThrow(ProjectResource project)
         {
             // Build a release plan for each channel to determine which channel is the best match for the provided options
-            var channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
+            channels = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
             var candidateChannels = await channels.GetAllPages(Repository).ConfigureAwait(false);
             var releasePlans = new List<ReleasePlan>();
             foreach (var channel in candidateChannels)
             {
-                Log.Information("Building a release plan for Channel '{Channel:l}'...", channel.Name);
+                commandOutputProvider.Information("Building a release plan for Channel '{Channel:l}'...", channel.Name);
 
                 var plan = await releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag).ConfigureAwait(false);
                 releasePlans.Add(plan);
@@ -221,14 +229,14 @@ namespace Octopus.Cli.Commands.Releases
             if (viablePlans.Length == 1)
             {
                 var selectedPlan = viablePlans.Single();
-                Log.Information("Selected the release plan for Channel '{Channel:l}' - it is a perfect match", selectedPlan.Channel.Name);
+                commandOutputProvider.Information("Selected the release plan for Channel '{Channel:l}' - it is a perfect match", selectedPlan.Channel.Name);
                 return selectedPlan;
             }
 
             if (viablePlans.Length > 1 && viablePlans.Any(p => p.Channel.IsDefault))
             {
                 var selectedPlan = viablePlans.First(p => p.Channel.IsDefault);
-                Log.Information("Selected the release plan for Channel '{Channel:l}' - there were multiple matching Channels ({AllChannels:l}) so we selected the default channel.", selectedPlan.Channel.Name, viablePlans.Select(p => p.Channel.Name).CommaSeperate());
+                commandOutputProvider.Information("Selected the release plan for Channel '{Channel:l}' - there were multiple matching Channels ({AllChannels:l}) so we selected the default channel.", selectedPlan.Channel.Name, viablePlans.Select(p => p.Channel.Name).CommaSeperate());
                 return selectedPlan;
             }
 
@@ -252,6 +260,36 @@ namespace Octopus.Cli.Commands.Releases
             {
                 throw new CommandException(ex.Message);
             }
+        }
+
+        public void PrintDefaultOutput()
+        {
+            
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(new
+            {
+                ReleaseId = release.Id,
+                release.Assembled,
+                release.Version,
+                Project = project.Name,
+                Steps = plan.Steps.Select((x, i) => new
+                {
+                    Id = i,
+                    x.StepName,
+                    x.Version,
+                    x.VersionSource,
+                    VersionRule = x.ChannelVersionRuleTestResult?.ToSummaryString()
+                }),
+                ChannelName = plan.Channel.Name,
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new NotImplementedException();
         }
     }
 }

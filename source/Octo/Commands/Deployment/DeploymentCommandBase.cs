@@ -18,6 +18,7 @@ namespace Octopus.Cli.Commands.Deployment
     public abstract class DeploymentCommandBase : ApiCommand
     {
         readonly VariableDictionary variables = new VariableDictionary();
+        IReadOnlyList<DeploymentResource> deployments;
 
         protected DeploymentCommandBase(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
@@ -123,7 +124,7 @@ namespace Octopus.Cli.Commands.Deployment
             if (DeployAt != null)
             {
                 var now = DateTimeOffset.UtcNow;
-                Log.Information("Deployment will be scheduled to start in: {Duration:l}", (DeployAt.Value - now).FriendlyDuration());
+                commandOutputProvider.Information("Deployment will be scheduled to start in: {Duration:l}", (DeployAt.Value - now).FriendlyDuration());
             }
         }
 
@@ -150,7 +151,8 @@ namespace Octopus.Cli.Commands.Deployment
             var deploymentsTask = IsTenantedDeployment ?
                 DeployTenantedRelease(project, release) : 
                 DeployToEnvironments(project, release);
-            var deployments = await deploymentsTask.ConfigureAwait(false);
+            
+            deployments = await deploymentsTask.ConfigureAwait(false);
             if (deployments.Any() && WaitForDeployment)
             {
                 await WaitForDeploymentToComplete(deployments, project, release).ConfigureAwait(false);
@@ -210,7 +212,7 @@ namespace Octopus.Cli.Commands.Deployment
                 var tentats = await Repository.Tenants.Get(tenantPromotions).ConfigureAwait(false);
                 deployableTenants.AddRange(tentats);
 
-                Log.Information("Found {NumberOfTenants} Tenants who can deploy {Project:l} {Version:l} to {Environment:l}", deployableTenants.Count, project.Name,release.Version, environmentName);
+                commandOutputProvider.Information("Found {NumberOfTenants} Tenants who can deploy {Project:l} {Version:l} to {Environment:l}", deployableTenants.Count, project.Name,release.Version, environmentName);
             }
             else
             {
@@ -307,11 +309,11 @@ namespace Octopus.Cli.Commands.Deployment
                     preview.StepsToExecute.SingleOrDefault(s => string.Equals(s.ActionName, step, StringComparison.CurrentCultureIgnoreCase));
                 if (stepToExecute == null)
                 {
-                    Log.Warning("No step/action named '{Step:l}' could be found when deploying to environment '{Environment:l}', so the step cannot be skipped.", step, promotionTarget.Name);
+                    commandOutputProvider.Warning("No step/action named '{Step:l}' could be found when deploying to environment '{Environment:l}', so the step cannot be skipped.", step, promotionTarget.Name);
                 }
                 else
                 {
-                    Log.Debug("Skipping step: {Step:l}", stepToExecute.ActionName);
+                    commandOutputProvider.Debug("Skipping step: {Step:l}", stepToExecute.ActionName);
                     skip.Add(stepToExecute.ActionId);
                 }
             }
@@ -343,7 +345,7 @@ namespace Octopus.Cli.Commands.Deployment
             {
                 if (previewStep.HasNoApplicableMachines)
                 {
-                    Log.Warning("Warning: there are no applicable machines roles used by step {Step:l}", previewStep.ActionName);
+                    commandOutputProvider.Warning("Warning: there are no applicable machines roles used by step {Step:l}", previewStep.ActionName);
                 }
             }
 
@@ -362,7 +364,7 @@ namespace Octopus.Cli.Commands.Deployment
             })
             .ConfigureAwait(false);
 
-            Log.Information("Deploying {Project:l} {Release:} to: {PromotionTarget:l} {Tenant:l}(Guided Failure: {GuidedFailure:l})", project.Name, release.Version, promotionTarget.Name,
+            commandOutputProvider.Information("Deploying {Project:l} {Release:} to: {PromotionTarget:l} {Tenant:l}(Guided Failure: {GuidedFailure:l})", project.Name, release.Version, promotionTarget.Name,
                 tenant == null ? string.Empty : $"for {tenant.Name} ",
                 deployment.UseGuidedFailure ? "Enabled" : "Not Enabled");
 
@@ -375,12 +377,12 @@ namespace Octopus.Cli.Commands.Deployment
             var deploymentTasks = await Task.WhenAll(getTasks).ConfigureAwait(false);
             if (showProgress && deployments.Count > 1)
             {
-                Log.Information("Only progress of the first task ({Task:l}) will be shown", deploymentTasks.First().Name);
+                commandOutputProvider.Information("Only progress of the first task ({Task:l}) will be shown", deploymentTasks.First().Name);
             }
 
             try
             {
-                Log.Information("Waiting for {NumberOfTasks} deployment(s) to complete....", deploymentTasks.Length);
+                commandOutputProvider.Information("Waiting for {NumberOfTasks} deployment(s) to complete....", deploymentTasks.Length);
                 await Repository.Tasks.WaitForCompletion(deploymentTasks.ToArray(), DeploymentStatusCheckSleepCycle.Seconds, DeploymentTimeout, PrintTaskOutput).ConfigureAwait(false);
                 var failed = false;
                 foreach (var deploymentTask in deploymentTasks)
@@ -388,11 +390,11 @@ namespace Octopus.Cli.Commands.Deployment
                     var updated = await Repository.Tasks.Get(deploymentTask.Id).ConfigureAwait(false);
                     if (updated.FinishedSuccessfully)
                     {
-                        Log.Information("{Task:l}: {State}", updated.Description, updated.State);
+                        commandOutputProvider.Information("{Task:l}: {State}", updated.Description, updated.State);
                     }
                     else
                     {
-                        Log.Error("{Task:l}: {State}, {Error:l}", updated.Description, updated.State, updated.ErrorMessage);
+                        commandOutputProvider.Error("{Task:l}: {State}, {Error:l}", updated.Description, updated.State, updated.ErrorMessage);
                         failed = true;
 
                         if (noRawLog)
@@ -409,12 +411,12 @@ namespace Octopus.Cli.Commands.Deployment
                             }
                             else
                             {
-                                Log.Error(raw);
+                                commandOutputProvider.Error(raw);
                             }
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, "Could not retrieve the raw task log for the failed task.");
+                            commandOutputProvider.Error(ex, "Could not retrieve the raw task log for the failed task.");
                         }
                     }
                 }
@@ -423,11 +425,11 @@ namespace Octopus.Cli.Commands.Deployment
                     throw new CommandException("One or more deployment tasks failed.");
                 }
 
-                Log.Information("Done!");
+                commandOutputProvider.Information("Done!");
             }
             catch (TimeoutException e)
             {
-                Log.Error(e.Message);
+                commandOutputProvider.Error(e.Message);
 
                 await CancelDeploymentOnTimeoutIfRequested(deploymentTasks).ConfigureAwait(false);
 
@@ -437,11 +439,11 @@ namespace Octopus.Cli.Commands.Deployment
                     select d;
                 if (guidedFailureDeployments.Any())
                 {
-                    Log.Warning("One or more deployments are using Guided Failure. Use the links below to check if intervention is required:");
+                    commandOutputProvider.Warning("One or more deployments are using Guided Failure. Use the links below to check if intervention is required:");
                     foreach (var guidedFailureDeployment in guidedFailureDeployments)
                     {
                         var environment = await Repository.Environments.Get(guidedFailureDeployment.Link("Environment")).ConfigureAwait(false);
-                        Log.Warning("  - {Environment:l}: {Url:l}", environment.Name, GetPortalUrl(string.Format("/app#/projects/{0}/releases/{1}/deployments/{2}", project.Slug, release.Version, guidedFailureDeployment.Id)));
+                        commandOutputProvider.Warning("  - {Environment:l}: {Url:l}", environment.Name, GetPortalUrl(string.Format("/app#/projects/{0}/releases/{1}/deployments/{2}", project.Slug, release.Version, guidedFailureDeployment.Id)));
                     }
                 }
                 throw new CommandException(e.Message);
@@ -454,14 +456,14 @@ namespace Octopus.Cli.Commands.Deployment
                 return Task.WhenAll();
 
             var tasks = deploymentTasks.Select(async task => {
-                Log.Warning("Cancelling deployment task '{Task:l}'", task.Description);
+                commandOutputProvider.Warning("Cancelling deployment task '{Task:l}'", task.Description);
                 try
                 {
                     await Repository.Tasks.Cancel(task).ConfigureAwait(false);
                 }
                 catch(Exception ex)
                 {
-                    Log.Error("Failed to cancel deployment task '{Task:l}': {ExceptionMessage:l}", task.Description, ex.Message);
+                    commandOutputProvider.Error("Failed to cancel deployment task '{Task:l}': {ExceptionMessage:l}", task.Description, ex.Message);
                 }
             });
             return Task.WhenAll(tasks);
