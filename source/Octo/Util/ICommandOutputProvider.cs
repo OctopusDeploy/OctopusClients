@@ -1,6 +1,8 @@
+using System;
 using System.IO;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
+using Serilog.Events;
 
 namespace Octopus.Cli.Util
 {
@@ -28,5 +30,9 @@ namespace Octopus.Cli.Util
         void Warning(string s);
         void Warning(string template, params object[] propertyValues);
         void Error(string template, params object[] propertyValues);
+        void ServiceMessage(string messageName, object o);
+        void TfsServiceMessage(string serverBaseUrl, ProjectResource project, ReleaseResource release);
+        void Write(LogEventLevel logEventLevel, string messageTemplate, params object[] propertyValues);
+        void Error(Exception ex, string messageTemplate);
     }
 }

@@ -2,8 +2,11 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
+using Octopus.Client.Model;
 using Serilog;
+using Serilog.Events;
 
 namespace Octopus.Cli.Util
 {
@@ -104,7 +107,7 @@ namespace Octopus.Cli.Util
 
         public void Json(object o)
         {
-            logger.Information(JsonConvert.SerializeObject(o, Formatting.Indented));
+            logger.Information(Octopus.Client.Serialization.JsonSerialization.SerializeObject(o));
         }
 
         public void Warning(string s)
@@ -128,6 +131,38 @@ namespace Octopus.Cli.Util
             if (PrintMessages)
             {
                 logger.Error(template, propertyValues);
+            }
+        }
+
+        public void ServiceMessage(string messageName, object o)
+        {
+            if (PrintMessages)
+            {
+                logger.ServiceMessage(messageName, o);
+            }
+        }
+
+        public void TfsServiceMessage(string serverBaseUrl, ProjectResource project, ReleaseResource release)
+        {
+            if (PrintMessages)
+            {
+                logger.TfsServiceMessage(serverBaseUrl, project, release);
+            }
+        }
+
+        public void Write(LogEventLevel logEventLevel, string messageTemplate, params object[] propertyValues)
+        {
+            if (PrintMessages)
+            {
+                logger.Write(logEventLevel, messageTemplate, propertyValues);
+            }
+        }
+
+        public void Error(Exception ex, string messageTemplate)
+        {
+            if (PrintMessages)
+            {
+                logger.Error(ex, messageTemplate);
             }
         }
     }
