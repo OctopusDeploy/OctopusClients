@@ -21,10 +21,6 @@ namespace Octopus.Cli.Commands
             this.commands = commands;
         }
 
-        //public override void GetHelp(TextWriter writer, string[] args)
-        //{
-        //}
-
         public Task Execute(string[] commandLineArguments)
         {
             return Task.Run(() =>
@@ -33,7 +29,6 @@ namespace Octopus.Cli.Commands
 
                 commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default;
 
-                GetHelp(Console.Out, commandLineArguments);
                 executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
 
                 var commandName = commandLineArguments.FirstOrDefault();
