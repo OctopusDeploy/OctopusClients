@@ -107,16 +107,6 @@ namespace Octopus.Cli.Commands.Releases
                         : new {d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name}
                 })
             });
-
-            //commandOutputProvider.Json(new
-            //{
-            //    ReleaseId = release.Id,
-            //    release.Version,
-            //    release.Assembled,
-            //    project.Name,
-            //    FromEnvironment = FromEnvironmentName,
-            //    DeployToEnvironmentNames,
-            //});
         }
 
         public void PrintXmlOutput()

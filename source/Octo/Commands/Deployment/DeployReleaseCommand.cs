@@ -80,9 +80,6 @@ namespace Octopus.Cli.Commands.Deployment
 
         public void PrintJsonOutput()
         {
-            //commandOutputProvider.Json(project);
-            //commandOutputProvider.Json(channel);
-            //commandOutputProvider.Json(releaseToPromote);
             commandOutputProvider.Json(new
             {
                 ProjectName = project.Name,
