@@ -103,7 +103,7 @@ namespace Octopus.Cli.Commands.Releases
                     d.Name,
                     d.QueueTime,
                     Tenant = string.IsNullOrEmpty(d.TenantId)
-                        ? new {d.TenantId, TenantName = string.Empty}
+                        ? null
                         : new {d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name}
                 })
             });
