@@ -69,3 +69,4 @@ TestResults/
 *.received.*
 .idea/
 **/Properties/launchSettings.json
+/source/Octo/Properties/launchSettings.json
