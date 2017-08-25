@@ -35,7 +35,7 @@ namespace Octopus.Cli.Tests.Commands
             return Task.Run(() => Assert.Fail("This should not be called"));
         }
 
-        public SpeakCommand(ILogger log, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
+        public SpeakCommand(ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
             var options = Options.For("default");
             options.Add("message=", m => { });

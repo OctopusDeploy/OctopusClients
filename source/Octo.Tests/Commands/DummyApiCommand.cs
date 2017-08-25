@@ -10,12 +10,12 @@ namespace Octopus.Cli.Tests.Commands
     public class DummyApiCommand : ApiCommand
     {
         string pill;
-        public DummyApiCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public DummyApiCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Dummy");
             options.Add("pill=", "Red or Blue. Blue, the story ends. Red, stay in Wonderland and see how deep the rabbit hole goes.", v => pill = v);
-            Log.Debug("Pill: " + pill);
+            commandOutputProvider.Debug("Pill: " + pill);
         }
 
         protected override Task Execute()
@@ -31,7 +31,7 @@ namespace Octopus.Cli.Tests.Commands
         public bool PrintJsonOutputCalled { get; set; }
         public bool PrintXmlOutputCalled { get; set; }
 
-        public DummyApiCommandWithFormattedOutputSupport(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public DummyApiCommandWithFormattedOutputSupport(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             
         }

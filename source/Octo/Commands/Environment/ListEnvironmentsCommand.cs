@@ -17,8 +17,8 @@ namespace Octopus.Cli.Commands.Environment
     {
         List<EnvironmentResource> environments;
 
-        public ListEnvironmentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListEnvironmentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
         }
 
@@ -29,24 +29,22 @@ namespace Octopus.Cli.Commands.Environment
 
         public void PrintDefaultOutput()
         {
-            Log.Information("Environments: {Count}", environments.Count);
+            commandOutputProvider.Information("Environments: {Count}", environments.Count);
 
             foreach (var environment in environments)
             {
-                Log.Information(" - {Environment:l} (ID: {Id:l})", environment.Name, environment.Id);
+                commandOutputProvider.Information(" - {Environment:l} (ID: {Id:l})", environment.Name, environment.Id);
             }
         }
 
         public void PrintJsonOutput()
         {
-            Log.Information(
-                JsonConvert.SerializeObject(
-                    environments.Select(environment => new
-                    {
-                        environment.Id,
-                        environment.Name
-                    }).ToArray(),
-                    Formatting.Indented));
+            commandOutputProvider.Json(
+                environments.Select(environment => new
+                {
+                    environment.Id,
+                    environment.Name
+                }));
         }
 
         public void PrintXmlOutput()

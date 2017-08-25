@@ -17,6 +17,7 @@ namespace Octopus.Cli.Util
         public CommandOutputProvider(ILogger logger)
         {
             this.logger = logger;
+            PrintMessages = true; // unless told otherwise
         }
 
         public bool PrintMessages { get; set; }
@@ -164,6 +165,21 @@ namespace Octopus.Cli.Util
             {
                 logger.Error(ex, messageTemplate);
             }
+        }
+
+        public bool ServiceMessagesEnabled()
+        {
+            return logger.ServiceMessagesEnabled();
+        }
+
+        public bool IsVSTS()
+        {
+            return logger.IsVSTS();
+        }
+
+        public void EnableServiceMessages()
+        {
+            logger.EnableServiceMessages();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Octopus.Cli.Commands
         readonly IImporterLocator importerLocator;
 
         public ImportCommand(IImporterLocator importerLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             this.importerLocator = importerLocator;
 
@@ -35,16 +35,16 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type of object to import using the paramter: --type=XYZ");
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file to import using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding importer '{Type:l}'", Type);
-            var importer = importerLocator.Find(Type, Repository, FileSystem, Log);
+            commandOutputProvider.Debug("Finding importer '{Type:l}'", Type);
+            var importer = importerLocator.Find(Type, Repository, FileSystem, commandOutputProvider);
             if (importer == null)
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 
-            Log.Debug("Validating the import");
+            commandOutputProvider.Debug("Validating the import");
             var validationResult = await importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
             if (validationResult && !DryRun)
             {
-                Log.Debug("Beginning the import");
+                commandOutputProvider.Debug("Beginning the import");
                 await importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
             }
         }

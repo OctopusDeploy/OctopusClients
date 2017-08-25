@@ -16,8 +16,8 @@ namespace Octopus.Cli.Commands.Project
     {
         private List<Octopus.Client.Model.ProjectResource> _projectResources;
 
-        public ListProjectsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListProjectsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
         }
 
@@ -29,10 +29,10 @@ namespace Octopus.Cli.Commands.Project
 
         public void PrintDefaultOutput()
         {
-            Log.Information("Projects: {Count}", _projectResources.Count);
+            commandOutputProvider.Information("Projects: {Count}", _projectResources.Count);
             foreach (var project in _projectResources)
             {
-                Log.Information(" - {Project:l} (ID: {Id:l})", project.Name, project.Id);
+                commandOutputProvider.Information(" - {Project:l} (ID: {Id:l})", project.Name, project.Id);
             }
         }
 

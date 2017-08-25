@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Cli.Infrastructure;
@@ -11,10 +12,14 @@ using Serilog;
 namespace Octopus.Cli.Commands.Deployment
 {
     [Command("delete-autodeployoverride", Description = "Delete auto deploy release overrides")]
-    public class DeleteAutoDeployOverrideCommand : ApiCommand
+    public class DeleteAutoDeployOverrideCommand : ApiCommand, ISupportFormattedOutput
     {
-        public DeleteAutoDeployOverrideCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory octopusClientFactory, ICommandOutputProvider commandOutputProvider) :
-            base(octopusClientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        IReadOnlyList<TenantResource> tenants;
+        ProjectResource project;
+        private List<Tuple<EnvironmentResource, TenantResource, DeletedOutcome>> deletedDeplomentOverrides;
+
+        public DeleteAutoDeployOverrideCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory octopusClientFactory, ICommandOutputProvider commandOutputProvider) :
+            base(octopusClientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Delete auto deploy release override");
             options.Add("project=", "Name of the project", v => ProjectName = v);
@@ -27,6 +32,8 @@ namespace Octopus.Cli.Commands.Deployment
             options.Add("tenanttag=",
                 "[Optional] A tenant tag used to match tenants that the override will apply to. Specify this argument multiple times to add multiple tenant tags",
                 tt => TenantTags.Add(tt));
+
+            deletedDeplomentOverrides = new List<Tuple<EnvironmentResource, TenantResource, DeletedOutcome>>();
         }
 
         public string ProjectName { get; set; }
@@ -50,11 +57,12 @@ namespace Octopus.Cli.Commands.Deployment
             }
         }
 
-        protected override async Task Execute()
+        public async Task Request()
         {
-            var projectTask = RepositoryCommonQueries.GetProjectByName(ProjectName);
-            var tenants = await RepositoryCommonQueries.FindTenants(TenantNames, TenantTags).ConfigureAwait(false);
-            var project = await projectTask.ConfigureAwait(false);
+            Task<ProjectResource> projectTask = RepositoryCommonQueries.GetProjectByName(ProjectName);
+            
+            tenants = await RepositoryCommonQueries.FindTenants(TenantNames, TenantTags).ConfigureAwait(false);
+            project = await projectTask.ConfigureAwait(false);
 
             foreach (var environmentName in EnvironmentNames)
             {
@@ -82,12 +90,16 @@ namespace Octopus.Cli.Commands.Deployment
 
             if (autoDeployOverride == null)
             {
-                Log.Warning("Did not find an auto deploy override for the project {Project:l} and environment {Environment:l}", project.Name, environment.Name);
+                deletedDeplomentOverrides.Add(
+                    new Tuple<EnvironmentResource, TenantResource, DeletedOutcome>(environment, null, DeletedOutcome.NotFound));
+                commandOutputProvider.Warning("Did not find an auto deploy override for the project {Project:l} and environment {Environment:l}", project.Name, environment.Name);
             }
             else
             {
+                deletedDeplomentOverrides.Add(
+                    new Tuple<EnvironmentResource, TenantResource, DeletedOutcome>(environment, null, DeletedOutcome.Deleted));
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l}", project.Name, environment.Name);
+                commandOutputProvider.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l}", project.Name, environment.Name);
             }
         }
 
@@ -98,13 +110,46 @@ namespace Octopus.Cli.Commands.Deployment
 
             if (autoDeployOverride == null)
             {
-                Log.Warning("Did not find an auto deploy override for the project {Project:l}, environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
+                deletedDeplomentOverrides.Add(
+                    new Tuple<EnvironmentResource, TenantResource, DeletedOutcome>(environment, tenant, DeletedOutcome.NotFound));
+                commandOutputProvider.Warning("Did not find an auto deploy override for the project {Project:l}, environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
             }
             else
             {
+                deletedDeplomentOverrides.Add(
+                    new Tuple<EnvironmentResource, TenantResource, DeletedOutcome>(environment, tenant, DeletedOutcome.Deleted));
                 project.AutoDeployReleaseOverrides.Remove(autoDeployOverride);
-                Log.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
+                commandOutputProvider.Information("Deleted auto deploy release override for the project {Project:l} to the environment {Environment:l} and tenant {Tenant:l}", project.Name, environment.Name, tenant.Name);
             }
+        }
+
+        public void PrintDefaultOutput()
+        {
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(new
+            {
+                Project = new {project.Id, project.Name},
+                AutoDeployOverridesRemoved = deletedDeplomentOverrides.Select(x => new
+                {
+                    Environment = new {x.Item1.Id, x.Item1.Name},
+                    Tenant = x.Item2 == null ? null : new {x.Item2.Id, x.Item2.Name},
+                    Outcome = x.Item3.ToString()
+                })
+            });
+        }
+
+        public void PrintXmlOutput()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private enum DeletedOutcome
+        {
+            Deleted,
+            NotFound
         }
     }
 }

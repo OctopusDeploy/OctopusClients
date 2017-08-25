@@ -27,7 +27,7 @@ namespace Octopus.Cli.Exporters
                     select attribute).ToArray();
         }
 
-        public IExporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public IExporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             var iExporterType = typeof (IExporter).GetTypeInfo();
             name = name.Trim().ToLowerInvariant();
@@ -38,7 +38,12 @@ namespace Octopus.Cli.Exporters
                 where attribute.Name == name
                 select t).FirstOrDefault();
 
-            return found == null ? null : (IExporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusAsyncRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILogger), log));
+            return found == null
+                ? null
+                : (IExporter) lifetimeScope.Resolve(found,
+                    new TypedParameter(typeof(IOctopusAsyncRepository), repository),
+                    new TypedParameter(typeof(IOctopusFileSystem), fileSystem),
+                    new TypedParameter(typeof(ICommandOutputProvider), commandOutputProvider));
         }
     }
 }

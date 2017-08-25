@@ -22,8 +22,8 @@ namespace Octopus.Cli.Commands.Deployment
         protected List<DeploymentPromotionTarget> promotionTargets;
         protected List<TenantResource> deploymentTenants;
 
-        protected DeploymentCommandBase(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        protected DeploymentCommandBase(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             SpecificMachineNames = new List<string>();
             SkipStepNames = new List<string>();
@@ -477,7 +477,7 @@ namespace Octopus.Cli.Commands.Deployment
         Task PrintTaskOutput(TaskResource[] taskResources)
         {
             var task = taskResources.First();
-            return printer.Render(Repository, Log, task);
+            return printer.Render(Repository, commandOutputProvider, task);
         }
 
         void ParseVariable(string variable)

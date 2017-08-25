@@ -17,8 +17,8 @@ namespace Octopus.Cli.Commands.Deployment
     {
         string filePath;
 
-        public DumpDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public DumpDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Dumper");
             options.Add("filePath=", "The full path and name of the export file", delegate(string v) { filePath = v; });
@@ -30,7 +30,7 @@ namespace Octopus.Cli.Commands.Deployment
             {
                 throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
             }
-            Log.Information("Listing projects, project groups and environments");
+            commandOutputProvider.Information("Listing projects, project groups and environments");
             var projectsTask = Repository.Projects.FindAll().ConfigureAwait(false);
             var projectGroupsTask =  Repository.ProjectGroups.GetAll().ConfigureAwait(false);
             var environmentsTask = Repository.Environments.GetAll().ConfigureAwait(false);
@@ -40,7 +40,7 @@ namespace Octopus.Cli.Commands.Deployment
             var projectGroups = (await projectGroupsTask).ToDictionary(p => p.Id, p => p.Name);
             var environments = (await environmentsTask).ToDictionary(p => p.Id, p => p.Name);
 
-            Log.Information("Dumping deployments...");
+            commandOutputProvider.Information("Dumping deployments...");
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 var xmlWriterSettings = new XmlWriterSettings() {Indent = true};
@@ -62,7 +62,7 @@ namespace Octopus.Cli.Commands.Deployment
                         xml.WriteElementString("Id", current.Id);
                         xml.WriteEndElement();
                     }
-                    Log.Information("Wrote {Count:n0} of {Total:n0} deployments...", seenBefore.Count, page.TotalResults);
+                    commandOutputProvider.Information("Wrote {Count:n0} of {Total:n0} deployments...", seenBefore.Count, page.TotalResults);
                     return true;
                 })
                 .ConfigureAwait(false);

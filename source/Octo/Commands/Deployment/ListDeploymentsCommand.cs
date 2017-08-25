@@ -28,8 +28,8 @@ namespace Octopus.Cli.Commands.Deployment
         
         private Dictionary<DeploymentResource, DeploymentRelatedResources> deploymentResources;
 
-        public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("project=", "[Optional] Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
@@ -88,14 +88,14 @@ namespace Octopus.Cli.Commands.Deployment
         {
             if (!deploymentResources.Any())
             {
-                Log.Information("Did not find any deployments matching the search criteria.");
+                commandOutputProvider.Information("Did not find any deployments matching the search criteria.");
             }
 
             commandOutputProvider.Debug($"Showing {deploymentResources.Count} results...");
 
             foreach (var item in deploymentResources.Keys)
             {
-                LogDeploymentInfo(Log, item, deploymentResources[item].ReleaseResource, deploymentResources[item].ChannelResource, environmentsById, projectsById, tenantsById);
+                LogDeploymentInfo(commandOutputProvider, item, deploymentResources[item].ReleaseResource, deploymentResources[item].ChannelResource, environmentsById, projectsById, tenantsById);
             }    
             
             if (numberOfResults.HasValue && numberOfResults != deploymentResources.Count)
@@ -186,36 +186,36 @@ namespace Octopus.Cli.Commands.Deployment
             return tenantsResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        private static void LogDeploymentInfo(ILogger log, DeploymentResource deploymentItem, ReleaseResource release, ChannelResource channel,
+        private static void LogDeploymentInfo(ICommandOutputProvider outputProvider, DeploymentResource deploymentItem, ReleaseResource release, ChannelResource channel,
             IDictionary<string, string> environmentsById, IDictionary<string, string> projectsById, IDictionary<string, string> tenantsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[deploymentItem.EnvironmentId];
             var nameOfDeploymentProject = projectsById[deploymentItem.ProjectId];
 
-            log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
-            log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
+            outputProvider.Information(" - Project: {Project:l}", nameOfDeploymentProject);
+            outputProvider.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
 
             if (!string.IsNullOrEmpty(deploymentItem.TenantId))
             {
                 var nameOfDeploymentTenant = tenantsById[deploymentItem.TenantId];
-                log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
+                outputProvider.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 
             if (channel != null)
             {
-                log.Information(" - Channel: {Channel:l}", channel.Name);
+                outputProvider.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            log.Information("\tCreated: {$Date:l}", deploymentItem.Created);
+            outputProvider.Information("\tCreated: {$Date:l}", deploymentItem.Created);
 
             // Date will have to be fetched from Tasks (they need to be loaded) it doesn't come down with the DeploymentResource
             //log.Information("   Date: {$Date:l}", deploymentItem.QueueTime);
 
-            log.Information("\tVersion: {Version:l}", release.Version);
-            log.Information("\tAssembled: {$Assembled:l}", release.Assembled);
-            log.Information("\tPackage Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            log.Information("\tRelease Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
-            log.Information(string.Empty);
+            outputProvider.Information("\tVersion: {Version:l}", release.Version);
+            outputProvider.Information("\tAssembled: {$Assembled:l}", release.Assembled);
+            outputProvider.Information("\tPackage Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            outputProvider.Information("\tRelease Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
+            outputProvider.Information(string.Empty);
         }
     }
 }

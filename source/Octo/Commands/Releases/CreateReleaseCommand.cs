@@ -26,8 +26,8 @@ namespace Octopus.Cli.Commands.Releases
         string versionNumber;
         ResourceCollection<ChannelResource> channels;
 
-        public CreateReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
+        public CreateReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IPackageVersionResolver versionResolver, IReleasePlanBuilder releasePlanBuilder, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(repositoryFactory, fileSystem, clientFactory, commandOutputProvider)
         {
             this.releasePlanBuilder = releasePlanBuilder;
 

@@ -17,8 +17,8 @@ namespace Octopus.Cli.Commands.Deployment
         ChannelResource channel;
         ReleaseResource releaseToPromote;
 
-        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
+        public DeployReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(repositoryFactory, fileSystem, clientFactory, commandOutputProvider)
         {
             var options = Options.For("Deployment");
             options.Add("project=", "Name of the project", v => ProjectName = v);

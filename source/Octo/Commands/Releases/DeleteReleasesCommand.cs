@@ -20,8 +20,8 @@ namespace Octopus.Cli.Commands.Releases
         List<ReleaseResource> toDelete;
         List<ReleaseResource> wouldDelete;
 
-        public DeleteReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public DeleteReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Deletion");
             options.Add("project=", "Name of the project", v => ProjectName = v);

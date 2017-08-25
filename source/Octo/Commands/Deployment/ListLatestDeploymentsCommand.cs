@@ -25,8 +25,8 @@ namespace Octopus.Cli.Commands.Deployment
         Dictionary<string, string> tenantsById;
         private Dictionary<DashboardItemResource, DeploymentRelatedResources> dashboardRelatedResourceses;
 
-        public ListLatestDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListLatestDeploymentsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
@@ -71,43 +71,42 @@ namespace Octopus.Cli.Commands.Deployment
             return environmentResources.ToDictionary(p => p.Id, p => p.Name);
         }
 
-        private static void LogDeploymentInfo(ILogger log, DashboardItemResource dashboardItem, ReleaseResource release, ChannelResource channel,
+        private static void LogDeploymentInfo(ICommandOutputProvider commandOutputProvider, DashboardItemResource dashboardItem, ReleaseResource release, ChannelResource channel,
             IDictionary<string, string> environmentsById, IDictionary<string, string> projectedById, IDictionary<string, string> tenantsById)
         {
             var nameOfDeploymentEnvironment = environmentsById[dashboardItem.EnvironmentId];
             var nameOfDeploymentProject = projectedById[dashboardItem.ProjectId];
 
-            log.Information(" - Project: {Project:l}", nameOfDeploymentProject);
-            log.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
+            commandOutputProvider.Information(" - Project: {Project:l}", nameOfDeploymentProject);
+            commandOutputProvider.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
             if (!string.IsNullOrEmpty(dashboardItem.TenantId))
             {
                 var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
-                log.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
+                commandOutputProvider.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 
             if(channel != null)
             {
-                log.Information(" - Channel: {Channel:l}", channel.Name);
+                commandOutputProvider.Information(" - Channel: {Channel:l}", channel.Name);
             }
 
-            log.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
-            log.Information("   Duration: {Duration:l}", dashboardItem.Duration);
+            commandOutputProvider.Information("   Date: {$Date:l}", dashboardItem.QueueTime);
+            commandOutputProvider.Information("   Duration: {Duration:l}", dashboardItem.Duration);
 
             if (dashboardItem.State == TaskState.Failed)
             {
-                log.Error("   State: {$State:l}", dashboardItem.State);
+                commandOutputProvider.Error("   State: {$State:l}", dashboardItem.State);
             }
             else
             {
-                log.Information("   State: {$State:l}", dashboardItem.State);
+                commandOutputProvider.Information("   State: {$State:l}", dashboardItem.State);
             }
 
-            log.Information("   Version: {Version:l}", release.Version);
-            log.Information("   Assembled: {$Assembled:l}", release.Assembled);
-            log.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
-            log.Information("   Release Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
-
-            log.Information("");
+            commandOutputProvider.Information("   Version: {Version:l}", release.Version);
+            commandOutputProvider.Information("   Assembled: {$Assembled:l}", release.Assembled);
+            commandOutputProvider.Information("   Package Versions: {PackageVersion:l}", GetPackageVersionsAsString(release.SelectedPackages));
+            commandOutputProvider.Information("   Release Notes: {ReleaseNotes:l}", GetReleaseNotes(release));
+            commandOutputProvider.Information(string.Empty);
         }
 
         
@@ -142,13 +141,13 @@ namespace Octopus.Cli.Commands.Deployment
         {
             if (!dashboard.Items.Any())
             {
-                Log.Information("Did not find any releases matching the search criteria.");
+                commandOutputProvider.Information("Did not find any releases matching the search criteria.");
             }
 
             foreach (var dashboardItem in dashboardRelatedResourceses.Keys)
             {
                 LogDeploymentInfo(
-                    Log, 
+                    commandOutputProvider, 
                     dashboardItem, 
                     dashboardRelatedResourceses[dashboardItem].ReleaseResource,
                     dashboardRelatedResourceses[dashboardItem].ChannelResource, 

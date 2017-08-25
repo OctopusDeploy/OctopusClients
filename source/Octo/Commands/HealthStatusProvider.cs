@@ -16,7 +16,6 @@ namespace Octopus.Cli.Commands
     /// </summary>
     public class HealthStatusProvider
     {
-        private readonly ILogger log;
         private readonly HashSet<string> statuses;
         private readonly HashSet<string> healthStatuses;
         private readonly ICommandOutputProvider commandOutputProvider;
@@ -24,9 +23,8 @@ namespace Octopus.Cli.Commands
         public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
-        public HealthStatusProvider(IOctopusAsyncRepository repository, ILogger log, HashSet<string> statuses, HashSet<string> healthStatuses, ICommandOutputProvider commandOutputProvider)
+        public HealthStatusProvider(IOctopusAsyncRepository repository, HashSet<string> statuses, HashSet<string> healthStatuses, ICommandOutputProvider commandOutputProvider)
         {
-            this.log = log;
             this.statuses = statuses;
             this.healthStatuses = healthStatuses;
             this.commandOutputProvider = commandOutputProvider;

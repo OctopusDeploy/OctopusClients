@@ -12,28 +12,26 @@ namespace Octopus.Cli.Commands.Deployment
 {
     public class TaskOutputProgressPrinter
     {
-        private ILogger log;
         readonly HashSet<string> printed = new HashSet<string>();
 
-        public async Task Render(IOctopusAsyncRepository repository, ILogger log, TaskResource resource)
+        public async Task Render(IOctopusAsyncRepository repository, ICommandOutputProvider commandOutputProvider, TaskResource resource)
         {
-            this.log = log;
             var details = await repository.Tasks.GetDetails(resource).ConfigureAwait(false);
 
             if (details.ActivityLogs != null)
             {
                 foreach (var item in details.ActivityLogs.SelectMany(a => a.Children))
                 {
-                    if (log.ServiceMessagesEnabled())
+                    if (commandOutputProvider.ServiceMessagesEnabled())
                     {
-                        if (log.IsVSTS())
-                            RenderToVSTS(item, log, "");
+                        if (commandOutputProvider.IsVSTS())
+                            RenderToVSTS(item, commandOutputProvider, String.Empty);
                         else
-                            RenderToTeamCity(item, log);
+                            RenderToTeamCity(item, commandOutputProvider);
                     }
                     else
                     {
-                        RenderToConsole(item, log, "");                        
+                        RenderToConsole(item, commandOutputProvider, string.Empty);                        
                     }
                 }
             }
@@ -51,7 +49,7 @@ namespace Octopus.Cli.Commands.Deployment
             return true;
         }
 
-        void RenderToConsole(ActivityElement element, ILogger log, string indent)
+        void RenderToConsole(ActivityElement element, ICommandOutputProvider commandOutputProvider, string indent)
         {
             if (!IsPrintable(element))
                 return;
@@ -88,51 +86,51 @@ namespace Octopus.Cli.Commands.Deployment
 
             foreach (var child in element.Children)
             {
-                RenderToConsole(child, log, indent + "  ");
+                RenderToConsole(child, commandOutputProvider, indent + "  ");
             }
         }
 
-        void RenderToTeamCity(ActivityElement element, ILogger log)
+        void RenderToTeamCity(ActivityElement element, ICommandOutputProvider commandOutputProvider)
         {
             if (!IsPrintable(element))
                 return;
 
             var blockName = element.Status + ": " + element.Name;
 
-            log.ServiceMessage("blockOpened", new { name = blockName });
+            commandOutputProvider.ServiceMessage("blockOpened", new { name = blockName });
 
             foreach (var logEntry in element.LogElements)
             {
                 var lines = logEntry.MessageText.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
                 foreach (var line in lines)
                 {
-                    log.ServiceMessage("message", new { text = line, status = ConvertToTeamCityMessageStatus(logEntry.Category) });
+                    commandOutputProvider.ServiceMessage("message", new { text = line, status = ConvertToTeamCityMessageStatus(logEntry.Category) });
                 }
             }
 
             foreach (var child in element.Children)
             {
-                RenderToTeamCity(child, log);
+                RenderToTeamCity(child, commandOutputProvider);
             }
 
-            log.ServiceMessage("blockClosed", new { name = blockName });
+            commandOutputProvider.ServiceMessage("blockClosed", new { name = blockName });
         }
 
-        void RenderToVSTS(ActivityElement element, ILogger log, string indent)
+        void RenderToVSTS(ActivityElement element, ICommandOutputProvider commandOutputProvider, string indent)
         {
             if (!IsPrintable(element))
                 return;
 
-            log.Information("{Indent:l}         {Status:l}: {Name:l}", indent, element.Status, element.Name);
+            commandOutputProvider.Information("{Indent:l}         {Status:l}: {Name:l}", indent, element.Status, element.Name);
 
             foreach (var logEntry in element.LogElements)
             {
-                log.Information("{Category,-8:l}{Indent:l}   {Message:l}", logEntry.Category, logEntry.MessageText);
+                commandOutputProvider.Information("{Category,-8:l}{Indent:l}   {Message:l}", logEntry.Category, logEntry.MessageText);
             }
 
             foreach (var child in element.Children)
             {
-                RenderToVSTS(child, log, indent + "  ");
+                RenderToVSTS(child, commandOutputProvider, indent + "  ");
             }
         }
 

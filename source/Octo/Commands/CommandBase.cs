@@ -15,11 +15,10 @@ namespace Octopus.Cli.Commands
         protected bool printHelp;
         protected readonly ISupportFormattedOutput formattedOutputInstance;
 
-        protected CommandBase(ILogger log, ICommandOutputProvider commandOutputProvider)
+        protected CommandBase(ICommandOutputProvider commandOutputProvider)
         {
             this.commandOutputProvider = commandOutputProvider;
-            this.Log = log;
-
+            
             var options = Options.For("Common options");
             options.Add("help", "[Optional] Print help for a command", x => printHelp = true);
             formattedOutputInstance = this as ISupportFormattedOutput;
@@ -33,8 +32,6 @@ namespace Octopus.Cli.Commands
                 commandOutputProvider.PrintMessages = true;
             }
         }
-
-        protected ILogger Log { get; private set; }
 
         protected Options Options { get; } = new Options();
 

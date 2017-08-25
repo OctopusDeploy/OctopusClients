@@ -16,8 +16,8 @@ namespace Octopus.Cli.Commands.Tenant
     {
         List<TenantResource> tenants;
 
-        public ListTenantsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory,ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListTenantsCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory,ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
         }
 
@@ -36,11 +36,11 @@ namespace Octopus.Cli.Commands.Tenant
 
         public void PrintDefaultOutput()
         {
-            Log.Information("Tenants: {Count}", tenants.Count);
+            commandOutputProvider.Information("Tenants: {Count}", tenants.Count);
 
             foreach (var tenant in tenants.OrderBy(m => m.Name))
             {
-                Log.Information(" - {Tenant:l} (ID: {Count})", tenant.Name, tenant.Id);
+                commandOutputProvider.Information(" - {Tenant:l} (ID: {Count})", tenant.Name, tenant.Id);
             }
         }
 

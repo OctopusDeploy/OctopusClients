@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Octopus.Cli.Commands.Deployment;
 
 namespace Octopus.Cli.Tests.Commands
@@ -24,7 +25,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            createAutoDeployOverrideCommand = new CreateAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            createAutoDeployOverrideCommand = new CreateAutoDeployOverrideCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");
@@ -119,6 +120,24 @@ namespace Octopus.Cli.Tests.Commands
             Assert.AreEqual(release.Id, autoDeployOverride.ReleaseId);
             Assert.AreEqual(octopusTenant.Id, autoDeployOverride.TenantId);
             Assert.AreEqual(environment.Id, autoDeployOverride.EnvironmentId);
+        }
+
+        [Test]
+        public async Task JsonOutput_ShouldBeWellFormed()
+        {
+            CommandLineArgs.Add("-project=OctoFx");
+            CommandLineArgs.Add("-environment=Production");
+            CommandLineArgs.Add("-version=1.2.0");
+            CommandLineArgs.Add("-tenanttag=VIP");
+            CommandLineArgs.Add("-outputformat=json");
+
+            await createAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            string logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("Production");
+            logoutput.Should().Contain("1.2.0");
+            logoutput.Should().Contain("Octopus");
         }
     }
 }

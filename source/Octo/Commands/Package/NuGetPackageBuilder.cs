@@ -10,12 +10,12 @@ namespace Octopus.Cli.Commands.Package
     public class NuGetPackageBuilder : IPackageBuilder
     {
         readonly IOctopusFileSystem fileSystem;
-        readonly Serilog.ILogger log;
+        private readonly ICommandOutputProvider commandOutputProvider;
 
-        public NuGetPackageBuilder(IOctopusFileSystem fileSystem, Serilog.ILogger log)
+        public NuGetPackageBuilder(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             this.fileSystem = fileSystem;
-            this.log = log;
+            this.commandOutputProvider = commandOutputProvider;
         }
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
@@ -30,7 +30,7 @@ namespace Octopus.Cli.Commands.Package
             {
                 foreach(var file in nugetPkgBuilder.Files)
                 {
-                    log.Information($"Added file: {file.Path}");
+                    commandOutputProvider.Information($"Added file: {file.Path}");
                 }
             }
 
@@ -40,7 +40,7 @@ namespace Octopus.Cli.Commands.Package
             if (fileSystem.FileExists(output) && !overwrite)
                 throw new CommandException("The package file already exists and --overwrite was not specified");
 
-            log.Information("Saving {Filename} to {OutFolder}...", filename, outFolder);
+            commandOutputProvider.Information("Saving {Filename} to {OutFolder}...", filename, outFolder);
 
             fileSystem.EnsureDirectoryExists(outFolder);
 

@@ -25,8 +25,8 @@ namespace Octopus.Cli.Commands.Machine
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("environment=", "Name of an environment to filter by. Can be specified many times.", v => environments.Add(v));
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Commands.Machine
 
         public async Task Request()
         {
-            provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses, commandOutputProvider);
+            provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider);
 
             environmentResources = await GetEnvironments().ConfigureAwait(false);
 

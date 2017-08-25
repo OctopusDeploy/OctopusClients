@@ -17,7 +17,7 @@ namespace Octo.Tests.Commands
         [SetUp]
         public void Setup()
         {
-            createEnvironmentCommand = new CreateEnvironmentCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            createEnvironmentCommand = new CreateEnvironmentCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
             //Repository.Environments.Create(Arg.Any<EnvironmentResource>()).Returns()
         }
 

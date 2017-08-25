@@ -14,8 +14,8 @@ namespace Octopus.Cli.Commands.Environment
     {
         EnvironmentResource env;
 
-        public CreateEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public CreateEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Environment creation");
             options.Add("name=", "The name of the environment", v => EnvironmentName = v);

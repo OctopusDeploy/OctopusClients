@@ -17,8 +17,8 @@ namespace Octopus.Cli.Commands.Releases
         EnvironmentResource environment;
         ReleaseResource release;
 
-        public PromoteReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(repositoryFactory, log, fileSystem, clientFactory, commandOutputProvider)
+        public PromoteReleaseCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(repositoryFactory, fileSystem, clientFactory, commandOutputProvider)
         {
             var options = Options.For("Release Promotion");
             options.Add("project=", "Name of the project", v => ProjectName = v);

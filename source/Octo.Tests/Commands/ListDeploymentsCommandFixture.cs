@@ -18,7 +18,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listDeploymentsCommands = new ListDeploymentsCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            listDeploymentsCommands = new ListDeploymentsCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
 
             var deploymentResources = new ResourceCollection<DeploymentResource>(
                 new List<DeploymentResource>

@@ -16,8 +16,8 @@ namespace Octopus.Cli.Commands.Project
         ProjectGroupResource projectGroup;
         private bool projectGroupCreated = false;
 
-        public CreateProjectCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public CreateProjectCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Project creation");
             options.Add("name=", "The name of the project", v => ProjectName = v);

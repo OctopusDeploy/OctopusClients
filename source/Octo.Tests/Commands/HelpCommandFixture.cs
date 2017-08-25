@@ -30,7 +30,7 @@ namespace Octopus.Cli.Tests.Commands
 
             commandLocator = Substitute.For<ICommandLocator>();
             commandOutputProvider = new CommandOutputProvider(logger);
-            helpCommand = new HelpCommand(logger, commandLocator, commandOutputProvider);
+            helpCommand = new HelpCommand(commandLocator, commandOutputProvider);
             logger = new LoggerConfiguration().WriteTo.TextWriter(output).CreateLogger();
         }
 
@@ -55,7 +55,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldPrintHelpForExistingCommand()
         {
-            var speak = new SpeakCommand(logger, commandOutputProvider);
+            var speak = new SpeakCommand(commandOutputProvider);
             commandLocator.Find("speak").Returns(speak);
             helpCommand.Execute("speak");
 

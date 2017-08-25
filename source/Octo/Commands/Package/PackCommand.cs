@@ -18,7 +18,6 @@ namespace Octopus.Cli.Commands.Package
         readonly IList<string> authors = new List<string>();
         readonly IOctopusFileSystem fileSystem;
         readonly IList<string> includes = new List<string>();
-        readonly ILogger log;
         string basePath;
         string description;
         string id;
@@ -30,9 +29,8 @@ namespace Octopus.Cli.Commands.Package
         SemanticVersion version;
         IPackageBuilder packageBuilder;
 
-        public PackCommand(ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
+        public PackCommand(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
-            this.log = log;
             this.fileSystem = fileSystem;
 
             var common = Options.For("Advanced options");
@@ -97,7 +95,7 @@ namespace Octopus.Cli.Commands.Package
                 if (!string.IsNullOrWhiteSpace(releaseNotesFile))
                 {
                     if (!File.Exists(releaseNotesFile))
-                        log.Warning("The release notes file '{Path:l}' could not be found", releaseNotesFile);
+                        commandOutputProvider.Warning("The release notes file '{Path:l}' could not be found", releaseNotesFile);
                     else
                         allReleaseNotes = fileSystem.ReadFile(releaseNotesFile);
                 }
@@ -131,12 +129,12 @@ namespace Octopus.Cli.Commands.Package
 
                 
                 if (verbose)
-                    log.Information("Verbose logging");
-                log.Information("Packing {id:l} version {Version}...", id, version);
+                    commandOutputProvider.Information("Verbose logging");
+                commandOutputProvider.Information("Packing {id:l} version {Version}...", id, version);
 
                 packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite, verbose);
 
-                log.Information("Done.");
+                commandOutputProvider.Information("Done.");
             });
         }
 
@@ -145,10 +143,10 @@ namespace Octopus.Cli.Commands.Package
             switch (fmt.ToLowerInvariant())
             {
                 case "zip":
-                    return new ZipPackageBuilder(fileSystem, log);
+                    return new ZipPackageBuilder(fileSystem, commandOutputProvider);
                 case "nupkg":
                 case "nuget":
-                    return new NuGetPackageBuilder(fileSystem, log);
+                    return new NuGetPackageBuilder(fileSystem, commandOutputProvider);
                 default:
                     throw new CommandException("Unknown package format: " + fmt);
             }

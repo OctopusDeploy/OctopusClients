@@ -18,7 +18,7 @@ namespace Octo.Tests.Commands
         [SetUp]
         public void Setup()
         {
-            createProjectCommand = new CreateProjectCommand(RepositoryFactory, Log, FileSystem, ClientFactory,
+            createProjectCommand = new CreateProjectCommand(RepositoryFactory, FileSystem, ClientFactory,
                 CommandOutputProvider);
 
             projectName = Guid.NewGuid().ToString();

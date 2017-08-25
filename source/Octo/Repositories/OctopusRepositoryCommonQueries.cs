@@ -13,17 +13,17 @@ namespace Octopus.Cli.Repositories
     public class OctopusRepositoryCommonQueries
     {
         readonly IOctopusAsyncRepository repository;
-        readonly ILogger log;
+        readonly ICommandOutputProvider commandOutputProvider;
 
-        public OctopusRepositoryCommonQueries(IOctopusAsyncRepository repository, ILogger log)
+        public OctopusRepositoryCommonQueries(IOctopusAsyncRepository repository, ICommandOutputProvider commandOutputProvider)
         {
             this.repository = repository;
-            this.log = log;
+            this.commandOutputProvider = commandOutputProvider;
         }
 
         public async Task<ProjectResource> GetProjectByName(string projectName)
         {
-            log.Debug("Finding project: {Project:l}", projectName);
+            commandOutputProvider.Debug("Finding project: {Project:l}", projectName);
             var project = await repository.Projects.FindByName(projectName).ConfigureAwait(false);
             if (project == null)
                 throw new CouldNotFindException("a project named", projectName);
@@ -32,7 +32,7 @@ namespace Octopus.Cli.Repositories
 
         public async Task<EnvironmentResource> GetEnvironmentByName(string environmentName)
         {
-            log.Debug("Finding environment: {Environment:l}", environmentName);
+            commandOutputProvider.Debug("Finding environment: {Environment:l}", environmentName);
             var environment = await repository.Environments.FindByName(environmentName).ConfigureAwait(false);
             if (environment == null)
                 throw new CouldNotFindException("an environment named", environmentName);
@@ -49,7 +49,7 @@ namespace Octopus.Cli.Repositories
                     ? "latest release for project"
                     : $"latest release in channel '{channel.Name}'";
 
-                log.Debug("Finding {Message:l}", message);
+                commandOutputProvider.Debug("Finding {Message:l}", message);
 
                 var releases = await repository
                     .Projects
@@ -79,7 +79,7 @@ namespace Octopus.Cli.Repositories
             else
             {
                 message = $"release {versionNumber}";
-                log.Debug("Finding {Message:l}", message);
+                commandOutputProvider.Debug("Finding {Message:l}", message);
                 releaseToPromote = await repository.Projects.GetReleaseByVersion(project, versionNumber).ConfigureAwait(false);
             }
 

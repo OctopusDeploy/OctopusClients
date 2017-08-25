@@ -28,8 +28,8 @@ namespace Octopus.Cli.Commands.Environment
         List<MachineResult> commandResults = new List<MachineResult>();
 
 
-        public CleanEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public CleanEnvironmentCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Cleanup");
             options.Add("environment=", "Name of an environment to clean up.", v => environmentName = v);
@@ -92,7 +92,7 @@ namespace Octopus.Cli.Commands.Environment
 
         private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines)
         {
-            var provider = new HealthStatusProvider(Repository, Log, statuses, healthStatuses, commandOutputProvider);
+            var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider);
             environmentMachines = provider.Filter(environmentMachines);
 
             if (isDisabled.HasValue)

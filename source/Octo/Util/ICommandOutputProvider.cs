@@ -34,5 +34,8 @@ namespace Octopus.Cli.Util
         void TfsServiceMessage(string serverBaseUrl, ProjectResource project, ReleaseResource release);
         void Write(LogEventLevel logEventLevel, string messageTemplate, params object[] propertyValues);
         void Error(Exception ex, string messageTemplate);
+        bool ServiceMessagesEnabled();
+        bool IsVSTS();
+        void EnableServiceMessages();
     }
 }

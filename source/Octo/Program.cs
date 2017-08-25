@@ -86,7 +86,7 @@ namespace Octopus.Cli
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
-
+            
             return builder.Build();
         }
 

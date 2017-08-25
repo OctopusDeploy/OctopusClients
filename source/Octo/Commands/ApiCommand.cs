@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Model;
@@ -29,7 +29,7 @@ namespace Octopus.Cli.Commands
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
 
-        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
+        protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
             this.clientFactory = clientFactory;
             this.repositoryFactory = repositoryFactory;
@@ -44,7 +44,7 @@ namespace Octopus.Cli.Commands
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
-            options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => Log.EnableServiceMessages());
+            options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => commandOutputProvider.EnableServiceMessages());
             options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => clientOptions.Timeout = TimeSpan.FromSeconds(int.Parse(v)));
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
@@ -97,8 +97,8 @@ namespace Octopus.Cli.Commands
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
-            RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, Log);
-
+            RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
+            
             if (enableDebugging)
             {
                 Repository.Client.SendingOctopusRequest += request => commandOutputProvider.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
@@ -271,12 +271,12 @@ namespace Octopus.Cli.Commands
 
             if (ignoreSslErrors)
             {
-                Log.Warning(warning);
-                Log.Warning("Because --ignoreSslErrors was set, this will be ignored.");
+                commandOutputProvider.Warning(warning);
+                commandOutputProvider.Warning("Because --ignoreSslErrors was set, this will be ignored.");
                 return true;
             }
 
-            Log.Error(warning);
+            commandOutputProvider.Error(warning);
             return false;
         }
 #endif

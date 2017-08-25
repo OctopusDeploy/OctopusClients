@@ -19,8 +19,8 @@ namespace Octopus.Cli.Commands.Releases
         private string[] projectsFilter;
         List<ReleaseResource> releases;
 
-        public ListReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
-            : base(clientFactory, repositoryFactory, log, fileSystem, commandOutputProvider)
+        public ListReleasesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             var options = Options.For("Listing");
             options.Add("project=", "Name of a project to filter by. Can be specified many times.", v => projects.Add(v));
@@ -49,10 +49,10 @@ namespace Octopus.Cli.Commands.Releases
 
         public void PrintDefaultOutput()
         {
-            Log.Information("Releases: {Count}", releases.Count);
+            commandOutputProvider.Information("Releases: {Count}", releases.Count);
             foreach (var project in projectResources)
             {
-                Log.Information(" - Project: {Project:l}", project.Name);
+                commandOutputProvider.Information(" - Project: {Project:l}", project.Name);
 
                 foreach (var release in releases.Where(x => x.ProjectId == project.Id))
                 {
@@ -60,9 +60,9 @@ namespace Octopus.Cli.Commands.Releases
                     propertiesToLog.AddRange(FormatReleasePropertiesAsStrings(release));
                     foreach (var property in propertiesToLog)
                     {
-                        Log.Information("    {Property:l}", property);
+                        commandOutputProvider.Information("    {Property:l}", property);
                     }
-                    Log.Information("");
+                    commandOutputProvider.Information("");
                 }
             }
         }

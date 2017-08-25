@@ -24,7 +24,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldLoadOptionsFromFile()
         {
-            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, Log, new OctopusPhysicalFileSystem(Log), versionResolver, releasePlanBuilder, ClientFactory, CommandOutputProvider);
+            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, new OctopusPhysicalFileSystem(Log), versionResolver, releasePlanBuilder, ClientFactory, CommandOutputProvider);
 
             Assert.Throws<CouldNotFindException>(delegate {
                 createReleaseCommand.Execute("--configfile=Commands/Resources/CreateRelease.config.txt");

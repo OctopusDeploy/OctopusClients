@@ -20,7 +20,7 @@ namespace Octo.Tests.Commands
         [SetUp]
         public void Setup()
         {
-            listTenantsCommand = new ListTenantsCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            listTenantsCommand = new ListTenantsCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
             Repository.Tenants.FindAll().Returns(Task.FromResult(new List<TenantResource>
             {
                 new TenantResource {Name = "Tenant1", Id = "Tenant-1"},

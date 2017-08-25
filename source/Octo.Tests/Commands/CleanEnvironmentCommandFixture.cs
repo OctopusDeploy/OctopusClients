@@ -20,7 +20,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            listMachinesCommand = new CleanEnvironmentCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
         CleanEnvironmentCommand listMachinesCommand;

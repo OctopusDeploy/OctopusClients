@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
         readonly ICommandLocator commands;
         string executable;
 
-        public HelpCommand(ILogger log, ICommandLocator commands, ICommandOutputProvider commandOutputProvider) : base(log, commandOutputProvider)
+        public HelpCommand(ICommandLocator commands, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
             this.commands = commands;
         }

@@ -18,8 +18,7 @@ namespace Octopus.Cli.Tests.Commands
             // arrange
             StringWriter sw = new StringWriter();
             DummyApiCommandWithFormattedOutputSupport command =
-                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
-                    CommandOutputProvider);
+                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
 
             // act
             command.GetHelp(sw, new []{ "command" });
@@ -33,7 +32,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             // arrange
             DummyApiCommandWithFormattedOutputSupport command =
-                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem, CommandOutputProvider);
+                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
 
             CommandLineArgs.Add("--outputFormat=json");
 
@@ -49,8 +48,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             // arrange
             DummyApiCommandWithFormattedOutputSupport command =
-                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
-                    CommandOutputProvider);
+                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
             CommandLineArgs.Add("--outputFormat=blah");
 
             // act
@@ -67,8 +65,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             // arrange
             DummyApiCommandWithFormattedOutputSupport command =
-                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, Log, FileSystem,
-                    CommandOutputProvider);
+                new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
 
             CommandLineArgs.Add("--outputFormat=json");
             CommandLineArgs.Add("--help");

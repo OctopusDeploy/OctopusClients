@@ -22,7 +22,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listMachinesCommand = new ListMachinesCommand(RepositoryFactory, Log, FileSystem, ClientFactory, CommandOutputProvider);
+            listMachinesCommand = new ListMachinesCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
         ListMachinesCommand listMachinesCommand;
