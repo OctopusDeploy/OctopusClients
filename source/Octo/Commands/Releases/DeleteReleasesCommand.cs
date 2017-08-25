@@ -137,7 +137,7 @@ namespace Octopus.Cli.Commands.Releases
                 Releases = affectedReleases.Select(r => new
                     {
                         r.Version,
-                        Deleted = !WhatIf
+                        Deleted = toDelete.Any(x=>x.Version == r.Version)
                     }
                 )
             });
