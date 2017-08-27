@@ -64,11 +64,6 @@ namespace Octopus.Cli.Commands.Machine
             }));
         }
 
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
-
         private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();

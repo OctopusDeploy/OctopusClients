@@ -108,10 +108,5 @@ namespace Octopus.Cli.Commands.Releases
                 })
             });
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

@@ -286,10 +286,5 @@ namespace Octopus.Cli.Commands.Releases
                 ChannelName = plan.Channel.Name,
             });
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -183,10 +183,5 @@ namespace Octopus.Cli.Commands.Deployment
                     ReleaseNotes = GetReleaseNotes(x.release)
                 }));
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

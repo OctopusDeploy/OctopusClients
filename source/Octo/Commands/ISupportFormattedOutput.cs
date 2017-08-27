@@ -9,7 +9,5 @@ namespace Octopus.Cli.Commands
         void PrintDefaultOutput();
 
         void PrintJsonOutput();
-
-        void PrintXmlOutput();
     }
 }

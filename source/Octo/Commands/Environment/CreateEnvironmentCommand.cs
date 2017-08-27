@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
@@ -57,11 +56,6 @@ namespace Octopus.Cli.Commands.Environment
                 env.Id,
                 env.Name,
             });
-        }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
         }
     }
 }

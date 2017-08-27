@@ -55,7 +55,6 @@ namespace Octopus.Cli.Tests.Commands
             await command.Execute(CommandLineArgs.ToArray());
 
             // assert
-            command.PrintXmlOutputCalled.ShouldBeEquivalentTo(false);
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(false);
             command.PrintDefaultOutputCalled.ShouldBeEquivalentTo(true);
         }

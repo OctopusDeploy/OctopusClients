@@ -166,11 +166,6 @@ namespace Octopus.Cli.Commands.Environment
             }));
         }
 
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
-
         public enum MachineAction
         {
             RemovedFromEnvironment,

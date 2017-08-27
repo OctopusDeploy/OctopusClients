@@ -145,10 +145,5 @@ namespace Octopus.Cli.Commands.Channel
                 }
             });
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

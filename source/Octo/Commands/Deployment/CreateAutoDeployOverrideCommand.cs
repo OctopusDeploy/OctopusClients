@@ -144,11 +144,6 @@ namespace Octopus.Cli.Commands.Deployment
             });
         }
 
-        public void PrintXmlOutput()
-        {
-            throw new System.NotImplementedException();
-        }
-
         private enum CreatedOutcome
         {
             Created,

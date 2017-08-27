@@ -91,10 +91,5 @@ namespace Octopus.Cli.Commands.Project
                 }
             });
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

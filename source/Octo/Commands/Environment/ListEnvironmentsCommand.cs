@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -45,11 +44,6 @@ namespace Octopus.Cli.Commands.Environment
                     environment.Id,
                     environment.Name
                 }));
-        }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
         }
     }
 }

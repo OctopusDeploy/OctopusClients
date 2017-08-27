@@ -121,11 +121,6 @@ namespace Octopus.Cli.Commands.Deployment
                 }));
         }
 
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
-
         private async Task<IDictionary<string, string>> LoadProjects()
         {
             commandOutputProvider.Information("Loading projects...");

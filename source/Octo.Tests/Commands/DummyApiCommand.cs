@@ -29,7 +29,6 @@ namespace Octopus.Cli.Tests.Commands
         public bool QueryCalled { get; set; }
         public bool PrintDefaultOutputCalled { get; set; }
         public bool PrintJsonOutputCalled { get; set; }
-        public bool PrintXmlOutputCalled { get; set; }
 
         public DummyApiCommandWithFormattedOutputSupport(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
@@ -50,11 +49,6 @@ namespace Octopus.Cli.Tests.Commands
         public void PrintJsonOutput()
         {
             PrintJsonOutputCalled = true;
-        }
-
-        public void PrintXmlOutput()
-        {
-            PrintXmlOutputCalled = true;
         }
     }
 }

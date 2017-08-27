@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -44,11 +43,6 @@ namespace Octopus.Cli.Commands.Project
                     project.Id,
                     project.Name
                 }));
-        }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
         }
     }
 }

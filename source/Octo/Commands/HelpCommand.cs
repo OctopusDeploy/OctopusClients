@@ -121,10 +121,5 @@ namespace Octopus.Cli.Commands
                 x.Aliases
             }));
         }
-
-        public void PrintXmlOutput()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
