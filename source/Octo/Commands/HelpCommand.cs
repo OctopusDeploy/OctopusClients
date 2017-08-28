@@ -11,7 +11,7 @@ using Serilog;
 namespace Octopus.Cli.Commands
 {
     [Command("help", "?", "h", Description = "Prints this help text")]
-    public class HelpCommand : CommandBase, ICommand, ISupportFormattedOutput
+    public class HelpCommand : CommandBase, ICommand
     {
         readonly ICommandLocator commands;
         string executable;
@@ -67,16 +67,13 @@ namespace Octopus.Cli.Commands
 
         void PrintGeneralHelp()
         {
-            if (formattedOutputInstance != null)
+            if (HelpOutputFormat == OutputFormat.Json)
             {
-                if (OutputFormat == OutputFormat.Json)
-                {
-                    PrintJsonOutput();
-                }
-                else
-                {
-                    PrintDefaultOutput();
-                }
+                PrintJsonOutput();
+            }
+            else
+            {
+                PrintDefaultOutput();
             }
         }
 

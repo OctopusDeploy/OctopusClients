@@ -21,10 +21,11 @@ namespace Octopus.Cli.Commands
             
             var options = Options.For("Common options");
             options.Add("help", "[Optional] Print help for a command", x => printHelp = true);
+            options.Add("helpOutputFormat=", "[Optional] Output format for help, only valid option is json", SetHelpOutputFormat);
             formattedOutputInstance = this as ISupportFormattedOutput;
             if (formattedOutputInstance != null)
             {
-                options.Add("outputFormat=", "[Optional] Output format, valid options are json or xml",
+                options.Add("outputFormat=", "[Optional] Output format, only valid option is json",
                     SetOutputFormat);
             }
             else
@@ -36,6 +37,8 @@ namespace Octopus.Cli.Commands
         protected Options Options { get; } = new Options();
 
         public OutputFormat OutputFormat { get; set; }
+
+        public OutputFormat HelpOutputFormat { get; set; }
 
         public virtual void GetHelp(TextWriter writer, string[] args)
         {
@@ -53,8 +56,8 @@ namespace Octopus.Cli.Commands
                 commandName = commandAttribute.Name;
             }
 
-            commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default;
-            if (OutputFormat == OutputFormat.Json)
+            commandOutputProvider.PrintMessages = HelpOutputFormat == OutputFormat.Default;
+            if (HelpOutputFormat  == OutputFormat.Json)
             {
                 commandOutputProvider.Json(new
                 {
@@ -74,18 +77,26 @@ namespace Octopus.Cli.Commands
             }
             else
             {
-                
                 commandOutputProvider.PrintCommandHelpHeader(executable, commandName, writer);
                 commandOutputProvider.PrintCommandOptions(Options, writer);
                 commandOutputProvider.PrintCommandHelpFooter(executable, commandName, writer);
             }
         }
 
-        private void SetOutputFormat(string s)
+        protected void SetOutputFormat(string s)
+        {
+            OutputFormat = ParseOutputFormat(s);
+        }
+        
+        private void SetHelpOutputFormat(string s)
+        {
+            HelpOutputFormat = ParseOutputFormat(s);
+        }
+
+        private OutputFormat ParseOutputFormat(string s)
         {
             OutputFormat outputFormat;
-            OutputFormat = Enum.TryParse(s, true, out outputFormat) ? outputFormat : OutputFormat.Default;
-            
+            return Enum.TryParse(s, true, out outputFormat) ? outputFormat : OutputFormat.Default;
         }
     }
 }
