@@ -41,8 +41,11 @@ namespace Octopus.Cli.Commands.Environment
             commandOutputProvider.Json(
                 environments.Select(environment => new
                 {
-                    environment.Id,
-                    environment.Name
+                    Environment = new
+                    {
+                        environment.Id,
+                        environment.Name
+                    }
                 }));
         }
     }

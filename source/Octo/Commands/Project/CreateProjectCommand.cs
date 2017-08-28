@@ -81,13 +81,13 @@ namespace Octopus.Cli.Commands.Project
                 Project = new
                 {
                     project.Id,
-                    project.Name,
-                    Group = new
-                    {
-                        projectGroup.Id,
-                        projectGroup.Name,
-                        NewGroupCreated = projectGroupCreated
-                    }
+                    project.Name
+                },
+                Group = new
+                {
+                    projectGroup.Id,
+                    projectGroup.Name,
+                    NewGroupCreated = projectGroupCreated
                 }
             });
         }

@@ -168,12 +168,12 @@ namespace Octopus.Cli.Commands.Deployment
                 })
                 .Select(x => new
                 {
-                    Project = projectsById[x.dashboardItem.ProjectId],
-                    Environment = environmentsById[x.dashboardItem.EnvironmentId],
-                    Tenant = !string.IsNullOrEmpty(x.dashboardItem.TenantId)
-                        ? tenantsById[x.dashboardItem.TenantId]
-                        : string.Empty,
-                    Channel = x.channel != null ? x.channel.Name : string.Empty,
+                    Project = new { Id = x.dashboardItem.ProjectId, Name = projectsById[x.dashboardItem.ProjectId] },
+                    Environment = new { Id = x.dashboardItem.EnvironmentId, Name = environmentsById[x.dashboardItem.EnvironmentId] },
+                    Tenant = string.IsNullOrWhiteSpace(x.dashboardItem.TenantId)
+                        ? null
+                        : new { Id = x.dashboardItem.TenantId, Name = tenantsById[x.dashboardItem.TenantId] },
+                    Channel = x.channel == null ? null : new { x.channel.Id, x.channel.Name },
                     Date = x.dashboardItem.QueueTime,
                     x.dashboardItem.Duration,
                     State = x.dashboardItem.State.ToString(),

@@ -158,10 +158,8 @@ namespace Octopus.Cli.Commands.Environment
         {
             commandOutputProvider.Json(commandResults.Select(x =>new
             {
-                MachineId = x.Machine.Id,
-                Name = x.Machine.Name,
-                Status = x.Machine.Status,
-                EnvironmentName = x.Action == MachineAction.RemovedFromEnvironment ? environmentResource.Name : string.Empty,
+                Machine = new { x.Machine.Id,x.Machine.Name, x.Machine.Status },
+                Environment = x.Action == MachineAction.RemovedFromEnvironment ? new { environmentResource.Id, environmentResource.Name } : null,
                 Action = x.Action.ToString()
             }));
         }

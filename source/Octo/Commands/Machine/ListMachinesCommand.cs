@@ -56,9 +56,11 @@ namespace Octopus.Cli.Commands.Machine
         {
             commandOutputProvider.Json(environmentMachines.Select(machine => new
             {
-                machine.Name,
-                Status = provider.GetStatus(machine),
-                machine.Id,
+                Machine = new {
+                    machine.Id,
+                    machine.Name,
+                    Status = provider.GetStatus(machine)
+                },
                 Environments = machine.EnvironmentIds.Select(id => environmentResources.First(e => e.Id == id).Name)
                     .ToArray()
             }));

@@ -47,8 +47,11 @@ namespace Octopus.Cli.Commands.Tenant
         {
             commandOutputProvider.Json(tenants.OrderBy(x => x.Name).Select(t => new
             {
-                t.Name,
-                t.Id
+                Tenant = new
+                {
+                    t.Id,
+                    t.Name,
+                }
             }));
         }
     }

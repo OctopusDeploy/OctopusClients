@@ -84,8 +84,8 @@ namespace Octopus.Cli.Commands.Releases
         {
             commandOutputProvider.Json(new
             {
-                ProjectName = project.Name,
-                FromEnvironment = environment.Name,
+                ProjectName = new { project.Id, project.Name },
+                FromEnvironment = new { environment.Id, environment.Name },
                 release.Version,
                 Deployments = deployments.Select(d => new
                 {
@@ -94,7 +94,7 @@ namespace Octopus.Cli.Commands.Releases
                     Environment = new
                     {
                         d.EnvironmentId,
-                        EnvironmentName = promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
+                        promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
                     },
                     d.SkipActions,
                     d.SpecificMachineIds,

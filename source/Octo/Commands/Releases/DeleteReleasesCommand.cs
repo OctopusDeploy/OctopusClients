@@ -133,7 +133,7 @@ namespace Octopus.Cli.Commands.Releases
             List<ReleaseResource> affectedReleases = WhatIf ? wouldDelete : toDelete;
             commandOutputProvider.Json(new
             {
-                ProjectName = project.Name,
+                Project = new { project.Id, project.Name },
                 Releases = affectedReleases.Select(r => new
                     {
                         r.Version,

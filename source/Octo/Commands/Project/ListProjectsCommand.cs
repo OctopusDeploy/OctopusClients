@@ -40,8 +40,11 @@ namespace Octopus.Cli.Commands.Project
             commandOutputProvider.Json(
                 _projectResources.Select(project => new
                 {
-                    project.Id,
-                    project.Name
+                    Project = new
+                    {
+                        project.Id,
+                        project.Name
+                    }
                 }));
         }
     }

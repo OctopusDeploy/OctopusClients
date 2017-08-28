@@ -71,14 +71,13 @@ namespace Octopus.Cli.Commands.Releases
         {
             commandOutputProvider.Json(projectResources.Select(pr => new
             {
-                pr.Name,
+                Project = new { pr.Id, pr.Name },
                 Releases = releases.Where(r => r.ProjectId == pr.Id).Select(r => new
                 {
                     r.Version,
                     r.Assembled,
                     PackageVersions = GetPackageVersionsAsString(r.SelectedPackages),
                     ReleaseNotes = GetReleaseNotes(r)
-
                 })
             }));
         }

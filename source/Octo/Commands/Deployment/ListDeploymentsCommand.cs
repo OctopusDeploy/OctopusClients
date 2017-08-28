@@ -107,12 +107,12 @@ namespace Octopus.Cli.Commands.Deployment
             commandOutputProvider.Json(
                 deploymentResources.Select(dr => new
                 {
-                    Project = projectsById[dr.Key.ProjectId],
-                    Environment = environmentsById[dr.Key.EnvironmentId],
-                    Tenant = !string.IsNullOrWhiteSpace(dr.Key.TenantId)
-                        ? tenantsById[dr.Key.TenantId]
-                        : string.Empty,
-                    Channel = dr.Value.ChannelResource != null ? dr.Value.ChannelResource.Name : string.Empty,
+                    Project = new { Id = dr.Key.ProjectId, Name = projectsById[dr.Key.ProjectId] },
+                    Environment = new { Id = dr.Key.EnvironmentId, Name = environmentsById[dr.Key.EnvironmentId] },
+                    Tenant = string.IsNullOrWhiteSpace(dr.Key.TenantId)
+                        ? null
+                        : new { Id = dr.Key.TenantId, Name = tenantsById[dr.Key.TenantId] },
+                    Channel = dr.Value.ChannelResource == null ? null : new { Id = dr.Key.ChannelId, dr.Value.ChannelResource.Name },
                     dr.Key.Created,
                     dr.Value.ReleaseResource.Version,
                     dr.Value.ReleaseResource.Assembled,

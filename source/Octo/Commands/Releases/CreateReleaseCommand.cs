@@ -274,7 +274,8 @@ namespace Octopus.Cli.Commands.Releases
                 ReleaseId = release.Id,
                 release.Assembled,
                 release.Version,
-                Project = project.Name,
+                Project = new { project.Id, project.Name },
+                Channel = plan.Channel == null ? null : new { plan.Channel.Id, plan.Channel.Name },
                 Steps = plan.Steps.Select((x, i) => new
                 {
                     Id = i,
@@ -282,8 +283,7 @@ namespace Octopus.Cli.Commands.Releases
                     x.Version,
                     x.VersionSource,
                     VersionRule = x.ChannelVersionRuleTestResult?.ToSummaryString()
-                }),
-                ChannelName = plan.Channel.Name,
+                })
             });
         }
     }
