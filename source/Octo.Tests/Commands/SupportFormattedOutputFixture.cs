@@ -49,7 +49,7 @@ namespace Octopus.Cli.Tests.Commands
             // arrange
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
-            CommandLineArgs.Add("--outputFormat=blah");
+            CommandLineArgs.Add("--helpOutputFormat=blah");
 
             // act
             await command.Execute(CommandLineArgs.ToArray());
@@ -66,7 +66,7 @@ namespace Octopus.Cli.Tests.Commands
             DummyApiCommandWithFormattedOutputSupport command =
                 new DummyApiCommandWithFormattedOutputSupport(ClientFactory, RepositoryFactory, FileSystem, CommandOutputProvider);
 
-            CommandLineArgs.Add("--outputFormat=json");
+            CommandLineArgs.Add("--helpOutputFormat=json");
             CommandLineArgs.Add("--help");
 
             // act
@@ -76,7 +76,7 @@ namespace Octopus.Cli.Tests.Commands
             var logoutput = LogOutput.ToString();
             Console.WriteLine(logoutput);
             JsonConvert.DeserializeObject(logoutput);
-            logoutput.Should().Contain("--outputFormat=VALUE");
+            logoutput.Should().Contain("--helpOutputFormat=VALUE");
             logoutput.Should().Contain("--help");
 
         }
