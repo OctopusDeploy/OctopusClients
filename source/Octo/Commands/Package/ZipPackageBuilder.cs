@@ -13,12 +13,19 @@ namespace Octopus.Cli.Commands.Package
     {
         readonly IOctopusFileSystem fileSystem;
         private readonly ICommandOutputProvider commandOutputProvider;
+        private readonly List<string> files;
+        
 
         public ZipPackageBuilder(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             this.fileSystem = fileSystem;
             this.commandOutputProvider = commandOutputProvider;
+            files = new List<string>();
         }
+
+        public string[] Files => files.ToArray();
+
+        public string PackageFormat => "zip";
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
         {
@@ -49,7 +56,11 @@ namespace Octopus.Cli.Commands.Package
                             fullFilePath.Substring(basePathLength).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 
                         if (verboseInfo)
+                        {
                             commandOutputProvider.Information($"Added file: {relativePath}");
+                        }
+
+                        files.Add(relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
                         entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTime);

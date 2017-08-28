@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NuGet.Packaging;
 using NuGet.Versioning;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
 using Octopus.Cli.Util;
 using Serilog;
 using SemanticVersion = Octopus.Client.Model.SemanticVersion;
@@ -13,7 +14,7 @@ using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 namespace Octopus.Cli.Commands.Package
 {
     [Command("pack", Description = "Creates a package (.nupkg or .zip) from files on disk, without needing a .nuspec or .csproj")]
-    public class PackCommand : CommandBase, ICommand
+    public class PackCommand : CommandBase, ICommand, ISupportFormattedOutput
     {
         readonly IList<string> authors = new List<string>();
         readonly IOctopusFileSystem fileSystem;
@@ -28,6 +29,7 @@ namespace Octopus.Cli.Commands.Package
         string title;
         SemanticVersion version;
         IPackageBuilder packageBuilder;
+        string allReleaseNotes;
 
         public PackCommand(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
@@ -67,6 +69,8 @@ namespace Octopus.Cli.Commands.Package
                     return;
                 }
 
+                commandOutputProvider.PrintMessages = this.OutputFormat == OutputFormat.Default || this.verbose;
+
                 if (string.IsNullOrWhiteSpace(id))
                     throw new CommandException("An ID is required");
 
@@ -91,7 +95,7 @@ namespace Octopus.Cli.Commands.Package
                 if (string.IsNullOrWhiteSpace(description))
                     description = "A deployment package created from files on disk.";
 
-                string allReleaseNotes = null;
+                allReleaseNotes = null;
                 if (!string.IsNullOrWhiteSpace(releaseNotesFile))
                 {
                     if (!File.Exists(releaseNotesFile))
@@ -134,7 +138,14 @@ namespace Octopus.Cli.Commands.Package
 
                 packageBuilder.BuildPackage(basePath, includes, metadata, outFolder, overwrite, verbose);
 
-                commandOutputProvider.Information("Done.");
+                if (OutputFormat == OutputFormat.Json)
+                {
+                    PrintJsonOutput();
+                }
+                else
+                {
+                    PrintDefaultOutput();
+                }
             });
         }
 
@@ -150,6 +161,30 @@ namespace Octopus.Cli.Commands.Package
                 default:
                     throw new CommandException("Unknown package format: " + fmt);
             }
+        }
+
+        public Task Request()
+        {
+            return Task.WhenAny();
+        }
+
+        public void PrintDefaultOutput()
+        {
+            commandOutputProvider.Information("Done.");
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(new
+            {
+                PackageId = this.id,
+                Version = this.version.ToString(),
+                ReleaseNotes = allReleaseNotes ?? string.Empty,
+                Description = this.description,
+                packageBuilder.PackageFormat,
+                OutputFolder = this.outFolder,
+                Files = packageBuilder.Files.Any() ? packageBuilder.Files : includes,
+            });   
         }
     }
 }

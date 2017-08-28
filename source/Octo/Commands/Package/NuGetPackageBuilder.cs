@@ -11,12 +11,17 @@ namespace Octopus.Cli.Commands.Package
     {
         readonly IOctopusFileSystem fileSystem;
         private readonly ICommandOutputProvider commandOutputProvider;
+        private readonly List<string> files;
 
         public NuGetPackageBuilder(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             this.fileSystem = fileSystem;
             this.commandOutputProvider = commandOutputProvider;
+            files = new List<string>();
         }
+
+        public string[] Files => files.ToArray();
+        public string PackageFormat => "nupkg";
 
         public void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo)
         {
@@ -33,8 +38,9 @@ namespace Octopus.Cli.Commands.Package
                     commandOutputProvider.Information($"Added file: {file.Path}");
                 }
             }
+            files.AddRange(nugetPkgBuilder.Files.Select(x=>x.Path).ToArray());
 
-            var filename = metadata.Id + "." + metadata.Version + ".nupkg";
+            var filename = $"{metadata.Id}.{metadata.Version}.nupkg";
             var output = Path.Combine(outFolder, filename);
 
             if (fileSystem.FileExists(output) && !overwrite)
