@@ -1,12 +1,13 @@
+using System;
 using Octopus.Cli.Model;
 
 namespace Octopus.Cli.Commands
 {
     public class ReleasePlanItem
     {
-        public ReleasePlanItem(string stepName, string packageId, string packageFeedId, bool isResolveable, string userSpecifiedVersion)
+        public ReleasePlanItem(string actionName, string packageId, string packageFeedId, bool isResolveable, string userSpecifiedVersion)
         {
-            StepName = stepName;
+            ActionName = actionName;
             PackageId = packageId;
             PackageFeedId = packageFeedId;
             IsResolveable = isResolveable;
@@ -14,7 +15,7 @@ namespace Octopus.Cli.Commands
             VersionSource = string.IsNullOrWhiteSpace(Version) ? "Cannot resolve" : "User specified";
         }
 
-        public string StepName { get; }
+        public string ActionName { get; }
 
         public string PackageId { get; }
 

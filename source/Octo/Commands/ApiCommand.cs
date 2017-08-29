@@ -209,7 +209,7 @@ namespace Octopus.Cli.Commands
 
             foreach (var package in packages)
             {
-                var packageVersionAsString = package.StepName + " " + package.Version;
+                var packageVersionAsString = package.ActionName + " " + package.Version;
 
                 if (packageVersionsAsString.Contains(packageVersionAsString))
                 {
