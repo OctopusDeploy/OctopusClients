@@ -6,6 +6,8 @@ namespace Octopus.Client.Model
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public DateTimeOffset? Started { get; set;}
+        public DateTimeOffset? Ended { get; set;}
         public ActivityStatus Status { get; set; }
         public ActivityElement[] Children { get; set; }
         public bool ShowAtSummaryLevel { get; set; }
