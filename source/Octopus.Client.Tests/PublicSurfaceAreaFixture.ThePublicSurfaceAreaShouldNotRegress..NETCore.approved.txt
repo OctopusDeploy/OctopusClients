@@ -1850,6 +1850,7 @@ Octopus.Client.Model
   {
       InheritFromDefault = 0
       Inline = 1
+      OnlyConnectivity = 2
   }
   class MachineUpdatePolicy
   {
