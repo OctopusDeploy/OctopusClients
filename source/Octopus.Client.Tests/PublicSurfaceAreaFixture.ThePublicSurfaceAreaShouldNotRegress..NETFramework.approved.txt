@@ -2308,6 +2308,7 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
   {
     .ctor()
+    Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
   }
   class NumericReportData
