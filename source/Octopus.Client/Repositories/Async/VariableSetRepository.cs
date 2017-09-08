@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -21,5 +23,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<string[]>(Client.RootDocument.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
         }
 
+        public override Task<List<VariableSetResource>> Get(params string[] ids)
+        {
+            throw new NotSupportedException("VariableSet does not support this operation");
+        }
     }
 }

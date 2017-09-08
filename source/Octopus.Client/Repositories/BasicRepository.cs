@@ -118,7 +118,7 @@ namespace Octopus.Client.Repositories
             return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
         }
 
-        public List<TResource> Get(params string[] ids)
+        public virtual List<TResource> Get(params string[] ids)
         {
             if (ids == null) return new List<TResource>();
             var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
