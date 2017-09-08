@@ -210,7 +210,8 @@ Task("PackClientNuget")
             ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
             Configuration = configuration,
             OutputDirectory = artifactsDir,
-            NoBuild = true
+            NoBuild = true,
+            IncludeSymbols = true
         });
     });
 
@@ -241,6 +242,7 @@ Task("CopyToLocalPackages")
 {
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
+    CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.symbols.nupkg", localPackagesDir);
 });
 
 
