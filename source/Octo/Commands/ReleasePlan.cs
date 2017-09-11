@@ -125,5 +125,10 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("The step '" + packageStepName + "' provides the release version number but no package version could be determined from it.");
             return step.Version;
         }
+
+        public bool ChannelIsMissingSteps()
+        {
+            return Channel != null && !steps.Any();
+        }
     }
 }
