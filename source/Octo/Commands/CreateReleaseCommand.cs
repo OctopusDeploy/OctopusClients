@@ -211,6 +211,10 @@ namespace Octopus.Cli.Commands
 
                 var plan = await releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag).ConfigureAwait(false);
                 releasePlans.Add(plan);
+                if (plan.ChannelIsMissingSteps())
+                {
+                    Log.Warning($"Channel {channel.Name} does not contain any steps");
+                }
             }
 
             var viablePlans = releasePlans.Where(p => p.IsViableReleasePlan()).ToArray();

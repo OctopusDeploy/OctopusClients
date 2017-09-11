@@ -34,7 +34,7 @@ namespace Octopus.Cli.Commands
 
         public IEnumerable<ReleasePlanItem> Steps => steps;
 
-        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules();
+        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules() && !ChannelIsMissingSteps();
 
         public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
