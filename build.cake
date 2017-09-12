@@ -91,7 +91,7 @@ Task("Test")
     {
         GetFiles("**/**/*Tests.csproj")
             .ToList()
-            .ForEach(testProjectFile => 
+            .ForEach(testProjectFile =>
             {
                 DotNetCoreTest(testProjectFile.FullPath, new DotNetCoreTestSettings
                 {
@@ -116,7 +116,7 @@ Task("DotnetPublish")
     var portablePublishDir =  $"{octoPublishFolder}/portable";
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
-        Framework = "netcoreapp1.0",
+        Framework = "netcoreapp2.0",
         Configuration = configuration,
         OutputDirectory = portablePublishDir
     });
@@ -130,7 +130,7 @@ Task("DotnetPublish")
     {
         DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
         {
-            Framework = "netcoreapp1.0",
+            Framework = "netcoreapp2.0",
             Configuration = configuration,
             Runtime = rid,
             OutputDirectory = $"{octoPublishFolder}/{rid}"
@@ -148,8 +148,8 @@ Task("MergeOctoExe")
             $"{outputFolder}/Octo.exe",
             $"{inputFolder}/Octo.exe",
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
+            new ILRepackSettings {
+                Internalize = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -197,9 +197,9 @@ Task("PackClientNuget")
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
+            new ILRepackSettings {
                 Internalize = true,
-                XmlDocs = true, 
+                XmlDocs = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
