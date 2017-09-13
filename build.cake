@@ -2,7 +2,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0011"
-#tool "nuget:?package=ILRepack&version=2.0.11"
+#tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
 
 using SharpCompress;
@@ -179,7 +179,7 @@ Task("Zip")
                 var outFile = $"{artifactsDir}/OctopusTools.{nugetVersion}.{dirName}";
                 if(dirName == "portable" || dirName.Contains("win"))
                     Zip(dir, outFile + ".zip");
-            
+
                 if(!dirName.Contains("win"))
                     TarGzip(dir, outFile);
             }
@@ -211,18 +211,18 @@ Task("PackClientNuget")
             Configuration = configuration,
             OutputDirectory = artifactsDir,
             NoBuild = true,
-            IncludeSymbols = true
+            IncludeSymbols = false
         });
     });
 
-    
+
 
 Task("PackOctopusToolsNuget")
     .IsDependentOn("MergeOctoExe")
     .Does(() => {
         var nugetPackDir = $"{publishDir}/nuget";
         var nuspecFile = "OctopusTools.nuspec";
-        
+
         CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
@@ -242,7 +242,6 @@ Task("CopyToLocalPackages")
 {
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
-    CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.symbols.nupkg", localPackagesDir);
 });
 
 
