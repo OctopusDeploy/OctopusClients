@@ -20,10 +20,12 @@ using Octopus.Client.Serialization;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Nancy.Extensions;
 using Octopus.Client.Model;
 using Octopus.Client.Tests.Integration.Repository;
+using HttpStatusCode = Nancy.HttpStatusCode;
 
 namespace Octopus.Client.Tests.Integration
 {
@@ -35,8 +37,10 @@ namespace Octopus.Client.Tests.Integration
 
     public abstract class HttpIntegrationTestBase : NancyModule
     {
-        public static readonly string HostBaseUri = "http://foo.localtest.me:17358";
-        public static readonly string HostBaseSslUri = "https://localhost:17359";
+        public static readonly int HostPort = 17358;
+        public static readonly int HostSslPort = 17359;
+        public static readonly string HostBaseUri = $"http://foo.localtest.me:{17358}";
+        public static readonly string HostBaseSslUri = $"https://localhost:{17359}";
         protected static readonly Guid InstallationId = Guid.NewGuid();
         public static readonly byte[] SharedBytes = { 34, 56, 255, 0, 8 };
         static IWebHost currentHost;
@@ -51,7 +55,16 @@ namespace Octopus.Client.Tests.Integration
             Console.WriteLine("HttpIntegrationTestBase OneTimeSetup");
             currentHost = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseKestrel(o => o.UseHttps(GetCert()))
+                .UseKestrel(o =>
+                    {
+#if NET452
+                        o.UseHttps(GetCert());
+#else
+                        o.Listen(IPAddress.Any, HostPort);
+                        o.Listen(IPAddress.Any, HostSslPort, c => c.UseHttps(GetCert()));
+#endif
+                    }
+                )
                 .UseStartup<Startup>()
                 .UseUrls(HostBaseUri, HostBaseSslUri)
                 .Build();
@@ -206,7 +219,7 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-        #region Nancy JSON Serializers
+#region Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
             private readonly JsonSerializer serializer;
@@ -374,6 +387,6 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-        #endregion
+#endregion
     }
 }
