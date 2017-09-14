@@ -55,7 +55,8 @@ namespace Octopus.Client.Tests
                     : "class";
 
             var interfaces = type.GetInterfaces();
-            var baseClasses = type.GetBaseTypes().Where(x => x.Name != typeof(object).Name);
+            if (type.BaseType != null && type.BaseType.Name != typeof(object).Name) 
+                interfaces = interfaces.Concat(new []{ type.BaseType }).ToArray();
             var members = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                 .OrderBy(t => t.Name)
                 .ToArray();
@@ -78,7 +79,7 @@ namespace Octopus.Client.Tests
 
             return
                 $"{kind} {type.Name}".InArray()
-                    .Concat(interfaces.Union(baseClasses).Select(i => $"  {FormatTypeName(i)}"))
+                    .Concat(interfaces.Select(i => $"  {FormatTypeName(i)}"))
                     .Concat("{")
                     .Concat(body.Select(l => "  " + l))
                     .Concat("}");
