@@ -24,10 +24,22 @@ namespace Octopus.Client.Tests
                 .ToArray();
 
             var framework = string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
-            this.Assent(
-                string.Join("\r\n", lines),
-                new Configuration().UsingNamer(new PostfixNamer(framework))
-            );
+            try
+            {
+                this.Assent(
+                    string.Join("\r\n", lines),
+                    new Configuration().UsingNamer(new PostfixNamer(framework))
+                );
+            }
+            catch (AssentFailedException e)
+            {
+                using (var teamCityArtifactsWriter = new TeamCityServiceMessages().CreateWriter())
+                {
+                    teamCityArtifactsWriter.PublishArtifact(e.ReceivedFileName);
+                    teamCityArtifactsWriter.PublishArtifact(e.ApprovedFileName);
+                }
+                throw;
+            }
         }
 
         IEnumerable<object> FormatNamespace(string name, IEnumerable<TypeInfo> types)
