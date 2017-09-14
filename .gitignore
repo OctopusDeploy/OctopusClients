@@ -52,7 +52,6 @@ ignore[.-]*
 svnignore[.-]*
 lint.db
 build
-tools/TestResult.xml
 *.ReSharper
 source/packages
 source/OctopusTools.v2.ncrunchsolution
@@ -61,7 +60,12 @@ source/OctopusTools.v2.ncrunchsolution
 *.lock.json
 .vs
 .vscode
-/tools/
+/tools/Addins/
+/tools/Cake/
+/tools/GitVersion.CommandLine
+/tools/ILRepack
+/tools/*
+!/tools/packages.config
 /artifacts/
 /publish/
 TestResult.xml
