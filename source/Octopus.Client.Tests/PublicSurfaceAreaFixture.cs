@@ -55,6 +55,8 @@ namespace Octopus.Client.Tests
                     : "class";
 
             var interfaces = type.GetInterfaces();
+            if (type.BaseType != null && type.BaseType.Name != typeof(object).Name) 
+                interfaces = interfaces.Concat(new []{ type.BaseType }).ToArray();
             var members = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                 .OrderBy(t => t.Name)
                 .ToArray();

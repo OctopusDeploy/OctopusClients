@@ -30,5 +30,7 @@ namespace Octopus.Client.Model
         }
 
         public TaskProgress Progress { get; set; }
+
+        public int? PhysicalLogSize { get; set; }
     }
 }
