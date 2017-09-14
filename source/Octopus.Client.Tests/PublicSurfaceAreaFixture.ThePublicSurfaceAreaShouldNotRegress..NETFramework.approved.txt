@@ -1076,12 +1076,14 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ActivityElement[] Children { get; set; }
+    Nullable<DateTimeOffset> Ended { get; set; }
     String Id { get; set; }
     Octopus.Client.Model.ActivityLogElement[] LogElements { get; set; }
     String Name { get; set; }
     String ProgressMessage { get; set; }
     Int32 ProgressPercentage { get; set; }
     Boolean ShowAtSummaryLevel { get; set; }
+    Nullable<DateTimeOffset> Started { get; set; }
     Octopus.Client.Model.ActivityStatus Status { get; set; }
   }
   class ActivityLogElement
@@ -3211,6 +3213,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
     IList<ActivityElement> ActivityLogs { get; set; }
+    Nullable<Int32> PhysicalLogSize { get; set; }
     Octopus.Client.Model.TaskProgress Progress { get; set; }
     Octopus.Client.Model.TaskResource Task { get; set; }
   }
