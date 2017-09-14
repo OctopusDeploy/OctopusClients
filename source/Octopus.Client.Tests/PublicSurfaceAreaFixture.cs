@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Assent;
 using Assent.Namers;
+using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NUnit.Framework;
 using Octopus.Client.Tests.Extensions;
 
