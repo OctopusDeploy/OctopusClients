@@ -56,8 +56,9 @@ namespace Octopus.Cli.Util
             }
         }
 
+#if NET45
         public static HashSet<TElement> ToHashSet<TElement>(this IEnumerable<TElement> items) => new HashSet<TElement>(items);
-
+#endif
         public static bool None<TElement>(this IEnumerable<TElement> items) => !items.Any();
     }
 }

@@ -2,7 +2,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0011"
-#tool "nuget:?package=ILRepack&version=2.0.11"
+#tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
 
 using SharpCompress;
@@ -91,7 +91,7 @@ Task("Test")
     {
         GetFiles("**/**/*Tests.csproj")
             .ToList()
-            .ForEach(testProjectFile => 
+            .ForEach(testProjectFile =>
             {
                 DotNetCoreTest(testProjectFile.FullPath, new DotNetCoreTestSettings
                 {
@@ -116,7 +116,7 @@ Task("DotnetPublish")
     var portablePublishDir =  $"{octoPublishFolder}/portable";
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
-        Framework = "netcoreapp1.0",
+        Framework = "netcoreapp2.0",
         Configuration = configuration,
         OutputDirectory = portablePublishDir
     });
@@ -130,7 +130,7 @@ Task("DotnetPublish")
     {
         DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
         {
-            Framework = "netcoreapp1.0",
+            Framework = "netcoreapp2.0",
             Configuration = configuration,
             Runtime = rid,
             OutputDirectory = $"{octoPublishFolder}/{rid}"
@@ -148,8 +148,8 @@ Task("MergeOctoExe")
             $"{outputFolder}/Octo.exe",
             $"{inputFolder}/Octo.exe",
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
-                Internalize = true, 
+            new ILRepackSettings {
+                Internalize = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -179,7 +179,7 @@ Task("Zip")
                 var outFile = $"{artifactsDir}/OctopusTools.{nugetVersion}.{dirName}";
                 if(dirName == "portable" || dirName.Contains("win"))
                     Zip(dir, outFile + ".zip");
-            
+
                 if(!dirName.Contains("win"))
                     TarGzip(dir, outFile);
             }
@@ -197,9 +197,9 @@ Task("PackClientNuget")
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings { 
+            new ILRepackSettings {
                 Internalize = true,
-                XmlDocs = true, 
+                XmlDocs = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -211,18 +211,18 @@ Task("PackClientNuget")
             Configuration = configuration,
             OutputDirectory = artifactsDir,
             NoBuild = true,
-            IncludeSymbols = true
+            IncludeSymbols = false
         });
     });
 
-    
+
 
 Task("PackOctopusToolsNuget")
     .IsDependentOn("MergeOctoExe")
     .Does(() => {
         var nugetPackDir = $"{publishDir}/nuget";
         var nuspecFile = "OctopusTools.nuspec";
-        
+
         CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
@@ -242,7 +242,6 @@ Task("CopyToLocalPackages")
 {
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
-    CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.symbols.nupkg", localPackagesDir);
 });
 
 
