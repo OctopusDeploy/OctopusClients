@@ -113,7 +113,7 @@ namespace Octopus.Client.Repositories.Async
                     : Client.Get<TResource>(Client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
             }
 
-            public async Task<List<TResource>> Get(params string[] ids)
+            public virtual async Task<List<TResource>> Get(params string[] ids)
             {
                 if (ids == null) return new List<TResource>();
                 var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();

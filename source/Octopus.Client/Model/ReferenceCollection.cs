@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Octopus.Client.Model
 {
     /// <summary>
-    /// A case-insensitive collection of unique strings used for holding document ID's.
+    /// A case-insensitive collection of unique strings used for holding document ID's or names.
     /// </summary>
     public class ReferenceCollection : HashSet<string>
     {

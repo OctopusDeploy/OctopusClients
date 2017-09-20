@@ -34,7 +34,7 @@ namespace Octopus.Cli.Commands
 
         public IEnumerable<ReleasePlanItem> Steps => steps;
 
-        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules();
+        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules() && !ChannelIsMissingSteps();
 
         public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
@@ -124,6 +124,11 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(step.Version))
                 throw new CommandException("The step '" + packageStepName + "' provides the release version number but no package version could be determined from it.");
             return step.Version;
+        }
+
+        public bool ChannelIsMissingSteps()
+        {
+            return Channel != null && !steps.Any();
         }
     }
 }

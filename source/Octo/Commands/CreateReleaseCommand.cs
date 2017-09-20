@@ -103,6 +103,11 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
             }
 
+            if (plan.ChannelIsMissingSteps())
+            {
+                throw new CommandException($"Channel {plan.Channel.Name} has no available steps");
+            }
+
             if (plan.HasStepsViolatingChannelVersionRules())
             {
                 if (IgnoreChannelRules)
@@ -206,6 +211,10 @@ namespace Octopus.Cli.Commands
 
                 var plan = await releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag).ConfigureAwait(false);
                 releasePlans.Add(plan);
+                if (plan.ChannelIsMissingSteps())
+                {
+                    Log.Warning($"Channel {channel.Name} does not contain any steps");
+                }
             }
 
             var viablePlans = releasePlans.Where(p => p.IsViableReleasePlan()).ToArray();

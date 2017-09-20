@@ -200,6 +200,7 @@ Octopus.Client
     HttpStatusCode StatusCode { get; }
   }
   class OctopusResponse`1
+    Octopus.Client.OctopusResponse
   {
     .ctor(Octopus.Client.OctopusRequest, HttpStatusCode, String, Octopus.Client.TResponseResource)
     Octopus.Client.TResponseResource ResponseResource { get; }
@@ -460,7 +461,8 @@ Octopus.Client.Editors.Async
 Octopus.Client.Exceptions
 {
   class OctopusDeserializationException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(Int32, String)
     .ctor(Int32, String, Exception)
@@ -475,7 +477,8 @@ Octopus.Client.Exceptions
     String HelpText { get; set; }
   }
   abstract class OctopusException
-    _Exception
+    ISerializable
+    Exception
   {
     String HelpText { get; }
     Int32 HttpStatusCode { get; }
@@ -494,27 +497,32 @@ Octopus.Client.Exceptions
     }
   }
   class OctopusMethodNotAllowedFoundException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(String)
   }
   class OctopusResourceNotFoundException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(String)
   }
   class OctopusSecurityException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(Int32, String)
   }
   class OctopusServerException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(Int32, String)
   }
   class OctopusValidationException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(String, ICollection<String>)
     .ctor(Int32, String, ICollection<String>)
@@ -525,7 +533,8 @@ Octopus.Client.Exceptions
     Octopus.Client.Exceptions.TDetails DetailsAs()
   }
   class UnsupportedApiVersionException
-    _Exception
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
   {
     .ctor(String)
   }
@@ -559,6 +568,9 @@ Octopus.Client.Logging
     IDisposable OpenNestedContext(String)
   }
   class Logger
+    ICloneable
+    ISerializable
+    MulticastDelegate
   {
     .ctor(Object, IntPtr)
     IAsyncResult BeginInvoke(Octopus.Client.Logging.LogLevel, Func<String>, Exception, Object[], AsyncCallback, Object)
@@ -612,6 +624,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ActionType { get; set; }
@@ -641,6 +654,7 @@ Octopus.Client.Model
   class ActionTemplateUsageResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ActionId { get; set; }
@@ -674,12 +688,14 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ActivityElement[] Children { get; set; }
+    Nullable<DateTimeOffset> Ended { get; set; }
     String Id { get; set; }
     Octopus.Client.Model.ActivityLogElement[] LogElements { get; set; }
     String Name { get; set; }
     String ProgressMessage { get; set; }
     Int32 ProgressPercentage { get; set; }
     Boolean ShowAtSummaryLevel { get; set; }
+    Nullable<DateTimeOffset> Started { get; set; }
     Octopus.Client.Model.ActivityStatus Status { get; set; }
   }
   class ActivityLogElement
@@ -717,6 +733,7 @@ Octopus.Client.Model
   class AlertResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Message { get; set; }
@@ -729,7 +746,7 @@ Octopus.Client.Model
       Danger = 2
   }
   class AllowCsvAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
@@ -748,6 +765,7 @@ Octopus.Client.Model
   class ApiKeyResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ApiKey { get; set; }
@@ -756,7 +774,7 @@ Octopus.Client.Model
     String UserId { get; set; }
   }
   abstract class ApiPropertyAttribute
-    _Attribute
+    Attribute
   {
   }
   abstract class Arguments
@@ -808,6 +826,7 @@ Octopus.Client.Model
   class ArtifactResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     DateTimeOffset Created { get; set; }
@@ -840,6 +859,7 @@ Octopus.Client.Model
   class AzureRootResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
   }
@@ -850,6 +870,7 @@ Octopus.Client.Model
   class BackupConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean BackupAutomatically { get; set; }
@@ -863,6 +884,7 @@ Octopus.Client.Model
   class BuiltInFeedStatsResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String IndexingStatus { get; set; }
@@ -872,6 +894,7 @@ Octopus.Client.Model
   class BuiltInRepositoryConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Nullable<Int32> DeleteUnreleasedPackagesAfterDays { get; set; }
@@ -988,6 +1011,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -1003,6 +1027,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor(String, String)
     .ctor(String, String, String)
@@ -1037,6 +1062,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -1058,6 +1084,7 @@ Octopus.Client.Model
   class ChannelVersionRuleResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection Actions { get; set; }
@@ -1114,6 +1141,7 @@ Octopus.Client.Model
   class DashboardConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection IncludedEnvironmentIds { get; set; }
@@ -1125,6 +1153,7 @@ Octopus.Client.Model
   class DashboardEnvironmentResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -1132,6 +1161,7 @@ Octopus.Client.Model
   class DashboardItemResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ChannelId { get; set; }
@@ -1157,6 +1187,7 @@ Octopus.Client.Model
   class DashboardProjectGroupResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
@@ -1166,6 +1197,7 @@ Octopus.Client.Model
   class DashboardProjectResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean CanPerformUntenantedDeployment { get; set; }
@@ -1179,6 +1211,7 @@ Octopus.Client.Model
   class DashboardResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     List<DashboardEnvironmentResource> Environments { get; set; }
@@ -1193,6 +1226,7 @@ Octopus.Client.Model
   class DashboardTenantResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -1208,6 +1242,7 @@ Octopus.Client.Model
   class DefectResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     .ctor(String)
@@ -1244,6 +1279,7 @@ Octopus.Client.Model
   class DeploymentActionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ActionType { get; set; }
@@ -1267,6 +1303,7 @@ Octopus.Client.Model
   class DeploymentPreviewResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.Forms.Form Form { get; set; }
@@ -1276,6 +1313,7 @@ Octopus.Client.Model
   class DeploymentProcessResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String LastSnapshotId { get; set; }
@@ -1290,6 +1328,7 @@ Octopus.Client.Model
   class DeploymentPromomotionTenant
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -1298,6 +1337,7 @@ Octopus.Client.Model
   class DeploymentPromotionTarget
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -1305,6 +1345,7 @@ Octopus.Client.Model
   class DeploymentResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ChannelId { get; set; }
@@ -1385,6 +1426,7 @@ Octopus.Client.Model
   class DeploymentTemplateResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String DeploymentNotes { get; set; }
@@ -1418,6 +1460,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.FeedResource
   {
     .ctor()
     String ApiVersion { get; set; }
@@ -1436,6 +1479,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -1503,6 +1547,7 @@ Octopus.Client.Model
   class EventResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Category { get; set; }
@@ -1527,6 +1572,7 @@ Octopus.Client.Model
   class ExternalSecurityGroupResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String DisplayName { get; set; }
@@ -1534,6 +1580,7 @@ Octopus.Client.Model
   class FeaturesConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean IsBrowserCachingEnabled { get; set; }
@@ -1545,6 +1592,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
@@ -1613,6 +1661,7 @@ Octopus.Client.Model
   class InterruptionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean CanTakeResponsibility { get; set; }
@@ -1630,6 +1679,7 @@ Octopus.Client.Model
   class InvitationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection AddToTeamIds { get; set; }
@@ -1674,6 +1724,7 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
     Octopus.Client.Model.IVariableTemplateContainer
     Octopus.Client.Model.IVariableTemplateContainerEditor<LibraryVariableSetResource>
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.VariableSetContentType ContentType { get; set; }
@@ -1696,6 +1747,7 @@ Octopus.Client.Model
   class LicenseResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean IsCompliant { get; set; }
@@ -1706,6 +1758,7 @@ Octopus.Client.Model
   class LifecycleProgressionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection NextDeployments { get; set; }
@@ -1716,6 +1769,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -1739,6 +1793,9 @@ Octopus.Client.Model
     ICollection
     IReadOnlyDictionary<String, Href>
     IReadOnlyCollection<KeyValuePair<String, Href>>
+    ISerializable
+    IDeserializationCallback
+    Dictionary<String, Href>
   {
     .ctor()
     Octopus.Client.Model.LinkCollection Add(String, Octopus.Client.Model.Href)
@@ -1760,6 +1817,7 @@ Octopus.Client.Model
   class MachineConnectionStatus
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String CurrentTentacleVersion { get; set; }
@@ -1814,6 +1872,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -1835,6 +1894,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
@@ -1876,6 +1936,7 @@ Octopus.Client.Model
   {
       InheritFromDefault = 0
       Inline = 1
+      OnlyConnectivity = 2
   }
   class MachineUpdatePolicy
   {
@@ -1887,6 +1948,7 @@ Octopus.Client.Model
   class MaintenanceConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
@@ -1916,21 +1978,22 @@ Octopus.Client.Model
     ICollection
     IReadOnlyList<NamedReferenceItem>
     IReadOnlyCollection<NamedReferenceItem>
+    List<NamedReferenceItem>
   {
     .ctor()
   }
   class NormalizeAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
   class NotDocumentReferenceAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
   class NotReadableAttribute
-    _Attribute
+    Octopus.Client.Model.ApiPropertyAttribute
   {
     .ctor()
   }
@@ -1938,8 +2001,10 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.FeedResource
   {
     .ctor()
+    Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
   }
   class NumericReportData
@@ -1958,6 +2023,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
@@ -1970,6 +2036,7 @@ Octopus.Client.Model
   class PackageFromBuiltInFeedResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.PackageResource
   {
     .ctor()
     String Hash { get; set; }
@@ -1978,6 +2045,7 @@ Octopus.Client.Model
   class PackageResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -2155,6 +2223,7 @@ Octopus.Client.Model
   class ProgressionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Dictionary<String, IEnumerable<ReferenceDataItem>> ChannelEnvironments { get; set; }
@@ -2181,6 +2250,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -2194,6 +2264,7 @@ Octopus.Client.Model
     Octopus.Client.Model.INamedResource
     Octopus.Client.Model.IVariableTemplateContainer
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource>
+    Octopus.Client.Model.Resource
   {
     .ctor()
     .ctor(String, String, String)
@@ -2234,6 +2305,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionResource Action { get; set; }
@@ -2242,6 +2314,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
   }
   class PropertyValueJsonConverter
+    JsonConverter
   {
     .ctor()
     Boolean CanConvert(Type)
@@ -2257,6 +2330,7 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue SensitiveValue { get; }
     String Value { get; }
     class PropertyValueJsonConverter
+      JsonConverter
     {
       .ctor()
       Boolean CanConvert(Type)
@@ -2268,6 +2342,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Host { get; set; }
@@ -2283,6 +2358,9 @@ Octopus.Client.Model
     IEnumerable
     ISet<String>
     IReadOnlyCollection<String>
+    ISerializable
+    IDeserializationCallback
+    HashSet<String>
   {
     .ctor()
     .ctor(String)
@@ -2301,6 +2379,7 @@ Octopus.Client.Model
   class RegisterCommand
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.UserResource
   {
     .ctor()
     String InvitationCode { get; set; }
@@ -2325,6 +2404,7 @@ Octopus.Client.Model
   class ReleaseResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ReleaseSummaryResource
   {
     .ctor()
     .ctor(String, String, String)
@@ -2340,6 +2420,7 @@ Octopus.Client.Model
   class ReleaseSummaryResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     .ctor(String, String)
@@ -2361,6 +2442,7 @@ Octopus.Client.Model
   class ReleaseTemplateResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String DeploymentProcessId { get; set; }
@@ -2372,6 +2454,7 @@ Octopus.Client.Model
   class ReportDeploymentCountOverTimeResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ProjectId { get; set; }
@@ -2391,6 +2474,7 @@ Octopus.Client.Model
   class ResourceCollection`1
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor(IEnumerable<TResource>, Octopus.Client.Model.LinkCollection)
     Boolean IsStale { get; set; }
@@ -2420,6 +2504,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.RetentionPeriod DeployedReleases { get; set; }
@@ -2436,6 +2521,7 @@ Octopus.Client.Model
   class RootResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ApiVersion { get; set; }
@@ -2469,7 +2555,10 @@ Octopus.Client.Model
     ICollection
     IReadOnlyDictionary<ScopeField, ScopeValue>
     IReadOnlyCollection<KeyValuePair<ScopeField, ScopeValue>>
+    ISerializable
+    IDeserializationCallback
     IEquatable<ScopeSpecification>
+    Dictionary<ScopeField, ScopeValue>
   {
     .ctor()
     Octopus.Client.Model.ScopeSpecification Clone()
@@ -2484,6 +2573,9 @@ Octopus.Client.Model
     IEnumerable
     ISet<String>
     IReadOnlyCollection<String>
+    ISerializable
+    IDeserializationCallback
+    Octopus.Client.Model.ReferenceCollection
   {
     .ctor()
     .ctor(String)
@@ -2491,7 +2583,7 @@ Octopus.Client.Model
     .ctor(IEnumerable<String>)
   }
   class ScriptConsoleSupportedAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
@@ -2530,6 +2622,7 @@ Octopus.Client.Model
     IComparable
     IComparable<StrictSemanticVersion>
     IEquatable<StrictSemanticVersion>
+    Octopus.Client.Model.Versioning.StrictSemanticVersion
   {
     .ctor(String)
     .ctor(Octopus.Client.Model.SemanticVersion)
@@ -2576,6 +2669,7 @@ Octopus.Client.Model
   class ServerActivitiesResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ServerActivityResource[] OrchestratedActivities { get; set; }
@@ -2585,6 +2679,7 @@ Octopus.Client.Model
   class ServerActivityResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ActorName { get; set; }
@@ -2599,6 +2694,7 @@ Octopus.Client.Model
   class ServerStatusResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.AuthenticationMode AuthenticationMode { get; set; }
@@ -2617,6 +2713,7 @@ Octopus.Client.Model
   class SmtpConfigurationResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean EnableSsl { get; set; }
@@ -2627,7 +2724,7 @@ Octopus.Client.Model
     Nullable<Int32> SmtpPort { get; set; }
   }
   class SquidAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
@@ -2653,6 +2750,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.EventNotificationSubscription EventNotificationSubscription { get; set; }
@@ -2665,7 +2763,7 @@ Octopus.Client.Model
       Event = 0
   }
   class SupportsRestrictionAttribute
-    _Attribute
+    Attribute
   {
     .ctor(String[])
     Boolean ExplicitTenantScopeRequired { get; set; }
@@ -2678,6 +2776,7 @@ Octopus.Client.Model
   class SystemInfoResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String ClrVersion { get; set; }
@@ -2724,6 +2823,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
@@ -2736,10 +2836,12 @@ Octopus.Client.Model
   class TaskDetailsResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
     IList<ActivityElement> ActivityLogs { get; set; }
+    Nullable<Int32> PhysicalLogSize { get; set; }
     Octopus.Client.Model.TaskProgress Progress { get; set; }
     Octopus.Client.Model.TaskResource Task { get; set; }
   }
@@ -2752,6 +2854,7 @@ Octopus.Client.Model
   class TaskResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Dictionary<String, Object> Arguments { get; set; }
@@ -2788,6 +2891,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean CanBeDeleted { get; set; }
@@ -2813,6 +2917,7 @@ Octopus.Client.Model
   class TenantProjectEnvironmentMappingResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection Environments { get; set; }
@@ -2822,6 +2927,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Name { get; set; }
@@ -2842,6 +2948,7 @@ Octopus.Client.Model
   class TenantVariableResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Dictionary<String, Library> LibraryVariables { get; set; }
@@ -2873,7 +2980,7 @@ Octopus.Client.Model
       Update = 1
   }
   class TentacleUpgradeSupportedAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
@@ -2894,7 +3001,7 @@ Octopus.Client.Model
     }
   }
   class TrimAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
@@ -2935,6 +3042,7 @@ Octopus.Client.Model
   class UserPermissionSetResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Dictionary<Permission, List<UserPermissionRestriction>> Permissions { get; set; }
@@ -2943,6 +3051,7 @@ Octopus.Client.Model
   class UserResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String DisplayName { get; set; }
@@ -2957,6 +3066,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean CanBeDeleted { get; set; }
@@ -3006,6 +3116,7 @@ Octopus.Client.Model
   class VariableSetResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String OwnerId { get; set; }
@@ -3047,12 +3158,12 @@ Octopus.Client.Model
     String Template { get; set; }
   }
   class WriteableAttribute
-    _Attribute
+    Octopus.Client.Model.ApiPropertyAttribute
   {
     .ctor()
   }
   class WriteableOnCreateAttribute
-    _Attribute
+    Octopus.Client.Model.ApiPropertyAttribute
   {
     .ctor()
   }
@@ -3063,6 +3174,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     String Description { get; set; }
@@ -3084,6 +3196,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
@@ -3099,6 +3212,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
@@ -3112,6 +3226,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
@@ -3120,7 +3235,7 @@ Octopus.Client.Model.Accounts
     String Username { get; set; }
   }
   class SupportedAccountTypesAttribute
-    _Attribute
+    Attribute
   {
     .ctor(Octopus.Client.Model.Accounts.AccountType[])
     Octopus.Client.Model.Accounts.AccountType[] AccountTypes { get; }
@@ -3129,6 +3244,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
@@ -3139,6 +3255,7 @@ Octopus.Client.Model.Accounts
 Octopus.Client.Model.DeploymentProcess
 {
   class InlineScriptAction
+    Octopus.Client.Model.DeploymentProcess.ScriptAction
   {
     .ctor(Octopus.Client.Model.ScriptSyntax, String)
     Octopus.Client.Model.DeploymentProcess.ScriptSource Source { get; }
@@ -3146,6 +3263,7 @@ Octopus.Client.Model.DeploymentProcess
     String GetScriptBody()
   }
   class InlineScriptActionFromFileInAssembly
+    Octopus.Client.Model.DeploymentProcess.ScriptAction
   {
     .ctor(String, Assembly)
     Assembly ResourceAssembly { get; }
@@ -3162,6 +3280,7 @@ Octopus.Client.Model.DeploymentProcess
     static Octopus.Client.Model.DeploymentProcess.InlineScriptActionFromFileInAssembly InlineScriptFromFileInAssembly(String, Assembly)
   }
   class ScriptActionFromFileInPackage
+    Octopus.Client.Model.DeploymentProcess.ScriptAction
   {
     .ctor(Octopus.Client.Model.PackageResource, String)
     String PackageFeedId { get; }
@@ -3186,11 +3305,13 @@ Octopus.Client.Model.Endpoints
   abstract class AgentlessEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
   }
   class AzureWebAppEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
     String AccountId { get; set; }
@@ -3206,6 +3327,7 @@ Octopus.Client.Model.Endpoints
   class CloudRegionEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
@@ -3213,6 +3335,7 @@ Octopus.Client.Model.Endpoints
   class CloudServiceEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
     String AccountId { get; set; }
@@ -3226,12 +3349,14 @@ Octopus.Client.Model.Endpoints
   abstract class EndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
   class ListeningTentacleEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
@@ -3241,6 +3366,7 @@ Octopus.Client.Model.Endpoints
   class OfflineDropEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
     String ApplicationsDirectory { get; set; }
@@ -3252,6 +3378,7 @@ Octopus.Client.Model.Endpoints
   class PollingTentacleEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
@@ -3260,6 +3387,7 @@ Octopus.Client.Model.Endpoints
   class SshEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
     String AccountId { get; set; }
@@ -3287,6 +3415,7 @@ Octopus.Client.Model.Endpoints
   abstract class TentacleEndpointResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
@@ -3301,6 +3430,7 @@ Octopus.Client.Model.Forms
     Object Value { get; }
   }
   class Checkbox
+    Octopus.Client.Model.Forms.Control
   {
     .ctor(String)
     String Text { get; }
@@ -3335,11 +3465,13 @@ Octopus.Client.Model.Forms
     static IList<String> Validate(Octopus.Client.Model.Forms.Form)
   }
   class Paragraph
+    Octopus.Client.Model.Forms.Control
   {
     .ctor(String)
     String Text { get; }
   }
   class SubmitButtonGroup
+    Octopus.Client.Model.Forms.Control
   {
     .ctor(List<Button>)
     List<Button> Buttons { get; }
@@ -3347,6 +3479,7 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
   class TextArea
+    Octopus.Client.Model.Forms.Control
   {
     .ctor(String)
     String Label { get; }
@@ -3354,6 +3487,7 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
   class VariableValue
+    Octopus.Client.Model.Forms.Control
   {
     .ctor(String, String, String, Boolean)
     String Description { get; }
@@ -3369,6 +3503,7 @@ Octopus.Client.Model.Triggers
   class AutoDeployActionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
@@ -3377,6 +3512,7 @@ Octopus.Client.Model.Triggers
   class MachineFilterResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
@@ -3388,6 +3524,7 @@ Octopus.Client.Model.Triggers
   abstract class TriggerActionResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
   }
@@ -3398,6 +3535,7 @@ Octopus.Client.Model.Triggers
   abstract class TriggerFilterResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
   }
@@ -3970,18 +4108,22 @@ Octopus.Client.Repositories.Async
 Octopus.Client.Serialization
 {
   class AccountConverter
+    Octopus.Client.Serialization.InheritedClassConverter<AccountResource, AccountType>
   {
     .ctor()
   }
   class EndpointConverter
+    Octopus.Client.Serialization.InheritedClassConverter<EndpointResource, CommunicationStyle>
   {
     .ctor()
   }
   class FeedConverter
+    Octopus.Client.Serialization.InheritedClassConverter<FeedResource, FeedType>
   {
     .ctor()
   }
   class HrefConverter
+    JsonConverter
   {
     .ctor(Func<String>)
     Boolean CanConvert(Type)
@@ -3989,6 +4131,7 @@ Octopus.Client.Serialization
     void WriteJson(JsonWriter, Object, JsonSerializer)
   }
   abstract class InheritedClassConverter`2
+    JsonConverter
   {
     Boolean CanConvert(Type)
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
@@ -4001,10 +4144,12 @@ Octopus.Client.Serialization
     static String SerializeObject(Object)
   }
   class TriggerActionConverter
+    Octopus.Client.Serialization.InheritedClassConverter<TriggerActionResource, TriggerActionType>
   {
     .ctor()
   }
   class TriggerFilterConverter
+    Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
   {
     .ctor()
   }
@@ -4025,24 +4170,24 @@ Octopus.Client.Util
 Octopus.Client.Validation
 {
   class ContainsSomeValidCharactersAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
   class NonEmptyCollectionAttribute
-    _Attribute
+    ValidationAttribute
   {
     .ctor()
     Boolean IsValid(Object)
   }
   class NonEmptyCollectionItemAttribute
-    _Attribute
+    ValidationAttribute
   {
     .ctor()
     Boolean IsValid(Object)
   }
   class PasswordComplexityAttribute
-    _Attribute
+    ValidationAttribute
   {
     static System.String DefaultMessage
     .ctor()
@@ -4050,12 +4195,12 @@ Octopus.Client.Validation
     Boolean IsValid(Object)
   }
   class PathSegmentAttribute
-    _Attribute
+    Attribute
   {
     .ctor()
   }
   class ValidSemanticVersionOrMaskAttribute
-    _Attribute
+    ValidationAttribute
   {
     .ctor()
     Boolean IsValid(Object)
