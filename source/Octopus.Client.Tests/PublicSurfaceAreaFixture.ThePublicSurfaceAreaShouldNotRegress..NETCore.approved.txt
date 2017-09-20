@@ -1443,6 +1443,30 @@ Octopus.Client.Model
     Int32 SortOrder { get; set; }
     Boolean UseGuidedFailure { get; set; }
   }
+  class EnvironmentsSummaryResource
+  {
+    .ctor()
+    List<EnvironmentSummaryResource> EnvironmentSummaries { get; set; }
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    Dictionary<String, Int32> MachineTenantSummaries { get; set; }
+    Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
+  class EnvironmentSummaryResource
+  {
+    .ctor()
+    Octopus.Client.Model.EnvironmentResource Environment { get; set; }
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    String[] MachineIdsForCalamariUpgrade { get; set; }
+    Dictionary<String, Int32> MachineTenantSummaries { get; set; }
+    Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
+    Boolean TentacleUpgradesRequired { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
   class EventNotificationSubscription
   {
     .ctor()
@@ -3634,8 +3658,9 @@ Octopus.Client.Repositories.Async
   {
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
-    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource)
+    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
+    Task<EnvironmentsSummaryResource> Summary(String, String, String, Nullable<Boolean>, String, String, String, String)
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>

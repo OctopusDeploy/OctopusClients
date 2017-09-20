@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
@@ -7,7 +6,25 @@ namespace Octopus.Client.Repositories
 {
     public interface IEnvironmentRepository : IFindByName<EnvironmentResource>, IGet<EnvironmentResource>, ICreate<EnvironmentResource>, IModify<EnvironmentResource>, IDelete<EnvironmentResource>, IGetAll<EnvironmentResource>
     {
-        List<MachineResource> GetMachines(EnvironmentResource environment);
+        List<MachineResource> GetMachines(EnvironmentResource environment,
+            int? skip = 0,
+            int? take = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatus = null,
+            string commStyle = null,
+            string tenantIds = null,
+            string tenantTags = null);
+        EnvironmentsSummaryResource Summary(
+            string ids = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatus = null,
+            string commStyle = null,
+            string tenantIds = null,
+            string tenantTags = null);
         void Sort(string[] environmentIdsInOrder);
         EnvironmentEditor CreateOrModify(string name);
         EnvironmentEditor CreateOrModify(string name, string description);
@@ -20,17 +37,60 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public List<MachineResource> GetMachines(EnvironmentResource environment)
+        public List<MachineResource> GetMachines(EnvironmentResource environment,
+            int? skip = 0,
+            int? take = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatus = null,
+            string commStyle = null,
+            string tenantIds = null,
+            string tenantTags = null)
         {
             var resources = new List<MachineResource>();
 
-            Client.Paginate<MachineResource>(environment.Link("Machines"), new { }, page =>
+            Client.Paginate<MachineResource>(environment.Link("Machines"), new
+            {
+                skip,
+                take,
+                partialName,
+                roles,
+                isDisabled,
+                healthStatus,
+                commStyle,
+                tenantIds,
+                tenantTags
+            }, page =>
             {
                 resources.AddRange(page.Items);
                 return true;
             });
 
             return resources;
+        }
+
+        public EnvironmentsSummaryResource Summary(
+            string ids = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatus = null,
+            string commStyle = null,
+            string tenantIds = null,
+            string tenantTags = null)
+        {
+            return Client.Get<EnvironmentsSummaryResource>(Client.RootDocument.Link("EnvironmentsSummary"), new
+            {
+                ids,
+                partialName,
+                roles,
+                isDisabled,
+                healthStatus,
+                commStyle,
+                tenantIds,
+                tenantTags
+            });
         }
 
         public void Sort(string[] environmentIdsInOrder)
