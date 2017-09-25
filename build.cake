@@ -96,8 +96,7 @@ Task("Test")
                 DotNetCoreTest(testProjectFile.FullPath, new DotNetCoreTestSettings
                 {
                     Configuration = configuration,
-                    NoBuild = true,
-                    ArgumentCustomization = args => args.Append("-l trx")
+                    NoBuild = true
                 });
             });
     });

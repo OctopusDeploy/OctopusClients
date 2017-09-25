@@ -1,12 +1,8 @@
 ﻿#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
 using System;
-using System.Diagnostics;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.DotNet.InternalAbstractions;
-using Microsoft.Extensions.PlatformAbstractions;
 using Nancy;
 using NUnit.Framework;
 
