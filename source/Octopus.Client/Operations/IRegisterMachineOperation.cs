@@ -55,9 +55,9 @@ namespace Octopus.Client.Operations
         string TentacleThumbprint { get; set; }
 
         /// <summary>
-        /// Gets or sets the Id of the proxy that Octopus should use when communicating with the Tentacle.
+        /// Gets or sets the name of the proxy that Octopus should use when communicating with the Tentacle.
         /// </summary>
-        string ProxyId { get; set; }
+        string ProxyName { get; set; }
 
         /// <summary>
         /// If a machine with the same name already exists, it won't be overwritten by default (instead, an

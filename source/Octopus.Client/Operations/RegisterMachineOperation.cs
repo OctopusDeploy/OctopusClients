@@ -78,9 +78,9 @@ namespace Octopus.Client.Operations
         public string TentacleThumbprint { get; set; }
 
         /// <summary>
-        /// Gets or sets the Id of the proxy that Octopus should use when communicating with the Tentacle.
+        /// Gets or sets the name of the proxy that Octopus should use when communicating with the Tentacle.
         /// </summary>
-        public string ProxyId { get; set; }
+        public string ProxyName { get; set; }
 
         /// <summary>
         /// If a machine with the same name already exists, it won't be overwritten by default (instead, an
@@ -140,8 +140,9 @@ namespace Octopus.Client.Operations
             var machine = GetMachine(repository);
             var tenants = GetTenants(repository);
             ValidateTenantTags(repository);
+            var proxy = GetProxy(repository);
 
-            ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants);
+            ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants, proxy);
 
             if (machine.Id != null)
                 repository.Machines.Modify(machine);
@@ -204,6 +205,18 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
+        ProxyResource GetProxy(IOctopusRepository repository)
+        {
+            var proxy = default(ProxyResource);
+            if (!string.IsNullOrEmpty(ProxyName))
+            {
+                proxy = repository.Proxies.FindByName(ProxyName);
+                if (proxy == null)
+                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
+            }
+            return proxy;
+        }
+
         MachineResource GetMachine(IOctopusRepository repository)
         {
             var existing = default(MachineResource);
@@ -260,9 +273,10 @@ namespace Octopus.Client.Operations
             var machineTask = GetMachine(repository).ConfigureAwait(false);
             var tenants = GetTenants(repository).ConfigureAwait(false);
             await ValidateTenantTags(repository).ConfigureAwait(false);
+            var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
-            ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants);
+            ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants, await proxy);
 
             if (machine.Id != null)
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
@@ -326,6 +340,18 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
+        async Task<ProxyResource> GetProxy(IOctopusAsyncRepository repository)
+        {
+            var proxy = default(ProxyResource);
+            if (!string.IsNullOrEmpty(ProxyName))
+            {
+                proxy = await repository.Proxies.FindByName(ProxyName).ConfigureAwait(false);
+                if (proxy == null)
+                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
+            }
+            return proxy;
+        }
+
         async Task<MachineResource> GetMachine(IOctopusAsyncRepository repository)
         {
             var existing = default(MachineResource);
@@ -341,7 +367,7 @@ namespace Octopus.Client.Operations
             return existing ?? new MachineResource();
         }
 
-        void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants)
+        void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants, ProxyResource proxy)
         {
             machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
             machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
@@ -356,7 +382,7 @@ namespace Octopus.Client.Operations
                 var listening = new ListeningTentacleEndpointResource();
                 listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
                 listening.Thumbprint = TentacleThumbprint;
-                listening.ProxyId = ProxyId;
+                listening.ProxyId = proxy?.Id;
                 machine.Endpoint = listening;
             }
             else if (CommunicationStyle == CommunicationStyle.TentacleActive)
