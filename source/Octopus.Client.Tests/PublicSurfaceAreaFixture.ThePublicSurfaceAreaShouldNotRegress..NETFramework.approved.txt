@@ -3998,6 +3998,7 @@ Octopus.Client.Operations
     String[] EnvironmentNames { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
+    String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
     String[] Tenants { get; set; }
@@ -4022,6 +4023,7 @@ Octopus.Client.Operations
     String[] EnvironmentNames { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
+    String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
     String[] Tenants { get; set; }
