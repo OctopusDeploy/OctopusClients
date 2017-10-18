@@ -34,7 +34,7 @@ namespace Octopus.Cli.Commands
             log.Debug("Finding release template...");
             var releaseTemplate = await repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel).ConfigureAwait(false);
 
-            var plan = new ReleasePlan(project, channel, releaseTemplate, versionResolver);
+            var plan = new ReleasePlan(project, channel, releaseTemplate, deploymentProcess, versionResolver);
 
             if (plan.UnresolvedSteps.Any())
             {
