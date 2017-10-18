@@ -171,7 +171,7 @@ namespace Octopus.Cli.Commands
     {
         public static bool AnyEnabled(this IEnumerable<ReleasePlanItem> items)
         {
-            return items.Any(x => x.IsDisabled == false);
+            return items.Any(x => x.IsEnabled());
         }
 
         public static bool IsEnabled(this ReleasePlanItem item)
