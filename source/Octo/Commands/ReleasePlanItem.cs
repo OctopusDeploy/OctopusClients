@@ -38,5 +38,7 @@ namespace Octopus.Cli.Commands
         {
             ChannelVersionRuleTestResult = result;
         }
+
+        public bool IsDisabled { get; set; }
     }
 }

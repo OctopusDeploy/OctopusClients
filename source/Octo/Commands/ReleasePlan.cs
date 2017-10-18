@@ -11,19 +11,54 @@ namespace Octopus.Cli.Commands
     {
         readonly ReleasePlanItem[] steps;
 
-        public ReleasePlan(ProjectResource project, ChannelResource channel, ReleaseTemplateResource releaseTemplate, IPackageVersionResolver versionResolver)
+        public ReleasePlan(ProjectResource project, ChannelResource channel, ReleaseTemplateResource releaseTemplate, DeploymentProcessResource deploymentProcess, IPackageVersionResolver versionResolver)
         {
             Project = project;
             Channel = channel;
             ReleaseTemplate = releaseTemplate;
-            steps = releaseTemplate.Packages.Select(
-                p => new ReleasePlanItem(
-                    p.StepName,
-                    p.PackageId,
-                    p.FeedId,
-                    p.IsResolvable,
-                    versionResolver.ResolveVersion(p.StepName, p.PackageId)))
-                .ToArray();
+            steps = deploymentProcess.Steps
+                .SelectMany(s => s.Actions)
+                .Where(x => !x.IsDisabled)
+                .Select(a => new
+                {
+                    StepName = a.Name,
+                    PackageId = a.Properties.ContainsKey("Octopus.Action.Package.PackageId")
+                        ? a.Properties["Octopus.Action.Package.PackageId"].Value
+                        : string.Empty,
+                    FeedId = a.Properties.ContainsKey("Octopus.Action.Package.FeedId")
+                        ? a.Properties["Octopus.Action.Package.FeedId"].Value
+                        : string.Empty,
+                    a.IsDisabled,
+
+                })
+                .Select(x => new
+                {
+                    x.StepName,
+                    x.PackageId,
+                    x.FeedId,
+                    VersionNumber = !string.IsNullOrEmpty(x.PackageId)
+                        ? versionResolver.ResolveVersion(x.StepName, x.PackageId)
+                        : string.Empty,
+                    hasReferences = x.PackageId.Contains("#{") || x.FeedId.Contains("#{"),
+                    x.IsDisabled
+
+                })
+                .Select(x => new
+                {
+                    x.StepName,
+                    x.PackageId,
+                    x.FeedId,
+                    x.VersionNumber,
+                    x.IsDisabled,
+                    IsResolvable = (!x.hasReferences && !string.IsNullOrEmpty(x.FeedId)) ||
+                                   string.IsNullOrEmpty(x.FeedId)
+                })
+                .Select(x =>
+                    new ReleasePlanItem(x.StepName, x.PackageId, x.FeedId, x.IsResolvable, x.VersionNumber)
+                    {
+                        IsDisabled = x.IsDisabled
+                    }).ToArray();
+
         }
 
         public ProjectResource Project { get; }
@@ -38,7 +73,7 @@ namespace Octopus.Cli.Commands
 
         public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
-            get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version)).ToArray(); }
+            get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version) && !string.IsNullOrEmpty(s.PackageFeedId)).ToArray(); }
         }
 
         public bool HasUnresolvedSteps()
@@ -128,7 +163,7 @@ namespace Octopus.Cli.Commands
 
         public bool ChannelIsMissingSteps()
         {
-            return Channel != null && !steps.Any();
+            return Channel != null && !steps.Any(s => s.IsDisabled == false);
         }
     }
 }
