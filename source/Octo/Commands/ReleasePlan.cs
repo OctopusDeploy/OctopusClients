@@ -18,7 +18,7 @@ namespace Octopus.Cli.Commands
             ReleaseTemplate = releaseTemplate;
             steps = deploymentProcess.Steps
                 .SelectMany(s => s.Actions)
-                .Where(x => !x.IsDisabled)
+                .Where(x => !x.IsDisabled) // release plan only deals with enabled steps
                 .Select(a => new
                 {
                     StepName = a.Name,
@@ -69,7 +69,7 @@ namespace Octopus.Cli.Commands
 
         public IEnumerable<ReleasePlanItem> Steps => steps;
 
-        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules() && !ChannelIsMissingSteps();
+        public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules() && ChannelHasAnyEnabledSteps();
 
         public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
@@ -161,9 +161,22 @@ namespace Octopus.Cli.Commands
             return step.Version;
         }
 
-        public bool ChannelIsMissingSteps()
+        public bool ChannelHasAnyEnabledSteps()
         {
-            return Channel != null && !steps.Any(s => s.IsDisabled == false);
+            return Channel != null && steps.AnyEnabled();
+        }
+    }
+
+    public static class Extensions
+    {
+        public static bool AnyEnabled(this IEnumerable<ReleasePlanItem> items)
+        {
+            return items.Any(x => x.IsDisabled == false);
+        }
+
+        public static bool IsEnabled(this ReleasePlanItem item)
+        {
+            return item.IsDisabled == false;
         }
     }
 }
