@@ -14,8 +14,8 @@ namespace Octopus.Client.Repositories.Async
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null);
         Task<EnvironmentsSummaryResource> Summary(
@@ -23,8 +23,8 @@ namespace Octopus.Client.Repositories.Async
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null);
         Task Sort(string[] environmentIdsInOrder);
@@ -45,8 +45,8 @@ namespace Octopus.Client.Repositories.Async
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null)
         {
@@ -58,8 +58,8 @@ namespace Octopus.Client.Repositories.Async
                 partialName,
                 roles,
                 isDisabled,
-                healthStatus,
-                commStyle,
+                healthStatuses,
+                commStyles,
                 tenantIds,
                 tenantTags
             }, page =>
@@ -76,8 +76,8 @@ namespace Octopus.Client.Repositories.Async
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null)
         {
@@ -87,8 +87,8 @@ namespace Octopus.Client.Repositories.Async
                 partialName,
                 roles,
                 isDisabled,
-                healthStatus,
-                commStyle,
+                healthStatuses,
+                commStyles,
                 tenantIds,
                 tenantTags
             });

@@ -11,5 +11,7 @@ namespace Octopus.Client.Model
         public Dictionary<string, int> MachineTenantSummaries { get; set; }
         public Dictionary<string, int> MachineTenantTagSummaries { get; set; }
         public List<EnvironmentSummaryResource> EnvironmentSummaries { get; set; }
+        public bool TentacleUpgradesRequired { get; set; }
+        public string[] MachineIdsForCalamariUpgrade { get; set; }
     }
 }

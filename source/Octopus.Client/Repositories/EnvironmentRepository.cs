@@ -12,8 +12,8 @@ namespace Octopus.Client.Repositories
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null);
         EnvironmentsSummaryResource Summary(
@@ -21,15 +21,15 @@ namespace Octopus.Client.Repositories
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null);
         void Sort(string[] environmentIdsInOrder);
         EnvironmentEditor CreateOrModify(string name);
         EnvironmentEditor CreateOrModify(string name, string description);
     }
-    
+
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
         public EnvironmentRepository(IOctopusClient client)
@@ -43,8 +43,8 @@ namespace Octopus.Client.Repositories
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null)
         {
@@ -57,8 +57,8 @@ namespace Octopus.Client.Repositories
                 partialName,
                 roles,
                 isDisabled,
-                healthStatus,
-                commStyle,
+                healthStatuses,
+                commStyles,
                 tenantIds,
                 tenantTags
             }, page =>
@@ -75,8 +75,8 @@ namespace Octopus.Client.Repositories
             string partialName = null,
             string roles = null,
             bool? isDisabled = false,
-            string healthStatus = null,
-            string commStyle = null,
+            string healthStatuses = null,
+            string commStyles = null,
             string tenantIds = null,
             string tenantTags = null)
         {
@@ -86,8 +86,8 @@ namespace Octopus.Client.Repositories
                 partialName,
                 roles,
                 isDisabled,
-                healthStatus,
-                commStyle,
+                healthStatuses,
+                commStyles,
                 tenantIds,
                 tenantTags
             });

@@ -99,22 +99,22 @@ namespace Octopus.Client.Repositories.Async
             {
                 skip,
                 take,
-                from = from,
-                to = to,
-                regarding = regarding,
-                regardingAny = regardingAny,
+                from,
+                to,
+                regarding,
+                regardingAny,
                 @internal = includeInternalEvents,
-                user = user,
-                users = users,
-                projects = projects,
-                environments = environments,
-                eventGroups = eventGroups,
-                eventCategories = eventCategories,
-                tenants = tenants,
-                tags = tags,
-                fromAutoId = fromAutoId,
-                toAutoId = toAutoId,
-                documentTypes = documentTypes
+                user,
+                users,
+                projects,
+                environments,
+                eventGroups,
+                eventCategories,
+                tenants,
+                tags,
+                fromAutoId,
+                toAutoId,
+                documentTypes
             });
         }
     }
