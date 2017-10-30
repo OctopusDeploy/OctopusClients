@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands
             {
                 throw new CommandException("A version number was not specified and could not be automatically selected.");
             }
-
+            
             Log.Write(
                 plan.IsViableReleasePlan() ? LogEventLevel.Information : LogEventLevel.Warning,
                 "Release plan for {Project:l} {Version:l}" + Environment.NewLine + "{Plan:l}",
@@ -100,7 +100,7 @@ namespace Octopus.Cli.Commands
 
             if (plan.HasUnresolvedSteps())
             {
-                throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
+                throw new CommandException("Package versions could not be resolved for one or more of the package packageSteps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
             }
 
             if (plan.ChannelHasAnyEnabledSteps() == false)
@@ -213,7 +213,7 @@ namespace Octopus.Cli.Commands
                 releasePlans.Add(plan);
                 if (plan.ChannelHasAnyEnabledSteps() == false)
                 {
-                    Log.Warning($"Channel {channel.Name} does not contain any steps");
+                    Log.Warning($"Channel {channel.Name} does not contain any packageSteps");
                 }
             }
 

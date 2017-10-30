@@ -9,16 +9,17 @@ namespace Octopus.Cli.Commands
 {
     public class ReleasePlan
     {
-        readonly ReleasePlanItem[] steps;
+        readonly ReleasePlanItem[] packageSteps;
+        private readonly ReleasePlanItem[] scriptSteps;
 
         public ReleasePlan(ProjectResource project, ChannelResource channel, ReleaseTemplateResource releaseTemplate, DeploymentProcessResource deploymentProcess, IPackageVersionResolver versionResolver)
         {
             Project = project;
             Channel = channel;
             ReleaseTemplate = releaseTemplate;
-            steps = deploymentProcess.Steps
+            scriptSteps = deploymentProcess.Steps
                 .SelectMany(s => s.Actions)
-                .Where(x => !x.IsDisabled) // release plan only deals with enabled steps
+                
                 .Select(a => new
                 {
                     StepName = a.Name,
@@ -29,36 +30,23 @@ namespace Octopus.Cli.Commands
                         ? a.Properties["Octopus.Action.Package.FeedId"].Value
                         : string.Empty,
                     a.IsDisabled,
+                    a.Channels,
 
                 })
-                .Select(x => new
-                {
-                    x.StepName,
-                    x.PackageId,
-                    x.FeedId,
-                    VersionNumber = !string.IsNullOrEmpty(x.PackageId)
-                        ? versionResolver.ResolveVersion(x.StepName, x.PackageId)
-                        : string.Empty,
-                    hasReferences = x.PackageId.Contains("#{") || x.FeedId.Contains("#{"),
-                    x.IsDisabled
-
-                })
-                .Select(x => new
-                {
-                    x.StepName,
-                    x.PackageId,
-                    x.FeedId,
-                    x.VersionNumber,
-                    x.IsDisabled,
-                    IsResolvable = (!x.hasReferences && !string.IsNullOrEmpty(x.FeedId)) ||
-                                   string.IsNullOrEmpty(x.FeedId)
-                })
+                .Where(x => string.IsNullOrEmpty(x.PackageId) && x.IsDisabled == false) // only consider enabled script steps
+                .Where(a => !a.Channels.Any() || a.Channels.Contains(channel.Id)) // only include actions without channel scope or with a matchign channel scope
                 .Select(x =>
-                    new ReleasePlanItem(x.StepName, x.PackageId, x.FeedId, x.IsResolvable, x.VersionNumber)
+                    new ReleasePlanItem(x.StepName, null, null, true, null)
                     {
                         IsDisabled = x.IsDisabled
                     }).ToArray();
-
+            packageSteps = releaseTemplate.Packages.Select(
+                p => new ReleasePlanItem(
+                    p.StepName,
+                    p.PackageId,
+                    p.FeedId,
+                    p.IsResolvable,
+                    versionResolver.ResolveVersion(p.StepName, p.PackageId))).ToArray();
         }
 
         public ProjectResource Project { get; }
@@ -67,13 +55,17 @@ namespace Octopus.Cli.Commands
 
         public ReleaseTemplateResource ReleaseTemplate { get; }
 
-        public IEnumerable<ReleasePlanItem> Steps => steps;
+        public IEnumerable<ReleasePlanItem> PackageSteps => packageSteps;
 
         public bool IsViableReleasePlan() => !HasUnresolvedSteps() && !HasStepsViolatingChannelVersionRules() && ChannelHasAnyEnabledSteps();
 
         public IEnumerable<ReleasePlanItem> UnresolvedSteps
         {
-            get { return steps.Where(s => string.IsNullOrWhiteSpace(s.Version) && !string.IsNullOrEmpty(s.PackageFeedId)).ToArray(); }
+            get
+            {
+                var releasePlanItems = packageSteps.Where(s => string.IsNullOrWhiteSpace(s.Version));
+                return releasePlanItems.ToArray();
+            }
         }
 
         public bool HasUnresolvedSteps()
@@ -83,20 +75,20 @@ namespace Octopus.Cli.Commands
 
         public bool HasStepsViolatingChannelVersionRules()
         {
-            return Channel != null && Steps.Any(s => s.ChannelVersionRuleTestResult.IsSatisfied != true);
+            return Channel != null && PackageSteps.Any(s => s.ChannelVersionRuleTestResult.IsSatisfied != true);
         }
 
         public List<SelectedPackage> GetSelections()
         {
-            return Steps.Select(x => new SelectedPackage {StepName = x.StepName, Version = x.Version}).ToList();
+            return PackageSteps.Select(x => new SelectedPackage {StepName = x.StepName, Version = x.Version}).ToList();
         }
 
         public string GetHighestVersionNumber()
         {
-            var step = Steps.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
+            var step = PackageSteps.Select(p => SemanticVersion.Parse(p.Version)).OrderByDescending(v => v).FirstOrDefault();
             if (step == null)
             {
-                throw new CommandException("None of the deployment steps in this release reference a NuGet package, so the highest package version number cannot be determined.");
+                throw new CommandException("None of the deployment packageSteps in this release reference a NuGet package, so the highest package version number cannot be determined.");
             }
 
             return step.ToString();
@@ -112,22 +104,22 @@ namespace Octopus.Cli.Commands
                 result.AppendLine();
             }
 
-            if (steps.Length == 0)
+            if (packageSteps.Length == 0)
             {
                 return result.ToString();
             }
 
-            var nameColumnWidth = Width("Name", steps.Select(s => s.StepName));
-            var versionColumnWidth = Width("Version", steps.Select(s => s.Version));
-            var sourceColumnWidth = Width("Source", steps.Select(s => s.VersionSource));
-            var rulesColumnWidth = Width("Version rules", steps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
+            var nameColumnWidth = Width("Name", packageSteps.Select(s => s.StepName));
+            var versionColumnWidth = Width("Version", packageSteps.Select(s => s.Version));
+            var sourceColumnWidth = Width("Source", packageSteps.Select(s => s.VersionSource));
+            var rulesColumnWidth = Width("Version rules", packageSteps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
             var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + versionColumnWidth + "} {3,-" + sourceColumnWidth + "} {4,-" + rulesColumnWidth + "}";
 
             result.AppendFormat(format, "#", "Name", "Version", "Source", "Version rules").AppendLine();
             result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', versionColumnWidth), new string('-', sourceColumnWidth), new string('-', rulesColumnWidth)).AppendLine();
-            for (var i = 0; i < steps.Length; i++)
+            for (var i = 0; i < packageSteps.Length; i++)
             {
-                var item = steps[i];
+                var item = packageSteps[i];
                 result.AppendFormat(format,
                     i + 1,
                     item.StepName,
@@ -153,7 +145,7 @@ namespace Octopus.Cli.Commands
 
         public string GetActionVersionNumber(string packageStepName)
         {
-            var step = steps.SingleOrDefault(s => s.StepName.Equals(packageStepName, StringComparison.OrdinalIgnoreCase));
+            var step = packageSteps.SingleOrDefault(s => s.StepName.Equals(packageStepName, StringComparison.OrdinalIgnoreCase));
             if (step == null)
                 throw new CommandException("The step '" + packageStepName + "' is configured to provide the package version number but doesn't exist in the release plan.");
             if (string.IsNullOrWhiteSpace(step.Version))
@@ -163,7 +155,7 @@ namespace Octopus.Cli.Commands
 
         public bool ChannelHasAnyEnabledSteps()
         {
-            return Channel != null && steps.AnyEnabled();
+            return Channel != null && (packageSteps.AnyEnabled() || scriptSteps.AnyEnabled());
         }
     }
 
