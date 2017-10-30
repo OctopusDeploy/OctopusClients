@@ -243,7 +243,7 @@ namespace Octo.Tests.Commands
         }
 
         [Test]
-        public void SingleStep_ResolvableUsingFeed_ShouldBenViablePlan()
+        public void SingleStep_ResolvableUsingFeed_ShouldBeViablePlan()
         {
             // arrange
             releaseTemplateResource.Packages.Add(GetReleaseTemplatePackage().WithPackage().IsResolvable());
@@ -255,7 +255,6 @@ namespace Octo.Tests.Commands
             // assert
             plan.IsViableReleasePlan().Should().BeTrue();
         }
-
 
         private static ReleaseTemplatePackage GetReleaseTemplatePackage()
         {
