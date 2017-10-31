@@ -13,7 +13,7 @@ using Serilog;
 using FluentAssertions.Common;
 using Octopus.Cli.Model;
 
-namespace Octo.Tests.Commands
+namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
     public class ReleasePlanBuilderTests

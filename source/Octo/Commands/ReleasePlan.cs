@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {
@@ -155,7 +156,9 @@ namespace Octopus.Cli.Commands
 
         public bool ChannelHasAnyEnabledSteps()
         {
-            return Channel != null && (packageSteps.AnyEnabled() || scriptSteps.AnyEnabled());
+            var channelNotNull = Channel != null;
+            
+            return packageSteps.AnyEnabled() || scriptSteps.AnyEnabled();
         }
     }
 
@@ -163,6 +166,11 @@ namespace Octopus.Cli.Commands
     {
         public static bool AnyEnabled(this IEnumerable<ReleasePlanItem> items)
         {
+            if (items == null)
+            {
+                return false;
+            }
+
             return items.Any(x => x.IsEnabled());
         }
 
