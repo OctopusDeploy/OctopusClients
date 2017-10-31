@@ -15,6 +15,7 @@ using System.Net;
 using Octopus.Cli.Repositories;
 using Octopus.Client;
 using Octopus.Client.Exceptions;
+using Serilog.Events;
 
 namespace Octopus.Cli
 {
@@ -57,7 +58,7 @@ namespace Octopus.Cli
         public static void ConfigureLogger()
         {
             Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
+               .MinimumLevel.ControlledBy(LogUtilities.LevelSwitch)
                .WriteTo.Trace()
                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
                .CreateLogger();
