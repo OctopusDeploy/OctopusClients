@@ -56,10 +56,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<DeploymentPreviewResource>(promotionTarget.Link("Preview"));
         }
 
-        public Task<ReleaseResource> SnapshotVariables(ReleaseResource release)
+        public async Task<ReleaseResource> SnapshotVariables(ReleaseResource release)
         {
-            Client.Post(release.Link("SnapshotVariables"));
-            return Get(release.Id);
+            await Client.Post(release.Link("SnapshotVariables"));
+            return await Get(release.Id);
         }
 
         public Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
