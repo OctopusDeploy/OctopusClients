@@ -19,7 +19,7 @@ namespace Octopus.Cli.Diagnostics
     {
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
-        static BuildEnvironment buildEnvironment;
+        internal static BuildEnvironment buildEnvironment;
 
         static LogExtensions()
         {
@@ -44,10 +44,26 @@ namespace Octopus.Cli.Diagnostics
         public static void EnableServiceMessages(this ILogger log)
         {
             serviceMessagesEnabled = true;
-            buildEnvironment = (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
-                ? string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")) ? BuildEnvironment.NoneOrUnknown : BuildEnvironment.TeamCity
-                : BuildEnvironment.TeamFoundationBuild;
-            log.Information("Build environment is {Environment:l}", buildEnvironment);
+
+            //If these env variables have values, octo is running from TFS
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) &&
+                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
+            {
+                
+                buildEnvironment = BuildEnvironment.TeamFoundationBuild;
+            }
+            //If this env variable has a value, octo is running from TeamCity
+            else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")))
+            {
+                buildEnvironment = BuildEnvironment.TeamCity;
+            }
+            //If none of the above, then it is being executed from an unknown source
+            else
+            {
+                buildEnvironment = BuildEnvironment.NoneOrUnknown;
+            }
+
+            log.Information("Build environment is {0}", buildEnvironment);
         }
 
         public static void DisableServiceMessages(this ILogger log)
