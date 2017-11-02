@@ -131,8 +131,7 @@ namespace Octopus.Cli
             if (cmd != null)
             {
                 Log.Error(ex.Message);
-                if (LogExtensions.buildEnvironment == BuildEnvironment.TeamCity ||
-                    LogExtensions.buildEnvironment == BuildEnvironment.TeamFoundationBuild)
+                if (LogExtensions.IsKnownEnvironment())
                 {
                     Log.Error("This error is most likely ocurring while executing Octo.exe as part of an automated build process. The following doc is recommended to get some tips on how to troubleshoot this: [Octopurls link]");
                 }

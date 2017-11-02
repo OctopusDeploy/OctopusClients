@@ -15,11 +15,25 @@ namespace Octopus.Cli.Diagnostics
         TeamFoundationBuild
     }
 
+    public interface IEnvVariableGetter
+    {
+        string GetVariableValue(string name);
+    }
+
+    public class EnvVariableGetter : IEnvVariableGetter
+    {
+        public string GetVariableValue(string name)
+        {
+            return Environment.GetEnvironmentVariable(name);
+        }
+    }
+
     public static class LogExtensions
     {
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
-        internal static BuildEnvironment buildEnvironment;
+        static BuildEnvironment buildEnvironment;
+        public static IEnvVariableGetter variableGetter = new EnvVariableGetter();
 
         static LogExtensions()
         {
@@ -41,19 +55,32 @@ namespace Octopus.Cli.Diagnostics
             };
         }
 
+        public static bool IsKnownEnvironment()
+        {
+            if(buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool EnvironmentVariableHasValue(string variableName)
+        {
+            return !string.IsNullOrEmpty(variableGetter.GetVariableValue(variableName));
+        }
+
         public static void EnableServiceMessages(this ILogger log)
         {
             serviceMessagesEnabled = true;
 
             //If these env variables have values, octo is running from TFS
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) &&
-                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
+            if (EnvironmentVariableHasValue("BUILD_BUILDID") || EnvironmentVariableHasValue("AGENT_WORKFOLDER"))
             {
-                
                 buildEnvironment = BuildEnvironment.TeamFoundationBuild;
             }
             //If this env variable has a value, octo is running from TeamCity
-            else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")))
+            else if (EnvironmentVariableHasValue("TEAMCITY_VERSION"))
             {
                 buildEnvironment = BuildEnvironment.TeamCity;
             }
