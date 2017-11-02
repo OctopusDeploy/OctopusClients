@@ -35,6 +35,16 @@ namespace Octopus.Cli.Diagnostics
         static BuildEnvironment buildEnvironment;
         public static IEnvVariableGetter variableGetter = new EnvVariableGetter();
 
+        /// <summary>
+        /// This dictionary holds a record of the environment variables the code will check to define on which build environment is running on.
+        /// </summary>
+        public static Dictionary<string, BuildEnvironment> KnownEnvironmentVariables = new Dictionary<string, BuildEnvironment>()
+        {
+            {"BUILD_BUILDID",BuildEnvironment.TeamFoundationBuild},
+            {"AGENT_WORKFOLDER",BuildEnvironment.TeamFoundationBuild},
+            {"TEAMCITY_VERSION",BuildEnvironment.TeamCity}
+        };
+
         static LogExtensions()
         {
             serviceMessagesEnabled = false;
@@ -74,20 +84,14 @@ namespace Octopus.Cli.Diagnostics
         {
             serviceMessagesEnabled = true;
 
-            //If these env variables have values, octo is running from TFS
-            if (EnvironmentVariableHasValue("BUILD_BUILDID") || EnvironmentVariableHasValue("AGENT_WORKFOLDER"))
+            buildEnvironment = BuildEnvironment.NoneOrUnknown;
+
+            foreach (var knownEnvironmentVariable in KnownEnvironmentVariables)
             {
-                buildEnvironment = BuildEnvironment.TeamFoundationBuild;
-            }
-            //If this env variable has a value, octo is running from TeamCity
-            else if (EnvironmentVariableHasValue("TEAMCITY_VERSION"))
-            {
-                buildEnvironment = BuildEnvironment.TeamCity;
-            }
-            //If none of the above, then it is being executed from an unknown source
-            else
-            {
-                buildEnvironment = BuildEnvironment.NoneOrUnknown;
+                if (EnvironmentVariableHasValue(knownEnvironmentVariable.Key))
+                {
+                    buildEnvironment = knownEnvironmentVariable.Value;
+                }
             }
 
             log.Information("Build environment is {0}", buildEnvironment);

@@ -20,21 +20,14 @@ namespace Octo.Tests.Commands
         IReleasePlanBuilder releasePlanBuilder;
         IEnvVariableGetter envVariableGetter;
 
-        string[] buildVariables =
-        {
-            "TEAMCITY_VERSION", // Teamcity Variable
-            "BUILD_BUILDID", // TFS/VSTS variable
-            "GENT_WORKFOLDER", // TFS/VSTS variable
-        };
-
         [Test]
-        public void EnvironmentIsKnownIfBuildVariablesHaveValues()
+        public void EnvironmentIsKnownIfBuildVariablesHaveValues2()
         {
-            foreach (var buildServerEnvVar in buildVariables)
+            foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
             {
                 envVariableGetter = Substitute.For<IEnvVariableGetter>();
 
-                envVariableGetter.GetVariableValue(buildServerEnvVar).Returns("whatever value");
+                envVariableGetter.GetVariableValue(knownEnvironmentVariable.Key).Returns("whatever value");
 
                 LogExtensions.variableGetter = envVariableGetter;
 
@@ -49,9 +42,9 @@ namespace Octo.Tests.Commands
         {
             envVariableGetter = Substitute.For<IEnvVariableGetter>();
 
-            foreach (var buildServerEnvVar in buildVariables)
+            foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
             {
-                envVariableGetter.GetVariableValue(buildServerEnvVar).Returns("");
+                envVariableGetter.GetVariableValue(knownEnvironmentVariable.Key).Returns("");
             }
 
             LogExtensions.variableGetter = envVariableGetter;
