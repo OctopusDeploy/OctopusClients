@@ -19,6 +19,7 @@ namespace Octopus.Client.Repositories
         EnvironmentsSummaryResource Summary(
             string ids = null,
             string partialName = null,
+            string machinePartialName = null,
             string roles = null,
             bool? isDisabled = false,
             string healthStatuses = null,
@@ -74,6 +75,7 @@ namespace Octopus.Client.Repositories
         public EnvironmentsSummaryResource Summary(
             string ids = null,
             string partialName = null,
+            string machinePartialName = null,
             string roles = null,
             bool? isDisabled = false,
             string healthStatuses = null,
@@ -86,6 +88,7 @@ namespace Octopus.Client.Repositories
             {
                 ids,
                 partialName,
+                machinePartialName,
                 roles,
                 isDisabled,
                 healthStatuses,

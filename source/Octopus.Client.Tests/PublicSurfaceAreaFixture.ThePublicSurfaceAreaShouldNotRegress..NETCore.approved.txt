@@ -3802,7 +3802,7 @@ Octopus.Client.Repositories.Async
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
-    Task<EnvironmentsSummaryResource> Summary(String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
+    Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>

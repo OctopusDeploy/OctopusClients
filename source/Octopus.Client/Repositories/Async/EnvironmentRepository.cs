@@ -21,6 +21,7 @@ namespace Octopus.Client.Repositories.Async
         Task<EnvironmentsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
+            string machinePartialName = null,
             string roles = null,
             bool? isDisabled = false,
             string healthStatuses = null,
@@ -75,6 +76,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<EnvironmentsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
+            string machinePartialName = null,
             string roles = null,
             bool? isDisabled = false,
             string healthStatuses = null,
@@ -87,6 +89,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 ids,
                 partialName,
+                machinePartialName,
                 roles,
                 isDisabled,
                 healthStatuses,
