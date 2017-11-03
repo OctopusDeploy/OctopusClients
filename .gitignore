@@ -72,3 +72,4 @@ TestResult.xml
 TestResults/
 *.received.*
 .idea/
+/source/Octo/Properties/launchSettings.json

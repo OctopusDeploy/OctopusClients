@@ -34,11 +34,11 @@ namespace Octopus.Cli.Commands
             log.Debug("Finding release template...");
             var releaseTemplate = await repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel).ConfigureAwait(false);
 
-            var plan = new ReleasePlan(project, channel, releaseTemplate, versionResolver);
+            var plan = new ReleasePlan(project, channel, releaseTemplate, deploymentProcess, versionResolver);
 
             if (plan.UnresolvedSteps.Any())
             {
-                log.Debug("The package version for some steps was not specified. Going to try and resolve those automatically...");
+                log.Debug("The package version for some packageSteps was not specified. Going to try and resolve those automatically...");
                 foreach (var unresolved in plan.UnresolvedSteps)
                 {
                     if (!unresolved.IsResolveable)
@@ -79,7 +79,7 @@ namespace Octopus.Cli.Commands
             // Test each step in this plan satisfies the channel version rules
             if (channel != null)
             {
-                foreach (var step in plan.Steps)
+                foreach (var step in plan.PackageSteps)
                 {
                     // Note the rule can be null, meaning: anything goes
                     var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.StepName, StringComparison.OrdinalIgnoreCase)));

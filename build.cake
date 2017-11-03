@@ -96,8 +96,7 @@ Task("Test")
                 DotNetCoreTest(testProjectFile.FullPath, new DotNetCoreTestSettings
                 {
                     Configuration = configuration,
-                    NoBuild = true,
-                    ArgumentCustomization = args => args.Append("-l trx")
+                    NoBuild = true
                 });
             });
     });
@@ -110,7 +109,8 @@ Task("DotnetPublish")
     {
         Framework = "net45",
         Configuration = configuration,
-        OutputDirectory = $"{octoPublishFolder}/netfx"
+        OutputDirectory = $"{octoPublishFolder}/netfx",
+        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
 
     var portablePublishDir =  $"{octoPublishFolder}/portable";
@@ -118,7 +118,8 @@ Task("DotnetPublish")
     {
         Framework = "netcoreapp2.0",
         Configuration = configuration,
-        OutputDirectory = portablePublishDir
+        OutputDirectory = portablePublishDir,
+        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
     CopyFileToDirectory($"{assetDir}/Octo", portablePublishDir);
     CopyFileToDirectory($"{assetDir}/Octo.cmd", portablePublishDir);
@@ -133,7 +134,8 @@ Task("DotnetPublish")
             Framework = "netcoreapp2.0",
             Configuration = configuration,
             Runtime = rid,
-            OutputDirectory = $"{octoPublishFolder}/{rid}"
+            OutputDirectory = $"{octoPublishFolder}/{rid}",
+			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
         });
     }
 });
