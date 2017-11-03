@@ -26,7 +26,8 @@ namespace Octopus.Client.Repositories.Async
             string healthStatuses = null,
             string commStyles = null,
             string tenantIds = null,
-            string tenantTags = null);
+            string tenantTags = null,
+            bool? hideEmptyEnvironments = false);
         Task Sort(string[] environmentIdsInOrder);
         Task<EnvironmentEditor> CreateOrModify(string name);
         Task<EnvironmentEditor> CreateOrModify(string name, string description);
@@ -79,7 +80,8 @@ namespace Octopus.Client.Repositories.Async
             string healthStatuses = null,
             string commStyles = null,
             string tenantIds = null,
-            string tenantTags = null)
+            string tenantTags = null,
+            bool? hideEmptyEnvironments = false)
         {
             return Client.Get<EnvironmentsSummaryResource>(Client.RootDocument.Link("EnvironmentsSummary"), new
             {
@@ -90,7 +92,8 @@ namespace Octopus.Client.Repositories.Async
                 healthStatuses,
                 commStyles,
                 tenantIds,
-                tenantTags
+                tenantTags,
+                hideEmptyEnvironments,
             });
         }
 
