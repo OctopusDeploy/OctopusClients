@@ -1,53 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentAssertions;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Cli.Diagnostics;
-using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Commands;
-using Octopus.Cli.Tests.Helpers;
-using Octopus.Cli.Util;
 
 namespace Octo.Tests.Commands
 {
     class ServiceMessagesTestFixture : ApiCommandFixtureBase
     {
-        CreateReleaseCommand createReleaseCommand;
-        IPackageVersionResolver versionResolver;
-        IReleasePlanBuilder releasePlanBuilder;
-        IEnvVariableGetter envVariableGetter;
+        IEnvironmentVariableReader envVariableGetter;
 
         [Test]
-        public void EnvironmentIsKnownIfBuildVariablesHaveValues2()
+        public void EnvironmentIsKnownIfBuildVariablesHaveValues()
         {
             foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
             {
-                envVariableGetter = Substitute.For<IEnvVariableGetter>();
+                foreach (var variable in knownEnvironmentVariable.Value)
+                {
+                    envVariableGetter = Substitute.For<IEnvironmentVariableReader>();
 
-                envVariableGetter.GetVariableValue(knownEnvironmentVariable.Key).Returns("whatever value");
+                    envVariableGetter.GetVariableValue(variable).Returns("whatever value");
 
-                LogExtensions.variableGetter = envVariableGetter;
+                    LogExtensions.environmentVariableReader = envVariableGetter;
 
-                LogExtensions.EnableServiceMessages(Log);
+                    LogExtensions.EnableServiceMessages(Log);
 
-                Assert.IsTrue(LogExtensions.IsKnownEnvironment());
+                    Assert.IsTrue(LogExtensions.IsKnownEnvironment());
+                }
             }
         }
 
         [Test]
         public void EnvironmentIsUnknownIfBuildVariablesDontHaveValues()
         {
-            envVariableGetter = Substitute.For<IEnvVariableGetter>();
+            envVariableGetter = Substitute.For<IEnvironmentVariableReader>();
 
             foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
             {
-                envVariableGetter.GetVariableValue(knownEnvironmentVariable.Key).Returns("");
+                foreach (var variable in knownEnvironmentVariable.Value)
+                {
+                    envVariableGetter.GetVariableValue(variable).Returns("");
+                }
             }
 
-            LogExtensions.variableGetter = envVariableGetter;
+            LogExtensions.environmentVariableReader = envVariableGetter;
 
             LogExtensions.EnableServiceMessages(Log);
 

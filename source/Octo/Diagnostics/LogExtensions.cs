@@ -10,17 +10,17 @@ namespace Octopus.Cli.Diagnostics
 {
     public enum BuildEnvironment
     {
-        NoneOrUnknown,
-        TeamCity,
-        TeamFoundationBuild
+        NoneOrUnknown = 0,
+        TeamCity = 1,
+        TeamFoundationBuild = 2
     }
 
-    public interface IEnvVariableGetter
+    public interface IEnvironmentVariableReader
     {
         string GetVariableValue(string name);
     }
 
-    public class EnvVariableGetter : IEnvVariableGetter
+    public class EnvironmentVariableReader : IEnvironmentVariableReader
     {
         public string GetVariableValue(string name)
         {
@@ -33,16 +33,15 @@ namespace Octopus.Cli.Diagnostics
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
         static BuildEnvironment buildEnvironment;
-        public static IEnvVariableGetter variableGetter = new EnvVariableGetter();
+        public static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
 
         /// <summary>
         /// This dictionary holds a record of the environment variables the code will check to define on which build environment is running on.
         /// </summary>
-        public static Dictionary<string, BuildEnvironment> KnownEnvironmentVariables = new Dictionary<string, BuildEnvironment>()
+        public static Dictionary<BuildEnvironment,string[]> KnownEnvironmentVariables = new Dictionary<BuildEnvironment, string[]>()
         {
-            {"BUILD_BUILDID",BuildEnvironment.TeamFoundationBuild},
-            {"AGENT_WORKFOLDER",BuildEnvironment.TeamFoundationBuild},
-            {"TEAMCITY_VERSION",BuildEnvironment.TeamCity}
+            {BuildEnvironment.TeamFoundationBuild ,new[]{"BUILD_BUILDID", "AGENT_WORKFOLDER" }},
+            {BuildEnvironment.TeamCity,new[]{"TEAMCITY_VERSION"}}
         };
 
         static LogExtensions()
@@ -67,34 +66,19 @@ namespace Octopus.Cli.Diagnostics
 
         public static bool IsKnownEnvironment()
         {
-            if(buildEnvironment == BuildEnvironment.NoneOrUnknown)
-            {
-                return false;
-            }
-
-            return true;
+            return buildEnvironment != BuildEnvironment.NoneOrUnknown;
         }
 
         public static bool EnvironmentVariableHasValue(string variableName)
         {
-            return !string.IsNullOrEmpty(variableGetter.GetVariableValue(variableName));
+            return !string.IsNullOrEmpty(environmentVariableReader.GetVariableValue(variableName));
         }
 
         public static void EnableServiceMessages(this ILogger log)
         {
             serviceMessagesEnabled = true;
-
-            buildEnvironment = BuildEnvironment.NoneOrUnknown;
-
-            foreach (var knownEnvironmentVariable in KnownEnvironmentVariables)
-            {
-                if (EnvironmentVariableHasValue(knownEnvironmentVariable.Key))
-                {
-                    buildEnvironment = knownEnvironmentVariable.Value;
-                }
-            }
-
-            log.Information("Build environment is {0}", buildEnvironment);
+            
+            buildEnvironment = KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
         }
 
         public static void DisableServiceMessages(this ILogger log)
