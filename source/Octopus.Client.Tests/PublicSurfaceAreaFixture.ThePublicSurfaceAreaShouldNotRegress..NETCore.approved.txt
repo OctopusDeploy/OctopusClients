@@ -2695,6 +2695,7 @@ Octopus.Client.Model
     String SendEmailFrom { get; set; }
     String SmtpHost { get; set; }
     String SmtpLogin { get; set; }
+    Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }
   }
   class SquidAttribute

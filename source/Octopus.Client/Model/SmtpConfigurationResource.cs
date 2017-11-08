@@ -20,8 +20,12 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool EnableSsl { get; set; }
 
+        [Writeable]
+        public SensitiveValue SmtpPassword { get; set; }
+
         [NotReadable]
         [Writeable]
+        [Obsolete("Use 'SmtpPassword' instead. Will be removed in version 5.0.0.", false)]
         public string NewSmtpPassword { get; set; }
     }
 }
