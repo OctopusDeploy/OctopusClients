@@ -8,13 +8,20 @@ namespace Octopus.Client.Model
         {
         }
 
-        public SelectedPackage(string stepName, string version)
+        public SelectedPackage(string actionName, string version)
         {
-            StepName = stepName;
+            ActionName = actionName;
             Version = version;
         }
 
-        public string StepName { get; set; }
+        [Obsolete("Replaced by " + nameof(ActionName))]
+        public string StepName
+        {
+            get => ActionName;
+            set => ActionName = value;
+        }
+
+        public string ActionName { get; set; }
         public string Version { get; set; }
     }
 }

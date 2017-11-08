@@ -2431,6 +2431,7 @@ Octopus.Client.Model
   class ReleaseTemplatePackage
   {
     .ctor()
+    String ActionName { get; set; }
     String FeedId { get; set; }
     String FeedName { get; set; }
     Boolean IsResolvable { get; set; }
@@ -2616,6 +2617,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String)
+    String ActionName { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
   }
