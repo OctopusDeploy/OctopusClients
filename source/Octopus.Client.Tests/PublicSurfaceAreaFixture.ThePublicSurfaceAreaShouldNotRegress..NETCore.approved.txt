@@ -435,8 +435,10 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IVariableSetRepository)
     Octopus.Client.Model.VariableSetResource Instance { get; }
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean)
+    Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean, String)
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification)
     Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String)
+    Octopus.Client.Editors.Async.VariableSetEditor AddOrUpdateVariableValue(String, String, String)
     Octopus.Client.Editors.Async.VariableSetEditor Customize(Action<VariableSetResource>)
     Task<VariableSetEditor> Load(String)
     Task<VariableSetEditor> Save()
@@ -1485,6 +1487,32 @@ Octopus.Client.Model
     Int32 SortOrder { get; set; }
     Boolean UseGuidedFailure { get; set; }
   }
+  class EnvironmentsSummaryResource
+  {
+    .ctor()
+    List<EnvironmentSummaryResource> EnvironmentSummaries { get; set; }
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    String[] MachineIdsForCalamariUpgrade { get; set; }
+    Dictionary<String, Int32> MachineTenantSummaries { get; set; }
+    Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
+    Boolean TentacleUpgradesRequired { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
+  class EnvironmentSummaryResource
+  {
+    .ctor()
+    Octopus.Client.Model.EnvironmentResource Environment { get; set; }
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    String[] MachineIdsForCalamariUpgrade { get; set; }
+    Dictionary<String, Int32> MachineTenantSummaries { get; set; }
+    Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
+    Boolean TentacleUpgradesRequired { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
   class EventNotificationSubscription
   {
     .ctor()
@@ -2403,6 +2431,7 @@ Octopus.Client.Model
   class ReleaseTemplatePackage
   {
     .ctor()
+    String ActionName { get; set; }
     String FeedId { get; set; }
     String FeedName { get; set; }
     Boolean IsResolvable { get; set; }
@@ -2588,6 +2617,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String)
+    String ActionName { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
   }
@@ -3061,6 +3091,7 @@ Octopus.Client.Model
   class VariableResource
   {
     .ctor()
+    String Description { get; set; }
     String Id { get; set; }
     Boolean IsEditable { get; set; }
     Boolean IsSensitive { get; set; }
@@ -3097,8 +3128,10 @@ Octopus.Client.Model
     IList<VariableResource> Variables { get; set; }
     Int32 Version { get; set; }
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String)
+    Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, String)
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification)
     Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean)
+    Octopus.Client.Model.VariableSetResource AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean, String)
   }
   class VariableTemplateContainerEditor`1
     Octopus.Client.Model.IVariableTemplateContainerEditor<TContainer>
@@ -3769,8 +3802,9 @@ Octopus.Client.Repositories.Async
   {
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
-    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource)
+    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
+    Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
@@ -3862,6 +3896,7 @@ Octopus.Client.Repositories.Async
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
+    Task<ResourceCollection<MachineResource>> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
   }
   interface IMachineRoleRepository
   {

@@ -4,7 +4,14 @@ namespace Octopus.Client.Model
 {
     public class ReleaseTemplatePackage
     {
-        public string StepName { get; set; }
+        [Obsolete("Replaced by " + nameof(ActionName))]
+        public string StepName
+        {
+            get => ActionName;
+            set => ActionName = value;
+        }
+
+        public string ActionName { get; set; }
 
         [Obsolete("Replaced by PackageId")]
         public string NuGetPackageId
