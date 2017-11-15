@@ -2248,6 +2248,13 @@ Octopus.Client.Model
     Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
+  class ProjectedTeamReferenceDataItem
+    Octopus.Client.Model.ReferenceDataItem
+  {
+    .ctor(String, String, Boolean, String[])
+    String[] ExternalGroupNames { get; set; }
+    Boolean IsDirectlyAssigned { get; set; }
+  }
   class ProjectGroupResource
     Octopus.Client.Model.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3050,7 +3057,7 @@ Octopus.Client.Model
   {
     .ctor()
     Dictionary<Permission, List<UserPermissionRestriction>> Permissions { get; set; }
-    List<ReferenceDataItem> Teams { get; set; }
+    List<ProjectedTeamReferenceDataItem> Teams { get; set; }
   }
   class UserResource
     Octopus.Client.Model.IResource
