@@ -36,7 +36,7 @@ namespace Octopus.Cli.Commands.Releases
             commandOutputProvider.Debug("Finding release template...");
             var releaseTemplate = await repository.DeploymentProcesses.GetTemplate(deploymentProcess, channel).ConfigureAwait(false);
 
-            var plan = new ReleasePlan(project, channel, releaseTemplate, versionResolver);
+            var plan = new ReleasePlan(project, channel, releaseTemplate, deploymentProcess, versionResolver);
 
             if (plan.UnresolvedSteps.Any())
             {
@@ -45,20 +45,20 @@ namespace Octopus.Cli.Commands.Releases
                 {
                     if (!unresolved.IsResolveable)
                     {
-                        commandOutputProvider.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.StepName);
+                        commandOutputProvider.Error("The version number for step '{Step:l}' cannot be automatically resolved because the feed or package ID is dynamic.", unresolved.ActionName);
                         continue;
                     }
 
                     if (!string.IsNullOrEmpty(versionPreReleaseTag))
-                        commandOutputProvider.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.StepName);
+                        commandOutputProvider.Debug("Finding latest package with pre-release '{Tag:l}' for step: {StepName:l}", versionPreReleaseTag, unresolved.ActionName);
                     else
-                        commandOutputProvider.Debug("Finding latest package for step: {StepName:l}", unresolved.StepName);
+                        commandOutputProvider.Debug("Finding latest package for step: {StepName:l}", unresolved.ActionName);
 
                     var feed = await repository.Feeds.Get(unresolved.PackageFeedId).ConfigureAwait(false);
                     if (feed == null)
-                        throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.StepName, unresolved.PackageFeedId));
+                        throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.ActionName, unresolved.PackageFeedId));
 
-                    var filters = BuildChannelVersionFilters(unresolved.StepName, channel);
+                    var filters = BuildChannelVersionFilters(unresolved.ActionName, channel);
                     filters["packageId"] = unresolved.PackageId;
                     if (!string.IsNullOrWhiteSpace(versionPreReleaseTag))
                         filters["preReleaseTag"] = versionPreReleaseTag;
@@ -72,7 +72,7 @@ namespace Octopus.Cli.Commands.Releases
                     }
                     else
                     {
-                        commandOutputProvider.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.StepName);
+                        commandOutputProvider.Debug("Selected '{PackageId:l}' version '{Version:l}' for '{StepName:l}'", latestPackage.PackageId, latestPackage.Version, unresolved.ActionName);
                         unresolved.SetVersionFromLatest(latestPackage.Version);
                     }
                 }
@@ -81,10 +81,10 @@ namespace Octopus.Cli.Commands.Releases
             // Test each step in this plan satisfies the channel version rules
             if (channel != null)
             {
-                foreach (var step in plan.Steps)
+                foreach (var step in plan.PackageSteps)
                 {
                     // Note the rule can be null, meaning: anything goes
-                    var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.StepName, StringComparison.OrdinalIgnoreCase)));
+                    var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.ActionName, StringComparison.OrdinalIgnoreCase)));
                     var result = await versionRuleTester.Test(repository, rule, step.Version).ConfigureAwait(false);
                     step.SetChannelVersionRuleTestResult(result);
                 }

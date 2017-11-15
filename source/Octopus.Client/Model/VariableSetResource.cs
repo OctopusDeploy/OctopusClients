@@ -61,6 +61,32 @@ namespace Octopus.Client.Model
             return this;
         }
 
+        public VariableSetResource AddOrUpdateVariableValue(string name, string value, string description)
+        {
+            var existing = Variables.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase) &&
+                                                         (x.Scope == null || x.Scope.Equals(new ScopeSpecification())));
+
+            if (existing == null)
+            {
+                var template = new VariableResource
+                {
+                    Name = name,
+                    Value = value,
+                    Description = description
+                };
+
+                Variables.Add(template);
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Value = value;
+                existing.Description = description;
+            }
+
+            return this;
+        }
+
         public VariableSetResource AddOrUpdateVariableValue(string name, string value, ScopeSpecification scope)
         {
             var existing = Variables.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase) && x.Scope.Equals(scope));
@@ -106,6 +132,34 @@ namespace Octopus.Client.Model
                 existing.Value = value;
                 existing.Scope = scope;
                 existing.IsSensitive = isSensitive;
+            }
+
+            return this;
+        }
+
+        public VariableSetResource AddOrUpdateVariableValue(string name, string value, ScopeSpecification scope, bool isSensitive, string description)
+        {
+            var existing = Variables.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase) && x.Scope.Equals(scope));
+            if (existing == null)
+            {
+                var template = new VariableResource
+                {
+                    Name = name,
+                    Value = value,
+                    Scope = scope,
+                    IsSensitive = isSensitive,
+                    Description = description
+                };
+
+                Variables.Add(template);
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Value = value;
+                existing.Scope = scope;
+                existing.IsSensitive = isSensitive;
+                existing.Description = description;
             }
 
             return this;

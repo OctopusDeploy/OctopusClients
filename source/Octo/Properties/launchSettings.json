@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Octo": {
-      "commandName": "Project",
-      "commandLineArgs": "list-deployments --help"
+      "commandName": "Project"
     }
   }
 }

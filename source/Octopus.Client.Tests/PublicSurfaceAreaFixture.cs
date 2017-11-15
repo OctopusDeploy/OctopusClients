@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Assent;
 using Assent.Namers;
+using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NUnit.Framework;
 using Octopus.Client.Tests.Extensions;
 
@@ -24,10 +25,22 @@ namespace Octopus.Client.Tests
                 .ToArray();
 
             var framework = string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
-            this.Assent(
-                string.Join("\r\n", lines),
-                new Configuration().UsingNamer(new PostfixNamer(framework))
-            );
+            try
+            {
+                this.Assent(
+                    string.Join("\r\n", lines),
+                    new Configuration().UsingNamer(new PostfixNamer(framework))
+                );
+            }
+            catch (AssentFailedException e)
+            {
+                using (var teamCityArtifactsWriter = new TeamCityServiceMessages().CreateWriter())
+                {
+                    teamCityArtifactsWriter.PublishArtifact(e.ReceivedFileName);
+                    teamCityArtifactsWriter.PublishArtifact(e.ApprovedFileName);
+                }
+                throw;
+            }
         }
 
         IEnumerable<object> FormatNamespace(string name, IEnumerable<TypeInfo> types)
@@ -55,6 +68,8 @@ namespace Octopus.Client.Tests
                     : "class";
 
             var interfaces = type.GetInterfaces();
+            if (type.BaseType != null && type.BaseType.Name != typeof(object).Name) 
+                interfaces = interfaces.Concat(new []{ type.BaseType }).ToArray();
             var members = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                 .OrderBy(t => t.Name)
                 .ToArray();

@@ -28,6 +28,19 @@ namespace Octopus.Client.Repositories.Async
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles);
+
+        Task<ResourceCollection<MachineResource>> List(int skip = 0,
+            int? take = null,
+            string ids = null,
+            string name = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatuses = null,
+            string commStyles = null,
+            string tenantIds = null,
+            string tenantTags = null,
+            string environmentIds = null);
     }
 
     class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
@@ -78,6 +91,36 @@ namespace Octopus.Client.Repositories.Async
             string[] roles)
         {
             return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles);
+        }
+
+        public Task<ResourceCollection<MachineResource>> List(int skip = 0,
+            int? take = null,
+            string ids = null,
+            string name = null,
+            string partialName = null,
+            string roles = null,
+            bool? isDisabled = false,
+            string healthStatuses = null,
+            string commStyles = null,
+            string tenantIds = null,
+            string tenantTags = null,
+            string environmentIds = null)
+        {
+            return Client.List<MachineResource>(Client.RootDocument.Link("Machines"), new
+            {
+                skip,
+                take,
+                ids,
+                name,
+                partialName,
+                roles,
+                isDisabled,
+                healthStatuses,
+                commStyles,
+                tenantIds,
+                tenantTags,
+                environmentIds,
+            });
         }
     }
 }

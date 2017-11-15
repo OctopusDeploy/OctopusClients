@@ -96,7 +96,8 @@ namespace Octopus.Cli.Commands.Releases
             }
             else
             {
-                throw new CommandException("A version number was not specified and could not be automatically selected.");
+                throw new CommandException(
+                    "A version number was not specified and could not be automatically selected.");
             }
 
             commandOutputProvider.Write(
@@ -104,10 +105,21 @@ namespace Octopus.Cli.Commands.Releases
                 "Release plan for {Project:l} {Version:l}" + System.Environment.NewLine + "{Plan:l}",
                 ProjectName, versionNumber, plan.FormatAsTable()
             );
-
             if (plan.HasUnresolvedSteps())
             {
-                throw new CommandException("Package versions could not be resolved for one or more of the package steps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
+                throw new CommandException(
+                    "Package versions could not be resolved for one or more of the package packageSteps in this release. See the errors above for details. Either ensure the latest version of the package can be automatically resolved, or set the version to use specifically by using the --package argument.");
+            }
+            if (plan.ChannelHasAnyEnabledSteps() == false)
+            {
+                if (serverSupportsChannels)
+                {
+                    throw new CommandException($"Channel {plan.Channel.Name} has no available steps");
+                }
+                else
+                {
+                    throw new CommandException($"Plan has no available steps");
+                }
             }
 
             if (plan.HasStepsViolatingChannelVersionRules())
@@ -118,7 +130,8 @@ namespace Octopus.Cli.Commands.Releases
                 }
                 else
                 {
-                    throw new CommandException($"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Either correct the package versions for this release, let Octopus select the best channel by omitting the --channel argument, select a different channel using --channel=MyChannel argument, or ignore these version rules altogether by using the --ignoreChannelRules argument.");
+                    throw new CommandException(
+                        $"At least one step violates the package version rules for the Channel '{plan.Channel.Name}'. Either correct the package versions for this release, let Octopus select the best channel by omitting the --channel argument, select a different channel using --channel=MyChannel argument, or ignore these version rules altogether by using the --ignoreChannelRules argument.");
                 }
             }
 
@@ -127,7 +140,8 @@ namespace Octopus.Cli.Commands.Releases
                 commandOutputProvider.Debug("Checking for existing release for {Project:l} {Version:l} because you specified --ignoreexisting...", ProjectName, versionNumber);
                 try
                 {
-                    var found = await Repository.Projects.GetReleaseByVersion(project, versionNumber).ConfigureAwait(false);
+                    var found = await Repository.Projects.GetReleaseByVersion(project, versionNumber)
+                        .ConfigureAwait(false);
                     if (found != null)
                     {
                         commandOutputProvider.Information("A release of {Project:l} with the number {Version:l} already exists, and you specified --ignoreexisting, so we won't even attempt to create the release.", ProjectName, versionNumber);
@@ -215,6 +229,10 @@ namespace Octopus.Cli.Commands.Releases
 
                 var plan = await releasePlanBuilder.Build(Repository, project, channel, VersionPreReleaseTag).ConfigureAwait(false);
                 releasePlans.Add(plan);
+                if (plan.ChannelHasAnyEnabledSteps() == false)
+                {
+                    Log.Warning($"Channel {channel.Name} does not contain any packageSteps");
+                }
             }
 
             var viablePlans = releasePlans.Where(p => p.IsViableReleasePlan()).ToArray();
@@ -276,10 +294,10 @@ namespace Octopus.Cli.Commands.Releases
                 release.Version,
                 Project = new { project.Id, project.Name },
                 Channel = plan.Channel == null ? null : new { plan.Channel.Id, plan.Channel.Name },
-                Steps = plan.Steps.Select((x, i) => new
+                Steps = plan.PackageSteps.Select((x, i) => new
                 {
                     Id = i,
-                    x.StepName,
+                    x.ActionName,
                     x.Version,
                     x.VersionSource,
                     VersionRule = x.ChannelVersionRuleTestResult?.ToSummaryString()

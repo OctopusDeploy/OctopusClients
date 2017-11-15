@@ -55,6 +55,11 @@ namespace Octopus.Client.Operations
         string TentacleThumbprint { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the proxy that Octopus should use when communicating with the Tentacle.
+        /// </summary>
+        string ProxyName { get; set; }
+
+        /// <summary>
         /// If a machine with the same name already exists, it won't be overwritten by default (instead, an
         /// <see cref="ArgumentException" /> will be thrown).
         /// Set this property to <c>true</c> if you do want the existing machine to be overwritten.

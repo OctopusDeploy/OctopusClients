@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Model;
 using Octopus.Cli.Util;
@@ -53,6 +54,7 @@ namespace Octopus.Cli.Commands.Package
             basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(outFolder)); outFolder = v;});
             basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(basePath)); basePath = v;});
             basic.Add("verbose", "[Optional] verbose output", v => verbose = true);
+            basic.AddLogLevelOptions();
 
             packageBuilder = SelectFormat("nupkg");
         }
