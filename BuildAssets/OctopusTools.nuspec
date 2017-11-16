@@ -13,8 +13,8 @@
     <releaseNotes></releaseNotes>
     <language>en-US</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://octopus.com/</licenseUrl>
-    <projectUrl>https://octopus.com/</projectUrl>
+    <licenseUrl>https://github.com/OctopusDeploy/OctopusClients/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/OctopusDeploy/OctopusClients/</projectUrl>
     <iconUrl>http://i.octopusdeploy.com/resources/Avatar3_360.png</iconUrl>
     <tags>automation deployment</tags>
     <developmentDependency>true</developmentDependency>
