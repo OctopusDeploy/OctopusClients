@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Accounts
 {

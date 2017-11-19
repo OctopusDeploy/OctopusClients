@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Octopus.Client.Extensibility.Attributes;
 using Octopus.Client.Extensions;
 
 namespace Octopus.Client.Model

@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model.Triggers
+﻿using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model.Triggers
 {
     public class AutoDeployActionResource : TriggerActionResource
     {

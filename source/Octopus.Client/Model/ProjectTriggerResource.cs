@@ -1,4 +1,6 @@
-﻿using Octopus.Client.Model.Triggers;
+﻿using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
+using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client.Model
 {

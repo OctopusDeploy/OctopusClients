@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Serialization

@@ -22,7 +22,9 @@ using Nancy.Responses.Negotiation;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+
 using Nancy.Extensions;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Tests.Integration.Repository;
 using HttpStatusCode = Nancy.HttpStatusCode;

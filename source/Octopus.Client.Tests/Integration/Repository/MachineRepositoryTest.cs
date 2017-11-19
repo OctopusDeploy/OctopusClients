@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using Nancy;
 using NUnit.Framework;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
