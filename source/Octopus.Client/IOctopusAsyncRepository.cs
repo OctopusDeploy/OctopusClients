@@ -57,5 +57,6 @@ namespace Octopus.Client
         IDefectsRepository Defects { get; }
         IOctopusServerNodeRepository OctopusServerNodes { get; }
 
+        IConfigurationRepository Configuration { get; }
     }
 }
