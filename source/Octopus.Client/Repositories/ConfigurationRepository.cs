@@ -6,6 +6,12 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
+    public interface IConfigurationRepository
+    {
+        T Get<T>() where T : class, IResource, new();
+        T Modify<T>(T configurationResource) where T : class, IResource, new();
+    }
+
     class ConfigurationRepository : IConfigurationRepository
     {
         private readonly IOctopusClient client;
@@ -24,11 +30,10 @@ namespace Octopus.Client.Repositories
             return client.Get<T>(configurationItem.Link("Values"));
         }
 
-        public void Modify<T>(T configurationResource) where T : class, IResource, new()
+        public T Modify<T>(T configurationResource) where T : class, IResource, new()
         {
-            var configResourceInstance = new T();
             var configurationItem = GetConfigurationItem(configurationResource);
-            client.Put<T>(configurationItem.Link("Values"), configurationResource);
+            return client.Update(configurationItem.Link("Values"), configurationResource);
         }
 
         private ConfigurationItemResource GetConfigurationItem(IResource instance) 
