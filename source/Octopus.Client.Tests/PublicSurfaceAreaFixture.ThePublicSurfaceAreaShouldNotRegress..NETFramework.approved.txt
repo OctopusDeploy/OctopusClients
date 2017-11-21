@@ -57,6 +57,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
     Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
@@ -131,6 +132,7 @@ Octopus.Client
     Octopus.Client.Repositories.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusClient Client { get; }
     Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
@@ -208,6 +210,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
     Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
@@ -302,6 +305,7 @@ Octopus.Client
     Octopus.Client.Repositories.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusClient Client { get; }
     Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
@@ -988,13 +992,13 @@ Octopus.Client.Logging
 Octopus.Client.Model
 {
   class ActionsUpdateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
     IDictionary<String, String[]> ActionIdsByProcessId { get; set; }
     IDictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
     String Id { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     IDictionary<String, PropertyValueResource> Overrides { get; set; }
     Int32 Version { get; set; }
   }
@@ -1013,9 +1017,9 @@ Octopus.Client.Model
     Boolean IsSensitive()
   }
   class ActionTemplateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -1028,7 +1032,7 @@ Octopus.Client.Model
     Int32 Version { get; set; }
   }
   class ActionTemplateSearchResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
     String Author { get; set; }
@@ -1038,13 +1042,13 @@ Octopus.Client.Model
     String Id { get; set; }
     Boolean IsBuiltIn { get; set; }
     Boolean IsInstalled { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
     String Type { get; set; }
     String Website { get; set; }
   }
   class ActionTemplateUsageResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1067,11 +1071,11 @@ Octopus.Client.Model
       DefaultParamterValueMissing = 2
   }
   class ActionUpdateResultResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
     String Id { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     IDictionary<String, String[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
     String[] NamesOfNewParametersMissingDefaultValue { get; set; }
     Octopus.Client.Model.ActionUpdateOutcome Outcome { get; set; }
@@ -1123,7 +1127,7 @@ Octopus.Client.Model
     }
   }
   class AlertResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1156,7 +1160,7 @@ Octopus.Client.Model
     .ctor()
   }
   class ApiKeyResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1165,11 +1169,6 @@ Octopus.Client.Model
     DateTimeOffset Created { get; set; }
     String Purpose { get; set; }
     String UserId { get; set; }
-  }
-  abstract class ApiPropertyAttribute
-    _Attribute
-    Attribute
-  {
   }
   abstract class Arguments
   {
@@ -1218,7 +1217,7 @@ Octopus.Client.Model
     static System.String AccountId
   }
   class ArtifactResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1227,6 +1226,15 @@ Octopus.Client.Model
     String Filename { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     String Source { get; set; }
+  }
+  class AuthenticationConfigResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    Boolean AutoLoginEnabled { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    String[] TrustedRedirectUrls { get; set; }
   }
   AuthenticationMode
   {
@@ -1251,7 +1259,7 @@ Octopus.Client.Model
     String TenantId { get; }
   }
   class AzureRootResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1262,7 +1270,7 @@ Octopus.Client.Model
     static System.String Name
   }
   class BackupConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1276,7 +1284,7 @@ Octopus.Client.Model
     Nullable<TimeSpan> StartingFrom { get; set; }
   }
   class BuiltInFeedStatsResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1286,7 +1294,7 @@ Octopus.Client.Model
     Int32 TotalPackages { get; set; }
   }
   class BuiltInRepositoryConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1402,9 +1410,9 @@ Octopus.Client.Model
       UpdateAlways = 2
   }
   class CertificateConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -1418,9 +1426,9 @@ Octopus.Client.Model
       Pem = 2
   }
   class CertificateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor(String, String)
@@ -1453,9 +1461,9 @@ Octopus.Client.Model
     Int32 Version { get; }
   }
   class ChannelResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -1476,7 +1484,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ChannelResource UsingLifecycle(Octopus.Client.Model.LifecycleResource)
   }
   class ChannelVersionRuleResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1497,14 +1505,14 @@ Octopus.Client.Model
       AzureCloudService = 7
   }
   class CommunityActionTemplateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
     String Author { get; set; }
     String Description { get; set; }
     String HistoryUrl { get; set; }
     String Id { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
@@ -1518,6 +1526,15 @@ Octopus.Client.Model
     .ctor()
     Boolean Equals(Octopus.Client.Model.UserPermissionRestriction, Octopus.Client.Model.UserPermissionRestriction)
     Int32 GetHashCode(Octopus.Client.Model.UserPermissionRestriction)
+  }
+  class ConfigurationItemResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Description { get; set; }
+    String Name { get; set; }
   }
   abstract class ControlType
   {
@@ -1533,7 +1550,7 @@ Octopus.Client.Model
     static Dictionary<String, String> AsDisplaySettings(String)
   }
   class DashboardConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1545,7 +1562,7 @@ Octopus.Client.Model
     Nullable<Int32> ProjectLimit { get; set; }
   }
   class DashboardEnvironmentResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1553,7 +1570,7 @@ Octopus.Client.Model
     String Name { get; set; }
   }
   class DashboardItemResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1579,7 +1596,7 @@ Octopus.Client.Model
     String TenantId { get; set; }
   }
   class DashboardProjectGroupResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1589,7 +1606,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DashboardProjectGroupResource Copy()
   }
   class DashboardProjectResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1603,7 +1620,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DashboardProjectResource Copy()
   }
   class DashboardResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1618,7 +1635,7 @@ Octopus.Client.Model
     List<DashboardTenantResource> Tenants { get; set; }
   }
   class DashboardTenantResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1634,7 +1651,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DefectStatus Status { get; set; }
   }
   class DefectResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1671,7 +1688,7 @@ Octopus.Client.Model
     }
   }
   class DeploymentActionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1695,7 +1712,7 @@ Octopus.Client.Model
       Rejected = 1
   }
   class DeploymentPreviewResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1705,7 +1722,7 @@ Octopus.Client.Model
     Boolean UseGuidedFailureModeByDefault { get; set; }
   }
   class DeploymentProcessResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1720,7 +1737,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentProcessResource RemoveStep(String)
   }
   class DeploymentPromomotionTenant
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1729,7 +1746,7 @@ Octopus.Client.Model
     List<DeploymentPromotionTarget> PromoteTo { get; set; }
   }
   class DeploymentPromotionTarget
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1737,7 +1754,7 @@ Octopus.Client.Model
     String Name { get; set; }
   }
   class DeploymentResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1818,7 +1835,7 @@ Octopus.Client.Model
       StartWithPrevious = 1
   }
   class DeploymentTemplateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1851,9 +1868,9 @@ Octopus.Client.Model
       Ssh = 2
   }
   class DockerFeedResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.FeedResource
   {
     .ctor()
@@ -1870,9 +1887,9 @@ Octopus.Client.Model
     String ToBase64()
   }
   class EnvironmentResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -1941,7 +1958,7 @@ Octopus.Client.Model
     Int32 StartIndex { get; }
   }
   class EventResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1966,7 +1983,7 @@ Octopus.Client.Model
       Deployment = 3
   }
   class ExternalSecurityGroupResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1974,7 +1991,7 @@ Octopus.Client.Model
     String DisplayName { get; set; }
   }
   class FeaturesConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -1985,9 +2002,9 @@ Octopus.Client.Model
     Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2035,27 +2052,13 @@ Octopus.Client.Model
       FullHealthCheck = 0
       ConnectionTest = 1
   }
-  class Href
-    IEquatable<Href>
-  {
-    .ctor(String)
-    String AsString()
-    Boolean Equals(Octopus.Client.Model.Href)
-    Boolean Equals(Object)
-    Int32 GetHashCode()
-    String ToString()
-  }
   interface IAuditedResource
   {
     String LastModifiedBy { get; set; }
     Nullable<DateTimeOffset> LastModifiedOn { get; set; }
   }
-  interface INamedResource
-  {
-    String Name { get; }
-  }
   class InterruptionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2073,7 +2076,7 @@ Octopus.Client.Model
     String Title { get; set; }
   }
   class InvitationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2081,11 +2084,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection AddToTeamIds { get; set; }
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
-  }
-  interface IResource
-  {
-    String Id { get; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
   }
   interface IVariableTemplateContainer
   {
@@ -2110,14 +2108,14 @@ Octopus.Client.Model
     .ctor(String)
     String LibraryVariableSetId { get; }
     String LibraryVariableSetName { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, PropertyValueResource> Variables { get; set; }
   }
   class LibraryVariableSetResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IVariableTemplateContainer
     Octopus.Client.Model.IVariableTemplateContainerEditor<LibraryVariableSetResource>
     Octopus.Client.Model.Resource
@@ -2141,7 +2139,7 @@ Octopus.Client.Model
     Octopus.Client.Model.LibraryVariableSetResource Clear()
   }
   class LicenseResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2152,7 +2150,7 @@ Octopus.Client.Model
     Boolean UseFreeVersion { get; set; }
   }
   class LifecycleProgressionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2162,9 +2160,9 @@ Octopus.Client.Model
     List<PhaseProgressionResource> Phases { get; set; }
   }
   class LifecycleResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2180,23 +2178,6 @@ Octopus.Client.Model
     Octopus.Client.Model.LifecycleResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.LifecycleResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
-  class LinkCollection
-    IDictionary<String, Href>
-    ICollection<KeyValuePair<String, Href>>
-    IEnumerable<KeyValuePair<String, Href>>
-    IEnumerable
-    IDictionary
-    ICollection
-    IReadOnlyDictionary<String, Href>
-    IReadOnlyCollection<KeyValuePair<String, Href>>
-    ISerializable
-    IDeserializationCallback
-    Dictionary<String, Href>
-  {
-    .ctor()
-    Octopus.Client.Model.LinkCollection Add(String, Octopus.Client.Model.Href)
-    static Octopus.Client.Model.LinkCollection Self(Octopus.Client.Model.Href)
-  }
   class LoginCommand
   {
     .ctor()
@@ -2211,7 +2192,7 @@ Octopus.Client.Model
     TimeSpan DeleteMachinesElapsedTimeSpan { get; set; }
   }
   class MachineConnectionStatus
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2265,9 +2246,9 @@ Octopus.Client.Model
       Disabled = 5
   }
   class MachinePolicyResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2287,9 +2268,9 @@ Octopus.Client.Model
     DateTime StartedAtUtc { get; set; }
   }
   class MachineResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2342,7 +2323,7 @@ Octopus.Client.Model
     Octopus.Client.Model.TentacleUpdateBehavior TentacleUpdateBehavior { get; set; }
   }
   class MaintenanceConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2354,7 +2335,7 @@ Octopus.Client.Model
     .ctor()
     String EnvironmentId { get; set; }
     String LibraryVariableSetId { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String ProjectId { get; set; }
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
@@ -2392,14 +2373,14 @@ Octopus.Client.Model
   }
   class NotReadableAttribute
     _Attribute
-    Octopus.Client.Model.ApiPropertyAttribute
+    Octopus.Client.Extensibility.Attributes.ApiPropertyAttribute
   {
     .ctor()
   }
   class NuGetFeedResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.FeedResource
   {
     .ctor()
@@ -2419,9 +2400,9 @@ Octopus.Client.Model
     String Label { get; set; }
   }
   class OctopusServerNodeResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2433,7 +2414,7 @@ Octopus.Client.Model
     String Rank { get; set; }
   }
   class PackageFromBuiltInFeedResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.PackageResource
   {
@@ -2442,7 +2423,7 @@ Octopus.Client.Model
     Nullable<Int64> PackageSizeBytes { get; set; }
   }
   class PackageResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2620,7 +2601,7 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
   class ProgressionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2632,7 +2613,7 @@ Octopus.Client.Model
   class Project
   {
     .ctor(String)
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String ProjectId { get; }
     String ProjectName { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
@@ -2646,9 +2627,9 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
   class ProjectGroupResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2658,9 +2639,9 @@ Octopus.Client.Model
     String RetentionPolicyId { get; set; }
   }
   class ProjectResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IVariableTemplateContainer
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource>
     Octopus.Client.Model.Resource
@@ -2701,9 +2682,9 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectResource IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
   }
   class ProjectTriggerResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2738,9 +2719,9 @@ Octopus.Client.Model
     }
   }
   class ProxyResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2776,7 +2757,7 @@ Octopus.Client.Model
     String Name { get; set; }
   }
   class RegisterCommand
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.UserResource
   {
@@ -2801,7 +2782,7 @@ Octopus.Client.Model
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
   }
   class ReleaseResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.ReleaseSummaryResource
   {
@@ -2817,7 +2798,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
   }
   class ReleaseSummaryResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2840,7 +2821,7 @@ Octopus.Client.Model
     String VersionSelectedLastRelease { get; set; }
   }
   class ReleaseTemplateResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2852,7 +2833,7 @@ Octopus.Client.Model
     String VersioningPackageStepName { get; set; }
   }
   class ReportDeploymentCountOverTimeResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -2861,22 +2842,22 @@ Octopus.Client.Model
     Octopus.Client.Model.NumericReportData ReportData { get; set; }
   }
   abstract class Resource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
   {
     String Id { get; set; }
     String LastModifiedBy { get; set; }
     Nullable<DateTimeOffset> LastModifiedOn { get; set; }
-    Octopus.Client.Model.LinkCollection Links { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     Boolean HasLink(String)
     String Link(String)
   }
   class ResourceCollection`1
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
-    .ctor(IEnumerable<TResource>, Octopus.Client.Model.LinkCollection)
+    .ctor(IEnumerable<TResource>, Octopus.Client.Extensibility.LinkCollection)
     Boolean IsStale { get; set; }
     IList<TResource> Items { get; set; }
     Int32 ItemsPerPage { get; set; }
@@ -2901,9 +2882,9 @@ Octopus.Client.Model
     String ToString()
   }
   class RetentionPolicyResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -2919,7 +2900,7 @@ Octopus.Client.Model
       Items = 1
   }
   class RootResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3069,7 +3050,7 @@ Octopus.Client.Model
     Boolean Equals(Octopus.Client.Model.SensitiveValue)
   }
   class ServerActivitiesResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3079,7 +3060,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ServerActivityResource[] SystemServices { get; set; }
   }
   class ServerActivityResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3094,7 +3075,7 @@ Octopus.Client.Model
     List<ServerActivityResource> SupervisedActivities { get; set; }
   }
   class ServerStatusResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3113,7 +3094,7 @@ Octopus.Client.Model
       SkipUnavailableMachines = 1
   }
   class SmtpConfigurationResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3150,9 +3131,9 @@ Octopus.Client.Model
     .ctor()
   }
   class SubscriptionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3178,7 +3159,7 @@ Octopus.Client.Model
     static System.String Name
   }
   class SystemInfoResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3195,7 +3176,7 @@ Octopus.Client.Model
     static System.String Name
   }
   class TagResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
   {
     .ctor()
     String CanonicalTagName { get; set; }
@@ -3224,9 +3205,9 @@ Octopus.Client.Model
     }
   }
   class TagSetResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3238,7 +3219,7 @@ Octopus.Client.Model
     Octopus.Client.Model.TagSetResource RemoveTag(String)
   }
   class TaskDetailsResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3256,7 +3237,7 @@ Octopus.Client.Model
     Int32 ProgressPercentage { get; set; }
   }
   class TaskResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3292,9 +3273,9 @@ Octopus.Client.Model
       Cancelling = 8
   }
   class TeamResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3319,7 +3300,7 @@ Octopus.Client.Model
       Tenanted = 2
   }
   class TenantProjectEnvironmentMappingResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3328,9 +3309,9 @@ Octopus.Client.Model
     String ProjectId { get; set; }
   }
   class TenantResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3345,12 +3326,12 @@ Octopus.Client.Model
   class TenantsMissingVariablesResource
   {
     .ctor(String)
-    Octopus.Client.Model.LinkCollection Links { get; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; }
     IEnumerable<MissingVariableResource> MissingVariables { get; set; }
     String TenantId { get; }
   }
   class TenantVariableResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3364,14 +3345,14 @@ Octopus.Client.Model
       .ctor(String)
       String LibraryVariableSetId { get; }
       String LibraryVariableSetName { get; set; }
-      Octopus.Client.Model.LinkCollection Links { get; set; }
+      Octopus.Client.Extensibility.LinkCollection Links { get; set; }
       List<ActionTemplateParameterResource> Templates { get; set; }
       Dictionary<String, PropertyValueResource> Variables { get; set; }
     }
     class Project
     {
       .ctor(String)
-      Octopus.Client.Model.LinkCollection Links { get; set; }
+      Octopus.Client.Extensibility.LinkCollection Links { get; set; }
       String ProjectId { get; }
       String ProjectName { get; set; }
       List<ActionTemplateParameterResource> Templates { get; set; }
@@ -3446,7 +3427,7 @@ Octopus.Client.Model
     }
   }
   class UserPermissionSetResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3455,7 +3436,7 @@ Octopus.Client.Model
     List<ReferenceDataItem> Teams { get; set; }
   }
   class UserResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3469,9 +3450,9 @@ Octopus.Client.Model
     String Username { get; set; }
   }
   class UserRoleResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3520,7 +3501,7 @@ Octopus.Client.Model
       ScriptModule = 1
   }
   class VariableSetResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3563,25 +3544,37 @@ Octopus.Client.Model
     String DonorPackageStepId { get; set; }
     String Template { get; set; }
   }
-  class WriteableAttribute
-    _Attribute
-    Octopus.Client.Model.ApiPropertyAttribute
+  class WebPortalConfigResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.WebPortalSecurityResource Security { get; set; }
   }
-  class WriteableOnCreateAttribute
-    _Attribute
-    Octopus.Client.Model.ApiPropertyAttribute
+  class WebPortalSecurityResource
   {
     .ctor()
+    Boolean ContentSecurityPolicyEnabled { get; set; }
+    String CorsWhitelist { get; set; }
+    Boolean HttpStrictTransportSecurityEnabled { get; set; }
+    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
+    String ReferrerPolicy { get; set; }
+    Octopus.Client.Model.XOptionsResource XOptions { get; set; }
+  }
+  class XOptionsResource
+  {
+    static System.String XFrameAllowFromDescription
+    .ctor()
+    String XFrameOptionAllowFrom { get; set; }
   }
 }
 Octopus.Client.Model.Accounts
 {
   abstract class AccountResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
@@ -3601,9 +3594,9 @@ Octopus.Client.Model.Accounts
       AzureServicePrincipal = 4
   }
   class AzureServicePrincipalAccountResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
@@ -3617,9 +3610,9 @@ Octopus.Client.Model.Accounts
     String TenantId { get; set; }
   }
   class AzureSubscriptionAccountResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
@@ -3631,9 +3624,9 @@ Octopus.Client.Model.Accounts
     String SubscriptionNumber { get; set; }
   }
   class SshKeyPairAccountResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
@@ -3650,9 +3643,9 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType[] AccountTypes { get; }
   }
   class UsernamePasswordAccountResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.INamedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
@@ -3712,13 +3705,13 @@ Octopus.Client.Model.DeploymentProcess
 Octopus.Client.Model.Endpoints
 {
   abstract class AgentlessEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
   }
   class AzureWebAppEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
@@ -3734,7 +3727,7 @@ Octopus.Client.Model.Endpoints
     static System.String Osx64
   }
   class CloudRegionEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
@@ -3742,7 +3735,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
   class CloudServiceEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
@@ -3756,14 +3749,14 @@ Octopus.Client.Model.Endpoints
     Boolean UseCurrentInstanceCount { get; set; }
   }
   abstract class EndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
   class ListeningTentacleEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
@@ -3773,7 +3766,7 @@ Octopus.Client.Model.Endpoints
     String Uri { get; set; }
   }
   class OfflineDropEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
@@ -3785,7 +3778,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.SensitiveValue SensitiveVariablesEncryptionPassword { get; set; }
   }
   class PollingTentacleEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
@@ -3794,7 +3787,7 @@ Octopus.Client.Model.Endpoints
     String Uri { get; set; }
   }
   class SshEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
@@ -3822,7 +3815,7 @@ Octopus.Client.Model.Endpoints
     String Version { get; set; }
   }
   abstract class TentacleEndpointResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
@@ -3910,7 +3903,7 @@ Octopus.Client.Model.Forms
 Octopus.Client.Model.Triggers
 {
   class AutoDeployActionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Triggers.TriggerActionResource
   {
@@ -3919,7 +3912,7 @@ Octopus.Client.Model.Triggers
     Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
   }
   class MachineFilterResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
@@ -3931,7 +3924,7 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
   abstract class TriggerActionResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -3942,7 +3935,7 @@ Octopus.Client.Model.Triggers
       AutoDeploy = 0
   }
   abstract class TriggerFilterResource
-    Octopus.Client.Model.IResource
+    Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
@@ -4106,7 +4099,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<ArtifactResource>
     Octopus.Client.Repositories.IDelete<ArtifactResource>
   {
-    Octopus.Client.Model.ResourceCollection<ArtifactResource> FindRegarding(Octopus.Client.Model.IResource)
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> FindRegarding(Octopus.Client.Extensibility.IResource)
     Stream GetContent(Octopus.Client.Model.ArtifactResource)
     void PutContent(Octopus.Client.Model.ArtifactResource, Stream)
   }
@@ -4160,6 +4153,11 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
     void Install(Octopus.Client.Model.CommunityActionTemplateResource)
     void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+  }
+  interface IConfigurationRepository
+  {
+    Octopus.Client.Repositories.T Get()
+    Octopus.Client.Repositories.T Modify(Octopus.Client.Repositories.T)
   }
   interface ICreate`1
   {
@@ -4554,7 +4552,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ArtifactResource>
     Octopus.Client.Repositories.Async.IDelete<ArtifactResource>
   {
-    Task<ResourceCollection<ArtifactResource>> FindRegarding(Octopus.Client.Model.IResource)
+    Task<ResourceCollection<ArtifactResource>> FindRegarding(Octopus.Client.Extensibility.IResource)
     Task<Stream> GetContent(Octopus.Client.Model.ArtifactResource)
     Task PutContent(Octopus.Client.Model.ArtifactResource, Stream)
   }
@@ -4608,6 +4606,11 @@ Octopus.Client.Repositories.Async
     Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
     Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
     Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+  }
+  interface IConfigurationRepository
+  {
+    Task<T> Get()
+    Task<T> Modify(Octopus.Client.Repositories.Async.T)
   }
   interface ICreate`1
   {
