@@ -57,6 +57,7 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
+        IConfigurationRepository Configuration { get; }
     }
 }
 #endif
