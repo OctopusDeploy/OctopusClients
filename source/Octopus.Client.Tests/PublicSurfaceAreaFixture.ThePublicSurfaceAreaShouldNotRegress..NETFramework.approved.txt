@@ -4314,6 +4314,7 @@ Octopus.Client.Repositories
     List<MachineResource> FindByThumbprint(String)
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.MachineResource)
     IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource)
+    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Object)
     Octopus.Client.Model.ResourceCollection<MachineResource> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
   }
   interface IMachineRoleRepository
@@ -4762,6 +4763,7 @@ Octopus.Client.Repositories.Async
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
+    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource, Object)
     Task<ResourceCollection<MachineResource>> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
   }
   interface IMachineRoleRepository

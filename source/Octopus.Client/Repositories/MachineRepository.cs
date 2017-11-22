@@ -12,6 +12,8 @@ namespace Octopus.Client.Repositories
         MachineConnectionStatus GetConnectionStatus(MachineResource machine);
         List<MachineResource> FindByThumbprint(string thumbprint);
         IReadOnlyList<TaskResource> GetTasks(MachineResource machine);
+        IReadOnlyList<TaskResource> GetTasks(MachineResource machine, object pathParameters);
+
 
         MachineEditor CreateOrModify(
             string name,
@@ -65,10 +67,27 @@ namespace Octopus.Client.Repositories
             return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
         }
 
-        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine)
+        /// <summary>
+        /// Gets all tasks involving the specified machine
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <returns></returns>
+        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine) => GetTasks(machine, new {skip = 0});
+
+        /// <summary>
+        /// Gets all tasks involving the specified machine
+        /// 
+        /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <param name="pathParameters"></param>
+        /// <returns></returns>
+        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine, object pathParameters)
         {
-            if (machine == null) throw new ArgumentNullException(nameof(machine));
-            return Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), new {skip = 0});
+            if (machine == null)
+                throw new ArgumentNullException(nameof(machine));
+
+            return Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), pathParameters);
         }
 
         public MachineEditor CreateOrModify(
