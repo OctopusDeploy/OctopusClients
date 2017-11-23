@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 
 namespace Octopus.Client.Model

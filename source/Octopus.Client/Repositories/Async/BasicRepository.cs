@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async

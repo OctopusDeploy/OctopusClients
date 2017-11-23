@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Tests.Integration

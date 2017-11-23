@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Octopus.Client.Extensibility.Attributes;
 using Octopus.Client.Validation;
 
 namespace Octopus.Client.Model

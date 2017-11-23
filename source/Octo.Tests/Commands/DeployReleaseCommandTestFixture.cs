@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Serilog;
 using Serilog.Core;

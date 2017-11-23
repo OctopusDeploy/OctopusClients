@@ -100,7 +100,7 @@ namespace Octopus.Cli.Commands
             if (notFoundChannels.Any())
                 throw new CouldNotFindException("the channels named", notFoundChannels.CommaSeperate());
 
-            return channels.Select(c => c.Id).ToHashSet();
+            return new HashSet<string>(channels.Select(c => c.Id));
         }
 
         private async Task<ProjectResource> GetProject()

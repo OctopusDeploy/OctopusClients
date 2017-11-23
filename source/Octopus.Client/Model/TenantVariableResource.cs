@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Octopus.Client.Extensibility;
+
 
 namespace Octopus.Client.Model
 {

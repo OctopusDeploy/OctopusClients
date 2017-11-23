@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
