@@ -226,8 +226,8 @@ Task("PackOctopusToolsNuget")
         var nuspecFile = "OctopusTools.nuspec";
 
         CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
-        CopyFileToDirectory($"LICENSE.txt", nugetPackDir);
-        CopyFileToDirectory($"VERIFICATION.txt", nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/LICENSE.txt", nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/VERIFICATION.txt", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
 
