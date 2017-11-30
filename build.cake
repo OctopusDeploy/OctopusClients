@@ -107,7 +107,7 @@ Task("DotnetPublish")
 {
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
-        Framework = "net452",
+        Framework = "net451",
         Configuration = configuration,
         OutputDirectory = $"{octoPublishFolder}/netfx",
         ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
@@ -193,8 +193,8 @@ Task("Zip")
 Task("PackClientNuget")
     .IsDependentOn("Test")
     .Does(() => {
-        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net452";
-        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net452Merged";
+        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net451";
+        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net451Merged";
         CreateDirectory(outputFolder);
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
