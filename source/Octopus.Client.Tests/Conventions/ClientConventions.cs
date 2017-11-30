@@ -265,7 +265,8 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof (Sync.IChannelRepository).GetTypeInfo(),
-                typeof (Sync.IProjectTriggerRepository).GetTypeInfo()
+                typeof (Sync.IProjectTriggerRepository).GetTypeInfo(),
+                typeof (Sync.IScheduledProjectTriggerRepository).GetTypeInfo()
             };
 
             var getsResources = SyncRepositoryInterfaceTypes
@@ -331,6 +332,7 @@ namespace Octopus.Client.Tests.Conventions
                 typeof (Sync.IVariableSetRepository).GetTypeInfo(),
                 typeof (Sync.IChannelRepository).GetTypeInfo(),
                 typeof (Sync.IProjectTriggerRepository).GetTypeInfo(),
+                typeof (Sync.IScheduledProjectTriggerRepository).GetTypeInfo(),
                 typeof (Sync.ICommunityActionTemplateRepository).GetTypeInfo()
             };
 
