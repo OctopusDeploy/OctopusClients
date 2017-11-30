@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Octopus.Client.Editors;
+﻿using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Model.ScheduledTriggers;
-using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client.Repositories
 {

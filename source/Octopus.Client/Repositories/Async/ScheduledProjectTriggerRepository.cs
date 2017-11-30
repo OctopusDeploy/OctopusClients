@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ScheduledProjectTriggerResource> FindByName(ProjectResource project, string name)
         {
-            return FindByName(name, path: project.Link("Triggers"));
+            return FindByName(name, path: project.Link("ScheduledTriggers"));
         }
 
         public Task<ScheduledProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerScheduleResource filter, ScheduledTriggerActionResource action)
