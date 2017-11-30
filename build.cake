@@ -152,6 +152,7 @@ Task("MergeOctoExe")
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
+                Parallel = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -198,9 +199,10 @@ Task("PackClientNuget")
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
-            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
+                Parallel = false,
                 XmlDocs = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
