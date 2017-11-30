@@ -30,6 +30,8 @@ namespace Octopus.Client.Model
 
         public ReferenceCollection WebhookTeams { get; set; }
 
+        public TimeSpan WebhookTimeout { get; set; }
+
         public DateTimeOffset? WebhookLastProcessed { get; set; }
 
         public long? WebhookLastProcessedEventAutoId { get; set; }
