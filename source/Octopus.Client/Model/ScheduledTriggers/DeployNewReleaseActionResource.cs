@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model.ScheduledTriggers
+﻿using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model.ScheduledTriggers
 {
     public class DeployNewReleaseActionResource : ScheduledTriggerActionResource
     {

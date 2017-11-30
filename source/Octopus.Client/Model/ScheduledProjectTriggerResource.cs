@@ -1,4 +1,6 @@
-﻿using Octopus.Client.Model.ScheduledTriggers;
+﻿using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
+using Octopus.Client.Model.ScheduledTriggers;
 
 namespace Octopus.Client.Model
 {
