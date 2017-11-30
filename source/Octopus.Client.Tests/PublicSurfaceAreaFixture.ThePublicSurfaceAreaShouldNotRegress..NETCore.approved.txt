@@ -73,6 +73,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.Async.IScheduledProjectTriggerRepository ScheduledProjectTriggers { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -155,6 +156,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.Async.IScheduledProjectTriggerRepository ScheduledProjectTriggers { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -379,6 +381,16 @@ Octopus.Client.Editors.Async
     Task<ProjectTriggerEditor> CreateOrModify(String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
+  }
+  class ScheduledProjectTriggerEditor
+    Octopus.Client.Editors.Async.IResourceEditor<ScheduledProjectTriggerResource, ScheduledProjectTriggerEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IScheduledProjectTriggerRepository)
+    Octopus.Client.Model.ScheduledProjectTriggerResource Instance { get; }
+    Task<ScheduledProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource, Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource)
+    Octopus.Client.Editors.Async.ScheduledProjectTriggerEditor Customize(Action<ScheduledProjectTriggerResource>)
+    Task<ScheduledProjectTriggerEditor> Save()
   }
   class SubscriptionEditor
     Octopus.Client.Editors.Async.IResourceEditor<SubscriptionResource, SubscriptionEditor>
@@ -2522,6 +2534,18 @@ Octopus.Client.Model
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
   }
+  class ScheduledProjectTriggerResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource Action { get; set; }
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource Schedule { get; set; }
+  }
   ScopeField
   {
       Project = 0
@@ -3504,6 +3528,136 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
 }
+Octopus.Client.Model.ScheduledTriggers
+{
+  class CronTriggerScheduleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource
+  {
+    .ctor()
+    String CronExpression { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+  }
+  DailyTriggerScheduleInterval
+  {
+      OnceDaily = 0
+      OnceHourly = 1
+      OnceEveryMinute = 2
+  }
+  class DailyTriggerScheduleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource
+  {
+    .ctor()
+    Nullable<Int16> HourlInterval { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.DailyTriggerScheduleInterval Interval { get; set; }
+    Nullable<Int16> MinuteInterval { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+    DateTime StartTime { get; set; }
+  }
+  DayOfWeek
+  {
+      Sunday = 0
+      Monday = 1
+      Tuesday = 2
+      Wednesday = 3
+      Thursday = 4
+      Friday = 5
+      Saturday = 6
+  }
+  class DaysPerMonthTriggerScheduleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource
+  {
+    .ctor()
+    Nullable<Int16> DateOfMonth { get; set; }
+    Nullable<Int16> DayNumberOfMonth { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.DayOfWeek DayOfWeek { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+    DateTime StartTime { get; set; }
+  }
+  class DaysPerWeekTriggerScheduleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.DailyTriggerScheduleResource
+  {
+    .ctor()
+    Boolean Friday { get; set; }
+    Boolean Monday { get; set; }
+    Boolean Saturday { get; set; }
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+    Boolean Sunday { get; set; }
+    Boolean Thursday { get; set; }
+    Boolean Tuesday { get; set; }
+    Boolean Wednesday { get; set; }
+    void SetDayFromString(String)
+  }
+  class DeployLatestReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
+    Int32 EnvironmentId { get; set; }
+  }
+  class DeployNewReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
+    Int32 EnvironmentId { get; set; }
+  }
+  MonthlyScheduleType
+  {
+      DateOfMonth = 0
+      DayOfMonth = 1
+  }
+  class PromoteLatestReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
+    Int32 DestinationEnvironmentId { get; set; }
+    Int32 SourceEnvironmentId { get; set; }
+  }
+  abstract class ScheduledTriggerActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
+    Int32 ChannelId { get; set; }
+  }
+  ScheduledTriggerActionType
+  {
+      PromoteLatestRelease = 0
+      DeployLatestRelease = 1
+      DeployNewRelease = 2
+  }
+  abstract class TriggerScheduleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+  }
+  TriggerScheduleType
+  {
+      Daily = 0
+      DaysPerWeek = 1
+      DaysPerMonth = 2
+      CronExpression = 3
+  }
+}
 Octopus.Client.Model.Triggers
 {
   class AutoDeployActionResource
@@ -3997,6 +4151,15 @@ Octopus.Client.Repositories.Async
   interface IRetentionPolicyRepository
   {
     Task<TaskResource> ApplyNow()
+  }
+  interface IScheduledProjectTriggerRepository
+    Octopus.Client.Repositories.Async.ICreate<ScheduledProjectTriggerResource>
+    Octopus.Client.Repositories.Async.IModify<ScheduledProjectTriggerResource>
+    Octopus.Client.Repositories.Async.IGet<ScheduledProjectTriggerResource>
+    Octopus.Client.Repositories.Async.IDelete<ScheduledProjectTriggerResource>
+  {
+    Task<ScheduledProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource, Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource)
+    Task<ScheduledProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
   }
   interface ISchedulerRepository
   {
