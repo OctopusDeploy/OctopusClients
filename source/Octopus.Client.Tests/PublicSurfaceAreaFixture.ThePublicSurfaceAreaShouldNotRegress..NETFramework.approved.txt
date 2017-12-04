@@ -5206,6 +5206,11 @@ Octopus.Client.Serialization
     static JsonSerializerSettings GetDefaultSerializerSettings()
     static String SerializeObject(Object)
   }
+  class ScheduledTriggerActionConverter
+    Octopus.Client.Serialization.InheritedClassConverter<ScheduledTriggerActionResource, ScheduledTriggerActionType>
+  {
+    .ctor()
+  }
   class TriggerActionConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerActionResource, TriggerActionType>
   {
@@ -5213,6 +5218,11 @@ Octopus.Client.Serialization
   }
   class TriggerFilterConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
+  {
+    .ctor()
+  }
+  class TriggerScheduleConverter
+    Octopus.Client.Serialization.InheritedClassConverter<TriggerScheduleResource, TriggerScheduleType>
   {
     .ctor()
   }
