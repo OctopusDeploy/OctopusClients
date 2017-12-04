@@ -29,7 +29,9 @@ namespace Octopus.Client.Serialization
                     new HrefConverter(null),
                     new PropertyValueResource.PropertyValueJsonConverter(),
                     new TriggerActionConverter(),
-                    new TriggerFilterConverter()
+                    new TriggerFilterConverter(),
+                    new TriggerScheduleConverter(),
+                    new ScheduledTriggerActionConverter()
                 }
             };
         }
