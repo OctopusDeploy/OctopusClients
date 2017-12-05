@@ -7,6 +7,7 @@ using Octopus.Client.Model;
 using Autofac;
 using FluentAssertions;
 using Nancy.Extensions;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
 

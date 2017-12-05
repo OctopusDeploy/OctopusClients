@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async

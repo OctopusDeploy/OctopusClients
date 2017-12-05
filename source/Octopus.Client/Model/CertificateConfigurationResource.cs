@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model
+﻿using Octopus.Client.Extensibility;
+
+namespace Octopus.Client.Model
 {
     public class CertificateConfigurationResource : Resource, INamedResource
     {

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Octopus.Client.Extensibility.Attributes;
+using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {

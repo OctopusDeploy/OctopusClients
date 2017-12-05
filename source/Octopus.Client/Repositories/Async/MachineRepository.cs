@@ -13,6 +13,7 @@ namespace Octopus.Client.Repositories.Async
         Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine);
         Task<List<MachineResource>> FindByThumbprint(string thumbprint);
         Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine);
+        Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine, object pathParameters);
 
         Task<MachineEditor> CreateOrModify(
             string name,
@@ -66,10 +67,27 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
         }
 
-        public async Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine)
+        /// <summary>
+        /// Gets all tasks involving the specified machine
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <returns></returns>
+        public Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine) => GetTasks(machine, new {  skip = 0 });
+
+        /// <summary>
+        /// Gets all tasks associated with this machine
+        /// 
+        /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <param name="pathParameters"></param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine, object pathParameters)
         {
-            if (machine == null) throw new ArgumentNullException(nameof(machine));
-            return await Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), new { skip = 0 }).ConfigureAwait(false);
+            if (machine == null)
+                throw new ArgumentNullException(nameof(machine));
+
+            return await Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), pathParameters).ConfigureAwait(false);
         }
 
         public Task<MachineEditor> CreateOrModify(

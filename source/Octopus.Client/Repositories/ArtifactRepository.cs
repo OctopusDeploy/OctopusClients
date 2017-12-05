@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories

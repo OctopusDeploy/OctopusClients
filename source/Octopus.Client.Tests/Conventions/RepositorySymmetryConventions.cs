@@ -67,7 +67,7 @@ namespace Octopus.Client.Tests.Conventions
 
             var missingQ = from a in asyncRepository.GetMethods()
                            let parameters = a.GetParameters().Select(p => p.ParameterType).ToArray()
-                           let s = syncRepository.GetMethod(a.Name, parameters)
+                           let s = GetMatchingMethod(a, syncRepository, parameters)
                            where s == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
                            where !(asyncRepository.Name == "ITaskRepository" && a.Name == "WaitForCompletion")
                            select $"{a.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
@@ -91,7 +91,7 @@ namespace Octopus.Client.Tests.Conventions
 
             var missingQ = from s in syncRepository.GetMethods()
                            let parameters = s.GetParameters().Select(p => p.ParameterType).ToArray()
-                           let a = asyncRepository.GetMethod(s.Name, parameters)
+                           let a = GetMatchingMethod(s, asyncRepository, parameters)
                            where a == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
                            where !(syncRepository.Name == "ITaskRepository" && s.Name == "WaitForCompletion")
                            select $"{s.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
@@ -153,6 +153,30 @@ namespace Octopus.Client.Tests.Conventions
             if (generic != typeof(Task<>))
                 return false;
             return syncType.Name == asyncType.GetGenericArguments()[0].Name;
+        }
+
+        private MethodInfo GetMatchingMethod(MethodInfo sourceMethod, Type targetType, Type[] parameters)
+        {
+            return sourceMethod.IsGenericMethodDefinition
+                ? targetType.GetMethods().First(x => x.Name == sourceMethod.Name && x.GetParameters().SequenceEqual(sourceMethod.GetParameters(), new SimpleParameterComparer()))
+                : targetType.GetMethod(sourceMethod.Name, parameters);
+        }
+
+        private class SimpleParameterComparer : IEqualityComparer<ParameterInfo>
+        {
+            public bool Equals(ParameterInfo x, ParameterInfo y)
+            {
+                var parameterTypeEqual = x.ParameterType.IsGenericParameter
+                    ? x.ParameterType.Name == y.ParameterType.Name && x.ParameterType.IsGenericParameter == y.ParameterType.IsGenericParameter
+                    : x.ParameterType.FullName == y.ParameterType.FullName && x.ParameterType.AssemblyQualifiedName == y.ParameterType.AssemblyQualifiedName;
+
+                return x.Position == y.Position && parameterTypeEqual;
+            }
+
+            public int GetHashCode(ParameterInfo obj)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

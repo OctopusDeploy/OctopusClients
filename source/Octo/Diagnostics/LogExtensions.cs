@@ -10,9 +10,22 @@ namespace Octopus.Cli.Diagnostics
 {
     public enum BuildEnvironment
     {
-        NoneOrUnknown,
-        TeamCity,
-        TeamFoundationBuild
+        NoneOrUnknown = 0,
+        TeamCity = 1,
+        TeamFoundationBuild = 2
+    }
+
+    public interface IEnvironmentVariableReader
+    {
+        string GetVariableValue(string name);
+    }
+
+    public class EnvironmentVariableReader : IEnvironmentVariableReader
+    {
+        public string GetVariableValue(string name)
+        {
+            return Environment.GetEnvironmentVariable(name);
+        }
     }
 
     public static class LogExtensions
@@ -20,6 +33,16 @@ namespace Octopus.Cli.Diagnostics
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
         static BuildEnvironment buildEnvironment;
+        public static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
+
+        /// <summary>
+        /// This dictionary holds a record of the environment variables the code will check to define on which build environment is running on.
+        /// </summary>
+        public static Dictionary<BuildEnvironment,string[]> KnownEnvironmentVariables = new Dictionary<BuildEnvironment, string[]>()
+        {
+            {BuildEnvironment.TeamFoundationBuild ,new[]{"BUILD_BUILDID", "AGENT_WORKFOLDER" }},
+            {BuildEnvironment.TeamCity,new[]{"TEAMCITY_VERSION"}}
+        };
 
         static LogExtensions()
         {
@@ -41,13 +64,21 @@ namespace Octopus.Cli.Diagnostics
             };
         }
 
+        public static bool IsKnownEnvironment()
+        {
+            return buildEnvironment != BuildEnvironment.NoneOrUnknown;
+        }
+
+        public static bool EnvironmentVariableHasValue(string variableName)
+        {
+            return !string.IsNullOrEmpty(environmentVariableReader.GetVariableValue(variableName));
+        }
+
         public static void EnableServiceMessages(this ILogger log)
         {
             serviceMessagesEnabled = true;
-            buildEnvironment = (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_WORKFOLDER")))
-                ? string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEAMCITY_VERSION")) ? BuildEnvironment.NoneOrUnknown : BuildEnvironment.TeamCity
-                : BuildEnvironment.TeamFoundationBuild;
-            log.Information("Build environment is {Environment:l}", buildEnvironment);
+            
+            buildEnvironment = KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
         }
 
         public static void DisableServiceMessages(this ILogger log)

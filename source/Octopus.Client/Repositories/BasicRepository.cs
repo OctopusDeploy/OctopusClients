@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 using System.Text.RegularExpressions;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories
 {

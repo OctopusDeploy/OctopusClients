@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,6 +13,7 @@ using Octopus.Client.Repositories.Async;
 using Serilog;
 using FluentAssertions.Common;
 using Octopus.Cli.Model;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Cli.Tests.Commands
 {

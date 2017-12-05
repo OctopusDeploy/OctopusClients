@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Octo;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Serilog;
 using Octopus.Client.Serialization;

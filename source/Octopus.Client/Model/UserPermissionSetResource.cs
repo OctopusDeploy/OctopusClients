@@ -23,6 +23,6 @@ namespace Octopus.Client.Model
         /// <summary>
         /// Gets the teams that the user is a member of.
         /// </summary>
-        public List<ReferenceDataItem> Teams { get; set; }
+        public List<ProjectedTeamReferenceDataItem> Teams { get; set; }
     }
 }

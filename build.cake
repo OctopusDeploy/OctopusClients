@@ -107,7 +107,7 @@ Task("DotnetPublish")
 {
     DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
     {
-        Framework = "net45",
+        Framework = "net451",
         Configuration = configuration,
         OutputDirectory = $"{octoPublishFolder}/netfx",
         ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
@@ -152,6 +152,7 @@ Task("MergeOctoExe")
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
+                Parallel = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
         );
@@ -192,15 +193,16 @@ Task("Zip")
 Task("PackClientNuget")
     .IsDependentOn("Test")
     .Does(() => {
-        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
-        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
+        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net451";
+        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net451Merged";
         CreateDirectory(outputFolder);
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
-            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
+                Parallel = false,
                 XmlDocs = true,
                 Libs = new List<FilePath>() { inputFolder }
             }
@@ -226,6 +228,8 @@ Task("PackOctopusToolsNuget")
         var nuspecFile = "OctopusTools.nuspec";
 
         CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/LICENSE.txt", nugetPackDir);
+        CopyFileToDirectory($"{assetDir}/VERIFICATION.txt", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
         CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
 

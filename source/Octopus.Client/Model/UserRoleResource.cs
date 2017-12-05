@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {

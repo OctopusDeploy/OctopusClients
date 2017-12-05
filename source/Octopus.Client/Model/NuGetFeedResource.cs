@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model
+﻿using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model
 {
 #pragma warning disable 618
     public class NuGetFeedResource : FeedResource

@@ -70,6 +70,7 @@ namespace Octopus.Client
             Tenants = new TenantRepository(client);
             TagSets = new TagSetRepository(client);
             BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(client);
+            Configuration = new ConfigurationRepository(client);
         }
 
         public IOctopusAsyncClient Client { get; }
@@ -77,6 +78,8 @@ namespace Octopus.Client
         public IActionTemplateRepository ActionTemplates { get; }
 
         public ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+
+        public IConfigurationRepository Configuration { get; }
 
         public IDashboardRepository Dashboards { get; }
 
