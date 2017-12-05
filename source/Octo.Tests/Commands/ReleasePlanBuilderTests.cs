@@ -12,6 +12,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Serilog;
 using FluentAssertions.Common;
+using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Model;
 using Octopus.Client.Extensibility;
 
