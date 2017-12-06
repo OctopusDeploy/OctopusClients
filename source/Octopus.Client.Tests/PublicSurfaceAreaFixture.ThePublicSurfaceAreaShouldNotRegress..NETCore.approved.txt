@@ -1541,6 +1541,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
     Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
+    TimeSpan WebhookTimeout { get; set; }
     String WebhookURI { get; set; }
   }
   class EventNotificationSubscriptionFilter
