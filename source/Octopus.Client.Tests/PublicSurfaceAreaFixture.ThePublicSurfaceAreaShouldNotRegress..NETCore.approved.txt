@@ -1439,6 +1439,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentStepResource RequirePackagesToBeAcquired(Boolean)
     Octopus.Client.Model.DeploymentStepResource TargetingRoles(String[])
     Octopus.Client.Model.DeploymentStepResource WithCondition(Octopus.Client.Model.DeploymentStepCondition)
+    Octopus.Client.Model.DeploymentStepResource WithPackageRequirement(Octopus.Client.Model.DeploymentStepPackageRequirement)
     Octopus.Client.Model.DeploymentStepResource WithStartTrigger(Octopus.Client.Model.DeploymentStepStartTrigger)
   }
   DeploymentStepStartTrigger

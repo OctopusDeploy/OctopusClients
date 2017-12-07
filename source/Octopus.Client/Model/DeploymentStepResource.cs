@@ -51,6 +51,13 @@ namespace Octopus.Client.Model
             return this;
         }
 
+        public DeploymentStepResource WithPackageRequirement(DeploymentStepPackageRequirement packageRequirement)
+        {
+            PackageRequirement = packageRequirement;
+            return this;
+        }
+
+        [Obsolete("This method was deprecated in https://github.com/OctopusDeploy/Issues/issues/3974.  Please use the WithPackageRequirement method instead.")]
         public DeploymentStepResource RequirePackagesToBeAcquired(bool requirePackagesToBeAcquired = true)
         {
             PackageRequirement = requirePackagesToBeAcquired
