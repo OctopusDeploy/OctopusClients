@@ -16,7 +16,13 @@ namespace Octopus.Client.Model
         /// of the actions within the step need packages. If the actions need packages, then the step
         /// will be scheduled after acquisition regardless of the value of this flag.
         /// </summary>
-        public bool RequiresPackagesToBeAcquired { get; set; }
+        [Obsolete("This method was deprecated in https://github.com/OctopusDeploy/Issues/issues/3974.  Please use the PackageRequirement property instead.")]
+        public bool RequiresPackagesToBeAcquired {
+            get => PackageRequirement == DeploymentStepPackageRequirement.AfterPackageAcquisition;
+            set => RequirePackagesToBeAcquired(value);
+        }
+
+        public DeploymentStepPackageRequirement PackageRequirement { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
@@ -47,7 +53,9 @@ namespace Octopus.Client.Model
 
         public DeploymentStepResource RequirePackagesToBeAcquired(bool requirePackagesToBeAcquired = true)
         {
-            RequiresPackagesToBeAcquired = requirePackagesToBeAcquired;
+            PackageRequirement = requirePackagesToBeAcquired
+                ? DeploymentStepPackageRequirement.AfterPackageAcquisition
+                : DeploymentStepPackageRequirement.LetOctopusDecide;
             return this;
         }
 
@@ -116,8 +124,6 @@ namespace Octopus.Client.Model
             action.Properties["Octopus.Action.RunOnServer"] = scriptTarget == ScriptTarget.Server ? "true" : "false";
             action.Properties["Octopus.Action.Script.Syntax"] = scriptAction.Syntax.ToString();
             action.Properties["Octopus.Action.Script.ScriptSource"] = scriptAction.Source.ToString();
-
-            RequiresPackagesToBeAcquired = scriptAction.Source == ScriptSource.Package;
 
             switch (scriptAction.Source)
             {
