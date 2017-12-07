@@ -1788,6 +1788,12 @@ Octopus.Client.Model
       Always = 2
       Variable = 3
   }
+  DeploymentStepPackageRequirement
+  {
+      LetOctopusDecide = 0
+      BeforePackageAcquisition = 1
+      AfterPackageAcquisition = 2
+  }
   class DeploymentStepProperties
   {
     .ctor()
@@ -1814,6 +1820,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentStepCondition Condition { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.DeploymentStepPackageRequirement PackageRequirement { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Boolean RequiresPackagesToBeAcquired { get; set; }
     Octopus.Client.Model.DeploymentStepStartTrigger StartTrigger { get; set; }
