@@ -3613,7 +3613,7 @@ Octopus.Client.Model.Accounts
     .ctor()
     String AccessKey { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
-    String SecretKey { get; set; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
   class AmazonWebServicesRoleAccountResource
     Octopus.Client.Extensibility.IResource
