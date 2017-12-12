@@ -3601,6 +3601,28 @@ Octopus.Client.Model.Accounts
       SshKeyPair = 2
       AzureSubscription = 3
       AzureServicePrincipal = 4
+      AmazonWebServicesAccount = 5
+      AmazonWebServicesRoleAccount = 6
+  }
+  class AmazonWebServicesAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String SecretKey { get; set; }
+  }
+  class AmazonWebServicesRoleAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
   }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
