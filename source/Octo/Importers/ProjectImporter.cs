@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Serilog;
 using Octopus.Cli.Commands;
@@ -173,20 +171,14 @@ namespace Octopus.Cli.Importers
             }
         }
 
-        private async Task MapChannelsToAction(DeploymentProcessResource importedDeploymentProcess, Dictionary<string, ChannelResource> importedChannels, Dictionary<string, ReferenceCollection> oldActionChannels)
+        async Task MapChannelsToAction(DeploymentProcessResource importedDeploymentProcess, IDictionary<string, ChannelResource> importedChannels, IDictionary<string, ReferenceCollection> oldActionChannels)
         {
             foreach (var step in importedDeploymentProcess.Steps)
             {
                 foreach (var action in step.Actions)
                 {
-                    var oldChannelIds = oldActionChannels[action.Id];
-                    var newChannelIds = new List<string>();
-                    Log.Debug("Updating IDs of Channels");
-                    foreach (var oldChannelId in oldChannelIds)
-                    {
-                        newChannelIds.Add(importedChannels[oldChannelId].Id);
-                    }
-                    action.Channels.AddRange(newChannelIds);
+                    Log.Debug("Setting action channels");
+                    action.Channels.AddRange(oldActionChannels[action.Id].Select(oldChannelId =>  importedChannels[oldChannelId].Id));
                 }
             }
             await Repository.DeploymentProcesses.Modify(importedDeploymentProcess).ConfigureAwait(false);
