@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -141,13 +140,18 @@ namespace Octopus.Cli.Importers
                 Log.Debug("Beginning import of project '{Project:l}'", validatedImportSettings.Project.Name);
 
                 var importedProject = await ImportProject(validatedImportSettings.Project, validatedImportSettings.ProjectGroupId, validatedImportSettings.LibraryVariableSets).ConfigureAwait(false);
+
+                var oldActionChannels = validatedImportSettings.DeploymentProcess.Steps.SelectMany(s => s.Actions).ToDictionary(x => x.Id, x => x.Channels.Clone());
+
+                var importeDeploymentProcess = await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates).ConfigureAwait(false);
+
                 var importedChannels =
                     (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
                         .ToDictionary(k => k.Key, v => v.Value);
 
                 await MapReleaseCreationStrategyChannel(importedProject, importedChannels);
 
-                await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates, importedChannels).ConfigureAwait(false);
+                await MapChannelsToAction(importeDeploymentProcess, importedChannels, oldActionChannels);
 
                 await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
 
@@ -165,6 +169,19 @@ namespace Octopus.Cli.Importers
                     }
                 }
             }
+        }
+
+        async Task MapChannelsToAction(DeploymentProcessResource importedDeploymentProcess, IDictionary<string, ChannelResource> importedChannels, IDictionary<string, ReferenceCollection> oldActionChannels)
+        {
+            foreach (var step in importedDeploymentProcess.Steps)
+            {
+                foreach (var action in step.Actions)
+                {
+                    Log.Debug("Setting action channels");
+                    action.Channels.AddRange(oldActionChannels[action.Id].Select(oldChannelId =>  importedChannels[oldChannelId].Id));
+                }
+            }
+            await Repository.DeploymentProcesses.Modify(importedDeploymentProcess).ConfigureAwait(false);
         }
 
         Task MapReleaseCreationStrategyChannel(ProjectResource importedProject, Dictionary<string, ChannelResource> channelMap)
@@ -395,12 +412,11 @@ namespace Octopus.Cli.Importers
             return variables;
         }
 
-        async Task ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
+        async Task<DeploymentProcessResource> ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
             IDictionary<string, FeedResource> nugetFeeds,
-            IDictionary<string, ActionTemplateResource> actionTemplates,
-            IDictionary<string, ChannelResource> channels)
+            IDictionary<string, ActionTemplateResource> actionTemplates)
         {
             Log.Debug("Importing the Projects Deployment Process");
             var existingDeploymentProcess = await Repository.DeploymentProcesses.Get(importedProject.DeploymentProcessId).ConfigureAwait(false);
@@ -433,21 +449,14 @@ namespace Octopus.Cli.Importers
                     action.Environments.Clear();
                     action.Environments.AddRange(newEnvironmentIds);
 
-                    var oldChannelIds = action.Channels;
-                    var newChannelIds = new List<string>();
-                    Log.Debug("Updating IDs of Channels");
-                    foreach (var oldChannelId in oldChannelIds)
-                    {
-                        newChannelIds.Add(channels[oldChannelId].Id);
-                    }
+                    // Make sure source channels are clear, will be added later
                     action.Channels.Clear();
-                    action.Channels.AddRange(newChannelIds);
                 }
             }
             existingDeploymentProcess.Steps.Clear();
             existingDeploymentProcess.Steps.AddRange(steps);
 
-            await Repository.DeploymentProcesses.Modify(existingDeploymentProcess).ConfigureAwait(false);
+            return await Repository.DeploymentProcesses.Modify(existingDeploymentProcess).ConfigureAwait(false);
         }
 
         async Task<IReadOnlyList<KeyValuePair<string, ChannelResource>>> ImportProjectChannels(List<ChannelResource> channels, ProjectResource importedProject, IDictionary<string, LifecycleResource> channelLifecycles)
