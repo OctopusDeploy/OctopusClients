@@ -4,6 +4,7 @@
     {
         String,
         Sensitive,
-        Certificate
+        Certificate,
+        AmazonWebServicesAccount
     }
 }
