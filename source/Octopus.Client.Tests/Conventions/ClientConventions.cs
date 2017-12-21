@@ -40,7 +40,7 @@ namespace Octopus.Client.Tests.Conventions
             .ToArray();
 
         private static readonly TypeInfo[] ResourceTypes = ExportedTypes
-            .Where(t => t.Name.EndsWith("Resource"))
+            .Where(t => !t.IsInterface && !t.IsAbstract && t.Name.EndsWith("Resource"))
             .ToArray();
 
         private static readonly TypeInfo[] RepositoryResourceTypes = ResourceTypes
