@@ -3216,7 +3216,7 @@ Octopus.Client.Model
   {
       String = 0
       Sensitive = 1
-      Certificate = 2,
+      Certificate = 2
       AmazonWebServicesAccount = 3
   }
   class VersioningStrategyResource
