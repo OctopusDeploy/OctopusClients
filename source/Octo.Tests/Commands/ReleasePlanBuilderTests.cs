@@ -14,6 +14,7 @@ using Serilog;
 using FluentAssertions.Common;
 using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Model;
+using Octopus.Cli.Util;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Cli.Tests.Commands
@@ -29,6 +30,7 @@ namespace Octopus.Cli.Tests.Commands
         private IDeploymentProcessRepository deploymentProcessRepository;
         private IReleaseRepository releaseRepository;
         private IFeedRepository feedRepository;
+        private ICommandOutputProvider commandOutputProvider;
         
         private ProjectResource projectResource;
         private ChannelResource channelResource;
@@ -80,6 +82,7 @@ namespace Octopus.Cli.Tests.Commands
             logger = Substitute.For<ILogger>();
             versionResolver = Substitute.For<IPackageVersionResolver>();
             versionRuleTester = Substitute.For<IChannelVersionRuleTester>();
+            commandOutputProvider = Substitute.For<ICommandOutputProvider>();
 
             deploymentProcessRepository = Substitute.For<IDeploymentProcessRepository>();
             deploymentProcessRepository.Get(projectResource.DeploymentProcessId)
@@ -102,7 +105,7 @@ namespace Octopus.Cli.Tests.Commands
             repository.Client
                 .Get<List<PackageResource>>(Arg.Any<string>(), Arg.Any<IDictionary<string, object>>()).Returns(packages);
 
-            builder = new ReleasePlanBuilder(logger, versionResolver, versionRuleTester);
+            builder = new ReleasePlanBuilder(logger, versionResolver, versionRuleTester, commandOutputProvider);
         }
 
         [Test]
