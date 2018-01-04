@@ -266,7 +266,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             return new ReleaseTemplatePackage
             {
-                StepName = TestHelpers.GetId("step")
+                ActionName = TestHelpers.GetId("step")
             };
         }
 
@@ -324,7 +324,7 @@ namespace Octopus.Cli.Tests.Commands
         public static ReleaseTemplatePackage WithVersion(this ReleaseTemplatePackage releaseTemplatePackage,
             string version, IPackageVersionResolver versionResolver)
         {
-            versionResolver.ResolveVersion(releaseTemplatePackage.StepName, releaseTemplatePackage.PackageId)
+            versionResolver.ResolveVersion(releaseTemplatePackage.ActionName, releaseTemplatePackage.PackageId)
                 .Returns(version);
             return releaseTemplatePackage;
         }
