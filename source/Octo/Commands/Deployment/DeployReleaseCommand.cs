@@ -101,7 +101,8 @@ namespace Octopus.Cli.Commands.Deployment
                     d.QueueTime,
                     Tenant = string.IsNullOrEmpty(d.TenantId)
                         ? null
-                        : new { d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name }
+                        : new { d.TenantId, TenantName = deploymentTenants.FirstOrDefault(x => x.Id == d.TenantId)?.Name },
+                    d.UseGuidedFailure
                 })
             });
         }
