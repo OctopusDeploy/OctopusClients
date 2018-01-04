@@ -53,10 +53,8 @@ namespace Octopus.Cli.Commands.Environment
         {
             commandOutputProvider.Json(new
             {
-                Environment = new {
-                    env.Id,
-                    env.Name,
-                }
+                env.Id,
+                env.Name,
             });
         }
     }
