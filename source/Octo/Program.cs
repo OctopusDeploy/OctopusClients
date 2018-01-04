@@ -72,7 +72,7 @@ namespace Octopus.Cli
             builder.RegisterAssemblyTypes(thisAssembly).As<ICommand>().AsSelf();
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
 
-            builder.RegisterType<CommandOutputProvider>().As<ICommandOutputProvider>();
+            builder.RegisterType<CommandOutputProvider>().As<ICommandOutputProvider>().SingleInstance();
 
             builder.RegisterAssemblyTypes(thisAssembly).As<IExporter>().AsSelf();
             builder.RegisterAssemblyTypes(thisAssembly).As<IImporter>().AsSelf();
