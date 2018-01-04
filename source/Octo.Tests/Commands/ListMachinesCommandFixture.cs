@@ -247,7 +247,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+            LogLines.Should().Contain("The `--status` parameter will be deprecated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
             LogLines.Should().Contain("Machines: 2");
         }
 

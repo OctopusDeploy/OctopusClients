@@ -38,7 +38,7 @@ namespace Octopus.Cli.Commands
             {
                 if (statuses.Any())
                 {
-                    commandOutputProvider.Warning("The `--status` parameter will be depricated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
+                    commandOutputProvider.Warning("The `--status` parameter will be deprecated in Octopus Deploy 4.0. You may want to execute this command with the `--health-status=` parameter instead.");
                 }
             }
             else
