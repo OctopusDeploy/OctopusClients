@@ -59,27 +59,11 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintMessages = HelpOutputFormat == OutputFormat.Default;
             if (HelpOutputFormat  == OutputFormat.Json)
             {
-                commandOutputProvider.Json(new
-                {
-                    Command = commandName,
-                    Options = Options.OptionSets.OrderByDescending(x => x.Key).Select(g => new
-                    {
-                        @Group = g.Key,
-                        Parameters = g.Value.Select(p => new
-                        {
-                            Name = p.Names.First(),
-                            Usage = string.Format("{0}{1}{2}",p.Prototype.Length == 1 ? "-" : "--", p.Prototype, p.Prototype.EndsWith("=") ? "VALUE" : string.Empty),
-                            Value = p.OptionValueType.ToString(),
-                            p.Description
-                        })
-                    })
-                });
+                PrintJsonHelpOutput(commandName);
             }
             else
             {
-                commandOutputProvider.PrintCommandHelpHeader(executable, commandName, writer);
-                commandOutputProvider.PrintCommandOptions(Options, writer);
-                commandOutputProvider.PrintCommandHelpFooter(executable, commandName, writer);
+                PrintDefaultHelpOutput(writer, executable, commandName);
             }
         }
 
@@ -97,6 +81,33 @@ namespace Octopus.Cli.Commands
         {
             OutputFormat outputFormat;
             return Enum.TryParse(s, true, out outputFormat) ? outputFormat : OutputFormat.Default;
+        }
+
+        private void PrintDefaultHelpOutput(TextWriter writer, string executable, string commandName)
+        {
+            commandOutputProvider.PrintCommandHelpHeader(executable, commandName, writer);
+            commandOutputProvider.PrintCommandOptions(Options, writer);
+            commandOutputProvider.PrintCommandHelpFooter(executable, commandName, writer);
+        }
+
+        private void PrintJsonHelpOutput(string commandName)
+        {
+            commandOutputProvider.Json(new
+            {
+                Command = commandName,
+                Options = Options.OptionSets.OrderByDescending(x => x.Key).Select(g => new
+                {
+                    @Group = g.Key,
+                    Parameters = g.Value.Select(p => new
+                    {
+                        Name = p.Names.First(),
+                        Usage = string.Format("{0}{1}{2}", p.Prototype.Length == 1 ? "-" : "--", p.Prototype,
+                            p.Prototype.EndsWith("=") ? "VALUE" : string.Empty),
+                        Value = p.OptionValueType.ToString(),
+                        p.Description
+                    })
+                })
+            });
         }
     }
 }

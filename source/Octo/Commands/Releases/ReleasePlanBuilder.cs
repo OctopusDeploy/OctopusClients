@@ -12,14 +12,12 @@ namespace Octopus.Cli.Commands.Releases
 {
     public class ReleasePlanBuilder : IReleasePlanBuilder
     {
-        private readonly ILogger log;
         private readonly IPackageVersionResolver versionResolver;
         private readonly IChannelVersionRuleTester versionRuleTester;
         private readonly ICommandOutputProvider commandOutputProvider;
 
         public ReleasePlanBuilder(ILogger log, IPackageVersionResolver versionResolver, IChannelVersionRuleTester versionRuleTester, ICommandOutputProvider commandOutputProvider)
         {
-            this.log = log;
             this.versionResolver = versionResolver;
             this.versionRuleTester = versionRuleTester;
             this.commandOutputProvider = commandOutputProvider;
