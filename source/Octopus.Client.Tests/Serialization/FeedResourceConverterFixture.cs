@@ -31,6 +31,23 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void MavenFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "Blah",
+                FeedType = FeedType.Maven,
+                DownloadAttempts = 91
+            };
+
+            var result = Execute<MavenFeedResource>(input);
+
+            Assert.AreEqual(FeedType.Maven, result.FeedType);
+            Assert.IsAssignableFrom(typeof(MavenFeedResource), result);
+            Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
+        }
+
+        [Test]
         public void NuGetFeedTypesDeserialize()
         {
             var input = new
