@@ -2097,6 +2097,7 @@ Octopus.Client.Model
       None = 0
       NuGet = 1
       Docker = 2
+      Maven = 3
   }
   class FileUpload
   {
@@ -2407,6 +2408,17 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
+  }
+  class MavenFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   class MissingVariableResource
   {
