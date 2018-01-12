@@ -10,7 +10,7 @@ namespace Octopus.Client.Model.ScheduledTriggers
 
         public DailyTriggerScheduleInterval Interval { get; set; }
 
-        public short? HourlInterval { get; set; }
+        public short? HourInterval { get; set; }
 
         public short? MinuteInterval { get; set; }
     }

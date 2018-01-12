@@ -3551,7 +3551,7 @@ Octopus.Client.Model.ScheduledTriggers
     Octopus.Client.Model.ScheduledTriggers.TriggerScheduleResource
   {
     .ctor()
-    Nullable<Int16> HourlInterval { get; set; }
+    Nullable<Int16> HourInterval { get; set; }
     Octopus.Client.Model.ScheduledTriggers.DailyTriggerScheduleInterval Interval { get; set; }
     Nullable<Int16> MinuteInterval { get; set; }
     Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
