@@ -2,10 +2,12 @@
 using System.IO;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
-using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 using FluentAssertions;
+using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Util;
+using Serilog;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -16,15 +18,20 @@ namespace Octopus.Cli.Tests.Commands
         ICommandLocator commandLocator;
         StringWriter output;
         TextWriter originalOutput;
+        private ICommandOutputProvider commandOutputProvider;
+        private ILogger logger;
 
         [SetUp]
         public void SetUp()
         {
             originalOutput = Console.Out;
-            Console.SetOut(output = new StringWriter());
+            output = new StringWriter();
+            Console.SetOut(output);
 
             commandLocator = Substitute.For<ICommandLocator>();
-            helpCommand = new HelpCommand(commandLocator);
+            commandOutputProvider = new CommandOutputProvider(logger);
+            helpCommand = new HelpCommand(commandLocator, commandOutputProvider);
+            logger = new LoggerConfiguration().WriteTo.TextWriter(output).CreateLogger();
         }
 
         [Test]
@@ -48,15 +55,13 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldPrintHelpForExistingCommand()
         {
-            var speak = Substitute.For<ICommand>();
+            var speak = new SpeakCommand(commandOutputProvider);
             commandLocator.Find("speak").Returns(speak);
             helpCommand.Execute("speak");
 
             output.ToString()
                 .Should()
-                .Contain("Usage: Octo speak [<options>]");
-
-            speak.Received().GetHelp(Arg.Any<TextWriter>());
+                .Contain("Usage: Octo.Tests speak [<options>]");
         }
 
         [Test]

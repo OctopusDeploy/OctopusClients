@@ -1,10 +1,9 @@
-﻿using System;
-using System.Text;
-using Serilog;
+﻿using System.Text;
 using Newtonsoft.Json;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Util;
 using Octopus.Client.Serialization;
+using Serilog;
 
 namespace Octopus.Cli.Exporters
 {

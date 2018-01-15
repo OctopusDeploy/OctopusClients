@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Infrastructure;
 
 namespace Octopus.Cli.Tests.Commands
 {

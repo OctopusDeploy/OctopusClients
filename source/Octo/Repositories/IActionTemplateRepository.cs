@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Cli.Repositories

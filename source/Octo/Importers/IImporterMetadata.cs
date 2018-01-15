@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Octopus.Cli.Importers
+﻿namespace Octopus.Cli.Importers
 {
     public interface IImporterMetadata
     {

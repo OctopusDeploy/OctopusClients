@@ -1,6 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 using Octopus.Cli.Util;
@@ -23,7 +24,7 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldLoadOptionsFromFile()
         {
-            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, Log, new OctopusPhysicalFileSystem(Log), versionResolver, releasePlanBuilder, ClientFactory);
+            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, new OctopusPhysicalFileSystem(Log), versionResolver, releasePlanBuilder, ClientFactory, CommandOutputProvider);
 
             Assert.Throws<CouldNotFindException>(delegate {
                 createReleaseCommand.Execute("--configfile=Commands/Resources/CreateRelease.config.txt");

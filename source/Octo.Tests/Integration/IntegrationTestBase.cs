@@ -69,8 +69,8 @@ namespace Octopus.Cli.Tests.Integration
         {
             var logOutput = new StringBuilder();
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.ColoredConsole(outputTemplate: "[{Level}] {Message}{NewLine}{Exception}")
-                .WriteTo.TextWriter(new StringWriter(logOutput), outputTemplate: "[{Level}] {Message}{NewLine}{Exception}")
+                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
+                .WriteTo.TextWriter(new StringWriter(logOutput), outputTemplate: "{Message}{NewLine}{Exception}")
                 .CreateLogger();
 
             var allArgs = new[]

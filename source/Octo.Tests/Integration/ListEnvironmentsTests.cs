@@ -31,6 +31,7 @@ namespace Octopus.Cli.Tests.Integration
         [Test]
         public void ListEnvironments()
         {
+
             var result = Execute("list-environments");
             result.LogOutput.Should().Contain(EnvironmentName);
             result.Code.Should().Be(0);
