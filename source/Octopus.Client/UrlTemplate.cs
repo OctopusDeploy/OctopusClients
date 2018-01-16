@@ -447,7 +447,36 @@ namespace Octopus.Client
 
         static string Encode(string p, bool allowReserved)
         {
-            return Uri.EscapeDataString(p);
+            var result = new StringBuilder();
+            for (int i = 0; i < p.Length; i++)
+            {
+                char c = p[i];
+                if ((c >= 'A' && c <= 'z') //Alpha
+                    || (c >= '0' && c <= '9') // Digit
+                    || UriUnreservedSymbols.IndexOf(c) != -1
+                    // Unreserved symbols  - These should never be percent encoded
+                    || (allowReserved && UriReservedSymbols.IndexOf(c) != -1))
+                    // Reserved symbols - should be included if requested (+)
+                {
+                    result.Append(c);
+                }
+                else
+                {
+                    if (char.IsHighSurrogate(c))
+                    {
+                        // get all characters associated with this unicode character
+                        var unicodeChars = p.ToCharArray().Skip(i).TakeWhile(x => !char.IsLowSurrogate(x), true).ToArray();
+                        result.Append(Uri.EscapeDataString(new string(unicodeChars)));
+                        i += unicodeChars.Length;
+                    }
+                    else
+                    {
+                        result.Append(Uri.EscapeDataString(c.ToString()));
+                    }
+                }
+            }
+
+            return result.ToString();
         }
 
         static OperatorInfo GetOperator(char operatorIndicator)
