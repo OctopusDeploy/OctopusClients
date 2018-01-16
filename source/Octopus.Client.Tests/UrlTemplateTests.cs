@@ -181,6 +181,5 @@ namespace Octopus.Client.Tests
             // Assert
             url.ShouldBeEquivalentTo(@"/api/projects?name=Me%26You");
         }
-
     }
 }
