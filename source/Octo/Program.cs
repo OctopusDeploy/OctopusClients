@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using Autofac;
-using Serilog;
 using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Diagnostics;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Importers;
 using Octopus.Cli.Infrastructure;
-using Octopus.Cli.Util;
-using System.Net;
 using Octopus.Cli.Repositories;
+using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Exceptions;
+using Serilog;
 using Serilog.Events;
 
 namespace Octopus.Cli
@@ -34,10 +34,8 @@ namespace Octopus.Cli
 
         internal static int Run(string[] args)
         {
-            Log.Information("Octopus Deploy Command Line Tool, version {Version:l}", typeof(Program).GetInformationalVersion());
             Console.Title = "Octopus Deploy Command Line Tool";
-            Log.Information(string.Empty);
-
+            
             try
             {
                 var container = BuildContainer();
@@ -74,6 +72,8 @@ namespace Octopus.Cli
             builder.RegisterAssemblyTypes(thisAssembly).As<ICommand>().AsSelf();
             builder.RegisterType<CommandLocator>().As<ICommandLocator>();
 
+            builder.RegisterType<CommandOutputProvider>().As<ICommandOutputProvider>().SingleInstance();
+
             builder.RegisterAssemblyTypes(thisAssembly).As<IExporter>().AsSelf();
             builder.RegisterAssemblyTypes(thisAssembly).As<IImporter>().AsSelf();
             builder.RegisterType<ExporterLocator>().As<IExporterLocator>();
@@ -87,7 +87,7 @@ namespace Octopus.Cli
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
             builder.RegisterType<OctopusPhysicalFileSystem>().As<IOctopusFileSystem>();
-
+            
             return builder.Build();
         }
 

@@ -1,5 +1,5 @@
-﻿using Octopus.Client.Model;
-using System;
+﻿using System;
+using Octopus.Client.Model;
 
 namespace Octopus.Cli.Util
 {

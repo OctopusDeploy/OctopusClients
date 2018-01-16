@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Serilog;
+﻿using System.Threading.Tasks;
 using Octopus.Cli.Exporters;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {
@@ -14,8 +13,8 @@ namespace Octopus.Cli.Commands
     {
         readonly IExporterLocator exporterLocator;
 
-        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory)
-            : base(clientFactory, repositoryFactory, log, fileSystem)
+        public ExportCommand(IExporterLocator exporterLocator, IOctopusFileSystem fileSystem, IOctopusAsyncRepositoryFactory repositoryFactory, ILogger log, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+            : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             this.exporterLocator = exporterLocator;
 
@@ -38,12 +37,12 @@ namespace Octopus.Cli.Commands
             if (string.IsNullOrWhiteSpace(Type)) throw new CommandException("Please specify the type to export using the parameter: --type=XYZ");
             if (string.IsNullOrWhiteSpace(FilePath)) throw new CommandException("Please specify the full path and name of the export file using the parameter: --filePath=XYZ");
 
-            Log.Debug("Finding exporter '{Type:l}'", Type);
-            var exporter = exporterLocator.Find(Type, Repository, FileSystem, Log);
+            commandOutputProvider.Debug("Finding exporter '{Type:l}'", Type);
+            var exporter = exporterLocator.Find(Type, Repository, FileSystem, commandOutputProvider);
             if (exporter == null)
                 throw new CommandException("Error: Unrecognized exporter '" + Type + "'");
 
-            Log.Debug("Beginning the export");
+            commandOutputProvider.Debug("Beginning the export");
             return exporter.Export(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("Name={0}", Name), string.Format("ReleaseVersion={0}", ReleaseVersion));
         }
     }
