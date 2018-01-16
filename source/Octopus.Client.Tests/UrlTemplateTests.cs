@@ -153,5 +153,34 @@ namespace Octopus.Client.Tests
             // Assert
             url.ShouldBeEquivalentTo(@"/api/projects?name=KPP.Bastj%C3%A4nster");
         }
+
+        [Test]
+        public void ParameterValueContainsSmilyFace_ShouldUrlEncodeValue()
+        {
+            // Arrange
+            var urlTemplateResolver = new UrlTemplate(@"/api/tenants{/id}{?skip,projectId,name,tags,take,ids,partialName}");
+            urlTemplateResolver.SetParameter("name", @"Team 😄");
+
+            // Act
+            var url = urlTemplateResolver.Resolve();
+
+            // Assert
+            url.ShouldBeEquivalentTo(@"/api/tenants?name=Team%20%F0%9F%98%84");
+        }
+
+        [Test]
+        public void ParameterValueContainsReservedCharacter_ShouldUrlEncodeValue()
+        {
+            // Arrange
+            var urlTemplateResolver = new UrlTemplate(@"/api/projects{/id}{?name,skip,ids,clone,take}");
+            urlTemplateResolver.SetParameter("name", "Me&You");
+
+            // Act
+            var url = urlTemplateResolver.Resolve();
+
+            // Assert
+            url.ShouldBeEquivalentTo(@"/api/projects?name=Me%26You");
+        }
+
     }
 }
