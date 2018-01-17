@@ -15,6 +15,8 @@ using System.Xml;
 //////////////////////////////////////////////////////////////////////
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var signingCertificatePath = Argument("signing_certificate_path", "");
+var signingCertificatePassword = Argument("signing_certificate_password", "");
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
@@ -121,6 +123,8 @@ Task("DotnetPublish")
         OutputDirectory = portablePublishDir,
         ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
+    SignBinaries(portablePublishDir);
+    
     CopyFileToDirectory($"{assetDir}/Octo", portablePublishDir);
     CopyFileToDirectory($"{assetDir}/Octo.cmd", portablePublishDir);
 
@@ -137,6 +141,7 @@ Task("DotnetPublish")
             OutputDirectory = $"{octoPublishFolder}/{rid}",
 			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
         });
+        SignBinaries($"{octoPublishFolder}/{rid}");
     }
 });
 
@@ -153,9 +158,10 @@ Task("MergeOctoExe")
             new ILRepackSettings {
                 Internalize = true,
                 Parallel = true,
-                Libs = new List<FilePath>() { inputFolder }
+                Libs = new List<DirectoryPath>() { inputFolder }
             }
         );
+        SignBinaries(outputFolder);
     });
 
 
@@ -204,11 +210,13 @@ Task("PackClientNuget")
                 Internalize = true,
                 Parallel = false,
                 XmlDocs = true,
-                Libs = new List<FilePath>() { inputFolder }
+                Libs = new List<DirectoryPath>() { inputFolder }
             }
         );
         DeleteDirectory(inputFolder, true);
         MoveDirectory(outputFolder, inputFolder);
+
+        SignBinaries($"{octopusClientFolder}/bin/{configuration}");
 
         DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
             ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
@@ -249,6 +257,21 @@ Task("CopyToLocalPackages")
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
 });
+
+private void SignBinaries(string path)
+{
+    Information($"Signing binaries in {path}");
+	var files = GetFiles(path + "/**/Octopus.*.dll");
+    files.Add(GetFiles(path + "/**/Octo.dll"));
+    files.Add(GetFiles(path + "/**/Octo.exe"));
+
+	Sign(files, new SignToolSignSettings {
+			ToolPath = MakeAbsolute(File("./certificates/signtool.exe")),
+            TimeStampUri = new Uri("http://timestamp.globalsign.com/scripts/timestamp.dll"),
+            CertPath = signingCertificatePath,
+            Password = signingCertificatePassword
+    });
+}
 
 
 private void TarGzip(string path, string outputFile)
