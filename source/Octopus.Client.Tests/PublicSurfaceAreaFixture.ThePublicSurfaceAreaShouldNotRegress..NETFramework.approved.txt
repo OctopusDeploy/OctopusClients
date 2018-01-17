@@ -2098,6 +2098,7 @@ Octopus.Client.Model
       NuGet = 1
       Docker = 2
       Maven = 3
+      OctopusProject = 4
   }
   class FileUpload
   {
@@ -2488,6 +2489,15 @@ Octopus.Client.Model
     .ctor()
     Double[] Data { get; set; }
     String Label { get; set; }
+  }
+  class OctopusProjectFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   class OctopusServerNodeResource
     Octopus.Client.Extensibility.IResource
