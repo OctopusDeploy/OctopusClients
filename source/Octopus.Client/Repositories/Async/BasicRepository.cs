@@ -23,9 +23,9 @@ namespace Octopus.Client.Repositories.Async
 
             public IOctopusAsyncClient Client { get; }
 
-            public Task<TResource> Create(TResource resource)
+            public Task<TResource> Create(TResource resource, object pathParameters = null)
             {
-                return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource);
+                return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
             }
 
             public Task<TResource> Modify(TResource resource)
