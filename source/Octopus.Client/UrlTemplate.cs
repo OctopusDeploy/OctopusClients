@@ -448,8 +448,9 @@ namespace Octopus.Client
         static string Encode(string p, bool allowReserved)
         {
             var result = new StringBuilder();
-            foreach (var c in p)
+            for (int i = 0; i < p.Length; i++)
             {
+                char c = p[i];
                 if ((c >= 'A' && c <= 'z') //Alpha
                     || (c >= '0' && c <= '9') // Digit
                     || UriUnreservedSymbols.IndexOf(c) != -1
@@ -461,7 +462,17 @@ namespace Octopus.Client
                 }
                 else
                 {
-                    result.Append(Uri.EscapeDataString(c.ToString()));
+                    if (char.IsHighSurrogate(c))
+                    {
+                        // get all characters associated with this unicode character
+                        var unicodeChars = p.ToCharArray().Skip(i).TakeWhile(x => !char.IsLowSurrogate(x), true).ToArray();
+                        result.Append(Uri.EscapeDataString(new string(unicodeChars)));
+                        i += unicodeChars.Length;
+                    }
+                    else
+                    {
+                        result.Append(Uri.EscapeDataString(c.ToString()));
+                    }
                 }
             }
 

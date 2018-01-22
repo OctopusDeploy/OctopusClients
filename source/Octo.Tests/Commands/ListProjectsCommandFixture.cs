@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Octopus.Cli.Commands.Project;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -16,7 +17,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            listProjectsCommand = new ListProjectsCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            listProjectsCommand = new ListProjectsCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
         [Test]
@@ -30,9 +31,28 @@ namespace Octopus.Cli.Tests.Commands
 
             await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Projects: 2");
-            LogLines.Should().Contain("[Information]  - ProjectA (ID: projectaid)");
-            LogLines.Should().Contain("[Information]  - ProjectB (ID: projectbid)");
+            LogLines.Should().Contain("Projects: 2");
+            LogLines.Should().Contain(" - ProjectA (ID: projectaid)");
+            LogLines.Should().Contain(" - ProjectB (ID: projectbid)");
+        }
+
+        [Test]
+        public async Task JsonFormat_ShouldBeWellFormed()
+        {
+            CommandLineArgs.Add("--outputFormat=json");
+            Repository.Projects.FindAll().Returns(new List<ProjectResource>
+            {
+                new ProjectResource {Name = "ProjectA", Id = "projectaid"},
+                new ProjectResource {Name = "ProjectB", Id = "projectbid"}
+            });
+
+            await listProjectsCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            var logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("projectaid");
+            logoutput.Should().Contain("projectbid");
+
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Octopus.Cli.Util
+﻿namespace Octopus.Cli.Util
 {
     public static class NumericExtensions
     {
