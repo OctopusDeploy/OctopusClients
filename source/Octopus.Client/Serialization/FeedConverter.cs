@@ -10,7 +10,8 @@ namespace Octopus.Client.Serialization
             new Dictionary<FeedType, Type>
             {
                 {FeedType.NuGet, typeof(NuGetFeedResource)},
-                {FeedType.Docker, typeof(DockerFeedResource)}
+                {FeedType.Docker, typeof(DockerFeedResource)},
+                {FeedType.Maven, typeof(MavenFeedResource)}
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);

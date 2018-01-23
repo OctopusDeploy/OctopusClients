@@ -10,6 +10,7 @@ using System.Threading;
 using FluentAssertions;
 using NuGet.Common;
 using NUnit.Framework;
+using Octo;
 
 namespace Octopus.Cli.Tests.Integration
 {

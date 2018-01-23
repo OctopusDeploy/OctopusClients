@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
     public class FeedResource : Resource, INamedResource
     {
         /// <summary>
-        /// The FeedResource type has been depricated on Octopus Deploy 3.5 servers. Use NuGetFeedResource instead")]
+        /// The FeedResource type has been deprecated on Octopus Deploy 3.5 servers. Use NuGetFeedResource instead")]
         /// </summary>
         public FeedResource()
         {

@@ -1,38 +1,41 @@
 using System;
 using System.IO;
 using System.Linq;
-using Octopus.Cli.Infrastructure;
-using Octopus.Cli.Util;
 using System.Reflection;
 using System.Threading.Tasks;
+using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
+using Octopus.Cli.Util;
+using Serilog;
 
 namespace Octopus.Cli.Commands
 {
     [Command("help", "?", "h", Description = "Prints this help text")]
-    public class HelpCommand : ICommand
+    public class HelpCommand : CommandBase, ICommand
     {
         readonly ICommandLocator commands;
+        string executable;
 
-        public HelpCommand(ICommandLocator commands)
+        public HelpCommand(ICommandLocator commands, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
             this.commands = commands;
-        }
-
-        public void GetHelp(TextWriter writer)
-        {
         }
 
         public Task Execute(string[] commandLineArguments)
         {
             return Task.Run(() =>
             {
-                var executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
+                Options.Parse(commandLineArguments);
+
+                commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default;
+
+                executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
 
                 var commandName = commandLineArguments.FirstOrDefault();
 
                 if (string.IsNullOrEmpty(commandName))
                 {
-                    PrintGeneralHelp(executable);
+                    PrintGeneralHelp();
                 }
                 else
                 {
@@ -40,41 +43,46 @@ namespace Octopus.Cli.Commands
 
                     if (command == null)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Command '{0}' is not supported", commandName);
+                        if (!commandName.StartsWith("--"))
+                        {
+                            // wasn't a parameter!
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Command '{0}' is not supported", commandName);
+                        }
                         Console.ResetColor();
-                        PrintGeneralHelp(executable);
+                        PrintGeneralHelp();
                     }
                     else
                     {
-                        PrintCommandHelp(executable, command, commandName);
+                        PrintCommandHelp(command, commandLineArguments);
                     }
                 }
             });
         }
 
-        void PrintCommandHelp(string executable, ICommand command, string commandName)
+        void PrintCommandHelp(ICommand command, string[] args)
         {
-            Console.ResetColor();
-            Console.Write("Usage: ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(executable + " " + commandName + " [<options>]");
-            Console.ResetColor();
-            Console.WriteLine();
-            Console.WriteLine("Where [<options>] is any of: ");
-            Console.WriteLine();
-
-            command.GetHelp(Console.Out);
-
-            Console.WriteLine();
-            Console.Write("Or use ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(executable + " help <command>");
-            Console.ResetColor();
-            Console.WriteLine(" for more details.");
+            command.GetHelp(Console.Out, args);
         }
 
-        void PrintGeneralHelp(string executable)
+        void PrintGeneralHelp()
+        {
+            if (HelpOutputFormat == OutputFormat.Json)
+            {
+                PrintJsonOutput();
+            }
+            else
+            {
+                PrintDefaultOutput();
+            }
+        }
+
+        public Task Request()
+        {
+            return Task.WhenAny();
+        }
+
+        public void PrintDefaultOutput()
         {
             Console.ResetColor();
             Console.Write("Usage: ");
@@ -99,6 +107,16 @@ namespace Octopus.Cli.Commands
             Console.Write(executable + " help <command>");
             Console.ResetColor();
             Console.WriteLine(" for more details.");
+        }
+
+        public void PrintJsonOutput()
+        {
+            commandOutputProvider.Json(commands.List().Select(x => new
+            {
+                x.Name,
+                x.Description,
+                x.Aliases
+            }));
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using System.Reflection;
 using Autofac;
-using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
-using System.Reflection;
+using Serilog;
 
 namespace Octopus.Cli.Importers
 {
@@ -28,7 +27,7 @@ namespace Octopus.Cli.Importers
                     select attribute).ToArray();
         }
 
-        public IImporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ILogger log)
+        public IImporter Find(string name, IOctopusAsyncRepository repository, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
             var iImporterType = typeof (IImporter).GetTypeInfo();
             name = name.Trim().ToLowerInvariant();
@@ -39,7 +38,7 @@ namespace Octopus.Cli.Importers
                 where attribute.Name == name
                 select t).FirstOrDefault();
 
-            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusAsyncRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ILogger), log));
+            return found == null ? null : (IImporter) lifetimeScope.Resolve(found, new TypedParameter(typeof (IOctopusAsyncRepository), repository), new TypedParameter(typeof (IOctopusFileSystem), fileSystem), new TypedParameter(typeof (ICommandOutputProvider), commandOutputProvider));
         }
     }
 }

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
+using Octopus.Cli.Commands.Deployment;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
-using Serilog;
-using Serilog.Core;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -26,7 +23,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            deployReleaseCommand = new DeployReleaseCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            deployReleaseCommand = new DeployReleaseCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
 
             var project = new ProjectResource();
             var release = new ReleaseResource { Version = "1.0.0" };

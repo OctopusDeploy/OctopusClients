@@ -553,6 +553,72 @@ Octopus.Client.Exceptions
     .ctor(String)
   }
 }
+Octopus.Client.Extensibility
+{
+  class Href
+    IEquatable<Href>
+  {
+    .ctor(String)
+    String AsString()
+    Boolean Equals(Octopus.Client.Extensibility.Href)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
+  }
+  interface INamedResource
+  {
+    String Name { get; }
+  }
+  interface IResource
+  {
+    String Id { get; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+  }
+  class LinkCollection
+    IDictionary<String, Href>
+    ICollection<KeyValuePair<String, Href>>
+    IEnumerable<KeyValuePair<String, Href>>
+    IEnumerable
+    IDictionary
+    ICollection
+    IReadOnlyDictionary<String, Href>
+    IReadOnlyCollection<KeyValuePair<String, Href>>
+    ISerializable
+    IDeserializationCallback
+    Dictionary<String, Href>
+  {
+    .ctor()
+    Octopus.Client.Extensibility.LinkCollection Add(String, Octopus.Client.Extensibility.Href)
+    static Octopus.Client.Extensibility.LinkCollection Self(Octopus.Client.Extensibility.Href)
+  }
+}
+Octopus.Client.Extensibility.Attributes
+{
+  abstract class ApiPropertyAttribute
+    Attribute
+  {
+  }
+  class WriteableAttribute
+    Octopus.Client.Extensibility.Attributes.ApiPropertyAttribute
+  {
+    .ctor()
+  }
+  class WriteableOnCreateAttribute
+    Octopus.Client.Extensibility.Attributes.ApiPropertyAttribute
+  {
+    .ctor()
+  }
+}
+Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration
+{
+  abstract class ExtensionConfigurationResource
+    Octopus.Client.Extensibility.IResource
+  {
+    String Id { get; set; }
+    Boolean IsEnabled { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+  }
+}
 Octopus.Client.Extensions
 {
   abstract class StringExtensions
@@ -1405,6 +1471,12 @@ Octopus.Client.Model
       Always = 2
       Variable = 3
   }
+  DeploymentStepPackageRequirement
+  {
+      LetOctopusDecide = 0
+      BeforePackageAcquisition = 1
+      AfterPackageAcquisition = 2
+  }
   class DeploymentStepProperties
   {
     .ctor()
@@ -1431,6 +1503,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentStepCondition Condition { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.DeploymentStepPackageRequirement PackageRequirement { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Boolean RequiresPackagesToBeAcquired { get; set; }
     Octopus.Client.Model.DeploymentStepStartTrigger StartTrigger { get; set; }
@@ -1444,6 +1517,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentStepResource RequirePackagesToBeAcquired(Boolean)
     Octopus.Client.Model.DeploymentStepResource TargetingRoles(String[])
     Octopus.Client.Model.DeploymentStepResource WithCondition(Octopus.Client.Model.DeploymentStepCondition)
+    Octopus.Client.Model.DeploymentStepResource WithPackageRequirement(Octopus.Client.Model.DeploymentStepPackageRequirement)
     Octopus.Client.Model.DeploymentStepResource WithStartTrigger(Octopus.Client.Model.DeploymentStepStartTrigger)
   }
   DeploymentStepStartTrigger
@@ -1553,6 +1627,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
     Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
+    TimeSpan WebhookTimeout { get; set; }
     String WebhookURI { get; set; }
   }
   class EventNotificationSubscriptionFilter
@@ -1636,6 +1711,7 @@ Octopus.Client.Model
       None = 0
       NuGet = 1
       Docker = 2
+      Maven = 3
   }
   class FileUpload
   {
@@ -1946,6 +2022,17 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
+  }
+  class MavenFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   class MissingVariableResource
   {
@@ -3863,6 +3950,7 @@ Octopus.Client.Repositories.Async
   interface IBuiltInPackageRepositoryRepository
   {
     Task DeletePackage(Octopus.Client.Model.PackageResource)
+    Task DeletePackages(IReadOnlyList<PackageResource>)
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(Int32, Int32)
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
@@ -3913,7 +4001,7 @@ Octopus.Client.Repositories.Async
   }
   interface ICreate`1
   {
-    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource)
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
   }
   interface IDashboardConfigurationRepository
   {

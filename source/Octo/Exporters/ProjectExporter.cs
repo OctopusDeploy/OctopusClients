@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Extensions;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
 namespace Octopus.Cli.Exporters
 {

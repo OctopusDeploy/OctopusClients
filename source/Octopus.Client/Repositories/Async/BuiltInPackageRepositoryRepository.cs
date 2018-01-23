@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -11,6 +13,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30);
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
         Task DeletePackage(PackageResource package);
+        Task DeletePackages(IReadOnlyList<PackageResource> packages);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -44,5 +47,9 @@ namespace Octopus.Client.Repositories.Async
         {
             return client.Delete(client.RootDocument.Link("Packages"), new { id = package.Id });
         }
+
+        public Task DeletePackages(IReadOnlyList<PackageResource> packages)
+            => client.Delete(client.RootDocument.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
+        
     }
 }

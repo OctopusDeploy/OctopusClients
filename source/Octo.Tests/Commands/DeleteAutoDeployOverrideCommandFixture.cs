@@ -3,9 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Client.Model;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Octopus.Cli.Commands.Deployment;
 
 namespace Octopus.Cli.Tests.Commands
 {
@@ -24,7 +25,7 @@ namespace Octopus.Cli.Tests.Commands
         [SetUp]
         public void SetUp()
         {
-            deleteAutoDeployOverrideCommand = new DeleteAutoDeployOverrideCommand(RepositoryFactory, Log, FileSystem, ClientFactory);
+            deleteAutoDeployOverrideCommand = new DeleteAutoDeployOverrideCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
 
             environment = new EnvironmentResource { Name = "Production", Id = "Environments-001" };
             project = new ProjectResource("Projects-1", "OctoFx", "OctoFx");
@@ -75,7 +76,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production");
+            LogLines.Should().Contain("Deleted auto deploy release override for the project OctoFx to the environment Production");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -91,7 +92,7 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            LogLines.Should().Contain("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
         }
@@ -107,9 +108,28 @@ namespace Octopus.Cli.Tests.Commands
 
             await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("[Information] Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
+            LogLines.Should().Contain("Deleted auto deploy release override for the project OctoFx to the environment Production and tenant Octopus");
             await Repository.Projects.ReceivedWithAnyArgs().Modify(null).ConfigureAwait(false);
             Assert.True(!savedProject.AutoDeployReleaseOverrides.Any());
+        }
+
+        [Test]
+        public async Task JsonOutput_ShouldBeWellFormed()
+        {
+            CommandLineArgs.Add("--project=OctoFx");
+            CommandLineArgs.Add("--environment=Production");
+            CommandLineArgs.Add("--tenanttag=VIP");
+            CommandLineArgs.Add("--outputformat=json");
+
+            project.AutoDeployReleaseOverrides.Add(new AutoDeployReleaseOverrideResource(environment.Id, octopusTenant.Id, release.Id));
+
+            await deleteAutoDeployOverrideCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+
+            string logoutput = LogOutput.ToString();
+            JsonConvert.DeserializeObject(logoutput);
+            logoutput.Should().Contain("Deleted");
+            logoutput.Should().Contain("Production");
+            logoutput.Should().Contain("Octopus");
         }
 
     }
