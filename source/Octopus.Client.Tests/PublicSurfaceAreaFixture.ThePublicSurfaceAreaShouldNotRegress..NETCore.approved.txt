@@ -2235,7 +2235,7 @@ Octopus.Client.Model
       CertificateDelete = 101
       CertificateExportPrivateKey = 102
       UserEdit = 103
-      ServerConfigurationEdit = 104
+      ConfigureServer = 104
   }
   class PermissionDescription
   {
