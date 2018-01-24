@@ -2635,6 +2635,8 @@ Octopus.Client.Model
       CertificateEdit = 100
       CertificateDelete = 101
       CertificateExportPrivateKey = 102
+      UserEdit = 103
+      ServerConfigurationEdit = 104
   }
   class PermissionDescription
   {
@@ -2645,6 +2647,7 @@ Octopus.Client.Model
   abstract class PermissionScope
   {
     static System.String Environments
+    static System.String ProjectGroups
     static System.String Projects
     static System.String Tenants
   }
