@@ -27,9 +27,9 @@ namespace Octopus.Client.Repositories
             get { return client; }
         }
 
-        public TResource Create(TResource resource)
+        public TResource Create(TResource resource, object pathParameters = null)
         {
-            return client.Create(client.RootDocument.Link(CollectionLinkName), resource);
+            return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
