@@ -2637,6 +2637,7 @@ Octopus.Client.Model
       CertificateExportPrivateKey = 102
       UserEdit = 103
       ConfigureServer = 104
+      FeedEdit = 105
   }
   class PermissionDescription
   {
