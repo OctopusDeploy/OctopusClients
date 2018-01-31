@@ -220,6 +220,8 @@ namespace Octopus.Client.Model
 
         [Description("Edit users")] UserEdit,
         
-        [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer
+        [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer,
+
+        [Description("Edit feeds")] FeedEdit
     }
 }
