@@ -35,7 +35,7 @@ namespace Octopus.Cli
         internal static int Run(string[] args)
         {
             Console.Title = "Octopus Deploy Command Line Tool";
-            
+
             try
             {
                 var container = BuildContainer();
@@ -128,6 +128,18 @@ namespace Octopus.Cli
                 return lastExit;
             }
 
+            var securityException = ex as OctopusSecurityException;
+            if (securityException != null)
+            {
+                if (!string.IsNullOrWhiteSpace(securityException.HelpText))
+                {
+                    Log.Error(securityException.HelpText);    
+                }
+                
+                Log.Error(securityException.Message);
+                return -5;
+            }
+
             var cmd = ex as CommandException;
             if (cmd != null)
             {
@@ -141,11 +153,11 @@ namespace Octopus.Cli
             var reflex = ex as ReflectionTypeLoadException;
             if (reflex != null)
             {
-                Log.Error(ex, "");
+                Log.Error(ex, string.Empty);
 
                 foreach (var loaderException in reflex.LoaderExceptions)
                 {
-                    Log.Error(loaderException, "");
+                    Log.Error(loaderException, string.Empty);
                 }
 
                 return -43;
@@ -159,7 +171,7 @@ namespace Octopus.Cli
                 return -7;
             }
 
-            Log.Error(ex, "");
+            Log.Error(ex, string.Empty);
             return -3;
         }
     }
