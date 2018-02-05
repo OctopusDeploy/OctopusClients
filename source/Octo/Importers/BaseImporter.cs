@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Serilog;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Serilog;
 
 namespace Octopus.Cli.Importers
 {
