@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class SpacePartialExportResource : Resource
+    public class MigrationPartialExportResource : Resource
     {
         [Writeable]
         public string PackageId { get; set; }

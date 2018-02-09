@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class SpaceImportResource : Resource
+    public class MigrationImportResource : Resource
     {
         [Writeable]
         public string PackageId { get; set; }

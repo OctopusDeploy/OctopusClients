@@ -4,8 +4,8 @@ namespace Octopus.Client.Repositories
 {
     public interface IMigrationRepository
     {
-        SpacePartialExportResource SpacePartialExport(SpacePartialExportResource resource);
-        SpaceImportResource SpaceImport(SpaceImportResource resource);
+        MigrationPartialExportResource PartialExport(MigrationPartialExportResource resource);
+        MigrationImportResource Import(MigrationImportResource resource);
     }
 
     class MigrationRepository : IMigrationRepository
@@ -17,14 +17,14 @@ namespace Octopus.Client.Repositories
             this.client = client;
         }
 
-        public SpacePartialExportResource SpacePartialExport(SpacePartialExportResource resource)
+        public MigrationPartialExportResource PartialExport(MigrationPartialExportResource resource)
         {
-            return client.Post<SpacePartialExportResource, SpacePartialExportResource>(client.RootDocument.Link("MigrationsSpacePartialExport"), resource);
+            return client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource);
         }
 
-        public SpaceImportResource SpaceImport(SpaceImportResource resource)
+        public MigrationImportResource Import(MigrationImportResource resource)
         {
-            return client.Post< SpaceImportResource, SpaceImportResource>(client.RootDocument.Link("MigrationsSpaceImport"), resource);
+            return client.Post< MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource);
         }
     }
 }
