@@ -1030,6 +1030,18 @@ Octopus.Client.Model
         static System.String Timeout
       }
     }
+    abstract class Migration
+    {
+      static System.String Name
+    }
+    abstract class MigrationImport
+    {
+      static System.String Name
+    }
+    abstract class MigrationPartialExport
+    {
+      static System.String Name
+    }
     abstract class Retention
     {
       static System.String Name
@@ -2024,6 +2036,18 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+  }
+  abstract class Migration
+  {
+    static System.String Name
+  }
+  abstract class MigrationImport
+  {
+    static System.String Name
+  }
+  abstract class MigrationPartialExport
+  {
+    static System.String Name
   }
   class MissingVariableResource
   {
@@ -3632,7 +3656,7 @@ Octopus.Client.Model.Forms
 }
 Octopus.Client.Model.Migrations
 {
-  class SpaceImportResource
+  class MigrationImportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -3649,7 +3673,7 @@ Octopus.Client.Model.Migrations
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
   }
-  class SpacePartialExportResource
+  class MigrationPartialExportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -4081,8 +4105,8 @@ Octopus.Client.Repositories.Async
   }
   interface IMigrationRepository
   {
-    Task<SpaceImportResource> SpaceImport(Octopus.Client.Model.Migrations.SpaceImportResource)
-    Task<SpacePartialExportResource> SpacePartialExport(Octopus.Client.Model.Migrations.SpacePartialExportResource)
+    Task<MigrationImportResource> Import(Octopus.Client.Model.Migrations.MigrationImportResource)
+    Task<MigrationPartialExportResource> PartialExport(Octopus.Client.Model.Migrations.MigrationPartialExportResource)
   }
   interface IModify`1
   {

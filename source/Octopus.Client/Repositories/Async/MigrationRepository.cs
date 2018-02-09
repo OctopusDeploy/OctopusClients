@@ -5,8 +5,8 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IMigrationRepository
     {
-        Task<SpacePartialExportResource> SpacePartialExport(SpacePartialExportResource resource);
-        Task<SpaceImportResource> SpaceImport(SpaceImportResource resource);
+        Task<MigrationPartialExportResource> PartialExport(MigrationPartialExportResource resource);
+        Task<MigrationImportResource> Import(MigrationImportResource resource);
     }
 
     class MigrationRepository : IMigrationRepository
@@ -18,14 +18,14 @@ namespace Octopus.Client.Repositories.Async
             this.client = client;
         }
 
-        public async Task<SpacePartialExportResource> SpacePartialExport(SpacePartialExportResource resource)
+        public async Task<MigrationPartialExportResource> PartialExport(MigrationPartialExportResource resource)
         {
-            return await client.Post<SpacePartialExportResource, SpacePartialExportResource>(client.RootDocument.Link("MigrationsSpacePartialExport"), resource).ConfigureAwait(false);
+            return await client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource).ConfigureAwait(false);
         }
 
-        public async Task<SpaceImportResource> SpaceImport(SpaceImportResource resource)
+        public async Task<MigrationImportResource> Import(MigrationImportResource resource)
         {
-            return await client.Post<SpaceImportResource, SpaceImportResource>(client.RootDocument.Link("MigrationsSpaceImport"), resource).ConfigureAwait(false);
+            return await client.Post<MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource).ConfigureAwait(false);
         }
     }
 }
