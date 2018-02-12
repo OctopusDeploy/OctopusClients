@@ -4155,6 +4155,7 @@ Octopus.Client.Model.ScheduledTriggers
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
+    String Timezone { get; set; }
   }
   TriggerScheduleType
   {
