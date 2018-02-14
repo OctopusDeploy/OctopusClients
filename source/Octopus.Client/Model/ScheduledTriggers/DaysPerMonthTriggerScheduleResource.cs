@@ -37,6 +37,6 @@ namespace Octopus.Client.Model.ScheduledTriggers
         public string DayNumberOfMonth { get; set; }
 
         [Writeable]
-        public DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeek? DayOfWeek { get; set; }
     }
 }

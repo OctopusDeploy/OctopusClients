@@ -4081,7 +4081,7 @@ Octopus.Client.Model.ScheduledTriggers
     .ctor()
     Nullable<Int16> DateOfMonth { get; set; }
     String DayNumberOfMonth { get; set; }
-    Octopus.Client.Model.ScheduledTriggers.DayOfWeek DayOfWeek { get; set; }
+    Nullable<DayOfWeek> DayOfWeek { get; set; }
     Octopus.Client.Model.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
     Octopus.Client.Model.ScheduledTriggers.TriggerScheduleType ScheduleType { get; }
     DateTime StartTime { get; set; }
