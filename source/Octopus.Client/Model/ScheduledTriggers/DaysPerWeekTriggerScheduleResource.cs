@@ -1,21 +1,30 @@
-﻿namespace Octopus.Client.Model.ScheduledTriggers
+﻿using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model.ScheduledTriggers
 {
     public class DaysPerWeekTriggerScheduleResource : DailyTriggerScheduleResource
     {
         public override TriggerScheduleType ScheduleType => TriggerScheduleType.DaysPerWeek;
 
+        [Writeable]
         public bool Monday { get; set; }
 
+        [Writeable]
         public bool Tuesday { get; set; }
 
+        [Writeable]
         public bool Wednesday { get; set; }
 
+        [Writeable]
         public bool Thursday { get; set; }
 
+        [Writeable]
         public bool Friday { get; set; }
 
+        [Writeable]
         public bool Saturday { get; set; }
 
+        [Writeable]
         public bool Sunday { get; set; }
 
         public void SetDayFromString(string day)

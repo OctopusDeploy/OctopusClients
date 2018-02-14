@@ -1,4 +1,6 @@
-﻿namespace Octopus.Client.Model.ScheduledTriggers
+﻿using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model.ScheduledTriggers
 {
     public enum TriggerScheduleType
     {
@@ -12,6 +14,7 @@
     {
         public abstract TriggerScheduleType ScheduleType { get; }
 
+        [Writeable]
         public string Timezone { get; set; }
     }
 }

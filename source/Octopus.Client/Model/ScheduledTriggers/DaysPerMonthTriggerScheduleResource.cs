@@ -1,4 +1,5 @@
 ﻿using System;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.ScheduledTriggers
 {
@@ -23,14 +24,19 @@ namespace Octopus.Client.Model.ScheduledTriggers
     {
         public override TriggerScheduleType ScheduleType => TriggerScheduleType.DaysPerMonth;
 
+        [Writeable]
         public DateTime StartTime { get; set; }
 
+        [Writeable]
         public MonthlyScheduleType MonthlyScheduleType { get; set; }
 
+        [Writeable]
         public short? DateOfMonth { get; set; }
 
-        public short? DayNumberOfMonth { get; set; }
+        [Writeable]
+        public string DayNumberOfMonth { get; set; }
 
+        [Writeable]
         public DayOfWeek DayOfWeek { get; set; }
     }
 }
