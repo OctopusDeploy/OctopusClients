@@ -50,7 +50,7 @@ namespace Octopus.Client.Exceptions
             return CreateException(statusCode, body);
         }
 
-        static OctopusException CreateException(int statusCode, string body)
+        public static OctopusException CreateException(int statusCode, string body)
         {
             if (statusCode == 400 || statusCode == 409) // Bad request: usually validation error 
             {
