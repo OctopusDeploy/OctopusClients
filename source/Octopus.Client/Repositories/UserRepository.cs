@@ -61,8 +61,7 @@ namespace Octopus.Client.Repositories
         }
         public UserResource Register(RegisterCommand registerCommand)
         {
-            Client.Post(Client.RootDocument.Link("Register"), registerCommand);
-            return GetCurrent();
+            return Client.Post<UserResource, UserResource>(Client.RootDocument.Link("Register"), registerCommand);
         }
 
         public void SignIn(LoginCommand loginCommand)
