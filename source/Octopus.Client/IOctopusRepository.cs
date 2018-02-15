@@ -17,14 +17,15 @@ namespace Octopus.Client
         IOctopusClient Client { get; }
 
         IAccountRepository Accounts { get; }
-        IArtifactRepository Artifacts { get; }
         IActionTemplateRepository ActionTemplates { get; }
+        IArtifactRepository Artifacts { get; }
         IBackupRepository Backups { get; }
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
-        ICertificateRepository Certificates { get; }
         ICertificateConfigurationRepository CertificateConfiguration { get; }
+        ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
         ICommunityActionTemplateRepository CommunityActionTemplates {get; }
+        IConfigurationRepository Configuration { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
@@ -37,28 +38,28 @@ namespace Octopus.Client
         IInterruptionRepository Interruptions { get; }
         ILibraryVariableSetRepository LibraryVariableSets { get; }
         ILifecyclesRepository Lifecycles { get; }
+        IMachinePolicyRepository MachinePolicies { get; }
         IMachineRepository Machines { get; }
         IMachineRoleRepository MachineRoles { get; }
-        IMachinePolicyRepository MachinePolicies { get; }
+        IMigrationRepository Migrations { get; }
         IOctopusServerNodeRepository OctopusServerNodes { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
-        IReleaseRepository Releases { get; }
+        IProjectTriggerRepository ProjectTriggers { get; }
         IProxyRepository Proxies { get; }
-        IServerStatusRepository ServerStatus { get; }
+        IReleaseRepository Releases { get; }
+        IRetentionPolicyRepository RetentionPolicies { get; }
         ISchedulerRepository Schedulers { get; }
+        IServerStatusRepository ServerStatus { get; }
         ISubscriptionRepository Subscriptions { get; }
         IScheduledProjectTriggerRepository ScheduledProjectTriggers { get; set; }
+        ITagSetRepository TagSets { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
-        ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
-        IProjectTriggerRepository ProjectTriggers { get; }
-        IRetentionPolicyRepository RetentionPolicies { get; }
-        IConfigurationRepository Configuration { get; }
     }
 }
 #endif

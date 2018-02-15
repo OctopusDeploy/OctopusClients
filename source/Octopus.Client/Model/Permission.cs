@@ -12,21 +12,21 @@ namespace Octopus.Client.Model
     {
         None,
 
-        [Description("Perform system-level configuration tasks and access control")] AdministerSystem,
+        [Description("Perform system-level functions like configuring HTTP web hosting, the public URL, server nodes, maintenance mode, and server diagnostics")] AdministerSystem,
 
         [Description("Edit project details")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Tenants)] ProjectEdit,
 
         [Description("View the details of projects")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Tenants)] ProjectView,
 
-        [Description("Create projects")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Tenants)] ProjectCreate,
+        [Description("Create projects")] [SupportsRestriction(PermissionScope.ProjectGroups)] ProjectCreate,
 
         [Description("Delete projects")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Tenants)] ProjectDelete,
 
-        [Description("View the deployment process associated with a project")] [SupportsRestriction(PermissionScope.Projects)] ProcessView,
+        [Description("View the deployment process and channels associated with a project")] [SupportsRestriction(PermissionScope.Projects)] ProcessView,
 
-        [Description("Edit the deployment process associated with a project")] [SupportsRestriction(PermissionScope.Projects)] ProcessEdit,
+        [Description("Edit the deployment process and channels associated with a project")] [SupportsRestriction(PermissionScope.Projects)] ProcessEdit,
 
-        [Description("Edit variables belonging to a project or library variable set")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments)] VariableEdit,
+        [Description("Edit variables belonging to a project")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments)] VariableEdit,
 
         [Description("Edit non-environment scoped variables belonging to a project or library variable set")] [SupportsRestriction(PermissionScope.Projects)] VariableEditUnscoped,
 
@@ -88,13 +88,13 @@ namespace Octopus.Client.Model
 
         [Description("Delete library variable sets")] LibraryVariableSetDelete,
 
-        [Description("View project groups")] ProjectGroupView,
+        [Description("View project groups")] [SupportsRestriction(PermissionScope.ProjectGroups)] ProjectGroupView,
 
-        [Description("Create project groups")] ProjectGroupCreate,
+        [Description("Create project groups")] [SupportsRestriction(PermissionScope.ProjectGroups)] ProjectGroupCreate,
 
-        [Description("Edit project groups")] ProjectGroupEdit,
+        [Description("Edit project groups")] [SupportsRestriction(PermissionScope.ProjectGroups)] ProjectGroupEdit,
 
-        [Description("Delete project groups")] ProjectGroupDelete,
+        [Description("Delete project groups")] [SupportsRestriction(PermissionScope.ProjectGroups)] ProjectGroupDelete,
 
         [Description("Create teams")] TeamCreate,
 
@@ -159,8 +159,8 @@ namespace Octopus.Client.Model
         [Description("Create accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountCreate,
 
         [Description("Delete accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountDelete,
-	
-    	[Description("View audit logs")] AuditView,
+
+        [Description("View audit logs")] AuditView,
 
         [Description("Create tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantCreate,
 
@@ -217,5 +217,11 @@ namespace Octopus.Client.Model
         [Description("Delete certificates")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateDelete,
 
         [Description("Export certificate private-keys")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateExportPrivateKey,
+
+        [Description("Edit users")] UserEdit,
+        
+        [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer,
+
+        [Description("Edit feeds")] FeedEdit
     }
 }

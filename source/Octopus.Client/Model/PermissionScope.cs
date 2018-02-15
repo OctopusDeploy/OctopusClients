@@ -6,6 +6,7 @@ namespace Octopus.Client.Model
     {
         public const string Environments = "environments";
         public const string Projects = "projects";
+        public const string ProjectGroups = "projectgroups";
         public const string Tenants = "tenants";
     }
 }
