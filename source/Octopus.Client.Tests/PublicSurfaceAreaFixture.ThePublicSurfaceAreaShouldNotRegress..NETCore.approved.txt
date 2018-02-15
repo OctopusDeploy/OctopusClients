@@ -3679,6 +3679,48 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
 }
+Octopus.Client.Model.Migrations
+{
+  class MigrationImportResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean DeletePackageOnCompletion { get; set; }
+    String FailureCallbackUri { get; set; }
+    Boolean IsDryRun { get; set; }
+    Boolean IsEncryptedPackage { get; set; }
+    Boolean OverwriteExisting { get; set; }
+    String PackageId { get; set; }
+    String PackageVersion { get; set; }
+    String Password { get; set; }
+    String SuccessCallbackUri { get; set; }
+    String TaskId { get; set; }
+  }
+  class MigrationPartialExportResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String DestinationApiKey { get; set; }
+    String DestinationPackageFeed { get; set; }
+    Boolean EncryptPackage { get; set; }
+    String FailureCallbackUri { get; set; }
+    Boolean IgnoreCertificates { get; set; }
+    Boolean IgnoreDeployments { get; set; }
+    Boolean IgnoreMachines { get; set; }
+    Boolean IgnoreTenants { get; set; }
+    Boolean IncludeTaskLogs { get; set; }
+    String PackageId { get; set; }
+    String PackageVersion { get; set; }
+    String Password { get; set; }
+    List<String> Projects { get; set; }
+    String SuccessCallbackUri { get; set; }
+    String TaskId { get; set; }
+  }
+}
 Octopus.Client.Model.ScheduledTriggers
 {
   class CronTriggerScheduleResource
@@ -3808,48 +3850,6 @@ Octopus.Client.Model.ScheduledTriggers
       DaysPerWeek = 1
       DaysPerMonth = 2
       CronExpression = 3
-  }
-}
-Octopus.Client.Model.Migrations
-{
-  class MigrationImportResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Boolean DeletePackageOnCompletion { get; set; }
-    String FailureCallbackUri { get; set; }
-    Boolean IsDryRun { get; set; }
-    Boolean IsEncryptedPackage { get; set; }
-    Boolean OverwriteExisting { get; set; }
-    String PackageId { get; set; }
-    String PackageVersion { get; set; }
-    String Password { get; set; }
-    String SuccessCallbackUri { get; set; }
-    String TaskId { get; set; }
-  }
-  class MigrationPartialExportResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String DestinationApiKey { get; set; }
-    String DestinationPackageFeed { get; set; }
-    Boolean EncryptPackage { get; set; }
-    String FailureCallbackUri { get; set; }
-    Boolean IgnoreCertificates { get; set; }
-    Boolean IgnoreDeployments { get; set; }
-    Boolean IgnoreMachines { get; set; }
-    Boolean IgnoreTenants { get; set; }
-    Boolean IncludeTaskLogs { get; set; }
-    String PackageId { get; set; }
-    String PackageVersion { get; set; }
-    String Password { get; set; }
-    List<String> Projects { get; set; }
-    String SuccessCallbackUri { get; set; }
-    String TaskId { get; set; }
   }
 }
 Octopus.Client.Model.Triggers
