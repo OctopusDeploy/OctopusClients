@@ -54,11 +54,11 @@ namespace Octopus.Client.Editors.Async
             EnvironmentResource[] environments,
             string[] roles,
             TenantResource[] tenants,
-            TagResource[] tenantTags, 
+            TagResource[] tenantTags,
             TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
-            
+
             if (existing == null)
             {
                 var resource = new MachineResource
@@ -75,7 +75,7 @@ namespace Octopus.Client.Editors.Async
                 {
                     resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
                 }
-                
+
                 Instance = await repository.Create(resource).ConfigureAwait(false);
             }
             else

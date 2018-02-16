@@ -142,7 +142,7 @@ namespace Octopus.Cli.Tests.Commands
         {
             var environmentResource = new EnvironmentResource { Name = "Development", Id = "Environments-001" };
             Repository.Environments.FindByName("Development").Returns(environmentResource);
-            
+
             CommandLineArgs.Add("--outputFormat=json");
             CommandLineArgs.Add($"--environment={environmentResource.Name}");
             CommandLineArgs.Add("-status=Offline");

@@ -74,7 +74,7 @@ namespace Octopus.Client.Editors
                 {
                     resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
                 }
-                
+
                 Instance = repository.Create(resource);
             }
             else

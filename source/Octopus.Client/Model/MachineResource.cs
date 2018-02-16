@@ -5,7 +5,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public class MachineResource : Resource, INamedResource
+    public class MachineResource : MachineBasedResource
     {
         public MachineResource()
         {
@@ -15,35 +15,11 @@ namespace Octopus.Client.Model
             TenantIds = new ReferenceCollection();
         }
 
-        [Trim]
-        [Writeable]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Obsoleted as Server 3.4
-        /// </summary>
-        [Trim]
-        [Writeable]
-        public string Thumbprint { get; set; }
-
-        /// <summary>
-        /// Obsoleted as Server 3.4
-        /// </summary>
-        [Trim]
-        [Writeable]
-        public string Uri { get; set; }
-
-        [Writeable]
-        public bool IsDisabled { get; set; }
-
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; }
 
         [Writeable]
         public ReferenceCollection Roles { get; set; }
-
-        [Writeable]
-        public string MachinePolicyId { get; set; }
 
         // Nullable backing-field is to support backwards-compatibility
         TenantedDeploymentMode? tenantedDeploymentParticipation;
@@ -52,14 +28,14 @@ namespace Octopus.Client.Model
         public TenantedDeploymentMode TenantedDeploymentParticipation
         {
             set => tenantedDeploymentParticipation = value;
-            
+
             get
             {
                 if (tenantedDeploymentParticipation.HasValue)
                     return tenantedDeploymentParticipation.Value;
 
                 // Responses from server versions before TenantedDeploymentParticipation was implemented will default
-                // to pre-existing behaviour 
+                // to pre-existing behaviour
                 return TenantIds.Any() || TenantTags.Any()
                     ? TenantedDeploymentMode.Tenanted
                     : TenantedDeploymentMode.Untenanted;
@@ -71,21 +47,6 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
-
-
-        /// <summary>
-        /// Obsoleted as Server 3.4
-        /// </summary>
-        public MachineModelStatus Status { get; set; }
-
-        public MachineModelHealthStatus HealthStatus { get; set; }
-        public bool HasLatestCalamari { get; set; }
-        public string StatusSummary { get; set; }
-
-        public bool IsInProcess { get; set; }
-
-        [Writeable]
-        public EndpointResource Endpoint { get; set; }
 
         public MachineResource AddOrUpdateEnvironments(params EnvironmentResource[] environments)
         {

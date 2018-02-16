@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles);
-        
+
         ResourceCollection<MachineResource> List(int skip = 0,
             int? take = null,
             string ids = null,
@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories
             string tenantTags = null,
             string environmentIds = null);
     }
-    
+
     class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
     {
         public MachineRepository(IOctopusClient client) : base(client, "Machines")
@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories
 
         /// <summary>
         /// Gets all tasks involving the specified machine
-        /// 
+        ///
         /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
         /// </summary>
         /// <param name="machine"></param>

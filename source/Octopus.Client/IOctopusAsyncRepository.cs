@@ -58,5 +58,7 @@ namespace Octopus.Client
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
+        IWorkerPoolRepository WorkerPools { get; }
+        IWorkerMachineRepository WorkerMachines { get; }
     }
 }

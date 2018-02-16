@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories.Async
 
         /// <summary>
         /// Gets all tasks associated with this machine
-        /// 
+        ///
         /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
         /// </summary>
         /// <param name="machine"></param>

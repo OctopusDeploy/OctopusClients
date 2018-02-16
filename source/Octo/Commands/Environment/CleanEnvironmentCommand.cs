@@ -46,9 +46,9 @@ namespace Octopus.Cli.Commands.Environment
                 throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
             if (!healthStatuses.Any() && !statuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --status or --health-status");
-            
+
             environmentResource = await GetEnvironment().ConfigureAwait(false);
-            
+
             machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
@@ -148,10 +148,10 @@ namespace Octopus.Cli.Commands.Environment
             }
             return environmentResource;
         }
-        
+
         public void PrintDefaultOutput()
         {
-            
+
         }
 
         public void PrintJsonOutput()
