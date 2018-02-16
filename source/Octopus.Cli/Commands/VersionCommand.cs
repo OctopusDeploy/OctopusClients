@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands
         {
             return Task.Run(() => 
             {
-                Console.WriteLine($"{typeof(Program).GetInformationalVersion()}");
+                Console.WriteLine($"{typeof(CliProgram).GetInformationalVersion()}");
             });
         }
 

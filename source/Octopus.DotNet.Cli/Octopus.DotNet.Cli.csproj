@@ -4,11 +4,24 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>dotnet-octo</AssemblyName>
+    
+    <PackageId>Octopus.DotNet.Cli</PackageId>
+    <Authors>Octopus Deploy</Authors>
+    <Copyright>Octopus Deploy Pty Ltd</Copyright>
+    <PackageIconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</PackageIconUrl>
+    <PackageProjectUrl>http://octopusdeploy.com/</PackageProjectUrl>
+    <PackageLicenseUrl>http://octopusdeploy.com/pricing</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/OctopusDeploy/OctopusClients</RepositoryUrl>
+    <Description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
+
+      This package contains the client library for the HTTP API in Octopus.</Description>
+
     <PackageType>DotnetCliTool</PackageType>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Octo\Octo.csproj" />
+    <ProjectReference Include="..\Octopus.Cli\Octopus.Cli.csproj" />
   </ItemGroup>
 
 </Project>

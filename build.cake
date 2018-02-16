@@ -30,6 +30,10 @@ var projectToPublish = "./source/Octo/Octo.csproj";
 var octopusClientFolder = "./source/Octopus.Client";
 var octoPublishFolder = $"{publishDir}/Octo";
 var octoMergedFolder =  $"{publishDir}/OctoMerged";
+var octopusCliFolder = "./source/Octopus.Cli";
+var dotNetOctoCliFolder = "./source/Octopus.DotNet.Cli";
+var dotNetOctoPublishFolder = $"{publishDir}/dotnetocto";
+var dotNetOctoMergedFolder =  $"{publishDir}/dotnetocto-Merged";
 
 GitVersion gitVersionInfo;
 string nugetVersion;
@@ -73,7 +77,10 @@ Task("Clean")
 
 Task("Restore")
     .IsDependentOn("Clean")
-    .Does(() => DotNetCoreRestore("source"));
+    .Does(() => DotNetCoreRestore("source", new DotNetCoreRestoreSettings
+        {
+            ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
+        }));
 
 Task("Build")
     .IsDependentOn("Restore")
@@ -143,7 +150,9 @@ Task("DotnetPublish")
         });
         SignBinaries($"{octoPublishFolder}/{rid}");
     }
+    
 });
+
 
 Task("MergeOctoExe")
     .IsDependentOn("DotnetPublish")
@@ -164,8 +173,7 @@ Task("MergeOctoExe")
         SignBinaries(outputFolder);
     });
 
-
-
+	
 Task("Zip")
     .IsDependentOn("MergeOctoExe")
     .IsDependentOn("DotnetPublish")
@@ -228,7 +236,6 @@ Task("PackClientNuget")
     });
 
 
-
 Task("PackOctopusToolsNuget")
     .IsDependentOn("MergeOctoExe")
     .Does(() => {
@@ -247,15 +254,45 @@ Task("PackOctopusToolsNuget")
         });
     });
 
+Task("PackDotNetOctoNuget")
+	.IsDependentOn("DotnetPublish")
+    .Does(() => {
+
+		SignBinaries($"{octopusCliFolder}/bin/{configuration}");
+
+		DotNetCorePack(octopusCliFolder, new DotNetCorePackSettings
+		{
+			Configuration = configuration,
+			OutputDirectory = artifactsDir,
+			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
+            NoBuild = true,
+            IncludeSymbols = false
+		});
+
+		SignBinaries($"{dotNetOctoCliFolder}/bin/{configuration}");
+
+		DotNetCorePack(dotNetOctoCliFolder, new DotNetCorePackSettings
+		{
+			Configuration = configuration,
+			OutputDirectory = artifactsDir,
+			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
+            NoBuild = true,
+            IncludeSymbols = false
+		});
+    });
+
 Task("CopyToLocalPackages")
     .WithCriteria(BuildSystem.IsLocalBuild)
     .IsDependentOn("PackClientNuget")
     .IsDependentOn("PackOctopusToolsNuget")
+    .IsDependentOn("PackDotNetOctoNuget")
     .IsDependentOn("Zip")
     .Does(() =>
 {
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
+    CopyFileToDirectory($"{artifactsDir}/Octopus.Cli.{nugetVersion}.nupkg", localPackagesDir);
+    CopyFileToDirectory($"{artifactsDir}/Octopus.DotNet.Cli.{nugetVersion}.nupkg", localPackagesDir);
 });
 
 private void SignBinaries(string path)
@@ -264,6 +301,7 @@ private void SignBinaries(string path)
 	var files = GetFiles(path + "/**/Octopus.*.dll");
     files.Add(GetFiles(path + "/**/Octo.dll"));
     files.Add(GetFiles(path + "/**/Octo.exe"));
+    files.Add(GetFiles(path + "/**/dotnet-octo.dll"));
 
 	Sign(files, new SignToolSignSettings {
 			ToolPath = MakeAbsolute(File("./certificates/signtool.exe")),
