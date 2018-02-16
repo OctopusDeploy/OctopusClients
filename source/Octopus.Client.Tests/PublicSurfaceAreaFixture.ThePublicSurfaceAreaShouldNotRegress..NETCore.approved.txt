@@ -490,6 +490,7 @@ Octopus.Client.Exceptions
   abstract class OctopusExceptionFactory
   {
     static Task<OctopusException> CreateException(HttpResponseMessage)
+    static Octopus.Client.Exceptions.OctopusException CreateException(Int32, String)
     class OctopusErrorsContract
     {
       .ctor()

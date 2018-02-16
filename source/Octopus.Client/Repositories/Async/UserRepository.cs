@@ -63,8 +63,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            await Client.Post(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
-            return await GetCurrent().ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
         }
 
         public Task SignIn(LoginCommand loginCommand)
