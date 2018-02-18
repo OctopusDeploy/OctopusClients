@@ -73,4 +73,6 @@ TestResults/
 *.received.*
 .idea/
 /source/Octo/Properties/launchSettings.json
+source/Octo/Properties/launchSettings.json
+launchSettings.json
 **/ExpectedSdkVersion.txt
