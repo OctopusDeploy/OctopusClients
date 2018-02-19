@@ -207,8 +207,8 @@ Task("Zip")
 Task("PackClientNuget")
     .IsDependentOn("Test")
     .Does(() => {
-        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net451";
-        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net451Merged";
+        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
+        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
         CreateDirectory(outputFolder);
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
