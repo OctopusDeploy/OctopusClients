@@ -81,7 +81,7 @@ namespace Octopus.Cli.Tests.Integration
                 }.Concat(args)
                 .ToArray();
 
-            var code = Program.Run(allArgs);
+            var code = new CliProgram().Run(allArgs);
             return new ExecuteResult(code, logOutput.ToString());
         }
 

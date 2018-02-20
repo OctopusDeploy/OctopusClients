@@ -47,7 +47,7 @@ namespace Octopus.Cli.Tests.Commands
 
             output.ToString()
                 .Should()
-                .Contain("Usage: Octo <command> [<options>]")
+                .Contain("Usage: octo <command> [<options>]")
                 .And.Contain("Where <command> is one of:")
                 .And.Contain("create-foo");
         }

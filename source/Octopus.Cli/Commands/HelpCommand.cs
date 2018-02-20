@@ -29,7 +29,7 @@ namespace Octopus.Cli.Commands
 
                 commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default;
 
-                executable = Path.GetFileNameWithoutExtension(typeof(HelpCommand).GetTypeInfo().Assembly.FullLocalPath());
+                executable = "octo";
 
                 var commandName = commandLineArguments.FirstOrDefault();
 

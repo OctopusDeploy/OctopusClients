@@ -8,7 +8,9 @@
     <owners>Octopus Deploy</owners>
     <summary>Create, deploy and promote releases using Octopus Deploy.</summary>
     <description>
-      Octopus Deploy is an automated deployment tool powered by NuGet. This package contains Octo.exe, a command line tool for creating and deploying releases with Octopus Deploy.
+      Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
+	  
+	  This package contains Octo.exe, a command line tool for creating and deploying releases with Octopus Deploy.
     </description>
     <releaseNotes></releaseNotes>
     <language>en-US</language>

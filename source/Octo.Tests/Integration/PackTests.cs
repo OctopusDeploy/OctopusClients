@@ -51,7 +51,7 @@ namespace Octopus.Cli.Tests.Integration
                 }
 
                 var now = DateTime.Now;
-                var result = Program.Run(args.ToArray());
+                var result = new CliProgram().Run(args.ToArray());
 
                 result.Should().Be(0);
 
@@ -101,7 +101,7 @@ namespace Octopus.Cli.Tests.Integration
                 // sleep a few seconds so our last modified time is not the same as the package creation time
                 Thread.Sleep(TimeSpan.FromSeconds(5));
 
-                var result = Program.Run(
+                var result = new CliProgram().Run(
                     new[]
                     {
                         "pack",
