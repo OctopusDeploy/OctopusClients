@@ -7,6 +7,10 @@ namespace Octopus.Client.Model.ScheduledTriggers
         public override ScheduledTriggerActionType ActionType => ScheduledTriggerActionType.DeployLatestRelease;
 
         [Writeable]
-        public int EnvironmentId { get; set; }
+        public int SourceEnvironmentId { get; set; }
+
+        [Writeable]
+        public int DestinationEnvironmentId { get; set; }
+
     }
 }

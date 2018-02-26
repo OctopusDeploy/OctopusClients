@@ -11,7 +11,6 @@ namespace Octopus.Client.Serialization
             {
                 { ScheduledTriggerActionType.DeployNewRelease, typeof (DeployNewReleaseActionResource)},
                 { ScheduledTriggerActionType.DeployLatestRelease, typeof (DeployLatestReleaseActionResource)},
-                { ScheduledTriggerActionType.PromoteLatestRelease, typeof (PromoteLatestReleaseActionResource)},
             };
 
         protected override IDictionary<ScheduledTriggerActionType, Type> DerivedTypeMappings => ActionTypes;
