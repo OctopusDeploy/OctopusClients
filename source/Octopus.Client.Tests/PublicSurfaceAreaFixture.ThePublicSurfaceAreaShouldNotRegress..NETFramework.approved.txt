@@ -4217,7 +4217,8 @@ Octopus.Client.Model.ScheduledTriggers
   {
     .ctor()
     Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
-    Int32 EnvironmentId { get; set; }
+    Int32 DestinationEnvironmentId { get; set; }
+    Int32 SourceEnvironmentId { get; set; }
   }
   class DeployNewReleaseActionResource
     Octopus.Client.Extensibility.IResource
@@ -4233,16 +4234,6 @@ Octopus.Client.Model.ScheduledTriggers
       DateOfMonth = 0
       DayOfMonth = 1
   }
-  class PromoteLatestReleaseActionResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionResource
-  {
-    .ctor()
-    Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
-    Int32 DestinationEnvironmentId { get; set; }
-    Int32 SourceEnvironmentId { get; set; }
-  }
   abstract class ScheduledTriggerActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4250,6 +4241,8 @@ Octopus.Client.Model.ScheduledTriggers
   {
     Octopus.Client.Model.ScheduledTriggers.ScheduledTriggerActionType ActionType { get; }
     Int32 ChannelId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
   }
   ScheduledTriggerActionType
   {
