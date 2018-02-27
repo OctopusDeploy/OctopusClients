@@ -27,7 +27,7 @@ namespace Octopus.Cli.Util
             if (PrintMessages)
             {
                 logger.Information("Octopus Deploy Command Line Tool, version {Version:l}",
-                        typeof(Program).GetInformationalVersion());
+                        typeof(CliProgram).GetInformationalVersion());
                 logger.Information(string.Empty);
             }
         }

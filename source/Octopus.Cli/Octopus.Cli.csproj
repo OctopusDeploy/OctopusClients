@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net451</TargetFrameworks>
+    <PackageId>Octopus.Cli</PackageId>
+    <Authors>Octopus Deploy</Authors>
+    <Copyright>Octopus Deploy Pty Ltd</Copyright>
+    <PackageIconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</PackageIconUrl>
+    <PackageProjectUrl>http://octopusdeploy.com/</PackageProjectUrl>
+    <PackageLicenseUrl>http://octopusdeploy.com/pricing</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/OctopusDeploy/OctopusClients</RepositoryUrl>
+    <Description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
+
+      This package contains the .NET CLI library for interacting with the HTTP API in Octopus.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="NuGet.Common" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="NuGet.Frameworks" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="NuGet.Packaging" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="NuGet.Packaging.Core" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="NuGet.Packaging.Core.Types" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="NuGet.Versioning" Version="3.5.0-octopus-44558" />
+    <PackageReference Include="Octostache" Version="2.0.4" />
+    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.Trace" Version="2.0.0" />
+    <PackageReference Include="Sprache" Version="2.1.0" />
+    <PackageReference Include="Serilog" Version="2.3.0" />
+    <PackageReference Include="Autofac" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Octopus.Client\Octopus.Client.csproj" />
+  </ItemGroup>
+
+</Project>
