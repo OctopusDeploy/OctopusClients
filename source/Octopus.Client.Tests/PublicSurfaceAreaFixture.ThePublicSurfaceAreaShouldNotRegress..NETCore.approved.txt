@@ -3838,6 +3838,7 @@ Octopus.Client.Operations
     String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
@@ -3860,6 +3861,7 @@ Octopus.Client.Operations
     String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
