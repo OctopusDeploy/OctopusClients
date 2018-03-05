@@ -3721,6 +3721,15 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
+  abstract class ScopedDeploymentActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    String ChannelId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
   abstract class TriggerActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3821,7 +3830,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   class DeployLatestReleaseActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerActionResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
@@ -3831,7 +3840,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   class DeployNewReleaseActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerActionResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
@@ -3842,33 +3851,12 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
       DateOfMonth = 0
       DayOfMonth = 1
   }
-  abstract class ScheduledTriggerActionResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.TriggerActionResource
-  {
-    String ChannelId { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
-  }
-  ScheduledTriggerActionType
-  {
-      DeployLatestRelease = 0
-      DeployNewRelease = 1
-  }
   abstract class ScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     String Timezone { get; set; }
-  }
-  TriggerScheduleType
-  {
-      Daily = 0
-      DaysPerWeek = 1
-      DaysPerMonth = 2
-      CronExpression = 3
   }
 }
 Octopus.Client.Model.Versioning

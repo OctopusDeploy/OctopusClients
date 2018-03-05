@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-    public class DeployNewReleaseActionResource : ScheduledTriggerActionResource
+    public class DeployNewReleaseActionResource : ScopedDeploymentActionResource
     {
         public override TriggerActionType ActionType => TriggerActionType.DeployNewRelease;
 

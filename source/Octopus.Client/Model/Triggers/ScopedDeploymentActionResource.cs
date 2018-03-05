@@ -1,16 +1,10 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.Triggers.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers
 {
-    public enum ScheduledTriggerActionType
+    public abstract class ScopedDeploymentActionResource : TriggerActionResource
     {
-        DeployLatestRelease,
-        DeployNewRelease
-    }
-
-    public abstract class ScheduledTriggerActionResource : TriggerActionResource
-    {
-        protected ScheduledTriggerActionResource()
+        protected ScopedDeploymentActionResource()
         {
             TenantTags = new ReferenceCollection();
             TenantIds = new ReferenceCollection();
