@@ -1,15 +1,14 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
     public enum ScheduledTriggerActionType
     {
-        PromoteLatestRelease,
         DeployLatestRelease,
         DeployNewRelease
     }
 
-    public abstract class ScheduledTriggerActionResource : Resource
+    public abstract class ScheduledTriggerActionResource : TriggerActionResource
     {
         protected ScheduledTriggerActionResource()
         {
@@ -18,14 +17,12 @@ namespace Octopus.Client.Model.ScheduledTriggers
         }
 
         [Writeable]
-        public int ChannelId { get; set; }
+        public string ChannelId { get; set; }
 
         [Writeable]
         public ReferenceCollection TenantIds { get; set; }
 
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
-
-        public abstract ScheduledTriggerActionType ActionType { get; }
     }
 }

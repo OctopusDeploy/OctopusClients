@@ -63,7 +63,6 @@ namespace Octopus.Client
             Proxies = new ProxyRepository(client);
             Releases = new ReleaseRepository(client);
             RetentionPolicies = new RetentionPolicyRepository(client);
-            ScheduledProjectTriggers = new ScheduledProjectTriggerRepository(client);
             Schedulers = new SchedulerRepository(client);
             ServerStatus = new ServerStatusRepository(client);
             Subscriptions = new SubscriptionRepository(client);
@@ -114,7 +113,6 @@ namespace Octopus.Client
         public ISchedulerRepository Schedulers { get; }
         public IServerStatusRepository ServerStatus { get; }
         public ISubscriptionRepository Subscriptions { get; }
-        public IScheduledProjectTriggerRepository ScheduledProjectTriggers { get; }
         public ITagSetRepository TagSets { get; }
         public ITaskRepository Tasks { get; }
         public ITeamsRepository Teams { get; }
