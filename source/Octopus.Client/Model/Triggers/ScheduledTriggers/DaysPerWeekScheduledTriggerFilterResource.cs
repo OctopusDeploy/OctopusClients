@@ -1,10 +1,10 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-    public class DaysPerWeekTriggerScheduleResource : DailyTriggerScheduleResource
+    public class DaysPerWeekScheduledTriggerFilterResource : DailyScheduledTriggerFilterResource
     {
-        public override TriggerScheduleType ScheduleType => TriggerScheduleType.DaysPerWeek;
+        public override TriggerFilterType FilterType => TriggerFilterType.DaysPerWeekSchedule;
 
         [Writeable]
         public bool Monday { get; set; }

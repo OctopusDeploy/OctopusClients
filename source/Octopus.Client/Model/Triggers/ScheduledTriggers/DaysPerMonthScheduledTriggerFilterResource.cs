@@ -1,7 +1,7 @@
 ﻿using System;
 using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
     public enum MonthlyScheduleType
     {
@@ -20,9 +20,9 @@ namespace Octopus.Client.Model.ScheduledTriggers
         Saturday = 6
     }
 
-    public class DaysPerMonthTriggerScheduleResource : TriggerScheduleResource
+    public class DaysPerMonthScheduledTriggerFilterResource : ScheduledTriggerFilterResource
     {
-        public override TriggerScheduleType ScheduleType => TriggerScheduleType.DaysPerMonth;
+        public override TriggerFilterType FilterType => TriggerFilterType.DaysPerMonthSchedule;
 
         [Writeable]
         public DateTime StartTime { get; set; }

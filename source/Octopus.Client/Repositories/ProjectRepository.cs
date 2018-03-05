@@ -55,11 +55,6 @@ namespace Octopus.Client.Repositories
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
         }
 
-        public ResourceCollection<ScheduledProjectTriggerResource> GetScheduledTriggers(ProjectResource project)
-        {
-            return Client.List<ScheduledProjectTriggerResource>(project.Link("ScheduledTriggers"));
-        }
-
         public void SetLogo(ProjectResource project, string fileName, Stream contents)
         {
             Client.Post(project.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);

@@ -52,7 +52,6 @@ namespace Octopus.Client
         ISchedulerRepository Schedulers { get; }
         IServerStatusRepository ServerStatus { get; }
         ISubscriptionRepository Subscriptions { get; }
-        IScheduledProjectTriggerRepository ScheduledProjectTriggers { get; set; }
         ITagSetRepository TagSets { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }

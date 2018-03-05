@@ -1,17 +1,17 @@
 ﻿using System;
 using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-    public class DailyTriggerScheduleResource : TriggerScheduleResource
+    public class DailyScheduledTriggerFilterResource : ScheduledTriggerFilterResource
     {
-        public override TriggerScheduleType ScheduleType => TriggerScheduleType.Daily;
+        public override TriggerFilterType FilterType => TriggerFilterType.DailySchedule;
 
         [Writeable]
         public DateTime StartTime { get; set; }
 
         [Writeable]
-        public DailyTriggerScheduleInterval Interval { get; set; }
+        public DailyScheduledTriggerInterval Interval { get; set; }
 
         [Writeable]
         public short? HourInterval { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Octopus.Client.Model.Triggers;
+using Octopus.Client.Model.Triggers.ScheduledTriggers;
 
 namespace Octopus.Client.Serialization
 {
@@ -9,7 +10,9 @@ namespace Octopus.Client.Serialization
         static readonly IDictionary<TriggerActionType, Type> ActionTypes =
           new Dictionary<TriggerActionType, Type>
           {
-              { TriggerActionType.AutoDeploy, typeof (AutoDeployActionResource)}
+              { TriggerActionType.AutoDeploy, typeof (AutoDeployActionResource)},
+              { TriggerActionType.DeployLatestRelease, typeof (DeployLatestReleaseActionResource)},
+              { TriggerActionType.DeployNewRelease, typeof (DeployNewReleaseActionResource)}
           };
 
         protected override IDictionary<TriggerActionType, Type> DerivedTypeMappings => ActionTypes;

@@ -1,6 +1,6 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.ScheduledTriggers
+namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
     public enum TriggerScheduleType
     {
@@ -10,10 +10,8 @@ namespace Octopus.Client.Model.ScheduledTriggers
         CronExpression
     }
 
-    public abstract class TriggerScheduleResource : Resource
+    public abstract class ScheduledTriggerFilterResource : TriggerFilterResource
     {
-        public abstract TriggerScheduleType ScheduleType { get; }
-
         [Writeable]
         public string Timezone { get; set; }
     }
