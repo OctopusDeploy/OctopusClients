@@ -75,6 +75,12 @@ namespace Octopus.Client.Operations
 
         Uri SubscriptionId { get; set; }
 
+        /// <summary>
+        /// How the machine should participate in Tenanted Deployments.
+        /// Allowed values are Untenanted, TenantedOrUntenanted or Tenanted
+        /// </summary>
+        TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+
 #if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
