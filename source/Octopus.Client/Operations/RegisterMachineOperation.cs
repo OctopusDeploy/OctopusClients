@@ -98,6 +98,12 @@ namespace Octopus.Client.Operations
 
         public Uri SubscriptionId { get; set; }
 
+        /// <summary>
+        /// How the machine should participate in Tenanted Deployments.
+        /// Allowed values are Untenanted, TenantedOrUntenanted or Tenanted
+        /// </summary>
+        public TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+
 #if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
@@ -374,6 +380,8 @@ namespace Octopus.Client.Operations
             machine.TenantTags = new ReferenceCollection(TenantTags);
             machine.Roles = new ReferenceCollection(Roles);
             machine.Name = MachineName;
+            machine.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
+
             if (machinePolicy != null)
                 machine.MachinePolicyId = machinePolicy.Id;
 

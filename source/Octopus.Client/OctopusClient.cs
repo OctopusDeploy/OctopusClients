@@ -114,6 +114,7 @@ namespace Octopus.Client
             // From what I can see it uses the Uri.Authority value - which contains the port number
             // We need to clear the port in order to successfully get cookies for the same origin
             var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) { Port = 0 };
+
             return uriBuilder.Uri;
         }
 
