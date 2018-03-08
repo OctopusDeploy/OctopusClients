@@ -31,7 +31,7 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
         public MonthlyScheduleType MonthlyScheduleType { get; set; }
 
         [Writeable]
-        public short? DateOfMonth { get; set; }
+        public string DateOfMonth { get; set; }
 
         [Writeable]
         public string DayNumberOfMonth { get; set; }
