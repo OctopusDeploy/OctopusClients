@@ -4,11 +4,13 @@
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0011"
 #tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
+#addin "nuget:?package=Cake.Incubator"
 
 using SharpCompress;
 using SharpCompress.Common;
 using SharpCompress.Writer;
 using System.Xml;
+using Cake.Incubator;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -54,6 +56,7 @@ Setup(context =>
 
     Information("Building OctopusClients v{0}", nugetVersion);
     Information("Informational Version {0}", gitVersionInfo.InformationalVersion);
+    Verbose("GitVersion:\n{0}", gitVersionInfo.Dump());
 });
 
 Teardown(context =>
