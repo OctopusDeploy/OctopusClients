@@ -2843,6 +2843,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionResource Action { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterResource Filter { get; set; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
   }
@@ -4142,6 +4143,15 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
+  abstract class ScopedDeploymentActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    String ChannelId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
   abstract class TriggerActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4152,6 +4162,8 @@ Octopus.Client.Model.Triggers
   TriggerActionType
   {
       AutoDeploy = 0
+      DeployLatestRelease = 1
+      DeployNewRelease = 2
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -4163,6 +4175,118 @@ Octopus.Client.Model.Triggers
   TriggerFilterType
   {
       MachineFilter = 0
+      DailySchedule = 1
+      DaysPerWeekSchedule = 2
+      DaysPerMonthSchedule = 3
+      CronExpressionSchedule = 4
+  }
+}
+Octopus.Client.Model.Triggers.ScheduledTriggers
+{
+  class CronScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    String CronExpression { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+  }
+  class DailyScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Nullable<Int16> HourInterval { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
+    Nullable<Int16> MinuteInterval { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterRunType RunType { get; set; }
+    DateTime StartTime { get; set; }
+  }
+  DailyScheduledTriggerInterval
+  {
+      OnceDaily = 0
+      OnceHourly = 1
+      OnceEveryMinute = 2
+  }
+  DayOfWeek
+  {
+      Sunday = 0
+      Monday = 1
+      Tuesday = 2
+      Wednesday = 3
+      Thursday = 4
+      Friday = 5
+      Saturday = 6
+  }
+  class DaysPerMonthScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    String DateOfMonth { get; set; }
+    String DayNumberOfMonth { get; set; }
+    Nullable<DayOfWeek> DayOfWeek { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
+    DateTime StartTime { get; set; }
+  }
+  class DaysPerWeekScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Boolean Friday { get; set; }
+    Boolean Monday { get; set; }
+    Boolean Saturday { get; set; }
+    Boolean Sunday { get; set; }
+    Boolean Thursday { get; set; }
+    Boolean Tuesday { get; set; }
+    Boolean Wednesday { get; set; }
+    void SetDayFromString(String)
+  }
+  class DeployLatestReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    String DestinationEnvironmentId { get; set; }
+    String SourceEnvironmentId { get; set; }
+    String Variables { get; set; }
+  }
+  class DeployNewReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    String EnvironmentId { get; set; }
+    String Variables { get; set; }
+  }
+  MonthlyScheduleType
+  {
+      DateOfMonth = 0
+      DayOfMonth = 1
+  }
+  abstract class ScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
+  {
+    String Timezone { get; set; }
+  }
+  ScheduledTriggerFilterRunType
+  {
+      ScheduledTime = 0
+      Continuously = 1
   }
 }
 Octopus.Client.Model.Versioning

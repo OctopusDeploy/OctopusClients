@@ -2,7 +2,9 @@
 {
     public enum TriggerActionType
     {
-        AutoDeploy
+        AutoDeploy,
+        DeployLatestRelease,
+        DeployNewRelease
     }
 
     public abstract class TriggerActionResource : Resource
