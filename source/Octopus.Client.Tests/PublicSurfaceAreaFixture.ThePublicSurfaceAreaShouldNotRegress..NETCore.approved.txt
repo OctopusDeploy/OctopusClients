@@ -3850,6 +3850,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String DestinationEnvironmentId { get; set; }
     String SourceEnvironmentId { get; set; }
+    String Variables { get; set; }
   }
   class DeployNewReleaseActionResource
     Octopus.Client.Extensibility.IResource
@@ -3859,6 +3860,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String EnvironmentId { get; set; }
+    String Variables { get; set; }
   }
   MonthlyScheduleType
   {
