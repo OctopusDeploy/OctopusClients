@@ -2663,6 +2663,15 @@ Octopus.Client.Model
       Days = 0
       Items = 1
   }
+  class RoleScope
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    String UserRoleId { get; set; }
+  }
   class RootResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3054,6 +3063,22 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     Octopus.Client.Model.ReferenceCollection UserRoleIds { get; set; }
+  }
+  class TeamV2Resource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean CanBeDeleted { get; set; }
+    Boolean CanBeRenamed { get; set; }
+    Boolean CanChangeMembers { get; set; }
+    Boolean CanChangeRoles { get; set; }
+    Octopus.Client.Model.NamedReferenceItemCollection ExternalSecurityGroups { get; set; }
+    Octopus.Client.Model.ReferenceCollection MemberUserIds { get; set; }
+    String Name { get; set; }
+    List<RoleScope> RoleScopes { get; set; }
   }
   TenantedDeploymentMode
   {
