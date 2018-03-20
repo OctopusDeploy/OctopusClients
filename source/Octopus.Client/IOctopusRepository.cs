@@ -55,7 +55,6 @@ namespace Octopus.Client
         ITagSetRepository TagSets { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
-        ITeamsV2Repository TeamsV2 { get; }
         ITenantRepository Tenants { get; }
         ITenantVariablesRepository TenantVariables { get; }
         IUserRepository Users { get; }
