@@ -59,11 +59,20 @@ namespace Octopus.Client.Model
         /// <summary>
         /// The set of roles and scopes that this team will have
         /// </summary>
+        [Writeable]
         public List<RoleScope> RoleScopes { get; set; }
     }
 
     public class RoleScope
     {
+        public RoleScope()
+        {
+            ProjectIds = new ReferenceCollection();
+            EnvironmentIds = new ReferenceCollection();
+            TenantIds = new ReferenceCollection();
+            ProjectGroupIds = new ReferenceCollection();
+        }
+
         /// <summary>
         /// The role for which scoping will apply
         /// </summary>
