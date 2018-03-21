@@ -63,6 +63,9 @@ namespace Octopus.Client.Model
         public List<RoleScope> RoleScopes { get; set; }
     }
 
+    /// <summary>
+    /// The set of roles and scopes that this team will have
+    /// </summary>
     public class RoleScope
     {
         public RoleScope()
