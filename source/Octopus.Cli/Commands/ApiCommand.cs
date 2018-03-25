@@ -24,19 +24,19 @@ namespace Octopus.Cli.Commands
         /// <summary>
         /// The environment variable that can hold the Octopus server
         /// </summary>
-        private const string ServerUrlEnvVar = "OCTOPUS_CLI_SERVER";
+        public const string ServerUrlEnvVar = "OCTOPUS_CLI_SERVER";
         /// <summary>
         /// The environment variable that can hold the API key
         /// </summary>
-        private const string ApiKeyEnvVar = "OCTOPUS_CLI_API_KEY";
+        public const string ApiKeyEnvVar = "OCTOPUS_CLI_API_KEY";
         /// <summary>
         /// The environment variable that can hold the username
         /// </summary>
-        private const string UsernameEnvVar = "OCTOPUS_CLI_USERNAME";
+        public const string UsernameEnvVar = "OCTOPUS_CLI_USERNAME";
         /// <summary>
         /// The environment variable that can hold the password
         /// </summary>   
-        private const string PasswordEnvVar = "OCTOPUS_CLI_PASSWORD";
+        public const string PasswordEnvVar = "OCTOPUS_CLI_PASSWORD";
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
 using Octopus.Cli.Tests.Helpers;
 
@@ -21,13 +22,17 @@ namespace Octopus.Cli.Tests.Commands
         [Test]
         public void ShouldThrowIfNoServerSpecified()
         {
-            Assert.Throws<CommandException>(() => apiCommand.Execute("--apiKey=ABCDEF123456789"));
+            // Ignore this test if for some reason the environment variable was set
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ApiCommand.ServerUrlEnvVar)))
+                Assert.Throws<CommandException>(() => apiCommand.Execute("--apiKey=ABCDEF123456789"));    
         }
 
         [Test]
         public void ShouldThrowIfNoApiKeySpecified()
         {
-            Assert.Throws<CommandException>(() => apiCommand.Execute("--server=http://the-server"));
+            // Ignore this test if for some reason the environment variable was set
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ApiCommand.ApiKeyEnvVar)))
+                Assert.Throws<CommandException>(() => apiCommand.Execute("--server=http://the-server"));
         }
 
         [Test]
