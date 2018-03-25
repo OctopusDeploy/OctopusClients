@@ -21,9 +21,20 @@ namespace Octopus.Cli.Commands
 {
     public abstract class ApiCommand : CommandBase, ICommand
     {
+        /// <summary>
+        /// The environment variable that can hold the Octopus server
+        /// </summary>
+        private const string SERVER_URL_ENV_VAR = "OCTOPUS_CLI_SERVER";
+        /// <summary>
+        /// The environment variable that can hold the API key
+        /// </summary>
+        private const string API_KEY_ENV_VAR = "OCTOPUS_CLI_API_KEY";
+        private const string USER_NAME_ENV_KEY = "OCTOPUS_CLI_USERNAME";
+        private const string PASSWORD_ENV_KEY = "OCTOPUS_CLI_PASSWORD";
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;
+        string serverBaseUrl;
         bool enableDebugging;
         bool ignoreSslErrors;
         
@@ -38,8 +49,8 @@ namespace Octopus.Cli.Commands
             this.FileSystem = fileSystem;
 
             var options = Options.For("Common options");
-            options.Add("server=", "The base URL for your Octopus server - e.g., http://your-octopus/", v => ServerBaseUrl = v);
-            options.Add("apiKey=", "[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used.", v => apiKey = v);
+            options.Add("server=", $"[Optional] The base URL for your Octopus server - e.g., http://your-octopus/. This URL can also be set in the {SERVER_URL_ENV_VAR} environment variable.", v => serverBaseUrl = v);
+            options.Add("apiKey=", $"[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used. This key can also be set in the {API_KEY_ENV_VAR} environment variable.", v => apiKey = v);
             options.Add("user=", "[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password.", v => username = v);
             options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
             
@@ -56,7 +67,21 @@ namespace Octopus.Cli.Commands
 
         protected ILogger Log { get; }
 
-        protected string ServerBaseUrl { get; private set; }
+        protected string ServerBaseUrl => string.IsNullOrWhiteSpace(serverBaseUrl)
+                    ? System.Environment.GetEnvironmentVariable(SERVER_URL_ENV_VAR)
+                    : serverBaseUrl;
+            
+        string ApiKey => string.IsNullOrWhiteSpace(apiKey)
+            ? System.Environment.GetEnvironmentVariable(API_KEY_ENV_VAR)
+            : apiKey;
+        
+        string Username => string.IsNullOrWhiteSpace(username)
+            ? System.Environment.GetEnvironmentVariable(USER_NAME_ENV_KEY)
+            : username;
+        
+        string Password => string.IsNullOrWhiteSpace(password)
+            ? System.Environment.GetEnvironmentVariable(PASSWORD_ENV_KEY)
+            : password;
 
         protected IOctopusAsyncRepository Repository { get; private set; }
 
@@ -79,17 +104,23 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Unrecognized command arguments: " + string.Join(", ", remainingArguments));
 
             if (string.IsNullOrWhiteSpace(ServerBaseUrl))
-                throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/");
+                throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/. " +
+                    $"The Octopus Server URL can also be set in the {SERVER_URL_ENV_VAR} environment variable.");
 
-            if (!string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(username))
-                throw new CommandException("Please provide an API Key OR a username and password, not both");
+            if (!string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(Username))
+                throw new CommandException("Please provide an API Key OR a username and password, not both. " +
+                                           "These values may have been passed in as command line arguments, or may have been set in the " +
+                                           $"{API_KEY_ENV_VAR} and {USER_NAME_ENV_KEY} environment variables.");
 
-            if (string.IsNullOrWhiteSpace(apiKey) && string.IsNullOrWhiteSpace(username))
-                throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789 OR a username and password. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
+            if (string.IsNullOrWhiteSpace(ApiKey) && string.IsNullOrWhiteSpace(Username))
+                throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789 OR a username and password. " +
+                                           $"The API key can also be set in the {API_KEY_ENV_VAR} environment variable, " +
+                                           $"while the username and password can be set in the {USER_NAME_ENV_KEY} and {PASSWORD_ENV_KEY} " +
+                                           "environment variables respectively. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
 
-            var endpoint = string.IsNullOrWhiteSpace(apiKey)
+            var endpoint = string.IsNullOrWhiteSpace(ApiKey)
                 ? new OctopusServerEndpoint(ServerBaseUrl)
-                : new OctopusServerEndpoint(ServerBaseUrl, apiKey);
+                : new OctopusServerEndpoint(ServerBaseUrl, ApiKey);
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             clientOptions.IgnoreSslErrors = ignoreSslErrors;
@@ -115,9 +146,9 @@ namespace Octopus.Cli.Commands
 
             commandOutputProvider.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
-            if (!string.IsNullOrWhiteSpace(username))
+            if (!string.IsNullOrWhiteSpace(Username))
             {
-                await Repository.Users.SignIn(username, password);
+                await Repository.Users.SignIn(Username, Password);
             }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
