@@ -24,13 +24,19 @@ namespace Octopus.Cli.Commands
         /// <summary>
         /// The environment variable that can hold the Octopus server
         /// </summary>
-        private const string SERVER_URL_ENV_VAR = "OCTOPUS_CLI_SERVER";
+        private const string ServerUrlEnvVar = "OCTOPUS_CLI_SERVER";
         /// <summary>
         /// The environment variable that can hold the API key
         /// </summary>
-        private const string API_KEY_ENV_VAR = "OCTOPUS_CLI_API_KEY";
-        private const string USER_NAME_ENV_KEY = "OCTOPUS_CLI_USERNAME";
-        private const string PASSWORD_ENV_KEY = "OCTOPUS_CLI_PASSWORD";
+        private const string ApiKeyEnvVar = "OCTOPUS_CLI_API_KEY";
+        /// <summary>
+        /// The environment variable that can hold the username
+        /// </summary>
+        private const string UsernameEnvVar = "OCTOPUS_CLI_USERNAME";
+        /// <summary>
+        /// The environment variable that can hold the password
+        /// </summary>   
+        private const string PasswordEnvVar = "OCTOPUS_CLI_PASSWORD";
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
         string apiKey;
@@ -49,10 +55,10 @@ namespace Octopus.Cli.Commands
             this.FileSystem = fileSystem;
 
             var options = Options.For("Common options");
-            options.Add("server=", $"[Optional] The base URL for your Octopus server - e.g., http://your-octopus/. This URL can also be set in the {SERVER_URL_ENV_VAR} environment variable.", v => serverBaseUrl = v);
-            options.Add("apiKey=", $"[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used. This key can also be set in the {API_KEY_ENV_VAR} environment variable.", v => apiKey = v);
-            options.Add("user=", "[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password.", v => username = v);
-            options.Add("pass=", "[Optional] Password to use when authenticating with the server.", v => password = v);
+            options.Add("server=", $"[Optional] The base URL for your Octopus server - e.g., http://your-octopus/. This URL can also be set in the {ServerUrlEnvVar} environment variable.", v => serverBaseUrl = v);
+            options.Add("apiKey=", $"[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used. This key can also be set in the {ApiKeyEnvVar} environment variable.", v => apiKey = v);
+            options.Add("user=", $"[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password. This Username can also be set in the {UsernameEnvVar} environment variable.", v => username = v);
+            options.Add("pass=", $"[Optional] Password to use when authenticating with the server. This Password can also be set in the {PasswordEnvVar} environment variable.", v => password = v);
             
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
@@ -68,19 +74,19 @@ namespace Octopus.Cli.Commands
         protected ILogger Log { get; }
 
         protected string ServerBaseUrl => string.IsNullOrWhiteSpace(serverBaseUrl)
-                    ? System.Environment.GetEnvironmentVariable(SERVER_URL_ENV_VAR)
+                    ? System.Environment.GetEnvironmentVariable(ServerUrlEnvVar)
                     : serverBaseUrl;
             
         string ApiKey => string.IsNullOrWhiteSpace(apiKey)
-            ? System.Environment.GetEnvironmentVariable(API_KEY_ENV_VAR)
+            ? System.Environment.GetEnvironmentVariable(ApiKeyEnvVar)
             : apiKey;
         
         string Username => string.IsNullOrWhiteSpace(username)
-            ? System.Environment.GetEnvironmentVariable(USER_NAME_ENV_KEY)
+            ? System.Environment.GetEnvironmentVariable(UsernameEnvVar)
             : username;
         
         string Password => string.IsNullOrWhiteSpace(password)
-            ? System.Environment.GetEnvironmentVariable(PASSWORD_ENV_KEY)
+            ? System.Environment.GetEnvironmentVariable(PasswordEnvVar)
             : password;
 
         protected IOctopusAsyncRepository Repository { get; private set; }
@@ -105,17 +111,17 @@ namespace Octopus.Cli.Commands
 
             if (string.IsNullOrWhiteSpace(ServerBaseUrl))
                 throw new CommandException("Please specify the Octopus Server URL using --server=http://your-server/. " +
-                    $"The Octopus Server URL can also be set in the {SERVER_URL_ENV_VAR} environment variable.");
+                    $"The Octopus Server URL can also be set in the {ServerUrlEnvVar} environment variable.");
 
             if (!string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(Username))
                 throw new CommandException("Please provide an API Key OR a username and password, not both. " +
                                            "These values may have been passed in as command line arguments, or may have been set in the " +
-                                           $"{API_KEY_ENV_VAR} and {USER_NAME_ENV_KEY} environment variables.");
+                                           $"{ApiKeyEnvVar} and {UsernameEnvVar} environment variables.");
 
             if (string.IsNullOrWhiteSpace(ApiKey) && string.IsNullOrWhiteSpace(Username))
                 throw new CommandException("Please specify your API key using --apiKey=ABCDEF123456789 OR a username and password. " +
-                                           $"The API key can also be set in the {API_KEY_ENV_VAR} environment variable, " +
-                                           $"while the username and password can be set in the {USER_NAME_ENV_KEY} and {PASSWORD_ENV_KEY} " +
+                                           $"The API key can also be set in the {ApiKeyEnvVar} environment variable, " +
+                                           $"while the username and password can be set in the {UsernameEnvVar} and {PasswordEnvVar} " +
                                            "environment variables respectively. Learn more at: https://github.com/OctopusDeploy/Octopus-Tools");
 
             var endpoint = string.IsNullOrWhiteSpace(ApiKey)
