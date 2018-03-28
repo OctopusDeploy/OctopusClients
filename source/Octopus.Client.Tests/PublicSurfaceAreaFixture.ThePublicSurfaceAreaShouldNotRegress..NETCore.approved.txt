@@ -4,11 +4,13 @@ Octopus.Client
     Octopus.Client.ILinkResolver
   {
     .ctor(Uri, String)
+    Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
     String ToString()
   }
   interface ILinkResolver
   {
+    Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
   }
   interface IOctopusAsyncClient
@@ -18,6 +20,7 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
@@ -97,6 +100,7 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
@@ -217,6 +221,7 @@ Octopus.Client
     .ctor(Octopus.Client.ILinkResolver, String, ICredentials)
     String ApiKey { get; }
     ICredentials Credentials { get; }
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
