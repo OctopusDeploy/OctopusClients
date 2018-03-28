@@ -68,6 +68,10 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignIn(LoginCommand loginCommand)
         {
+            if (loginCommand.State == null)
+            {
+                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
+            }
             return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
         }
 

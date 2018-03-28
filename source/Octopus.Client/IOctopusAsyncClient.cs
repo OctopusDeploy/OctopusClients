@@ -58,6 +58,11 @@ namespace Octopus.Client
         IOctopusAsyncRepository Repository { get; }
 
         /// <summary>
+        /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
+        /// </summary>
+        bool IsUsingSecureConnection { get; }
+
+        /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
         /// limited in size (pagination) and links to the next page of data is available in the <see cref="Resource.Links" />
         /// property.

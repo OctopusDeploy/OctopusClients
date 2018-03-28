@@ -102,28 +102,24 @@ namespace Octopus.Client
         /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
         /// client  will assume Octopus runs under a virtual directory.
         /// </summary>
-        public ILinkResolver OctopusServer
-        {
-            get { return octopusServer; }
-        }
+        public ILinkResolver OctopusServer => octopusServer;
 
+        /// <summary>
+        /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
+        /// </summary>
+        public bool IsUsingSecureConnection => octopusServer.IsUsingSecureConnection;
+        
         /// <summary>
         /// Gets the API key to use when connecting to the Octopus server. For more information on API keys, please see the API
         /// documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </summary>
-        public string ApiKey
-        {
-            get { return apiKey; }
-        }
+        public string ApiKey => apiKey;
 
         /// <summary>
         /// Gets the additional credentials to use when communicating to servers that require integrated/basic authentication.
         /// </summary>
-        public ICredentials Credentials
-        {
-            get { return credentials; }
-        }
+        public ICredentials Credentials => credentials;
 
         /// <summary>
         /// Recreates the endpoint using the API key of a new user.

@@ -24,5 +24,10 @@ namespace Octopus.Client.Model
         /// Whether the cookie should be persistent.
         /// </summary>
         public bool RememberMe { get; set; }
+
+        /// <summary>
+        /// Encapsulated state for post successful login.
+        /// </summary>
+        public LoginState State { get; set; }
     }
 }
