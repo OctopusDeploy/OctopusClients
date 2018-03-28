@@ -6,6 +6,7 @@
         NuGet,
         Docker,
         Maven,
-        OctopusProject
+        OctopusProject,
+        GitHub
     }
 }

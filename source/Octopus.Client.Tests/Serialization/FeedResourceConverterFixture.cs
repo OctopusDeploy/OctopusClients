@@ -48,6 +48,23 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void GitHubFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "GitIt",
+                FeedType = FeedType.GitHub,
+                DownloadAttempts = 91
+            };
+
+            var result = Execute<GitHubFeedResource>(input);
+
+            Assert.AreEqual(FeedType.GitHub, result.FeedType);
+            Assert.IsAssignableFrom(typeof(GitHubFeedResource), result);
+            Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
+        }
+
+        [Test]
         public void NuGetFeedTypesDeserialize()
         {
             var input = new

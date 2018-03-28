@@ -12,6 +12,7 @@ namespace Octopus.Client.Serialization
                 {FeedType.NuGet, typeof(NuGetFeedResource)},
                 {FeedType.Docker, typeof(DockerFeedResource)},
                 {FeedType.Maven, typeof(MavenFeedResource)},
+                {FeedType.GitHub, typeof(GitHubFeedResource)},
                 {FeedType.OctopusProject, typeof(OctopusProjectFeedResource)}
             };
 

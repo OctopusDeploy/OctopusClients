@@ -1731,12 +1731,24 @@ Octopus.Client.Model
       Docker = 2
       Maven = 3
       OctopusProject = 4
+      GitHub = 5
   }
   class FileUpload
   {
     .ctor()
     Stream Contents { get; set; }
     String FileName { get; set; }
+  }
+  class GitHubFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   abstract class Health
   {
@@ -3903,6 +3915,7 @@ Octopus.Client.Operations
     String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
@@ -3925,6 +3938,7 @@ Octopus.Client.Operations
     String ProxyName { get; set; }
     String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
