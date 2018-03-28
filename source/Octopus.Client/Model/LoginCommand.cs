@@ -26,7 +26,7 @@ namespace Octopus.Client.Model
         public bool RememberMe { get; set; }
 
         /// <summary>
-        /// Encapsulated state for post successful login.
+        /// Provides hints to the server about the context of the client. This will be set automatically by the framework, or you can set it yourself to override the automatic behaviour.
         /// </summary>
         public LoginState State { get; set; }
     }
