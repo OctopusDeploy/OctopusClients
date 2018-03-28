@@ -2292,7 +2292,13 @@ Octopus.Client.Model
     .ctor()
     String Password { get; set; }
     Boolean RememberMe { get; set; }
+    Octopus.Client.Model.LoginState State { get; set; }
     String Username { get; set; }
+  }
+  class LoginState
+  {
+    .ctor()
+    Boolean UsingSecureConnection { get; set; }
   }
   class MachineCleanupPolicy
   {
