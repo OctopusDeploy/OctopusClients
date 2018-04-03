@@ -55,6 +55,7 @@ namespace Octopus.Client
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
         ITenantRepository Tenants { get; }
+        ITenantVariablesRepository TenantVariables { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
