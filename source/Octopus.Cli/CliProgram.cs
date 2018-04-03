@@ -32,8 +32,15 @@ namespace Octopus.Cli
 
         internal int Run(string[] args)
         {
-
-            Console.Title = "Octopus Deploy Command Line Tool";
+            try
+            {
+                Console.Title = "Octopus Deploy Command Line Tool";
+            }
+            catch
+            {
+                // Try best effort to set the title of the console
+                // This can fail when there is no window because the window handle will be invalid
+            }
             
             try
             {
