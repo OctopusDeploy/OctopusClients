@@ -30,6 +30,11 @@ namespace Octopus.Client
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         RootResource RootDocument { get; }
+    
+        /// <summary>
+        /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
+        /// </summary>
+        bool IsUsingSecureConnection { get; }
 
         /// <summary>
         /// Occurs when a request is about to be sent.

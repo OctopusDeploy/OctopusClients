@@ -24,5 +24,10 @@ namespace Octopus.Client.Model
         /// Whether the cookie should be persistent.
         /// </summary>
         public bool RememberMe { get; set; }
+
+        /// <summary>
+        /// Provides hints to the server about the context of the client. This will be set automatically by the framework, or you can set it yourself to override the automatic behaviour.
+        /// </summary>
+        public LoginState State { get; set; }
     }
 }

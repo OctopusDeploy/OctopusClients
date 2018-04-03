@@ -29,16 +29,19 @@ namespace Octopus.Client.Repositories
 
         public TResource Create(TResource resource, object pathParameters = null)
         {
+            if (resource == null) throw new ArgumentNullException(nameof(resource));
             return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
         {
+            if (resource == null) throw new ArgumentNullException(nameof(resource));
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
+            if (resource == null) throw new ArgumentNullException(nameof(resource));
             client.Delete(resource.Links["Self"]);
         }
 

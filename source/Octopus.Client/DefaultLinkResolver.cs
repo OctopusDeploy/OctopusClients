@@ -40,6 +40,11 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
+        /// </summary>
+        public bool IsUsingSecureConnection => baseUri.StartsWith("https://");
+
+        /// <summary>
         /// Resolves the specified link into a fully qualified URI.
         /// </summary>
         /// <param name="link">The application relative link (should begin with a <c>/</c>).</param>
