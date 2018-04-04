@@ -2663,15 +2663,6 @@ Octopus.Client.Model
       Days = 0
       Items = 1
   }
-  class RoleScope
-  {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    String UserRoleId { get; set; }
-  }
   class RootResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2685,6 +2676,15 @@ Octopus.Client.Model
     Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
+  }
+  class ScopedUserRole
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    String UserRoleId { get; set; }
   }
   ScopeField
   {
@@ -3057,7 +3057,7 @@ Octopus.Client.Model
     Octopus.Client.Model.NamedReferenceItemCollection ExternalSecurityGroups { get; set; }
     Octopus.Client.Model.ReferenceCollection MemberUserIds { get; set; }
     String Name { get; set; }
-    List<RoleScope> RoleScopes { get; set; }
+    List<ScopedUserRole> ScopedUserRoles { get; set; }
   }
   TenantedDeploymentMode
   {

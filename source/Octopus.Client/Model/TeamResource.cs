@@ -10,7 +10,7 @@ namespace Octopus.Client.Model
         public TeamResource()
         {
             ExternalSecurityGroups = new NamedReferenceItemCollection();
-            RoleScopes = new List<RoleScope>();
+            ScopedUserRoles = new List<ScopedUserRole>();
         }
 
         /// <summary>
@@ -60,15 +60,15 @@ namespace Octopus.Client.Model
         /// The set of roles and scopes that this team will have
         /// </summary>
         [Writeable]
-        public List<RoleScope> RoleScopes { get; set; }
+        public List<ScopedUserRole> ScopedUserRoles { get; set; }
     }
 
     /// <summary>
     /// The set of roles and scopes that this team will have
     /// </summary>
-    public class RoleScope
+    public class ScopedUserRole
     {
-        public RoleScope()
+        public ScopedUserRole()
         {
             ProjectIds = new ReferenceCollection();
             EnvironmentIds = new ReferenceCollection();
