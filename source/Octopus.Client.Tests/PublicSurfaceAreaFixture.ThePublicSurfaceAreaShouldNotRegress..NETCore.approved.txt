@@ -4,11 +4,13 @@ Octopus.Client
     Octopus.Client.ILinkResolver
   {
     .ctor(Uri, String)
+    Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
     String ToString()
   }
   interface ILinkResolver
   {
+    Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
   }
   interface IOctopusAsyncClient
@@ -18,6 +20,7 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
@@ -81,6 +84,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
+    Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
@@ -99,6 +103,7 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
@@ -166,6 +171,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
+    Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
@@ -221,6 +227,7 @@ Octopus.Client
     .ctor(Octopus.Client.ILinkResolver, String, ICredentials)
     String ApiKey { get; }
     ICredentials Credentials { get; }
+    Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
@@ -1907,7 +1914,13 @@ Octopus.Client.Model
     .ctor()
     String Password { get; set; }
     Boolean RememberMe { get; set; }
+    Octopus.Client.Model.LoginState State { get; set; }
     String Username { get; set; }
+  }
+  class LoginState
+  {
+    .ctor()
+    Boolean UsingSecureConnection { get; set; }
   }
   abstract class MachineBasedResource
     Octopus.Client.Extensibility.IResource
@@ -4372,6 +4385,11 @@ Octopus.Client.Repositories.Async
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
     Task SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
+  }
+  interface ITenantVariablesRepository
+    Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
+  {
+    Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.Async.IPaginate<UserResource>

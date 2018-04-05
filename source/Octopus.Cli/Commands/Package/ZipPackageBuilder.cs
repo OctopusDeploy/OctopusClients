@@ -14,7 +14,6 @@ namespace Octopus.Cli.Commands.Package
         readonly IOctopusFileSystem fileSystem;
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly List<string> files;
-        
 
         public ZipPackageBuilder(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
@@ -63,7 +62,7 @@ namespace Octopus.Cli.Commands.Package
                         files.Add(relativePath);
 
                         var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
-                        entry.LastWriteTime = new DateTimeOffset(new FileInfo(file).LastWriteTime);
+                        UpdateLastWriteTime(file, entry);
 
                         using (var entryStream = entry.Open())
                         using (var sourceStream = File.OpenRead(file))
@@ -72,6 +71,28 @@ namespace Octopus.Cli.Commands.Package
                         }
                     }
                 }
+            }
+        }
+
+        private static readonly DateTime MinDatetime = new DateTime(1980, 1, 1);
+        private static readonly DateTime MaxDatetime = new DateTime(2107, 12, 31, 23, 59, 58);
+
+        private static void UpdateLastWriteTime(string file, ZipArchiveEntry entry)
+        {
+            var fileInfo = new FileInfo(file);
+            
+            try
+            {
+                entry.LastWriteTime = new DateTimeOffset(fileInfo.LastWriteTime);
+            }
+            catch (ArgumentOutOfRangeException ex)
+                when (ex.Message.StartsWith("The DateTimeOffset specified cannot be converted into a Zip file timestamp."))
+            {
+                // This occurs if the file LastWriteTime is missing, resulting in the OS reading it as UNIX min
+                // System.Compression.IO requires the date to be between 1980/01/01 00:00 and 2107/12/31 23:59:58
+                // https://github.com/dotnet/corefx/blob/master/src/System.IO.Compression/src/System/IO/Compression/ZipArchiveEntry.cs#L216
+
+                entry.LastWriteTime = new DateTimeOffset(fileInfo.LastWriteTime > MinDatetime ? MaxDatetime : MinDatetime, TimeSpan.Zero);
             }
         }
 
