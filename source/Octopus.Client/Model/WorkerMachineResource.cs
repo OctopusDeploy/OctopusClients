@@ -5,7 +5,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public class WorkerMachineResource : MachineBasedResource
+    public class WorkerMachineResource : MachineResource
     {
         public WorkerMachineResource()
         {

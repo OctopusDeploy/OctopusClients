@@ -33,7 +33,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, LibraryVariableSetResource> LibraryVariableSets { get; set; }
             public DeploymentProcessResource DeploymentProcess { get; set; }
             public IDictionary<string, EnvironmentResource> Environments { get; set; }
-            public IDictionary<string, MachineResource> Machines { get; set; }
+            public IDictionary<string, DeploymentTargetResource> Machines { get; set; }
             public IDictionary<string, FeedResource> Feeds { get; set; }
             public IDictionary<string, ActionTemplateResource> Templates { get; set; }
             public VariableSetResource VariableSet { get; set; }
@@ -307,7 +307,7 @@ namespace Octopus.Cli.Importers
         async Task ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
-            IDictionary<string, MachineResource> machines,
+            IDictionary<string, DeploymentTargetResource> machines,
             IDictionary<string, ChannelResource> channels,
             IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
@@ -332,7 +332,7 @@ namespace Octopus.Cli.Importers
             await Repository.VariableSets.Modify(existingVariableSet).ConfigureAwait(false);
         }
 
-        VariableScopeValues UpdateScopeValues(IDictionary<string, EnvironmentResource> environments, IDictionary<string, MachineResource> machines, IDictionary<string, ChannelResource> channels, IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
+        VariableScopeValues UpdateScopeValues(IDictionary<string, EnvironmentResource> environments, IDictionary<string, DeploymentTargetResource> machines, IDictionary<string, ChannelResource> channels, IDictionary<ScopeField, List<ReferenceDataItem>> scopeValuesUsed)
         {
             var scopeValues = new VariableScopeValues();
             Log.Debug("Updating the Environments of the Variable Sets Scope Values");
@@ -359,7 +359,7 @@ namespace Octopus.Cli.Importers
             return scopeValues;
         }
 
-        IList<VariableResource> UpdateVariables(VariableSetResource variableSet, IDictionary<string, EnvironmentResource> environments, IDictionary<string, MachineResource> machines, IDictionary<string, ChannelResource> channels)
+        IList<VariableResource> UpdateVariables(VariableSetResource variableSet, IDictionary<string, EnvironmentResource> environments, IDictionary<string, DeploymentTargetResource> machines, IDictionary<string, ChannelResource> channels)
         {
             var variables = variableSet.Variables;
 
@@ -600,10 +600,10 @@ namespace Octopus.Cli.Importers
             return dependencies;
         }
 
-        protected async Task<CheckedReferences<MachineResource>> CheckMachinesExist(List<ReferenceDataItem> machineList)
+        protected async Task<CheckedReferences<DeploymentTargetResource>> CheckMachinesExist(List<ReferenceDataItem> machineList)
         {
             Log.Debug("Checking that all machines exist");
-            var dependencies = new CheckedReferences<MachineResource>();
+            var dependencies = new CheckedReferences<DeploymentTargetResource>();
             foreach (var m in machineList)
             {
                 var machine = await Repository.Machines.FindByName(m.Name).ConfigureAwait(false);

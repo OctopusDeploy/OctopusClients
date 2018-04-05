@@ -61,7 +61,7 @@ namespace Octopus.Cli.Commands
                     $"The following health status value is unknown: {string.Join(", ", missingHealthStatuses)}. Please choose from {string.Join(", ", HealthStatusNames)}");
         }
 
-        public string GetStatus(MachineBasedResource machineResource)
+        public string GetStatus(MachineResource machineResource)
         {
             if (IsHealthStatusPendingDeprication)
             {
@@ -76,14 +76,14 @@ namespace Octopus.Cli.Commands
 
         private bool IsHealthStatusPendingDeprication { get; }
 
-        public IEnumerable<TMachineResource> Filter<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineBasedResource
+        public IEnumerable<TMachineResource> Filter<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             machines = FilterByProvidedStatus(machines);
             machines = FilterByProvidedHealthStatus(machines);
             return machines;
         }
 
-        IEnumerable<TMachineResource> FilterByProvidedStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineBasedResource
+        IEnumerable<TMachineResource> FilterByProvidedStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             var statusFilter = new List<MachineModelStatus>();
             if (statuses.Count > 0)
@@ -102,7 +102,7 @@ namespace Octopus.Cli.Commands
                 : machines;
         }
 
-        IEnumerable<TMachineResource> FilterByProvidedHealthStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineBasedResource
+        IEnumerable<TMachineResource> FilterByProvidedHealthStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             var statusFilter = new List<MachineModelHealthStatus>();
             if (healthStatuses.Count > 0)

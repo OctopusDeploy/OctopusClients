@@ -280,6 +280,17 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.DeploymentProcessEditor RemoveStep(String)
     Task<DeploymentProcessEditor> Save()
   }
+  class DeploymentTargetEditor
+    Octopus.Client.Editors.Async.IResourceEditor<DeploymentTargetResource, DeploymentTargetEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IMachineRepository)
+    Octopus.Client.Model.DeploymentTargetResource Instance { get; }
+    Task<DeploymentTargetEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
+    Task<DeploymentTargetEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Octopus.Client.Editors.Async.DeploymentTargetEditor Customize(Action<DeploymentTargetResource>)
+    Task<DeploymentTargetEditor> Save()
+  }
   class EnvironmentEditor
     Octopus.Client.Editors.Async.IResourceEditor<EnvironmentResource, EnvironmentEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -327,17 +338,6 @@ Octopus.Client.Editors.Async
     Task<LifecycleEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.LifecycleEditor Customize(Action<LifecycleResource>)
     Task<LifecycleEditor> Save()
-  }
-  class MachineEditor
-    Octopus.Client.Editors.Async.IResourceEditor<MachineResource, MachineEditor>
-    Octopus.Client.Editors.Async.IResourceBuilder
-  {
-    .ctor(Octopus.Client.Repositories.Async.IMachineRepository)
-    Octopus.Client.Model.MachineResource Instance { get; }
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
-    Octopus.Client.Editors.Async.MachineEditor Customize(Action<MachineResource>)
-    Task<MachineEditor> Save()
   }
   class ProjectChannelsEditor
   {
@@ -1560,6 +1560,31 @@ Octopus.Client.Model
       StartAfterPrevious = 0
       StartWithPrevious = 1
   }
+  class DeploymentTargetResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.MachineResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateEnvironments(Octopus.Client.Model.EnvironmentResource[])
+    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateRoles(String[])
+    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateTenants(Octopus.Client.Model.TenantResource[])
+    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
+    Octopus.Client.Model.DeploymentTargetResource ClearEnvironments()
+    Octopus.Client.Model.DeploymentTargetResource ClearRoles()
+    Octopus.Client.Model.DeploymentTargetResource ClearTenants()
+    Octopus.Client.Model.DeploymentTargetResource ClearTenantTags()
+    Octopus.Client.Model.DeploymentTargetResource RemoveEnvironment(Octopus.Client.Model.EnvironmentResource)
+    Octopus.Client.Model.DeploymentTargetResource RemoveRole(String)
+    Octopus.Client.Model.DeploymentTargetResource RemoveTenant(Octopus.Client.Model.TenantResource)
+    Octopus.Client.Model.DeploymentTargetResource RemoveTenantTag(Octopus.Client.Model.TagResource)
+  }
   class DeploymentTemplateResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1922,24 +1947,6 @@ Octopus.Client.Model
     .ctor()
     Boolean UsingSecureConnection { get; set; }
   }
-  abstract class MachineBasedResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.Resource
-  {
-    Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
-    Boolean HasLatestCalamari { get; set; }
-    Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
-    Boolean IsDisabled { get; set; }
-    Boolean IsInProcess { get; set; }
-    String MachinePolicyId { get; set; }
-    String Name { get; set; }
-    Octopus.Client.Model.MachineModelStatus Status { get; set; }
-    String StatusSummary { get; set; }
-    String Thumbprint { get; set; }
-    String Uri { get; set; }
-  }
   class MachineCleanupPolicy
   {
     .ctor()
@@ -2022,30 +2029,23 @@ Octopus.Client.Model
     Guid InitialMessageId { get; set; }
     DateTime StartedAtUtc { get; set; }
   }
-  class MachineResource
+  abstract class MachineResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.MachineBasedResource
+    Octopus.Client.Model.Resource
   {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
-    Octopus.Client.Model.MachineResource AddOrUpdateEnvironments(Octopus.Client.Model.EnvironmentResource[])
-    Octopus.Client.Model.MachineResource AddOrUpdateRoles(String[])
-    Octopus.Client.Model.MachineResource AddOrUpdateTenants(Octopus.Client.Model.TenantResource[])
-    Octopus.Client.Model.MachineResource AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
-    Octopus.Client.Model.MachineResource ClearEnvironments()
-    Octopus.Client.Model.MachineResource ClearRoles()
-    Octopus.Client.Model.MachineResource ClearTenants()
-    Octopus.Client.Model.MachineResource ClearTenantTags()
-    Octopus.Client.Model.MachineResource RemoveEnvironment(Octopus.Client.Model.EnvironmentResource)
-    Octopus.Client.Model.MachineResource RemoveRole(String)
-    Octopus.Client.Model.MachineResource RemoveTenant(Octopus.Client.Model.TenantResource)
-    Octopus.Client.Model.MachineResource RemoveTenantTag(Octopus.Client.Model.TagResource)
+    Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
+    Boolean HasLatestCalamari { get; set; }
+    Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
+    Boolean IsDisabled { get; set; }
+    Boolean IsInProcess { get; set; }
+    String MachinePolicyId { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.MachineModelStatus Status { get; set; }
+    String StatusSummary { get; set; }
+    String Thumbprint { get; set; }
+    String Uri { get; set; }
   }
   class MachineScriptPolicy
   {
@@ -3367,7 +3367,7 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.MachineBasedResource
+    Octopus.Client.Model.MachineResource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
@@ -4107,7 +4107,7 @@ Octopus.Client.Repositories.Async
   {
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
-    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
+    Task<List<DeploymentTargetResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
     Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
   }
@@ -4188,21 +4188,21 @@ Octopus.Client.Repositories.Async
   {
   }
   interface IMachineRepository
-    Octopus.Client.Repositories.Async.IFindByName<MachineResource>
-    Octopus.Client.Repositories.Async.IPaginate<MachineResource>
-    Octopus.Client.Repositories.Async.IGet<MachineResource>
-    Octopus.Client.Repositories.Async.ICreate<MachineResource>
-    Octopus.Client.Repositories.Async.IModify<MachineResource>
-    Octopus.Client.Repositories.Async.IDelete<MachineResource>
+    Octopus.Client.Repositories.Async.IFindByName<DeploymentTargetResource>
+    Octopus.Client.Repositories.Async.IPaginate<DeploymentTargetResource>
+    Octopus.Client.Repositories.Async.IGet<DeploymentTargetResource>
+    Octopus.Client.Repositories.Async.ICreate<DeploymentTargetResource>
+    Octopus.Client.Repositories.Async.IModify<DeploymentTargetResource>
+    Octopus.Client.Repositories.Async.IDelete<DeploymentTargetResource>
   {
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
-    Task<List<MachineResource>> FindByThumbprint(String)
-    Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
-    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
-    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource, Object)
-    Task<ResourceCollection<MachineResource>> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
+    Task<DeploymentTargetEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Task<DeploymentTargetEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
+    Task<DeploymentTargetResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<List<DeploymentTargetResource>> FindByThumbprint(String)
+    Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.DeploymentTargetResource)
+    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.DeploymentTargetResource)
+    Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.DeploymentTargetResource, Object)
+    Task<ResourceCollection<DeploymentTargetResource>> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
   }
   interface IMachineRoleRepository
   {

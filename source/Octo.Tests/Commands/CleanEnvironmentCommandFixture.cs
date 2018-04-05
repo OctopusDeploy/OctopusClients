@@ -35,16 +35,16 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             );
 
-            var machineList = new List<MachineResource>
+            var machineList = new List<DeploymentTargetResource>
             {
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01996",
                     Id = "Machines-003",
@@ -53,7 +53,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             };
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
+            Repository.Machines.FindMany(Arg.Any<Func<DeploymentTargetResource, bool>>()).Returns(machineList);
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
@@ -76,16 +76,16 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             );
 
-            var machineList = new List<MachineResource>
+            var machineList = new List<DeploymentTargetResource>
             {
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection(new[] {"Environments-001", "Environments-002"})
                 },
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01996",
                     Id = "Machines-003",
@@ -94,7 +94,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             };
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
+            Repository.Machines.FindMany(Arg.Any<Func<DeploymentTargetResource, bool>>()).Returns(machineList);
 
             listMachinesCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
@@ -147,16 +147,16 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add($"--environment={environmentResource.Name}");
             CommandLineArgs.Add("-status=Offline");
 
-            var machineList = new List<MachineResource>
+            var machineList = new List<DeploymentTargetResource>
             {
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection(new [] {"Environments-001", "Environments-002"})
                 },
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01996",
                     Id = "Machines-003",
@@ -165,7 +165,7 @@ namespace Octopus.Cli.Tests.Commands
                 }
             };
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(machineList);
+            Repository.Machines.FindMany(Arg.Any<Func<DeploymentTargetResource, bool>>()).Returns(machineList);
 
             await listMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 

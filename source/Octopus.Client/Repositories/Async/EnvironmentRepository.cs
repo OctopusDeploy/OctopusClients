@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IEnvironmentRepository : IFindByName<EnvironmentResource>, IGet<EnvironmentResource>, ICreate<EnvironmentResource>, IModify<EnvironmentResource>, IDelete<EnvironmentResource>, IGetAll<EnvironmentResource>
     {
-        Task<List<MachineResource>> GetMachines(EnvironmentResource environment,
+        Task<List<DeploymentTargetResource>> GetMachines(EnvironmentResource environment,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -41,7 +41,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public async Task<List<MachineResource>> GetMachines(EnvironmentResource environment,
+        public async Task<List<DeploymentTargetResource>> GetMachines(EnvironmentResource environment,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -52,9 +52,9 @@ namespace Octopus.Client.Repositories.Async
             string tenantIds = null,
             string tenantTags = null)
         {
-            var resources = new List<MachineResource>();
+            var resources = new List<DeploymentTargetResource>();
 
-            await Client.Paginate<MachineResource>(environment.Link("Machines"), new {
+            await Client.Paginate<DeploymentTargetResource>(environment.Link("Machines"), new {
                 skip,
                 take,
                 partialName,

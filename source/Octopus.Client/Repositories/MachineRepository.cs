@@ -6,16 +6,16 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IMachineRepository : IFindByName<MachineResource>, IGet<MachineResource>, ICreate<MachineResource>, IModify<MachineResource>, IDelete<MachineResource>
+    public interface IMachineRepository : IFindByName<DeploymentTargetResource>, IGet<DeploymentTargetResource>, ICreate<DeploymentTargetResource>, IModify<DeploymentTargetResource>, IDelete<DeploymentTargetResource>
     {
-        MachineResource Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
-        MachineConnectionStatus GetConnectionStatus(MachineResource machine);
-        List<MachineResource> FindByThumbprint(string thumbprint);
-        IReadOnlyList<TaskResource> GetTasks(MachineResource machine);
-        IReadOnlyList<TaskResource> GetTasks(MachineResource machine, object pathParameters);
+        DeploymentTargetResource Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
+        MachineConnectionStatus GetConnectionStatus(DeploymentTargetResource deploymentTarget);
+        List<DeploymentTargetResource> FindByThumbprint(string thumbprint);
+        IReadOnlyList<TaskResource> GetTasks(DeploymentTargetResource deploymentTarget);
+        IReadOnlyList<TaskResource> GetTasks(DeploymentTargetResource deploymentTarget, object pathParameters);
 
 
-        MachineEditor CreateOrModify(
+        DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
@@ -24,13 +24,13 @@ namespace Octopus.Client.Repositories
             TagResource[] tenantTags,
             TenantedDeploymentMode? tenantedDeploymentParticipation);
 
-        MachineEditor CreateOrModify(
+        DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles);
 
-        ResourceCollection<MachineResource> List(int skip = 0,
+        ResourceCollection<DeploymentTargetResource> List(int skip = 0,
             int? take = null,
             string ids = null,
             string name = null,
@@ -44,53 +44,53 @@ namespace Octopus.Client.Repositories
             string environmentIds = null);
     }
 
-    class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
+    class MachineRepository : BasicRepository<DeploymentTargetResource>, IMachineRepository
     {
         public MachineRepository(IOctopusClient client) : base(client, "Machines")
         {
         }
 
-        public MachineResource Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
+        public DeploymentTargetResource Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
+            return Client.Get<DeploymentTargetResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
         }
 
-        public MachineConnectionStatus GetConnectionStatus(MachineResource machine)
+        public MachineConnectionStatus GetConnectionStatus(DeploymentTargetResource deploymentTarget)
         {
-            if (machine == null) throw new ArgumentNullException("machine");
-            return Client.Get<MachineConnectionStatus>(machine.Link("Connection"));
+            if (deploymentTarget == null) throw new ArgumentNullException("deploymentTarget");
+            return Client.Get<MachineConnectionStatus>(deploymentTarget.Link("Connection"));
         }
 
-        public List<MachineResource> FindByThumbprint(string thumbprint)
+        public List<DeploymentTargetResource> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
+            return Client.Get<List<DeploymentTargetResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
         }
 
         /// <summary>
         /// Gets all tasks involving the specified machine
         /// </summary>
-        /// <param name="machine"></param>
+        /// <param name="deploymentTarget"></param>
         /// <returns></returns>
-        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine) => GetTasks(machine, new {skip = 0});
+        public IReadOnlyList<TaskResource> GetTasks(DeploymentTargetResource deploymentTarget) => GetTasks(deploymentTarget, new {skip = 0});
 
         /// <summary>
         /// Gets all tasks involving the specified machine
         ///
         /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
         /// </summary>
-        /// <param name="machine"></param>
+        /// <param name="deploymentTarget"></param>
         /// <param name="pathParameters"></param>
         /// <returns></returns>
-        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine, object pathParameters)
+        public IReadOnlyList<TaskResource> GetTasks(DeploymentTargetResource deploymentTarget, object pathParameters)
         {
-            if (machine == null)
-                throw new ArgumentNullException(nameof(machine));
+            if (deploymentTarget == null)
+                throw new ArgumentNullException(nameof(deploymentTarget));
 
-            return Client.ListAll<TaskResource>(machine.Link("TasksTemplate"), pathParameters);
+            return Client.ListAll<TaskResource>(deploymentTarget.Link("TasksTemplate"), pathParameters);
         }
 
-        public MachineEditor CreateOrModify(
+        public DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
@@ -99,19 +99,19 @@ namespace Octopus.Client.Repositories
             TagResource[] tenantTags,
             TenantedDeploymentMode? tenantedDeploymentParticipation)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
+            return new DeploymentTargetEditor(this).CreateOrModify(name, endpoint, environments, roles, tenants, tenantTags, tenantedDeploymentParticipation);
         }
 
-        public MachineEditor CreateOrModify(
+        public DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles)
         {
-            return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles);
+            return new DeploymentTargetEditor(this).CreateOrModify(name, endpoint, environments, roles);
         }
 
-        public ResourceCollection<MachineResource> List(int skip = 0,
+        public ResourceCollection<DeploymentTargetResource> List(int skip = 0,
             int? take = null,
             string ids = null,
             string name = null,
@@ -124,7 +124,7 @@ namespace Octopus.Client.Repositories
             string tenantTags = null,
             string environmentIds = null)
         {
-            return Client.List<MachineResource>(Client.RootDocument.Link("Machines"), new
+            return Client.List<DeploymentTargetResource>(Client.RootDocument.Link("Machines"), new
             {
                 skip,
                 take,

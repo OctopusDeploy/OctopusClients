@@ -1,39 +1,38 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
-using Octopus.Client.Repositories.Async;
+using Octopus.Client.Repositories;
 
-namespace Octopus.Client.Editors.Async
+namespace Octopus.Client.Editors
 {
-    public class MachineEditor : IResourceEditor<MachineResource, MachineEditor>
+    public class DeploymentTargetEditor : IResourceEditor<DeploymentTargetResource, DeploymentTargetEditor>
     {
         private readonly IMachineRepository repository;
 
-        public MachineEditor(IMachineRepository repository)
+        public DeploymentTargetEditor(IMachineRepository repository)
         {
             this.repository = repository;
         }
 
-        public MachineResource Instance { get; private set; }
+        public DeploymentTargetResource Instance { get; private set; }
 
-        public async Task<MachineEditor> CreateOrModify(
+        public DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = await repository.Create(new MachineResource
+                Instance = repository.Create(new DeploymentTargetResource
                 {
                     Name = name,
                     Endpoint = endpoint,
                     EnvironmentIds = new ReferenceCollection(environments.Select(e => e.Id)),
                     Roles = new ReferenceCollection(roles)
-                }).ConfigureAwait(false);
+                });
             }
             else
             {
@@ -42,13 +41,13 @@ namespace Octopus.Client.Editors.Async
                 existing.EnvironmentIds.ReplaceAll(environments.Select(e => e.Id));
                 existing.Roles.ReplaceAll(roles);
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
         }
 
-        public async Task<MachineEditor> CreateOrModify(
+        public DeploymentTargetEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             EnvironmentResource[] environments,
@@ -57,11 +56,11 @@ namespace Octopus.Client.Editors.Async
             TagResource[] tenantTags,
             TenantedDeploymentMode? tenantedDeploymentParticipation = null)
         {
-            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            var existing = repository.FindByName(name);
 
             if (existing == null)
             {
-                var resource = new MachineResource
+                var resource = new DeploymentTargetResource
                 {
                     Name = name,
                     Endpoint = endpoint,
@@ -76,7 +75,7 @@ namespace Octopus.Client.Editors.Async
                     resource.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
                 }
 
-                Instance = await repository.Create(resource).ConfigureAwait(false);
+                Instance = repository.Create(resource);
             }
             else
             {
@@ -92,7 +91,7 @@ namespace Octopus.Client.Editors.Async
                     existing.TenantedDeploymentParticipation = tenantedDeploymentParticipation.Value;
                 }
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = repository.Modify(existing);
             }
 
             return this;
@@ -128,15 +127,15 @@ namespace Octopus.Client.Editors.Async
         //    return machine;
         //}
 
-        public MachineEditor Customize(Action<MachineResource> customize)
+        public DeploymentTargetEditor Customize(Action<DeploymentTargetResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<MachineEditor> Save()
+        public DeploymentTargetEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }
