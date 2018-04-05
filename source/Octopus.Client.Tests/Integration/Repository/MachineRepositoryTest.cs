@@ -24,7 +24,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void AsyncGetTasksReturnsAllPages()
         {
-            var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}"} } };
+            var machine = new DeploymentTargetResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}"} } };
             var repository = new MachineRepository(AsyncClient);
             var tasks = repository.GetTasks(machine).Result;
 
@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void SyncGetTasksReturnsAllPages()
         {
-            var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
+            var machine = new DeploymentTargetResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
             var repository = new Client.Repositories.MachineRepository(SyncClient);
             var tasks = repository.GetTasks(machine);
 

@@ -6,7 +6,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IEnvironmentRepository : IFindByName<EnvironmentResource>, IGet<EnvironmentResource>, ICreate<EnvironmentResource>, IModify<EnvironmentResource>, IDelete<EnvironmentResource>, IGetAll<EnvironmentResource>
     {
-        List<MachineResource> GetMachines(EnvironmentResource environment,
+        List<DeploymentTargetResource> GetMachines(EnvironmentResource environment,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public List<MachineResource> GetMachines(EnvironmentResource environment,
+        public List<DeploymentTargetResource> GetMachines(EnvironmentResource environment,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -50,9 +50,9 @@ namespace Octopus.Client.Repositories
             string tenantIds = null,
             string tenantTags = null)
         {
-            var resources = new List<MachineResource>();
+            var resources = new List<DeploymentTargetResource>();
 
-            Client.Paginate<MachineResource>(environment.Link("Machines"), new
+            Client.Paginate<DeploymentTargetResource>(environment.Link("Machines"), new
             {
                 skip,
                 take,

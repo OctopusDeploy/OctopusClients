@@ -24,7 +24,7 @@ namespace Octopus.Cli.Commands.Environment
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
         EnvironmentResource environmentResource;
-        IEnumerable<MachineResource> machines;
+        IEnumerable<DeploymentTargetResource> machines;
         List<MachineResult> commandResults = new List<MachineResult>();
 
 
@@ -46,16 +46,16 @@ namespace Octopus.Cli.Commands.Environment
                 throw new CommandException("Please specify an environment name using the parameter: --environment=XYZ");
             if (!healthStatuses.Any() && !statuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --status or --health-status");
-            
+
             environmentResource = await GetEnvironment().ConfigureAwait(false);
-            
+
             machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
             await CleanUpEnvironment(machines.ToList(), environmentResource);
         }
 
-        private async Task CleanUpEnvironment(List<MachineResource> filteredMachines, EnvironmentResource environmentResource)
+        private async Task CleanUpEnvironment(List<DeploymentTargetResource> filteredMachines, EnvironmentResource environmentResource)
         {
             commandOutputProvider.Information("Found {MachineCount} machines in {Environment:l} with the status {Status:l}", filteredMachines.Count, environmentResource.Name, GetStateFilterDescription());
 
@@ -68,7 +68,7 @@ namespace Octopus.Cli.Commands.Environment
             {
                 MachineResult result = new MachineResult
                 {
-                    Machine = machine
+                    DeploymentTarget = machine
                 };
                 // If the machine belongs to more than one environment, we should remove the machine from the environment rather than delete it altogether.
                 if (machine.EnvironmentIds.Count > 1)
@@ -90,7 +90,7 @@ namespace Octopus.Cli.Commands.Environment
             }
         }
 
-        private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines)
+        private IEnumerable<DeploymentTargetResource> FilterByState(IEnumerable<DeploymentTargetResource> environmentMachines)
         {
             var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider);
             environmentMachines = provider.Filter(environmentMachines);
@@ -132,7 +132,7 @@ namespace Octopus.Cli.Commands.Environment
             return description;
         }
 
-        private Task<List<MachineResource>> FilterByEnvironment(EnvironmentResource environmentResource)
+        private Task<List<DeploymentTargetResource>> FilterByEnvironment(EnvironmentResource environmentResource)
         {
             commandOutputProvider.Debug("Loading machines...");
             return Repository.Machines.FindMany(x =>  x.EnvironmentIds.Any(environmentId => environmentId == environmentResource.Id));
@@ -148,17 +148,17 @@ namespace Octopus.Cli.Commands.Environment
             }
             return environmentResource;
         }
-        
+
         public void PrintDefaultOutput()
         {
-            
+
         }
 
         public void PrintJsonOutput()
         {
             commandOutputProvider.Json(commandResults.Select(x =>new
             {
-                Machine = new { x.Machine.Id,x.Machine.Name, x.Machine.Status },
+                Machine = new { x.DeploymentTarget.Id,x.DeploymentTarget.Name, x.DeploymentTarget.Status },
                 Environment = x.Action == MachineAction.RemovedFromEnvironment ? new { environmentResource.Id, environmentResource.Name } : null,
                 Action = x.Action.ToString()
             }));
@@ -172,7 +172,7 @@ namespace Octopus.Cli.Commands.Environment
 
         private class MachineResult
         {
-            public MachineResource Machine { get; set; }
+            public DeploymentTargetResource DeploymentTarget { get; set; }
             public MachineAction Action { get; set; }
         }
     }

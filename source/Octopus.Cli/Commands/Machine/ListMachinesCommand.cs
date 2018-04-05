@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands.Machine
         readonly HashSet<string> healthStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private HealthStatusProvider provider;
         List<EnvironmentResource> environmentResources;
-        IEnumerable<MachineResource> environmentMachines;
+        IEnumerable<DeploymentTargetResource> environmentMachines;
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
@@ -64,7 +64,7 @@ namespace Octopus.Cli.Commands.Machine
             }));
         }
 
-        private void LogFilteredMachines(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
+        private void LogFilteredMachines(IEnumerable<DeploymentTargetResource> environmentMachines, HealthStatusProvider provider, List<EnvironmentResource> environmentResources)
         {
             var orderedMachines = environmentMachines.OrderBy(m => m.Name).ToList();
             commandOutputProvider.Information("Machines: {Count}", orderedMachines.Count);
@@ -81,7 +81,7 @@ namespace Octopus.Cli.Commands.Machine
             return Repository.Environments.FindAll();
         }
 
-        private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines, HealthStatusProvider provider)
+        private IEnumerable<DeploymentTargetResource> FilterByState(IEnumerable<DeploymentTargetResource> environmentMachines, HealthStatusProvider provider)
         {
             environmentMachines = provider.Filter(environmentMachines);
 
@@ -104,7 +104,7 @@ namespace Octopus.Cli.Commands.Machine
             return environmentMachines;
         }
 
-        private  Task<List<MachineResource>> FilterByEnvironments(List<EnvironmentResource> environmentResources)
+        private  Task<List<DeploymentTargetResource>> FilterByEnvironments(List<EnvironmentResource> environmentResources)
         {
             var environmentsToInclude = environmentResources.Where(e => environments.Contains(e.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             var missingEnvironments = environments.Except(environmentsToInclude.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();

@@ -223,9 +223,9 @@ namespace Octopus.Client.Operations
             return proxy;
         }
 
-        MachineResource GetMachine(IOctopusRepository repository)
+        DeploymentTargetResource GetMachine(IOctopusRepository repository)
         {
-            var existing = default(MachineResource);
+            var existing = default(DeploymentTargetResource);
             try
             {
                 existing = repository.Machines.FindByName(MachineName);
@@ -235,7 +235,7 @@ namespace Octopus.Client.Operations
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
             }
-            return existing ?? new MachineResource();
+            return existing ?? new DeploymentTargetResource();
         }
 #endif
 
@@ -358,9 +358,9 @@ namespace Octopus.Client.Operations
             return proxy;
         }
 
-        async Task<MachineResource> GetMachine(IOctopusAsyncRepository repository)
+        async Task<DeploymentTargetResource> GetMachine(IOctopusAsyncRepository repository)
         {
-            var existing = default(MachineResource);
+            var existing = default(DeploymentTargetResource);
             try
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
@@ -370,20 +370,20 @@ namespace Octopus.Client.Operations
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
             }
-            return existing ?? new MachineResource();
+            return existing ?? new DeploymentTargetResource();
         }
 
-        void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants, ProxyResource proxy)
+        void ApplyChanges(DeploymentTargetResource deploymentTarget, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants, ProxyResource proxy)
         {
-            machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
-            machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
-            machine.TenantTags = new ReferenceCollection(TenantTags);
-            machine.Roles = new ReferenceCollection(Roles);
-            machine.Name = MachineName;
-            machine.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
+            deploymentTarget.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
+            deploymentTarget.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
+            deploymentTarget.TenantTags = new ReferenceCollection(TenantTags);
+            deploymentTarget.Roles = new ReferenceCollection(Roles);
+            deploymentTarget.Name = MachineName;
+            deploymentTarget.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
 
             if (machinePolicy != null)
-                machine.MachinePolicyId = machinePolicy.Id;
+                deploymentTarget.MachinePolicyId = machinePolicy.Id;
 
             if (CommunicationStyle == CommunicationStyle.TentaclePassive)
             {
@@ -391,14 +391,14 @@ namespace Octopus.Client.Operations
                 listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
                 listening.Thumbprint = TentacleThumbprint;
                 listening.ProxyId = proxy?.Id;
-                machine.Endpoint = listening;
+                deploymentTarget.Endpoint = listening;
             }
             else if (CommunicationStyle == CommunicationStyle.TentacleActive)
             {
                 var polling = new PollingTentacleEndpointResource();
                 polling.Uri = SubscriptionId.ToString();
                 polling.Thumbprint = TentacleThumbprint;
-                machine.Endpoint = polling;
+                deploymentTarget.Endpoint = polling;
             }
         }
 

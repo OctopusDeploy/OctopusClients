@@ -11,7 +11,7 @@ using Serilog;
 namespace Octopus.Cli.Commands
 {
     /// <summary>
-    /// This class exists to provide backwards compataility to the pre 3.4.0 changes to machine state. 
+    /// This class exists to provide backwards compataility to the pre 3.4.0 changes to machine state.
     /// As of 3.4.0 the <see cref="MachineModelStatus"/> enum has been marked as obselete to be replaced with <see cref="MachineModelHealthStatus"/>
     /// </summary>
     public class HealthStatusProvider
@@ -76,14 +76,14 @@ namespace Octopus.Cli.Commands
 
         private bool IsHealthStatusPendingDeprication { get; }
 
-        public IEnumerable<MachineResource> Filter(IEnumerable<MachineResource> machines)
+        public IEnumerable<TMachineResource> Filter<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             machines = FilterByProvidedStatus(machines);
             machines = FilterByProvidedHealthStatus(machines);
             return machines;
         }
 
-        IEnumerable<MachineResource> FilterByProvidedStatus(IEnumerable<MachineResource> machines)
+        IEnumerable<TMachineResource> FilterByProvidedStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             var statusFilter = new List<MachineModelStatus>();
             if (statuses.Count > 0)
@@ -102,7 +102,7 @@ namespace Octopus.Cli.Commands
                 : machines;
         }
 
-        IEnumerable<MachineResource> FilterByProvidedHealthStatus(IEnumerable<MachineResource> machines)
+        IEnumerable<TMachineResource> FilterByProvidedHealthStatus<TMachineResource>(IEnumerable<TMachineResource> machines) where TMachineResource : MachineResource
         {
             var statusFilter = new List<MachineModelHealthStatus>();
             if (healthStatuses.Count > 0)

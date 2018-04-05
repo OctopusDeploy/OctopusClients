@@ -38,23 +38,23 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(new List<MachineResource>
+            Repository.Machines.FindMany(Arg.Any<Func<DeploymentTargetResource, bool>>()).Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01466",
                     Id = "Machines-002",
@@ -81,9 +81,9 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindMany(Arg.Any<Func<MachineResource, bool>>()).Returns(new List<MachineResource>
+            Repository.Machines.FindMany(Arg.Any<Func<DeploymentTargetResource, bool>>()).Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource
+                new DeploymentTargetResource
                 {
                     Name = "PC01234",
                     Id = "Machines-001",
@@ -108,16 +108,16 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Healthy,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
@@ -142,21 +142,21 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC0123",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
@@ -181,23 +181,23 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC0123",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.HasWarnings,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
@@ -221,23 +221,23 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC0123",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
                     HealthStatus = MachineModelHealthStatus.HasWarnings,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
@@ -264,15 +264,15 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC0123",
                     Id = "Machines-001",
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -281,7 +281,7 @@ namespace Octopus.Cli.Tests.Commands
                     Endpoint = new ListeningTentacleEndpointResource() {TentacleVersionDetails = new TentacleDetailsResource { UpgradeSuggested = true } },
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01467",
                     Id = "Machines-003",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -290,7 +290,7 @@ namespace Octopus.Cli.Tests.Commands
                     Endpoint = new ListeningTentacleEndpointResource() {TentacleVersionDetails = new TentacleDetailsResource { UpgradeSuggested = false } },
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01468",
                     Id = "Machines-004",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -298,7 +298,7 @@ namespace Octopus.Cli.Tests.Commands
                     EnvironmentIds = new ReferenceCollection("Environments-001"),
                     HasLatestCalamari = false
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01999",
                     Id = "Machines-005",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -333,21 +333,21 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
@@ -373,21 +373,21 @@ namespace Octopus.Cli.Tests.Commands
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
             });
 
-            Repository.Machines.FindAll().Returns(new List<MachineResource>
+            Repository.Machines.FindAll().Returns(new List<DeploymentTargetResource>
             {
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01234",
                     Id = "Machines-001",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     Status = MachineModelStatus.Online,
                     EnvironmentIds = new ReferenceCollection("Environments-001")
                 },
-                new MachineResource {
+                new DeploymentTargetResource {
                     Name = "PC01996",
                     Id = "Machines-003",
                     Status = MachineModelStatus.Offline,
