@@ -1318,7 +1318,9 @@ Octopus.Client.Model
     static System.String EnvironmentId
     static System.String MachineIds
     static System.String MachineTimeout
+    static System.String RestrictedTo
     static System.String Timeout
+    static System.String WorkerpoolId
   }
   abstract class Arguments
   {
@@ -1334,6 +1336,8 @@ Octopus.Client.Model
   {
     static System.String EnvironmentId
     static System.String MachineIds
+    static System.String RestrictedTo
+    static System.String WorkerpoolId
   }
   abstract class Arguments
   {
@@ -1484,12 +1488,15 @@ Octopus.Client.Model
     abstract class Health
     {
       static System.String Name
+      static String[] CanBeRestrictedTo()
       abstract class Arguments
       {
         static System.String EnvironmentId
         static System.String MachineIds
         static System.String MachineTimeout
+        static System.String RestrictedTo
         static System.String Timeout
+        static System.String WorkerpoolId
       }
     }
     abstract class Migration
@@ -1515,6 +1522,13 @@ Octopus.Client.Model
     abstract class SystemIntegrityCheck
     {
       static System.String Name
+    }
+    abstract class TaskRestrictedTo
+    {
+      static System.String Environment
+      static System.String Policy
+      static System.String Unrestricted
+      static System.String WorkerPool
     }
     abstract class TestAzureAccount
     {
@@ -1543,10 +1557,13 @@ Octopus.Client.Model
     abstract class Upgrade
     {
       static System.String Name
+      static String[] CanBeRestrictedTo()
       abstract class Arguments
       {
         static System.String EnvironmentId
         static System.String MachineIds
+        static System.String RestrictedTo
+        static System.String WorkerpoolId
       }
     }
   }
@@ -2214,12 +2231,15 @@ Octopus.Client.Model
   abstract class Health
   {
     static System.String Name
+    static String[] CanBeRestrictedTo()
     abstract class Arguments
     {
       static System.String EnvironmentId
       static System.String MachineIds
       static System.String MachineTimeout
+      static System.String RestrictedTo
       static System.String Timeout
+      static System.String WorkerpoolId
     }
   }
   HealthCheckErrorHandling
@@ -3507,6 +3527,13 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
   }
+  abstract class TaskRestrictedTo
+  {
+    static System.String Environment
+    static System.String Policy
+    static System.String Unrestricted
+    static System.String WorkerPool
+  }
   TaskState
   {
       Queued = 1
@@ -3648,10 +3675,13 @@ Octopus.Client.Model
   abstract class Upgrade
   {
     static System.String Name
+    static String[] CanBeRestrictedTo()
     abstract class Arguments
     {
       static System.String EnvironmentId
       static System.String MachineIds
+      static System.String RestrictedTo
+      static System.String WorkerpoolId
     }
   }
   class UserPermissionRestriction
@@ -4800,8 +4830,8 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
     Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
-    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[])
-    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[])
+    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
     List<TaskResource> GetAllActive(Int32)
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
@@ -5294,8 +5324,8 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
-    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[])
-    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[])
+    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
     Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
