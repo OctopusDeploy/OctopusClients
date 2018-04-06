@@ -6,7 +6,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands.WorkerPool;
+using Octopus.Cli.Commands.WorkerPools;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 
