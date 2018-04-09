@@ -10,6 +10,11 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
+        
+        /// <summary>
+        /// If true, this action cannot be skipped when deploying
+        /// </summary>
+        public bool IsRequired { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ReferenceCollection Environments { get; } = new ReferenceCollection();
