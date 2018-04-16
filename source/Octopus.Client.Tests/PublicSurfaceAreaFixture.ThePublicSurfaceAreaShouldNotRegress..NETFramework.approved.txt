@@ -1516,6 +1516,12 @@ Octopus.Client.Model
     String Name { get; set; }
     String Thumbprint { get; set; }
   }
+  CertificateExportPemOptions
+  {
+      PrimaryOnly = 0
+      PrimaryAndChain = 1
+      ChainOnly = 2
+  }
   CertificateFormat
   {
       Pkcs12 = 0
@@ -4495,6 +4501,7 @@ Octopus.Client.Repositories
   {
     void Archive(Octopus.Client.Model.CertificateResource)
     Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Stream ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
     Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
     Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
     void UnArchive(Octopus.Client.Model.CertificateResource)
@@ -4960,6 +4967,7 @@ Octopus.Client.Repositories.Async
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task<Stream> ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
     Task<CertificateConfigurationResource> GetOctopusCertificate()
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
