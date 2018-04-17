@@ -4365,18 +4365,21 @@ Octopus.Client.Model.Versioning
 Octopus.Client.Operations
 {
   interface IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    String[] EnvironmentNames { get; set; }
+    String[] Roles { get; set; }
+    String[] Tenants { get; set; }
+    String[] TenantTags { get; set; }
+  }
+  interface IRegisterMachineOperationBase
   {
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
-    String[] EnvironmentNames { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
     String ProxyName { get; set; }
-    String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
-    String[] Tenants { get; set; }
-    String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
@@ -4387,22 +4390,35 @@ Octopus.Client.Operations
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
+  interface IRegisterWorkerMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    String[] WorkerPoolNames { get; set; }
+  }
   class RegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
     Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.RegisterMachineOperationBase
   {
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
+    String[] EnvironmentNames { get; set; }
+    String[] Roles { get; set; }
+    String[] Tenants { get; set; }
+    String[] TenantTags { get; set; }
+    void Execute(Octopus.Client.IOctopusRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+  }
+  abstract class RegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    .ctor(Octopus.Client.IOctopusClientFactory)
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
-    String[] EnvironmentNames { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
     String ProxyName { get; set; }
-    String[] Roles { get; set; }
     Uri SubscriptionId { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
-    String[] Tenants { get; set; }
-    String[] TenantTags { get; set; }
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
@@ -4411,6 +4427,17 @@ Octopus.Client.Operations
     void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+  }
+  class RegisterWorkerMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterWorkerMachineOperation
+    Octopus.Client.Operations.RegisterMachineOperationBase
+  {
+    .ctor()
+    .ctor(Octopus.Client.IOctopusClientFactory)
+    String[] WorkerPoolNames { get; set; }
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
 }
