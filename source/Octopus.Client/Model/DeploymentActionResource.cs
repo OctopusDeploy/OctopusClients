@@ -10,6 +10,7 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
+        public string WorkerPoolId { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ReferenceCollection Environments { get; } = new ReferenceCollection();
