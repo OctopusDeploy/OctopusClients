@@ -10,6 +10,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IMachineRepository : IFindByName<MachineResource>, IGet<MachineResource>, ICreate<MachineResource>, IModify<MachineResource>, IDelete<MachineResource>
     {
         Task<MachineResource> Discover(string host, int port = 10933, DiscoverableEndpointType? discoverableEndpointType = null);
+        Task<MachineResource> Discover(DiscoverMachineOptions options);
         Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine);
         Task<List<MachineResource>> FindByThumbprint(string thumbprint);
         Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine);
@@ -51,9 +52,20 @@ namespace Octopus.Client.Repositories.Async
         }
 
         public Task<MachineResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
-        {
-            return Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
-        }
+            => Discover(new DiscoverMachineOptions(host)
+            {
+                Port = port,
+                Type = type
+            });
+
+        public Task<MachineResource> Discover(DiscoverMachineOptions options)
+            => Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new
+            {
+                host = options.Host,
+                port = options.Port,
+                type = options.Type,
+                proxyId = options.Proxy?.Id
+            });
 
         public Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine)
         {
