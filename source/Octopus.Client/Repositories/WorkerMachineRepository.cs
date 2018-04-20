@@ -48,7 +48,7 @@ namespace Octopus.Client.Repositories
         public List<WorkerMachineResource> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerMachineResource>>(Client.RootDocument.Link("workers"), new { id = "all", thumbprint });
+            return Client.Get<List<WorkerMachineResource>>(Client.RootDocument.Link("Workers"), new { id = "all", thumbprint });
         }
 
 
