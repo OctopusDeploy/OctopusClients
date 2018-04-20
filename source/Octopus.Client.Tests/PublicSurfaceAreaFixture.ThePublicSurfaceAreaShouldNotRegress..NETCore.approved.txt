@@ -1569,6 +1569,14 @@ Octopus.Client.Model
       TentacleActive = 1
       Ssh = 2
   }
+  class DiscoverMachineOptions
+  {
+    .ctor(String)
+    String Host { get; }
+    Int32 Port { get; set; }
+    Octopus.Client.Model.ProxyResource Proxy { get; set; }
+    Nullable<DiscoverableEndpointType> Type { get; set; }
+  }
   class DockerFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4246,6 +4254,7 @@ Octopus.Client.Repositories.Async
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
     Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<MachineResource> Discover(Octopus.Client.Model.DiscoverMachineOptions)
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
