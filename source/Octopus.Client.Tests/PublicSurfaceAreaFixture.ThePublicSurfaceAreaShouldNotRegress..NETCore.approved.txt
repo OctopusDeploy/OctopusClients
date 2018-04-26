@@ -1420,6 +1420,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Forms.Form Form { get; set; }
     List<DeploymentTemplateStep> StepsToExecute { get; set; }
     Boolean UseGuidedFailureModeByDefault { get; set; }
+    Boolean AllowDynamicInfrastructure { get; set; }
   }
   class DeploymentProcessResource
     Octopus.Client.Extensibility.IResource
