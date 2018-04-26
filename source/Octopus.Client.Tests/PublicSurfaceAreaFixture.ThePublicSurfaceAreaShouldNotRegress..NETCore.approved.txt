@@ -284,6 +284,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
+    Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
   }
