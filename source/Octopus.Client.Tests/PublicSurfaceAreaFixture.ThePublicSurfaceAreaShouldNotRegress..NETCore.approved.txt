@@ -1601,6 +1601,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean AllowDynamicInfrastructure { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     Int32 SortOrder { get; set; }
