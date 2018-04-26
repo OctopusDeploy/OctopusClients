@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories.Async
             bool? hideEmptyEnvironments = false);
         Task Sort(string[] environmentIdsInOrder);
         Task<EnvironmentEditor> CreateOrModify(string name);
-        Task<EnvironmentEditor> CreateOrModify(string name, string description);
+        Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure);
     }
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
@@ -110,9 +110,9 @@ namespace Octopus.Client.Repositories.Async
             return new EnvironmentEditor(this).CreateOrModify(name);
         }
 
-        public Task<EnvironmentEditor> CreateOrModify(string name, string description)
+        public Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
         {
-            return new EnvironmentEditor(this).CreateOrModify(name, description);
+            return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
         }
     }
 }

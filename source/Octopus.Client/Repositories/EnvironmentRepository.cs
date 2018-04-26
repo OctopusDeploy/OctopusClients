@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
             bool? hideEmptyEnvironments = false);
         void Sort(string[] environmentIdsInOrder);
         EnvironmentEditor CreateOrModify(string name);
-        EnvironmentEditor CreateOrModify(string name, string description);
+        EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure);
     }
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
@@ -109,9 +109,9 @@ namespace Octopus.Client.Repositories
             return new EnvironmentEditor(this).CreateOrModify(name);
         }
 
-        public EnvironmentEditor CreateOrModify(string name, string description)
+        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
         {
-            return new EnvironmentEditor(this).CreateOrModify(name, description);
+            return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
         }
     }
 }
