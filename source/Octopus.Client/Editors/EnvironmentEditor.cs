@@ -35,7 +35,7 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public EnvironmentEditor CreateOrModify(string name, string description)
+        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
         {
             var existing = repository.FindByName(name);
             if (existing == null)
@@ -43,13 +43,15 @@ namespace Octopus.Client.Editors
                 Instance = repository.Create(new EnvironmentResource
                 {
                     Name = name,
-                    Description = description
+                    Description = description,
+                    AllowDynamicInfrastructure = allowDynamicInfrastructure
                 });
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
+                existing.AllowDynamicInfrastructure = allowDynamicInfrastructure;
 
                 Instance = repository.Modify(existing);
             }
