@@ -59,6 +59,28 @@ namespace Octopus.Client.Editors
             return this;
         }
 
+        public EnvironmentEditor CreateOrModify(string name, string description)
+        {
+            var existing = repository.FindByName(name);
+            if (existing == null)
+            {
+                Instance = repository.Create(new EnvironmentResource
+                {
+                    Name = name,
+                    Description = description,
+                });
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
+
+                Instance = repository.Modify(existing);
+            }
+
+            return this;
+        }
+
         public EnvironmentEditor Customize(Action<EnvironmentResource> customize)
         {
             customize?.Invoke(Instance);
