@@ -283,8 +283,8 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
-    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<EnvironmentEditor> CreateOrModify(String, String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)    
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
   }
@@ -4163,6 +4163,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<EnvironmentResource>
   {
     Task<EnvironmentEditor> CreateOrModify(String)
+    Task<EnvironmentEditor> CreateOrModify(String, String)
     Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])

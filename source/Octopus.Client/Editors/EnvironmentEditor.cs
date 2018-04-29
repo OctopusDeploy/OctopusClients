@@ -35,7 +35,7 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure)
         {
             var existing = repository.FindByName(name);
             if (existing == null)

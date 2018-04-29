@@ -110,7 +110,12 @@ namespace Octopus.Client.Repositories.Async
             return new EnvironmentEditor(this).CreateOrModify(name);
         }
 
-        public Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+        public Task<EnvironmentEditor> CreateOrModify(string name, string description)
+        {
+            return new EnvironmentEditor(this).CreateOrModify(name, description);
+        }
+
+        public Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure)
         {
             return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
         }

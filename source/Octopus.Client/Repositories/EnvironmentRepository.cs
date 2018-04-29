@@ -109,7 +109,12 @@ namespace Octopus.Client.Repositories
             return new EnvironmentEditor(this).CreateOrModify(name);
         }
 
-        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+        public EnvironmentEditor CreateOrModify(string name, string description)
+        {
+            return new EnvironmentEditor(this).CreateOrModify(name, description);
+        }
+
+        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure)
         {
             return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
         }
