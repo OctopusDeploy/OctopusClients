@@ -4163,7 +4163,6 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<EnvironmentResource>
   {
     Task<EnvironmentEditor> CreateOrModify(String)
-    Task<EnvironmentEditor> CreateOrModify(String, String)
     Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
