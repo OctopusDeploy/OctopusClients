@@ -29,6 +29,7 @@ namespace Octopus.Client.Repositories
             bool? hideEmptyEnvironments = false);
         void Sort(string[] environmentIdsInOrder);
         EnvironmentEditor CreateOrModify(string name);
+        EnvironmentEditor CreateOrModify(string name, string description);
         EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure);
     }
 

@@ -4583,6 +4583,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<EnvironmentResource>
   {
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
     List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     void Sort(String[])

@@ -31,6 +31,7 @@ namespace Octopus.Client.Repositories.Async
             bool? hideEmptyEnvironments = false);
         Task Sort(string[] environmentIdsInOrder);
         Task<EnvironmentEditor> CreateOrModify(string name);
+        Task<EnvironmentEditor> CreateOrModify(string name, string description);
         Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure);
     }
 
