@@ -30,6 +30,7 @@ namespace Octopus.Client.Repositories
         void Sort(string[] environmentIdsInOrder);
         EnvironmentEditor CreateOrModify(string name);
         EnvironmentEditor CreateOrModify(string name, string description);
+        EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure);
     }
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
@@ -112,6 +113,11 @@ namespace Octopus.Client.Repositories
         public EnvironmentEditor CreateOrModify(string name, string description)
         {
             return new EnvironmentEditor(this).CreateOrModify(name, description);
+        }
+
+        public EnvironmentEditor CreateOrModify(string name, string description, bool allowDynamicInfrastructure)
+        {
+            return new EnvironmentEditor(this).CreateOrModify(name, description, allowDynamicInfrastructure);
         }
     }
 }

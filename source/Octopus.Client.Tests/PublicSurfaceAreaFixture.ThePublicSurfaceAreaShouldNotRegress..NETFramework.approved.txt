@@ -446,6 +446,7 @@ Octopus.Client.Editors
     .ctor(Octopus.Client.Repositories.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
     Octopus.Client.Editors.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Octopus.Client.Editors.EnvironmentEditor Save()
@@ -674,6 +675,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
@@ -1516,6 +1518,12 @@ Octopus.Client.Model
     String Name { get; set; }
     String Thumbprint { get; set; }
   }
+  CertificateExportPemOptions
+  {
+      PrimaryOnly = 0
+      PrimaryAndChain = 1
+      ChainOnly = 2
+  }
   CertificateFormat
   {
       Pkcs12 = 0
@@ -2007,6 +2015,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean AllowDynamicInfrastructure { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     Int32 SortOrder { get; set; }
@@ -4503,6 +4512,7 @@ Octopus.Client.Repositories
   {
     void Archive(Octopus.Client.Model.CertificateResource)
     Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Stream ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
     Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
     Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
     void UnArchive(Octopus.Client.Model.CertificateResource)
@@ -4582,6 +4592,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
     List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     void Sort(String[])
     Octopus.Client.Model.EnvironmentsSummaryResource Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
@@ -4969,6 +4980,7 @@ Octopus.Client.Repositories.Async
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task<Stream> ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
     Task<CertificateConfigurationResource> GetOctopusCertificate()
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
@@ -5048,6 +5060,7 @@ Octopus.Client.Repositories.Async
   {
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
     Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
