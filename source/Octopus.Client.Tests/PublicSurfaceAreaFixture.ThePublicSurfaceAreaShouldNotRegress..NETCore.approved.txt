@@ -1419,6 +1419,7 @@ Octopus.Client.Model
     String Name { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
+    String WorkerPoolId { get; set; }
     Octopus.Client.Model.DeploymentActionResource ClearAllConditions()
     Octopus.Client.Model.DeploymentActionResource ForChannels(Octopus.Client.Model.ChannelResource[])
     Octopus.Client.Model.DeploymentActionResource ForEnvironments(Octopus.Client.Model.EnvironmentResource[])
