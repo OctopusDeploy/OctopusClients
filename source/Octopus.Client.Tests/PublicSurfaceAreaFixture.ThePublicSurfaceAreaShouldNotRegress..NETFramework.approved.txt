@@ -53,6 +53,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -131,6 +132,7 @@ Octopus.Client
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -212,6 +214,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -310,6 +313,7 @@ Octopus.Client
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -3821,6 +3825,12 @@ Octopus.Client.Model.Accounts
     String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
     String TenantId { get; set; }
+    class WebSiteResource
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+    }
   }
   class AzureSubscriptionAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3835,6 +3845,13 @@ Octopus.Client.Model.Accounts
     String CertificateThumbprint { get; set; }
     String ServiceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
+    class WebSiteResource
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+      String WebSpace { get; set; }
+    }
   }
   class SshKeyPairAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3865,6 +3882,19 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
+  }
+  class WebSiteResource
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+  }
+  class WebSiteResource
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+    String WebSpace { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -4449,6 +4479,12 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
+  class AzureServicePrincipalAccountRepository
+    Octopus.Client.Repositories.IAzureServicePrincipalAccountRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    List<WebSiteResource> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
     Octopus.Client.Repositories.IModify<AccountResource>
@@ -4492,6 +4528,10 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<ArtifactResource> FindRegarding(Octopus.Client.Extensibility.IResource)
     Stream GetContent(Octopus.Client.Model.ArtifactResource)
     void PutContent(Octopus.Client.Model.ArtifactResource, Stream)
+  }
+  interface IAzureServicePrincipalAccountRepository
+  {
+    List<WebSiteResource> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IBackupRepository
   {
@@ -4931,7 +4971,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository
   {
     .ctor(Octopus.Client.IOctopusAsyncClient)
-    void WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
+    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
@@ -4979,7 +5019,7 @@ Octopus.Client.Repositories.Async
   }
   interface IAzureServicePrincipalAccountRepository
   {
-    void WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
+    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IBackupRepository
   {
