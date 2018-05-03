@@ -1,10 +1,12 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Model.Accounts;
 
 namespace Octopus.Client.Repositories.Async
 {
     public interface IAzureServicePrincipalAccountRepository
     {
-        void WebSites(AzureServicePrincipalAccountResource account);
+        Task<List<AzureServicePrincipalAccountResource.WebSiteResource>> WebSites(AzureServicePrincipalAccountResource account);
     }
 
     public class AzureServicePrincipalAccountRepository : IAzureServicePrincipalAccountRepository
@@ -16,9 +18,9 @@ namespace Octopus.Client.Repositories.Async
             this.client = client;
         }
 
-        public void WebSites(AzureServicePrincipalAccountResource account)
+        public Task<List<AzureServicePrincipalAccountResource.WebSiteResource>> WebSites(AzureServicePrincipalAccountResource account)
         {
-            client.Get<string>(account.Link("WebSites"));
+            return client.Get<List<AzureServicePrincipalAccountResource.WebSiteResource>>(account.Link("WebSites"));
         }
     }
 }

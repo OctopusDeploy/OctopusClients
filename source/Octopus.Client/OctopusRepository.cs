@@ -25,6 +25,7 @@ namespace Octopus.Client
             this.Client = client;
 
             Accounts = new AccountRepository(client);
+            AzureServicePrincipalAccounts = new AzureServicePrincipalAccountRepository(client);
             ActionTemplates = new ActionTemplateRepository(client);
             Artifacts = new ArtifactRepository(client);
             Backups = new BackupRepository(client);
@@ -73,6 +74,7 @@ namespace Octopus.Client
         public IOctopusClient Client { get; }
 
         public IAccountRepository Accounts { get; }
+        public IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
         public IBackupRepository Backups { get; }

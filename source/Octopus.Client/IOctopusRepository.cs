@@ -17,6 +17,7 @@ namespace Octopus.Client
         IOctopusClient Client { get; }
 
         IAccountRepository Accounts { get; }
+        IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
         IActionTemplateRepository ActionTemplates { get; }
         IArtifactRepository Artifacts { get; }
         IBackupRepository Backups { get; }
