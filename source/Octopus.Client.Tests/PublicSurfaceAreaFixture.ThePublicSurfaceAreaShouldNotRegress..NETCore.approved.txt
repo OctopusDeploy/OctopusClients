@@ -46,6 +46,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -131,6 +132,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -631,6 +633,7 @@ Octopus.Client.Extensions
   }
   abstract class TypeExtensions
   {
+    static Octopus.Client.Model.Accounts.AccountType DetermineAccountType(Type)
     static Object GetDefault(Type)
   }
   abstract class UriExtensions
@@ -3407,6 +3410,12 @@ Octopus.Client.Model.Accounts
     String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
     String TenantId { get; set; }
+    class WebSiteResource
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+    }
   }
   class AzureSubscriptionAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3421,6 +3430,13 @@ Octopus.Client.Model.Accounts
     String CertificateThumbprint { get; set; }
     String ServiceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
+    class WebSiteResource
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+      String WebSpace { get; set; }
+    }
   }
   class SshKeyPairAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3450,6 +3466,19 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
+  }
+  class WebSiteResource
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+  }
+  class WebSiteResource
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+    String WebSpace { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -4028,6 +4057,12 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories.Async
 {
+  class AzureServicePrincipalAccountRepository
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient)
+    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
     Octopus.Client.Repositories.Async.IModify<AccountResource>
@@ -4036,6 +4071,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<AccountResource>
     Octopus.Client.Repositories.Async.IPaginate<AccountResource>
   {
+    Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
+    Task<List<TAccount>> FindAllOfType(Object)
+    Task<TAccount> FindByNameOfType(String)
+    Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
+    Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
+    Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
+    Task<TAccount> GetOfType(String)
+    Task<List<TAccount>> GetOfType(String[])
+    Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Task<TAccount> RefreshOfType(Octopus.Client.Repositories.Async.TAccount)
   }
   interface IActionTemplateRepository
     Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
@@ -4061,6 +4106,10 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ArtifactResource>> FindRegarding(Octopus.Client.Extensibility.IResource)
     Task<Stream> GetContent(Octopus.Client.Model.ArtifactResource)
     Task PutContent(Octopus.Client.Model.ArtifactResource, Stream)
+  }
+  interface IAzureServicePrincipalAccountRepository
+  {
+    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IBackupRepository
   {
