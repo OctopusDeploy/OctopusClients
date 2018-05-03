@@ -1035,6 +1035,7 @@ Octopus.Client.Extensions
   }
   abstract class TypeExtensions
   {
+    static Octopus.Client.Model.Accounts.AccountType DetermineAccountType(Type)
     static Object GetDefault(Type)
   }
   abstract class UriExtensions
@@ -4456,6 +4457,16 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<AccountResource>
     Octopus.Client.Repositories.IPaginate<AccountResource>
   {
+    Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
+    List<TAccount> FindAllOfType(Object)
+    Octopus.Client.Repositories.TAccount FindByNameOfType(String)
+    List<TAccount> FindByNamesOfType(IEnumerable<String>)
+    List<TAccount> FindManyOfType(Func<TAccount, Boolean>, Object)
+    Octopus.Client.Repositories.TAccount FindOneOfType(Func<TAccount, Boolean>, Object)
+    Octopus.Client.Repositories.TAccount GetOfType(String)
+    List<TAccount> GetOfType(String[])
+    void PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Octopus.Client.Repositories.TAccount RefreshOfType(Octopus.Client.Repositories.TAccount)
   }
   interface IActionTemplateRepository
     Octopus.Client.Repositories.ICreate<ActionTemplateResource>
@@ -4916,6 +4927,12 @@ Octopus.Client.Repositories
 }
 Octopus.Client.Repositories.Async
 {
+  class AzureServicePrincipalAccountRepository
+    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient)
+    void WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
     Octopus.Client.Repositories.Async.IModify<AccountResource>
@@ -4924,6 +4941,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<AccountResource>
     Octopus.Client.Repositories.Async.IPaginate<AccountResource>
   {
+    Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
+    Task<List<TAccount>> FindAllOfType(Object)
+    Task<TAccount> FindByNameOfType(String)
+    Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
+    Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
+    Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
+    Task<TAccount> GetOfType(String)
+    Task<List<TAccount>> GetOfType(String[])
+    Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Task<TAccount> RefreshOfType(Octopus.Client.Repositories.Async.TAccount)
   }
   interface IActionTemplateRepository
     Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
@@ -4949,6 +4976,10 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ArtifactResource>> FindRegarding(Octopus.Client.Extensibility.IResource)
     Task<Stream> GetContent(Octopus.Client.Model.ArtifactResource)
     Task PutContent(Octopus.Client.Model.ArtifactResource, Stream)
+  }
+  interface IAzureServicePrincipalAccountRepository
+  {
+    void WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IBackupRepository
   {
