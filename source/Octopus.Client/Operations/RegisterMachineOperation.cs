@@ -157,14 +157,6 @@ namespace Octopus.Client.Operations
                 repository.Machines.Create(machine);
         }
 
-        void AlignTenantsAndParticipationMode() {
-            if ((Tenants?.Any() == true || TenantTags?.Any() == true)
-                && TenantedDeploymentParticipation == TenantedDeploymentMode.Untenanted)
-            {
-                TenantedDeploymentParticipation = TenantedDeploymentMode.Tenanted;
-            }
-        }
-
         List<TenantResource> GetTenants(IOctopusRepository repository)
         {
             if (Tenants == null || !Tenants.Any())
@@ -298,6 +290,14 @@ namespace Octopus.Client.Operations
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
             else
                 await repository.Machines.Create(machine).ConfigureAwait(false);
+        }
+        void AlignTenantsAndParticipationMode()
+        {
+            if ((Tenants?.Any() == true || TenantTags?.Any() == true)
+                && TenantedDeploymentParticipation == TenantedDeploymentMode.Untenanted)
+            {
+                TenantedDeploymentParticipation = TenantedDeploymentMode.Tenanted;
+            }
         }
 
         async Task<List<TenantResource>> GetTenants(IOctopusAsyncRepository repository)
