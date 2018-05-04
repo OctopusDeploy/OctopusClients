@@ -46,7 +46,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
-    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -132,7 +131,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
-    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository AzureServicePrincipalAccounts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -245,6 +243,50 @@ Octopus.Client
 }
 Octopus.Client.Editors.Async
 {
+  class AccountEditor`1
+    Octopus.Client.Editors.Async.IResourceEditor<TAccountResource, AccountEditor<TAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+    Octopus.Client.Editors.Async.TAccountResource Instance { get; }
+    Task<AccountEditor<TAccountResource>> CreateOrModify(String)
+    Octopus.Client.Editors.Async.AccountEditor<TAccountResource> Customize(Action<TAccountResource>)
+    Task<AccountEditor<TAccountResource>> Save()
+  }
+  class AmazonWebServicesAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AccountEditor<AmazonWebServicesAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AmazonWebServicesRoleAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesRoleAccountResource, AccountEditor<AmazonWebServicesRoleAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesRoleAccountResource>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AzureServicePrincipalAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AccountEditor<AzureServicePrincipalAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AzureServicePrincipalAccountResource>
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.Repositories.Async.IAccountRepository)
+    Task<List<ResourceGroup>> ResourceGroups()
+    Task<List<AzureStorageAccount>> StorageAccounts()
+    Task<List<WebSite>> WebSites()
+  }
+  class AzureSubscriptionAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AccountEditor<AzureSubscriptionAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource>
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.Repositories.Async.IAccountRepository)
+    Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+  }
   class ChannelEditor
     Octopus.Client.Editors.Async.IResourceEditor<ChannelResource, ChannelEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -392,6 +434,13 @@ Octopus.Client.Editors.Async
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
   }
+  class SshKeyPairAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, AccountEditor<SshKeyPairAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<SshKeyPairAccountResource>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
   class SubscriptionEditor
     Octopus.Client.Editors.Async.IResourceEditor<SubscriptionResource, SubscriptionEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -441,6 +490,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantVariablesEditor Customize(Action<TenantVariableResource>)
     Task<TenantVariablesEditor> Load()
     Task<TenantVariablesEditor> Save()
+  }
+  class UsernamePasswordAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<UsernamePasswordAccountResource, AccountEditor<UsernamePasswordAccountResource>>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<UsernamePasswordAccountResource>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   class VariableSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<VariableSetResource, VariableSetEditor>
@@ -3395,6 +3451,12 @@ Octopus.Client.Model.Accounts
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
   }
+  class AzureCloudService
+  {
+    .ctor()
+    String Location { get; set; }
+    String Name { get; set; }
+  }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3410,12 +3472,24 @@ Octopus.Client.Model.Accounts
     String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
     String TenantId { get; set; }
-    class WebSiteResource
+    class ResourceGroup
+    {
+      .ctor()
+      String Id { get; set; }
+      String Name { get; set; }
+    }
+    class WebSite
     {
       .ctor()
       String Name { get; }
       String ResourceGroup { get; set; }
     }
+  }
+  class AzureStorageAccount
+  {
+    .ctor()
+    String Location { get; set; }
+    String Name { get; set; }
   }
   class AzureSubscriptionAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3430,13 +3504,19 @@ Octopus.Client.Model.Accounts
     String CertificateThumbprint { get; set; }
     String ServiceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
-    class WebSiteResource
+    class WebSite
     {
       .ctor()
       String Name { get; }
       String ResourceGroup { get; set; }
       String WebSpace { get; set; }
     }
+  }
+  class ResourceGroup
+  {
+    .ctor()
+    String Id { get; set; }
+    String Name { get; set; }
   }
   class SshKeyPairAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3467,13 +3547,13 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
-  class WebSiteResource
+  class WebSite
   {
     .ctor()
     String Name { get; }
     String ResourceGroup { get; set; }
   }
-  class WebSiteResource
+  class WebSite
   {
     .ctor()
     String Name { get; }
@@ -4057,12 +4137,6 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories.Async
 {
-  class AzureServicePrincipalAccountRepository
-    Octopus.Client.Repositories.Async.IAzureServicePrincipalAccountRepository
-  {
-    .ctor(Octopus.Client.IOctopusAsyncClient)
-    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
-  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
     Octopus.Client.Repositories.Async.IModify<AccountResource>
@@ -4106,10 +4180,6 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ArtifactResource>> FindRegarding(Octopus.Client.Extensibility.IResource)
     Task<Stream> GetContent(Octopus.Client.Model.ArtifactResource)
     Task PutContent(Octopus.Client.Model.ArtifactResource, Stream)
-  }
-  interface IAzureServicePrincipalAccountRepository
-  {
-    Task<List<WebSiteResource>> WebSites(Octopus.Client.Model.Accounts.AzureServicePrincipalAccountResource)
   }
   interface IBackupRepository
   {

@@ -37,7 +37,7 @@ namespace Octopus.Client.Model.Accounts
         [Writeable]
         public string ServiceManagementEndpointBaseUri { get; set; }
 
-        public class WebSiteResource
+        public class WebSite
         {
             public string Name { get; }
             public string WebSpace { get; set; }
