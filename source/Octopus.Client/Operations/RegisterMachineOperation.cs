@@ -146,6 +146,7 @@ namespace Octopus.Client.Operations
             var machine = GetMachine(repository);
             var tenants = GetTenants(repository);
             ValidateTenantTags(repository);
+            AlignTenantsAndParticipationMode();
             var proxy = GetProxy(repository);
 
             ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants, proxy);
@@ -154,6 +155,14 @@ namespace Octopus.Client.Operations
                 repository.Machines.Modify(machine);
             else
                 repository.Machines.Create(machine);
+        }
+
+        void AlignTenantsAndParticipationMode() {
+            if ((Tenants?.Any() == true || TenantTags?.Any() == true)
+                && TenantedDeploymentParticipation == TenantedDeploymentMode.Untenanted)
+            {
+                TenantedDeploymentParticipation = TenantedDeploymentMode.Tenanted;
+            }
         }
 
         List<TenantResource> GetTenants(IOctopusRepository repository)
@@ -279,6 +288,7 @@ namespace Octopus.Client.Operations
             var machineTask = GetMachine(repository).ConfigureAwait(false);
             var tenants = GetTenants(repository).ConfigureAwait(false);
             await ValidateTenantTags(repository).ConfigureAwait(false);
+            AlignTenantsAndParticipationMode();
             var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
