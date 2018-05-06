@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands.WorkerPools
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
-        WorkerPoolResource workerpoolResource;
+        WorkerPoolResource workerPoolResource;
         IEnumerable<WorkerMachineResource> machines;
         List<MachineResult> commandResults = new List<MachineResult>();
 
@@ -44,12 +44,12 @@ namespace Octopus.Cli.Commands.WorkerPools
             if (!healthStatuses.Any() && !statuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --health-status");
 
-            workerpoolResource = await GetWorkerPool().ConfigureAwait(false);
+            workerPoolResource = await GetWorkerPool().ConfigureAwait(false);
 
-            machines = await FilterByWorkerPool(workerpoolResource).ConfigureAwait(false);
+            machines = await FilterByWorkerPool(workerPoolResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
-            await CleanUpPool(machines.ToList(), workerpoolResource);
+            await CleanUpPool(machines.ToList(), workerPoolResource);
         }
 
         private async Task CleanUpPool(List<WorkerMachineResource> filteredMachines, WorkerPoolResource poolResource)
@@ -156,7 +156,7 @@ namespace Octopus.Cli.Commands.WorkerPools
             commandOutputProvider.Json(commandResults.Select(x =>new
             {
                 Machine = new { x.Machine.Id,x.Machine.Name, x.Machine.Status },
-                Environment = x.Action == MachineAction.RemovedFromPool ? new { workerpoolResource.Id, workerpoolResource.Name } : null,
+                Environment = x.Action == MachineAction.RemovedFromPool ? new { workerPoolResource.Id, workerPoolResource.Name } : null,
                 Action = x.Action.ToString()
             }));
         }
