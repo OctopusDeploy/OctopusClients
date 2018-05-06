@@ -146,9 +146,9 @@ namespace Octopus.Client.Operations
             var machine = GetMachine(repository);
             var tenants = GetTenants(repository);
             ValidateTenantTags(repository);
-            AlignTenantsAndParticipationMode();
             var proxy = GetProxy(repository);
 
+            ValidateTenantsAndParticipationMode(machine);
             ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants, proxy);
 
             if (machine.Id != null)
@@ -280,10 +280,10 @@ namespace Octopus.Client.Operations
             var machineTask = GetMachine(repository).ConfigureAwait(false);
             var tenants = GetTenants(repository).ConfigureAwait(false);
             await ValidateTenantTags(repository).ConfigureAwait(false);
-            AlignTenantsAndParticipationMode();
             var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
+            ValidateTenantsAndParticipationMode(machine);
             ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants, await proxy);
 
             if (machine.Id != null)
@@ -291,12 +291,19 @@ namespace Octopus.Client.Operations
             else
                 await repository.Machines.Create(machine).ConfigureAwait(false);
         }
-        void AlignTenantsAndParticipationMode()
+        void ValidateTenantsAndParticipationMode(MachineResource machine)
         {
             if ((Tenants?.Any() == true || TenantTags?.Any() == true)
                 && TenantedDeploymentParticipation == TenantedDeploymentMode.Untenanted)
             {
-                TenantedDeploymentParticipation = TenantedDeploymentMode.Tenanted;
+                throw new ArgumentException($"{(Tenants?.Any() == true ? "Tenants" : "Tenant tags")} and tenanted deployment mode aren't consistent.  " +
+                                            $"If {(Tenants?.Any() == true ? "tenants" : "tenant tags")} are given either {TenantedDeploymentMode.Tenanted.ToString()} or {TenantedDeploymentMode.TenantedOrUntenanted.ToString()} mode must be used");
+            }
+
+            if (Tenants?.Any() == false && TenantTags?.Any() == false
+                && TenantedDeploymentParticipation == TenantedDeploymentMode.Tenanted)
+            {
+                throw new ArgumentException($"If tenanted deployment mode is set to {TenantedDeploymentMode.Tenanted.ToString()}, tenants or tags must also be supplied.");
             }
         }
 
