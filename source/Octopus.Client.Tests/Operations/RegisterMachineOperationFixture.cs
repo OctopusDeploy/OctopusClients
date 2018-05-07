@@ -23,6 +23,7 @@ namespace Octopus.Client.Tests.Operations
         ResourceCollection<EnvironmentResource> environments;
         ResourceCollection<MachineResource> machines;
         ResourceCollection<MachinePolicyResource> machinePolicies;
+        private ResourceCollection<TenantResource> tenants;
 
         [SetUp]
         public void SetUp()
@@ -36,7 +37,8 @@ namespace Octopus.Client.Tests.Operations
             environments = new ResourceCollection<EnvironmentResource>(new EnvironmentResource[0], LinkCollection.Self("/foo"));
             machines = new ResourceCollection<MachineResource>(new MachineResource[0], LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(new MachinePolicyResource[0], LinkCollection.Self("/foo"));
-            client.RootDocument.Returns(new RootResource {Links = LinkCollection.Self("/api").Add("Environments", "/api/environments").Add("Machines", "/api/machines").Add("MachinePolicies", "/api/machinepolicies")});
+            tenants = new ResourceCollection<TenantResource>(new TenantResource[0], LinkCollection.Self("/foo"));
+            client.RootDocument.Returns(new RootResource {Links = LinkCollection.Self("/api").Add("Environments", "/api/environments").Add("Machines", "/api/machines").Add("MachinePolicies", "/api/machinepolicies").Add("Tenants", "/api/tenants") });
 
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));
@@ -44,6 +46,8 @@ namespace Octopus.Client.Tests.Operations
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachineResource>, bool>>()(machines));
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachinePolicyResource>, bool>>()(machinePolicies));
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<TenantResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<TenantResource>, bool>>()(tenants));
 
             client.List<MachineResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(machines);
         }
@@ -85,6 +89,31 @@ namespace Octopus.Client.Tests.Operations
                 m.Name == "Mymachine"
                 && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
                 && m.EnvironmentIds.First() == "environments-2"))
+                .ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task ShouldCreateNewTenantedMachine()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            tenants.Items.Add(new TenantResource { Id = "tenants-1", Name = "A10ant", Links = LinkCollection.Self("/api/tenats/tenants-1") }); 
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.EnvironmentNames = new[] { "UAT" };
+            operation.Tenants = new[] { "A10ant" };
+            operation.TenantedDeploymentParticipation = TenantedDeploymentMode.Tenanted;
+
+            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+
+            await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                    m.Name == "Mymachine"
+                    && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
+                    && m.EnvironmentIds.First() == "environments-1"
+                    && m.TenantIds.First() == "tenants-1"))
                 .ConfigureAwait(false);
         }
 
@@ -204,6 +233,25 @@ namespace Octopus.Client.Tests.Operations
                 && m.Name == "Mymachine"
                 && m.EnvironmentIds.First() == "environments-2"
                 && m.MachinePolicyId == "MachinePolicies-2")).ConfigureAwait(false);
+        }
+
+        [Test]
+        public void ShouldThrowIfTenantsAndModeDisagree()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            tenants.Items.Add(new TenantResource { Id = "tenants-1", Name = "A10ant", Links = LinkCollection.Self("/api/tenats/tenants-1") });
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.EnvironmentNames = new[] { "UAT" };
+            operation.Tenants = new[] {"A10ant"};
+            operation.TenantedDeploymentParticipation = TenantedDeploymentMode.Untenanted;
+
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            exec.ShouldThrow<ArgumentException>().WithMessage($"Tenants and tenanted deployment mode aren't consistent.  If tenants are given either {TenantedDeploymentMode.Tenanted.ToString()} or {TenantedDeploymentMode.TenantedOrUntenanted.ToString()} mode must be used");
         }
     }
 }

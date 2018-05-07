@@ -148,6 +148,7 @@ namespace Octopus.Client.Operations
             ValidateTenantTags(repository);
             var proxy = GetProxy(repository);
 
+            ValidateTenantsAndParticipationMode(machine);
             ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants, proxy);
 
             if (machine.Id != null)
@@ -282,12 +283,28 @@ namespace Octopus.Client.Operations
             var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
+            ValidateTenantsAndParticipationMode(machine);
             ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants, await proxy);
 
             if (machine.Id != null)
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
             else
                 await repository.Machines.Create(machine).ConfigureAwait(false);
+        }
+        void ValidateTenantsAndParticipationMode(MachineResource machine)
+        {
+            if ((Tenants?.Any() == true || TenantTags?.Any() == true)
+                && TenantedDeploymentParticipation == TenantedDeploymentMode.Untenanted)
+            {
+                throw new ArgumentException($"{(Tenants?.Any() == true ? "Tenants" : "Tenant tags")} and tenanted deployment mode aren't consistent.  " +
+                                            $"If {(Tenants?.Any() == true ? "tenants" : "tenant tags")} are given either {TenantedDeploymentMode.Tenanted.ToString()} or {TenantedDeploymentMode.TenantedOrUntenanted.ToString()} mode must be used");
+            }
+
+            if (Tenants?.Any() == false && TenantTags?.Any() == false
+                && TenantedDeploymentParticipation == TenantedDeploymentMode.Tenanted)
+            {
+                throw new ArgumentException($"If tenanted deployment mode is set to {TenantedDeploymentMode.Tenanted.ToString()}, tenants or tags must also be supplied.");
+            }
         }
 
         async Task<List<TenantResource>> GetTenants(IOctopusAsyncRepository repository)
