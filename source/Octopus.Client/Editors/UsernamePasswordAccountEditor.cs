@@ -3,7 +3,7 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class UsernamePasswordAccountEditor : AccountEditor<UsernamePasswordAccountResource>
+    public class UsernamePasswordAccountEditor : AccountEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
     {
         public UsernamePasswordAccountEditor(IAccountRepository repository) : base(repository)
         {

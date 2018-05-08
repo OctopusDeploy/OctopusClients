@@ -5,7 +5,7 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class AzureServicePrincipalAccountEditor : AccountEditor<AzureServicePrincipalAccountResource>
+    public class AzureServicePrincipalAccountEditor : AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     {
         private readonly IOctopusClient client;
 
@@ -14,6 +14,11 @@ namespace Octopus.Client.Editors
             IAccountRepository repository) : base(repository)
         {
             this.client = client;
+        }
+
+        public override AzureServicePrincipalAccountEditor CreateOrModify(string name)
+        {
+            return base.CreateOrModify(name);
         }
 
         public List<AzureServicePrincipalAccountResource.ResourceGroup> ResourceGroups()

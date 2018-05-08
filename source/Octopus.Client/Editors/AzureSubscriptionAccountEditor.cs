@@ -4,7 +4,7 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class AzureSubscriptionAccountEditor : AccountEditor<AzureSubscriptionAccountResource>
+    public class AzureSubscriptionAccountEditor : AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
     {
         private readonly IOctopusClient client;
 

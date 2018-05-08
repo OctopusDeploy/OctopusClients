@@ -4,8 +4,9 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class AccountEditor<TAccountResource> : IResourceEditor<TAccountResource, AccountEditor<TAccountResource>>
+    public class AccountEditor<TAccountResource, TAccountEditor> : IResourceEditor<TAccountResource, TAccountEditor>
         where TAccountResource : AccountResource, new()
+        where TAccountEditor : AccountEditor<TAccountResource, TAccountEditor>
     {
         private readonly IAccountRepository repository;
 
@@ -16,7 +17,7 @@ namespace Octopus.Client.Editors
 
         public TAccountResource Instance { get; private set; }
 
-        public AccountEditor<TAccountResource> CreateOrModify(string name)
+        public virtual TAccountEditor CreateOrModify(string name)
         {
             var existing = repository.FindByName(name);
             if (existing == null)
@@ -38,19 +39,19 @@ namespace Octopus.Client.Editors
                 Instance = (TAccountResource)repository.Modify(existing);
             }
 
-            return this;
+            return (TAccountEditor) this;
         }
 
-        public virtual AccountEditor<TAccountResource> Customize(Action<TAccountResource> customize)
+        public virtual TAccountEditor Customize(Action<TAccountResource> customize)
         {
             customize?.Invoke(Instance);
-            return this;
+            return (TAccountEditor)this;
         }
 
-        public virtual AccountEditor<TAccountResource> Save()
+        public virtual TAccountEditor Save()
         {
             Instance = (TAccountResource)repository.Modify(Instance);
-            return this;
+            return (TAccountEditor)this;
         }
     }
 }
