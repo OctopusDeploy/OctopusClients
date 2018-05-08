@@ -6,6 +6,7 @@ using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
+using Octopus.Client.Model.Accounts.Usages;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -24,6 +25,8 @@ namespace Octopus.Client.Repositories.Async
         Task<TAccount> FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource;
         Task<List<TAccount>> FindManyOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource;
         Task<List<TAccount>> FindAllOfType<TAccount>(object pathParameters = null) where TAccount : AccountResource;
+
+        Task<AccountUsageResource> GetAccountUsage(string id);
     }
 
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
@@ -115,6 +118,12 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<TAccount>> FindAllOfType<TAccount>(object pathParameters = null) where TAccount : AccountResource
         {
             return FindManyOfType<TAccount>(x => true, PathParametersOfType<TAccount>(pathParameters));
+        }
+
+        public async Task<AccountUsageResource> GetAccountUsage(string id)
+        {
+            var account = await Client.Get<AccountResource>(id);
+            return await Client.Get<AccountUsageResource>(account.Link("Usages"));
         }
 
         public AccountType DetermineAccountType<TAccount>() where TAccount : AccountResource
