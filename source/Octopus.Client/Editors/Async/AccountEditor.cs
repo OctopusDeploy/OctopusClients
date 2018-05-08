@@ -36,9 +36,27 @@ namespace Octopus.Client.Editors.Async
                     throw new ArgumentException($"An account with that name exists but is not of type {typeof(TAccountResource).Name}");
                 }
 
-                existing.Name = name;
+                Instance = (TAccountResource)existing;
+            }
 
-                Instance = (TAccountResource)await Repository.Modify(existing);
+            return (TAccountEditor)this;
+        }
+
+        public async Task<TAccountEditor> FindByName(string name)
+        {
+            var existing = await Repository.FindByName(name);
+            if (existing == null)
+            {
+                throw new ArgumentException($"An account with the name {name} could not be found");
+            }
+            else
+            {
+                if (!(existing is TAccountResource))
+                {
+                    throw new ArgumentException($"An account with that name exists but is not of type {typeof(TAccountResource).Name}");
+                }
+
+                Instance = (TAccountResource)existing;
             }
 
             return (TAccountEditor)this;

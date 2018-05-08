@@ -36,12 +36,30 @@ namespace Octopus.Client.Editors
                         $"An account with that name exists but is not of type {typeof(TAccountResource).Name}");
                 }
 
-                existing.Name = name;
-
-                Instance = (TAccountResource) Repository.Modify(existing);
+                Instance = (TAccountResource) existing;
             }
 
             return (TAccountEditor) this;
+        }
+        
+        public TAccountEditor FindByName(string name)
+        {
+            var existing = Repository.FindByName(name);
+            if (existing == null)
+            {
+                throw new ArgumentException($"An account with the name {name} could not be found");
+            }
+            else
+            {
+                if (!(existing is TAccountResource))
+                {
+                    throw new ArgumentException($"An account with that name exists but is not of type {typeof(TAccountResource).Name}");
+                }
+
+                Instance = (TAccountResource)existing;
+            }
+
+            return (TAccountEditor)this;
         }
 
         public virtual TAccountEditor Customize(Action<TAccountResource> customize)
