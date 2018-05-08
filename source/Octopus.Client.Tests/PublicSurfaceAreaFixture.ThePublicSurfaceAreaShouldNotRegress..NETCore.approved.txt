@@ -3244,6 +3244,12 @@ Octopus.Client.Model
       static System.String MachineIds
     }
   }
+  class UsageEntry`1
+  {
+    Octopus.Client.Model.TEntry Entry { get; }
+    Boolean IsMissingScopedPermissions { get; }
+    String MissingId { get; }
+  }
   class UserPermissionRestriction
   {
     .ctor()
@@ -3559,6 +3565,69 @@ Octopus.Client.Model.Accounts
     String Name { get; }
     String ResourceGroup { get; set; }
     String WebSpace { get; set; }
+  }
+}
+Octopus.Client.Model.Accounts.Usages
+{
+  class AccountUsageResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    ICollection<UsageEntry<StepUsage>> DeploymentProcesses { get; set; }
+    ICollection<UsageEntry<LibraryVariableSetUsageEntry>> LibraryVariableSets { get; set; }
+    ICollection<UsageEntry<ProjectVariableSetUsage>> ProjectVariableSets { get; set; }
+    ICollection<UsageEntry<ReleaseUsage>> Releases { get; set; }
+    ICollection<UsageEntry<TargetUsageEntry>> Targets { get; set; }
+  }
+  class LibraryVariableSetUsageEntry
+  {
+    .ctor()
+    String LibraryVariableSetId { get; set; }
+    String LibraryVariableSetName { get; set; }
+  }
+  class ProjectVariableSetUsage
+  {
+    .ctor()
+    Boolean IsCurrentlyBeingUsedInProject { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String ProjectSlug { get; set; }
+    ICollection<ReleaseUsageEntry> Releases { get; set; }
+  }
+  class ReleaseUsage
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    ICollection<ReleaseUsageEntry> Releases { get; set; }
+  }
+  class ReleaseUsageEntry
+  {
+    .ctor()
+    String ReleaseId { get; set; }
+    String ReleaseVersion { get; set; }
+  }
+  class StepUsage
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String ProjectSlug { get; set; }
+    ICollection<StepUsageEntry> Steps { get; set; }
+  }
+  class StepUsageEntry
+  {
+    .ctor()
+    String StepId { get; set; }
+    String StepName { get; set; }
+  }
+  class TargetUsageEntry
+  {
+    .ctor()
+    String TargetId { get; set; }
+    String TargetName { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -4151,6 +4220,7 @@ Octopus.Client.Repositories.Async
     Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
     Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
     Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
+    Task<AccountUsageResource> GetAccountUsage(String)
     Task<TAccount> GetOfType(String)
     Task<List<TAccount>> GetOfType(String[])
     Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)

@@ -6,7 +6,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class AzureServicePrincipalAccountEditor : AccountEditor<AzureServicePrincipalAccountResource>
+    public class AzureServicePrincipalAccountEditor : AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     {
         private readonly IOctopusAsyncClient client;
 

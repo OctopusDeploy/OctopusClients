@@ -16,11 +16,6 @@ namespace Octopus.Client.Editors
             this.client = client;
         }
 
-        public override AzureServicePrincipalAccountEditor CreateOrModify(string name)
-        {
-            return base.CreateOrModify(name);
-        }
-
         public List<AzureServicePrincipalAccountResource.ResourceGroup> ResourceGroups()
         {
             return client.Get<List<AzureServicePrincipalAccountResource.ResourceGroup>>(Instance.Link("ResourceGroups"));

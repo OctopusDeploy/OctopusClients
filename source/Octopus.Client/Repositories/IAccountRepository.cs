@@ -5,6 +5,7 @@ using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
+using Octopus.Client.Model.Accounts.Usages;
 
 namespace Octopus.Client.Repositories
 {
@@ -23,6 +24,8 @@ namespace Octopus.Client.Repositories
         TAccount FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource;
         List<TAccount> FindManyOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource;
         List<TAccount> FindAllOfType<TAccount>(object pathParameters = null) where TAccount : AccountResource;
+
+        AccountUsageResource GetAccountUsage(string id);
     }
     
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
@@ -116,6 +119,12 @@ namespace Octopus.Client.Repositories
         public AccountType DetermineAccountType<TAccount>() where TAccount : AccountResource
         {
             return typeof(TAccount).DetermineAccountType();
+        }
+
+        public AccountUsageResource GetAccountUsage(string id)
+        {
+            var account = Client.Get<AccountResource>(id);
+            return Client.Get<AccountUsageResource>(account.Link("Usages"));
         }
     }
 }
