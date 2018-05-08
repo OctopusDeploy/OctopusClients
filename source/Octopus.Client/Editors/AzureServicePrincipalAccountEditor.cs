@@ -7,28 +7,23 @@ namespace Octopus.Client.Editors
 {
     public class AzureServicePrincipalAccountEditor : AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     {
-        private readonly IOctopusClient client;
-
-        public AzureServicePrincipalAccountEditor(
-            IOctopusClient client,
-            IAccountRepository repository) : base(repository)
+        public AzureServicePrincipalAccountEditor(IAccountRepository repository) : base(repository)
         {
-            this.client = client;
         }
 
         public List<AzureServicePrincipalAccountResource.ResourceGroup> ResourceGroups()
         {
-            return client.Get<List<AzureServicePrincipalAccountResource.ResourceGroup>>(Instance.Link("ResourceGroups"));
+            return Repository.Client.Get<List<AzureServicePrincipalAccountResource.ResourceGroup>>(Instance.Link("ResourceGroups"));
         }
 
         public List<AzureServicePrincipalAccountResource.WebSite> WebSites()
         {
-            return client.Get<List<AzureServicePrincipalAccountResource.WebSite>>(Instance.Link("WebSites"));
+            return Repository.Client.Get<List<AzureServicePrincipalAccountResource.WebSite>>(Instance.Link("WebSites"));
         }
 
         public List<AzureStorageAccount> StorageAccounts()
         {
-            return client.Get<List<AzureStorageAccount>>(Instance.Link("StorageAccounts"));
+            return Repository.Client.Get<List<AzureStorageAccount>>(Instance.Link("StorageAccounts"));
         }
     }
 }

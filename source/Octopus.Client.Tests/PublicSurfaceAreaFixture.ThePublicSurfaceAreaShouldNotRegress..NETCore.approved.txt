@@ -243,46 +243,47 @@ Octopus.Client
 }
 Octopus.Client.Editors.Async
 {
-  class AccountEditor`1
-    Octopus.Client.Editors.Async.IResourceEditor<TAccountResource, AccountEditor<TAccountResource>>
+  class AccountEditor`2
+    Octopus.Client.Editors.Async.IResourceEditor<TAccountResource, TAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Octopus.Client.Editors.Async.TAccountResource Instance { get; }
-    Task<AccountEditor<TAccountResource>> CreateOrModify(String)
-    Octopus.Client.Editors.Async.AccountEditor<TAccountResource> Customize(Action<TAccountResource>)
-    Task<AccountEditor<TAccountResource>> Save()
+    Task<TAccountEditor> CreateOrModify(String)
+    Octopus.Client.Editors.Async.TAccountEditor Customize(Action<TAccountResource>)
+    Task<TAccountEditor> Save()
+    Task<AccountUsageResource> Usage()
   }
   class AmazonWebServicesAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AccountEditor<AmazonWebServicesAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   class AmazonWebServicesRoleAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesRoleAccountResource, AccountEditor<AmazonWebServicesRoleAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesRoleAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   class AzureServicePrincipalAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AccountEditor<AzureServicePrincipalAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<AzureServicePrincipalAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
   {
-    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.Repositories.Async.IAccountRepository)
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Task<List<ResourceGroup>> ResourceGroups()
     Task<List<AzureStorageAccount>> StorageAccounts()
     Task<List<WebSite>> WebSites()
   }
   class AzureSubscriptionAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AccountEditor<AzureSubscriptionAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
   {
-    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.Repositories.Async.IAccountRepository)
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
     Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
@@ -435,9 +436,9 @@ Octopus.Client.Editors.Async
     Task<ProjectTriggersEditor> SaveAll()
   }
   class SshKeyPairAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, AccountEditor<SshKeyPairAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<SshKeyPairAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -492,9 +493,9 @@ Octopus.Client.Editors.Async
     Task<TenantVariablesEditor> Save()
   }
   class UsernamePasswordAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<UsernamePasswordAccountResource, AccountEditor<UsernamePasswordAccountResource>>
+    Octopus.Client.Editors.Async.IResourceEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<UsernamePasswordAccountResource>
+    Octopus.Client.Editors.Async.AccountEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -4207,6 +4208,7 @@ Octopus.Client.Operations
 Octopus.Client.Repositories.Async
 {
   interface IAccountRepository
+    Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
     Octopus.Client.Repositories.Async.IModify<AccountResource>
     Octopus.Client.Repositories.Async.IDelete<AccountResource>
@@ -4552,6 +4554,10 @@ Octopus.Client.Repositories.Async
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+  }
+  interface IResourceRepository
+  {
+    Octopus.Client.IOctopusAsyncClient Client { get; }
   }
   interface IRetentionPolicyRepository
   {

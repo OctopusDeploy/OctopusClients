@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model.Accounts;
+using Octopus.Client.Model.Accounts.Usages;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
@@ -9,21 +10,21 @@ namespace Octopus.Client.Editors.Async
         where TAccountResource : AccountResource, new()
         where TAccountEditor : AccountEditor<TAccountResource, TAccountEditor>
     {
-        private readonly IAccountRepository repository;
+        protected readonly IAccountRepository Repository;
 
         public AccountEditor(IAccountRepository repository)
         {
-            this.repository = repository;
+            Repository = repository;
         }
 
         public TAccountResource Instance { get; private set; }
 
         public async Task<TAccountEditor> CreateOrModify(string name)
         {
-            var existing = await repository.FindByName(name);
+            var existing = await Repository.FindByName(name);
             if (existing == null)
             {
-                Instance = (TAccountResource)await repository.Create(new TAccountResource
+                Instance = (TAccountResource)await Repository.Create(new TAccountResource
                 {
                     Name = name
                 });
@@ -37,7 +38,7 @@ namespace Octopus.Client.Editors.Async
 
                 existing.Name = name;
 
-                Instance = (TAccountResource)await repository.Modify(existing);
+                Instance = (TAccountResource)await Repository.Modify(existing);
             }
 
             return (TAccountEditor)this;
@@ -51,8 +52,13 @@ namespace Octopus.Client.Editors.Async
 
         public virtual async Task<TAccountEditor> Save()
         {
-            Instance = (TAccountResource)await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = (TAccountResource)await Repository.Modify(Instance).ConfigureAwait(false);
             return (TAccountEditor)this;
+        }
+
+        public Task<AccountUsageResource> Usage()
+        {
+            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usage"));
         }
     }
 }

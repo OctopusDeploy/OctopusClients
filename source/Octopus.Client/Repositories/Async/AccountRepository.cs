@@ -10,7 +10,7 @@ using Octopus.Client.Model.Accounts.Usages;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IAccountRepository : ICreate<AccountResource>, IModify<AccountResource>, IDelete<AccountResource>, IGet<AccountResource>, IFindByName<AccountResource>
+    public interface IAccountRepository : IResourceRepository, ICreate<AccountResource>, IModify<AccountResource>, IDelete<AccountResource>, IGet<AccountResource>, IFindByName<AccountResource>
     {
         AccountType DetermineAccountType<TAccount>() where TAccount : AccountResource;
 

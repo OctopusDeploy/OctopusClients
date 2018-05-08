@@ -9,21 +9,21 @@ namespace Octopus.Client.Editors
         where TAccountResource : AccountResource, new()
         where TAccountEditor : AccountEditor<TAccountResource, TAccountEditor>
     {
-        private readonly IAccountRepository repository;
+        protected readonly IAccountRepository Repository;
 
         public AccountEditor(IAccountRepository repository)
         {
-            this.repository = repository;
+            Repository = repository;
         }
 
         public TAccountResource Instance { get; private set; }
 
         public TAccountEditor CreateOrModify(string name)
         {
-            var existing = repository.FindByName(name);
+            var existing = Repository.FindByName(name);
             if (existing == null)
             {
-                Instance = (TAccountResource) repository.Create(new TAccountResource
+                Instance = (TAccountResource) Repository.Create(new TAccountResource
                 {
                     Name = name
                 });
@@ -38,7 +38,7 @@ namespace Octopus.Client.Editors
 
                 existing.Name = name;
 
-                Instance = (TAccountResource) repository.Modify(existing);
+                Instance = (TAccountResource) Repository.Modify(existing);
             }
 
             return (TAccountEditor) this;
@@ -52,8 +52,13 @@ namespace Octopus.Client.Editors
 
         public virtual TAccountEditor Save()
         {
-            Instance = (TAccountResource)repository.Modify(Instance);
+            Instance = (TAccountResource)Repository.Modify(Instance);
             return (TAccountEditor)this;
+        }
+
+        public AccountUsageResource Usage()
+        {
+            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usage"));
         }
     }
 }
