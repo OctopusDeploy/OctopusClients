@@ -4170,6 +4170,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String AccountId { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
     String WebSpaceName { get; set; }
   }
