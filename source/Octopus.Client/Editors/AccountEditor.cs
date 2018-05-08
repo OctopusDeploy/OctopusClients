@@ -74,9 +74,9 @@ namespace Octopus.Client.Editors
             return (TAccountEditor)this;
         }
 
-        public AccountUsageResource Usage()
+        public AccountUsageResource Usages()
         {
-            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usage"));
+            return Repository.Client.Get<AccountUsageResource>(Instance.Link("Usages"));
         }
     }
 }
