@@ -3721,9 +3721,10 @@ Octopus.Client.Model
   }
   class UsageEntry`1
   {
-    Octopus.Client.Model.TEntry Entry { get; }
-    Boolean IsMissingScopedPermissions { get; }
-    String MissingId { get; }
+    .ctor()
+    Octopus.Client.Model.TEntry Entry { get; set; }
+    Boolean IsMissingScopedPermissions { get; set; }
+    String MissingId { get; set; }
   }
   class UserPermissionRestriction
   {
