@@ -414,6 +414,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.TAccountResource Instance { get; }
     Octopus.Client.Editors.TAccountEditor CreateOrModify(String)
     Octopus.Client.Editors.TAccountEditor Customize(Action<TAccountResource>)
+    Octopus.Client.Editors.TAccountEditor FindByName(String)
     Octopus.Client.Editors.TAccountEditor Save()
     Octopus.Client.Model.Accounts.Usages.AccountUsageResource Usage()
   }
@@ -702,6 +703,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TAccountResource Instance { get; }
     Task<TAccountEditor> CreateOrModify(String)
     Octopus.Client.Editors.Async.TAccountEditor Customize(Action<TAccountResource>)
+    Task<TAccountEditor> FindByName(String)
     Task<TAccountEditor> Save()
     Task<AccountUsageResource> Usage()
   }
