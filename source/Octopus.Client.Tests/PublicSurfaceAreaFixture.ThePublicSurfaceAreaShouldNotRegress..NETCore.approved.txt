@@ -1236,23 +1236,9 @@ Octopus.Client.Model
   class CertificateUsageResource
   {
     .ctor()
-    ICollection<CertificateVariableUsageResource<LibraryVariableSetResource>> LibraryVariableSetUsages { get; set; }
-    ICollection<CertificateVariableUsageResource<ProjectResource>> ProjectUsages { get; set; }
-    ICollection<CertificateVariableUsageResource<TenantResource>> TenantUsages { get; set; }
-    class CertificateVariableUsageResource`1
-    {
-      .ctor()
-      Boolean IsMissingScopedPermissions { get; set; }
-      String MissingId { get; set; }
-      Octopus.Client.Model.T Owner { get; set; }
-    }
-  }
-  class CertificateVariableUsageResource`1
-  {
-    .ctor()
-    Boolean IsMissingScopedPermissions { get; set; }
-    String MissingId { get; set; }
-    Octopus.Client.Model.T Owner { get; set; }
+    ICollection<LibraryVariableSetResource> LibraryVariableSetUsages { get; set; }
+    ICollection<ProjectResource> ProjectUsages { get; set; }
+    ICollection<TenantResource> TenantUsages { get; set; }
   }
   class ChannelResource
     Octopus.Client.Extensibility.IResource
@@ -3279,13 +3265,6 @@ Octopus.Client.Model
       static System.String MachineIds
     }
   }
-  class UsageEntry`1
-  {
-    .ctor()
-    Octopus.Client.Model.TEntry Entry { get; set; }
-    Boolean IsMissingScopedPermissions { get; set; }
-    String MissingId { get; set; }
-  }
   class UserPermissionRestriction
   {
     .ctor()
@@ -3611,11 +3590,11 @@ Octopus.Client.Model.Accounts.Usages
     Octopus.Client.Model.Resource
   {
     .ctor()
-    ICollection<UsageEntry<StepUsage>> DeploymentProcesses { get; set; }
-    ICollection<UsageEntry<LibraryVariableSetUsageEntry>> LibraryVariableSets { get; set; }
-    ICollection<UsageEntry<ProjectVariableSetUsage>> ProjectVariableSets { get; set; }
-    ICollection<UsageEntry<ReleaseUsage>> Releases { get; set; }
-    ICollection<UsageEntry<TargetUsageEntry>> Targets { get; set; }
+    ICollection<StepUsage> DeploymentProcesses { get; set; }
+    ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
+    ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
+    ICollection<ReleaseUsage> Releases { get; set; }
+    ICollection<TargetUsageEntry> Targets { get; set; }
   }
   class LibraryVariableSetUsageEntry
   {

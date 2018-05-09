@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Octopus.Client.Model.Accounts.Usages
 {
@@ -10,18 +7,18 @@ namespace Octopus.Client.Model.Accounts.Usages
     {
         public AccountUsageResource()
         {
-            Targets = new List<UsageEntry<TargetUsageEntry>>();
-            DeploymentProcesses = new List<UsageEntry<StepUsage>>();
-            Releases = new List<UsageEntry<ReleaseUsage>>();
-            ProjectVariableSets = new List<UsageEntry<ProjectVariableSetUsage>>();
-            LibraryVariableSets = new List<UsageEntry<LibraryVariableSetUsageEntry>>();
+            Targets = new List<TargetUsageEntry>();
+            DeploymentProcesses = new List<StepUsage>();
+            Releases = new List<ReleaseUsage>();
+            ProjectVariableSets = new List<ProjectVariableSetUsage>();
+            LibraryVariableSets = new List<LibraryVariableSetUsageEntry>();
         }
 
-        public ICollection<UsageEntry<TargetUsageEntry>> Targets { get; set; }
-        public ICollection<UsageEntry<StepUsage>> DeploymentProcesses { get; set; }
-        public ICollection<UsageEntry<ReleaseUsage>> Releases { get; set; }
-        public ICollection<UsageEntry<ProjectVariableSetUsage>> ProjectVariableSets { get; set; }
-        public ICollection<UsageEntry<LibraryVariableSetUsageEntry>> LibraryVariableSets { get; set; }
+        public ICollection<TargetUsageEntry> Targets { get; set; }
+        public ICollection<StepUsage> DeploymentProcesses { get; set; }
+        public ICollection<ReleaseUsage> Releases { get; set; }
+        public ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
+        public ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
     }
 
     public class TargetUsageEntry
