@@ -17,6 +17,15 @@ namespace Octopus.Client.Repositories
         Stream Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false);
 
         /// <summary>
+        /// Exports the certificate in PEM format 
+        /// </summary>
+        /// <param name="certificate">The certificate to export.</param>
+        /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.</param>
+        /// <param name="pemOptions">Options specifying which certificates should be included when chain certificates are present</param>
+        /// <returns>The exported certificate in PEM format</returns>
+        Stream ExportAsPem(CertificateResource certificate, bool includePrivateKey = false, CertificateExportPemOptions pemOptions = CertificateExportPemOptions.PrimaryOnly);
+
+        /// <summary>
         /// Replace with a new certificate.  
         /// The certificate is replaced "in-place"; it will retain the same ID and other user properties (Name, Notes, Environments, etc...).
         /// A backup will be made of the replaced certificate; it will have a new ID and will be archived.  
@@ -58,6 +67,13 @@ namespace Octopus.Client.Repositories
         {
             var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
             return Client.GetContent(certificate.Link("Export"), pathParameters);
+        }
+        
+        public Stream ExportAsPem(CertificateResource certificate, bool includePrivateKey = false,
+            CertificateExportPemOptions pemOptions = CertificateExportPemOptions.PrimaryOnly)
+        {
+            var parameters = new { format = CertificateFormat.Pem, includePrivateKey, pemOptions };
+            return Client.GetContent(certificate.Link("Export"), parameters);
         }
 
         public CertificateResource Replace(CertificateResource certificate, string certificateData, string password)

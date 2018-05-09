@@ -39,5 +39,11 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public bool UseGuidedFailure { get; set; }
+
+        /// <summary>
+        /// If set to true, deployments to this environment will be allowed to contain steps that manage infrastructure.
+        /// </summary>
+        [Writeable]
+        public bool AllowDynamicInfrastructure { get; set; }
     }
 }

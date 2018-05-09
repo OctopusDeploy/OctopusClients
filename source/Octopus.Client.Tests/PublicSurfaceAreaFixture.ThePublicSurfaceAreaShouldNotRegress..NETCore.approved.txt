@@ -283,6 +283,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
@@ -1112,6 +1113,12 @@ Octopus.Client.Model
     String Name { get; set; }
     String Thumbprint { get; set; }
   }
+  CertificateExportPemOptions
+  {
+      PrimaryOnly = 0
+      PrimaryAndChain = 1
+      ChainOnly = 2
+  }
   CertificateFormat
   {
       Pkcs12 = 0
@@ -1569,6 +1576,14 @@ Octopus.Client.Model
       TentacleActive = 1
       Ssh = 2
   }
+  class DiscoverMachineOptions
+  {
+    .ctor(String)
+    String Host { get; }
+    Int32 Port { get; set; }
+    Octopus.Client.Model.ProxyResource Proxy { get; set; }
+    Nullable<DiscoverableEndpointType> Type { get; set; }
+  }
   class DockerFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1595,6 +1610,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean AllowDynamicInfrastructure { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     Int32 SortOrder { get; set; }
@@ -4080,6 +4096,7 @@ Octopus.Client.Repositories.Async
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
     Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Task<Stream> ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
     Task<CertificateConfigurationResource> GetOctopusCertificate()
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
@@ -4159,6 +4176,7 @@ Octopus.Client.Repositories.Async
   {
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
     Task Sort(String[])
     Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
@@ -4250,6 +4268,7 @@ Octopus.Client.Repositories.Async
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
     Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<MachineResource> Discover(Octopus.Client.Model.DiscoverMachineOptions)
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
