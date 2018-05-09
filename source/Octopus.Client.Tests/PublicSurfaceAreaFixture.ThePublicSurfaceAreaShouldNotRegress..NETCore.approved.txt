@@ -289,6 +289,18 @@ Octopus.Client.Editors.Async
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
   }
+  class CertificateEditor
+    Octopus.Client.Editors.Async.IResourceEditor<CertificateResource, CertificateEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.ICertificateRepository)
+    Octopus.Client.Model.CertificateResource Instance { get; }
+    Task<CertificateEditor> Create(String, String)
+    Octopus.Client.Editors.Async.CertificateEditor Customize(Action<CertificateResource>)
+    Task<CertificateEditor> FindByName(String)
+    Task<CertificateEditor> Save()
+    Task<CertificateUsageResource> Usages()
+  }
   class ChannelEditor
     Octopus.Client.Editors.Async.IResourceEditor<ChannelResource, ChannelEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -1220,6 +1232,27 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     String Thumbprint { get; }
     Int32 Version { get; }
+  }
+  class CertificateUsageResource
+  {
+    .ctor()
+    ICollection<CertificateVariableUsageResource<LibraryVariableSetResource>> LibraryVariableSetUsages { get; set; }
+    ICollection<CertificateVariableUsageResource<ProjectResource>> ProjectUsages { get; set; }
+    ICollection<CertificateVariableUsageResource<TenantResource>> TenantUsages { get; set; }
+    class CertificateVariableUsageResource`1
+    {
+      .ctor()
+      Boolean IsMissingScopedPermissions { get; set; }
+      String MissingId { get; set; }
+      Octopus.Client.Model.T Owner { get; set; }
+    }
+  }
+  class CertificateVariableUsageResource`1
+  {
+    .ctor()
+    Boolean IsMissingScopedPermissions { get; set; }
+    String MissingId { get; set; }
+    Octopus.Client.Model.T Owner { get; set; }
   }
   class ChannelResource
     Octopus.Client.Extensibility.IResource
@@ -4277,6 +4310,7 @@ Octopus.Client.Repositories.Async
     Task<CertificateConfigurationResource> GetOctopusCertificate()
   }
   interface ICertificateRepository
+    Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.IGet<CertificateResource>
     Octopus.Client.Repositories.Async.IFindByName<CertificateResource>
     Octopus.Client.Repositories.Async.IPaginate<CertificateResource>

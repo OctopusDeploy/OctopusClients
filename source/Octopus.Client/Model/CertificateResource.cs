@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
+    [DebuggerDisplay("Name = {Name}")]
     public class CertificateResource : Resource, INamedResource
     {
         [JsonConstructor]

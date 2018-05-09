@@ -4,7 +4,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface ICertificateRepository : IGet<CertificateResource>, IFindByName<CertificateResource>, ICreate<CertificateResource>, IModify<CertificateResource>, IDelete<CertificateResource>
+    public interface ICertificateRepository : IResourceRepository, IGet<CertificateResource>, IFindByName<CertificateResource>, ICreate<CertificateResource>, IModify<CertificateResource>, IDelete<CertificateResource>
     {
         /// <summary>
         /// Exports the certificate data.
