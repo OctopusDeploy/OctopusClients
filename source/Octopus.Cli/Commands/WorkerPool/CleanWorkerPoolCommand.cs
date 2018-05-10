@@ -15,12 +15,11 @@ namespace Octopus.Cli.Commands.WorkerPools
     public class CleanWorkerPoolCommand : ApiCommand, ISupportFormattedOutput
     {
         string poolName;
-        readonly HashSet<string> statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> healthStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
-        WorkerPoolResource workerpoolResource;
+        WorkerPoolResource workerPoolResource;
         IEnumerable<WorkerMachineResource> machines;
         List<MachineResult> commandResults = new List<MachineResult>();
 
@@ -30,7 +29,6 @@ namespace Octopus.Cli.Commands.WorkerPools
         {
             var options = Options.For("WorkerPool Cleanup");
             options.Add("workerpool=", "Name of a worker pool to clean up.", v => poolName = v);
-            options.Add("status=", $"Status of Worker Machines to clean up ({string.Join(", ", HealthStatusProvider.StatusNames)}). Can be specified many times.", v => statuses.Add(v));
             options.Add("health-status=", $"Health status of Worker Machines to clean up ({string.Join(", ", HealthStatusProvider.HealthStatusNames)}). Can be specified many times.", v => healthStatuses.Add(v));
             options.Add("disabled=", "[Optional] Disabled status filter of Worker Machine to clean up.", v => SetFlagState(v, ref isDisabled));
             options.Add("calamari-outdated=", "[Optional] State of Calamari to clean up. By default ignores Calamari state.", v => SetFlagState(v, ref isCalamariOutdated));
@@ -41,15 +39,15 @@ namespace Octopus.Cli.Commands.WorkerPools
         {
             if (string.IsNullOrWhiteSpace(poolName))
                 throw new CommandException("Please specify a worker pool name using the parameter: --workerpool=XYZ");
-            if (!healthStatuses.Any() && !statuses.Any())
+            if (!healthStatuses.Any())
                 throw new CommandException("Please specify a status using the parameter: --health-status");
 
-            workerpoolResource = await GetWorkerPool().ConfigureAwait(false);
+            workerPoolResource = await GetWorkerPool().ConfigureAwait(false);
 
-            machines = await FilterByWorkerPool(workerpoolResource).ConfigureAwait(false);
+            machines = await FilterByWorkerPool(workerPoolResource).ConfigureAwait(false);
             machines = FilterByState(machines);
 
-            await CleanUpPool(machines.ToList(), workerpoolResource);
+            await CleanUpPool(machines.ToList(), workerPoolResource);
         }
 
         private async Task CleanUpPool(List<WorkerMachineResource> filteredMachines, WorkerPoolResource poolResource)
@@ -89,7 +87,7 @@ namespace Octopus.Cli.Commands.WorkerPools
 
         private IEnumerable<WorkerMachineResource> FilterByState(IEnumerable<WorkerMachineResource> workerMachines)
         {
-            var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider);
+            var provider = new HealthStatusProvider(Repository, new HashSet<string>(StringComparer.OrdinalIgnoreCase), healthStatuses, commandOutputProvider);
             workerMachines = provider.Filter(workerMachines);
 
             if (isDisabled.HasValue)
@@ -109,7 +107,7 @@ namespace Octopus.Cli.Commands.WorkerPools
 
         private string GetStateFilterDescription()
         {
-            var description =  string.Join(",", statuses.Concat(healthStatuses));
+            var description =  string.Join(",", healthStatuses);
 
             if (isDisabled.HasValue)
             {
@@ -156,7 +154,7 @@ namespace Octopus.Cli.Commands.WorkerPools
             commandOutputProvider.Json(commandResults.Select(x =>new
             {
                 Machine = new { x.Machine.Id,x.Machine.Name, x.Machine.Status },
-                Environment = x.Action == MachineAction.RemovedFromPool ? new { workerpoolResource.Id, workerpoolResource.Name } : null,
+                Environment = x.Action == MachineAction.RemovedFromPool ? new { workerPoolResource.Id, workerPoolResource.Name } : null,
                 Action = x.Action.ToString()
             }));
         }

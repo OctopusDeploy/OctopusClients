@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IWorkerPoolRepository : IFindByName<WorkerPoolResource>, IGet<WorkerPoolResource>, ICreate<WorkerPoolResource>, IModify<WorkerPoolResource>, IDelete<WorkerPoolResource>, IGetAll<WorkerPoolResource>
     {
-        Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource pool,
+        Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories.Async
             string healthStatuses = null,
             string commStyles = null,
             bool? hideEmptyPools = false);
-        Task Sort(string[] workerpoolIdsInOrder);
+        Task Sort(string[] workerPoolIdsInOrder);
         Task<WorkerPoolEditor> CreateOrModify(string name);
         Task<WorkerPoolEditor> CreateOrModify(string name, string description);
     }
@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public async Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource environment,
+        public async Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -45,7 +45,7 @@ namespace Octopus.Client.Repositories.Async
         {
             var resources = new List<WorkerMachineResource>();
 
-            await Client.Paginate<WorkerMachineResource>(environment.Link("WorkerMachines"), new {
+            await Client.Paginate<WorkerMachineResource>(workerPool.Link("WorkerMachines"), new {
                 skip,
                 take,
                 partialName,
@@ -82,9 +82,9 @@ namespace Octopus.Client.Repositories.Async
             });
         }
 
-        public Task Sort(string[] environmentIdsInOrder)
+        public Task Sort(string[] workerPoolIdsInOrder)
         {
-            return Client.Put(Client.RootDocument.Link("WorkerPoolSortOrder"), environmentIdsInOrder);
+            return Client.Put(Client.RootDocument.Link("WorkerPoolSortOrder"), workerPoolIdsInOrder);
         }
 
         public Task<WorkerPoolEditor> CreateOrModify(string name)
