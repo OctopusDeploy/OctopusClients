@@ -1203,6 +1203,7 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+      Kubernetes = 8
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
