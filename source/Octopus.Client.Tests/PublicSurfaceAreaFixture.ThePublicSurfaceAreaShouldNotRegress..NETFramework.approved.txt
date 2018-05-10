@@ -3879,6 +3879,7 @@ Octopus.Client.Model
       Sensitive = 1
       Certificate = 2
       AmazonWebServicesAccount = 3
+      AzureAccount = 4
   }
   class VersioningStrategyResource
   {
