@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model.Endpoints
 {
-    class KubernetesEndpointResource : AgentlessEndpointResource
+    public class KubernetesEndpointResource : AgentlessEndpointResource
     {
         public override CommunicationStyle CommunicationStyle => CommunicationStyle.Kubernetes;
 
