@@ -2,7 +2,11 @@
 {
     public enum TriggerFilterType
     {
-        MachineFilter
+        MachineFilter,
+        DailySchedule,
+        DaysPerWeekSchedule,
+        DaysPerMonthSchedule,
+        CronExpressionSchedule
     }
 
     public abstract class TriggerFilterResource : Resource

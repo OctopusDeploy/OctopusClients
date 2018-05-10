@@ -231,7 +231,7 @@ namespace Octopus.Cli.Commands.Releases
                 releasePlans.Add(plan);
                 if (plan.ChannelHasAnyEnabledSteps() == false)
                 {
-                    Log.Warning($"Channel {channel.Name} does not contain any packageSteps");
+                    commandOutputProvider.Warning($"Channel {channel.Name} does not contain any packageSteps");
                 }
             }
 
