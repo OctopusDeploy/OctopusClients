@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Accounts
 {
+    [DebuggerDisplay("Name = {Name}")]
     public abstract class AccountResource : Resource, INamedResource
     {
         protected AccountResource()

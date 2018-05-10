@@ -36,6 +36,30 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
+        public async Task<EnvironmentEditor> CreateOrModify(string name, string description, bool allowDynamicInfrastructure = false)
+        {
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            if (existing == null)
+            {
+                Instance = await repository.Create(new EnvironmentResource
+                {
+                    Name = name,
+                    Description = description,
+                    AllowDynamicInfrastructure = allowDynamicInfrastructure
+                }).ConfigureAwait(false);
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
+                existing.AllowDynamicInfrastructure = allowDynamicInfrastructure;
+
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
+            }
+
+            return this;
+        }
+
         public async Task<EnvironmentEditor> CreateOrModify(string name, string description)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
@@ -44,7 +68,7 @@ namespace Octopus.Client.Editors.Async
                 Instance = await repository.Create(new EnvironmentResource
                 {
                     Name = name,
-                    Description = description
+                    Description = description,
                 }).ConfigureAwait(false);
             }
             else
