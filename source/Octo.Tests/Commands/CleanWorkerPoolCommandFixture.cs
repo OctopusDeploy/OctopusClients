@@ -19,6 +19,7 @@ namespace Octopus.Cli.Tests.Commands
         public void SetUp()
         {
             cleanPoolCommand = new CleanWorkerPoolCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
+            Repository.Client.RootDocument.Version = "2018.6.0";
         }
 
         CleanWorkerPoolCommand cleanPoolCommand;
@@ -27,7 +28,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldCleanPool()
         {
             CommandLineArgs.Add("-workerpool=SomePool");
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-health-status=Unhealthy");
 
             Repository.WorkerPools.FindByName("SomePool").Returns(
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
@@ -44,7 +45,7 @@ namespace Octopus.Cli.Tests.Commands
 
             cleanPoolCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
-            LogLines.Should().Contain(string.Format("Found {0} machines in {1} with the status {2}", workerList.Count, "SomePool", MachineModelStatus.Offline.ToString()));
+            LogLines.Should().Contain(string.Format("Found {0} machines in {1} with the status {2}", workerList.Count, "SomePool", MachineModelHealthStatus.Unhealthy.ToString()));
 
             LogLines.Should().Contain(string.Format("Deleting {0} {1} (ID: {2})", workerList[0].Name, workerList[0].Status, workerList[0].Id));
             Repository.WorkerMachines.Received().Delete(workerList[0]);
@@ -57,7 +58,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldRemoveMachinesBelongingToMultiplePoolsInsteadOfDeleting()
         {
             CommandLineArgs.Add("-workerpool=SomePool");
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-health-status=Unhealthy");
 
             Repository.WorkerPools.FindByName("SomePool").Returns(
                 new WorkerPoolResource { Name = "SomePool", Id = "WorkerPools-001"}
@@ -74,7 +75,7 @@ namespace Octopus.Cli.Tests.Commands
 
             cleanPoolCommand.Execute(CommandLineArgs.ToArray()).GetAwaiter().GetResult();
 
-            LogLines.Should().Contain(string.Format("Found {0} machines in {1} with the status {2}", workerList.Count, "SomePool", MachineModelStatus.Offline.ToString()));
+            LogLines.Should().Contain(string.Format("Found {0} machines in {1} with the status {2}", workerList.Count, "SomePool", MachineModelHealthStatus.Unhealthy.ToString()));
             LogLines.Should().Contain("Note: Some of these machines belong to multiple pools. Instead of being deleted, these machines will be removed from the SomePool pool.");
 
             LogLines.Should().Contain($"Removing {workerList[0].Name} {workerList[0].Status} (ID: {workerList[0].Id}) from SomePool");
@@ -106,7 +107,7 @@ namespace Octopus.Cli.Tests.Commands
         public void ShouldNotCleanIfPoolNotFound()
         {
             CommandLineArgs.Add("-workerpool=SomePool");
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-health-status=Unhealthy");
 
             Func<Task> exec = () => cleanPoolCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CouldNotFindException>()
@@ -122,7 +123,7 @@ namespace Octopus.Cli.Tests.Commands
 
             CommandLineArgs.Add("--outputFormat=json");
             CommandLineArgs.Add($"--workerpool=SomePool");
-            CommandLineArgs.Add("-status=Offline");
+            CommandLineArgs.Add("-health-status=Unhealthy");
 
             var workerList = MakeWorkerMachineList(2,
                 new List<ReferenceCollection>
@@ -159,7 +160,7 @@ namespace Octopus.Cli.Tests.Commands
                     {
                         Name = Guid.NewGuid().ToString(),
                         Id = "Machines-00" + i,
-                        Status = MachineModelStatus.Offline,
+                        HealthStatus = MachineModelHealthStatus.Unhealthy,
                         WorkerPoolIds = pools[i]
                     });
             }
