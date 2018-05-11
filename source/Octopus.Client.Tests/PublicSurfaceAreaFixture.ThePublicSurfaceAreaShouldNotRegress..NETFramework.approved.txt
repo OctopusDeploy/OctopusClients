@@ -3960,6 +3960,16 @@ Octopus.Client.Model.Endpoints
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
+  class KubernetesEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    String AccountId { get; set; }
+    String ClusterUrl { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+  }
   class ListeningTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
