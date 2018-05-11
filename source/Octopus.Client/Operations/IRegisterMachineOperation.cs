@@ -28,5 +28,12 @@ namespace Octopus.Client.Operations
         /// Gets or sets the tenant tags that this machine is linked to.
         /// </summary>
         string[] TenantTags { get; set; }
+
+        /// <summary>
+        /// How the machine should participate in Tenanted Deployments.
+        /// Allowed values are Untenanted, TenantedOrUntenanted or Tenanted
+        /// </summary>
+        TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+
     }
 }

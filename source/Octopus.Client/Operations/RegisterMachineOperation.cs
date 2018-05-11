@@ -50,6 +50,13 @@ namespace Octopus.Client.Operations
         /// </summary>
         public string[] TenantTags { get; set; }
 
+
+        /// <summary>
+        /// How the machine should participate in Tenanted Deployments.
+        /// Allowed values are Untenanted, TenantedOrUntenanted or Tenanted
+        /// </summary>
+        public TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+
 #if SYNC_CLIENT
 
         /// <summary>
@@ -237,6 +244,7 @@ namespace Octopus.Client.Operations
             machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
             machine.TenantTags = new ReferenceCollection(TenantTags);
             machine.Roles = new ReferenceCollection(Roles);
+            machine.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
         }
     }
 }
