@@ -4298,6 +4298,7 @@ Octopus.Client.Operations
   {
     String[] EnvironmentNames { get; set; }
     String[] Roles { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
   }
@@ -4330,6 +4331,7 @@ Octopus.Client.Operations
     .ctor(Octopus.Client.IOctopusClientFactory)
     String[] EnvironmentNames { get; set; }
     String[] Roles { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
