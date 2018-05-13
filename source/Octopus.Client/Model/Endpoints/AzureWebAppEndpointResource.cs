@@ -21,6 +21,10 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
+        public string ResourceGroupName { get; set; }
+
+        [Trim]
+        [Writeable]
         public string WebAppName { get; set; }
     }
 }
