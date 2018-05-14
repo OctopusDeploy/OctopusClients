@@ -4244,6 +4244,7 @@ Octopus.Client.Model.Endpoints
     String AccountId { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String Namespace { get; set; }
   }
   class ListeningTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
