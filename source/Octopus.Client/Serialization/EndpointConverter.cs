@@ -19,7 +19,8 @@ namespace Octopus.Client.Serialization
                 {CommunicationStyle.OfflineDrop, typeof (OfflineDropEndpointResource)},
                 {CommunicationStyle.AzureCloudService, typeof (CloudServiceEndpointResource)},
                 {CommunicationStyle.AzureWebApp, typeof (AzureWebAppEndpointResource)},
-                {CommunicationStyle.None, typeof (CloudRegionEndpointResource)}
+                {CommunicationStyle.None, typeof (CloudRegionEndpointResource)},
+                {CommunicationStyle.Kubernetes, typeof (KubernetesEndpointResource)}
           };
 
         protected override IDictionary<CommunicationStyle, Type> DerivedTypeMappings => EndpointTypes;
