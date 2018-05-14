@@ -13,5 +13,9 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string ClusterUrl { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Namespace { get; set; }
     }
 }
