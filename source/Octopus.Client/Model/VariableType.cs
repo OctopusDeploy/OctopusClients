@@ -5,6 +5,7 @@
         String,
         Sensitive,
         Certificate,
-        AmazonWebServicesAccount
+        AmazonWebServicesAccount,
+        AzureAccount
     }
 }

@@ -296,9 +296,16 @@ namespace Octopus.Client.Operations
             {
                 return new List<TenantResource>();
             }
-            var tenantsByName = await repository.Tenants.FindByNames(Tenants).ConfigureAwait(false);
-            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
+            var tenantsByName = new List<TenantResource>();
+            foreach (var tenantName in Tenants)
+            {
+                var tenant = await repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
+                if (tenant != null)
+                    tenantsByName.Add(tenant);
+            }
+
+            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
             var tenantsById = await repository.Tenants.Get(missing).ConfigureAwait(false);
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
@@ -323,7 +330,13 @@ namespace Octopus.Client.Operations
 
         async Task<List<EnvironmentResource>> GetEnvironments(IOctopusAsyncRepository repository)
         {
-            var selectedEnvironments = await repository.Environments.FindByNames(EnvironmentNames).ConfigureAwait(false);
+            var selectedEnvironments = new List<EnvironmentResource>();
+            foreach (var environmentName in EnvironmentNames)
+            {
+                var environment = await repository.Environments.FindByName(environmentName).ConfigureAwait(false);
+                if (environment != null)
+                    selectedEnvironments.Add(environment);
+            }
 
             var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
 

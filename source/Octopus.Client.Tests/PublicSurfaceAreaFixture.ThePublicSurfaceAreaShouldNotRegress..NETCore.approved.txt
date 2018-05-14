@@ -243,6 +243,64 @@ Octopus.Client
 }
 Octopus.Client.Editors.Async
 {
+  class AccountEditor`2
+    Octopus.Client.Editors.Async.IResourceEditor<TAccountResource, TAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+    Octopus.Client.Editors.Async.TAccountResource Instance { get; }
+    Task<TAccountEditor> CreateOrModify(String)
+    Octopus.Client.Editors.Async.TAccountEditor Customize(Action<TAccountResource>)
+    Task<TAccountEditor> FindByName(String)
+    Task<TAccountEditor> Save()
+    Task<AccountUsageResource> Usages()
+  }
+  class AmazonWebServicesAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AmazonWebServicesRoleAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AzureServicePrincipalAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+    Task<List<ResourceGroup>> ResourceGroups()
+    Task<List<AzureStorageAccount>> StorageAccounts()
+    Task<List<WebSite>> WebSites()
+  }
+  class AzureSubscriptionAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+    Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+  }
+  class CertificateEditor
+    Octopus.Client.Editors.Async.IResourceEditor<CertificateResource, CertificateEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.ICertificateRepository)
+    Octopus.Client.Model.CertificateResource Instance { get; }
+    Task<CertificateEditor> Create(String, String)
+    Octopus.Client.Editors.Async.CertificateEditor Customize(Action<CertificateResource>)
+    Task<CertificateEditor> FindByName(String)
+    Task<CertificateEditor> Save()
+    Task<CertificateUsageResource> Usages()
+  }
   class ChannelEditor
     Octopus.Client.Editors.Async.IResourceEditor<ChannelResource, ChannelEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -390,6 +448,13 @@ Octopus.Client.Editors.Async
     Task<ProjectTriggersEditor> Delete(String)
     Task<ProjectTriggersEditor> SaveAll()
   }
+  class SshKeyPairAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
   class SubscriptionEditor
     Octopus.Client.Editors.Async.IResourceEditor<SubscriptionResource, SubscriptionEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
@@ -439,6 +504,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantVariablesEditor Customize(Action<TenantVariableResource>)
     Task<TenantVariablesEditor> Load()
     Task<TenantVariablesEditor> Save()
+  }
+  class UsernamePasswordAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   class VariableSetEditor
     Octopus.Client.Editors.Async.IResourceEditor<VariableSetResource, VariableSetEditor>
@@ -631,6 +703,7 @@ Octopus.Client.Extensions
   }
   abstract class TypeExtensions
   {
+    static Octopus.Client.Model.Accounts.AccountType DetermineAccountType(Type)
     static Object GetDefault(Type)
   }
   abstract class UriExtensions
@@ -1160,6 +1233,13 @@ Octopus.Client.Model
     String Thumbprint { get; }
     Int32 Version { get; }
   }
+  class CertificateUsageResource
+  {
+    .ctor()
+    ICollection<LibraryVariableSetResource> LibraryVariableSetUsages { get; set; }
+    ICollection<ProjectResource> ProjectUsages { get; set; }
+    ICollection<TenantResource> TenantUsages { get; set; }
+  }
   class ChannelResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1576,6 +1656,14 @@ Octopus.Client.Model
       TentaclePassive = 0
       TentacleActive = 1
       Ssh = 2
+  }
+  class DiscoverMachineOptions
+  {
+    .ctor(String)
+    String Host { get; }
+    Int32 Port { get; set; }
+    Octopus.Client.Model.ProxyResource Proxy { get; set; }
+    Nullable<DiscoverableEndpointType> Type { get; set; }
   }
   class DockerFeedResource
     Octopus.Client.Extensibility.IResource
@@ -3307,6 +3395,7 @@ Octopus.Client.Model
       Sensitive = 1
       Certificate = 2
       AmazonWebServicesAccount = 3
+      AzureAccount = 4
   }
   class VersioningStrategyResource
   {
@@ -3385,6 +3474,12 @@ Octopus.Client.Model.Accounts
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
   }
+  class AzureCloudService
+  {
+    .ctor()
+    String Location { get; set; }
+    String Name { get; set; }
+  }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3400,6 +3495,24 @@ Octopus.Client.Model.Accounts
     String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
     String TenantId { get; set; }
+    class ResourceGroup
+    {
+      .ctor()
+      String Id { get; set; }
+      String Name { get; set; }
+    }
+    class WebSite
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+    }
+  }
+  class AzureStorageAccount
+  {
+    .ctor()
+    String Location { get; set; }
+    String Name { get; set; }
   }
   class AzureSubscriptionAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3414,6 +3527,19 @@ Octopus.Client.Model.Accounts
     String CertificateThumbprint { get; set; }
     String ServiceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
+    class WebSite
+    {
+      .ctor()
+      String Name { get; }
+      String ResourceGroup { get; set; }
+      String WebSpace { get; set; }
+    }
+  }
+  class ResourceGroup
+  {
+    .ctor()
+    String Id { get; set; }
+    String Name { get; set; }
   }
   class SshKeyPairAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3443,6 +3569,82 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
+  }
+  class WebSite
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+  }
+  class WebSite
+  {
+    .ctor()
+    String Name { get; }
+    String ResourceGroup { get; set; }
+    String WebSpace { get; set; }
+  }
+}
+Octopus.Client.Model.Accounts.Usages
+{
+  class AccountUsageResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    ICollection<StepUsage> DeploymentProcesses { get; set; }
+    ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
+    ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
+    ICollection<ReleaseUsage> Releases { get; set; }
+    ICollection<TargetUsageEntry> Targets { get; set; }
+  }
+  class LibraryVariableSetUsageEntry
+  {
+    .ctor()
+    String LibraryVariableSetId { get; set; }
+    String LibraryVariableSetName { get; set; }
+  }
+  class ProjectVariableSetUsage
+  {
+    .ctor()
+    Boolean IsCurrentlyBeingUsedInProject { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String ProjectSlug { get; set; }
+    ICollection<ReleaseUsageEntry> Releases { get; set; }
+  }
+  class ReleaseUsage
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    ICollection<ReleaseUsageEntry> Releases { get; set; }
+  }
+  class ReleaseUsageEntry
+  {
+    .ctor()
+    String ReleaseId { get; set; }
+    String ReleaseVersion { get; set; }
+  }
+  class StepUsage
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String ProjectSlug { get; set; }
+    ICollection<StepUsageEntry> Steps { get; set; }
+  }
+  class StepUsageEntry
+  {
+    .ctor()
+    String StepId { get; set; }
+    String StepName { get; set; }
+  }
+  class TargetUsageEntry
+  {
+    .ctor()
+    String TargetId { get; set; }
+    String TargetName { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -3509,6 +3711,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String AccountId { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
     String WebSpaceName { get; set; }
   }
@@ -4032,6 +4235,7 @@ Octopus.Client.Operations
 Octopus.Client.Repositories.Async
 {
   interface IAccountRepository
+    Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
     Octopus.Client.Repositories.Async.IModify<AccountResource>
     Octopus.Client.Repositories.Async.IDelete<AccountResource>
@@ -4039,6 +4243,17 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<AccountResource>
     Octopus.Client.Repositories.Async.IPaginate<AccountResource>
   {
+    Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
+    Task<List<TAccount>> FindAllOfType(Object)
+    Task<TAccount> FindByNameOfType(String)
+    Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
+    Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
+    Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
+    Task<AccountUsageResource> GetAccountUsage(String)
+    Task<TAccount> GetOfType(String)
+    Task<List<TAccount>> GetOfType(String[])
+    Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Task<TAccount> RefreshOfType(Octopus.Client.Repositories.Async.TAccount)
   }
   interface IActionTemplateRepository
     Octopus.Client.Repositories.Async.ICreate<ActionTemplateResource>
@@ -4086,6 +4301,7 @@ Octopus.Client.Repositories.Async
     Task<CertificateConfigurationResource> GetOctopusCertificate()
   }
   interface ICertificateRepository
+    Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.IGet<CertificateResource>
     Octopus.Client.Repositories.Async.IFindByName<CertificateResource>
     Octopus.Client.Repositories.Async.IPaginate<CertificateResource>
@@ -4267,6 +4483,7 @@ Octopus.Client.Repositories.Async
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
     Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<MachineResource> Discover(Octopus.Client.Model.DiscoverMachineOptions)
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
@@ -4365,6 +4582,10 @@ Octopus.Client.Repositories.Async
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+  }
+  interface IResourceRepository
+  {
+    Octopus.Client.IOctopusAsyncClient Client { get; }
   }
   interface IRetentionPolicyRepository
   {
