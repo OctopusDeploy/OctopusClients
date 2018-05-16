@@ -6,5 +6,7 @@ namespace Octopus.Client.Model
     {
         public string Id { get; set; }
         public string DisplayName { get; set; }
+
+        public bool DisplayIdAndName { get; set; }
     }
 }

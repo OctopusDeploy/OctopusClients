@@ -2,12 +2,16 @@
 
 namespace Octopus.Client.Model
 {
-#pragma warning disable 618
     public class NuGetFeedResource : FeedResource
-#pragma warning restore 618
     {
         public override FeedType FeedType => FeedType.NuGet;
         
+        [Writeable]
+        public int DownloadAttempts { get; set; }
+
+        [Writeable]
+        public int DownloadRetryBackoffSeconds { get; set; }
+
         [Writeable]
         public bool EnhancedMode { get; set; }
     }

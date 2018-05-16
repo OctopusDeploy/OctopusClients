@@ -13,5 +13,5 @@ namespace Octopus.Client.Model
 
         public bool IsCompliant { get; set; }
         public string NoncomplianceReason { get; set; }
-    }
+        public int MaintenanceExpiresIn { get; set; }    }
 }

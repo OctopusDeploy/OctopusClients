@@ -425,13 +425,6 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
   }
-  class AmazonWebServicesRoleAccountEditor
-    Octopus.Client.Editors.IResourceEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
-    Octopus.Client.Editors.IResourceBuilder
-    Octopus.Client.Editors.AccountEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
-  {
-    .ctor(Octopus.Client.Repositories.IAccountRepository)
-  }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     Octopus.Client.Editors.IResourceBuilder
@@ -723,13 +716,6 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
     Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
-  {
-    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
-  }
-  class AmazonWebServicesRoleAccountEditor
-    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
-    Octopus.Client.Editors.Async.IResourceBuilder
-    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesRoleAccountResource, AmazonWebServicesRoleAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -1268,6 +1254,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Author { get; set; }
+    String Category { get; set; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     Boolean HasUpdate { get; set; }
@@ -1456,6 +1443,7 @@ Octopus.Client.Model
     .ctor()
     DateTimeOffset Created { get; set; }
     String Filename { get; set; }
+    String LogCorrelationId { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     String Source { get; set; }
   }
@@ -1465,13 +1453,9 @@ Octopus.Client.Model
     .ctor()
     Boolean AutoLoginEnabled { get; set; }
     String Id { get; set; }
+    Boolean IsSelfServiceIdentityEditingEnabled { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String[] TrustedRedirectUrls { get; set; }
-  }
-  AuthenticationMode
-  {
-      UsernamePassword = 0
-      Domain = 1
   }
   abstract class AutoDeploy
   {
@@ -1521,8 +1505,6 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    String IndexingStatus { get; set; }
-    String SynchronizationStatus { get; set; }
     Int32 TotalPackages { get; set; }
   }
   class BuiltInRepositoryConfigurationResource
@@ -1531,6 +1513,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean ApplyToDynamicallyReferencedPackages { get; set; }
     Nullable<Int32> DeleteUnreleasedPackagesAfterDays { get; set; }
   }
   abstract class BuiltInTasks
@@ -1661,6 +1644,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Name { get; set; }
+    String SignatureAlgorithm { get; set; }
     String Thumbprint { get; set; }
   }
   CertificateExportPemOptions
@@ -1684,6 +1668,7 @@ Octopus.Client.Model
     .ctor(String, String)
     .ctor(String, String, String)
     Nullable<DateTimeOffset> Archived { get; }
+    IList<X509Certificate> CertificateChain { get; set; }
     Octopus.Client.Model.SensitiveValue CertificateData { get; set; }
     Octopus.Client.Model.CertificateFormat CertificateDataFormat { get; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
@@ -1701,6 +1686,7 @@ Octopus.Client.Model
     Boolean SelfSigned { get; }
     String SerialNumber { get; }
     String SignatureAlgorithmName { get; }
+    IList<String> SubjectAlternativeNames { get; set; }
     String SubjectCommonName { get; }
     String SubjectDistinguishedName { get; }
     String SubjectOrganization { get; }
@@ -1709,8 +1695,23 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     String Thumbprint { get; }
     Int32 Version { get; }
+    class X509Certificate
+    {
+      .ctor()
+      String IssuerDistinguishedName { get; set; }
+      DateTimeOffset NotAfter { get; set; }
+      DateTimeOffset NotBefore { get; set; }
+      String SerialNumber { get; set; }
+      String SignatureAlgorithmName { get; set; }
+      String SubjectDistinguishedName { get; set; }
+      String Thumbprint { get; set; }
+      Int32 Version { get; set; }
+    }
   }
   class CertificateUsageResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     ICollection<LibraryVariableSetResource> LibraryVariableSetUsages { get; set; }
@@ -1760,6 +1761,7 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+      AzureServiceFabricCluster = 8
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -1848,6 +1850,7 @@ Octopus.Client.Model
     DateTimeOffset QueueTime { get; set; }
     String ReleaseId { get; set; }
     String ReleaseVersion { get; set; }
+    Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
     String TaskId { get; set; }
     String TenantId { get; set; }
@@ -1870,6 +1873,7 @@ Octopus.Client.Model
     .ctor()
     Boolean CanPerformUntenantedDeployment { get; set; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     String ProjectGroupId { get; set; }
     String Slug { get; set; }
@@ -1951,6 +1955,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ActionType { get; set; }
+    Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
@@ -2026,7 +2031,6 @@ Octopus.Client.Model
     Boolean ForcePackageDownload { get; set; }
     Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
-    Boolean IsFirst { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
@@ -2152,6 +2156,12 @@ Octopus.Client.Model
     Octopus.Client.Model.FeedType FeedType { get; }
     String RegistryPath { get; set; }
   }
+  EmailPriority
+  {
+      Normal = 0
+      Low = 1
+      High = 2
+  }
   class EncryptedBytes
   {
     .ctor(Byte[], Byte[])
@@ -2205,9 +2215,12 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> EmailDigestLastProcessed { get; set; }
     Nullable<Int64> EmailDigestLastProcessedEventAutoId { get; set; }
     TimeSpan EmailFrequencyPeriod { get; set; }
+    Octopus.Client.Model.EmailPriority EmailPriority { get; set; }
     String EmailShowDatesInTimeZoneId { get; set; }
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
+    String WebhookHeaderKey { get; set; }
+    String WebhookHeaderValue { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
     Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
@@ -2272,9 +2285,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Boolean IsBrowserCachingEnabled { get; set; }
+    Boolean IsBuiltInRepoSyncEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
-    Boolean IsDockerEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
@@ -2316,6 +2328,12 @@ Octopus.Client.Model
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
   }
+  GuidedFailureMode
+  {
+      EnvironmentDefault = 0
+      Off = 1
+      On = 2
+  }
   abstract class Health
   {
     static System.String Name
@@ -2347,6 +2365,20 @@ Octopus.Client.Model
     String LastModifiedBy { get; set; }
     Nullable<DateTimeOffset> LastModifiedOn { get; set; }
   }
+  class IdentityClaimResource
+  {
+    .ctor()
+    .ctor(String, Boolean)
+    Boolean IsIdentifyingClaim { get; set; }
+    String Value { get; set; }
+  }
+  class IdentityResource
+  {
+    .ctor()
+    .ctor(String)
+    Dictionary<String, IdentityClaimResource> Claims { get; }
+    String IdentityProviderName { get; set; }
+  }
   class InterruptionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2358,6 +2390,7 @@ Octopus.Client.Model
     DateTimeOffset Created { get; set; }
     Octopus.Client.Model.Forms.Form Form { get; set; }
     Boolean HasResponsibility { get; set; }
+    Boolean IsLinkedToOtherInterruption { get; set; }
     Boolean IsPending { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ResponsibleTeamIds { get; set; }
@@ -2436,6 +2469,7 @@ Octopus.Client.Model
     .ctor()
     Boolean IsCompliant { get; set; }
     String LicenseText { get; set; }
+    Int32 MaintenanceExpiresIn { get; set; }
     String NoncomplianceReason { get; set; }
     Boolean UseFreeVersion { get; set; }
   }
@@ -2662,6 +2696,7 @@ Octopus.Client.Model
   class NamedReferenceItem
   {
     .ctor()
+    Boolean DisplayIdAndName { get; set; }
     String DisplayName { get; set; }
     String Id { get; set; }
   }
@@ -2703,6 +2738,8 @@ Octopus.Client.Model
     Octopus.Client.Model.FeedResource
   {
     .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
     Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
   }
@@ -2989,6 +3026,7 @@ Octopus.Client.Model
     .ctor(String, String, String)
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
@@ -3247,8 +3285,6 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     String Application { get; set; }
-    Boolean FormsLoginEnabled { get; set; }
-    Boolean GuestLoginEnabled { get; set; }
     Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
@@ -3420,9 +3456,9 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.AuthenticationMode AuthenticationMode { get; set; }
     Boolean IsDatabaseEncrypted { get; set; }
     Boolean IsInMaintenanceMode { get; set; }
+    Boolean IsMajorMinorUpgrade { get; set; }
     Boolean IsUpgradeAvailable { get; set; }
     String MaintenanceExpires { get; set; }
     String MaximumAvailableVersion { get; set; }
@@ -3567,7 +3603,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
     IList<ActivityElement> ActivityLogs { get; set; }
-    Nullable<Int32> PhysicalLogSize { get; set; }
+    Int64 PhysicalLogSize { get; set; }
     Octopus.Client.Model.TaskProgress Progress { get; set; }
     Octopus.Client.Model.TaskResource Task { get; set; }
   }
@@ -3782,8 +3818,10 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean CanPasswordBeEdited { get; set; }
     String DisplayName { get; set; }
     String EmailAddress { get; set; }
+    Octopus.Client.Model.IdentityResource[] Identities { get; set; }
     Boolean IsActive { get; set; }
     Boolean IsRequestor { get; set; }
     Boolean IsService { get; set; }
@@ -3905,6 +3943,18 @@ Octopus.Client.Model
     String ReferrerPolicy { get; set; }
     Octopus.Client.Model.XOptionsResource XOptions { get; set; }
   }
+  class X509Certificate
+  {
+    .ctor()
+    String IssuerDistinguishedName { get; set; }
+    DateTimeOffset NotAfter { get; set; }
+    DateTimeOffset NotBefore { get; set; }
+    String SerialNumber { get; set; }
+    String SignatureAlgorithmName { get; set; }
+    String SubjectDistinguishedName { get; set; }
+    String Thumbprint { get; set; }
+    Int32 Version { get; set; }
+  }
   class XOptionsResource
   {
     static System.String XFrameAllowFromDescription
@@ -3948,15 +3998,6 @@ Octopus.Client.Model.Accounts
     String AccessKey { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
-  }
-  class AmazonWebServicesRoleAccountResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.Accounts.AccountResource
-  {
-    .ctor()
-    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
   }
   class AzureCloudService
   {
@@ -4010,6 +4051,7 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.SensitiveValue CertificateBytes { get; set; }
     String CertificateThumbprint { get; set; }
     String ServiceManagementEndpointBaseUri { get; set; }
+    String ServiceManagementEndpointSuffix { get; set; }
     String SubscriptionNumber { get; set; }
     class WebSite
     {
@@ -4188,6 +4230,17 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.EndpointResource
   {
   }
+  AzureServiceFabricCredentialType
+  {
+      ClientCredential = 0
+      UserCredential = 1
+  }
+  AzureServiceFabricSecurityMode
+  {
+      Unsecure = 0
+      SecureClientCertificate = 1
+      SecureAzureAD = 2
+  }
   class AzureWebAppEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4198,7 +4251,6 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
-    String WebSpaceName { get; set; }
   }
   abstract class CalamariDotNetCorePlatforms
   {
@@ -4265,6 +4317,24 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String Uri { get; set; }
   }
+  class ServiceFabricEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    String AadClientCredentialSecret { get; set; }
+    Octopus.Client.Model.Endpoints.AzureServiceFabricCredentialType AadCredentialType { get; set; }
+    Octopus.Client.Model.SensitiveValue AadUserCredentialPassword { get; set; }
+    String AadUserCredentialUsername { get; set; }
+    String CertificateStoreLocation { get; set; }
+    String CertificateStoreName { get; set; }
+    String ClientCertVariable { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String ConnectionEndpoint { get; set; }
+    Octopus.Client.Model.Endpoints.AzureServiceFabricSecurityMode SecurityMode { get; set; }
+    String ServerCertThumbprint { get; set; }
+  }
   class SshEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4298,6 +4368,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
+    String CertificateSignatureAlgorithm { get; set; }
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
   }
@@ -4504,7 +4575,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
     Nullable<Int16> MinuteInterval { get; set; }
     Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterRunType RunType { get; set; }
-    DateTime StartTime { get; set; }
+    Nullable<DateTime> StartTime { get; set; }
   }
   DailyScheduledTriggerInterval
   {
