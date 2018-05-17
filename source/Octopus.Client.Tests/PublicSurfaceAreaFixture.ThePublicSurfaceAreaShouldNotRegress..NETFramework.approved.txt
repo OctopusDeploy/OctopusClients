@@ -105,6 +105,8 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
+    Octopus.Client.IOctopusClient ForGlobalContext()
+    Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
@@ -265,11 +267,14 @@ Octopus.Client
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
     .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.OctopusServerEndpoint, String)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     void Dispose()
+    Octopus.Client.IOctopusClient ForGlobalContext()
+    Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
     void Initialize()
