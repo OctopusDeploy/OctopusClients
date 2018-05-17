@@ -3759,6 +3759,7 @@ Octopus.Client.Model.Endpoints
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String Namespace { get; set; }
+    String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
   }
   class ListeningTentacleEndpointResource
