@@ -2264,6 +2264,9 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.FeedResource
   {
+    static System.Int32 DefaultDownloadAttempts
+    static System.Int32 DefaultDownloadRetryBackoffSeconds
+    static System.Boolean DefaultEnhancedMode
     .ctor()
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
