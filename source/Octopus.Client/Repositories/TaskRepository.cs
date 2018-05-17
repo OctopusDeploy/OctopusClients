@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
-        TaskDetailsResource GetDetails(TaskResource resource);
+        TaskDetailsResource GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         string GetRawOutputLog(TaskResource resource);
         void Rerun(TaskResource resource);
         void Cancel(TaskResource resource);
@@ -127,9 +127,16 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskDetailsResource GetDetails(TaskResource resource)
+        public TaskDetailsResource GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null)
         {
-            return Client.Get<TaskDetailsResource>(resource.Link("Details"));
+            var args = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (includeVerboseOutput.HasValue)
+                args.Add("verbose", includeVerboseOutput.Value);
+
+            if (tail.HasValue)
+                args.Add("tail", tail.Value);
+
+            return Client.Get<TaskDetailsResource>(resource.Link("Details"), args);
         }
 
         public string GetRawOutputLog(TaskResource resource)

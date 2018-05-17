@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteBackup(string description = null);
         Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
-        Task<TaskDetailsResource> GetDetails(TaskResource resource);
+        Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);
@@ -129,9 +129,16 @@ namespace Octopus.Client.Repositories.Async
             return Create(resource);
         }
 
-        public Task<TaskDetailsResource> GetDetails(TaskResource resource)
+        public Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null)
         {
-            return Client.Get<TaskDetailsResource>(resource.Link("Details"));
+            var args = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (includeVerboseOutput.HasValue)
+                args.Add("verbose", includeVerboseOutput.Value);
+
+            if (tail.HasValue)
+                args.Add("tail", tail.Value);
+
+            return Client.Get<TaskDetailsResource>(resource.Link("Details"), args);
         }
 
         public Task<string> GetRawOutputLog(TaskResource resource)
