@@ -1497,6 +1497,17 @@ Octopus.Client.Model
   {
     .ctor()
   }
+  AzureServiceFabricCredentialType
+  {
+      ClientCredential = 0
+      UserCredential = 1
+  }
+  AzureServiceFabricSecurityMode
+  {
+      Unsecure = 0
+      SecureClientCertificate = 1
+      SecureAzureAD = 2
+  }
   abstract class Backup
   {
     static System.String Name
@@ -1760,6 +1771,7 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
+      AzureServiceFabricCluster = 8
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -4264,6 +4276,24 @@ Octopus.Client.Model.Endpoints
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String Uri { get; set; }
+  }
+  class ServiceFabricEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    String AadClientCredentialSecret { get; set; }
+    Octopus.Client.Model.AzureServiceFabricCredentialType AadCredentialType { get; set; }
+    Octopus.Client.Model.SensitiveValue AadUserCredentialPassword { get; set; }
+    String AadUserCredentialUsername { get; set; }
+    String CertificateStoreLocation { get; set; }
+    String CertificateStoreName { get; set; }
+    String ClientCertVariable { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String ConnectionEndpoint { get; set; }
+    Octopus.Client.Model.AzureServiceFabricSecurityMode SecurityMode { get; set; }
+    String ServerCertThumbprint { get; set; }
   }
   class SshEndpointResource
     Octopus.Client.Extensibility.IResource
