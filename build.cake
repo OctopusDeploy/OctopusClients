@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0-beta0011"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 #tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
 #addin "nuget:?package=Cake.Incubator"
