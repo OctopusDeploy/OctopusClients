@@ -170,8 +170,15 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public async Task<IOctopusAsyncClient> ForSpaceContext(string spaceId)
         {
-            this.clientOptions.SpaceId = spaceId;
-            return await Create(this.serverEndpoint, this.clientOptions);
+            var newOptions = new OctopusClientOptions()
+            {
+                Proxy = clientOptions.Proxy,
+                ProxyPassword = clientOptions.ProxyPassword,
+                ProxyUsername = clientOptions.ProxyUsername,
+                SpaceId = spaceId,
+                Timeout = clientOptions.Timeout
+            };
+            return await Create(this.serverEndpoint, newOptions);
         }
 
         public async Task<IOctopusAsyncClient> ForGlobalContext()
