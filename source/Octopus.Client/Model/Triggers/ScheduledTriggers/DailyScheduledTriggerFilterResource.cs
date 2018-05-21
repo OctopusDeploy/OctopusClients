@@ -14,7 +14,7 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
         public override TriggerFilterType FilterType => TriggerFilterType.DailySchedule;
 
         [Writeable]
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
         [Writeable]
         public ScheduledTriggerFilterRunType RunType { get; set; }

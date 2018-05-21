@@ -8,6 +8,11 @@ namespace Octopus.Client.Model
 {
     public class UserResource : Resource
     {
+        public UserResource()
+        {
+            Identities = new IdentityResource[0];
+        }
+
         [Writeable]
         [Trim]
         [StringLength(64)]
@@ -31,6 +36,8 @@ namespace Octopus.Client.Model
         [DataType(DataType.EmailAddress)]
         public string EmailAddress { get; set; }
 
+        public bool CanPasswordBeEdited { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this user resource represents the user who requested it.
         /// </summary>
@@ -41,5 +48,8 @@ namespace Octopus.Client.Model
         [NotReadable]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
+    
+        [Writeable]
+        public IdentityResource[] Identities { get; set; }
     }
 }

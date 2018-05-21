@@ -20,7 +20,8 @@ namespace Octopus.Client.Serialization
                 {CommunicationStyle.AzureCloudService, typeof (CloudServiceEndpointResource)},
                 {CommunicationStyle.AzureWebApp, typeof (AzureWebAppEndpointResource)},
                 {CommunicationStyle.None, typeof (CloudRegionEndpointResource)},
-                {CommunicationStyle.Kubernetes, typeof (KubernetesEndpointResource)}
+                {CommunicationStyle.Kubernetes, typeof (KubernetesEndpointResource)},
+                {CommunicationStyle.AzureServiceFabricCluster, typeof(ServiceFabricEndpointResource)}
           };
 
         protected override IDictionary<CommunicationStyle, Type> DerivedTypeMappings => EndpointTypes;

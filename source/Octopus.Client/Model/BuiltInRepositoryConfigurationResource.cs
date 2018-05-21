@@ -7,5 +7,8 @@ namespace Octopus.Client.Model
     {
         [Writeable]
         public int? DeleteUnreleasedPackagesAfterDays { get; set; }
+
+        [Writeable]
+        public bool ApplyToDynamicallyReferencedPackages { get; set; }
     }
 }
