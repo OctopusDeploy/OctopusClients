@@ -339,5 +339,18 @@ namespace Octopus.Client
         /// </summary>
         /// <returns>A fresh copy of the root document.</returns>
         Task<RootResource> RefreshRootDocument();
+
+        /// <summary>
+        /// Requests an IOctopusAsyncClient which will operate within a given space.
+        /// </summary>
+        /// <param name="spaceId">The ID of the space.</param>
+        /// <returns>An instance of IOctopusClient</returns>
+        Task<IOctopusAsyncClient> ForSpaceContext(string spaceId);
+
+        /// <summary>
+        /// Requests an IOctopusAsyncClient which will operate within the global context.
+        /// </summary>
+        /// <returns>An instance of IOctopusClient</returns>
+        Task<IOctopusAsyncClient> ForGlobalContext();
     }
 }
