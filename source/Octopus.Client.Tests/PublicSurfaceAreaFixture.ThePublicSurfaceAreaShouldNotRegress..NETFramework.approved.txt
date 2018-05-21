@@ -1761,7 +1761,7 @@ Octopus.Client.Model
       AzureWebApp = 5
       Ftp = 6
       AzureCloudService = 7
-	  AzureServiceFabricCluster = 8
+      AzureServiceFabricCluster = 8
       Kubernetes = 9
   }
   class CommunityActionTemplateResource
