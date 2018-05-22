@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Octopus.Client.Model;
 using Octopus.Client.Model.Accounts;
 
 namespace Octopus.Client.Serialization
@@ -14,8 +13,7 @@ namespace Octopus.Client.Serialization
                 {AccountType.AzureSubscription, typeof(AzureSubscriptionAccountResource)},
                 {AccountType.AzureServicePrincipal, typeof(AzureServicePrincipalAccountResource)},
                 {AccountType.SshKeyPair, typeof(SshKeyPairAccountResource)},
-                {AccountType.AmazonWebServicesAccount, typeof(AmazonWebServicesAccountResource)},
-                {AccountType.AmazonWebServicesRoleAccount, typeof(AmazonWebServicesRoleAccountResource)}
+                {AccountType.AmazonWebServicesAccount, typeof(AmazonWebServicesAccountResource)}
             };
 
         protected override IDictionary<AccountType, Type> DerivedTypeMappings => AccountTypeMappings;
