@@ -1043,7 +1043,6 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Boolean ApplyToDynamicallyReferencedPackages { get; set; }
     Nullable<Int32> DeleteUnreleasedPackagesAfterDays { get; set; }
   }
   abstract class BuiltInTasks
