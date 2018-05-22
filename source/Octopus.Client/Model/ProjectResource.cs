@@ -84,6 +84,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
+        
+        [Writeable]
+        public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
         [Writeable]
         public VersioningStrategyResource VersioningStrategy { get; set; }

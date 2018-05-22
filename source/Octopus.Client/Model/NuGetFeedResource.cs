@@ -2,13 +2,21 @@
 
 namespace Octopus.Client.Model
 {
-#pragma warning disable 618
     public class NuGetFeedResource : FeedResource
-#pragma warning restore 618
     {
+        public static readonly int DefaultDownloadAttempts = 5;
+        public static readonly int DefaultDownloadRetryBackoffSeconds = 10;
+        public static readonly bool DefaultEnhancedMode = false;
+
         public override FeedType FeedType => FeedType.NuGet;
-        
+
         [Writeable]
-        public bool EnhancedMode { get; set; }
+        public int DownloadAttempts { get; set; } = DefaultDownloadAttempts;
+
+        [Writeable]
+        public int DownloadRetryBackoffSeconds { get; set; } = DefaultDownloadRetryBackoffSeconds;
+
+        [Writeable]
+        public bool EnhancedMode { get; set; } = DefaultEnhancedMode;
     }
 }
