@@ -4821,9 +4821,9 @@ Octopus.Client.Repositories
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
   {
-    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
@@ -5306,9 +5306,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
-    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
