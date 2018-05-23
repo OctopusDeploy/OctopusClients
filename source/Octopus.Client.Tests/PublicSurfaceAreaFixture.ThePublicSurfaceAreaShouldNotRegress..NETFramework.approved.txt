@@ -1345,21 +1345,6 @@ Octopus.Client.Model
       static System.String TargetRoles
     }
   }
-  class AlertResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String Message { get; set; }
-    Octopus.Client.Model.AlertSeverity Severity { get; set; }
-  }
-  AlertSeverity
-  {
-      Info = 0
-      Warning = 1
-      Danger = 2
-  }
   class AllowCsvAttribute
     _Attribute
     Attribute
@@ -2460,18 +2445,6 @@ Octopus.Client.Model
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.LibraryVariableSetResource Clear()
-  }
-  class LicenseResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Boolean IsCompliant { get; set; }
-    String LicenseText { get; set; }
-    Int32 MaintenanceExpiresIn { get; set; }
-    String NoncomplianceReason { get; set; }
-    Boolean UseFreeVersion { get; set; }
   }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
