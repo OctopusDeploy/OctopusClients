@@ -19,6 +19,9 @@ namespace Octopus.Client.Model
         public bool AutoLoginEnabled { get; set; }
 
         [Writeable]
+        public bool IsSelfServiceIdentityEditingEnabled { get; set; }
+
+        [Writeable]
         public string[] TrustedRedirectUrls { get; set; }
     }
 }

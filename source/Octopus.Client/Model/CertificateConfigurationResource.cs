@@ -6,5 +6,6 @@ namespace Octopus.Client.Model
     {
         public string Name { get; set; }
         public string Thumbprint { get; set; }
+        public string SignatureAlgorithm { get; set; }
     }
 }

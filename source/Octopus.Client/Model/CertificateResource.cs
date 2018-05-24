@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Octopus.Client.Extensibility.Attributes;
@@ -129,5 +130,27 @@ namespace Octopus.Client.Model
         [JsonProperty]
         public string SignatureAlgorithmName { get; private set; }
 
+        public IList<string> SubjectAlternativeNames { get; set; }
+
+        public IList<X509Certificate> CertificateChain { get; set; }
+
+        public class X509Certificate
+        {
+            public string SubjectDistinguishedName { get; set; }
+
+            public string IssuerDistinguishedName { get; set; }
+
+            public string Thumbprint { get; set; }
+
+            public DateTimeOffset NotAfter { get; set; }
+
+            public DateTimeOffset NotBefore { get; set; }
+
+            public int Version { get; set; }
+
+            public string SerialNumber { get; set; }
+
+            public string SignatureAlgorithmName { get; set; }
+        }
     }
 }

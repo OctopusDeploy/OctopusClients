@@ -6,6 +6,7 @@ namespace Octopus.Client.Model
     public class DashboardProjectResource : Resource
     {
         public string Name { get; set; }
+        public bool IsDisabled { get; set; }
         public string Slug { get; set; }
         public string ProjectGroupId { get; set; }
         public ReferenceCollection EnvironmentIds { get; set; }
