@@ -7,11 +7,15 @@ namespace Octopus.Client.Model
     {
         public DashboardConfigurationResource()
         {
+            IncludedProjectGroupIds = new ReferenceCollection();
             IncludedProjectIds = new ReferenceCollection();
             IncludedEnvironmentIds = new ReferenceCollection();
             IncludedTenantIds = new ReferenceCollection();
             IncludedTenantTags = new ReferenceCollection();
         }
+
+        [Writeable]
+        public ReferenceCollection IncludedProjectGroupIds { get; set; }
 
         [Writeable]
         public ReferenceCollection IncludedProjectIds { get; set; }

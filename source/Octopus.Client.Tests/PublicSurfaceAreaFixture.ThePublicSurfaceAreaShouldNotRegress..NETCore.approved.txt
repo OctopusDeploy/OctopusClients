@@ -1386,6 +1386,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection IncludedEnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection IncludedProjectGroupIds { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedProjectIds { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedTenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedTenantTags { get; set; }
