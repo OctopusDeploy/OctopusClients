@@ -2369,6 +2369,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsBuiltInRepoSyncEnabled { get; set; }
+    Boolean IsBuiltinWorkerEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsMultiTenancyEnabled { get; set; }
   }
