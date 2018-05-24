@@ -22,8 +22,6 @@ namespace Octopus.Client.Extensions
                 accountType = AccountType.AzureSubscription;
             else if (type == typeof(AmazonWebServicesAccountResource))
                 accountType = AccountType.AmazonWebServicesAccount;
-            else if (type == typeof(AmazonWebServicesRoleAccountResource))
-                accountType = AccountType.AmazonWebServicesRoleAccount;
             else
                 throw new ArgumentException($"Account type {type} is not supported");
             return accountType;

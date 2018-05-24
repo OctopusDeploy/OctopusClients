@@ -25,6 +25,8 @@ namespace Octopus.Client.Model
 
         [SupportedAccountTypes(AccountType.UsernamePassword)] Ftp = 6,
 
-        [SupportedAccountTypes(AccountType.AzureSubscription)] [ScriptConsoleSupported] AzureCloudService = 7
+        [SupportedAccountTypes(AccountType.AzureSubscription)] [ScriptConsoleSupported] AzureCloudService = 7,
+
+        AzureServiceFabricCluster = 8
     }
 }

@@ -41,5 +41,11 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 5)]
         public DateTimeOffset Created { get; set; }
+
+        /// <summary>
+        /// Gets the correlationId of the log block in which the artifact was captured
+        /// </summary>
+        [JsonProperty(Order = 6)]
+        public string LogCorrelationId { get; set; }
     }
 }

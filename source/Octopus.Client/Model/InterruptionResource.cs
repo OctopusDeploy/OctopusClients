@@ -77,5 +77,13 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 45)]
         public string CorrelationId { get; set; }
+
+        /// <summary>
+        /// If this interruption is linked to another it will be 
+        /// automatically completed when the other one is. Used to 
+        /// handle interruptions in child deployments.
+        /// </summary>
+        [JsonProperty(Order = 50)]
+        public bool IsLinkedToOtherInterruption { get; set; }
     }
 }
