@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
         public string Website { get; set; }
         public bool IsInstalled { get; set; }
         public bool IsBuiltIn { get; set; }
+        public string Category { get; set; }
 
         public string CommunityActionTemplateId { get; set; }
         public bool HasUpdate { get; set; }

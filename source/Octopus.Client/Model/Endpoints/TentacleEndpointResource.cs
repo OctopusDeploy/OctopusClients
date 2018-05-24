@@ -13,5 +13,7 @@ namespace Octopus.Client.Model.Endpoints
 
         [Writeable]
         public TentacleDetailsResource TentacleVersionDetails { get; set; }
+
+        public string CertificateSignatureAlgorithm { get; set; }
     }
 }

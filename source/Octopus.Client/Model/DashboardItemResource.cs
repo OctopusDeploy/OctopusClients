@@ -14,6 +14,7 @@ namespace Octopus.Client.Model
         public string ReleaseVersion { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset QueueTime { get; set; }
+        public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? CompletedTime { get; set; }
         public TaskState State { get; set; }
         public bool HasPendingInterruptions { get; set; }
