@@ -37,6 +37,11 @@ namespace Octopus.Client.Repositories.Async
     {
         public static string AppendSpaceId(this Href link, string spaceId)
         {
+            return AppendSpaceId(link.ToString(), spaceId);
+        }
+
+        public static string AppendSpaceId(this string link, string spaceId)
+        {
             if (!string.IsNullOrEmpty(spaceId))
             {
                 link += $"/{spaceId}";
