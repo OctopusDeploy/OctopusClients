@@ -19,6 +19,8 @@ namespace Octopus.Client.Model
 
         public TimeSpan EmailFrequencyPeriod { get; set; }
 
+        public EmailPriority EmailPriority { get; set; }
+
         public DateTimeOffset? EmailDigestLastProcessed { get; set; }
 
         public long? EmailDigestLastProcessedEventAutoId { get; set; }
@@ -31,6 +33,8 @@ namespace Octopus.Client.Model
         public ReferenceCollection WebhookTeams { get; set; }
 
         public TimeSpan WebhookTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public string WebhookHeaderKey { get; set; }
+        public string WebhookHeaderValue { get; set; }
 
         public DateTimeOffset? WebhookLastProcessed { get; set; }
 

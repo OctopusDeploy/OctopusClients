@@ -13,12 +13,6 @@ namespace Octopus.Client.Model
 
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool GuestLoginEnabled { get; set; }
-
-        public bool FormsLoginEnabled { get; set; }
-
-        [DefaultValue(false)]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool IsEarlyAccessProgram { get; set; }
     }
 }

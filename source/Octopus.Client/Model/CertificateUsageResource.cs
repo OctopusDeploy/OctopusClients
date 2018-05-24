@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public class CertificateUsageResource
+    public class CertificateUsageResource : Resource
     {
         public ICollection<ProjectResource> ProjectUsages { get; set; }
 
