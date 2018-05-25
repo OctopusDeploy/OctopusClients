@@ -4895,9 +4895,9 @@ Octopus.Client.Repositories
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
   {
-    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
@@ -5257,7 +5257,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
-    Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource, String)
     Octopus.Client.Model.InvitationResource Invite(String)
     Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
     Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
@@ -5380,9 +5380,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
-    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
@@ -5743,7 +5743,7 @@ Octopus.Client.Repositories.Async
     Task<UserResource> CreateServiceAccount(String, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
-    Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource)
+    Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource, String)
     Task<InvitationResource> Invite(String)
     Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)
