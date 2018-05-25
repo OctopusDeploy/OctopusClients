@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -30,23 +30,6 @@ namespace Octopus.Client.Repositories.Async
         public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource, string spaceId = null)
         {
             return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(spaceId));
-        }
-    }
-
-    static class LinkSpaceExtension
-    {
-        public static string AppendSpaceId(this Href link, string spaceId)
-        {
-            return AppendSpaceId(link.ToString(), spaceId);
-        }
-
-        public static string AppendSpaceId(this string link, string spaceId)
-        {
-            if (!string.IsNullOrEmpty(spaceId))
-            {
-                link += $"/{spaceId}";
-            }
-            return link;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -89,7 +90,7 @@ namespace Octopus.Client.Repositories
             return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
         }
 
-        public UserPermissionSetResource GetPermissions(UserResource user, string spaceId)
+        public UserPermissionSetResource GetPermissions(UserResource user, string spaceId = null)
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Get<UserPermissionSetResource>(user.Link("Permissions").AppendSpaceId(spaceId));

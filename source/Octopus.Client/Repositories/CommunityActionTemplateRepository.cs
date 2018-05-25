@@ -1,6 +1,7 @@
 using System;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
