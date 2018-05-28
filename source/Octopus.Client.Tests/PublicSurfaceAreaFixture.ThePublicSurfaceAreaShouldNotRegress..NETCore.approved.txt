@@ -2887,6 +2887,7 @@ Octopus.Client.Model
       Channel = 8
       TenantTag = 9
       Tenant = 10
+      WorkerPool = 11
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
@@ -3483,6 +3484,7 @@ Octopus.Client.Model
     List<ReferenceDataItem> Machines { get; set; }
     List<ReferenceDataItem> Roles { get; set; }
     List<ReferenceDataItem> TenantTags { get; set; }
+    List<ReferenceDataItem> WorkerPools { get; set; }
   }
   VariableSetContentType
   {
