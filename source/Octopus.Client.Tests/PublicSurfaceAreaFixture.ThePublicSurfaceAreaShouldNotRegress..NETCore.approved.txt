@@ -3017,6 +3017,14 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }
   }
+  class SpaceResource
+  {
+    .ctor()
+    String Description { get; set; }
+    Boolean IsDefault { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.ReferenceCollection Owners { get; set; }
+  }
   class SquidAttribute
     Attribute
   {
