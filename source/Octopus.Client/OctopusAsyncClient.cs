@@ -34,12 +34,14 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
+        private readonly string rootDocumentUri;
+        private OctopusClientOptions clientOptions;
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
-            options = options ?? new OctopusClientOptions();
-
+            clientOptions = options ?? new OctopusClientOptions();
+            this.rootDocumentUri = string.IsNullOrEmpty(clientOptions.SpaceId) ? "~/api" : "~/api/" + clientOptions.SpaceId;
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -48,10 +50,10 @@ namespace Octopus.Client
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
-            if (options.Proxy != null)
+            if (clientOptions.Proxy != null)
             {
                 handler.UseProxy = true;
-                handler.Proxy = new ClientProxy(options.Proxy, options.ProxyUsername, options.ProxyPassword);
+                handler.Proxy = new ClientProxy(clientOptions.Proxy, clientOptions.ProxyUsername, clientOptions.ProxyPassword);
             }
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -67,7 +69,7 @@ namespace Octopus.Client
                 handler.Proxy = serverEndpoint.Proxy;
 
             client = new HttpClient(handler, true);
-            client.Timeout = options.Timeout;
+            client.Timeout = clientOptions.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
@@ -162,8 +164,26 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>A fresh copy of the root document.</returns>
         public async Task<RootResource> RefreshRootDocument()
         {
-            RootDocument = await Get<RootResource>("~/api").ConfigureAwait(false);
+            RootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
             return RootDocument;
+        }
+
+        public async Task<IOctopusAsyncClient> ForSpaceContext(string spaceId)
+        {
+            var newOptions = new OctopusClientOptions()
+            {
+                Proxy = clientOptions.Proxy,
+                ProxyPassword = clientOptions.ProxyPassword,
+                ProxyUsername = clientOptions.ProxyUsername,
+                SpaceId = spaceId,
+                Timeout = clientOptions.Timeout
+            };
+            return await Create(this.serverEndpoint, newOptions);
+        }
+
+        public async Task<IOctopusAsyncClient> ForGlobalContext()
+        {
+            return await ForSpaceContext("global");
         }
 
         /// <summary>
@@ -478,7 +498,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                 try
                 {
-                    server = await Get<RootResource>("~/api").ConfigureAwait(false);
+                    server = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
                     break;
                 }
                 catch (HttpRequestException ex)

@@ -32,6 +32,8 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
+    Task<IOctopusAsyncClient> ForGlobalContext()
+    Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
@@ -105,6 +107,8 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
+    Octopus.Client.IOctopusClient ForGlobalContext()
+    Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
@@ -189,6 +193,8 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
+    Task<IOctopusAsyncClient> ForGlobalContext()
+    Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
@@ -265,11 +271,14 @@ Octopus.Client
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
     .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.OctopusServerEndpoint, String)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     void Dispose()
+    Octopus.Client.IOctopusClient ForGlobalContext()
+    Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
     void Initialize()
@@ -300,6 +309,7 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
+    String SpaceId { get; set; }
     TimeSpan Timeout { get; set; }
   }
   class OctopusRepository
@@ -3495,6 +3505,14 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }
   }
+  class SpaceResource
+  {
+    .ctor()
+    String Description { get; set; }
+    Boolean IsDefault { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.ReferenceCollection Owners { get; set; }
+  }
   class SquidAttribute
     _Attribute
     Attribute
@@ -4889,9 +4907,9 @@ Octopus.Client.Repositories
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
   {
-    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
@@ -5251,7 +5269,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
-    Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource, String)
     Octopus.Client.Model.InvitationResource Invite(String)
     Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
     Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
@@ -5374,9 +5392,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
-    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
-    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
   }
   interface IConfigurationRepository
   {
@@ -5737,7 +5755,7 @@ Octopus.Client.Repositories.Async
     Task<UserResource> CreateServiceAccount(String, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
-    Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource)
+    Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource, String)
     Task<InvitationResource> Invite(String)
     Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)

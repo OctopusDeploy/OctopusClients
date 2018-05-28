@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -19,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         Task SignIn(string username, string password, bool rememberMe = false);
         Task SignOut();
         Task<UserResource> GetCurrent();
-        Task<UserPermissionSetResource> GetPermissions(UserResource user);
+        Task<UserPermissionSetResource> GetPermissions(UserResource user, string spaceId = null);
         Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResource apiKey);
@@ -90,10 +91,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
         }
 
-        public Task<UserPermissionSetResource> GetPermissions(UserResource user)
+        public Task<UserPermissionSetResource> GetPermissions(UserResource user, string spaceId = null)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<UserPermissionSetResource>(user.Link("Permissions").AppendSpaceId(spaceId));
         }
 
         public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)

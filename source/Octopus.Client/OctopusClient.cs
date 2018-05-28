@@ -1,6 +1,5 @@
 ﻿#if SYNC_CLIENT
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -27,14 +26,20 @@ namespace Octopus.Client
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
-        private readonly SemanticVersion clientVersion;
+        readonly SemanticVersion clientVersion;
+        readonly string rootDocumentUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
+        }
+
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
+        {
+            this.rootDocumentUri = spaceId == null ? "~/api" : "~/api/" + spaceId;
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
@@ -76,12 +81,22 @@ namespace Octopus.Client
         /// <returns>A fresh copy of the root document.</returns>
         public RootResource RefreshRootDocument()
         {
-            var root = Get<RootResource>("~/api");
+            var root = Get<RootResource>(this.rootDocumentUri);
             lock (rootDocumentLock)
             {
                 rootDocument = root;
             }
             return rootDocument;
+        }
+
+        public IOctopusClient ForSpaceContext(string spaceId)
+        {
+            return new OctopusClient(this.serverEndpoint, spaceId);
+        }
+
+        public IOctopusClient ForGlobalContext()
+        {
+            return new OctopusClient(this.serverEndpoint, "global");
         }
 
         /// <summary>
@@ -410,7 +425,7 @@ namespace Octopus.Client
 
                 try
                 {
-                    server = Get<RootResource>("~/api");
+                    server = Get<RootResource>(this.rootDocumentUri);
                     break;
                 }
                 catch (WebException ex)
