@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public class SpaceResource
+    public class SpaceResource : Resource
     {
         public SpaceResource()
         {
