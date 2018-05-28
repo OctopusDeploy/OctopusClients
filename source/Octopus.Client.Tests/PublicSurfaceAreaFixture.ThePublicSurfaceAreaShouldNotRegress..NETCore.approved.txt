@@ -3018,6 +3018,9 @@ Octopus.Client.Model
     Nullable<Int32> SmtpPort { get; set; }
   }
   class SpaceResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String Description { get; set; }
