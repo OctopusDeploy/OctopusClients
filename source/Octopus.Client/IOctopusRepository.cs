@@ -51,6 +51,7 @@ namespace Octopus.Client
         IRetentionPolicyRepository RetentionPolicies { get; }
         ISchedulerRepository Schedulers { get; }
         IServerStatusRepository ServerStatus { get; }
+        ISpaceRepository Spaces { get; }
         ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
         ITaskRepository Tasks { get; }
