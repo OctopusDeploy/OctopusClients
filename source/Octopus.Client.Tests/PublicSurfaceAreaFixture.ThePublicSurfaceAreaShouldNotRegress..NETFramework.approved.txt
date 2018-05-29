@@ -88,6 +88,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
@@ -168,6 +169,7 @@ Octopus.Client
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
@@ -251,6 +253,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
@@ -353,6 +356,7 @@ Octopus.Client
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
@@ -5180,6 +5184,16 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
+  interface ISpaceRepository
+    Octopus.Client.Repositories.ICreate<SpaceResource>
+    Octopus.Client.Repositories.IModify<SpaceResource>
+    Octopus.Client.Repositories.IDelete<SpaceResource>
+    Octopus.Client.Repositories.IFindByName<SpaceResource>
+    Octopus.Client.Repositories.IPaginate<SpaceResource>
+    Octopus.Client.Repositories.IGet<SpaceResource>
+  {
+    void SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
+  }
   interface ISubscriptionRepository
     Octopus.Client.Repositories.IFindByName<SubscriptionResource>
     Octopus.Client.Repositories.IPaginate<SubscriptionResource>
@@ -5664,6 +5678,16 @@ Octopus.Client.Repositories.Async
   {
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
+  }
+  interface ISpaceRepository
+    Octopus.Client.Repositories.Async.ICreate<SpaceResource>
+    Octopus.Client.Repositories.Async.IModify<SpaceResource>
+    Octopus.Client.Repositories.Async.IDelete<SpaceResource>
+    Octopus.Client.Repositories.Async.IFindByName<SpaceResource>
+    Octopus.Client.Repositories.Async.IPaginate<SpaceResource>
+    Octopus.Client.Repositories.Async.IGet<SpaceResource>
+  {
+    Task SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
   }
   interface ISubscriptionRepository
     Octopus.Client.Repositories.Async.IFindByName<SubscriptionResource>
