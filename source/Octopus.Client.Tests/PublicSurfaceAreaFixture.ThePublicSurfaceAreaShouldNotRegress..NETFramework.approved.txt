@@ -2370,6 +2370,11 @@ Octopus.Client.Model
       FullHealthCheck = 0
       ConnectionTest = 1
   }
+  HeartbeatDeletionPolicy
+  {
+      NeverDelete = 0
+      DeleteAfterOfflineTimeout = 1
+  }
   interface IAuditedResource
   {
     String LastModifiedBy { get; set; }
@@ -2777,6 +2782,18 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
   }
+  class OctopusServerNodeHeartbeatPolicy
+  {
+    static System.TimeSpan DefaultOfflineTimeout
+    .ctor()
+    Octopus.Client.Model.HeartbeatDeletionPolicy DeletionPolicy { get; set; }
+    TimeSpan OfflineTimeout { get; set; }
+    HeartbeatDeletionPolicy
+    {
+        NeverDelete = 0
+        DeleteAfterOfflineTimeout = 1
+    }
+  }
   class OctopusServerNodeResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2784,6 +2801,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Octopus.Client.Model.OctopusServerNodeHeartbeatPolicy HeartbeatPolicy { get; set; }
     Boolean IsInMaintenanceMode { get; set; }
     Boolean IsOffline { get; set; }
     String LastSeen { get; set; }
