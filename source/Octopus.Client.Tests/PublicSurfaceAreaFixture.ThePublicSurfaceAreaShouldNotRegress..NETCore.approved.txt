@@ -1174,10 +1174,10 @@ Octopus.Client.Model
     }
     abstract class TaskRestrictedTo
     {
-      static System.String Environment
-      static System.String Policy
+      static System.String DeploymentTargets
+      static System.String Policies
       static System.String Unrestricted
-      static System.String WorkerPool
+      static System.String Workers
     }
     abstract class TestAzureAccount
     {
@@ -3243,10 +3243,10 @@ Octopus.Client.Model
   }
   abstract class TaskRestrictedTo
   {
-    static System.String Environment
-    static System.String Policy
+    static System.String DeploymentTargets
+    static System.String Policies
     static System.String Unrestricted
-    static System.String WorkerPool
+    static System.String Workers
   }
   TaskState
   {
