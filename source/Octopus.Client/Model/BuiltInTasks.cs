@@ -41,9 +41,9 @@ namespace Octopus.Client.Model
 
         public static class TaskRestrictedTo
         {
-            public static readonly string Environment = "Environment";
-            public static readonly string WorkerPool = "WorkerPool";
-            public static readonly string Policy = "Policy";
+            public static readonly string DeploymentTargets = "DeploymentTargets";
+            public static readonly string Workers = "Workers";
+            public static readonly string Policies = "Policies";
             public static readonly string Unrestricted = "Unlimited";
         }
 
@@ -55,9 +55,9 @@ namespace Octopus.Client.Model
             {
                 return new string[]
                 {
-                    TaskRestrictedTo.Environment,
-                    TaskRestrictedTo.WorkerPool,
-                    TaskRestrictedTo.Policy,
+                    TaskRestrictedTo.DeploymentTargets,
+                    TaskRestrictedTo.Workers,
+                    TaskRestrictedTo.Policies,
                     TaskRestrictedTo.Unrestricted
                 };
             }
@@ -117,8 +117,8 @@ namespace Octopus.Client.Model
             {
                 return new string[]
                 {
-                    TaskRestrictedTo.Environment,
-                    TaskRestrictedTo.WorkerPool,
+                    TaskRestrictedTo.DeploymentTargets,
+                    TaskRestrictedTo.Workers,
                     TaskRestrictedTo.Unrestricted
                 };
             }
