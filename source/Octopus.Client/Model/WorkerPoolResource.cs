@@ -25,6 +25,12 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
 
         /// <summary>
+        /// Is this the default pool.  The default pool is used for steps that don't specify a worker pool.  
+        /// The default pool, if empty, uses the builtin worker to run steps.
+        /// </summary>
+        public bool IsDefault { get; set; }
+
+        /// <summary>
         /// Gets or sets a number indicating the priority of this pool in sort order. WorkerPools with
         /// a lower sort order will appear in the UI before items with a higher sort order.
         /// </summary>
