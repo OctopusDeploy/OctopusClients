@@ -1824,7 +1824,6 @@ Octopus.Client.Model
     .ctor()
     Boolean IsBuiltInRepoSyncEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
-    Boolean IsMultiTenancyEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
@@ -2234,6 +2233,11 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
+  }
+  class MultiTenancyStatus
+  {
+    .ctor()
+    Boolean Enabled { get; set; }
   }
   class NamedReferenceItem
   {
@@ -4795,6 +4799,7 @@ Octopus.Client.Repositories.Async
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
     Task SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
+    Task<MultiTenancyStatus> Status()
   }
   interface ITenantVariablesRepository
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
