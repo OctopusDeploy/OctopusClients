@@ -11,23 +11,23 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Cli.Commands.Machine
 {
-    [Command("list-workermachines", Description = "Lists all worker machines")]
-    public class ListWorkerMachinesCommand : ApiCommand, ISupportFormattedOutput
+    [Command("list-workers", Description = "Lists all workers")]
+    public class ListWorkersCommand : ApiCommand, ISupportFormattedOutput
     {
         readonly HashSet<string> pools = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         readonly HashSet<string> healthStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private HealthStatusProvider provider;
         List<WorkerPoolResource> workerpoolResources;
-        IEnumerable<WorkerMachineResource> workerpoolMachines;
+        IEnumerable<WorkerResource> workerpoolWorkers;
         private bool? isDisabled;
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
 
-        public ListWorkerMachinesCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
+        public ListWorkersCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
-            var options = Options.For("Listing Worker Machines");
+            var options = Options.For("Listing Workers");
             options.Add("workerpool=", "Name of a worker pool to filter by. Can be specified many times.", v => pools.Add(v));
             options.Add("status=", $"[Optional] Status of Machines filter by ({string.Join(", ", HealthStatusProvider.StatusNames)}). Can be specified many times.", v => statuses.Add(v));
             options.Add("health-status=|healthstatus=", $"[Optional] Health status of Machines filter by ({string.Join(", ", HealthStatusProvider.HealthStatusNames)}). Can be specified many times.", v => healthStatuses.Add(v));
@@ -42,18 +42,18 @@ namespace Octopus.Cli.Commands.Machine
 
             workerpoolResources = await GetPools().ConfigureAwait(false);
 
-            workerpoolMachines = await FilterByWorkerPools(workerpoolResources).ConfigureAwait(false);
-            workerpoolMachines = FilterByState(workerpoolMachines, provider);
+            workerpoolWorkers = await FilterByWorkerPools(workerpoolResources).ConfigureAwait(false);
+            workerpoolWorkers = FilterByState(workerpoolWorkers, provider);
         }
 
         public void PrintDefaultOutput()
         {
-            LogFilteredMachines(workerpoolMachines, provider, workerpoolResources);
+            LogFilteredMachines(workerpoolWorkers, provider, workerpoolResources);
         }
 
         public void PrintJsonOutput()
         {
-            commandOutputProvider.Json(workerpoolMachines.Select(machine => new
+            commandOutputProvider.Json(workerpoolWorkers.Select(machine => new
             {
                 machine.Id,
                 machine.Name,
@@ -63,10 +63,10 @@ namespace Octopus.Cli.Commands.Machine
             }));
         }
 
-        private void LogFilteredMachines(IEnumerable<WorkerMachineResource> poolMachines, HealthStatusProvider provider, List<WorkerPoolResource> poolResources)
+        private void LogFilteredMachines(IEnumerable<WorkerResource> poolMachines, HealthStatusProvider provider, List<WorkerPoolResource> poolResources)
         {
             var orderedMachines = poolMachines.OrderBy(m => m.Name).ToList();
-            commandOutputProvider.Information("Worker Machines: {Count}", orderedMachines.Count);
+            commandOutputProvider.Information("Workers: {Count}", orderedMachines.Count);
             foreach (var machine in orderedMachines)
             {
                 commandOutputProvider.Information(" - {Machine:l} {Status:l} (ID: {MachineId:l}) in {WorkerPool:l}", machine.Name, provider.GetStatus(machine), machine.Id,
@@ -80,7 +80,7 @@ namespace Octopus.Cli.Commands.Machine
             return Repository.WorkerPools.FindAll();
         }
 
-        private IEnumerable<WorkerMachineResource> FilterByState(IEnumerable<WorkerMachineResource> poolMachines, HealthStatusProvider provider)
+        private IEnumerable<WorkerResource> FilterByState(IEnumerable<WorkerResource> poolMachines, HealthStatusProvider provider)
         {
             poolMachines = provider.Filter(poolMachines);
 
@@ -103,7 +103,7 @@ namespace Octopus.Cli.Commands.Machine
             return poolMachines;
         }
 
-        private  Task<List<WorkerMachineResource>> FilterByWorkerPools(List<WorkerPoolResource> poolResources)
+        private  Task<List<WorkerResource>> FilterByWorkerPools(List<WorkerPoolResource> poolResources)
         {
             var poolsToInclude = poolResources.Where(e => pools.Contains(e.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             var missingPools = pools.Except(poolsToInclude.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
@@ -113,18 +113,18 @@ namespace Octopus.Cli.Commands.Machine
 
             var poolsFilter = poolsToInclude.Select(p => p.Id).ToList();
 
-            commandOutputProvider.Debug("Loading worker machines...");
+            commandOutputProvider.Debug("Loading workers...");
             if (poolsFilter.Count > 0)
             {
                 commandOutputProvider.Debug("Loading machines from {WorkerPools:l}...", string.Join(", ", poolsToInclude.Select(e => e.Name)));
                 return
-                    Repository.WorkerMachines.FindMany(
+                    Repository.Workers.FindMany(
                         x => { return x.WorkerPoolIds.Any(poolId => poolsFilter.Contains(poolId)); });
             }
             else
             {
-                commandOutputProvider.Debug("Loading worker machines from all pools...");
-                return  Repository.WorkerMachines.FindAll();
+                commandOutputProvider.Debug("Loading workers from all pools...");
+                return  Repository.Workers.FindAll();
             }
         }
     }

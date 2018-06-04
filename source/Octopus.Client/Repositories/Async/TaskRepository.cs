@@ -10,10 +10,10 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>
     {
-        Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workermachineIds = null);
+        Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         Task<TaskResource> ExecuteBackup(string description = null);
-        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workermachineIds = null);
+        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteHealthCheck(
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null,
-            string restrictTo = null, string workerpoolId = null, string[] workermachineIds = null)
+            string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
             var resource = new TaskResource();
             resource.Name = BuiltInTasks.Health.Name;
@@ -51,7 +51,7 @@ namespace Octopus.Client.Repositories.Async
                 {BuiltInTasks.Health.Arguments.EnvironmentId, environmentId},
                 {BuiltInTasks.Health.Arguments.WorkerpoolId, workerpoolId},
                 {BuiltInTasks.Health.Arguments.RestrictedTo, restrictTo},
-                {BuiltInTasks.Health.Arguments.MachineIds, machineIds?.Concat(workermachineIds ?? new string[0]).ToArray() ?? workermachineIds}
+                {BuiltInTasks.Health.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
             };
             return Create(resource);
         }
@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories.Async
             return Create(resource);
         }
 
-        public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workermachineIds = null)
+        public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
             var resource = new TaskResource();
             resource.Name = BuiltInTasks.Upgrade.Name;
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories.Async
                 {BuiltInTasks.Upgrade.Arguments.EnvironmentId, environmentId},
                 {BuiltInTasks.Upgrade.Arguments.WorkerpoolId, workerpoolId},
                 {BuiltInTasks.Upgrade.Arguments.RestrictedTo, restrictTo},
-                {BuiltInTasks.Upgrade.Arguments.MachineIds, machineIds?.Concat(workermachineIds ?? new string[0]).ToArray() ?? workermachineIds}
+                {BuiltInTasks.Upgrade.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
             };
             return Create(resource);
         }

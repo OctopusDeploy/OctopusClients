@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 namespace Octopus.Client.Model
 {
     /// <summary>
-    /// Represents a pool of worker machines. WorkerPools are user-defined and map to pools of machines that
+    /// Represents a pool of workers. WorkerPools are user-defined and map to pools of machines that
     /// can do work as part of a deployment: for example, running scripts and deploying to Azure.
     /// </summary>
     public class WorkerPoolResource : Resource, INamedResource

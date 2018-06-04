@@ -5,7 +5,7 @@ using Octopus.Client.Model;
 namespace Octopus.Client.Operations
 {
     /// <summary>
-    /// Base for registering Deployment Targets and Worker Machines
+    /// Base for registering Deployment Targets and Workers
     /// </summary>
     public interface IRegisterMachineOperationBase
     {

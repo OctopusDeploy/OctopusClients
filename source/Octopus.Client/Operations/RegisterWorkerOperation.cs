@@ -12,20 +12,20 @@ namespace Octopus.Client.Operations
     /// <summary>
     /// Encapsulates the operation for registering machines.
     /// </summary>
-    public class RegisterWorkerMachineOperation : RegisterMachineOperationBase, IRegisterWorkerMachineOperation
+    public class RegisterWorkerOperation : RegisterMachineOperationBase, IRegisterWorkerOperation
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisterWorkerMachineOperation" /> class.
+        /// Initializes a new instance of the <see cref="RegisterWorkerOperation" /> class.
         /// </summary>
-        public RegisterWorkerMachineOperation() : this(null)
+        public RegisterWorkerOperation() : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisterWorkerMachineOperation" /> class.
+        /// Initializes a new instance of the <see cref="RegisterWorkerOperation" /> class.
         /// </summary>
         /// <param name="clientFactory">The client factory.</param>
-        public RegisterWorkerMachineOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
+        public RegisterWorkerOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
         {
 
         }
@@ -47,7 +47,7 @@ namespace Octopus.Client.Operations
         {
             var selectedPools = GetWorkerPools(repository);
             var machinePolicy = GetMachinePolicy(repository);
-            var machine = GetWorkerMachine(repository);
+            var machine = GetWorker(repository);
             var proxy = GetProxy(repository);
 
             ApplyBaseChanges(machine, machinePolicy, proxy);
@@ -55,9 +55,9 @@ namespace Octopus.Client.Operations
             machine.WorkerPoolIds = new ReferenceCollection(selectedPools.Select(p => p.Id).ToArray());
 
             if (machine.Id != null)
-                repository.WorkerMachines.Modify(machine);
+                repository.Workers.Modify(machine);
             else
-                repository.WorkerMachines.Create(machine);
+                repository.Workers.Create(machine);
         }
 
         List<WorkerPoolResource> GetWorkerPools(IOctopusRepository repository)
@@ -72,19 +72,19 @@ namespace Octopus.Client.Operations
             return selectedPools;
         }
 
-        WorkerMachineResource GetWorkerMachine(IOctopusRepository repository)
+        WorkerResource GetWorker(IOctopusRepository repository)
         {
-            var existing = default(WorkerMachineResource);
+            var existing = default(WorkerResource);
             try
             {
-                existing = repository.WorkerMachines.FindByName(MachineName);
+                existing = repository.Workers.FindByName(MachineName);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A worker machine named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new ArgumentException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
             }
-            return existing ?? new WorkerMachineResource();
+            return existing ?? new WorkerResource();
         }
 #endif
 
@@ -98,7 +98,7 @@ namespace Octopus.Client.Operations
         {
             var selectedPools = GetWorkerPools(repository).ConfigureAwait(false);
             var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
-            var machineTask = GetWorkerMachine(repository).ConfigureAwait(false);
+            var machineTask = GetWorker(repository).ConfigureAwait(false);
             var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
@@ -107,9 +107,9 @@ namespace Octopus.Client.Operations
             machine.WorkerPoolIds = new ReferenceCollection((await selectedPools).Select(p => p.Id).ToArray());
 
             if (machine.Id != null)
-                await repository.WorkerMachines.Modify(machine).ConfigureAwait(false);
+                await repository.Workers.Modify(machine).ConfigureAwait(false);
             else
-                await repository.WorkerMachines.Create(machine).ConfigureAwait(false);
+                await repository.Workers.Create(machine).ConfigureAwait(false);
         }
 
         async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusAsyncRepository repository)
@@ -124,19 +124,19 @@ namespace Octopus.Client.Operations
             return selectedPools;
         }
 
-        async Task<WorkerMachineResource> GetWorkerMachine(IOctopusAsyncRepository repository)
+        async Task<WorkerResource> GetWorker(IOctopusAsyncRepository repository)
         {
-            var existing = default(WorkerMachineResource);
+            var existing = default(WorkerResource);
             try
             {
-                existing = await repository.WorkerMachines.FindByName(MachineName).ConfigureAwait(false);
+                existing = await repository.Workers.FindByName(MachineName).ConfigureAwait(false);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A worker machine named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new ArgumentException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
             }
-            return existing ?? new WorkerMachineResource();
+            return existing ?? new WorkerResource();
         }
     }
 }

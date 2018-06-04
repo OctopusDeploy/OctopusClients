@@ -7,7 +7,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Cli.Commands.WorkerPool
 {
-    [Command("create-workerpool", Description = "Creates a pool for worker machines")]
+    [Command("create-workerpool", Description = "Creates a pool for workers")]
     public class CreateWorkerPoolCommand : ApiCommand, ISupportFormattedOutput
     {
         WorkerPoolResource pool;

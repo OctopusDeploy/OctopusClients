@@ -88,8 +88,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
-    Octopus.Client.Repositories.Async.IWorkerMachineRepository WorkerMachines { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
   interface IOctopusClientFactory
   {
@@ -175,8 +175,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
-    Octopus.Client.Repositories.Async.IWorkerMachineRepository WorkerMachines { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
@@ -538,15 +538,15 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Editors.Async.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
   }
-  class WorkerMachineEditor
-    Octopus.Client.Editors.Async.IResourceEditor<WorkerMachineResource, WorkerMachineEditor>
+  class WorkerEditor
+    Octopus.Client.Editors.Async.IResourceEditor<WorkerResource, WorkerEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
   {
-    .ctor(Octopus.Client.Repositories.Async.IWorkerMachineRepository)
-    Octopus.Client.Model.WorkerMachineResource Instance { get; }
-    Task<WorkerMachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
-    Octopus.Client.Editors.Async.WorkerMachineEditor Customize(Action<WorkerMachineResource>)
-    Task<WorkerMachineEditor> Save()
+    .ctor(Octopus.Client.Repositories.Async.IWorkerRepository)
+    Octopus.Client.Model.WorkerResource Instance { get; }
+    Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Editors.Async.WorkerEditor Customize(Action<WorkerResource>)
+    Task<WorkerEditor> Save()
   }
   class WorkerPoolEditor
     Octopus.Client.Editors.Async.IResourceEditor<WorkerPoolResource, WorkerPoolEditor>
@@ -3555,18 +3555,6 @@ Octopus.Client.Model
     String ReferrerPolicy { get; set; }
     Octopus.Client.Model.XOptionsResource XOptions { get; set; }
   }
-  class WorkerMachineResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.MachineBasedResource
-  {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
-    Octopus.Client.Model.WorkerMachineResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
-    Octopus.Client.Model.WorkerMachineResource ClearWorkerPools()
-    Octopus.Client.Model.WorkerMachineResource RemoveWorkerPool(Octopus.Client.Model.WorkerPoolResource)
-  }
   class WorkerPoolResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3590,6 +3578,18 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.WorkerPoolResource WorkerPool { get; set; }
+  }
+  class WorkerResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.MachineBasedResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
+    Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Model.WorkerResource ClearWorkerPools()
+    Octopus.Client.Model.WorkerResource RemoveWorkerPool(Octopus.Client.Model.WorkerPoolResource)
   }
   class X509Certificate
   {
@@ -4405,7 +4405,7 @@ Octopus.Client.Operations
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
-  interface IRegisterWorkerMachineOperation
+  interface IRegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     String[] WorkerPoolNames { get; set; }
@@ -4441,9 +4441,9 @@ Octopus.Client.Operations
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
-  class RegisterWorkerMachineOperation
+  class RegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
-    Octopus.Client.Operations.IRegisterWorkerMachineOperation
+    Octopus.Client.Operations.IRegisterWorkerOperation
     Octopus.Client.Operations.RegisterMachineOperationBase
   {
     .ctor()
@@ -4937,20 +4937,6 @@ Octopus.Client.Repositories.Async
   {
     Task<String[]> GetVariableNames(String, String[])
   }
-  interface IWorkerMachineRepository
-    Octopus.Client.Repositories.Async.IFindByName<WorkerMachineResource>
-    Octopus.Client.Repositories.Async.IPaginate<WorkerMachineResource>
-    Octopus.Client.Repositories.Async.IGet<WorkerMachineResource>
-    Octopus.Client.Repositories.Async.ICreate<WorkerMachineResource>
-    Octopus.Client.Repositories.Async.IModify<WorkerMachineResource>
-    Octopus.Client.Repositories.Async.IDelete<WorkerMachineResource>
-  {
-    Task<WorkerMachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
-    Task<WorkerMachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
-    Task<List<WorkerMachineResource>> FindByThumbprint(String)
-    Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerMachineResource)
-    Task<ResourceCollection<WorkerMachineResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
-  }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IPaginate<WorkerPoolResource>
@@ -4962,9 +4948,23 @@ Octopus.Client.Repositories.Async
   {
     Task<WorkerPoolEditor> CreateOrModify(String)
     Task<WorkerPoolEditor> CreateOrModify(String, String)
-    Task<List<WorkerMachineResource>> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
+    Task<List<WorkerResource>> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
     Task Sort(String[])
     Task<WorkerPoolsSummaryResource> Summary(String, String, String, Nullable<Boolean>, String, String, Nullable<Boolean>)
+  }
+  interface IWorkerRepository
+    Octopus.Client.Repositories.Async.IFindByName<WorkerResource>
+    Octopus.Client.Repositories.Async.IPaginate<WorkerResource>
+    Octopus.Client.Repositories.Async.IGet<WorkerResource>
+    Octopus.Client.Repositories.Async.ICreate<WorkerResource>
+    Octopus.Client.Repositories.Async.IModify<WorkerResource>
+    Octopus.Client.Repositories.Async.IDelete<WorkerResource>
+  {
+    Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Task<WorkerResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<List<WorkerResource>> FindByThumbprint(String)
+    Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
+    Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
 }
 Octopus.Client.Serialization

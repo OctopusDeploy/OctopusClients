@@ -6,7 +6,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IWorkerPoolRepository : IFindByName<WorkerPoolResource>, IGet<WorkerPoolResource>, ICreate<WorkerPoolResource>, IModify<WorkerPoolResource>, IDelete<WorkerPoolResource>, IGetAll<WorkerPoolResource>
     {
-        List<WorkerMachineResource> GetMachines(WorkerPoolResource workerPool,
+        List<WorkerResource> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public List<WorkerMachineResource> GetMachines(WorkerPoolResource workerPool,
+        public List<WorkerResource> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -41,9 +41,9 @@ namespace Octopus.Client.Repositories
             string healthStatuses = null,
             string commStyles = null)
         {
-            var resources = new List<WorkerMachineResource>();
+            var resources = new List<WorkerResource>();
 
-            Client.Paginate<WorkerMachineResource>(workerPool.Link("WorkerMachines"), new
+            Client.Paginate<WorkerResource>(workerPool.Link("Workers"), new
             {
                 skip,
                 take,

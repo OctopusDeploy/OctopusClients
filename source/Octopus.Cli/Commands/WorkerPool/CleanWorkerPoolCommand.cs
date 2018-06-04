@@ -11,7 +11,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Cli.Commands.WorkerPools
 {
-    [Command("clean-workerpool", Description = "Cleans all Offline Worker Machines from a WorkerPool")]
+    [Command("clean-workerpool", Description = "Cleans all Offline Workers from a WorkerPool")]
     public class CleanWorkerPoolCommand : ApiCommand, ISupportFormattedOutput
     {
         string poolName;
@@ -20,7 +20,7 @@ namespace Octopus.Cli.Commands.WorkerPools
         private bool? isCalamariOutdated;
         private bool? isTentacleOutdated;
         WorkerPoolResource workerPoolResource;
-        IEnumerable<WorkerMachineResource> machines;
+        IEnumerable<WorkerResource> machines;
         List<MachineResult> commandResults = new List<MachineResult>();
 
 
@@ -29,8 +29,8 @@ namespace Octopus.Cli.Commands.WorkerPools
         {
             var options = Options.For("WorkerPool Cleanup");
             options.Add("workerpool=", "Name of a worker pool to clean up.", v => poolName = v);
-            options.Add("health-status=", $"Health status of Worker Machines to clean up ({string.Join(", ", HealthStatusProvider.HealthStatusNames)}). Can be specified many times.", v => healthStatuses.Add(v));
-            options.Add("disabled=", "[Optional] Disabled status filter of Worker Machine to clean up.", v => SetFlagState(v, ref isDisabled));
+            options.Add("health-status=", $"Health status of Workers to clean up ({string.Join(", ", HealthStatusProvider.HealthStatusNames)}). Can be specified many times.", v => healthStatuses.Add(v));
+            options.Add("disabled=", "[Optional] Disabled status filter of Worker to clean up.", v => SetFlagState(v, ref isDisabled));
             options.Add("calamari-outdated=", "[Optional] State of Calamari to clean up. By default ignores Calamari state.", v => SetFlagState(v, ref isCalamariOutdated));
             options.Add("tentacle-outdated=", "[Optional] State of Tentacle version to clean up. By default ignores Tentacle state", v => SetFlagState(v, ref isTentacleOutdated));
         }
@@ -50,7 +50,7 @@ namespace Octopus.Cli.Commands.WorkerPools
             await CleanUpPool(machines.ToList(), workerPoolResource);
         }
 
-        private async Task CleanUpPool(List<WorkerMachineResource> filteredMachines, WorkerPoolResource poolResource)
+        private async Task CleanUpPool(List<WorkerResource> filteredMachines, WorkerPoolResource poolResource)
         {
             commandOutputProvider.Information("Found {MachineCount} machines in {WorkerPool:l} with the status {Status:l}", filteredMachines.Count, poolResource.Name, GetStateFilterDescription());
 
@@ -71,13 +71,13 @@ namespace Octopus.Cli.Commands.WorkerPools
                     commandOutputProvider.Information("Removing {Machine:l} {Status} (ID: {Id:l}) from {WorkerPool:l}", machine.Name, machine.Status, machine.Id,
                         poolResource.Name);
                     machine.WorkerPoolIds.Remove(poolResource.Id);
-                    await Repository.WorkerMachines.Modify(machine).ConfigureAwait(false);
+                    await Repository.Workers.Modify(machine).ConfigureAwait(false);
                     result.Action = MachineAction.RemovedFromPool;
                 }
                 else
                 {
                     commandOutputProvider.Information("Deleting {Machine:l} {Status} (ID: {Id:l})", machine.Name, machine.Status, machine.Id);
-                    await Repository.WorkerMachines.Delete(machine).ConfigureAwait(false);
+                    await Repository.Workers.Delete(machine).ConfigureAwait(false);
                     result.Action = MachineAction.Deleted;
                 }
 
@@ -85,24 +85,24 @@ namespace Octopus.Cli.Commands.WorkerPools
             }
         }
 
-        private IEnumerable<WorkerMachineResource> FilterByState(IEnumerable<WorkerMachineResource> workerMachines)
+        private IEnumerable<WorkerResource> FilterByState(IEnumerable<WorkerResource> workers)
         {
             var provider = new HealthStatusProvider(Repository, new HashSet<string>(StringComparer.OrdinalIgnoreCase), healthStatuses, commandOutputProvider);
-            workerMachines = provider.Filter(workerMachines);
+            workers = provider.Filter(workers);
 
             if (isDisabled.HasValue)
             {
-                workerMachines = workerMachines.Where(m => m.IsDisabled == isDisabled.Value);
+                workers = workers.Where(m => m.IsDisabled == isDisabled.Value);
             }
             if (isCalamariOutdated.HasValue)
             {
-                workerMachines = workerMachines.Where(m => m.HasLatestCalamari == !isCalamariOutdated.Value);
+                workers = workers.Where(m => m.HasLatestCalamari == !isCalamariOutdated.Value);
             }
             if (isTentacleOutdated.HasValue)
             {
-                workerMachines = workerMachines.Where(m => (m.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails.UpgradeSuggested == isTentacleOutdated.Value);
+                workers = workers.Where(m => (m.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails.UpgradeSuggested == isTentacleOutdated.Value);
             }
-            return workerMachines;
+            return workers;
         }
 
         private string GetStateFilterDescription()
@@ -127,10 +127,10 @@ namespace Octopus.Cli.Commands.WorkerPools
             return description;
         }
 
-        private Task<List<WorkerMachineResource>> FilterByWorkerPool(WorkerPoolResource poolResource)
+        private Task<List<WorkerResource>> FilterByWorkerPool(WorkerPoolResource poolResource)
         {
-            commandOutputProvider.Debug("Loading worker machines...");
-            return Repository.WorkerMachines.FindMany(x =>  x.WorkerPoolIds.Any(poolId => poolId == poolResource.Id));
+            commandOutputProvider.Debug("Loading workers...");
+            return Repository.Workers.FindMany(x =>  x.WorkerPoolIds.Any(poolId => poolId == poolResource.Id));
         }
 
         private async Task<WorkerPoolResource> GetWorkerPool()

@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IWorkerPoolRepository : IFindByName<WorkerPoolResource>, IGet<WorkerPoolResource>, ICreate<WorkerPoolResource>, IModify<WorkerPoolResource>, IDelete<WorkerPoolResource>, IGetAll<WorkerPoolResource>
     {
-        Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource workerPool,
+        Task<List<WorkerResource>> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public async Task<List<WorkerMachineResource>> GetMachines(WorkerPoolResource workerPool,
+        public async Task<List<WorkerResource>> GetMachines(WorkerPoolResource workerPool,
             int? skip = 0,
             int? take = null,
             string partialName = null,
@@ -43,9 +43,9 @@ namespace Octopus.Client.Repositories.Async
             string healthStatuses = null,
             string commStyles = null)
         {
-            var resources = new List<WorkerMachineResource>();
+            var resources = new List<WorkerResource>();
 
-            await Client.Paginate<WorkerMachineResource>(workerPool.Link("WorkerMachines"), new {
+            await Client.Paginate<WorkerResource>(workerPool.Link("Workers"), new {
                 skip,
                 take,
                 partialName,

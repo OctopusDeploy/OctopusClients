@@ -7,18 +7,18 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class WorkerMachineEditor : IResourceEditor<WorkerMachineResource, WorkerMachineEditor>
+    public class WorkerEditor : IResourceEditor<WorkerResource, WorkerEditor>
     {
-        private readonly IWorkerMachineRepository repository;
+        private readonly IWorkerRepository repository;
 
-        public WorkerMachineEditor(IWorkerMachineRepository repository)
+        public WorkerEditor(IWorkerRepository repository)
         {
             this.repository = repository;
         }
 
-        public WorkerMachineResource Instance { get; private set; }
+        public WorkerResource Instance { get; private set; }
 
-        public async Task<WorkerMachineEditor> CreateOrModify(
+        public async Task<WorkerEditor> CreateOrModify(
             string name,
             EndpointResource endpoint,
             WorkerPoolResource[] workerpools)
@@ -26,7 +26,7 @@ namespace Octopus.Client.Editors.Async
             var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
-                Instance = await repository.Create(new WorkerMachineResource
+                Instance = await repository.Create(new WorkerResource
                 {
                     Name = name,
                     Endpoint = endpoint,
@@ -45,13 +45,13 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public WorkerMachineEditor Customize(Action<WorkerMachineResource> customize)
+        public WorkerEditor Customize(Action<WorkerResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<WorkerMachineEditor> Save()
+        public async Task<WorkerEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;

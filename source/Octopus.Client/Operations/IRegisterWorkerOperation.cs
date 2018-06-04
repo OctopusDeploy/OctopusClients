@@ -5,9 +5,9 @@ using Octopus.Client.Model;
 namespace Octopus.Client.Operations
 {
     /// <summary>
-    /// Encapsulates the operation for registering worker machines.
+    /// Encapsulates the operation for registering workers.
     /// </summary>
-    public interface IRegisterWorkerMachineOperation : IRegisterMachineOperationBase
+    public interface IRegisterWorkerOperation : IRegisterMachineOperationBase
     {
         /// <summary>
         /// Gets or sets the worker pools that this machine should be added to.

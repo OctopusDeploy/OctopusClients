@@ -13,20 +13,20 @@ using Octopus.Client.Model.Endpoints;
 namespace Octopus.Cli.Tests.Commands
 {
     [TestFixture]
-    public class ListWorkerMachinesCommandFixture : ApiCommandFixtureBase
+    public class ListWorkersCommandFixture : ApiCommandFixtureBase
     {
         const string MachineLogFormat = " - {0} {1} (ID: {2}) in {3}";
 
         [SetUp]
         public void SetUp()
         {
-            listWorkerMachinesCommand = new ListWorkerMachinesCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
+            listWorkersCommand = new ListWorkersCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
         }
 
-        ListWorkerMachinesCommand listWorkerMachinesCommand;
+        ListWorkersCommand listWorkersCommand;
 
         [Test]
-        public async Task ShouldGetListOfWorkerMachinesWithPoolAndStatusArgs()
+        public async Task ShouldGetListOfWorkersWithPoolAndStatusArgs()
         {
             CommandLineArgs.Add("-workerpool=SomePool");
             CommandLineArgs.Add("-status=Offline");
@@ -36,7 +36,7 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
             });
 
-            var workerList = MakeWorkerMachineList(3,
+            var workerList = MakeWorkerList(3,
                 new List<MachineModelStatus>
                 {
                     MachineModelStatus.Online,
@@ -50,18 +50,18 @@ namespace Octopus.Cli.Tests.Commands
                     new ReferenceCollection("WorkerPools-001")
                 });
 
-            Repository.WorkerMachines.FindMany(Arg.Any<Func<WorkerMachineResource, bool>>()).Returns(workerList);
+            Repository.Workers.FindMany(Arg.Any<Func<WorkerResource, bool>>()).Returns(workerList);
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("Worker Machines: 2");
+            LogLines.Should().Contain("Workers: 2");
             LogLines.Should().NotContain(string.Format(MachineLogFormat, workerList[0].Name, workerList[0].Status.ToString(), workerList[0].Id, "SomePool"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[1].Name, workerList[1].Status.ToString(), workerList[1].Id, "SomePool"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[2].Name, workerList[2].Status.ToString(), workerList[2].Id, "SomePool"));
         }
 
         [Test]
-        public async Task ShouldGetListOfWorkerMachinesWithPoolArgs()
+        public async Task ShouldGetListOfWorkersWithPoolArgs()
         {
             CommandLineArgs.Add("-workerpool=SomePool");
 
@@ -70,7 +70,7 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
             });
 
-            var workerList = MakeWorkerMachineList(1,
+            var workerList = MakeWorkerList(1,
                 new List<MachineModelStatus>
                 {
                     MachineModelStatus.Online
@@ -79,16 +79,16 @@ namespace Octopus.Cli.Tests.Commands
                 {
                     new ReferenceCollection("WorkerPools-001")
                 });
-            Repository.WorkerMachines.FindMany(Arg.Any<Func<WorkerMachineResource, bool>>()).Returns(workerList);
+            Repository.Workers.FindMany(Arg.Any<Func<WorkerResource, bool>>()).Returns(workerList);
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("Worker Machines: 1");
+            LogLines.Should().Contain("Workers: 1");
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[0].Name, workerList[0].Status.ToString(), workerList[0].Id, "SomePool"));
         }
 
         [Test]
-        public async Task ShouldGetListOfWorkerMachinesWithNoArgs()
+        public async Task ShouldGetListOfWorkerWithNoArgs()
         {
             Repository.WorkerPools.FindAll().Returns(new List<WorkerPoolResource>
             {
@@ -96,7 +96,7 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomeOtherPool", Id = "WorkerPools-002"}
             });
 
-            var workerList = MakeWorkerMachineList(3,
+            var workerList = MakeWorkerList(3,
                 new List<MachineModelStatus>
                 {
                     MachineModelStatus.Online,
@@ -109,18 +109,18 @@ namespace Octopus.Cli.Tests.Commands
                     new ReferenceCollection("WorkerPools-002"),
                     new ReferenceCollection("WorkerPools-002")
                 });
-            Repository.WorkerMachines.FindAll().Returns(workerList);
+            Repository.Workers.FindAll().Returns(workerList);
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("Worker Machines: 3");
+            LogLines.Should().Contain("Workers: 3");
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[0].Name, workerList[0].Status.ToString(), workerList[0].Id, "SomePool"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[1].Name, workerList[1].Status.ToString(), workerList[1].Id, "SomeOtherPool"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[2].Name, workerList[2].Status.ToString(), workerList[2].Id, "SomeOtherPool"));
         }
 
         [Test]
-        public async Task ShouldGetListOfWorkerMachinesWithOfflineStatusArgs()
+        public async Task ShouldGetListOfWorkersWithOfflineStatusArgs()
         {
             CommandLineArgs.Add("-status=Offline");
 
@@ -129,7 +129,7 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
             });
 
-            var workerList = MakeWorkerMachineList(3,
+            var workerList = MakeWorkerList(3,
                 new List<MachineModelStatus>
                 {
                     MachineModelStatus.Online,
@@ -143,11 +143,11 @@ namespace Octopus.Cli.Tests.Commands
                     new ReferenceCollection("WorkerPools-001")
                 });
 
-            Repository.WorkerMachines.FindAll().Returns(workerList);
+            Repository.Workers.FindAll().Returns(workerList);
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("Worker Machines: 1");
+            LogLines.Should().Contain("Workers: 1");
             LogLines.Should().NotContain(string.Format(MachineLogFormat, workerList[0].Name, workerList[0].Status.ToString(), workerList[0].Id, "SomePool"));
             LogLines.Should().NotContain(string.Format(MachineLogFormat, workerList[1].Name, workerList[1].Status.ToString(), workerList[1].Id, "SomePool"));
             LogLines.Should().Contain(string.Format(MachineLogFormat, workerList[2].Name, workerList[2].Status.ToString(), workerList[2].Id, "SomePool"));
@@ -166,15 +166,15 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
             });
 
-            Repository.WorkerMachines.FindAll().Returns(new List<WorkerMachineResource>
+            Repository.Workers.FindAll().Returns(new List<WorkerResource>
             {
-                new WorkerMachineResource {
+                new WorkerResource {
                     Name = "PC0123",
                     Id = "Machines-001",
                     HealthStatus = MachineModelHealthStatus.Unavailable,
                     WorkerPoolIds = new ReferenceCollection("WorkerPools-001")
                 },
-                new WorkerMachineResource {
+                new WorkerResource {
                     Name = "PC01466",
                     Id = "Machines-002",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -183,7 +183,7 @@ namespace Octopus.Cli.Tests.Commands
                     Endpoint = new ListeningTentacleEndpointResource() {TentacleVersionDetails = new TentacleDetailsResource { UpgradeSuggested = true } },
                     WorkerPoolIds = new ReferenceCollection("WorkerPools-001")
                 },
-                new WorkerMachineResource {
+                new WorkerResource {
                     Name = "PC01467",
                     Id = "Machines-003",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -192,7 +192,7 @@ namespace Octopus.Cli.Tests.Commands
                     Endpoint = new ListeningTentacleEndpointResource() {TentacleVersionDetails = new TentacleDetailsResource { UpgradeSuggested = false } },
                     WorkerPoolIds = new ReferenceCollection("WorkerPools-001")
                 },
-                new WorkerMachineResource {
+                new WorkerResource {
                     Name = "PC01468",
                     Id = "Machines-004",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -200,7 +200,7 @@ namespace Octopus.Cli.Tests.Commands
                     WorkerPoolIds = new ReferenceCollection("WorkerPools-001"),
                     HasLatestCalamari = false
                 },
-                new WorkerMachineResource {
+                new WorkerResource {
                     Name = "PC01999",
                     Id = "Machines-005",
                     HealthStatus = MachineModelHealthStatus.Healthy,
@@ -208,9 +208,9 @@ namespace Octopus.Cli.Tests.Commands
                     WorkerPoolIds = new ReferenceCollection("WorkerPools-001")}
             });
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
-            LogLines.Should().Contain("Worker Machines: 1");
+            LogLines.Should().Contain("Workers: 1");
             LogLines.Should().Contain(string.Format(MachineLogFormat, "PC01466", "Healthy - Disabled", "Machines-002", "SomePool"));
         }
         
@@ -226,7 +226,7 @@ namespace Octopus.Cli.Tests.Commands
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}
             });
 
-            var workerList = MakeWorkerMachineList(3,
+            var workerList = MakeWorkerList(3,
                 new List<MachineModelStatus>
                 {
                     MachineModelStatus.Online,
@@ -240,9 +240,9 @@ namespace Octopus.Cli.Tests.Commands
                     new ReferenceCollection("WorkerPools-001")
                 });
 
-            Repository.WorkerMachines.FindAll().Returns(workerList);
+            Repository.Workers.FindAll().Returns(workerList);
 
-            await listWorkerMachinesCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
+            await listWorkersCommand.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             var logoutput = LogOutput.ToString();
             JsonConvert.DeserializeObject(logoutput);
@@ -252,14 +252,14 @@ namespace Octopus.Cli.Tests.Commands
         }
 
 
-        private List<WorkerMachineResource> MakeWorkerMachineList(int numWorkers, List<MachineModelStatus> statuses,
+        private List<WorkerResource> MakeWorkerList(int numWorkers, List<MachineModelStatus> statuses,
             List<ReferenceCollection> pools)
         {
-            var result = new List<WorkerMachineResource>();
+            var result = new List<WorkerResource>();
             for (int i = 0; i < numWorkers; i++)
             {
                 result.Add(
-                    new WorkerMachineResource
+                    new WorkerResource
                     {
                         Name = Guid.NewGuid().ToString(),
                         Id = "Machines-00" + i,

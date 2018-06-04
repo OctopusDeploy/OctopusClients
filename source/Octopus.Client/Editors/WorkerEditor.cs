@@ -6,18 +6,18 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class WorkerMachineEditor : IResourceEditor<WorkerMachineResource, WorkerMachineEditor>
+    public class WorkerEditor : IResourceEditor<WorkerResource, WorkerEditor>
     {
-        private readonly IWorkerMachineRepository repository;
+        private readonly IWorkerRepository repository;
 
-        public WorkerMachineEditor(IWorkerMachineRepository repository)
+        public WorkerEditor(IWorkerRepository repository)
         {
             this.repository = repository;
         }
 
-        public WorkerMachineResource Instance { get; private set; }
+        public WorkerResource Instance { get; private set; }
 
-        public WorkerMachineEditor CreateOrModify(
+        public WorkerEditor CreateOrModify(
             string name,
             EndpointResource endpoint,
             WorkerPoolResource[] pools)
@@ -25,7 +25,7 @@ namespace Octopus.Client.Editors
             var existing = repository.FindByName(name);
             if (existing == null)
             {
-                Instance = repository.Create(new WorkerMachineResource
+                Instance = repository.Create(new WorkerResource
                 {
                     Name = name,
                     Endpoint = endpoint,
@@ -44,13 +44,13 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public WorkerMachineEditor Customize(Action<WorkerMachineResource> customize)
+        public WorkerEditor Customize(Action<WorkerResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public WorkerMachineEditor Save()
+        public WorkerEditor Save()
         {
             Instance = repository.Modify(Instance);
             return this;

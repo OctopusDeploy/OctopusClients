@@ -5,9 +5,9 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public class WorkerMachineResource : MachineBasedResource
+    public class WorkerResource : MachineBasedResource
     {
-        public WorkerMachineResource()
+        public WorkerResource()
         {
             WorkerPoolIds = new ReferenceCollection();
         }
@@ -15,7 +15,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection WorkerPoolIds { get; set; }
 
-        public WorkerMachineResource AddOrUpdateWorkerPools(params WorkerPoolResource[] pools)
+        public WorkerResource AddOrUpdateWorkerPools(params WorkerPoolResource[] pools)
         {
             foreach (var pool in pools)
             {
@@ -24,13 +24,13 @@ namespace Octopus.Client.Model
             return this;
         }
 
-        public WorkerMachineResource RemoveWorkerPool(WorkerPoolResource pool)
+        public WorkerResource RemoveWorkerPool(WorkerPoolResource pool)
         {
             WorkerPoolIds.Remove(pool.Id);
             return this;
         }
 
-        public WorkerMachineResource ClearWorkerPools()
+        public WorkerResource ClearWorkerPools()
         {
             WorkerPoolIds.Clear();
             return this;
