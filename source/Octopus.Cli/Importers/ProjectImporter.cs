@@ -73,17 +73,18 @@ namespace Octopus.Cli.Importers
             var projectGroup = importedObject.ProjectGroup;
             var channels = importedObject.Channels;
             var channelLifecycles = importedObject.ChannelLifecycles;
+            var workerPools = importedObject.WorkerPools;
 
             var scopeValuesUsed = GetScopeValuesUsed(variableSet.Variables, deploymentProcess.Steps, variableSet.ScopeValues);
 
             var environmentChecksTask = CheckEnvironmentsExist(scopeValuesUsed[ScopeField.Environment]).ConfigureAwait(false);
-            var workerPoolChecksTask = CheckWorkerPoolsExist(scopeValuesUsed[ScopeField.WorkerPool]).ConfigureAwait(false);
             var machineChecksTask = CheckMachinesExist(scopeValuesUsed[ScopeField.Machine]).ConfigureAwait(false);
             var feedChecksTask = CheckNuGetFeedsExist(nugetFeeds).ConfigureAwait(false);
             var templateChecksTask = CheckActionTemplates(actionTemplates).ConfigureAwait(false);
             var libraryVariableSetChecksTask = CheckLibraryVariableSets(libVariableSets).ConfigureAwait(false);
             var projectGroupChecksTask = CheckProjectGroup(projectGroup).ConfigureAwait(false);
             var channelLifecycleChecksTask = CheckChannelLifecycles(channelLifecycles).ConfigureAwait(false);
+            var workerPoolChecksTask = CheckWorkerPoolsExist(workerPools).ConfigureAwait(false);
 
             var environmentChecks = await environmentChecksTask;
             var workerPoolChecks = await workerPoolChecksTask;
@@ -237,8 +238,7 @@ namespace Octopus.Cli.Importers
             {
                 {ScopeField.Environment, new List<ReferenceDataItem>()},
                 {ScopeField.Machine, new List<ReferenceDataItem>()},
-                {ScopeField.Channel, new List<ReferenceDataItem>()},
-                {ScopeField.WorkerPool, new List<ReferenceDataItem>()},
+                {ScopeField.Channel, new List<ReferenceDataItem>()}
             };
 
             foreach (var variable in variables)
@@ -302,15 +302,6 @@ namespace Octopus.Cli.Importers
                         if (channel != null && !usedScopeValues[ScopeField.Channel].Exists(ch => ch.Id == usedChannel))
                         {
                             usedScopeValues[ScopeField.Channel].Add(channel);
-                        }
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(action.WorkerPoolId))
-                    {
-                        var pool = variableScopeValues.WorkerPools.Find(p => p.Id == action.WorkerPoolId);
-                        if (pool != null && !usedScopeValues[ScopeField.WorkerPool].Exists(p => p.Id == action.WorkerPoolId))
-                        {
-                            usedScopeValues[ScopeField.WorkerPool].Add(pool);
                         }
                     }
                 }
