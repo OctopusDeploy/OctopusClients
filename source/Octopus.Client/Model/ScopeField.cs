@@ -14,7 +14,6 @@ namespace Octopus.Client.Model
         Private, // Allows inbuilt vars to override user ones
         Channel,
         TenantTag,
-        Tenant,
-        WorkerPool
+        Tenant
     }
 }
