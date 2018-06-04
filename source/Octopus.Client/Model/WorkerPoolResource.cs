@@ -28,6 +28,7 @@ namespace Octopus.Client.Model
         /// Is this the default pool.  The default pool is used for steps that don't specify a worker pool.  
         /// The default pool, if empty, uses the builtin worker to run steps.
         /// </summary>
+        [Writeable]
         public bool IsDefault { get; set; }
 
         /// <summary>
