@@ -7,7 +7,6 @@ namespace Octopus.Client.Model
         public VariableScopeValues()
         {
             Environments = new List<ReferenceDataItem>();
-            WorkerPools = new List<ReferenceDataItem>();
             Machines = new List<ReferenceDataItem>();
             Actions = new List<ReferenceDataItem>();
             Roles = new List<ReferenceDataItem>();
@@ -16,7 +15,6 @@ namespace Octopus.Client.Model
         }
 
         public List<ReferenceDataItem> Environments { get; set; }
-        public List<ReferenceDataItem> WorkerPools { get; set; }
         public List<ReferenceDataItem> Machines { get; set; }
         public List<ReferenceDataItem> Actions { get; set; }
         public List<ReferenceDataItem> Roles { get; set; }
