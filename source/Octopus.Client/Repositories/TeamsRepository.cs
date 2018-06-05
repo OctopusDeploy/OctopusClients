@@ -19,4 +19,20 @@ namespace Octopus.Client.Repositories
         {
         }
     }
+
+    public interface IScopedUserRolesRepository :
+        ICreate<ScopedUserRoleResource>,
+        IModify<ScopedUserRoleResource>,
+        IDelete<ScopedUserRoleResource>,
+        IGet<ScopedUserRoleResource>
+    {
+    }
+
+    class ScopedUserRolesRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRolesRepository
+    {
+        public ScopedUserRolesRepository(IOctopusClient client)
+            : base(client, "ScopedUserRoles")
+        {
+        }
+    }
 }

@@ -10,7 +10,6 @@ namespace Octopus.Client.Model
         public TeamResource()
         {
             ExternalSecurityGroups = new NamedReferenceItemCollection();
-            ScopedUserRoles = new List<ScopedUserRole>();
         }
 
         /// <summary>
@@ -55,20 +54,14 @@ namespace Octopus.Client.Model
         /// provided by Octopus cannot have its members changed, as it will always contain all users.
         /// </summary>
         public bool CanChangeMembers { get; set; }
-
-        /// <summary>
-        /// The set of roles and scopes that this team will have
-        /// </summary>
-        [Writeable]
-        public List<ScopedUserRole> ScopedUserRoles { get; set; }
     }
 
     /// <summary>
     /// The set of roles and scopes that this team will have
     /// </summary>
-    public class ScopedUserRole
+    public class ScopedUserRoleResource : Resource
     {
-        public ScopedUserRole()
+        public ScopedUserRoleResource()
         {
             ProjectIds = new ReferenceCollection();
             EnvironmentIds = new ReferenceCollection();
@@ -81,6 +74,9 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public string UserRoleId { get; set; }
+
+        [Writeable]
+        public string TeamId { get; set; }
 
         /// <summary>
         /// The project groups that the team can exercise its roles for. Includes all projects in the groups.
