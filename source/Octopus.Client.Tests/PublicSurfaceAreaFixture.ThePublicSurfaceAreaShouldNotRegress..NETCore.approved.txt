@@ -3309,7 +3309,6 @@ Octopus.Client.Model
     Octopus.Client.Model.NamedReferenceItemCollection ExternalSecurityGroups { get; set; }
     Octopus.Client.Model.ReferenceCollection MemberUserIds { get; set; }
     String Name { get; set; }
-    List<ScopedUserRole> ScopedUserRoles { get; set; }
   }
   TenantedDeploymentMode
   {
