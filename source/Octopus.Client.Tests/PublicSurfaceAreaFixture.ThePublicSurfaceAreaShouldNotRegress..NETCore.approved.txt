@@ -80,6 +80,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.Async.IScopedUserRolesRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -170,6 +171,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.Async.IScopedUserRolesRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -2885,12 +2887,16 @@ Octopus.Client.Model
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
   }
-  class ScopedUserRole
+  class ScopedUserRoleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
+    String TeamId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     String UserRoleId { get; set; }
   }
@@ -4843,6 +4849,14 @@ Octopus.Client.Repositories.Async
     Task Stop()
     Task Stop(String)
     Task Trigger(String)
+  }
+  interface IScopedUserRolesRepository
+    Octopus.Client.Repositories.Async.ICreate<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IPaginate<ScopedUserRoleResource>
+  {
   }
   interface IServerStatusRepository
   {
