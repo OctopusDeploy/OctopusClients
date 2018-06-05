@@ -45,11 +45,11 @@ namespace Octopus.Cli.Commands.Deployment
             environmentsById = await LoadEnvironments();
             environmentsFilter = environmentsById.Keys.ToArray();
 
-            var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
+            var multiTenancyStatus = await Repository.Tenants.Status();
             var tenantsFilter = new string[0];
 
             tenantsById = new Dictionary<string, string>();
-            if (features.IsMultiTenancyEnabled)
+            if (multiTenancyStatus.Enabled)
             {
                 tenantsById = await LoadTenants();
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];

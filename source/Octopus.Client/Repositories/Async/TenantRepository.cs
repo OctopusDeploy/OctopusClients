@@ -9,6 +9,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ITenantRepository : ICreate<TenantResource>, IModify<TenantResource>, IGet<TenantResource>, IDelete<TenantResource>, IFindByName<TenantResource>, IGetAll<TenantResource>
     {
+        Task<MultiTenancyStatus> Status();
         Task SetLogo(TenantResource tenant, string fileName, Stream contents);
         Task<TenantVariableResource> GetVariables(TenantResource tenant);
         Task<TenantVariableResource> ModifyVariables(TenantResource tenant, TenantVariableResource variables);
@@ -54,6 +55,11 @@ namespace Octopus.Client.Repositories.Async
                 projectId = projectId,
                 environmentId = environmentId
             });
+        }
+
+        public Task<MultiTenancyStatus> Status()
+        {
+            return Client.Get<MultiTenancyStatus>(Client.RootDocument.Link("TenantsStatus"));
         }
 
         public Task SetLogo(TenantResource tenant, string fileName, Stream contents)

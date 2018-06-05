@@ -6,7 +6,6 @@ using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
-using Serilog;
 
 namespace Octopus.Cli.Commands.Tenant
 {
@@ -22,8 +21,8 @@ namespace Octopus.Cli.Commands.Tenant
 
         public async Task Request()
         {
-            var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
-            if (features.IsMultiTenancyEnabled)
+            var multiTenancyStatus = await Repository.Tenants.Status();
+            if (multiTenancyStatus.Enabled)
             {
                 tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);
             }
