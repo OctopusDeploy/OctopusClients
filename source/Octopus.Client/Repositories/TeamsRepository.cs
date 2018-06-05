@@ -24,7 +24,8 @@ namespace Octopus.Client.Repositories
         ICreate<ScopedUserRoleResource>,
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
-        IGet<ScopedUserRoleResource>
+        IGet<ScopedUserRoleResource>,
+        IPaginate<ScopedUserRoleResource>
     {
     }
 
