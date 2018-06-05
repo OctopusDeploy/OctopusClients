@@ -2172,31 +2172,6 @@ Octopus.Client.Model
       StartAfterPrevious = 0
       StartWithPrevious = 1
   }
-  class DeploymentTargetResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.MachineBasedResource
-  {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
-    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateEnvironments(Octopus.Client.Model.EnvironmentResource[])
-    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateRoles(String[])
-    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateTenants(Octopus.Client.Model.TenantResource[])
-    Octopus.Client.Model.DeploymentTargetResource AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
-    Octopus.Client.Model.DeploymentTargetResource ClearEnvironments()
-    Octopus.Client.Model.DeploymentTargetResource ClearRoles()
-    Octopus.Client.Model.DeploymentTargetResource ClearTenants()
-    Octopus.Client.Model.DeploymentTargetResource ClearTenantTags()
-    Octopus.Client.Model.DeploymentTargetResource RemoveEnvironment(Octopus.Client.Model.EnvironmentResource)
-    Octopus.Client.Model.DeploymentTargetResource RemoveRole(String)
-    Octopus.Client.Model.DeploymentTargetResource RemoveTenant(Octopus.Client.Model.TenantResource)
-    Octopus.Client.Model.DeploymentTargetResource RemoveTenantTag(Octopus.Client.Model.TagResource)
-  }
   class DeploymentTemplateResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2706,9 +2681,26 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.DeploymentTargetResource
+    Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+    Octopus.Client.Model.MachineResource AddOrUpdateEnvironments(Octopus.Client.Model.EnvironmentResource[])
+    Octopus.Client.Model.MachineResource AddOrUpdateRoles(String[])
+    Octopus.Client.Model.MachineResource AddOrUpdateTenants(Octopus.Client.Model.TenantResource[])
+    Octopus.Client.Model.MachineResource AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
+    Octopus.Client.Model.MachineResource ClearEnvironments()
+    Octopus.Client.Model.MachineResource ClearRoles()
+    Octopus.Client.Model.MachineResource ClearTenants()
+    Octopus.Client.Model.MachineResource ClearTenantTags()
+    Octopus.Client.Model.MachineResource RemoveEnvironment(Octopus.Client.Model.EnvironmentResource)
+    Octopus.Client.Model.MachineResource RemoveRole(String)
+    Octopus.Client.Model.MachineResource RemoveTenant(Octopus.Client.Model.TenantResource)
+    Octopus.Client.Model.MachineResource RemoveTenantTag(Octopus.Client.Model.TagResource)
   }
   class MachineScriptPolicy
   {
