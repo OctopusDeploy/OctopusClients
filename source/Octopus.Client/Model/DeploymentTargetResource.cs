@@ -45,5 +45,89 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
+
+        public DeploymentTargetResource AddOrUpdateEnvironments(params EnvironmentResource[] environments)
+        {
+            foreach (var environment in environments)
+            {
+                EnvironmentIds.Add(environment.Id);
+            }
+            return this;
+        }
+
+        public DeploymentTargetResource RemoveEnvironment(EnvironmentResource environment)
+        {
+            EnvironmentIds.Remove(environment.Id);
+            return this;
+        }
+
+        public DeploymentTargetResource ClearEnvironments()
+        {
+            EnvironmentIds.Clear();
+            return this;
+        }
+
+        public DeploymentTargetResource AddOrUpdateRoles(params string[] roles)
+        {
+            foreach (var role in roles)
+            {
+                Roles.Add(role);
+            }
+            return this;
+        }
+
+        public DeploymentTargetResource RemoveRole(string role)
+        {
+            Roles.Remove(role);
+            return this;
+        }
+
+        public DeploymentTargetResource ClearRoles()
+        {
+            Roles.Clear();
+            return this;
+        }
+
+        public DeploymentTargetResource AddOrUpdateTenants(params TenantResource[] tenants)
+        {
+            foreach (var tenant in tenants)
+            {
+                TenantIds.Add(tenant.Id);
+            }
+            return this;
+        }
+
+        public DeploymentTargetResource RemoveTenant(TenantResource tenant)
+        {
+            TenantIds.Remove(tenant.Id);
+            return this;
+        }
+
+        public DeploymentTargetResource ClearTenants()
+        {
+            TenantIds.Clear();
+            return this;
+        }
+
+        public DeploymentTargetResource AddOrUpdateTenantTags(params TagResource[] tenantTags)
+        {
+            foreach (var tenantTag in tenantTags)
+            {
+                TenantTags.Add(tenantTag.CanonicalTagName);
+            }
+            return this;
+        }
+
+        public DeploymentTargetResource RemoveTenantTag(TagResource tenantTag)
+        {
+            TenantTags.Remove(tenantTag.CanonicalTagName);
+            return this;
+        }
+
+        public DeploymentTargetResource ClearTenantTags()
+        {
+            TenantTags.Clear();
+            return this;
+        }
     }
 }
