@@ -5375,6 +5375,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.IGet<ScopedUserRoleResource>
+    Octopus.Client.Repositories.IPaginate<ScopedUserRoleResource>
   {
   }
   interface IServerStatusRepository
@@ -5908,6 +5909,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IPaginate<ScopedUserRoleResource>
   {
   }
   interface IServerStatusRepository
