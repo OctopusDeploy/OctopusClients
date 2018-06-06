@@ -10,8 +10,9 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
-        public bool CanBeUsedForProjectVersioning { get; set; } 
-        
+        public string WorkerPoolId { get; set; }
+        public bool CanBeUsedForProjectVersioning { get; set; }
+
         /// <summary>
         /// If true, this action cannot be skipped when deploying
         /// </summary>

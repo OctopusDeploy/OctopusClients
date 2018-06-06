@@ -10,10 +10,10 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>
     {
-        Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null);
+        Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         Task<TaskResource> ExecuteBackup(string description = null);
-        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null);
+        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
@@ -37,7 +37,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null)
+        public Task<TaskResource> ExecuteHealthCheck(
+            string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null,
+            string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
             var resource = new TaskResource();
             resource.Name = BuiltInTasks.Health.Name;
@@ -47,7 +49,9 @@ namespace Octopus.Client.Repositories.Async
                 {BuiltInTasks.Health.Arguments.Timeout, TimeSpan.FromMinutes(timeoutAfterMinutes)},
                 {BuiltInTasks.Health.Arguments.MachineTimeout, TimeSpan.FromMinutes(machineTimeoutAfterMinutes)},
                 {BuiltInTasks.Health.Arguments.EnvironmentId, environmentId},
-                {BuiltInTasks.Health.Arguments.MachineIds, machineIds}
+                {BuiltInTasks.Health.Arguments.WorkerpoolId, workerpoolId},
+                {BuiltInTasks.Health.Arguments.RestrictedTo, restrictTo},
+                {BuiltInTasks.Health.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
             };
             return Create(resource);
         }
@@ -72,7 +76,7 @@ namespace Octopus.Client.Repositories.Async
             return Create(resource);
         }
 
-        public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null)
+        public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
             var resource = new TaskResource();
             resource.Name = BuiltInTasks.Upgrade.Name;
@@ -80,7 +84,9 @@ namespace Octopus.Client.Repositories.Async
             resource.Arguments = new Dictionary<string, object>
             {
                 {BuiltInTasks.Upgrade.Arguments.EnvironmentId, environmentId},
-                {BuiltInTasks.Upgrade.Arguments.MachineIds, machineIds}
+                {BuiltInTasks.Upgrade.Arguments.WorkerpoolId, workerpoolId},
+                {BuiltInTasks.Upgrade.Arguments.RestrictedTo, restrictTo},
+                {BuiltInTasks.Upgrade.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
             };
             return Create(resource);
         }
@@ -150,7 +156,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Post(resource.Link("Rerun"), (TaskResource)null);
         }
-        
+
         public Task Cancel(TaskResource resource)
         {
             return Client.Post(resource.Link("Cancel"), (TaskResource)null);
@@ -180,11 +186,11 @@ namespace Octopus.Client.Repositories.Async
             return WaitForCompletion(tasks, pollIntervalSeconds, timeoutAfterMinutes, taskInterval);
         }
 
-        public Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], Task> interval = null) 
+        public Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], Task> interval = null)
             => WaitForCompletion(tasks, pollIntervalSeconds, TimeSpan.FromMinutes(timeoutAfterMinutes), interval);
 
         public async Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], Task> interval = null)
-        { 
+        {
             var start = Stopwatch.StartNew();
             if (tasks == null || tasks.Length == 0)
                 return;
@@ -212,7 +218,7 @@ namespace Octopus.Client.Repositories.Async
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
