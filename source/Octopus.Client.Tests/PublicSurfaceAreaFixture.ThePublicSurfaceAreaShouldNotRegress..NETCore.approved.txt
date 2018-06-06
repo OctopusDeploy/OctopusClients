@@ -3362,6 +3362,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    IDictionary<String, String> DisplaySettings { get; set; }
     String Label { get; set; }
     Boolean Required { get; set; }
     Octopus.Client.Model.VariablePromptOptions Clone()
