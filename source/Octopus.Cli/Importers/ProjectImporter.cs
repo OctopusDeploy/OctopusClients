@@ -33,6 +33,7 @@ namespace Octopus.Cli.Importers
             public IDictionary<string, LibraryVariableSetResource> LibraryVariableSets { get; set; }
             public DeploymentProcessResource DeploymentProcess { get; set; }
             public IDictionary<string, EnvironmentResource> Environments { get; set; }
+            public IDictionary<string, WorkerPoolResource> WorkerPools { get; set; }
             public IDictionary<string, MachineResource> Machines { get; set; }
             public IDictionary<string, FeedResource> Feeds { get; set; }
             public IDictionary<string, ActionTemplateResource> Templates { get; set; }
@@ -72,6 +73,7 @@ namespace Octopus.Cli.Importers
             var projectGroup = importedObject.ProjectGroup;
             var channels = importedObject.Channels;
             var channelLifecycles = importedObject.ChannelLifecycles;
+            var workerPools = importedObject.WorkerPools;
 
             var scopeValuesUsed = GetScopeValuesUsed(variableSet.Variables, deploymentProcess.Steps, variableSet.ScopeValues);
 
@@ -82,8 +84,10 @@ namespace Octopus.Cli.Importers
             var libraryVariableSetChecksTask = CheckLibraryVariableSets(libVariableSets).ConfigureAwait(false);
             var projectGroupChecksTask = CheckProjectGroup(projectGroup).ConfigureAwait(false);
             var channelLifecycleChecksTask = CheckChannelLifecycles(channelLifecycles).ConfigureAwait(false);
+            var workerPoolChecksTask = CheckWorkerPoolsExist(workerPools).ConfigureAwait(false);
 
             var environmentChecks = await environmentChecksTask;
+            var workerPoolChecks = await workerPoolChecksTask;
             var machineChecks = await machineChecksTask;
             var feedChecks = await feedChecksTask;
             var templateChecks = await templateChecksTask;
@@ -95,6 +99,7 @@ namespace Octopus.Cli.Importers
 
             errorList.AddRange(
                 environmentChecks.MissingDependencyErrors
+                    .Concat(workerPoolChecks.MissingDependencyErrors)
                     .Concat(machineChecks.MissingDependencyErrors)
                     .Concat(feedChecks.MissingDependencyErrors)
                     .Concat(templateChecks.MissingDependencyErrors)
@@ -109,6 +114,7 @@ namespace Octopus.Cli.Importers
                 ProjectGroupId = projectGroupChecks.FoundDependencies.Values.FirstOrDefault()?.Id,
                 LibraryVariableSets = libraryVariableSetChecks.FoundDependencies,
                 Environments = environmentChecks.FoundDependencies,
+                WorkerPools = workerPoolChecks.FoundDependencies,
                 Feeds = feedChecks.FoundDependencies,
                 Templates = templateChecks.FoundDependencies,
                 Machines = machineChecks.FoundDependencies,
@@ -144,7 +150,7 @@ namespace Octopus.Cli.Importers
 
                 var oldActionChannels = validatedImportSettings.DeploymentProcess.Steps.SelectMany(s => s.Actions).ToDictionary(x => x.Id, x => x.Channels.Clone());
 
-                var importeDeploymentProcess = await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.Feeds, validatedImportSettings.Templates).ConfigureAwait(false);
+                var importeDeploymentProcess = await ImportDeploymentProcess(validatedImportSettings.DeploymentProcess, importedProject, validatedImportSettings.Environments, validatedImportSettings.WorkerPools, validatedImportSettings.Feeds, validatedImportSettings.Templates).ConfigureAwait(false);
 
                 var importedChannels =
                     (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
@@ -232,7 +238,7 @@ namespace Octopus.Cli.Importers
             {
                 {ScopeField.Environment, new List<ReferenceDataItem>()},
                 {ScopeField.Machine, new List<ReferenceDataItem>()},
-                {ScopeField.Channel, new List<ReferenceDataItem>()},
+                {ScopeField.Channel, new List<ReferenceDataItem>()}
             };
 
             foreach (var variable in variables)
@@ -303,7 +309,7 @@ namespace Octopus.Cli.Importers
 
             return usedScopeValues;
         }
-
+        
         async Task ImportVariableSets(VariableSetResource variableSet,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
@@ -416,6 +422,7 @@ namespace Octopus.Cli.Importers
         async Task<DeploymentProcessResource> ImportDeploymentProcess(DeploymentProcessResource deploymentProcess,
             ProjectResource importedProject,
             IDictionary<string, EnvironmentResource> environments,
+            IDictionary<string, WorkerPoolResource> workerPools,
             IDictionary<string, FeedResource> nugetFeeds,
             IDictionary<string, ActionTemplateResource> actionTemplates)
         {
@@ -449,6 +456,12 @@ namespace Octopus.Cli.Importers
                     }
                     action.Environments.Clear();
                     action.Environments.AddRange(newEnvironmentIds);
+
+                    if (!string.IsNullOrWhiteSpace(action.WorkerPoolId))
+                    {
+                        Log.Debug("Updating ID of Worker Pool");
+                        action.WorkerPoolId = workerPools[action.WorkerPoolId].Id;
+                    }
 
                     // Make sure source channels are clear, will be added later
                     action.Channels.Clear();
@@ -620,6 +633,18 @@ namespace Octopus.Cli.Importers
             {
                 var environment = await Repository.Environments.FindByName(env.Name).ConfigureAwait(false);
                 dependencies.Register(env.Name, env.Id, environment);
+            }
+            return dependencies;
+        }
+
+        protected async Task<CheckedReferences<WorkerPoolResource>> CheckWorkerPoolsExist(List<ReferenceDataItem> poolList)
+        {
+            Log.Debug("Checking that all worker pools exist");
+            var dependencies = new CheckedReferences<WorkerPoolResource>();
+            foreach (var p in poolList)
+            {
+                var pool = await Repository.WorkerPools.FindByName(p.Name).ConfigureAwait(false);
+                dependencies.Register(p.Name, p.Id, pool);
             }
             return dependencies;
         }

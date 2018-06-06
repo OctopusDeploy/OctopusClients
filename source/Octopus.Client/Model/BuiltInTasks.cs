@@ -39,14 +39,35 @@ namespace Octopus.Client.Model
             }
         }
 
+        public static class TaskRestrictedTo
+        {
+            public static readonly string DeploymentTargets = "DeploymentTargets";
+            public static readonly string Workers = "Workers";
+            public static readonly string Policies = "Policies";
+            public static readonly string Unrestricted = "Unlimited";
+        }
+
         public static class Health
         {
             public const string Name = "Health";
 
+            public static string[] CanBeRestrictedTo()
+            {
+                return new string[]
+                {
+                    TaskRestrictedTo.DeploymentTargets,
+                    TaskRestrictedTo.Workers,
+                    TaskRestrictedTo.Policies,
+                    TaskRestrictedTo.Unrestricted
+                };
+            }
+
             public static class Arguments
             {
                 public static string EnvironmentId = "EnvironmentId";
+                public static string WorkerpoolId = "WorkerpoolId";
                 public static string MachineIds = "MachineIds";
+                public static string RestrictedTo = "RestrictedTo";
                 public static string Timeout = "Timeout";
                 public static string MachineTimeout = "MachineTimeout";
             }
@@ -92,10 +113,22 @@ namespace Octopus.Client.Model
         {
             public const string Name = "Upgrade";
 
+            public static string[] CanBeRestrictedTo()
+            {
+                return new string[]
+                {
+                    TaskRestrictedTo.DeploymentTargets,
+                    TaskRestrictedTo.Workers,
+                    TaskRestrictedTo.Unrestricted
+                };
+            }
+
             public static class Arguments
             {
                 public static string EnvironmentId = "EnvironmentId";
+                public static string WorkerpoolId = "WorkerpoolId";
                 public static string MachineIds = "MachineIds";
+                public static string RestrictedTo = "RestrictedTo";
             }
 
         }
