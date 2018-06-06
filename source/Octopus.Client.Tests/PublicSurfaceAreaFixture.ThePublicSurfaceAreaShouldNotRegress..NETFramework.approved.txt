@@ -3216,6 +3216,7 @@ Octopus.Client.Model
     String NuGetFeedName { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
+    String PackageReferenceName { get; set; }
     String StepName { get; set; }
     String VersionSelectedLastRelease { get; set; }
   }
