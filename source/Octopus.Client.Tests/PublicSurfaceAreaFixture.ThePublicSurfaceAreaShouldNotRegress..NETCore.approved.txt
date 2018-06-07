@@ -2234,7 +2234,7 @@ Octopus.Client.Model
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
   }
-  class MultiTenancyStatus
+  class MultiTenancyStatusResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -4807,7 +4807,7 @@ Octopus.Client.Repositories.Async
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
     Task SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
-    Task<MultiTenancyStatus> Status()
+    Task<MultiTenancyStatusResource> Status()
   }
   interface ITenantVariablesRepository
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>

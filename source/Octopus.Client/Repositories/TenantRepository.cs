@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
 {
     public interface ITenantRepository : ICreate<TenantResource>, IModify<TenantResource>, IGet<TenantResource>, IDelete<TenantResource>, IFindByName<TenantResource>, IGetAll<TenantResource>
     {
-        MultiTenancyStatus Status();
+        MultiTenancyStatusResource Status();
         void SetLogo(TenantResource tenant, string fileName, Stream contents);
         TenantVariableResource GetVariables(TenantResource tenant);
         TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables);
@@ -56,9 +56,9 @@ namespace Octopus.Client.Repositories
             });
         }
 
-        public MultiTenancyStatus Status()
+        public MultiTenancyStatusResource Status()
         {
-            return Client.Get<MultiTenancyStatus>(Client.RootDocument.Link("TenantsStatus"));
+            return Client.Get<MultiTenancyStatusResource>(Client.RootDocument.Link("TenantsStatus"));
         }
 
         public void SetLogo(TenantResource tenant, string fileName, Stream contents)

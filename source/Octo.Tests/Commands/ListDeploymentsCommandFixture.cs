@@ -43,7 +43,7 @@ namespace Octopus.Cli.Tests.Commands
                 }, new LinkCollection());
 
             Repository.Tenants.Status()
-                .ReturnsForAnyArgs(new MultiTenancyStatus());
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource());
 
             Repository.Deployments
                 .When(

@@ -28,14 +28,14 @@ namespace Octo.Tests.Commands
             }));
 
             Repository.Tenants.Status()
-                .ReturnsForAnyArgs(new MultiTenancyStatus { Enabled = true });
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource { Enabled = true });
         }
 
         [Test]
         public async Task MultiTenacyFeatureDisabled_ShouldThrowException()
         {
             Repository.Tenants.Status()
-                .ReturnsForAnyArgs(new MultiTenancyStatus { Enabled = false });
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource { Enabled = false });
 
             try
             {
