@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
-using Octopus.Client;
-using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
-using Serilog;
-using FluentAssertions.Common;
 using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Model;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
+using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ReleasePlanBuilderTests

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using NSubstitute;
-using NUnit.Framework;
-using Octopus.Client.Model;
 using FluentAssertions;
 using Newtonsoft.Json;
+using NSubstitute;
+using NUnit.Framework;
 using Octopus.Cli.Commands.Environment;
+using Octopus.Client.Model;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListEnvironmentsCommandFixture: ApiCommandFixtureBase

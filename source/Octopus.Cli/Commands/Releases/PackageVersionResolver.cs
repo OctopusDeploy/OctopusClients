@@ -13,13 +13,64 @@ using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands.Releases
 {
+    /// <summary>
+    /// Represents the package that a version applies to
+    /// </summary>
+    class PackageKey : IEqualityComparer<PackageKey>
+    {
+        public string StepNameOrPackageId { get; }
+        public string PackageReferenceName { get; }
+
+        public PackageKey()
+        {
+
+        }
+
+        public PackageKey(string stepNameOrPackageId)
+        {
+            StepNameOrPackageId = stepNameOrPackageId;
+        }
+
+        public PackageKey(string stepNameOrPackageId, string packageReferenceName)
+        {
+            StepNameOrPackageId = stepNameOrPackageId;
+            PackageReferenceName = packageReferenceName;
+        }
+
+        public bool Equals(PackageKey x, PackageKey y)
+        {
+            return Object.Equals(x, y);
+        }
+
+        public int GetHashCode(PackageKey obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var key = obj as PackageKey;
+            return key != null &&
+                   string.Equals(StepNameOrPackageId, key.StepNameOrPackageId, StringComparison.CurrentCultureIgnoreCase) &&
+                   string.Equals(PackageReferenceName, key.PackageReferenceName, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 475932885;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StepNameOrPackageId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PackageReferenceName);
+            return hashCode;
+        }
+    }
+
     public class PackageVersionResolver : IPackageVersionResolver
     {
         static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
 
         readonly ILogger log;
         private readonly IOctopusFileSystem fileSystem;
-        readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        readonly IDictionary<PackageKey, string> stepNameToVersion = new Dictionary<PackageKey, string>(new PackageKey());
         string defaultVersion;
 
         public PackageVersionResolver(Serilog.ILogger log, IOctopusFileSystem fileSystem)
@@ -35,51 +86,54 @@ namespace Octopus.Cli.Commands.Releases
             {
                 log.Debug("Package file: {File:l}", file);
 
-                PackageIdentity packageIdentity;
-                if (TryReadPackageIdentity(file, out packageIdentity))
+                if (TryReadPackageIdentity(file, out var packageIdentity))
                 {
-                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                    Add(packageIdentity.Id, null, packageIdentity.Version.ToString());
                 }
             }
             foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipFilePatterns))
             {
                 log.Debug("Package file: {File:l}", file);
 
-                PackageIdentity packageIdentity;
-                if (TryParseZipIdAndVersion(file, out packageIdentity))
+                if (TryParseZipIdAndVersion(file, out var packageIdentity))
                 {
-                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                    Add(packageIdentity.Id, null, packageIdentity.Version.ToString());
                 }
             }
         }
 
         public void Add(string stepNameAndVersion)
         {
-            var index = new[] {':', '='}.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
-            if (index <= 0)
+            var split = stepNameAndVersion.Split(':', '=');
+            if (split.Length < 2)
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
 
-            var key = stepNameAndVersion.Substring(0, index);
-            var value = (index >= stepNameAndVersion.Length - 1) ? string.Empty : stepNameAndVersion.Substring(index + 1);
+            var stepOrPackageId = split[0];
+            var packageReferenceName = split.Length > 2 ? split[1] : null;
+            var version = split.Length > 2 ? split[2] : split[1];
 
-            if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(stepOrPackageId) || string.IsNullOrWhiteSpace(version))
             {
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
             }
 
-            SemanticVersion version;
-            if (!SemanticVersion.TryParse(value, out version))
+            if (!SemanticVersion.TryParse(version, out var parsedVersion))
             {
                 throw new CommandException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
             }
 
-            Add(key, value);
+            Add(stepOrPackageId, packageReferenceName, version);
         }
 
         public void Add(string stepName, string packageVersion)
         {
-            string current;
-            if (stepNameToVersion.TryGetValue(stepName, out current))
+            Add(stepName, null, packageVersion);
+        }
+
+        public void Add(string stepName, string packageReferenceName, string packageVersion)
+        {
+            var key = new PackageKey(stepName, packageReferenceName);
+            if (stepNameToVersion.TryGetValue(key, out var current))
             {
                 var newVersion = SemanticVersion.Parse(packageVersion);
                 var currentVersion = SemanticVersion.Parse(current);
@@ -89,7 +143,7 @@ namespace Octopus.Cli.Commands.Releases
                 }
             }
 
-            stepNameToVersion[stepName] = packageVersion;
+            stepNameToVersion[key] = packageVersion;
         }
 
         public void Default(string packageVersion)
@@ -111,12 +165,16 @@ namespace Octopus.Cli.Commands.Releases
 
         public string ResolveVersion(string stepName, string packageId)
         {
-             string version;
-             if (stepNameToVersion.TryGetValue(stepName, out version))
-                 return version;
+            return ResolveVersion(stepName, packageId, null);
+        }
+
+        public string ResolveVersion(string stepName, string packageId, string packageReferenceName)
+        {
+             if (stepNameToVersion.TryGetValue(new PackageKey(stepName, packageReferenceName), out var stepVersion))
+                 return stepVersion;
            
-             if (stepNameToVersion.TryGetValue(packageId, out version))
-                 return version;
+             if (stepNameToVersion.TryGetValue(new PackageKey(packageId, packageReferenceName), out var packageVersion))
+                 return packageVersion;
            
             return defaultVersion;
         }

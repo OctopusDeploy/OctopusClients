@@ -37,13 +37,14 @@ namespace Octopus.Cli.Commands.Releases
                 .Where(x => string.IsNullOrEmpty(x.PackageId) && x.IsDisabled == false) // only consider enabled script steps
                 .Where(a => !a.Channels.Any() || a.Channels.Contains(channel.Id)) // only include actions without channel scope or with a matchign channel scope
                 .Select(x =>
-                    new ReleasePlanItem(x.StepName, null, null, true, null)
+                    new ReleasePlanItem(x.StepName, null, null, null, true, null)
                     {
                         IsDisabled = x.IsDisabled
                     }).ToArray();
             packageSteps = releaseTemplate.Packages.Select(
                 p => new ReleasePlanItem(
                     p.ActionName,
+                    p.PackageReferenceName,
                     p.PackageId,
                     p.FeedId,
                     p.IsResolvable,

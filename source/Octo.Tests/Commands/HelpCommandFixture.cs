@@ -1,15 +1,15 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Tests.Helpers;
-using FluentAssertions;
 using Octopus.Cli.Commands;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Tests.Helpers;
 using Octopus.Cli.Util;
 using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class HelpCommandFixture

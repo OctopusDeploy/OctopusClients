@@ -23,5 +23,7 @@ namespace Octopus.Client.Model
 
         public string ActionName { get; set; }
         public string Version { get; set; }
+
+        public string PackageReferenceName { get; set; }
     }
 }

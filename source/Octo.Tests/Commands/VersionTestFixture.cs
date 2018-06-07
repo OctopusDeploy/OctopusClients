@@ -7,7 +7,7 @@ using Octopus.Cli.Tests.Helpers;
 using Octopus.Cli.Util;
 using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class VersionTestFixture
