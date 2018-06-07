@@ -1,6 +1,6 @@
 ﻿namespace Octopus.Client.Model
 {
-    public class MultiTenancyStatus
+    public class MultiTenancyStatus : Resource
     {
         public bool Enabled { get; set; }
     }

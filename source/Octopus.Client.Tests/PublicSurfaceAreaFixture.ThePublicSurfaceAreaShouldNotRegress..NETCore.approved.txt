@@ -2235,6 +2235,9 @@ Octopus.Client.Model
     String VariableTemplateName { get; set; }
   }
   class MultiTenancyStatus
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     Boolean Enabled { get; set; }
