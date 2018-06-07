@@ -81,6 +81,42 @@ namespace Octo.Tests.Commands
         }
 
         [Test]
+        public void ShouldParseWildCardConstraint()
+        {
+            resolver.Add("PackageA:Package2:2.0.0");
+            resolver.Add("Step:Package2:3.0.0");
+            resolver.Add("Step:4.0.0");
+            resolver.Add("Package2:5.0.0");
+            resolver.Add("PackageA:*:1.0.0");
+            resolver.Add("*:Package1:1.0.0-alpha1");
+            resolver.Add("*=Package1=1.0.0-alpha1");
+            resolver.Add("*=*=1.0.0-beta");
+
+            // This is an exact match. We prioritise step names over package names
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package2"), Is.EqualTo("3.0.0"));
+            // This is an exact match to the step name
+            Assert.That(resolver.ResolveVersion("Step", "PackageUnknown", "Package2"), Is.EqualTo("3.0.0"));
+            // This is an exact match to the package name
+            Assert.That(resolver.ResolveVersion("StepUnknown", "PackageA", "Package2"), Is.EqualTo("2.0.0"));
+            // This is an exact match to the unnamed package version by step id
+            Assert.That(resolver.ResolveVersion("Step", "PackageWhatever"), Is.EqualTo("4.0.0"));
+            // This is an exact match to the unnamed package version by package id
+            Assert.That(resolver.ResolveVersion("StepUnknown", "Package2"), Is.EqualTo("5.0.0"));
+            // Unnamed packages also match the wildcard
+            Assert.That(resolver.ResolveVersion("StepUnknown", "PackageA"), Is.EqualTo("1.0.0"));
+            // This will match the wildcard step but fixed package name version, because we treat the
+            // package reference name as more specific
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.0.0-alpha1"));
+            // This will match the fixed step but wildcard package name version
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Unknown"), Is.EqualTo("1.0.0"));
+            // This will also match the wildcard step and fixed package name version, because it is more
+            // specific than the default
+            Assert.That(resolver.ResolveVersion("Step", "PackageB", "Package1"), Is.EqualTo("1.0.0-alpha1"));
+            // This will match the default (i.e. the double wildcard)
+            Assert.That(resolver.ResolveVersion("StepWhatever", "PackageB", "PackageUnknown"), Is.EqualTo("1.0.0-beta"));
+        }
+
+        [Test]
         public void ShouldThrowOnInvalidConstraint()
         {
             Assert.Throws<CommandException>(() => resolver.Add(":"));

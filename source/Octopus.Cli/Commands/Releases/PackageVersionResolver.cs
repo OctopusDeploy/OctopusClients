@@ -66,6 +66,10 @@ namespace Octopus.Cli.Commands.Releases
 
     public class PackageVersionResolver : IPackageVersionResolver
     {
+        /// <summary>
+        /// Used to indicate a match with any matching step name or package reference name
+        /// </summary>
+        private const string WildCard = "*";
         static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
 
         readonly ILogger log;
@@ -132,6 +136,13 @@ namespace Octopus.Cli.Commands.Releases
 
         public void Add(string stepName, string packageReferenceName, string packageVersion)
         {
+            // Double wild card == default value
+            if (stepName == WildCard && packageReferenceName == WildCard)
+            {
+                Default(packageVersion);
+                return;
+            }
+
             var key = new PackageKey(stepName, packageReferenceName);
             if (stepNameToVersion.TryGetValue(key, out var current))
             {
@@ -170,13 +181,24 @@ namespace Octopus.Cli.Commands.Releases
 
         public string ResolveVersion(string stepName, string packageId, string packageReferenceName)
         {
-             if (stepNameToVersion.TryGetValue(new PackageKey(stepName, packageReferenceName), out var stepVersion))
-                 return stepVersion;
-           
-             if (stepNameToVersion.TryGetValue(new PackageKey(packageId, packageReferenceName), out var packageVersion))
-                 return packageVersion;
-           
-            return defaultVersion;
+            var identifiers = new[] {stepName, packageId};
+
+            // First attempt to get an exact match between step or package id and the package reference name
+            return identifiers
+                    .Select(id => new PackageKey(id, packageReferenceName))
+                    .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
+                    .FirstOrDefault(version => version != null)
+                ??
+                // If that fails, try to match on a wildcard step/package id and exact package reference name,
+                // and then on an exact step/package id and wildcard package reference name
+                identifiers
+                    .SelectMany(id => new[]
+                        {new PackageKey(WildCard, packageReferenceName), new PackageKey(id, WildCard)})
+                    .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
+                    .FirstOrDefault(version => version != null)
+                ??
+                // Finally, use the default version
+                defaultVersion;
         }
 
         bool TryReadPackageIdentity(string packageFile, out PackageIdentity packageIdentity)
