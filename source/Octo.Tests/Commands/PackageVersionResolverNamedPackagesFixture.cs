@@ -91,6 +91,7 @@ namespace Octo.Tests.Commands
             resolver.Add("*:Package1:1.0.0-alpha1");
             resolver.Add("*=Package1=1.0.0-alpha1");
             resolver.Add("*=*=1.0.0-beta");
+            resolver.Add("*=6.0.0");
 
             // This is an exact match. We prioritise step names over package names
             Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package2"), Is.EqualTo("3.0.0"));
@@ -102,8 +103,8 @@ namespace Octo.Tests.Commands
             Assert.That(resolver.ResolveVersion("Step", "PackageWhatever"), Is.EqualTo("4.0.0"));
             // This is an exact match to the unnamed package version by package id
             Assert.That(resolver.ResolveVersion("StepUnknown", "Package2"), Is.EqualTo("5.0.0"));
-            // Unnamed packages also match the wildcard
-            Assert.That(resolver.ResolveVersion("StepUnknown", "PackageA"), Is.EqualTo("1.0.0"));
+            // Unnamed packages also match the wildcard. In this case it is the wildcard for the unnamed packages
+            Assert.That(resolver.ResolveVersion("StepUnknown", "PackageA"), Is.EqualTo("6.0.0"));
             // This will match the wildcard step but fixed package name version, because we treat the
             // package reference name as more specific
             Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.0.0-alpha1"));
