@@ -222,6 +222,16 @@ namespace Octopus.Client.Model
         
         [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer,
 
-        [Description("Edit feeds")] FeedEdit
+        [Description("Edit feeds")] FeedEdit,
+        
+        [Description("Run background actions that don't require user principal")] RunSystem,
+        
+        [Description("Edit spaces")] SpaceEdit,
+        
+        [Description("View spaces")] SpaceView,
+        
+        [Description("Delete spaces")] SpaceDelete,
+        
+        [Description("Craete spaces")] SpaceCreate
     }
 }

@@ -21,6 +21,7 @@ namespace Octopus.Client.Repositories.Async
         Task SignOut();
         Task<UserResource> GetCurrent();
         Task<UserPermissionSetResource> GetPermissions(UserResource user, string spaceId = null);
+        Task<SpaceResource[]> GetSpaces(UserResource user);
         Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResource apiKey);
@@ -95,6 +96,12 @@ namespace Octopus.Client.Repositories.Async
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Get<UserPermissionSetResource>(user.Link("Permissions").AppendSpaceId(spaceId));
+        }
+
+        public Task<SpaceResource[]> GetSpaces(UserResource user)
+        {
+            if (user == null) throw new ArgumentNullException("user");
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)

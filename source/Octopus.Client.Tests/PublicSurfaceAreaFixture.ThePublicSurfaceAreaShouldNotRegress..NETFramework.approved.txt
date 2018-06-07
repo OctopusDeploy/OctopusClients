@@ -2955,6 +2955,11 @@ Octopus.Client.Model
       UserEdit = 103
       ConfigureServer = 104
       FeedEdit = 105
+      RunSystem = 106
+      SpaceEdit = 107
+      SpaceView = 108
+      SpaceDelete = 109
+      SpaceCreate = 110
   }
   class PermissionDescription
   {
@@ -5313,6 +5318,7 @@ Octopus.Client.Repositories
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
     Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource, String)
+    Octopus.Client.Model.SpaceResource[] GetSpaces(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.InvitationResource Invite(String)
     Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
     Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
@@ -5810,6 +5816,7 @@ Octopus.Client.Repositories.Async
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
     Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource, String)
+    Task<SpaceResource[]> GetSpaces(Octopus.Client.Model.UserResource)
     Task<InvitationResource> Invite(String)
     Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)

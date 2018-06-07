@@ -21,6 +21,7 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         UserPermissionSetResource GetPermissions(UserResource user, string spaceId = null);
+        SpaceResource[] GetSpaces(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
@@ -94,6 +95,12 @@ namespace Octopus.Client.Repositories
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Get<UserPermissionSetResource>(user.Link("Permissions").AppendSpaceId(spaceId));
+        }
+        
+        public SpaceResource[] GetSpaces(UserResource user)
+        {
+            if (user == null) throw new ArgumentNullException("user");
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)
