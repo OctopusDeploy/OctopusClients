@@ -58,8 +58,8 @@ namespace Octopus.Cli.Commands.Releases
         public override int GetHashCode()
         {
             var hashCode = 475932885;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StepNameOrPackageId);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PackageReferenceName);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StepNameOrPackageId?.ToLower());
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PackageReferenceName?.ToLower());
             return hashCode;
         }
     }

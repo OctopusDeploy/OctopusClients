@@ -26,8 +26,8 @@ namespace Octo.Tests.Commands
             resolver.Add("PackageA", "Package1", "1.0.0");
             resolver.Add("PackageB", "Package1", "1.1.0");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageB"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB", "Package1"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -36,8 +36,8 @@ namespace Octo.Tests.Commands
             resolver.Add("PackageA", "Package1", "1.0.0");
             resolver.Add("packageA", "Package1", "1.1.0");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("1.1.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "packagea"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "packagea", "Package1"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace Octo.Tests.Commands
             resolver.Add("PackageA", "Package1", "1.1.0");
             resolver.Add("PackageA", "Package1", "0.9.0");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.1.0"));
         }
 
         [Test]
@@ -55,8 +55,8 @@ namespace Octo.Tests.Commands
         {
             resolver.Add("PackageA", "Package1", "1.0.0");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageZ"), Is.Null);
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageZ", "Package1"), Is.Null);
         }
 
         [Test]
@@ -64,9 +64,9 @@ namespace Octo.Tests.Commands
         {
             resolver.Default("2.91.0");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("2.91.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageB"), Is.EqualTo("2.91.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageC"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB", "Package1"), Is.EqualTo("2.91.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageC", "Package1"), Is.EqualTo("2.91.0"));
         }
 
         [Test]
@@ -76,8 +76,8 @@ namespace Octo.Tests.Commands
             resolver.Add("PackageB:Package1:1.0.0-alpha1");
             resolver.Add("PackageB=Package1=1.0.0-alpha1");
 
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageA"), Is.EqualTo("1.0.0"));
-            Assert.That(resolver.ResolveVersion("Step", "Package1", "PackageB"), Is.EqualTo("1.0.0-alpha1"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageA", "Package1"), Is.EqualTo("1.0.0"));
+            Assert.That(resolver.ResolveVersion("Step", "PackageB", "Package1"), Is.EqualTo("1.0.0-alpha1"));
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace Octo.Tests.Commands
             resolver.Default("1.0.0");
             resolver.Add("StepName", "Package1", "1.1.0");
             resolver.Add("PackageId", "Package1", "1.2.0");
-            Assert.That(resolver.ResolveVersion("StepName", "Package1", "PackageId"), Is.EqualTo("1.1.0"));
+            Assert.That(resolver.ResolveVersion("StepName", "PackageId", "Package1"), Is.EqualTo("1.1.0"));
         }
 
 
@@ -109,7 +109,7 @@ namespace Octo.Tests.Commands
             resolver.Add("OtherStep", "Package1", "1.1.0");
             resolver.Add("PackageId", "Package1", "1.2.0");
 
-            Assert.That(resolver.ResolveVersion("StepName", "Package1", "PackageId"), Is.EqualTo("1.2.0"));
+            Assert.That(resolver.ResolveVersion("StepName", "PackageId", "Package1"), Is.EqualTo("1.2.0"));
         }
     }
 }
