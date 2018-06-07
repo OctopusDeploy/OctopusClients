@@ -232,6 +232,6 @@ namespace Octopus.Client.Model
         
         [Description("Delete spaces")] SpaceDelete,
         
-        [Description("Craete spaces")] SpaceCreate
+        [Description("Create spaces")] SpaceCreate
     }
 }
