@@ -48,7 +48,7 @@ namespace Octopus.Cli.Commands.Releases
                     p.PackageId,
                     p.FeedId,
                     p.IsResolvable,
-                    versionResolver.ResolveVersion(p.ActionName, p.PackageId)))
+                    versionResolver.ResolveVersion(p.ActionName, p.PackageId, p.PackageReferenceName)))
                 .ToArray();
         }
 
@@ -83,7 +83,12 @@ namespace Octopus.Cli.Commands.Releases
 
         public List<SelectedPackage> GetSelections()
         {
-            return PackageSteps.Select(x => new SelectedPackage {ActionName = x.ActionName, Version = x.Version}).ToList();
+            return PackageSteps.Select(x => new SelectedPackage
+            {
+                ActionName = x.ActionName,
+                PackageReferenceName = x.PackageReferenceName,
+                Version = x.Version
+            }).ToList();
         }
 
         public string GetHighestVersionNumber()
