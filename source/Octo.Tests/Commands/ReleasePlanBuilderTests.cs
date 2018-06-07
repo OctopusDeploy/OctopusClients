@@ -322,6 +322,8 @@ namespace Octo.Tests.Commands
         {
             versionResolver.ResolveVersion(releaseTemplatePackage.ActionName, releaseTemplatePackage.PackageId)
                 .Returns(version);
+            versionResolver.ResolveVersion(releaseTemplatePackage.ActionName, releaseTemplatePackage.PackageId, null)
+                .Returns(version);
             return releaseTemplatePackage;
         }
 
