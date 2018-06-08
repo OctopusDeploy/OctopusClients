@@ -108,7 +108,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public void Add(string stepNameAndVersion)
         {
-            var split = stepNameAndVersion.Split(':', '=');
+            var split = stepNameAndVersion.Split(':', '=', '/');
             if (split.Length < 2)
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
 
