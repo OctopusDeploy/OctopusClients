@@ -123,7 +123,7 @@ namespace Octopus.Cli.Commands.Releases
             var versionColumnWidth = Width("Version", packageSteps.Select(s => s.Version));
             var sourceColumnWidth = Width("Source", packageSteps.Select(s => s.VersionSource));
             var rulesColumnWidth = Width("Version rules", packageSteps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
-            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + versionColumnWidth + "} {3,-" + sourceColumnWidth + "} {4,-" + rulesColumnWidth + "}";
+            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + packageNameWidth + "} {3,-" + versionColumnWidth + "} {4,-" + sourceColumnWidth + "} {5,-" + rulesColumnWidth + "}";
 
             result.AppendFormat(format, "#", "Name", "Package Name", "Version", "Source", "Version rules").AppendLine();
             result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', packageNameWidth), new string('-', versionColumnWidth), new string('-', sourceColumnWidth), new string('-', rulesColumnWidth)).AppendLine();
