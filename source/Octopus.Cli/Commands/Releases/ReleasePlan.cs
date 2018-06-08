@@ -118,8 +118,8 @@ namespace Octopus.Cli.Commands.Releases
                 return result.ToString();
             }
 
-            var nameColumnWidth = Width("Name", new []{UnnamedPackagePlaceholder}.Concat(packageSteps.Select(s => s.ActionName)));
-            var packageNameWidth = Width("Package Name", packageSteps.Select(s => s.PackageReferenceName));
+            var nameColumnWidth = Width("Name",packageSteps.Select(s => s.ActionName));
+            var packageNameWidth = Width("Package Name", new[] { UnnamedPackagePlaceholder }.Concat(packageSteps.Select(s => s.PackageReferenceName)));
             var versionColumnWidth = Width("Version", packageSteps.Select(s => s.Version));
             var sourceColumnWidth = Width("Source", packageSteps.Select(s => s.VersionSource));
             var rulesColumnWidth = Width("Version rules", packageSteps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));

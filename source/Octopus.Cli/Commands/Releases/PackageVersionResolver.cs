@@ -70,6 +70,11 @@ namespace Octopus.Cli.Commands.Releases
         /// Used to indicate a match with any matching step name or package reference name
         /// </summary>
         private const string WildCard = "*";
+        /// <summary>
+        /// The characters we support for breaking up step, package name and version in the supplied strings
+        /// </summary>
+        private static readonly char[] Delimiters = new [] {':', '=', '/'};
+
         static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
 
         readonly ILogger log;
@@ -108,7 +113,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public void Add(string stepNameAndVersion)
         {
-            var split = stepNameAndVersion.Split(':', '=', '/');
+            var split = stepNameAndVersion.Split(Delimiters);
             if (split.Length < 2)
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
 
