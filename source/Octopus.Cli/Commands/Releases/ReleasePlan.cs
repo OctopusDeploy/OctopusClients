@@ -10,7 +10,6 @@ namespace Octopus.Cli.Commands.Releases
 {
     public class ReleasePlan
     {
-        private const string UnnamedPackagePlaceholder = "<Unnamed Package>";
         readonly ReleasePlanItem[] packageSteps;
         private readonly ReleasePlanItem[] scriptSteps;
 
@@ -118,25 +117,82 @@ namespace Octopus.Cli.Commands.Releases
                 return result.ToString();
             }
 
-            var nameColumnWidth = Width("Name",packageSteps.Select(s => s.ActionName));
-            var packageNameWidth = Width("Package Name", new[] { UnnamedPackagePlaceholder }.Concat(packageSteps.Select(s => s.PackageReferenceName)));
+            var nameColumnWidth = Width("Name", packageSteps.Select(s => s.ActionName));
+            var packageNameWidth = Width("Package Name", packageSteps.Select(s => s.PackageReferenceName));
             var versionColumnWidth = Width("Version", packageSteps.Select(s => s.Version));
             var sourceColumnWidth = Width("Source", packageSteps.Select(s => s.VersionSource));
             var rulesColumnWidth = Width("Version rules", packageSteps.Select(s => s.ChannelVersionRuleTestResult?.ToSummaryString()));
-            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + packageNameWidth + "} {3,-" + versionColumnWidth + "} {4,-" + sourceColumnWidth + "} {5,-" + rulesColumnWidth + "}";
 
+            if (packageSteps.Any(s => !string.IsNullOrEmpty(s.PackageReferenceName)))
+            {                
+                return BuildTableWithNamedPackages(result,
+                    nameColumnWidth,
+                    packageNameWidth,
+                    versionColumnWidth,
+                    sourceColumnWidth,
+                    rulesColumnWidth);
+            }
+
+            return BuildTableWithUnnamedPackages(
+                result,
+                nameColumnWidth,
+                versionColumnWidth,
+                sourceColumnWidth,
+                rulesColumnWidth);
+        }
+
+        /// <summary>
+        /// If we only have unnamed packages, don't display the name column
+        /// </summary>
+        private string BuildTableWithUnnamedPackages(
+            StringBuilder result,
+            int nameColumnWidth,
+            int versionColumnWidth,
+            int sourceColumnWidth,
+            int rulesColumnWidth)
+        {
+            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + versionColumnWidth + "} {3,-" + sourceColumnWidth + "} {4,-" + rulesColumnWidth + "}";
+            result.AppendFormat(format, "#", "Name", "Version", "Source", "Version rules").AppendLine();
+            result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', versionColumnWidth), new string('-', sourceColumnWidth), new string('-', rulesColumnWidth)).AppendLine();
+            for (var i = 0; i < packageSteps.Length; i++)
+            {
+                var item = packageSteps[i];
+                result.AppendFormat(format,
+                        i + 1,
+                        item.ActionName,
+                        item.Version ?? "ERROR",
+                        item.VersionSource,
+                        item.ChannelVersionRuleTestResult?.ToSummaryString())
+                    .AppendLine();
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// When we have named packages, add a column to display the names
+        /// </summary>
+        private string BuildTableWithNamedPackages(
+            StringBuilder result,
+            int nameColumnWidth, 
+            int packageNameWidth, 
+            int versionColumnWidth,
+            int sourceColumnWidth, 
+            int rulesColumnWidth)
+        {
+            var format = "  {0,-3} {1,-" + nameColumnWidth + "} {2,-" + packageNameWidth + "} {3,-" + versionColumnWidth + "} {4,-" + sourceColumnWidth + "} {5,-" + rulesColumnWidth + "}";
             result.AppendFormat(format, "#", "Name", "Package Name", "Version", "Source", "Version rules").AppendLine();
             result.AppendFormat(format, "---", new string('-', nameColumnWidth), new string('-', packageNameWidth), new string('-', versionColumnWidth), new string('-', sourceColumnWidth), new string('-', rulesColumnWidth)).AppendLine();
             for (var i = 0; i < packageSteps.Length; i++)
             {
                 var item = packageSteps[i];
                 result.AppendFormat(format,
-                    i + 1,
-                    item.ActionName,
-                    item.PackageReferenceName ?? UnnamedPackagePlaceholder,
-                    item.Version ?? "ERROR",
-                    item.VersionSource,
-                    item.ChannelVersionRuleTestResult?.ToSummaryString())
+                        i + 1,
+                        item.ActionName,
+                        item.PackageReferenceName,
+                        item.Version ?? "ERROR",
+                        item.VersionSource,
+                        item.ChannelVersionRuleTestResult?.ToSummaryString())
                     .AppendLine();
             }
 
