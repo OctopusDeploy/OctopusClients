@@ -125,6 +125,28 @@ namespace Octopus.Cli.Exporters
                 }
             }
 
+            Log.Debug("Finding all worker pools for deployment process...");
+            var workerPools = new List<ReferenceDataItem>();
+            foreach (var step in deploymentProcess.Steps)
+            {
+                foreach (var action in step.Actions)
+                {
+                    if (!string.IsNullOrWhiteSpace(action.WorkerPoolId))
+                    {
+                        Log.Debug("Finding worker pool for action {ActionName:l}", action.Name);
+                        var pool = await Repository.WorkerPools.Get(action.WorkerPoolId).ConfigureAwait(false);
+
+                        if (pool == null)
+                            throw new CouldNotFindException("Worker pool feed for step", step.Name);
+
+                        if (workerPools.All(wp => wp.Id != pool.Id))
+                        {
+                            workerPools.Add(new ReferenceDataItem(pool.Id, pool.Name));
+                        }
+                    }
+                }
+            }
+
             var libraryVariableSets = new List<ReferenceDataItem>();
             foreach (var libraryVariableSetId in project.IncludedLibraryVariableSetIds)
             {
@@ -158,6 +180,7 @@ namespace Octopus.Cli.Exporters
                 Lifecycle = lifecycle != null ? new ReferenceDataItem(lifecycle.Id, lifecycle.Name) : null,
                 Channels = channels.ToList(),
                 ChannelLifecycles = channelLifecycles,
+                WorkerPools = workerPools
             };
 
             var metadata = new ExportMetadata

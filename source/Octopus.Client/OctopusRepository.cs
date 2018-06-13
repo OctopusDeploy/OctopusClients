@@ -69,6 +69,8 @@ namespace Octopus.Client
             UserRoles = new UserRolesRepository(client);
             Users = new UserRepository(client);
             VariableSets = new VariableSetRepository(client);
+            Workers = new WorkerRepository(client);
+            WorkerPools = new WorkerPoolRepository(client);
         }
 
         public IOctopusClient Client { get; }
@@ -118,6 +120,8 @@ namespace Octopus.Client
         public IUserRepository Users { get; }
         public IUserRolesRepository UserRoles { get; }
         public IVariableSetRepository VariableSets { get; }
+        public IWorkerPoolRepository WorkerPools { get; }
+        public IWorkerRepository Workers { get; }
     }
 }
 #endif

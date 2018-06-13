@@ -91,6 +91,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
+    Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
   interface IOctopusClientFactory
   {
@@ -179,6 +181,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
+    Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
@@ -541,6 +545,27 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Editors.Async.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
   }
+  class WorkerEditor
+    Octopus.Client.Editors.Async.IResourceEditor<WorkerResource, WorkerEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IWorkerRepository)
+    Octopus.Client.Model.WorkerResource Instance { get; }
+    Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Editors.Async.WorkerEditor Customize(Action<WorkerResource>)
+    Task<WorkerEditor> Save()
+  }
+  class WorkerPoolEditor
+    Octopus.Client.Editors.Async.IResourceEditor<WorkerPoolResource, WorkerPoolEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IWorkerPoolRepository)
+    Octopus.Client.Model.WorkerPoolResource Instance { get; }
+    Task<WorkerPoolEditor> CreateOrModify(String)
+    Task<WorkerPoolEditor> CreateOrModify(String, String)
+    Octopus.Client.Editors.Async.WorkerPoolEditor Customize(Action<WorkerPoolResource>)
+    Task<WorkerPoolEditor> Save()
+  }
 }
 Octopus.Client.Exceptions
 {
@@ -883,21 +908,6 @@ Octopus.Client.Model
       static System.String TargetRoles
     }
   }
-  class AlertResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String Message { get; set; }
-    Octopus.Client.Model.AlertSeverity Severity { get; set; }
-  }
-  AlertSeverity
-  {
-      Info = 0
-      Warning = 1
-      Danger = 2
-  }
   class AllowCsvAttribute
     Attribute
   {
@@ -939,7 +949,9 @@ Octopus.Client.Model
     static System.String EnvironmentId
     static System.String MachineIds
     static System.String MachineTimeout
+    static System.String RestrictedTo
     static System.String Timeout
+    static System.String WorkerpoolId
   }
   abstract class Arguments
   {
@@ -955,6 +967,8 @@ Octopus.Client.Model
   {
     static System.String EnvironmentId
     static System.String MachineIds
+    static System.String RestrictedTo
+    static System.String WorkerpoolId
   }
   abstract class Arguments
   {
@@ -1100,12 +1114,15 @@ Octopus.Client.Model
     abstract class Health
     {
       static System.String Name
+      static String[] CanBeRestrictedTo()
       abstract class Arguments
       {
         static System.String EnvironmentId
         static System.String MachineIds
         static System.String MachineTimeout
+        static System.String RestrictedTo
         static System.String Timeout
+        static System.String WorkerpoolId
       }
     }
     abstract class Migration
@@ -1131,6 +1148,13 @@ Octopus.Client.Model
     abstract class SystemIntegrityCheck
     {
       static System.String Name
+    }
+    abstract class TaskRestrictedTo
+    {
+      static System.String DeploymentTargets
+      static System.String Policies
+      static System.String Unrestricted
+      static System.String Workers
     }
     abstract class TestAzureAccount
     {
@@ -1159,10 +1183,13 @@ Octopus.Client.Model
     abstract class Upgrade
     {
       static System.String Name
+      static String[] CanBeRestrictedTo()
       abstract class Arguments
       {
         static System.String EnvironmentId
         static System.String MachineIds
+        static System.String RestrictedTo
+        static System.String WorkerpoolId
       }
     }
   }
@@ -1501,6 +1528,7 @@ Octopus.Client.Model
     String Name { get; set; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
+    String WorkerPoolId { get; set; }
     Octopus.Client.Model.DeploymentActionResource ClearAllConditions()
     Octopus.Client.Model.DeploymentActionResource ForChannels(Octopus.Client.Model.ChannelResource[])
     Octopus.Client.Model.DeploymentActionResource ForEnvironments(Octopus.Client.Model.EnvironmentResource[])
@@ -1721,30 +1749,20 @@ Octopus.Client.Model
     Boolean UseGuidedFailure { get; set; }
   }
   class EnvironmentsSummaryResource
+    Octopus.Client.Model.SummaryResourcesCombined
   {
     .ctor()
     List<EnvironmentSummaryResource> EnvironmentSummaries { get; set; }
-    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
-    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
-    String[] MachineIdsForCalamariUpgrade { get; set; }
     Dictionary<String, Int32> MachineTenantSummaries { get; set; }
     Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
-    Boolean TentacleUpgradesRequired { get; set; }
-    Int32 TotalDisabledMachines { get; set; }
-    Int32 TotalMachines { get; set; }
   }
   class EnvironmentSummaryResource
+    Octopus.Client.Model.SummaryResource
   {
     .ctor()
     Octopus.Client.Model.EnvironmentResource Environment { get; set; }
-    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
-    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
-    String[] MachineIdsForCalamariUpgrade { get; set; }
     Dictionary<String, Int32> MachineTenantSummaries { get; set; }
     Dictionary<String, Int32> MachineTenantTagSummaries { get; set; }
-    Boolean TentacleUpgradesRequired { get; set; }
-    Int32 TotalDisabledMachines { get; set; }
-    Int32 TotalMachines { get; set; }
   }
   class EventNotificationSubscription
   {
@@ -1823,6 +1841,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsBuiltInRepoSyncEnabled { get; set; }
+    Boolean IsBuiltInWorkerEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
   }
   class FeedResource
@@ -1873,12 +1892,15 @@ Octopus.Client.Model
   abstract class Health
   {
     static System.String Name
+    static String[] CanBeRestrictedTo()
     abstract class Arguments
     {
       static System.String EnvironmentId
       static System.String MachineIds
       static System.String MachineTimeout
+      static System.String RestrictedTo
       static System.String Timeout
+      static System.String WorkerpoolId
     }
   }
   HealthCheckErrorHandling
@@ -2002,18 +2024,6 @@ Octopus.Client.Model
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.LibraryVariableSetResource Clear()
   }
-  class LicenseResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Boolean IsCompliant { get; set; }
-    String LicenseText { get; set; }
-    Int32 MaintenanceExpiresIn { get; set; }
-    String NoncomplianceReason { get; set; }
-    Boolean UseFreeVersion { get; set; }
-  }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2055,6 +2065,24 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean UsingSecureConnection { get; set; }
+  }
+  abstract class MachineBasedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
+    Boolean HasLatestCalamari { get; set; }
+    Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
+    Boolean IsDisabled { get; set; }
+    Boolean IsInProcess { get; set; }
+    String MachinePolicyId { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.MachineModelStatus Status { get; set; }
+    String StatusSummary { get; set; }
+    String Thumbprint { get; set; }
+    String Uri { get; set; }
   }
   class MachineCleanupPolicy
   {
@@ -2142,25 +2170,14 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
-    Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Boolean HasLatestCalamari { get; set; }
-    Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
-    Boolean IsDisabled { get; set; }
-    Boolean IsInProcess { get; set; }
-    String MachinePolicyId { get; set; }
-    String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
-    Octopus.Client.Model.MachineModelStatus Status { get; set; }
-    String StatusSummary { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
-    String Thumbprint { get; set; }
-    String Uri { get; set; }
     Octopus.Client.Model.MachineResource AddOrUpdateEnvironments(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.MachineResource AddOrUpdateRoles(String[])
     Octopus.Client.Model.MachineResource AddOrUpdateTenants(Octopus.Client.Model.TenantResource[])
@@ -3108,6 +3125,26 @@ Octopus.Client.Model
   {
       Event = 0
   }
+  class SummaryResource
+  {
+    .ctor()
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    String[] MachineIdsForCalamariUpgrade { get; set; }
+    Boolean TentacleUpgradesRequired { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
+  class SummaryResourcesCombined
+  {
+    .ctor()
+    Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
+    Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
+    String[] MachineIdsForCalamariUpgrade { get; set; }
+    Boolean TentacleUpgradesRequired { get; set; }
+    Int32 TotalDisabledMachines { get; set; }
+    Int32 TotalMachines { get; set; }
+  }
   class SupportsRestrictionAttribute
     Attribute
   {
@@ -3222,6 +3259,13 @@ Octopus.Client.Model
     String ServerNode { get; set; }
     Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
+  }
+  abstract class TaskRestrictedTo
+  {
+    static System.String DeploymentTargets
+    static System.String Policies
+    static System.String Unrestricted
+    static System.String Workers
   }
   TaskState
   {
@@ -3357,10 +3401,13 @@ Octopus.Client.Model
   abstract class Upgrade
   {
     static System.String Name
+    static String[] CanBeRestrictedTo()
     abstract class Arguments
     {
       static System.String EnvironmentId
       static System.String MachineIds
+      static System.String RestrictedTo
+      static System.String WorkerpoolId
     }
   }
   class UserPermissionRestriction
@@ -3423,6 +3470,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    IDictionary<String, String> DisplaySettings { get; set; }
     String Label { get; set; }
     Boolean Required { get; set; }
     Octopus.Client.Model.VariablePromptOptions Clone()
@@ -3519,6 +3567,42 @@ Octopus.Client.Model
     Int64 HttpStrictTransportSecurityMaxAge { get; set; }
     String ReferrerPolicy { get; set; }
     Octopus.Client.Model.XOptionsResource XOptions { get; set; }
+  }
+  class WorkerPoolResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Description { get; set; }
+    Boolean IsDefault { get; set; }
+    String Name { get; set; }
+    Int32 SortOrder { get; set; }
+  }
+  class WorkerPoolsSummaryResource
+    Octopus.Client.Model.SummaryResourcesCombined
+  {
+    .ctor()
+    List<WorkerPoolSummaryResource> WorkerPoolSummaries { get; set; }
+  }
+  class WorkerPoolSummaryResource
+    Octopus.Client.Model.SummaryResource
+  {
+    .ctor()
+    Octopus.Client.Model.WorkerPoolResource WorkerPool { get; set; }
+  }
+  class WorkerResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.MachineBasedResource
+  {
+    .ctor()
+    Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
+    Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Model.WorkerResource ClearWorkerPools()
+    Octopus.Client.Model.WorkerResource RemoveWorkerPool(Octopus.Client.Model.WorkerPoolResource)
   }
   class X509Certificate
   {
@@ -4311,18 +4395,22 @@ Octopus.Client.Model.Versioning
 Octopus.Client.Operations
 {
   interface IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
   {
-    Boolean AllowOverwrite { get; set; }
-    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
     String[] EnvironmentNames { get; set; }
-    String MachineName { get; set; }
-    String MachinePolicy { get; set; }
-    String ProxyName { get; set; }
     String[] Roles { get; set; }
-    Uri SubscriptionId { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
+  }
+  interface IRegisterMachineOperationBase
+  {
+    Boolean AllowOverwrite { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
+    String MachineName { get; set; }
+    String MachinePolicy { get; set; }
+    String ProxyName { get; set; }
+    Uri SubscriptionId { get; set; }
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
@@ -4330,27 +4418,50 @@ Octopus.Client.Operations
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
+  interface IRegisterWorkerOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    String[] WorkerPoolNames { get; set; }
+  }
   class RegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
     Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.RegisterMachineOperationBase
   {
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
-    Boolean AllowOverwrite { get; set; }
-    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
     String[] EnvironmentNames { get; set; }
-    String MachineName { get; set; }
-    String MachinePolicy { get; set; }
-    String ProxyName { get; set; }
     String[] Roles { get; set; }
-    Uri SubscriptionId { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+  }
+  abstract class RegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    .ctor(Octopus.Client.IOctopusClientFactory)
+    Boolean AllowOverwrite { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
+    String MachineName { get; set; }
+    String MachinePolicy { get; set; }
+    String ProxyName { get; set; }
+    Uri SubscriptionId { get; set; }
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+  }
+  class RegisterWorkerOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterWorkerOperation
+    Octopus.Client.Operations.RegisterMachineOperationBase
+  {
+    .ctor()
+    .ctor(Octopus.Client.IOctopusClientFactory)
+    String[] WorkerPoolNames { get; set; }
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
 }
@@ -4770,8 +4881,8 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
-    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[])
-    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[])
+    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
     Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
@@ -4850,6 +4961,35 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<VariableSetResource>
   {
     Task<String[]> GetVariableNames(String, String[])
+  }
+  interface IWorkerPoolRepository
+    Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IPaginate<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IGet<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.ICreate<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IModify<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IDelete<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IGetAll<WorkerPoolResource>
+  {
+    Task<WorkerPoolEditor> CreateOrModify(String)
+    Task<WorkerPoolEditor> CreateOrModify(String, String)
+    Task<List<WorkerResource>> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
+    Task Sort(String[])
+    Task<WorkerPoolsSummaryResource> Summary(String, String, String, Nullable<Boolean>, String, String, Nullable<Boolean>)
+  }
+  interface IWorkerRepository
+    Octopus.Client.Repositories.Async.IFindByName<WorkerResource>
+    Octopus.Client.Repositories.Async.IPaginate<WorkerResource>
+    Octopus.Client.Repositories.Async.IGet<WorkerResource>
+    Octopus.Client.Repositories.Async.ICreate<WorkerResource>
+    Octopus.Client.Repositories.Async.IModify<WorkerResource>
+    Octopus.Client.Repositories.Async.IDelete<WorkerResource>
+  {
+    Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Task<WorkerResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<List<WorkerResource>> FindByThumbprint(String)
+    Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
+    Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
 }
 Octopus.Client.Serialization

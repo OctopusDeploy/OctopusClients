@@ -12,10 +12,8 @@ namespace Octopus.Client.Operations
     /// <summary>
     /// Encapsulates the operation for registering machines.
     /// </summary>
-    public class RegisterMachineOperation : IRegisterMachineOperation
+    public class RegisterMachineOperation : RegisterMachineOperationBase, IRegisterMachineOperation
     {
-        readonly IOctopusClientFactory clientFactory;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisterMachineOperation" /> class.
         /// </summary>
@@ -27,9 +25,9 @@ namespace Octopus.Client.Operations
         /// Initializes a new instance of the <see cref="RegisterMachineOperation" /> class.
         /// </summary>
         /// <param name="clientFactory">The client factory.</param>
-        public RegisterMachineOperation(IOctopusClientFactory clientFactory)
+        public RegisterMachineOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
         {
-            this.clientFactory = clientFactory ?? new OctopusClientFactory();
+
         }
 
         /// <summary>
@@ -52,51 +50,6 @@ namespace Octopus.Client.Operations
         /// </summary>
         public string[] TenantTags { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the machine that will be used within Octopus to identify this machine.
-        /// </summary>
-        public string MachineName { get; set; }
-
-        /// <summary>
-        /// Get or sets the machine policy that applied to this machine.
-        /// </summary>
-        public string MachinePolicy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hostname that Octopus should use when communicating with the Tentacle.
-        /// </summary>
-        public string TentacleHostname { get; set; }
-
-        /// <summary>
-        /// Gets or sets the TCP port that Octopus should use when communicating with the Tentacle.
-        /// </summary>
-        public int TentaclePort { get; set; }
-
-        /// <summary>
-        /// Gets or sets the certificate thumbprint that Octopus should expect when communicating with the Tentacle.
-        /// </summary>
-        public string TentacleThumbprint { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the proxy that Octopus should use when communicating with the Tentacle.
-        /// </summary>
-        public string ProxyName { get; set; }
-
-        /// <summary>
-        /// If a machine with the same name already exists, it won't be overwritten by default (instead, an
-        /// <see cref="ArgumentException" /> will be thrown).
-        /// Set this property to <c>true</c> if you do want the existing machine to be overwritten.
-        /// </summary>
-        public bool AllowOverwrite { get; set; }
-
-        /// <summary>
-        /// The communication style to use with the Tentacle. Allowed values are: TentacleActive, in which case the
-        /// Tentacle will connect to the Octopus server for instructions; or, TentaclePassive, in which case the
-        /// Tentacle will listen for commands from the server (default).
-        /// </summary>
-        public CommunicationStyle CommunicationStyle { get; set; }
-
-        public Uri SubscriptionId { get; set; }
 
         /// <summary>
         /// How the machine should participate in Tenanted Deployments.
@@ -105,22 +58,6 @@ namespace Octopus.Client.Operations
         public TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
 
 #if SYNC_CLIENT
-        /// <summary>
-        /// Executes the operation against the specified Octopus Deploy server.
-        /// </summary>
-        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        /// <exception cref="System.ArgumentException">
-        /// </exception>
-        public void Execute(OctopusServerEndpoint serverEndpoint)
-        {
-            using (var client = clientFactory.CreateClient(serverEndpoint))
-            {
-                var repository = new OctopusRepository(client);
-
-                Execute(repository);
-            }
-        }
-
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
@@ -128,18 +65,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public void Execute(OctopusRepository repository)
-        {
-            Execute((IOctopusRepository)repository);
-        }
-
-        /// <summary>
-        /// Executes the operation against the specified Octopus Deploy server.
-        /// </summary>
-        /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
-        /// </exception>
-        public void Execute(IOctopusRepository repository)
+        public override void Execute(IOctopusRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository);
             var machinePolicy = GetMachinePolicy(repository);
@@ -148,7 +74,8 @@ namespace Octopus.Client.Operations
             ValidateTenantTags(repository);
             var proxy = GetProxy(repository);
 
-            ApplyChanges(machine, selectedEnvironments, machinePolicy, tenants, proxy);
+            ApplyBaseChanges(machine, machinePolicy, proxy);
+            ApplyDeploymentTargetChanges(machine, selectedEnvironments, tenants);
 
             if (machine.Id != null)
                 repository.Machines.Modify(machine);
@@ -199,30 +126,6 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
-        MachinePolicyResource GetMachinePolicy(IOctopusRepository repository)
-        {
-            var machinePolicy = default(MachinePolicyResource);
-            if (!string.IsNullOrEmpty(MachinePolicy))
-            {
-                machinePolicy = repository.MachinePolicies.FindByName(MachinePolicy);
-                if (machinePolicy == null)
-                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
-            }
-            return machinePolicy;
-        }
-
-        ProxyResource GetProxy(IOctopusRepository repository)
-        {
-            var proxy = default(ProxyResource);
-            if (!string.IsNullOrEmpty(ProxyName))
-            {
-                proxy = repository.Proxies.FindByName(ProxyName);
-                if (proxy == null)
-                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
-            }
-            return proxy;
-        }
-
         MachineResource GetMachine(IOctopusRepository repository)
         {
             var existing = default(MachineResource);
@@ -242,37 +145,10 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
-        /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        /// <exception cref="System.ArgumentException">
-        /// </exception>
-        public async Task ExecuteAsync(OctopusServerEndpoint serverEndpoint)
-        {
-            using (var client = await clientFactory.CreateAsyncClient(serverEndpoint).ConfigureAwait(false))
-            {
-                var repository = new OctopusAsyncRepository(client);
-
-                await ExecuteAsync(repository).ConfigureAwait(false);
-            }
-        }
-
-        /// <summary>
-        /// Executes the operation against the specified Octopus Deploy server.
-        /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public async Task ExecuteAsync(OctopusAsyncRepository repository)
-        {
-            await ExecuteAsync((IOctopusAsyncRepository) repository);
-        }
-
-        /// <summary>
-        /// Executes the operation against the specified Octopus Deploy server.
-        /// </summary>
-        /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
-        /// </exception>
-        public async Task ExecuteAsync(IOctopusAsyncRepository repository)
+        public override async Task ExecuteAsync(IOctopusAsyncRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository).ConfigureAwait(false);
             var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
@@ -282,7 +158,8 @@ namespace Octopus.Client.Operations
             var proxy = GetProxy(repository).ConfigureAwait(false);
 
             var machine = await machineTask;
-            ApplyChanges(machine, await selectedEnvironments, await machinePolicy, await tenants, await proxy);
+            ApplyBaseChanges(machine, await machinePolicy, await proxy);
+            ApplyDeploymentTargetChanges(machine, await selectedEnvironments, await tenants);
 
             if (machine.Id != null)
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
@@ -346,31 +223,6 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
-        async Task<MachinePolicyResource> GetMachinePolicy(IOctopusAsyncRepository repository)
-        {
-
-            var machinePolicy = default(MachinePolicyResource);
-            if (!string.IsNullOrEmpty(MachinePolicy))
-            {
-                machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy).ConfigureAwait(false);
-                if (machinePolicy == null)
-                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
-            }
-            return machinePolicy;
-        }
-
-        async Task<ProxyResource> GetProxy(IOctopusAsyncRepository repository)
-        {
-            var proxy = default(ProxyResource);
-            if (!string.IsNullOrEmpty(ProxyName))
-            {
-                proxy = await repository.Proxies.FindByName(ProxyName).ConfigureAwait(false);
-                if (proxy == null)
-                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
-            }
-            return proxy;
-        }
-
         async Task<MachineResource> GetMachine(IOctopusAsyncRepository repository)
         {
             var existing = default(MachineResource);
@@ -386,40 +238,13 @@ namespace Octopus.Client.Operations
             return existing ?? new MachineResource();
         }
 
-        void ApplyChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, MachinePolicyResource machinePolicy, IEnumerable<TenantResource> tenants, ProxyResource proxy)
+        void ApplyDeploymentTargetChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, IEnumerable<TenantResource> tenants)
         {
             machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
             machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
             machine.TenantTags = new ReferenceCollection(TenantTags);
             machine.Roles = new ReferenceCollection(Roles);
-            machine.Name = MachineName;
             machine.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
-
-            if (machinePolicy != null)
-                machine.MachinePolicyId = machinePolicy.Id;
-
-            if (CommunicationStyle == CommunicationStyle.TentaclePassive)
-            {
-                var listening = new ListeningTentacleEndpointResource();
-                listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
-                listening.Thumbprint = TentacleThumbprint;
-                listening.ProxyId = proxy?.Id;
-                machine.Endpoint = listening;
-            }
-            else if (CommunicationStyle == CommunicationStyle.TentacleActive)
-            {
-                var polling = new PollingTentacleEndpointResource();
-                polling.Uri = SubscriptionId.ToString();
-                polling.Thumbprint = TentacleThumbprint;
-                machine.Endpoint = polling;
-            }
-        }
-
-        static string CouldNotFindMessage(string modelType, params string[] missing)
-        {
-            return missing.Length == 1
-                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus server. Ensure the {modelType} exists and you have permission to access it."
-                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus server. Ensure the {modelType}s exist and you have permission to access them.";
         }
     }
 }

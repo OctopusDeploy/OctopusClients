@@ -14,6 +14,7 @@ namespace Octopus.Cli.Model
         public List<ReferenceDataItem> LibraryVariableSets { get; set; }
         public ReferenceDataItem Lifecycle { get; set; }
         public List<ChannelResource> Channels { get; set; } 
-        public List<ReferenceDataItem> ChannelLifecycles { get; set; } 
+        public List<ReferenceDataItem> ChannelLifecycles { get; set; }
+        public List<ReferenceDataItem> WorkerPools { get; set; }
     }
 }
