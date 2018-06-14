@@ -4928,7 +4928,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<TeamResource>
   {
     Task<ScopedUserRoleResource> CreateScopedUserRole(Octopus.Client.Model.TeamResource, Octopus.Client.Model.ScopedUserRoleResource)
-    Task<List<ScopedUserRoleResource>> GetApiKeys(Octopus.Client.Model.TeamResource)
+    Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
     Task UpdateScopedUserRole(Octopus.Client.Model.TeamResource, Octopus.Client.Model.ScopedUserRoleResource)
   }
   interface ITenantRepository

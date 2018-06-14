@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories
     {
         ScopedUserRoleResource CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
         void UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
-        List<ScopedUserRoleResource> GetApiKeys(TeamResource team);
+        List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
     
     class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories
             Client.Put(team.Link("ScopedUserRoles"), scopedUserRole);
         }
 
-        public List<ScopedUserRoleResource> GetApiKeys(TeamResource team)
+        public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)
         {
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
