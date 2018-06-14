@@ -61,7 +61,6 @@ namespace Octopus.Client
             ServerStatus = new ServerStatusRepository(client);
             Spaces = new SpaceRepository(client);
             Subscriptions = new SubscriptionRepository(client);
-            ScopedUserRoles = new ScopedUserRolesRepository(client);
             TagSets = new TagSetRepository(client);
             Tasks = new TaskRepository(client);
             Teams = new TeamsRepository(client);
@@ -113,7 +112,6 @@ namespace Octopus.Client
         public IServerStatusRepository ServerStatus { get; }
         public ISpaceRepository Spaces { get; }
         public ISubscriptionRepository Subscriptions { get; }
-        public IScopedUserRolesRepository ScopedUserRoles { get; }
         public ITagSetRepository TagSets { get; }
         public ITaskRepository Tasks { get; }
         public ITeamsRepository Teams { get; }

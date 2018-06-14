@@ -50,21 +50,4 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
     }
-
-    public interface IScopedUserRolesRepository :
-        ICreate<ScopedUserRoleResource>,
-        IModify<ScopedUserRoleResource>,
-        IDelete<ScopedUserRoleResource>,
-        IGet<ScopedUserRoleResource>,
-        IPaginate<ScopedUserRoleResource>
-    {
-    }
-
-    class ScopedUserRolesRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRolesRepository
-    {
-        public ScopedUserRolesRepository(IOctopusAsyncClient client)
-            : base(client, "ScopedUserRoles")
-        {
-        }
-    }
 }

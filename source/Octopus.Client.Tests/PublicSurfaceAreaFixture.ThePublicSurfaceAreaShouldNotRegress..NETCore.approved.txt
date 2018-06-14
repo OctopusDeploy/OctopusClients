@@ -80,7 +80,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
-    Octopus.Client.Repositories.Async.IScopedUserRolesRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -171,7 +170,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
-    Octopus.Client.Repositories.Async.IScopedUserRolesRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -4848,14 +4846,6 @@ Octopus.Client.Repositories.Async
     Task Stop()
     Task Stop(String)
     Task Trigger(String)
-  }
-  interface IScopedUserRolesRepository
-    Octopus.Client.Repositories.Async.ICreate<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.IPaginate<ScopedUserRoleResource>
-  {
   }
   interface IServerStatusRepository
   {

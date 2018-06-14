@@ -65,7 +65,6 @@ namespace Octopus.Client
             RetentionPolicies = new RetentionPolicyRepository(client);
             Schedulers = new SchedulerRepository(client);
             ServerStatus = new ServerStatusRepository(client);
-            ScopedUserRoles = new ScopedUserRolesRepository(client);
             Spaces = new SpaceRepository(client);
             Subscriptions = new SubscriptionRepository(client);
             TagSets = new TagSetRepository(client);
@@ -116,7 +115,6 @@ namespace Octopus.Client
         public IReleaseRepository Releases { get; }
         public IRetentionPolicyRepository RetentionPolicies { get; }
         public ISchedulerRepository Schedulers { get; }
-        public IScopedUserRolesRepository ScopedUserRoles { get; }
         public IServerStatusRepository ServerStatus { get; }
         public ISpaceRepository Spaces { get; }
         public ISubscriptionRepository Subscriptions { get; }
