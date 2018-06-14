@@ -19,7 +19,6 @@ namespace Octopus.Client.Repositories.Async
 
     class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
     {
-        private static string ScopedUserRoleLink = "ScopedUserRoles";
         public TeamsRepository(IOctopusAsyncClient client)
             : base(client, "Teams")
         {
@@ -27,14 +26,14 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ScopedUserRoleResource> CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
         {
-            if (team == null) throw new ArgumentNullException(nameof(team));
-            return Client.Post<object, ScopedUserRoleResource>(team.Link(ScopedUserRoleLink), scopedUserRole);
+            if (team == null) throw new ArgumentNullException("team");
+            return Client.Post<object, ScopedUserRoleResource>(team.Link("ScopedUserRoles"), scopedUserRole);
         }
 
         public Task UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
         {
             if (team == null) throw new ArgumentNullException(nameof(team));
-            return Client.Put(team.Link(ScopedUserRoleLink), scopedUserRole);
+            return Client.Put(team.Link("ScopedUserRoles"), scopedUserRole);
         }
 
         public async Task<List<ScopedUserRoleResource>> GetApiKeys(TeamResource team)
@@ -42,7 +41,7 @@ namespace Octopus.Client.Repositories.Async
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
-            await Client.Paginate<ScopedUserRoleResource>(team.Link(ScopedUserRoleLink), page =>
+            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), page =>
             {
                 resources.AddRange(page.Items);
                 return true;
