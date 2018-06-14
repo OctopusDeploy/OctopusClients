@@ -1050,6 +1050,17 @@ Octopus.Client.Model
     Octopus.Client.Model.RetentionPeriod Retention { get; set; }
     Nullable<TimeSpan> StartingFrom { get; set; }
   }
+  class BuiltInFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Nullable<Int32> DeleteUnreleasedPackagesAfterDays { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    Boolean IsBuiltInRepoSyncEnabled { get; set; }
+  }
   class BuiltInFeedStatsResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -1865,6 +1876,7 @@ Octopus.Client.Model
       Maven = 3
       OctopusProject = 4
       GitHub = 5
+      BuiltIn = 6
   }
   class FileUpload
   {

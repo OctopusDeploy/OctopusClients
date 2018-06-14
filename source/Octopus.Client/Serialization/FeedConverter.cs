@@ -13,7 +13,8 @@ namespace Octopus.Client.Serialization
                 {FeedType.Docker, typeof(DockerFeedResource)},
                 {FeedType.Maven, typeof(MavenFeedResource)},
                 {FeedType.GitHub, typeof(GitHubFeedResource)},
-                {FeedType.OctopusProject, typeof(OctopusProjectFeedResource)}
+                {FeedType.OctopusProject, typeof(OctopusProjectFeedResource)},
+                {FeedType.BuiltIn, typeof(BuiltInFeedResource)}
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);
