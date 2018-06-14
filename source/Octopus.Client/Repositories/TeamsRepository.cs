@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -14,9 +15,36 @@ namespace Octopus.Client.Repositories
     
     class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
     {
+        private static string ScopedUserRoleLink = "ScopedUserRole";
         public TeamsRepository(IOctopusClient client)
             : base(client, "Teams")
         {
+        }
+
+        public ScopedUserRoleResource CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
+        {
+            if (team == null) throw new ArgumentNullException(nameof(team));
+            return Client.Post<object, ScopedUserRoleResource>(team.Link(ScopedUserRoleLink), scopedUserRole);
+        }
+
+        public void UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
+        {
+            if (team == null) throw new ArgumentNullException(nameof(team));
+            Client.Put(team.Link(ScopedUserRoleLink), scopedUserRole);
+        }
+
+        public List<ScopedUserRoleResource> GetApiKeys(TeamResource team)
+        {
+            if (team == null) throw new ArgumentNullException(nameof(team));
+            var resources = new List<ScopedUserRoleResource>();
+
+            Client.Paginate<ScopedUserRoleResource>(team.Link(ScopedUserRoleLink), page =>
+            {
+                resources.AddRange(page.Items);
+                return true;
+            });
+
+            return resources;
         }
     }
 
