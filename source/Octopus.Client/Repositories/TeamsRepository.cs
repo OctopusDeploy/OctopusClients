@@ -11,6 +11,9 @@ namespace Octopus.Client.Repositories
         IFindByName<TeamResource>,
         IGet<TeamResource>
     {
+        ScopedUserRoleResource CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
+        void UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
+        List<ScopedUserRoleResource> GetApiKeys(TeamResource team);
     }
     
     class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
