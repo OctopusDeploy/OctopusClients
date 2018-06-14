@@ -18,7 +18,7 @@ namespace Octopus.Client.Repositories
     
     class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
     {
-        private static string ScopedUserRoleLink = "ScopedUserRole";
+        private static string ScopedUserRoleLink = "ScopedUserRoles";
         public TeamsRepository(IOctopusClient client)
             : base(client, "Teams")
         {
