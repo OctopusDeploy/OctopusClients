@@ -25,14 +25,15 @@ namespace Octopus.Client.Repositories
 
         public ScopedUserRoleResource CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
         {
-            if (team == null) throw new ArgumentNullException("team");
+            if (team == null) throw new ArgumentNullException(nameof(team));
             return Client.Post<object, ScopedUserRoleResource>(team.Link("ScopedUserRoles"), scopedUserRole);
         }
 
         public void UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
         {
             if (team == null) throw new ArgumentNullException(nameof(team));
-            Client.Put(team.Link("ScopedUserRoles"), scopedUserRole);
+            if (scopedUserRole == null) throw new ArgumentNullException(nameof(scopedUserRole));
+            Client.Put(scopedUserRole.Link("Self"), scopedUserRole);
         }
 
         public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)
