@@ -87,6 +87,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -170,6 +171,7 @@ Octopus.Client
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
@@ -256,6 +258,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
@@ -361,6 +364,7 @@ Octopus.Client
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
