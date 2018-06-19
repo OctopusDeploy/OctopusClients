@@ -3100,7 +3100,8 @@ Octopus.Client.Model
     String Description { get; set; }
     Boolean IsDefault { get; set; }
     String Name { get; set; }
-    Octopus.Client.Model.ReferenceCollection Owners { get; set; }
+    Octopus.Client.Model.ReferenceCollection OwnerTeams { get; set; }
+    Octopus.Client.Model.ReferenceCollection OwnerUsers { get; set; }
   }
   class SquidAttribute
     Attribute
@@ -4847,6 +4848,13 @@ Octopus.Client.Repositories.Async
     Task Stop(String)
     Task Trigger(String)
   }
+  interface IScopedUserRoleRepository
+    Octopus.Client.Repositories.Async.ICreate<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
+  {
+  }
   interface IServerStatusRepository
   {
     Task<ServerStatusResource> GetServerStatus()
@@ -4917,9 +4925,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<TeamResource>
     Octopus.Client.Repositories.Async.IGet<TeamResource>
   {
-    Task<ScopedUserRoleResource> CreateScopedUserRole(Octopus.Client.Model.TeamResource, Octopus.Client.Model.ScopedUserRoleResource)
     Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
-    Task UpdateScopedUserRole(Octopus.Client.Model.TeamResource, Octopus.Client.Model.ScopedUserRoleResource)
   }
   interface ITenantRepository
     Octopus.Client.Repositories.Async.ICreate<TenantResource>

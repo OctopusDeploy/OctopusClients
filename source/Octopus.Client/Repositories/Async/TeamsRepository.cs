@@ -12,8 +12,6 @@ namespace Octopus.Client.Repositories.Async
         IFindByName<TeamResource>,
         IGet<TeamResource>
     {
-        Task<ScopedUserRoleResource> CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
-        Task UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole);
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
 
@@ -22,18 +20,6 @@ namespace Octopus.Client.Repositories.Async
         public TeamsRepository(IOctopusAsyncClient client)
             : base(client, "Teams")
         {
-        }
-
-        public Task<ScopedUserRoleResource> CreateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
-        {
-            if (team == null) throw new ArgumentNullException(nameof(team));
-            return Client.Post<object, ScopedUserRoleResource>(team.Link("ScopedUserRoles"), scopedUserRole);
-        }
-
-        public Task UpdateScopedUserRole(TeamResource team, ScopedUserRoleResource scopedUserRole)
-        {
-            if (team == null) throw new ArgumentNullException(nameof(team));
-            return Client.Put(scopedUserRole.Link("Self"), scopedUserRole);
         }
 
         public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)

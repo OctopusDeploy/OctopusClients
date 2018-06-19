@@ -6,7 +6,8 @@ namespace Octopus.Client.Model
     {
         public SpaceResource()
         {
-            Owners = new ReferenceCollection();
+            OwnerTeams = new ReferenceCollection();
+            OwnerUsers = new ReferenceCollection();
         }
 
         [Writeable]
@@ -19,6 +20,9 @@ namespace Octopus.Client.Model
         public bool IsDefault { get; set; }
 
         [Writeable]
-        public ReferenceCollection Owners { get; set; }
+        public ReferenceCollection OwnerTeams { get; set; }
+        
+        [Writeable]
+        public ReferenceCollection OwnerUsers { get; set; }
     }
 }
