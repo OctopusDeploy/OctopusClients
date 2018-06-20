@@ -9,8 +9,5 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool IsCommunityActionTemplatesEnabled { get; set; }
-
-        [Writeable]
-        public bool IsBuiltInRepoSyncEnabled { get; set; }
     }
 }
