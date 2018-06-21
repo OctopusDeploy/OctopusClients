@@ -21,5 +21,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public EventNotificationSubscription EventNotificationSubscription { get; set; }
+
+        [Writeable]
+        public bool IsSpaceAgnostic { get; set; }
     }
 }

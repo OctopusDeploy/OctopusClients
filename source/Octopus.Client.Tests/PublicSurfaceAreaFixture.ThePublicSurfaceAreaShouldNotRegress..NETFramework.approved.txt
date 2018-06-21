@@ -3637,6 +3637,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.EventNotificationSubscription EventNotificationSubscription { get; set; }
     Boolean IsDisabled { get; set; }
+    Boolean IsSpaceAgnostic { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.SubscriptionType Type { get; set; }
   }
