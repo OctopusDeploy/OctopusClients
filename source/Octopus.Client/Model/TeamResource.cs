@@ -5,7 +5,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class TeamResource : Resource, INamedResource
+    public class TeamResource : Resource, INamedResource, IHaveSpaceResource
     {
         public TeamResource()
         {
@@ -54,6 +54,8 @@ namespace Octopus.Client.Model
         /// provided by Octopus cannot have its members changed, as it will always contain all users.
         /// </summary>
         public bool CanChangeMembers { get; set; }
+
+        public string SpaceId { get; set; }
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 using Octopus.Client.Extensions;
 
@@ -18,7 +19,7 @@ namespace Octopus.Client.Model
     /// is created to execute
     /// the actual deployment. And some tasks can be created manually, such as backup tasks and sending test emails.
     /// </summary>
-    public class TaskResource : Resource
+    public class TaskResource : Resource, IHaveSpaceResource
     {
         /// <summary>
         /// Create a new <see cref="TaskResource" />.
@@ -161,5 +162,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 34)]
         public bool HasWarningsOrErrors { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

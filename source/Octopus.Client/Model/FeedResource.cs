@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class FeedResource : Resource, INamedResource
+    public class FeedResource : Resource, INamedResource, IHaveSpaceResource
     {
         /// <summary>
         /// The FeedResource type has been deprecated on Octopus Deploy 3.5 servers. Use NuGetFeedResource instead")]
@@ -28,5 +28,7 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public virtual FeedType FeedType { get; }
+
+        public string SpaceId { get; set; }
     }
 }

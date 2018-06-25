@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class MachinePolicyResource : Resource, INamedResource
+    public class MachinePolicyResource : Resource, INamedResource, IHaveSpaceResource
     {
         public MachinePolicyResource()
         {
@@ -41,5 +41,7 @@ namespace Octopus.Client.Model
         [Writeable]
         [JsonProperty(Order=50, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachineUpdatePolicy MachineUpdatePolicy { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

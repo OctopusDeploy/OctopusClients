@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class TenantVariableResource : Resource
+    public class TenantVariableResource : Resource, IHaveSpaceResource
     {
         public string TenantId { get; set; }
         public string TenantName { get; set; }
@@ -46,5 +46,7 @@ namespace Octopus.Client.Model
 
             public LinkCollection Links { get; set; }
         }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class LifecycleResource : Resource, INamedResource
+    public class LifecycleResource : Resource, INamedResource, IHaveSpaceResource
     {
         public LifecycleResource()
         {
@@ -82,5 +82,7 @@ namespace Octopus.Client.Model
             if (existing != null) Phases.Remove(existing);
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }
