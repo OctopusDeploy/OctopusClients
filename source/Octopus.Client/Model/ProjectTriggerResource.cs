@@ -4,7 +4,7 @@ using Octopus.Client.Model.Triggers;
 
 namespace Octopus.Client.Model
 {
-    public class ProjectTriggerResource : Resource, INamedResource
+    public class ProjectTriggerResource : Resource, INamedResource, IHaveSpaceResource
     {
         [Trim]
         [Writeable]
@@ -22,5 +22,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public TriggerActionResource Action { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

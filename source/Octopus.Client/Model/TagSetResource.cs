@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class TagSetResource : Resource, INamedResource
+    public class TagSetResource : Resource, INamedResource, IHaveSpaceResource
     {
         public TagSetResource()
         {
@@ -70,5 +70,7 @@ namespace Octopus.Client.Model
             if (existing != null) Tags.Remove(existing);
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

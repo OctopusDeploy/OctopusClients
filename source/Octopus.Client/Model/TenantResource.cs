@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class TenantResource : Resource, INamedResource
+    public class TenantResource : Resource, INamedResource, IHaveSpaceResource
     {
         public TenantResource()
         {
@@ -62,5 +62,7 @@ namespace Octopus.Client.Model
             ProjectEnvironments.Clear();
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

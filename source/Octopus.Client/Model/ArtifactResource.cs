@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
@@ -9,7 +10,7 @@ namespace Octopus.Client.Model
     /// Artifacts are files like documents and test results that may be stored
     /// alongside a release.
     /// </summary>
-    public class ArtifactResource : Resource
+    public class ArtifactResource : Resource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets the filename of the Artifact to create. An example might be
@@ -47,5 +48,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 6)]
         public string LogCorrelationId { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using Octopus.Client.Extensibility;
 namespace Octopus.Client.Model
 {
     [DebuggerDisplay("Name = {Name}")]
-    public class CertificateResource : Resource, INamedResource
+    public class CertificateResource : Resource, INamedResource, IHaveSpaceResource
     {
         [JsonConstructor]
         protected CertificateResource()
@@ -152,5 +152,7 @@ namespace Octopus.Client.Model
 
             public string SignatureAlgorithmName { get; set; }
         }
+
+        public string SpaceId { get; set; }
     }
 }
