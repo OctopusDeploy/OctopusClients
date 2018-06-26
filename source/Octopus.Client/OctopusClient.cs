@@ -94,11 +94,6 @@ namespace Octopus.Client
             return new OctopusClient(this.serverEndpoint, spaceId);
         }
 
-        public IOctopusClient ForGlobalContext()
-        {
-            return new OctopusClient(this.serverEndpoint, "global");
-        }
-
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
