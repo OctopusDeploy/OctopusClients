@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class ActionTemplateResource : Resource, INamedResource
+    public class ActionTemplateResource : Resource, INamedResource, IHaveSpaceResource
     {
         readonly IDictionary<string, PropertyValueResource> properties = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
         readonly IList<ActionTemplateParameterResource> parameters = new List<ActionTemplateParameterResource>();
@@ -38,5 +38,7 @@ namespace Octopus.Client.Model
         {
             get { return parameters; }
         }
+
+        public string SpaceId { get; set; }
     }
 }

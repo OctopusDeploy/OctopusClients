@@ -11,4 +11,9 @@
     {
         string Name { get; }
     }
+
+    public interface IHaveSpaceResource
+    {
+        string SpaceId { get; set; }
+    }
 }
