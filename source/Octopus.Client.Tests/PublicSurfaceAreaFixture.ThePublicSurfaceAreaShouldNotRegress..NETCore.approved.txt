@@ -25,7 +25,6 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
-    Task<IOctopusAsyncClient> ForGlobalContext()
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
@@ -114,7 +113,6 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
-    Task<IOctopusAsyncClient> ForGlobalContext()
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
