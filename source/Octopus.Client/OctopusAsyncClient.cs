@@ -181,11 +181,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return await Create(this.serverEndpoint, newOptions);
         }
 
-        public async Task<IOctopusAsyncClient> ForGlobalContext()
-        {
-            return await ForSpaceContext("global");
-        }
-
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
