@@ -4450,7 +4450,7 @@ Octopus.Client.Repositories.Async
     Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
     Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
     Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
-    Task<AccountUsageResource> GetAccountUsage(String)
+    Task<AccountUsageResource> GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
     Task<TAccount> GetOfType(String)
     Task<List<TAccount>> GetOfType(String[])
     Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
