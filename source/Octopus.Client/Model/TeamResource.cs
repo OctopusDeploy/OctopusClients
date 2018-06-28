@@ -61,7 +61,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// The set of roles and scopes that this team will have
     /// </summary>
-    public class ScopedUserRoleResource : Resource
+    public class ScopedUserRoleResource : Resource, IHaveSpaceResource
     {
         public ScopedUserRoleResource()
         {
@@ -106,5 +106,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public ReferenceCollection TenantIds { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

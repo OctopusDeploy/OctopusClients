@@ -2927,12 +2927,14 @@ Octopus.Client.Model
   class ScopedUserRoleResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
+    String SpaceId { get; set; }
     String TeamId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     String UserRoleId { get; set; }
