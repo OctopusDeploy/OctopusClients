@@ -2014,6 +2014,7 @@ Octopus.Client.Model
     Boolean IsDisabled { get; set; }
     Boolean IsRequired { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.PackageReferenceCollection Packages { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
     String WorkerPoolId { get; set; }
@@ -2841,6 +2842,13 @@ Octopus.Client.Model
     String Name { get; set; }
     String Rank { get; set; }
   }
+  class PackageAcquisitionLocations
+  {
+    static System.String ExecutionTarget
+    static System.String NotAcquired
+    static System.String Server
+    .ctor()
+  }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2849,6 +2857,36 @@ Octopus.Client.Model
     .ctor()
     String Hash { get; set; }
     Nullable<Int64> PackageSizeBytes { get; set; }
+  }
+  class PackageReference
+  {
+    .ctor(String, String, String)
+    .ctor(String, String)
+    .ctor(String, String, String, String)
+    .ctor()
+    String AcquisitionLocation { get; set; }
+    String FeedId { get; set; }
+    Boolean IsPrimaryPackage { get; }
+    String Name { get; set; }
+    String PackageId { get; set; }
+    IDictionary<String, String> Properties { get; }
+  }
+  class PackageReferenceCollection
+    ICollection<PackageReference>
+    IEnumerable<PackageReference>
+    IEnumerable
+  {
+    .ctor()
+    Int32 Count { get; }
+    Boolean IsReadOnly { get; }
+    Octopus.Client.Model.PackageReference Item { get; }
+    Octopus.Client.Model.PackageReference PrimaryPackage { get; }
+    void Add(Octopus.Client.Model.PackageReference)
+    void Clear()
+    Boolean Contains(Octopus.Client.Model.PackageReference)
+    void CopyTo(Octopus.Client.Model.PackageReference[], Int32)
+    IEnumerator<PackageReference> GetEnumerator()
+    Boolean Remove(Octopus.Client.Model.PackageReference)
   }
   class PackageResource
     Octopus.Client.Extensibility.IResource
