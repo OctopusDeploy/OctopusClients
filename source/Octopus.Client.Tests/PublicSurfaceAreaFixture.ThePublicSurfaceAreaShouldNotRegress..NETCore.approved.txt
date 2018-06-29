@@ -4816,7 +4816,7 @@ Octopus.Client.Repositories.Async
   }
   interface IMixScopeRepository`1
   {
-    Task<List<TResource>> Search(Boolean, String[])
+    Task<List<TResource>> Search(Boolean, String[], Object)
   }
   interface IModify`1
   {
@@ -5146,6 +5146,10 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
+  }
+  abstract class ParameterHelper
+  {
+    static Dictionary<String, Object> CombineParameters(Object, Boolean, String[])
   }
 }
 Octopus.Client.Validation

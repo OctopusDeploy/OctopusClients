@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource>, IMixScopeRepository<TMixScopedResource> where TMixScopedResource : class, IResource
+    partial class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource>, IMixScopeRepository<TMixScopedResource> where TMixScopedResource : class, IResource
     {
         public MixScopeResourceRepository(IOctopusClient client, string collectionLinkName)
             : base(client, collectionLinkName)
@@ -13,7 +15,7 @@ namespace Octopus.Client.Repositories
 
         }
 
-        public List<TMixScopedResource> Search(bool includeGlobal, params string[] spaceIds)
+        public List<TMixScopedResource> Search(bool includeGlobal, string[] spaceIds, object parameters = null)
         {
             var spaces = spaceIds.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             var resources = new List<TMixScopedResource>();
@@ -21,9 +23,10 @@ namespace Octopus.Client.Repositories
             if (!Regex.IsMatch(link, @"\{\?.*\Wspaces\W"))
                 link += "{?spaces}";
 
+            var combinedParameters = ParameterHelper.CombineParameters(parameters, includeGlobal, spaces);
             Client.Paginate<TMixScopedResource>(
                     link,
-                    new { spaces, includeGlobal },
+                    combinedParameters,
                     page =>
                     {
                         resources.AddRange(page.Items);
@@ -32,5 +35,6 @@ namespace Octopus.Client.Repositories
 
             return resources;
         }
+
     }
 }

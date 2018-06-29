@@ -6,6 +6,6 @@ namespace Octopus.Client.Repositories
 {
     public interface IMixScopeRepository<TResource>
     {
-        List<TResource> Search(bool includeGlobal, params string[] spaceIds);
+        List<TResource> Search(bool includeGlobal, string[] spaceIds, object parameters = null);
     }
 }
