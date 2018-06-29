@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
 
-    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : MixScopeResourceRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusAsyncClient client)
             : base(client, "Teams")

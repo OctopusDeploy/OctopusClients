@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
 
-    class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
+    class SubscriptionRepository : MixScopeResourceRepository<SubscriptionResource>, ISubscriptionRepository
     {
         public SubscriptionRepository(IOctopusAsyncClient client) : base(client, "Subscriptions")
         {

@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories.Async
     {
     }
 
-    class ScopedUserRoleRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
+    class ScopedUserRoleRepository : MixScopeResourceRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusAsyncClient client)
             : base(client, "ScopedUserRoles")

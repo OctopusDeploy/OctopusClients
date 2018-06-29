@@ -4814,6 +4814,10 @@ Octopus.Client.Repositories.Async
     Task<MigrationImportResource> Import(Octopus.Client.Model.Migrations.MigrationImportResource)
     Task<MigrationPartialExportResource> PartialExport(Octopus.Client.Model.Migrations.MigrationPartialExportResource)
   }
+  interface IMixScopeRepository`1
+  {
+    Task<List<TResource>> Search(Boolean, String[])
+  }
   interface IModify`1
   {
     Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
