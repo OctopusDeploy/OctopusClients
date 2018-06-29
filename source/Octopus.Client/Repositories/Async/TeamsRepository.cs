@@ -10,7 +10,8 @@ namespace Octopus.Client.Repositories.Async
         IModify<TeamResource>,
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
-        IGet<TeamResource>
+        IGet<TeamResource>,
+        IMixScopeRepository<TeamResource>
     {
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }

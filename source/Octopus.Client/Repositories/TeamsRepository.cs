@@ -9,7 +9,8 @@ namespace Octopus.Client.Repositories
         IModify<TeamResource>,
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
-        IGet<TeamResource>
+        IGet<TeamResource>,
+        IMixScopeRepository<TeamResource>
     {
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }

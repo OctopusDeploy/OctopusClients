@@ -7,7 +7,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource>, IMixScopeRepository<TMixScopedResource> where TMixScopedResource : class, IResource
+    class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource> where TMixScopedResource : class, IResource
     {
         public MixScopeResourceRepository(IOctopusAsyncClient client, string collectionLinkName)
             : base(client, collectionLinkName)

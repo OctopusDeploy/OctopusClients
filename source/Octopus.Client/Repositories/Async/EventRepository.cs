@@ -4,7 +4,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IEventRepository : IGet<EventResource>
+    public interface IEventRepository : IGet<EventResource>, IMixScopeRepository<EventResource>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         Task<ResourceCollection<EventResource>> List(int skip = 0, 

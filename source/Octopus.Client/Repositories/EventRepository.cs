@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories
             string documentTypes = null);
     }
     
-    class EventRepository : MixScopeResourceRepository<EventResource>, IEventRepository
+    class EventRepository : MixScopeResourceRepository<EventResource>, IEventRepository, IMixScopeRepository<EventResource>
     {
         public EventRepository(IOctopusClient client)
             : base(client, "Events")

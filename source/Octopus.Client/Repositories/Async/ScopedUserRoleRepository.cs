@@ -6,7 +6,8 @@ namespace Octopus.Client.Repositories.Async
         ICreate<ScopedUserRoleResource>,
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
-        IGet<ScopedUserRoleResource>
+        IGet<ScopedUserRoleResource>,
+        IMixScopeRepository<ScopedUserRoleResource>
     {
     }
 
