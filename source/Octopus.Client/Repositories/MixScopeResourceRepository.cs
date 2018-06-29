@@ -20,8 +20,6 @@ namespace Octopus.Client.Repositories
             var spaces = spaceIds.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             var resources = new List<TMixScopedResource>();
             var link = Client.RootDocument.Link(CollectionLinkName);
-            if (!Regex.IsMatch(link, @"\{\?.*\Wspaces\W"))
-                link += "{?spaces}";
 
             var combinedParameters = ParameterHelper.CombineParameters(parameters, includeGlobal, spaces);
             Client.Paginate<TMixScopedResource>(
