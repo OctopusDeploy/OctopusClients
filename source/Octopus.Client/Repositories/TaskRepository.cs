@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories
         void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Action<TaskResource[]> interval = null);
     }
 
-    class TaskRepository : BasicRepository<TaskResource>, ITaskRepository
+    class TaskRepository : MixScopeResourceRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusClient client)
             : base(client, "Tasks")

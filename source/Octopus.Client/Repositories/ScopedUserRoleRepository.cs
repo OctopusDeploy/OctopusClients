@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     {
     }
     
-    class ScopedUserRoleRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
+    class ScopedUserRoleRepository : MixScopeResourceRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusClient client)
             : base(client, "ScopedUserRoles")

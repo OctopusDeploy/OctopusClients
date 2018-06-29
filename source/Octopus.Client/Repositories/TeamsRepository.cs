@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
     
-    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : MixScopeResourceRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusClient client)
             : base(client, "Teams")
