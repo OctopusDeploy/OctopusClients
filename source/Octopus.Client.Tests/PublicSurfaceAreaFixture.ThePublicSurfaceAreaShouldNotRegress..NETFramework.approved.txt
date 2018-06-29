@@ -5333,6 +5333,10 @@ Octopus.Client.Repositories
     Octopus.Client.Model.Migrations.MigrationImportResource Import(Octopus.Client.Model.Migrations.MigrationImportResource)
     Octopus.Client.Model.Migrations.MigrationPartialExportResource PartialExport(Octopus.Client.Model.Migrations.MigrationPartialExportResource)
   }
+  interface IMixScopeRepository`1
+  {
+    List<TResource> Search(Boolean, String[])
+  }
   interface IModify`1
   {
     Octopus.Client.Repositories.TResource Modify(Octopus.Client.Repositories.TResource)
