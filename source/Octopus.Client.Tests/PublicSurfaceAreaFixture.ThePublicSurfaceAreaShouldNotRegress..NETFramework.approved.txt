@@ -5232,6 +5232,7 @@ Octopus.Client.Repositories
   }
   interface IEventRepository
     Octopus.Client.Repositories.IGet<EventResource>
+    Octopus.Client.Repositories.IMixScopeRepository<EventResource>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -6010,6 +6011,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
     Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IMixScopeRepository<SubscriptionResource>
   {
     Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }

@@ -4,7 +4,13 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ISubscriptionRepository : IFindByName<SubscriptionResource>, ICreate<SubscriptionResource>, IModify<SubscriptionResource>, IGet<SubscriptionResource>, IDelete<SubscriptionResource>
+    public interface ISubscriptionRepository : 
+        IFindByName<SubscriptionResource>, 
+        ICreate<SubscriptionResource>, 
+        IModify<SubscriptionResource>, 
+        IGet<SubscriptionResource>, 
+        IDelete<SubscriptionResource>,
+        IMixScopeRepository<SubscriptionResource>
     {
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }

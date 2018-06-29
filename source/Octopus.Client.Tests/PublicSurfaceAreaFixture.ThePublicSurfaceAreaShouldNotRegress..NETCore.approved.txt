@@ -4949,6 +4949,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
     Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
+    Octopus.Client.Repositories.Async.IMixScopeRepository<SubscriptionResource>
   {
     Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
