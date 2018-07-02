@@ -226,8 +226,6 @@ Task("PackClientNuget")
             }
         );
 
-        //Hack since pack is now looking for PDBs in the folder since 2.1.300 breaking builds.
-        CopyFileToDirectory($"{inputFolder}/Octopus.Client.pdb", outputFolder);
         DeleteDirectory(inputFolder, true);
         MoveDirectory(outputFolder, inputFolder);
 
