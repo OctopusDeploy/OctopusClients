@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    partial class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource> where TMixScopedResource : class, IResource
+    class MixScopeResourceRepository<TMixScopedResource> : BasicRepository<TMixScopedResource> where TMixScopedResource : class, IResource
     {
         public MixScopeResourceRepository(IOctopusClient client, string collectionLinkName)
             : base(client, collectionLinkName)
         {
-
         }
 
         public List<TMixScopedResource> Search(bool includeGlobal, string[] spaceIds, object parameters = null)
@@ -33,6 +30,5 @@ namespace Octopus.Client.Repositories
 
             return resources;
         }
-
     }
 }
