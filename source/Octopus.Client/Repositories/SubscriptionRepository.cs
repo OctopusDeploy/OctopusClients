@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
         IDelete<SubscriptionResource>, 
         IMixScopeRepository<SubscriptionResource>
     {
-        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
+        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
     }
     
     class SubscriptionRepository : MixScopeResourceRepository<SubscriptionResource>, ISubscriptionRepository
@@ -21,9 +21,9 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
+        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
         {
-            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
+            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
         }
     }
 }

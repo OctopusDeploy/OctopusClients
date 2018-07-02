@@ -465,7 +465,7 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
     Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Task<SubscriptionEditor> Save()
   }
@@ -4951,7 +4951,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
     Octopus.Client.Repositories.Async.IMixScopeRepository<SubscriptionResource>
   {
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.Async.ICreate<TagSetResource>

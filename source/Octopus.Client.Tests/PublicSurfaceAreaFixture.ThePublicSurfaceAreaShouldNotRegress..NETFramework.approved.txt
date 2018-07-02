@@ -639,7 +639,7 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
     Octopus.Client.Editors.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Octopus.Client.Editors.SubscriptionEditor Save()
   }
@@ -954,7 +954,7 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
     Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Task<SubscriptionEditor> Save()
   }
@@ -5470,7 +5470,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<SubscriptionResource>
     Octopus.Client.Repositories.IMixScopeRepository<SubscriptionResource>
   {
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.ICreate<TagSetResource>
@@ -6013,7 +6013,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
     Octopus.Client.Repositories.Async.IMixScopeRepository<SubscriptionResource>
   {
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.Async.ICreate<TagSetResource>

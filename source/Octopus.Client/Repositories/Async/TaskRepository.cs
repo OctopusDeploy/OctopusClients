@@ -113,6 +113,7 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
 
             var resource = new TaskResource();
+            resource.SpaceId = template.SpaceId;
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
             resource.Arguments = new Dictionary<string, object>
