@@ -9,11 +9,11 @@ namespace Octopus.Client.Repositories
 {
     public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, IMixScopeRepository<TaskResource>
     {
-        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
+        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
+        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
         TaskResource ExecuteBackup(string description = null);
-        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
+        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
+        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null);
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
@@ -37,10 +37,10 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteHealthCheck(
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, 
-            string restrictTo = null, string workerpoolId = null, string[] workerIds = null
+            string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null
             )
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.Health.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -55,9 +55,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
+        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.UpdateCalamari.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -75,9 +75,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
+        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.Upgrade.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -90,9 +90,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
+        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -111,7 +111,7 @@ namespace Octopus.Client.Repositories
         {
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
 
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = template.SpaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
             resource.Arguments = new Dictionary<string, object>
