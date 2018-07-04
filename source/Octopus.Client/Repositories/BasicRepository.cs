@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories
     {
         readonly IOctopusClient client;
         protected readonly string CollectionLinkName;
-        protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
+        protected object LimitedToSpacesParameters { get; set; }
 
         protected BasicRepository(IOctopusClient client, string collectionLinkName)
         {
@@ -152,13 +152,9 @@ namespace Octopus.Client.Repositories
             return Get(resource.Id);
         }
 
-        protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaceIds)
+        protected object CreateSpacesParameters(bool includeGlobal, params string[] spaces)
         {
-            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["includeGlobal"] = includeGlobal,
-                ["spaces"] = spaceIds
-            };
+            return new { includeGlobal, spaces };
         }
     }
 

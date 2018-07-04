@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         abstract class BasicRepository<TResource> where TResource : class, IResource
         {
             protected readonly string CollectionLinkName;
-            protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
+            protected object LimitedToSpacesParameters { get; set; }
 
             protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
             {
@@ -147,13 +147,9 @@ namespace Octopus.Client.Repositories.Async
                 return Get(resource.Id);
             }
 
-            protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaceIds)
+            protected object CreateSpacesParameters(bool includeGlobal, params string[] spaces)
             {
-                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-                {
-                    ["includeGlobal"] = includeGlobal,
-                    ["spaces"] = spaceIds
-                };
+                return new {includeGlobal, spaces};
             }
     }
 
