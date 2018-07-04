@@ -8,7 +8,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, IMixScopeRepository<TaskResource>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanLimitToSpaces<ITaskRepository>
     {
         Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories.Async
         Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], Task> interval = null);
     }
 
-    class TaskRepository : MixScopeResourceRepository<TaskResource>, ITaskRepository
+    class TaskRepository : BasicRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusAsyncClient client)
             : base(client, "Tasks")
@@ -223,5 +223,13 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
+
+        public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new TaskRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
+        }
     }
 }

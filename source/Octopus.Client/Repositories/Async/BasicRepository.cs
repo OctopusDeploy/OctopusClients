@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -14,8 +15,9 @@ namespace Octopus.Client.Repositories.Async
         abstract class BasicRepository<TResource> where TResource : class, IResource
         {
             protected readonly string CollectionLinkName;
+            protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
 
-            protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
+        protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
             {
                 this.Client = client;
                 this.CollectionLinkName = collectionLinkName;
@@ -40,7 +42,8 @@ namespace Octopus.Client.Repositories.Async
 
             public Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
             {
-                return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+                var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, pathParameters);
+            return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), parameters, getNextPage);
             }
 
             public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -143,7 +146,16 @@ namespace Octopus.Client.Repositories.Async
                 if (resource == null) throw new ArgumentNullException("resource");
                 return Get(resource.Id);
             }
-        }
+
+            protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaceIds)
+            {
+                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["includeGlobal"] = includeGlobal,
+                    ["spaces"] = spaceIds
+                };
+            }
+    }
 
         // ReSharper restore MemberCanBePrivate.Local
         // ReSharper restore UnusedMember.Local

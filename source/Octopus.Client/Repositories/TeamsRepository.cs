@@ -10,12 +10,12 @@ namespace Octopus.Client.Repositories
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        IMixScopeRepository<TeamResource>
+        ICanLimitToSpaces<ITeamsRepository>
     {
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
     
-    class TeamsRepository : MixScopeResourceRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusClient client)
             : base(client, "Teams")
@@ -34,6 +34,14 @@ namespace Octopus.Client.Repositories
             });
 
             return resources;
+        }
+
+        public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new TeamsRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
         }
     }
 }

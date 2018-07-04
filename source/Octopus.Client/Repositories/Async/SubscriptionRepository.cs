@@ -10,12 +10,12 @@ namespace Octopus.Client.Repositories.Async
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
         IDelete<SubscriptionResource>,
-        IMixScopeRepository<SubscriptionResource>
+        ICanLimitToSpaces<ISubscriptionRepository>
     {
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
     }
 
-    class SubscriptionRepository : MixScopeResourceRepository<SubscriptionResource>, ISubscriptionRepository
+    class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
     {
         public SubscriptionRepository(IOctopusAsyncClient client) : base(client, "Subscriptions")
         {
@@ -24,6 +24,14 @@ namespace Octopus.Client.Repositories.Async
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
         {
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
+        }
+
+        public ISubscriptionRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new SubscriptionRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
         }
     }
 }

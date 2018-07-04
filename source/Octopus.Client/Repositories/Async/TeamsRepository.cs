@@ -11,12 +11,12 @@ namespace Octopus.Client.Repositories.Async
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        IMixScopeRepository<TeamResource>
+        ICanLimitToSpaces<ITeamsRepository>
     {
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
 
-    class TeamsRepository : MixScopeResourceRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusAsyncClient client)
             : base(client, "Teams")
@@ -35,6 +35,14 @@ namespace Octopus.Client.Repositories.Async
             }).ConfigureAwait(false);
 
             return resources;
+        }
+
+        public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new TeamsRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
         }
     }
 }

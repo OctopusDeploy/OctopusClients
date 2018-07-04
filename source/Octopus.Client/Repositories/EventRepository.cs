@@ -3,7 +3,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IEventRepository : IGet<EventResource>, IMixScopeRepository<EventResource>
+    public interface IEventRepository : IGet<EventResource>, ICanLimitToSpaces<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         ResourceCollection<EventResource> List(int skip = 0, 
@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories
             string documentTypes = null);
     }
     
-    class EventRepository : MixScopeResourceRepository<EventResource>, IEventRepository
+    class EventRepository : BasicRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusClient client)
             : base(client, "Events")
@@ -115,6 +115,14 @@ namespace Octopus.Client.Repositories
                 toAutoId,
                 documentTypes
             });
+        }
+
+        public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new EventRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
         }
     }
 }

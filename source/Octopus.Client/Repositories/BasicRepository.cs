@@ -5,6 +5,7 @@ using System.Linq;
 using Octopus.Client.Model;
 using System.Text.RegularExpressions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -15,6 +16,7 @@ namespace Octopus.Client.Repositories
     {
         readonly IOctopusClient client;
         protected readonly string CollectionLinkName;
+        protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
 
         protected BasicRepository(IOctopusClient client, string collectionLinkName)
         {
@@ -47,7 +49,7 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -85,7 +87,6 @@ namespace Octopus.Client.Repositories
         public TResource FindByName(string name, string path = null, object pathParameters = null)
         {
             name = (name ?? string.Empty).Trim();
-
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
                 pathParameters = new {name = name};
@@ -148,6 +149,15 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
+        }
+
+        protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaceIds)
+        {
+            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["includeGlobal"] = includeGlobal,
+                ["spaces"] = spaceIds
+            };
         }
     }
 

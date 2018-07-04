@@ -7,15 +7,23 @@ namespace Octopus.Client.Repositories
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
         IGet<ScopedUserRoleResource>,
-        IMixScopeRepository<ScopedUserRoleResource>
+        ICanLimitToSpaces<IScopedUserRoleRepository>
     {
     }
     
-    class ScopedUserRoleRepository : MixScopeResourceRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
+    class ScopedUserRoleRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusClient client)
             : base(client, "ScopedUserRoles")
         {
+        }
+
+        public IScopedUserRoleRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            return new ScopedUserRoleRepository(Client)
+            {
+                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
+            };
         }
     }
 }
