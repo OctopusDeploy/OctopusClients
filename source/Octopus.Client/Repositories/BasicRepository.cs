@@ -49,7 +49,8 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters, getNextPage);
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, pathParameters);
+            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), parameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)

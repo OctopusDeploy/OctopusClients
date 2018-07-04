@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories.Async
             protected readonly string CollectionLinkName;
             protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
 
-        protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
+            protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
             {
                 this.Client = client;
                 this.CollectionLinkName = collectionLinkName;
@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories.Async
             public Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
             {
                 var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, pathParameters);
-            return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), parameters, getNextPage);
+                return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), parameters, getNextPage);
             }
 
             public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
