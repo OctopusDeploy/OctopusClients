@@ -10,7 +10,7 @@ namespace Octopus.Client.Util
         public static Dictionary<string, object> CombineParameters(Dictionary<string, object> spaceLimitedParameters, object userProvidedParameters)
         {
             if (spaceLimitedParameters == null)
-                spaceLimitedParameters = new Dictionary<string, object>();
+                spaceLimitedParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             if (userProvidedParameters == null)
                 userProvidedParameters = new { };
@@ -18,13 +18,14 @@ namespace Octopus.Client.Util
 
             // Value from the current repository(spaceLimitedParameters) overrides the one from user (userProvidedParameters)
             spaceLimitedParameters.ToList().ForEach(x => resultDictionary[x.Key] = x.Value);
-            return resultDictionary;
+            return new Dictionary<string, object>(resultDictionary);
         }
 
-        static Dictionary<string, object> GetParameters(object parameters)
+        static IDictionary<string, object> GetParameters(object parameters)
         {
-            var dictionary =
-                new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (parameters is IDictionary<string, object> maybeDictionary)
+                return maybeDictionary;
+            var dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             var properties = parameters.GetType().GetTypeInfo().GetProperties();
             foreach (var property in properties)
             {
