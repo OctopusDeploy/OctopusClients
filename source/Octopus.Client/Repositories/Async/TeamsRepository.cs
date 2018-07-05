@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories.Async
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
-            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), page =>
+            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), LimitedToSpacesParameters, page =>
             {
                 resources.AddRange(page.Items);
                 return true;

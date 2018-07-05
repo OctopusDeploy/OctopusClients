@@ -1058,6 +1058,13 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
+  class InvalidSpacesLimitationParametersException
+    ISerializable
+    _Exception
+    Octopus.Client.Exceptions.OctopusException
+  {
+    .ctor()
+  }
   class OctopusDeserializationException
     ISerializable
     _Exception
@@ -6216,7 +6223,7 @@ Octopus.Client.Util
   }
   abstract class ParameterHelper
   {
-    static Dictionary<String, Object> CombineParameters(Object, Object)
+    static Dictionary<String, Object> CombineParameters(Dictionary<String, Object>, Object)
   }
 }
 Octopus.Client.Validation

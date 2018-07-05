@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -15,7 +17,7 @@ namespace Octopus.Client.Repositories.Async
         abstract class BasicRepository<TResource> where TResource : class, IResource
         {
             protected readonly string CollectionLinkName;
-            protected object LimitedToSpacesParameters { get; set; }
+            protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
 
             protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
             {
@@ -77,7 +79,8 @@ namespace Octopus.Client.Repositories.Async
 
             public Task<List<TResource>> GetAll()
             {
-                return Client.Get<List<TResource>>(Client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+                var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { id = "all" });
+                return Client.Get<List<TResource>>(Client.RootDocument.Link(CollectionLinkName), parameters);
             }
 
             public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -112,9 +115,10 @@ namespace Octopus.Client.Repositories.Async
                 if (string.IsNullOrWhiteSpace(idOrHref))
                     return null;
 
+                var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { id = idOrHref });
                 return idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
-                    ? Client.Get<TResource>(idOrHref)
-                    : Client.Get<TResource>(Client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+                    ? Client.Get<TResource>(idOrHref, LimitedToSpacesParameters)
+                    : Client.Get<TResource>(Client.RootDocument.Link(CollectionLinkName), parameters);
             }
 
             public virtual async Task<List<TResource>> Get(params string[] ids)
@@ -128,9 +132,10 @@ namespace Octopus.Client.Repositories.Async
                 if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                     link += "{?ids}";
 
+                var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { ids = actualIds });
                 await Client.Paginate<TResource>(
                     link,
-                    new { ids = actualIds },
+                    parameters,
                     page =>
                     {
                         resources.AddRange(page.Items);
@@ -147,13 +152,30 @@ namespace Octopus.Client.Repositories.Async
                 return Get(resource.Id);
             }
 
-            protected object CreateSpacesParameters(bool includeGlobal, params string[] spaces)
+            protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaces)
             {
-                return new {includeGlobal, spaces};
+                ValidateSpacesParameters(spaces);
+
+                return new Dictionary<string, object>
+                {
+                    ["includeGlobal"] = includeGlobal,
+                    ["spaces"] = spaces
+                };
+            }
+
+            void ValidateSpacesParameters(params string[] spaces)
+            {
+                if (LimitedToSpacesParameters == null) return;
+                var previouslyDefinedSpaceIds = LimitedToSpacesParameters["spaces"] as string[];
+                var previouslyDefinedSpaceIdsSet = new HashSet<string>(previouslyDefinedSpaceIds);
+                if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(spaces))
+                {
+                    throw new InvalidSpacesLimitationParametersException();
+                }
             }
     }
 
-        // ReSharper restore MemberCanBePrivate.Local
+    // ReSharper restore MemberCanBePrivate.Local
         // ReSharper restore UnusedMember.Local
         // ReSharper restore MemberCanBeProtected.Local
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -143,13 +144,13 @@ namespace Octopus.Client.Repositories.Async
 
             if (tail.HasValue)
                 args.Add("tail", tail.Value);
-
-            return Client.Get<TaskDetailsResource>(resource.Link("Details"), args);
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, args);
+            return Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters);
         }
 
         public Task<string> GetRawOutputLog(TaskResource resource)
         {
-            return Client.Get<string>(resource.Link("Raw"));
+            return Client.Get<string>(resource.Link("Raw"), LimitedToSpacesParameters);
         }
 
         public Task Rerun(TaskResource resource)
@@ -169,7 +170,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource)
         {
-            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"));
+            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), LimitedToSpacesParameters);
         }
 
         public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -198,7 +199,7 @@ namespace Octopus.Client.Repositories.Async
             while (true)
             {
                 var stillRunning = await Task.WhenAll(
-                        tasks.Select(t => Client.Get<TaskResource>(t.Link("Self")))
+                        tasks.Select(t => Client.Get<TaskResource>(t.Link("Self"), LimitedToSpacesParameters))
                     )
                     .ConfigureAwait(false);
 

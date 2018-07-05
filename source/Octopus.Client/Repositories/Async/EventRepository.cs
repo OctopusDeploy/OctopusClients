@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -95,7 +96,7 @@ namespace Octopus.Client.Repositories.Async
             long? toAutoId = null,
             string documentTypes = null)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new
             {
                 skip,
                 take,
@@ -116,6 +117,8 @@ namespace Octopus.Client.Repositories.Async
                 toAutoId,
                 documentTypes
             });
+
+            return Client.List<EventResource>(Client.RootDocument.Link("Events"), parameters);
         }
 
         public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)

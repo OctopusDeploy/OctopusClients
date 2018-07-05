@@ -7,14 +7,18 @@ namespace Octopus.Client.Util
 {
     public static class ParameterHelper
     {
-        public static Dictionary<string, object> CombineParameters(object leftHandSide, object rightHandSide)
+        public static Dictionary<string, object> CombineParameters(Dictionary<string, object> spaceLimitedParameters, object userProvidedParameters)
         {
-            if (leftHandSide == null)
-                leftHandSide = new { };
+            if (spaceLimitedParameters == null)
+                spaceLimitedParameters = new Dictionary<string, object>();
 
-            if (rightHandSide == null)
-                rightHandSide = new { };
-            return GetParameters(leftHandSide).Union(GetParameters(rightHandSide)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            if (userProvidedParameters == null)
+                userProvidedParameters = new { };
+            var resultDictionary = GetParameters(userProvidedParameters);
+
+            // Value from the current repository(spaceLimitedParameters) overrides the one from user (userProvidedParameters)
+            spaceLimitedParameters.ToList().ForEach(x => resultDictionary[x.Key] = x.Value);
+            return resultDictionary;
         }
 
         static Dictionary<string, object> GetParameters(object parameters)

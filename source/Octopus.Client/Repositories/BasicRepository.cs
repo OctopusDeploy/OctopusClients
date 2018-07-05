@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 using System.Text.RegularExpressions;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
@@ -16,7 +18,7 @@ namespace Octopus.Client.Repositories
     {
         readonly IOctopusClient client;
         protected readonly string CollectionLinkName;
-        protected object LimitedToSpacesParameters { get; set; }
+        protected Dictionary<string, object> LimitedToSpacesParameters { get; set; }
 
         protected BasicRepository(IOctopusClient client, string collectionLinkName)
         {
@@ -82,7 +84,8 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { id = "all" });
+            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), parameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
@@ -118,10 +121,10 @@ namespace Octopus.Client.Repositories
 
             if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                return client.Get<TResource>(idOrHref);
+                return client.Get<TResource>(idOrHref, LimitedToSpacesParameters);
             }
-
-            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { id = idOrHref });
+            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), parameters);
         }
 
         public virtual List<TResource> Get(params string[] ids)
@@ -134,9 +137,10 @@ namespace Octopus.Client.Repositories
             var link = client.RootDocument.Link(CollectionLinkName);
             if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
+            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new { ids = actualIds });
             client.Paginate<TResource>(
                 link,
-                new { ids = actualIds },
+                parameters,
                 page =>
                 {
                     resources.AddRange(page.Items);
@@ -152,9 +156,26 @@ namespace Octopus.Client.Repositories
             return Get(resource.Id);
         }
 
-        protected object CreateSpacesParameters(bool includeGlobal, params string[] spaces)
+        protected Dictionary<string, object> CreateSpacesParameters(bool includeGlobal, params string[] spaces)
         {
-            return new { includeGlobal, spaces };
+            ValidateSpacesParameters(spaces);
+
+            return new Dictionary<string, object>
+            {
+                ["includeGlobal"] = includeGlobal,
+                ["spaces"] = spaces
+            };
+        }
+
+        void ValidateSpacesParameters(params string[] spaces)
+        {
+            if (LimitedToSpacesParameters == null) return;
+            var previouslyDefinedSpaceIds = LimitedToSpacesParameters["spaces"] as string[];
+            var currentSpaces = new HashSet<string>(spaces);
+            if (!currentSpaces.IsSubsetOf(previouslyDefinedSpaceIds))
+            {
+                throw new InvalidSpacesLimitationParametersException();
+            }
         }
     }
 
