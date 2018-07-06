@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
         void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Action<TaskResource[]> interval = null);
     }
 
-    class TaskRepository : BasicRepository<TaskResource>, ITaskRepository
+    class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusClient client)
             : base(client, "Tasks")
@@ -143,13 +143,13 @@ namespace Octopus.Client.Repositories
 
             if (tail.HasValue)
                 args.Add("tail", tail.Value);
-            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, args);
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, args);
             return Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters);
         }
 
         public string GetRawOutputLog(TaskResource resource)
         {
-            return Client.Get<string>(resource.Link("Raw"), LimitedToSpacesParameters);
+            return Client.Get<string>(resource.Link("Raw"), AdditionalQueryParameters);
         }
 
         public void Rerun(TaskResource resource)
@@ -169,7 +169,7 @@ namespace Octopus.Client.Repositories
 
         public IReadOnlyList<TaskResource> GetQueuedBehindTasks(TaskResource resource)
         {
-            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), LimitedToSpacesParameters);
+            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), AdditionalQueryParameters);
         }
 
         public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -190,7 +190,7 @@ namespace Octopus.Client.Repositories
             {
                 var stillRunning =
                 (from task in tasks
-                    let currentStatus = Client.Get<TaskResource>(task.Link("Self"), LimitedToSpacesParameters)
+                    let currentStatus = Client.Get<TaskResource>(task.Link("Self"), AdditionalQueryParameters)
                     select currentStatus).ToArray();
 
                 interval?.Invoke(stillRunning);
@@ -216,10 +216,9 @@ namespace Octopus.Client.Repositories
 
         public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            return new TaskRepository(Client)
-            {
-                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
-            };
+            var repository = new TaskRepository(Client);
+            repository.SetupParameters(includeGlobal, spaceIds);
+            return repository;
         }
     }
 }

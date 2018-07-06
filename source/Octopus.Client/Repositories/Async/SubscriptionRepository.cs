@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
     }
 
-    class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
+    class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
     {
         public SubscriptionRepository(IOctopusAsyncClient client) : base(client, "Subscriptions")
         {
@@ -28,10 +28,9 @@ namespace Octopus.Client.Repositories.Async
 
         public ISubscriptionRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            return new SubscriptionRepository(Client)
-            {
-                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
-            };
+            var repository = new SubscriptionRepository(Client);
+            repository.SetupParameters(includeGlobal, spaceIds);
+            return repository;
         }
     }
 }

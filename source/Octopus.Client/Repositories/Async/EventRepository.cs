@@ -55,7 +55,7 @@ namespace Octopus.Client.Repositories.Async
             string documentTypes = null);
     }
 
-    class EventRepository : BasicRepository<EventResource>, IEventRepository
+    class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusAsyncClient client)
             : base(client, "Events")
@@ -96,7 +96,7 @@ namespace Octopus.Client.Repositories.Async
             long? toAutoId = null,
             string documentTypes = null)
         {
-            var parameters = ParameterHelper.CombineParameters(LimitedToSpacesParameters, new
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 take,
@@ -123,10 +123,9 @@ namespace Octopus.Client.Repositories.Async
 
         public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            return new EventRepository(Client)
-            {
-                 LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
-            };
+            var repository = new EventRepository(Client);
+            repository.SetupParameters(includeGlobal, spaceIds);
+            return repository;
         }
     }
 }

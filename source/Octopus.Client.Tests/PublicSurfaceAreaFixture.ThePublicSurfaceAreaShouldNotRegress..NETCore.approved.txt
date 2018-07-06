@@ -571,7 +571,7 @@ Octopus.Client.Exceptions
 {
   class InvalidSpacesLimitationParametersException
     ISerializable
-    Octopus.Client.Exceptions.OctopusException
+    Exception
   {
     .ctor()
   }
@@ -5157,10 +5157,6 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
-  }
-  abstract class ParameterHelper
-  {
-    static Dictionary<String, Object> CombineParameters(Dictionary<String, Object>, Object)
   }
 }
 Octopus.Client.Validation

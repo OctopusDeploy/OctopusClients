@@ -2,9 +2,9 @@
 
 namespace Octopus.Client.Exceptions
 {
-    public class InvalidSpacesLimitationParametersException : OctopusException
+    public class InvalidSpacesLimitationParametersException: Exception
     {
-        public InvalidSpacesLimitationParametersException(): base((int)System.Net.HttpStatusCode.Conflict, "The new spaceIds should be a subset of the previously defined spaceIds")
+        public InvalidSpacesLimitationParametersException(): base("The new spaceIds can only be a subset of the previously defined spaceIds and includeGlobal should be the same as the previous value")
         {
         }
     }

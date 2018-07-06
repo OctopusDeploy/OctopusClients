@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
     
-    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusClient client)
             : base(client, "Teams")
@@ -27,7 +27,7 @@ namespace Octopus.Client.Repositories
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
-            Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), LimitedToSpacesParameters, page =>
+            Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), AdditionalQueryParameters, page =>
             {
                 resources.AddRange(page.Items);
                 return true;
@@ -38,10 +38,9 @@ namespace Octopus.Client.Repositories
 
         public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            return new TeamsRepository(Client)
-            {
-                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
-            };
+            var repository = new TeamsRepository(Client);
+            repository.SetupParameters(includeGlobal, spaceIds);
+            return repository;
         }
     }
 }

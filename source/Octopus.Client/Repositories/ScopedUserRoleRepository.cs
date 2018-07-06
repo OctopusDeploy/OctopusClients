@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
     {
     }
     
-    class ScopedUserRoleRepository : BasicRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
+    class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusClient client)
             : base(client, "ScopedUserRoles")
@@ -20,10 +20,9 @@ namespace Octopus.Client.Repositories
 
         public IScopedUserRoleRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            return new ScopedUserRoleRepository(Client)
-            {
-                LimitedToSpacesParameters = CreateSpacesParameters(includeGlobal, spaceIds)
-            };
+            var repository = new ScopedUserRoleRepository(Client);
+            repository.SetupParameters(includeGlobal, spaceIds);
+            return repository;
         }
     }
 }
