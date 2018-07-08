@@ -41,7 +41,7 @@ namespace Octopus.Client
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             clientOptions = options ?? new OctopusClientOptions();
-            this.rootDocumentUri = string.IsNullOrEmpty(clientOptions.SpaceId) ? "~/api" : "~/api/" + clientOptions.SpaceId;
+            this.rootDocumentUri = "~/api";
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -134,6 +134,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
+                if (string.IsNullOrEmpty(client.clientOptions.SpaceId))
+                    client.SpaceRootDocument = await client.Get<SpaceRootResource>(client.RootDocument.Link("SpaceHome"),
+                        new {spaceId = client.clientOptions.SpaceId}).ConfigureAwait(false);
                 client.Repository = new OctopusAsyncRepository(client);
                 return client;
             }
@@ -153,6 +156,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public RootResource RootDocument { get; private set; }
 
+        public SpaceRootResource SpaceRootDocument { get; private set; }
+
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
@@ -165,6 +170,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             RootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+            if (clientOptions.SpaceId != null)
+                SpaceRootDocument = await Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId = clientOptions.SpaceId }).ConfigureAwait(false);
             return RootDocument;
         }
 

@@ -11,6 +11,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 
 namespace Octopus.Client
@@ -28,6 +29,8 @@ namespace Octopus.Client
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
+        private readonly string spaceId;
+        private Lazy<SpaceRootResource> spaceResourceLazy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -39,8 +42,10 @@ namespace Octopus.Client
 
         public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
         {
-            this.rootDocumentUri = spaceId == null ? "~/api" : "~/api/" + spaceId;
+            this.rootDocumentUri = "~/api";
+            this.spaceResourceLazy = new Lazy<SpaceRootResource>(LoadSpaceResource, true);
             this.serverEndpoint = serverEndpoint;
+            this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
         }
@@ -70,6 +75,13 @@ namespace Octopus.Client
             }
         }
 
+        public SpaceRootResource SpaceRootDocument => spaceResourceLazy.Value;
+
+        private SpaceRootResource LoadSpaceResource()
+        {
+            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(this.RootDocument.Link("SpaceHome"), new { spaceId });
+        }
+
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
@@ -85,6 +97,7 @@ namespace Octopus.Client
             lock (rootDocumentLock)
             {
                 rootDocument = root;
+                this.spaceResourceLazy = new Lazy<SpaceRootResource>(LoadSpaceResource, true);
             }
             return rootDocument;
         }
