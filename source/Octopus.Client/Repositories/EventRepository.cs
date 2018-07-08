@@ -66,7 +66,7 @@ namespace Octopus.Client.Repositories
             string regardingDocumentId = null,
             bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            return Client.List<EventResource>(Client.Link("Events"), new
             {
                 skip,
                 user = filterByUserId,
@@ -94,7 +94,7 @@ namespace Octopus.Client.Repositories
             long? toAutoId = null,
             string documentTypes = null)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            return Client.List<EventResource>(Client.Link("Events"), new
             {
                 skip,
                 take,

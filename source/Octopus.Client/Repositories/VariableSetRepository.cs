@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
 
         public string[] GetVariableNames(string project, string[] environments)
         {
-            return Client.Get<string[]>(Client.RootDocument.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
+            return Client.Get<string[]>(Client.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
         }
 
         public override List<VariableSetResource> Get(params string[] ids)

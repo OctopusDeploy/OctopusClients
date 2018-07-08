@@ -134,6 +134,7 @@ namespace Octopus.Client
         {
             // Force the Lazy instance to be loaded
             RootDocument.Link("Self");
+            SpaceRootDocument.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)

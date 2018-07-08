@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
         private ConfigurationItemResource GetConfigurationItem(IResource instance) 
         {
             var configurationItem =
-                client.Get<ConfigurationItemResource>(client.RootDocument.Link(collectionLinkName), new { instance.Id });
+                client.Get<ConfigurationItemResource>(client.Link(collectionLinkName), new { instance.Id });
             return configurationItem;
         }
     }

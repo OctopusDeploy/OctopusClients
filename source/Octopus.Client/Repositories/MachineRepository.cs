@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories
             });
 
         public MachineResource Discover(DiscoverMachineOptions options)
-            => Client.Get<MachineResource>(Client.RootDocument.Link("DiscoverMachine"), new
+            => Client.Get<MachineResource>(Client.Link("DiscoverMachine"), new
             {
                 host = options.Host,
                 port = options.Port,
@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories
         public List<MachineResource> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<MachineResource>>(Client.RootDocument.Link("machines"), new { id = "all", thumbprint });
+            return Client.Get<List<MachineResource>>(Client.Link("machines"), new { id = "all", thumbprint });
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories
             string tenantTags = null,
             string environmentIds = null)
         {
-            return Client.List<MachineResource>(Client.RootDocument.Link("Machines"), new
+            return Client.List<MachineResource>(Client.Link("Machines"), new
             {
                 skip,
                 take,

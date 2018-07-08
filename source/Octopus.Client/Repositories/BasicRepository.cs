@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
+            return client.Create(client.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
@@ -47,7 +47,7 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+            client.Paginate(path ?? client.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -79,7 +79,7 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+            return client.Get<List<TResource>>(client.Link(CollectionLinkName), new { id = "all" });
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
@@ -119,7 +119,7 @@ namespace Octopus.Client.Repositories
                 return client.Get<TResource>(idOrHref);
             }
 
-            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+            return client.Get<TResource>(client.Link(CollectionLinkName), new { id = idOrHref });
         }
 
         public virtual List<TResource> Get(params string[] ids)
@@ -129,7 +129,7 @@ namespace Octopus.Client.Repositories
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = client.RootDocument.Link(CollectionLinkName);
+            var link = client.Link(CollectionLinkName);
             if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
             client.Paginate<TResource>(

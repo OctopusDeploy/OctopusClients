@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
 
         public List<string> GetAllRoleNames()
         {
-            return client.Get<string[]>(client.RootDocument.Link("MachineRoles")).ToList();
+            return client.Get<string[]>(client.Link("MachineRoles")).ToList();
         }
     }
 }

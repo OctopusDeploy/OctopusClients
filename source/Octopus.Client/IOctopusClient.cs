@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Exceptions;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client
@@ -332,6 +333,22 @@ namespace Octopus.Client
         /// <param name="spaceId">The ID of the space.</param>
         /// <returns>An instance of IOctopusClient</returns>
         IOctopusClient ForSpaceContext(string spaceId);
+    }
+
+    public static class OctopusClientExtensions
+    {
+        /// <summary>
+        /// Gets the link with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
+        public static string Link(this IOctopusClient client, string name)
+        {
+            return client.SpaceRootDocument != null && client.SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : client.RootDocument.Link(name);
+        }
     }
 }
 #endif

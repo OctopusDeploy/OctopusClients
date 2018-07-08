@@ -20,12 +20,12 @@ namespace Octopus.Client.Repositories
 
         public FeaturesConfigurationResource GetFeaturesConfiguration()
         {
-            return client.Get<FeaturesConfigurationResource>(client.RootDocument.Link("FeaturesConfiguration"));
+            return client.Get<FeaturesConfigurationResource>(client.Link("FeaturesConfiguration"));
         }
 
         public FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("FeaturesConfiguration"), resource);
+            return client.Update(client.Link("FeaturesConfiguration"), resource);
         }
     }
 }

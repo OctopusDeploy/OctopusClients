@@ -349,4 +349,20 @@ namespace Octopus.Client
         /// <returns>An instance of IOctopusClient</returns>
         Task<IOctopusAsyncClient> ForSpaceContext(string spaceId);
     }
+    
+    public static class OctopusAsyncClientExtensions
+    {
+        /// <summary>
+        /// Gets the link with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
+        public static string Link(this IOctopusAsyncClient client, string name)
+        {
+            return client.SpaceRootDocument != null && client.SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : client.RootDocument.Link(name);
+        }
+    }
 }

@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
         {
-            return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, new { ignoreChannelRules });
+            return Client.Create(Client.Link(CollectionLinkName), resource, new { ignoreChannelRules });
         }
 
         public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)
