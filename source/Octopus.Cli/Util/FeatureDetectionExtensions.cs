@@ -7,22 +7,12 @@ namespace Octopus.Cli.Util
     {
         public static bool SupportsChannels(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.RootDocument.SupportsChannels() == true;
+            return repository?.Client?.HasLink("Channels") == true;
         }
-
-        public static bool SupportsChannels(this RootResource source)
-        {
-            return source?.HasLink("Channels") == true;
-        }
-
+        
         public static bool SupportsTenants(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.RootDocument.SupportsTenants() == true;
-        }
-
-        public static bool SupportsTenants(this RootResource source)
-        {
-            return source?.HasLink("Tenants") == true;
+            return repository?.Client?.HasLink("Tenants") == true;
         }
 
         public static bool UsePostForChannelVersionRuleTest(this RootResource source)

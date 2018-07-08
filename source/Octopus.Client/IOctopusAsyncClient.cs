@@ -353,6 +353,18 @@ namespace Octopus.Client
     public static class OctopusAsyncClientExtensions
     {
         /// <summary>
+        /// Determines whether the specified link exists.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns>
+        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool HasLink(this IOctopusAsyncClient client, string name)
+        {
+            return client.SpaceRootDocument?.HasLink(name) ?? client.RootDocument.HasLink(name);
+        }
+
+        /// <summary>
         /// Gets the link with the specified name.
         /// </summary>
         /// <param name="name">The name.</param>

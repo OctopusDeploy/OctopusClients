@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories.Async
             // For backwards compatibility. 
             // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
             // This allows pre-3.11 clients to still work.
-            return client.RootDocument.Links.ContainsKey("CertificateConfiguration")
+            return client.HasLink("CertificateConfiguration")
                 ? "CertificateConfiguration"
                 : "Certificates";
         }
