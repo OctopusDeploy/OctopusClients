@@ -4670,6 +4670,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<MachinePolicyResource>
     Octopus.Client.Repositories.Async.IDelete<MachinePolicyResource>
   {
+    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.MachinePolicyResource)
   }
   interface IMachineRepository
     Octopus.Client.Repositories.Async.IFindByName<MachineResource>
