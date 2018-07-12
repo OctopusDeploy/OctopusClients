@@ -3361,7 +3361,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    IList<ActivityElement> ActivityLog { get; set; }
+    Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
   }
   ScopeField
   {
