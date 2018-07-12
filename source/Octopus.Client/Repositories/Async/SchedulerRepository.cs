@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -10,6 +12,8 @@ namespace Octopus.Client.Repositories.Async
         Task Stop();
         Task Stop(string taskName);
         Task Trigger(string taskName);
+        Task<ScheduledTaskDetailsResource> GetLogs(string taskName);
+        Task<Stream> GetRawLogs(string taskName);
     }
 
     class SchedulerRepository : ISchedulerRepository
@@ -44,6 +48,16 @@ namespace Octopus.Client.Repositories.Async
         public Task Stop(string taskName)
         {
             return client.GetContent($"~/api/scheduler/stop?task={taskName}");
+        }
+
+        public Task<ScheduledTaskDetailsResource> GetLogs(string taskName)
+        {
+            return client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
+        }
+
+        public Task<Stream> GetRawLogs(string taskName)
+        {
+            return client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
         }
     }
 }

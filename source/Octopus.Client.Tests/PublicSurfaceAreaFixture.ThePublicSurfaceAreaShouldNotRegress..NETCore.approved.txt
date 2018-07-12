@@ -2857,6 +2857,14 @@ Octopus.Client.Model
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
   }
+  class ScheduledTaskDetailsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    IList<ActivityElement> ActivityLog { get; set; }
+  }
   ScopeField
   {
       Project = 0
@@ -4800,6 +4808,8 @@ Octopus.Client.Repositories.Async
   }
   interface ISchedulerRepository
   {
+    Task<ScheduledTaskDetailsResource> GetLogs(String)
+    Task<Stream> GetRawLogs(String)
     Task Start()
     Task Start(String)
     Task Stop()
