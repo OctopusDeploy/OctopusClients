@@ -3626,6 +3626,7 @@ Octopus.Client.Model.Accounts
       AzureServicePrincipal = 4
       AmazonWebServicesAccount = 5
       AmazonWebServicesRoleAccount = 6
+      Token = 7
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -3723,6 +3724,16 @@ Octopus.Client.Model.Accounts
   {
     .ctor(Octopus.Client.Model.Accounts.AccountType[])
     Octopus.Client.Model.Accounts.AccountType[] AccountTypes { get; }
+  }
+  class TokenAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    Octopus.Client.Model.SensitiveValue Token { get; set; }
   }
   class UsernamePasswordAccountResource
     Octopus.Client.Extensibility.IResource

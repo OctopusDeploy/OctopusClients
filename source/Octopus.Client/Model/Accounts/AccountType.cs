@@ -10,6 +10,7 @@ namespace Octopus.Client.Model.Accounts
         AzureSubscription,
         AzureServicePrincipal,
         AmazonWebServicesAccount,
-        AmazonWebServicesRoleAccount
+        AmazonWebServicesRoleAccount,
+        Token
     }
 }
