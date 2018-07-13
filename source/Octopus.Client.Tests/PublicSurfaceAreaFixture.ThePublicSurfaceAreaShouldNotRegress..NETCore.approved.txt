@@ -2478,6 +2478,8 @@ Octopus.Client.Model
       UserEdit = 103
       ConfigureServer = 104
       FeedEdit = 105
+      WorkerView = 106
+      WorkerEdit = 107
   }
   class PermissionDescription
   {
