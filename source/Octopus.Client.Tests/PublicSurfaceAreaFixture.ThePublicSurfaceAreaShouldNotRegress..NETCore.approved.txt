@@ -4513,6 +4513,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<CertificateConfigurationResource>
   {
     Task<CertificateConfigurationResource> GetOctopusCertificate()
+    Task<Stream> GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
   }
   interface ICertificateRepository
     Octopus.Client.Repositories.Async.IResourceRepository

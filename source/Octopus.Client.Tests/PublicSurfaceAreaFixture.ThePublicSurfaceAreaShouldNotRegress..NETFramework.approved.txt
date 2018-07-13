@@ -5025,6 +5025,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<CertificateConfigurationResource>
   {
     Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
+    Stream GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
   }
   interface ICertificateRepository
     Octopus.Client.Repositories.IResourceRepository
@@ -5543,6 +5544,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<CertificateConfigurationResource>
   {
     Task<CertificateConfigurationResource> GetOctopusCertificate()
+    Task<Stream> GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
   }
   interface ICertificateRepository
     Octopus.Client.Repositories.Async.IResourceRepository
