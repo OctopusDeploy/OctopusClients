@@ -1513,6 +1513,18 @@ Octopus.Client.Model
     String ReleaseId { get; }
     String TenantId { get; }
   }
+  class AwsElasticContainerRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String Region { get; set; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+  }
   class AzureRootResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2208,7 +2220,10 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
     String RegistryPath { get; set; }
+    String Username { get; set; }
   }
   EmailPriority
   {
@@ -2342,10 +2357,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
-    String FeedUri { get; set; }
     String Name { get; set; }
-    Octopus.Client.Model.SensitiveValue Password { get; set; }
-    String Username { get; set; }
   }
   FeedType
   {
@@ -2355,6 +2367,7 @@ Octopus.Client.Model
       Maven = 3
       OctopusProject = 4
       GitHub = 5
+      AwsElasticContainerRegistry = 6
   }
   class FileUpload
   {
@@ -2372,6 +2385,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   GuidedFailureMode
   {
@@ -2718,6 +2734,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   abstract class Migration
   {
@@ -2793,6 +2812,9 @@ Octopus.Client.Model
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   class NumericReportData
   {
