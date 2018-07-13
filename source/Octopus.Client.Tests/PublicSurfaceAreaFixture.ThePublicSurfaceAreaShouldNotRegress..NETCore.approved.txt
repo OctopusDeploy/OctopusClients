@@ -2731,6 +2731,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
+    .ctor(String, String)
     DateTimeOffset Assembled { get; set; }
     String ChannelId { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
@@ -4778,6 +4779,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
