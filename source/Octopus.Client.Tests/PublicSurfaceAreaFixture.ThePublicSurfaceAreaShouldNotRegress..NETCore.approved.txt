@@ -3878,6 +3878,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String AccountId { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
   }
@@ -3893,6 +3894,7 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
   }
   class CloudServiceEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -3903,6 +3905,7 @@ Octopus.Client.Model.Endpoints
     String AccountId { get; set; }
     String CloudServiceName { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String Slot { get; set; }
     String StorageAccountName { get; set; }
     Boolean SwapIfPossible { get; set; }
@@ -3961,6 +3964,7 @@ Octopus.Client.Model.Endpoints
     String ClientCertVariable { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String ConnectionEndpoint { get; set; }
+    String DefaultWorkerPoolId { get; set; }
     Octopus.Client.Model.Endpoints.AzureServiceFabricSecurityMode SecurityMode { get; set; }
     String ServerCertThumbprint { get; set; }
   }
