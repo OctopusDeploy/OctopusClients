@@ -28,8 +28,7 @@ namespace Octopus.Client
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
         private readonly string spaceId;
-        private Lazy<SpaceRootResource> spaceResourceLazy;
-        private Lazy<RootResource> rootResourceLazy;
+        private Lazy<RootResources> rootResourcesLazy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -41,10 +40,8 @@ namespace Octopus.Client
 
         public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
         {
-            this.rootDocumentUri = "~/api";
-            var rootResourceLazy = new Lazy<RootResource>(EstablishSession, true);
-            this.rootResourceLazy = rootResourceLazy;
-            this.spaceResourceLazy = new Lazy<SpaceRootResource>(() => LoadSpaceResource(rootResourceLazy.Value), true);
+            rootDocumentUri = "~/api";
+            rootResourcesLazy = new Lazy<RootResources>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
             this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
@@ -58,14 +55,9 @@ namespace Octopus.Client
         /// that it is only requested once for
         /// the current <see cref="IOctopusClient" />.
         /// </summary>
-        public RootResource RootDocument => rootResourceLazy.Value;
+        public RootResource RootDocument => rootResourcesLazy.Value.RootResource;
 
-        public SpaceRootResource SpaceRootDocument => spaceResourceLazy.Value;
-
-        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
-        {
-            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
-        }
+        public SpaceRootResource SpaceRootDocument => rootResourcesLazy.Value.SpaceRootResource;
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -78,10 +70,37 @@ namespace Octopus.Client
         /// <returns>A fresh copy of the root document.</returns>
         public RootResource RefreshRootDocument()
         {
-            var root = new Lazy<RootResource>(() => Get<RootResource>(this.rootDocumentUri), true);
-            spaceResourceLazy = new Lazy<SpaceRootResource>(() => LoadSpaceResource(root.Value), true);
-            rootResourceLazy = root;
-            return root.Value;
+            rootResourcesLazy = new Lazy<RootResources>(() =>
+            {
+                var rootResource = Get<RootResource>(rootDocumentUri);
+                var spaceRootResource = LoadSpaceResource(rootResource);
+                return new RootResources(rootResource, spaceRootResource);
+            });
+            return rootResourcesLazy.Value.RootResource;
+        }
+
+        RootResources LoadInitialRootResources()
+        {
+            var root = EstablishSession();
+            var spaceRoot = LoadSpaceResource(root);
+            return new RootResources(root, spaceRoot);
+        }
+        
+        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
+        {
+            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
+        }
+
+        class RootResources
+        {
+            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
+            {
+                RootResource = rootResource;
+                SpaceRootResource = spaceRootResource;
+            }
+
+            public RootResource RootResource { get; }
+            public SpaceRootResource SpaceRootResource { get; }
         }
 
         public IOctopusClient ForSpaceContext(string spaceId)
