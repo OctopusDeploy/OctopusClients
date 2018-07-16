@@ -169,9 +169,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>A fresh copy of the root document.</returns>
         public async Task<RootResource> RefreshRootDocument()
         {
-            RootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            if (clientOptions.SpaceId != null)
-                SpaceRootDocument = await Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId = clientOptions.SpaceId }).ConfigureAwait(false);
+            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+            var spaceRootDocument = clientOptions.SpaceId != null ? await Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new {spaceId = clientOptions.SpaceId}).ConfigureAwait(false) : null;
+            RootDocument = rootDocument;
+            SpaceRootDocument = spaceRootDocument;
             return RootDocument;
         }
 
