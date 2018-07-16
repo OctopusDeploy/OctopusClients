@@ -223,7 +223,11 @@ namespace Octopus.Client.Model
         [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer,
 
         [Description("Edit feeds")] FeedEdit,
-        
+
+        [Description("View the workers in worker pools")] WorkerView,
+
+        [Description("Edit workers and worker pools")] WorkerEdit,
+
         [Description("Run background actions that don't require user principal")] RunSystem,
         
         [Description("Edit spaces")] SpaceEdit,

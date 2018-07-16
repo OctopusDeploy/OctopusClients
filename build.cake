@@ -134,7 +134,7 @@ Task("DotnetPublish")
         ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
     SignBinaries(portablePublishDir);
-    
+
     CopyFileToDirectory($"{assetDir}/Octo", portablePublishDir);
     CopyFileToDirectory($"{assetDir}/Octo.cmd", portablePublishDir);
 
@@ -153,7 +153,7 @@ Task("DotnetPublish")
         });
         SignBinaries($"{octoPublishFolder}/{rid}");
     }
-    
+
 });
 
 
@@ -176,7 +176,7 @@ Task("MergeOctoExe")
         SignBinaries(outputFolder);
     });
 
-	
+
 Task("Zip")
     .IsDependentOn("MergeOctoExe")
     .IsDependentOn("DotnetPublish")
@@ -213,6 +213,7 @@ Task("PackClientNuget")
         var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
         var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
         CreateDirectory(outputFolder);
+
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
@@ -224,6 +225,7 @@ Task("PackClientNuget")
                 Libs = new List<DirectoryPath>() { inputFolder }
             }
         );
+
         DeleteDirectory(inputFolder, true);
         MoveDirectory(outputFolder, inputFolder);
 
@@ -234,7 +236,7 @@ Task("PackClientNuget")
             Configuration = configuration,
             OutputDirectory = artifactsDir,
             NoBuild = true,
-            IncludeSymbols = false
+            IncludeSymbols = false,
         });
     });
 

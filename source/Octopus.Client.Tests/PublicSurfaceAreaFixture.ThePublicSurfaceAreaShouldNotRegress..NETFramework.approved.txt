@@ -3038,11 +3038,13 @@ Octopus.Client.Model
       UserEdit = 103
       ConfigureServer = 104
       FeedEdit = 105
-      RunSystem = 106
-      SpaceEdit = 107
-      SpaceView = 108
-      SpaceDelete = 109
-      SpaceCreate = 110
+      WorkerView = 106
+      WorkerEdit = 107
+      RunSystem = 108
+      SpaceEdit = 109
+      SpaceView = 110
+      SpaceDelete = 111
+      SpaceCreate = 112
   }
   class PermissionDescription
   {
@@ -3305,6 +3307,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
+    .ctor(String, String)
     DateTimeOffset Assembled { get; set; }
     String ChannelId { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
@@ -3428,6 +3431,14 @@ Octopus.Client.Model
     Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
+  }
+  class ScheduledTaskDetailsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
   }
   class ScopedUserRoleResource
     Octopus.Client.Extensibility.IResource
@@ -4502,6 +4513,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String AccountId { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
   }
@@ -4517,6 +4529,7 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
   }
   class CloudServiceEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -4527,6 +4540,7 @@ Octopus.Client.Model.Endpoints
     String AccountId { get; set; }
     String CloudServiceName { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String Slot { get; set; }
     String StorageAccountName { get; set; }
     Boolean SwapIfPossible { get; set; }
@@ -4585,6 +4599,7 @@ Octopus.Client.Model.Endpoints
     String ClientCertVariable { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String ConnectionEndpoint { get; set; }
+    String DefaultWorkerPoolId { get; set; }
     Octopus.Client.Model.Endpoints.AzureServiceFabricSecurityMode SecurityMode { get; set; }
     String ServerCertThumbprint { get; set; }
   }
@@ -5083,7 +5098,7 @@ Octopus.Client.Repositories
     List<TAccount> FindByNamesOfType(IEnumerable<String>)
     List<TAccount> FindManyOfType(Func<TAccount, Boolean>, Object)
     Octopus.Client.Repositories.TAccount FindOneOfType(Func<TAccount, Boolean>, Object)
-    Octopus.Client.Model.Accounts.Usages.AccountUsageResource GetAccountUsage(String)
+    Octopus.Client.Model.Accounts.Usages.AccountUsageResource GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
     Octopus.Client.Repositories.TAccount GetOfType(String)
     List<TAccount> GetOfType(String[])
     void PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
@@ -5133,6 +5148,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<CertificateConfigurationResource>
   {
     Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
+    Stream GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
   }
   interface ICertificateRepository
     Octopus.Client.Repositories.IResourceRepository
@@ -5305,6 +5321,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<MachinePolicyResource>
     Octopus.Client.Repositories.IDelete<MachinePolicyResource>
   {
+    List<MachineResource> GetMachines(Octopus.Client.Model.MachinePolicyResource)
   }
   interface IMachineRepository
     Octopus.Client.Repositories.IFindByName<MachineResource>
@@ -5413,6 +5430,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.ReleaseResource Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Octopus.Client.Model.ReleaseResource SnapshotVariables(Octopus.Client.Model.ReleaseResource)
@@ -5427,6 +5445,8 @@ Octopus.Client.Repositories
   }
   interface ISchedulerRepository
   {
+    Octopus.Client.Model.ScheduledTaskDetailsResource GetLogs(String)
+    Stream GetRawLogs(String)
     void Start()
     void Start(String)
     void Stop()
@@ -5617,7 +5637,7 @@ Octopus.Client.Repositories.Async
     Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
     Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
     Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
-    Task<AccountUsageResource> GetAccountUsage(String)
+    Task<AccountUsageResource> GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
     Task<TAccount> GetOfType(String)
     Task<List<TAccount>> GetOfType(String[])
     Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
@@ -5667,6 +5687,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<CertificateConfigurationResource>
   {
     Task<CertificateConfigurationResource> GetOctopusCertificate()
+    Task<Stream> GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
   }
   interface ICertificateRepository
     Octopus.Client.Repositories.Async.IResourceRepository
@@ -5839,6 +5860,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<MachinePolicyResource>
     Octopus.Client.Repositories.Async.IDelete<MachinePolicyResource>
   {
+    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.MachinePolicyResource)
   }
   interface IMachineRepository
     Octopus.Client.Repositories.Async.IFindByName<MachineResource>
@@ -5947,6 +5969,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
@@ -5961,6 +5984,8 @@ Octopus.Client.Repositories.Async
   }
   interface ISchedulerRepository
   {
+    Task<ScheduledTaskDetailsResource> GetLogs(String)
+    Task<Stream> GetRawLogs(String)
     Task Start()
     Task Start(String)
     Task Stop()
