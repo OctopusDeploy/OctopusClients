@@ -4315,6 +4315,10 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     String AccountId { get; set; }
+    String AwsRegion { get; set; }
+    String ClientCertificate { get; set; }
+    String ClusterCertificate { get; set; }
+    String ClusterName { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String Namespace { get; set; }
