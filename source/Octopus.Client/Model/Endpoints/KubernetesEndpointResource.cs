@@ -12,7 +12,23 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
+        public string ClientCertificate { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ClusterCertificate { get; set; }
+
+        [Trim]
+        [Writeable]
         public string ClusterUrl { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ClusterName { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string AwsRegion { get; set; }
 
         [Trim]
         [Writeable]
