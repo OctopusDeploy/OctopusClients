@@ -511,7 +511,7 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (RootDocument != null)
+            if (rootResourcesLazy.IsValueCreated)
             {
                 var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
