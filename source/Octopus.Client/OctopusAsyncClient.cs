@@ -188,6 +188,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return await Create(this.serverEndpoint, newOptions);
         }
 
+        public bool HasLink(string name)
+        {
+            return SpaceRootDocument?.HasLink(name) ?? RootDocument.HasLink(name);
+        }
+        
+        public string Link(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : RootDocument.Link(name);
+        }
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>

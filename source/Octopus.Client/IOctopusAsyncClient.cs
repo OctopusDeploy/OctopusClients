@@ -348,10 +348,7 @@ namespace Octopus.Client
         /// <param name="spaceId">The ID of the space.</param>
         /// <returns>An instance of IOctopusClient</returns>
         Task<IOctopusAsyncClient> ForSpaceContext(string spaceId);
-    }
-    
-    public static class OctopusAsyncClientExtensions
-    {
+
         /// <summary>
         /// Determines whether the specified link exists.
         /// </summary>
@@ -359,22 +356,14 @@ namespace Octopus.Client
         /// <returns>
         /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
         /// </returns>
-        public static bool HasLink(this IOctopusAsyncClient client, string name)
-        {
-            return client.SpaceRootDocument?.HasLink(name) ?? client.RootDocument.HasLink(name);
-        }
+        bool HasLink(string name);
 
         /// <summary>
         /// Gets the link with the specified name.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="name">The name/key of the link.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">If the link is not defined.</exception>
-        public static string Link(this IOctopusAsyncClient client, string name)
-        {
-            return client.SpaceRootDocument != null && client.SpaceRootDocument.Links.TryGetValue(name, out var value)
-                ? value.AsString()
-                : client.RootDocument.Link(name);
-        }
+        string Link(string name);
     }
 }
