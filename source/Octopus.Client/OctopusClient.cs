@@ -21,8 +21,6 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClient : IHttpOctopusClient
     {
-        readonly object rootDocumentLock = new object();
-        RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
@@ -31,6 +29,7 @@ namespace Octopus.Client
         readonly string rootDocumentUri;
         private readonly string spaceId;
         private Lazy<SpaceRootResource> spaceResourceLazy;
+        private Lazy<RootResource> rootResourceLazy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -43,7 +42,9 @@ namespace Octopus.Client
         public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
         {
             this.rootDocumentUri = "~/api";
-            this.spaceResourceLazy = new Lazy<SpaceRootResource>(LoadSpaceResource, true);
+            var rootResourceLazy = new Lazy<RootResource>(EstablishSession, true);
+            this.rootResourceLazy = rootResourceLazy;
+            this.spaceResourceLazy = new Lazy<SpaceRootResource>(() => LoadSpaceResource(rootResourceLazy.Value), true);
             this.serverEndpoint = serverEndpoint;
             this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
@@ -57,29 +58,13 @@ namespace Octopus.Client
         /// that it is only requested once for
         /// the current <see cref="IOctopusClient" />.
         /// </summary>
-        public RootResource RootDocument
-        {
-            get
-            {
-                if (rootDocument != null) return rootDocument;
-
-                lock (rootDocumentLock)
-                {
-                    if (rootDocument != null) return rootDocument;
-
-                    var root = EstablishSession();
-                    Thread.MemoryBarrier();
-                    rootDocument = root;
-                    return root;
-                }
-            }
-        }
+        public RootResource RootDocument => rootResourceLazy.Value;
 
         public SpaceRootResource SpaceRootDocument => spaceResourceLazy.Value;
 
-        private SpaceRootResource LoadSpaceResource()
+        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(this.RootDocument.Link("SpaceHome"), new { spaceId });
+            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
         }
 
         /// <summary>
@@ -93,13 +78,10 @@ namespace Octopus.Client
         /// <returns>A fresh copy of the root document.</returns>
         public RootResource RefreshRootDocument()
         {
-            var root = Get<RootResource>(this.rootDocumentUri);
-            lock (rootDocumentLock)
-            {
-                rootDocument = root;
-                this.spaceResourceLazy = new Lazy<SpaceRootResource>(LoadSpaceResource, true);
-            }
-            return rootDocument;
+            var root = new Lazy<RootResource>(() => Get<RootResource>(this.rootDocumentUri), true);
+            spaceResourceLazy = new Lazy<SpaceRootResource>(() => LoadSpaceResource(root.Value), true);
+            rootResourceLazy = root;
+            return root.Value;
         }
 
         public IOctopusClient ForSpaceContext(string spaceId)
@@ -510,9 +492,9 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (rootDocument != null)
+            if (RootDocument != null)
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
+                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
                     .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
