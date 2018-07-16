@@ -23,6 +23,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 this.Client = client;
                 this.CollectionLinkName = collectionLinkName;
+                AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             }
 
             public IOctopusAsyncClient Client { get; }

@@ -11,30 +11,26 @@ namespace Octopus.Client.Util
     {
         public static Dictionary<string, object> CombineParameters(Dictionary<string, object> currentAdditionalQueryParameters, object userProvidedParameters)
         {
-            if (currentAdditionalQueryParameters == null)
-                currentAdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
             if (userProvidedParameters == null)
                 userProvidedParameters = new { };
             var resultDictionary = GetParameters(userProvidedParameters);
 
             // Value from the current repository(currentAdditionalQueryParameters) overrides the one from user (userProvidedParameters)
             currentAdditionalQueryParameters.ToList().ForEach(x => resultDictionary[x.Key] = x.Value);
-            return new Dictionary<string, object>(resultDictionary);
+            return new Dictionary<string, object>(resultDictionary, StringComparer.OrdinalIgnoreCase);
         }
 
-        public static void ValidateSpaceParameters(SpaceQueryParameters curreSpaceQueryParameters, bool newIncludeGlobal,
-            string[] newSpaceIds)
+        public static void ValidateSpaceParameters(SpaceQueryParameters currentSpaceQueryParameters, SpaceQueryParameters newSpaceQueryParameters)
         {
-            if (curreSpaceQueryParameters == null) return;
+            if (currentSpaceQueryParameters == null) return;
 
-            if (curreSpaceQueryParameters.IncludeGlobal != newIncludeGlobal)
+            if (newSpaceQueryParameters.IncludeGlobal && !currentSpaceQueryParameters.IncludeGlobal)
             {
-                throw new InvalidSpacesLimitationParametersException();
+                throw new IncludeGlobalCannotBeSetFromFalseToTrueException();
             }
 
-            var previouslyDefinedSpaceIdsSet = new HashSet<string>(curreSpaceQueryParameters.SpaceIds);
-            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceIds))
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(currentSpaceQueryParameters.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
             {
                 throw new InvalidSpacesLimitationParametersException();
             }

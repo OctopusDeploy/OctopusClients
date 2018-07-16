@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -17,7 +18,11 @@ namespace Octopus.Client.Repositories.Async
 
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
     {
-        public SubscriptionRepository(IOctopusAsyncClient client) : base(client, "Subscriptions")
+        public SubscriptionRepository(IOctopusAsyncClient client) : base(client, "Subscriptions", null)
+        {
+        }
+
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Subscriptions", spaceQueryParameters)
         {
         }
 
@@ -28,9 +33,8 @@ namespace Octopus.Client.Repositories.Async
 
         public ISubscriptionRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            var repository = new SubscriptionRepository(Client);
-            repository.SetupParameters(includeGlobal, spaceIds);
-            return repository;
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new SubscriptionRepository(Client, newParameters);
         }
     }
 }

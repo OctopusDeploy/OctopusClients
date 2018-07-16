@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -19,7 +20,12 @@ namespace Octopus.Client.Repositories.Async
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusAsyncClient client)
-            : base(client, "Teams")
+            : base(client, "Teams", null)
+        {
+        }
+
+        TeamsRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
+            : base(client, "Teams", spaceQueryParameters)
         {
         }
 
@@ -39,9 +45,8 @@ namespace Octopus.Client.Repositories.Async
 
         public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            var repository = new TeamsRepository(Client);
-            repository.SetupParameters(includeGlobal, spaceIds);
-            return repository;
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new TeamsRepository(Client, newParameters);
         }
     }
 }

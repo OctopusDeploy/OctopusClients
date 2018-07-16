@@ -1,4 +1,5 @@
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -14,15 +15,18 @@ namespace Octopus.Client.Repositories
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusClient client)
-            : base(client, "ScopedUserRoles")
+            : base(client, "ScopedUserRoles", null)
+        {
+        }
+
+        ScopedUserRoleRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "ScopedUserRoles", spaceQueryParameters)
         {
         }
 
         public IScopedUserRoleRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            var repository = new ScopedUserRoleRepository(Client);
-            repository.SetupParameters(includeGlobal, spaceIds);
-            return repository;
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new ScopedUserRoleRepository(Client, newParameters);
         }
     }
 }

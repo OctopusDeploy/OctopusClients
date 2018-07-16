@@ -34,7 +34,12 @@ namespace Octopus.Client.Repositories.Async
     class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusAsyncClient client)
-            : base(client, "Tasks")
+            : base(client, "Tasks", null)
+        {
+        }
+
+        TaskRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
+            : base(client, "Tasks", spaceQueryParameters)
         {
         }
 
@@ -227,9 +232,8 @@ namespace Octopus.Client.Repositories.Async
 
         public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            var repository = new TaskRepository(Client);
-            repository.SetupParameters(includeGlobal, spaceIds);
-            return repository;
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new TaskRepository(Client, newParameters);
         }
     }
 }

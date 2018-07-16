@@ -57,7 +57,11 @@ namespace Octopus.Client.Repositories
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusClient client)
-            : base(client, "Events")
+            : base(client, "Events", null)
+        {
+        }
+
+        EventRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Events", spaceQueryParameters)
         {
         }
 
@@ -121,9 +125,8 @@ namespace Octopus.Client.Repositories
 
         public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
         {
-            var repository = new EventRepository(Client);
-            repository.SetupParameters(includeGlobal, spaceIds);
-            return repository;
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new EventRepository(Client, newParameters);
         }
     }
 }
