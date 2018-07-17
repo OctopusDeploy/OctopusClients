@@ -569,13 +569,13 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
-  class IncludeGlobalCannotBeSetFromFalseToTrueException
+  class InvalidIncludeGlobalConfigurationException
     ISerializable
     Exception
   {
     .ctor()
   }
-  class InvalidSpacesLimitationParametersException
+  class InvalidSpacesLimitationException
     ISerializable
     Exception
   {

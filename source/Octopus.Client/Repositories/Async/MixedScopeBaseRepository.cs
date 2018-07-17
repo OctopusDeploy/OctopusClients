@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories.Async
         protected SpaceQueryParameters CreateParameters(bool includeGlobal, string[] spaceIds)
         {
             var newParameter = new SpaceQueryParameters(includeGlobal, spaceIds);
-            ParameterHelper.ValidateSpaceParameters(SpaceQueryParameters, newParameter);
+            ValidateSpaceParameters(newParameter);
             return newParameter;
         }
         protected SpaceQueryParameters SpaceQueryParameters { get; set; }
@@ -32,6 +32,25 @@ namespace Octopus.Client.Repositories.Async
                     ["includeGlobal"] = SpaceQueryParameters.IncludeGlobal,
                     ["spaces"] = SpaceQueryParameters.SpaceIds
                 };
+            }
+        }
+
+        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        {
+            if (SpaceQueryParameters == null)
+            {
+                return;
+            }
+
+            if (newSpaceQueryParameters.IncludeGlobal && !SpaceQueryParameters.IncludeGlobal)
+            {
+                throw new InvalidIncludeGlobalConfigurationException();
+            }
+
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryParameters.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
+            {
+                throw new InvalidSpacesLimitationException();
             }
         }
     }

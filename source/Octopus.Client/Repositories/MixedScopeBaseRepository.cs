@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Util;
 
@@ -15,7 +16,7 @@ namespace Octopus.Client.Repositories
         protected SpaceQueryParameters CreateParameters(bool includeGlobal, string[] spaceIds)
         {
             var newParameters = new SpaceQueryParameters(includeGlobal, spaceIds);
-            ParameterHelper.ValidateSpaceParameters(SpaceQueryParameters, newParameters);
+            ValidateSpaceParameters(newParameters);
             return newParameters;
         }
         protected SpaceQueryParameters SpaceQueryParameters { get; set; }
@@ -31,6 +32,25 @@ namespace Octopus.Client.Repositories
                     ["includeGlobal"] = SpaceQueryParameters.IncludeGlobal,
                     ["spaces"] = SpaceQueryParameters.SpaceIds
                 };
+            }
+        }
+
+        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        {
+            if (SpaceQueryParameters == null)
+            {
+                return;
+            }
+
+            if (newSpaceQueryParameters.IncludeGlobal && !SpaceQueryParameters.IncludeGlobal)
+            {
+                throw new InvalidIncludeGlobalConfigurationException();
+            }
+
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryParameters.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
+            {
+                throw new InvalidSpacesLimitationException();
             }
         }
     }
