@@ -275,6 +275,7 @@ Octopus.Client.Editors.Async
     Task<List<ResourceGroup>> ResourceGroups()
     Task<List<AzureStorageAccount>> StorageAccounts()
     Task<List<WebSite>> WebSites()
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
   }
   class AzureSubscriptionAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
@@ -285,6 +286,9 @@ Octopus.Client.Editors.Async
     Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    Task<List<WebSite>> WebSites()
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, Octopus.Client.Model.Accounts.WebSite)
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
   }
   class CertificateEditor
     Octopus.Client.Editors.Async.IResourceEditor<CertificateResource, CertificateEditor>
@@ -3667,8 +3671,17 @@ Octopus.Client.Model.Accounts
     class WebSite
     {
       .ctor()
-      String Name { get; }
+      String Name { get; set; }
       String ResourceGroup { get; set; }
+      String WebSpace { get; set; }
+    }
+    class WebSlot
+    {
+      .ctor()
+      String Name { get; set; }
+      String Region { get; set; }
+      String ResourceGroupName { get; set; }
+      String Site { get; set; }
     }
   }
   class AzureStorageAccount
@@ -3694,9 +3707,17 @@ Octopus.Client.Model.Accounts
     class WebSite
     {
       .ctor()
-      String Name { get; }
+      String Name { get; set; }
       String ResourceGroup { get; set; }
       String WebSpace { get; set; }
+    }
+    class WebSlot
+    {
+      .ctor()
+      String Name { get; set; }
+      String Region { get; set; }
+      String ResourceGroupName { get; set; }
+      String Site { get; set; }
     }
   }
   class ResourceGroup
@@ -3737,15 +3758,32 @@ Octopus.Client.Model.Accounts
   class WebSite
   {
     .ctor()
-    String Name { get; }
+    String Name { get; set; }
     String ResourceGroup { get; set; }
+    String WebSpace { get; set; }
   }
   class WebSite
   {
     .ctor()
-    String Name { get; }
+    String Name { get; set; }
     String ResourceGroup { get; set; }
     String WebSpace { get; set; }
+  }
+  class WebSlot
+  {
+    .ctor()
+    String Name { get; set; }
+    String Region { get; set; }
+    String ResourceGroupName { get; set; }
+    String Site { get; set; }
+  }
+  class WebSlot
+  {
+    .ctor()
+    String Name { get; set; }
+    String Region { get; set; }
+    String ResourceGroupName { get; set; }
+    String Site { get; set; }
   }
 }
 Octopus.Client.Model.Accounts.Usages
@@ -3889,6 +3927,7 @@ Octopus.Client.Model.Endpoints
     String DefaultWorkerPoolId { get; set; }
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
+    String WebAppSlotName { get; set; }
   }
   abstract class CalamariDotNetCorePlatforms
   {
