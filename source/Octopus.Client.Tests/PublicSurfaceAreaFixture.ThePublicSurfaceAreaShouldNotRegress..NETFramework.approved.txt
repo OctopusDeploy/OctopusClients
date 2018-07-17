@@ -1813,6 +1813,7 @@ Octopus.Client.Model
       Ftp = 6
       AzureCloudService = 7
       AzureServiceFabricCluster = 8
+      Kubernetes = 9
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -4429,6 +4430,23 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+  }
+  class KubernetesEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    String AccountId { get; set; }
+    String AwsRegion { get; set; }
+    String ClientCertificate { get; set; }
+    String ClusterCertificate { get; set; }
+    String ClusterName { get; set; }
+    String ClusterUrl { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String Namespace { get; set; }
+    String ProxyId { get; set; }
+    String SkipTlsVerification { get; set; }
   }
   class ListeningTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
