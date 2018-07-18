@@ -1,4 +1,5 @@
-using System;
+using System.IO;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
@@ -9,6 +10,8 @@ namespace Octopus.Client.Repositories
         void Stop();
         void Stop(string taskName);
         void Trigger(string taskName);
+        ScheduledTaskDetailsResource GetLogs(string taskName);
+        Stream GetRawLogs(string taskName);
     }
     
     class SchedulerRepository : ISchedulerRepository
@@ -43,6 +46,16 @@ namespace Octopus.Client.Repositories
         public void Stop(string taskName)
         {
             client.GetContent($"~/api/scheduler/stop?task={taskName}");
+        }
+
+        public ScheduledTaskDetailsResource GetLogs(string taskName)
+        {
+            return client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
+        }
+
+        public Stream GetRawLogs(string taskName)
+        {
+            return client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
         }
     }
 }

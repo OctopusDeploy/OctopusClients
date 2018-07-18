@@ -44,5 +44,9 @@ namespace Octopus.Client.Model.Endpoints
 
         [Writeable]
         public SensitiveValue AadUserCredentialPassword { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string DefaultWorkerPoolId { get; set; }
     }
 }
