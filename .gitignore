@@ -74,3 +74,4 @@ TestResults/
 .idea/
 /source/Octo/Properties/launchSettings.json
 **/ExpectedSdkVersion.txt
+**/launchSettings.json

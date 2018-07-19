@@ -27,6 +27,8 @@ namespace Octopus.Client.Model
 
         [SupportedAccountTypes(AccountType.AzureSubscription)] [ScriptConsoleSupported] AzureCloudService = 7,
 
-        AzureServiceFabricCluster = 8
+        AzureServiceFabricCluster = 8,
+
+        [SupportedAccountTypes(AccountType.UsernamePassword)] [ScriptConsoleSupported] Kubernetes = 9
     }
 }
