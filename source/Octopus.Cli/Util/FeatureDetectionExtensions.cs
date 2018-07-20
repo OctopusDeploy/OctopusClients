@@ -7,12 +7,26 @@ namespace Octopus.Cli.Util
     {
         public static bool SupportsChannels(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.HasLink("Channels") == true;
+            var hasChannelLink = repository?.Client?.HasLink("Channels") == true;
+            if (!hasChannelLink)
+            {
+                // When default space is off and SpaceId is not provided, we check if it is in post space world, as channels are always available in spaces
+                return repository?.Client?.HasLink("SpaceHome") == true;
+            }
+
+            return true;
         }
         
         public static bool SupportsTenants(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.HasLink("Tenants") == true;
+            var hasTenantLink = repository?.Client?.HasLink("Tenants") == true;
+            if (!hasTenantLink)
+            {
+                // When default space is off and SpaceId is not provided, we check if it is in post space world, as tenants are always available in spaces
+                return repository?.Client?.HasLink("SpaceHome") == true;
+            }
+
+            return true;
         }
 
         public static bool UsePostForChannelVersionRuleTest(this RootResource source)
