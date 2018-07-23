@@ -3661,6 +3661,7 @@ Octopus.Client.Model
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection OwnerTeams { get; set; }
     Octopus.Client.Model.ReferenceCollection OwnerUsers { get; set; }
+    Boolean TaskQueueStopped { get; set; }
   }
   class SquidAttribute
     _Attribute
