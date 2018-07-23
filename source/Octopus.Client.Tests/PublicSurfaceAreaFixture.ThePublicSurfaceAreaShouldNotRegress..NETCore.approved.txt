@@ -23,11 +23,14 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
+    Boolean HasLink(String)
+    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -109,6 +112,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
@@ -116,6 +120,8 @@ Octopus.Client
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
+    Boolean HasLink(String)
+    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
@@ -3143,6 +3149,13 @@ Octopus.Client.Model
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection OwnerTeams { get; set; }
     Octopus.Client.Model.ReferenceCollection OwnerUsers { get; set; }
+  }
+  class SpaceRootResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
   }
   class SquidAttribute
     Attribute
