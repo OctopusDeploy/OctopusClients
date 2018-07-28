@@ -19,6 +19,8 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool IsDefault { get; set; }
 
+        public bool TaskQueueStopped { get; set; }
+
         [Writeable]
         public ReferenceCollection OwnerTeams { get; set; }
         

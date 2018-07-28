@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -6,6 +7,7 @@ namespace Octopus.Client.Repositories
     public interface ICertificateConfigurationRepository : IGet<CertificateConfigurationResource>, IFindByName<CertificateConfigurationResource>
     {
         CertificateConfigurationResource GetOctopusCertificate();
+        Stream GetPublicCertificate(CertificateConfigurationResource certificateConfiguration);
     }
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
@@ -17,6 +19,11 @@ namespace Octopus.Client.Repositories
         public CertificateConfigurationResource GetOctopusCertificate()
         {
             return Get("certificate-global");
+        }
+
+        public Stream GetPublicCertificate(CertificateConfigurationResource certificateConfiguration)
+        {
+            return Client.GetContent(certificateConfiguration.Links["PublicCer"]);
         }
 
         static string DetermineCollectionLinkName(IOctopusClient client)

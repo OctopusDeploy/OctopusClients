@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -7,6 +8,7 @@ namespace Octopus.Client.Repositories.Async
     public interface ICertificateConfigurationRepository : IGet<CertificateConfigurationResource>, IFindByName<CertificateConfigurationResource>
     {
         Task<CertificateConfigurationResource> GetOctopusCertificate();
+        Task<Stream> GetPublicCertificate(CertificateConfigurationResource certificateConfiguration);
     }
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
@@ -18,6 +20,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<CertificateConfigurationResource> GetOctopusCertificate()
         {
             return Get("certificate-global");
+        }
+
+        public Task<Stream> GetPublicCertificate(CertificateConfigurationResource certificateConfiguration)
+        {
+            return Client.GetContent(certificateConfiguration.Links["PublicCer"]);
         }
 
         static string DetermineCollectionLinkName(IOctopusAsyncClient client)
