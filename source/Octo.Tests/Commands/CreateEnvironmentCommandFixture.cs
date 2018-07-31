@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NSubstitute;
-using Octopus.Cli.Tests.Commands;
 using NUnit.Framework;
 using Octopus.Cli.Commands.Environment;
 using Octopus.Client.Model;
