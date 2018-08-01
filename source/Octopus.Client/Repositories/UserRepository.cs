@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories
         }
         public UserResource Register(RegisterCommand registerCommand)
         {
-            return Client.Post<UserResource, UserResource>(Client.RootDocument.Link("Register"), registerCommand);
+            return Client.Post<UserResource, UserResource>(Client.Link("Register"), registerCommand);
         }
 
         public void SignIn(LoginCommand loginCommand)
@@ -73,7 +73,7 @@ namespace Octopus.Client.Repositories
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection};
             }
-            Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+            Client.Post(Client.Link("SignIn"), loginCommand);
         }
 
         public void SignIn(string username, string password, bool rememberMe = false)
@@ -83,12 +83,12 @@ namespace Octopus.Client.Repositories
 
         public void SignOut()
         {
-            Client.Post(Client.RootDocument.Link("SignOut"));
+            Client.Post(Client.Link("SignOut"));
         }
 
         public UserResource GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return Client.Get<UserResource>(Client.Link("CurrentUser"));
         }
 
         public UserPermissionSetResource GetPermissions(UserResource user, string spaceId = null)

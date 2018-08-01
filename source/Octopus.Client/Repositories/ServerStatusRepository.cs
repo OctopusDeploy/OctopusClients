@@ -18,7 +18,7 @@ namespace Octopus.Client.Repositories
 
         public ServerStatusResource GetServerStatus()
         {
-            return Client.Get<ServerStatusResource>(Client.RootDocument.Link("ServerStatus"));
+            return Client.Get<ServerStatusResource>(Client.Link("ServerStatus"));
         }
 
         public SystemInfoResource GetSystemInfo(ServerStatusResource status)

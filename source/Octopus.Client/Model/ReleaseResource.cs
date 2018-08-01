@@ -21,6 +21,11 @@ namespace Octopus.Client.Model
             ChannelId = channelId;
         }
 
+        public ReleaseResource(string version, string projectId)
+            : this(version, projectId, null)
+        {
+        }
+
         public DateTimeOffset Assembled { get; set; }
 
         [Writeable]
@@ -44,5 +49,4 @@ namespace Octopus.Client.Model
         public List<SelectedPackage> SelectedPackages { get; set; }
         public string SpaceId { get; set; }
     }
-    
 }

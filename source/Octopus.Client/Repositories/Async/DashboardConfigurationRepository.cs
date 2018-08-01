@@ -21,12 +21,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<DashboardConfigurationResource> GetDashboardConfiguration()
         {
-            return client.Get<DashboardConfigurationResource>(client.RootDocument.Link("DashboardConfiguration"));
+            return client.Get<DashboardConfigurationResource>(client.Link("DashboardConfiguration"));
         }
 
         public Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("DashboardConfiguration"), resource);
+            return client.Update(client.Link("DashboardConfiguration"), resource);
         }
     }
 }

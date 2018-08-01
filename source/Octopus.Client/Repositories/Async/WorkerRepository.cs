@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<WorkerResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
+            return Client.Get<WorkerResource>(Client.Link("DiscoverMachine"), new { host, port, type });
         }
 
         public Task<MachineConnectionStatus> GetConnectionStatus(WorkerResource worker)
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerResource>>(Client.RootDocument.Link("Workers"), new { id = "all", thumbprint });
+            return Client.Get<List<WorkerResource>>(Client.Link("Workers"), new { id = "all", thumbprint });
         }
 
         public Task<WorkerEditor> CreateOrModify(
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             string workerpoolIds = null)
         {
-            return Client.List<WorkerResource>(Client.RootDocument.Link("Workers"), new
+            return Client.List<WorkerResource>(Client.Link("Workers"), new
             {
                 skip,
                 take,

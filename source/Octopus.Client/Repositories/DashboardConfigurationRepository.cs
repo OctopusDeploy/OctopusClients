@@ -20,12 +20,12 @@ namespace Octopus.Client.Repositories
 
         public DashboardConfigurationResource GetDashboardConfiguration()
         {
-            return client.Get<DashboardConfigurationResource>(client.RootDocument.Link("DashboardConfiguration"));
+            return client.Get<DashboardConfigurationResource>(client.Link("DashboardConfiguration"));
         }
 
         public DashboardConfigurationResource ModifyDashboardConfiguration(DashboardConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("DashboardConfiguration"), resource);
+            return client.Update(client.Link("DashboardConfiguration"), resource);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<BackupConfigurationResource> GetConfiguration()
         {
-            return client.Get<BackupConfigurationResource>(client.RootDocument.Link("BackupConfiguration"));
+            return client.Get<BackupConfigurationResource>(client.Link("BackupConfiguration"));
         }
 
         public Task<BackupConfigurationResource> ModifyConfiguration(BackupConfigurationResource backupConfiguration)

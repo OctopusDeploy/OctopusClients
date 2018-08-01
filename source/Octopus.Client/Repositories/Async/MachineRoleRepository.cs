@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<string>> GetAllRoleNames()
         {
-            var result = await client.Get<string[]>(client.RootDocument.Link("MachineRoles")).ConfigureAwait(false);
+            var result = await client.Get<string[]>(client.Link("MachineRoles")).ConfigureAwait(false);
             return result.ToList();
         }
     }

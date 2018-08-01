@@ -31,6 +31,8 @@ namespace Octopus.Client
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         RootResource RootDocument { get; }
+        
+        SpaceRootResource SpaceRootDocument { get; }
 
         /// <summary>
         /// Occurs when a request is about to be sent.
@@ -346,5 +348,22 @@ namespace Octopus.Client
         /// <param name="spaceId">The ID of the space.</param>
         /// <returns>An instance of IOctopusClient</returns>
         Task<IOctopusAsyncClient> ForSpaceContext(string spaceId);
+
+        /// <summary>
+        /// Determines whether the specified link exists.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns>
+        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
+        /// </returns>
+        bool HasLink(string name);
+
+        /// <summary>
+        /// Gets the link with the specified name.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
+        string Link(string name);
     }
 }

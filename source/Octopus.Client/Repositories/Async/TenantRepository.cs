@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TenantResource>> FindAll(string name, string[] tags, int pageSize = int.MaxValue)
         {
-            return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags, take = pageSize });
+            return Client.Get<List<TenantResource>>(Client.Link("Tenants"), new { id = "all", name, tags, take = pageSize });
         }
 
         public Task<TenantVariableResource> ModifyVariables(TenantResource tenant, TenantVariableResource variables)
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
         {
-            return Client.Get<List<TenantsMissingVariablesResource>>(Client.RootDocument.Link("TenantsMissingVariables"), new
+            return Client.Get<List<TenantsMissingVariablesResource>>(Client.Link("TenantsMissingVariables"), new
             {
                 tenantId = tenantId,
                 projectId = projectId,
@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<MultiTenancyStatusResource> Status()
         {
-            return Client.Get<MultiTenancyStatusResource>(Client.RootDocument.Link("TenantsStatus"));
+            return Client.Get<MultiTenancyStatusResource>(Client.Link("TenantsStatus"));
         }
 
         public Task SetLogo(TenantResource tenant, string fileName, Stream contents)

@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
+            return client.Create(client.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), parameters, getNextPage);
+            client.Paginate(path ?? client.Link(CollectionLinkName), parameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories
         public List<TResource> GetAll()
         {
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = "all" });
-            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), parameters);
+            return client.Get<List<TResource>>(client.Link(CollectionLinkName), parameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
@@ -125,7 +125,7 @@ namespace Octopus.Client.Repositories
                 return client.Get<TResource>(idOrHref, AdditionalQueryParameters);
             }
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
-            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), parameters);
+            return client.Get<TResource>(client.Link(CollectionLinkName), parameters);
         }
 
         public virtual List<TResource> Get(params string[] ids)
@@ -135,7 +135,7 @@ namespace Octopus.Client.Repositories
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = client.RootDocument.Link(CollectionLinkName);
+            var link = client.Link(CollectionLinkName);
             if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });

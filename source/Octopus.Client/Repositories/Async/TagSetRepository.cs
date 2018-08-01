@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Sort(string[] tagSetIdsInOrder)
         {
-            return Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
+            return Client.Put(Client.Link("TagSetSortOrder"), tagSetIdsInOrder);
         }
 
         public Task<TagSetEditor> CreateOrModify(string name)

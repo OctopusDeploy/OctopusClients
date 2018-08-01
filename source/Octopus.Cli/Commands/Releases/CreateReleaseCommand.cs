@@ -214,7 +214,7 @@ namespace Octopus.Cli.Commands.Releases
 
         private bool ServerSupportsChannels()
         {
-            return Repository.Client.RootDocument.HasLink("Channels");
+            return Repository.Client.HasLink("Channels");
         }
 
         async Task<ReleasePlan> AutoSelectBestReleasePlanOrThrow(ProjectResource project)

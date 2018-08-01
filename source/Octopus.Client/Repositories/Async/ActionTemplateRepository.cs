@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<ActionTemplateSearchResource>> Search()
         {
-            return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+            return Client.Get<List<ActionTemplateSearchResource>>(Client.Link("ActionTemplatesSearch"));
         }
 
         public Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version)

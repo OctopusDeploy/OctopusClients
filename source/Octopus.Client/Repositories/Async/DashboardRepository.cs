@@ -21,12 +21,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<DashboardResource> GetDashboard()
         {
-            return client.Get<DashboardResource>(client.RootDocument.Link("Dashboard"));
+            return client.Get<DashboardResource>(client.Link("Dashboard"));
         }
 
         public Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments)
         {
-            return client.Get<DashboardResource>(client.RootDocument.Link("DashboardDynamic"), new { projects, environments });
+            return client.Get<DashboardResource>(client.Link("DashboardDynamic"), new { projects, environments });
         }
     }
 }

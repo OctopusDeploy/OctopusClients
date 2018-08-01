@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             bool? hideEmptyEnvironments = false)
         {
-            return Client.Get<EnvironmentsSummaryResource>(Client.RootDocument.Link("EnvironmentsSummary"), new
+            return Client.Get<EnvironmentsSummaryResource>(Client.Link("EnvironmentsSummary"), new
             {
                 ids,
                 partialName,
@@ -103,7 +103,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Sort(string[] environmentIdsInOrder)
         {
-            return Client.Put(Client.RootDocument.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+            return Client.Put(Client.Link("EnvironmentSortOrder"), environmentIdsInOrder);
         }
 
         public Task<EnvironmentEditor> CreateOrModify(string name)

@@ -35,5 +35,9 @@ namespace Octopus.Client.Model.Endpoints
 
         [Writeable]
         public bool UseCurrentInstanceCount { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string DefaultWorkerPoolId { get; set; }
     }
 }

@@ -22,5 +22,9 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string WebAppName { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string DefaultWorkerPoolId { get; set; }
     }
 }

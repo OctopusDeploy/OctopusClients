@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories
         List<TAccount> FindManyOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource;
         List<TAccount> FindAllOfType<TAccount>(object pathParameters = null) where TAccount : AccountResource;
 
-        AccountUsageResource GetAccountUsage(string id);
+        AccountUsageResource GetAccountUsage(AccountResource account);
     }
     
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories
 
         public void PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
         {
-            Client.Paginate(Client.RootDocument.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
+            Client.Paginate(Client.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
         }
 
         public TAccount FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource
@@ -121,9 +121,8 @@ namespace Octopus.Client.Repositories
             return typeof(TAccount).DetermineAccountType();
         }
 
-        public AccountUsageResource GetAccountUsage(string id)
+        public AccountUsageResource GetAccountUsage(AccountResource account)
         {
-            var account = Client.Get<AccountResource>(id);
             return Client.Get<AccountUsageResource>(account.Link("Usages"));
         }
     }

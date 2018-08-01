@@ -41,7 +41,7 @@ namespace Octopus.Client
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             clientOptions = options ?? new OctopusClientOptions();
-            this.rootDocumentUri = string.IsNullOrEmpty(clientOptions.SpaceId) ? "~/api" : "~/api/" + clientOptions.SpaceId;
+            this.rootDocumentUri = "~/api";
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -133,7 +133,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
             try
             {
-                client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
+                var rootResource = await client.EstablishSession().ConfigureAwait(false);
+                var spaceRootResource = !string.IsNullOrEmpty(client.clientOptions.SpaceId) ? 
+                    await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
+                        new {spaceId = client.clientOptions.SpaceId}).ConfigureAwait(false)
+                    : null;
+                client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
                 return client;
             }
@@ -144,6 +149,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
+
+
         /// <summary>
         /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
         /// server. Instead of hardcoding paths,
@@ -151,7 +158,23 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusAsyncClient" />.
         /// </summary>
-        public RootResource RootDocument { get; private set; }
+        public RootResource RootDocument => RootDocuments.RootResource;
+
+        public SpaceRootResource SpaceRootDocument => RootDocuments.SpaceRootResource;
+
+        RootResources RootDocuments { get; set; }
+        
+        class RootResources
+        {
+            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
+            {
+                RootResource = rootResource;
+                SpaceRootResource = spaceRootResource;
+            }
+
+            public RootResource RootResource { get; }
+            public SpaceRootResource SpaceRootResource { get; }
+        }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -164,8 +187,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>A fresh copy of the root document.</returns>
         public async Task<RootResource> RefreshRootDocument()
         {
-            RootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            return RootDocument;
+            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+            var spaceRootDocument = !string.IsNullOrEmpty(clientOptions.SpaceId) 
+                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = clientOptions.SpaceId}).ConfigureAwait(false) 
+                : null;
+            RootDocuments = new RootResources(rootDocument, spaceRootDocument);
+            return rootDocument;
         }
 
         public async Task<IOctopusAsyncClient> ForSpaceContext(string spaceId)
@@ -181,6 +208,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return await Create(this.serverEndpoint, newOptions);
         }
 
+        public bool HasLink(string name)
+        {
+            return SpaceRootDocument?.HasLink(name) ?? RootDocument.HasLink(name);
+        }
+        
+        public string Link(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : RootDocument.Link(name);
+        }
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
@@ -541,7 +579,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (RootDocument != null)
+                if (RootDocuments != null)
                 {
                     var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)

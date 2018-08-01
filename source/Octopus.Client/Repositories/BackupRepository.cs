@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
 
         public BackupConfigurationResource GetConfiguration()
         {
-            return client.Get<BackupConfigurationResource>(client.RootDocument.Link("BackupConfiguration"));
+            return client.Get<BackupConfigurationResource>(client.Link("BackupConfiguration"));
         }
 
         public BackupConfigurationResource ModifyConfiguration(BackupConfigurationResource backupConfiguration)

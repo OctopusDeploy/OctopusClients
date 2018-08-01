@@ -28,28 +28,28 @@ namespace Octopus.Client.Repositories.Async
         public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
         {
             return client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                client.RootDocument.Link("PackageUpload"),
+                client.Link("PackageUpload"),
                 new FileUpload() { Contents = contents, FileName = fileName },
                 new { replace = replaceExisting });
         }
 
         public Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
         {
-            return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
+            return client.List<PackageFromBuiltInFeedResource>(client.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
         }
 
         public Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
         {
-            return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { latest = true, take, skip });
+            return client.List<PackageFromBuiltInFeedResource>(client.Link("Packages"), new { latest = true, take, skip });
         }
 
         public Task DeletePackage(PackageResource package)
         {
-            return client.Delete(client.RootDocument.Link("Packages"), new { id = package.Id });
+            return client.Delete(client.Link("Packages"), new { id = package.Id });
         }
 
         public Task DeletePackages(IReadOnlyList<PackageResource> packages)
-            => client.Delete(client.RootDocument.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
+            => client.Delete(client.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
         
     }
 }
