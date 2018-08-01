@@ -1,9 +1,10 @@
 using System;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IEventRepository : IGet<EventResource>
+    public interface IEventRepository : IGet<EventResource>, ICanLimitToSpaces<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         ResourceCollection<EventResource> List(int skip = 0, 
@@ -53,10 +54,14 @@ namespace Octopus.Client.Repositories
             string documentTypes = null);
     }
     
-    class EventRepository : BasicRepository<EventResource>, IEventRepository
+    class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusClient client)
-            : base(client, "Events")
+            : base(client, "Events", null)
+        {
+        }
+
+        EventRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Events", spaceQueryParameters)
         {
         }
 
@@ -94,7 +99,7 @@ namespace Octopus.Client.Repositories
             long? toAutoId = null,
             string documentTypes = null)
         {
-            return Client.List<EventResource>(Client.Link("Events"), new
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 take,
@@ -115,6 +120,13 @@ namespace Octopus.Client.Repositories
                 toAutoId,
                 documentTypes
             });
+            return Client.List<EventResource>(Client.Link("Events"), parameters);
+        }
+
+        public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new EventRepository(Client, newParameters);
         }
     }
 }
