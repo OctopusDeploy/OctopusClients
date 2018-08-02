@@ -41,9 +41,5 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string ProxyId { get; set; }
-
-        [Trim]
-        [Writeable]
-        public string DefaultWorkerPoolId { get; set; }
     }
 }
