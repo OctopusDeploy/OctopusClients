@@ -7,6 +7,7 @@
         Docker,
         Maven,
         OctopusProject,
-        GitHub
+        GitHub,
+        AwsElasticContainerRegistry
     }
 }
