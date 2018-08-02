@@ -3729,6 +3729,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.EventNotificationSubscription EventNotificationSubscription { get; set; }
+    Boolean IncludeEventsFromSpaces { get; set; }
     Boolean IsDisabled { get; set; }
     String Name { get; set; }
     String SpaceId { get; set; }
