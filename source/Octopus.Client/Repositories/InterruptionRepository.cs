@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<InterruptionResource> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new { skip,take, pendingOnly, regarding = regardingDocumentId });
+            return Client.List<InterruptionResource>(Client.Link("Interruptions"), new { skip,take, pendingOnly, regarding = regardingDocumentId });
         }
 
         public void Submit(InterruptionResource interruption)

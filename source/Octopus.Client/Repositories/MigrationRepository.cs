@@ -19,12 +19,12 @@ namespace Octopus.Client.Repositories
 
         public MigrationPartialExportResource PartialExport(MigrationPartialExportResource resource)
         {
-            return client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource);
+            return client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.Link("MigrationsPartialExport"), resource);
         }
 
         public MigrationImportResource Import(MigrationImportResource resource)
         {
-            return client.Post< MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource);
+            return client.Post< MigrationImportResource, MigrationImportResource>(client.Link("MigrationsImport"), resource);
         }
     }
 }

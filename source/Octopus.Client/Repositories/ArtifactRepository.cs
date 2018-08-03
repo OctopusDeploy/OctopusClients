@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<ArtifactResource> FindRegarding(IResource resource)
         {
-            return Client.List<ArtifactResource>(Client.RootDocument.Link("Artifacts"), new { regarding = resource.Id });
+            return Client.List<ArtifactResource>(Client.Link("Artifacts"), new { regarding = resource.Id });
         }
     }
 }

@@ -4,16 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanLimitToSpaces<ITaskRepository>
     {
-        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
+        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
+        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
         TaskResource ExecuteBackup(string description = null);
-        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
+        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
+        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null);
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
@@ -28,19 +29,23 @@ namespace Octopus.Client.Repositories
         void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Action<TaskResource[]> interval = null);
     }
 
-    class TaskRepository : BasicRepository<TaskResource>, ITaskRepository
+    class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusClient client)
-            : base(client, "Tasks")
+            : base(client, "Tasks", null)
+        {
+        }
+
+        TaskRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Tasks", spaceQueryParameters)
         {
         }
 
         public TaskResource ExecuteHealthCheck(
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, 
-            string restrictTo = null, string workerpoolId = null, string[] workerIds = null
+            string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null
             )
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.Health.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -55,9 +60,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
+        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.UpdateCalamari.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -75,9 +80,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
+        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.Upgrade.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -90,9 +95,9 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
+        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null)
         {
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = spaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description;
             resource.Arguments = new Dictionary<string, object>
@@ -111,7 +116,7 @@ namespace Octopus.Client.Repositories
         {
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
 
-            var resource = new TaskResource();
+            var resource = new TaskResource(){SpaceId = template.SpaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
             resource.Arguments = new Dictionary<string, object>
@@ -142,13 +147,13 @@ namespace Octopus.Client.Repositories
 
             if (tail.HasValue)
                 args.Add("tail", tail.Value);
-
-            return Client.Get<TaskDetailsResource>(resource.Link("Details"), args);
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, args);
+            return Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters);
         }
 
         public string GetRawOutputLog(TaskResource resource)
         {
-            return Client.Get<string>(resource.Link("Raw"));
+            return Client.Get<string>(resource.Link("Raw"), AdditionalQueryParameters);
         }
 
         public void Rerun(TaskResource resource)
@@ -168,7 +173,7 @@ namespace Octopus.Client.Repositories
 
         public IReadOnlyList<TaskResource> GetQueuedBehindTasks(TaskResource resource)
         {
-            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"));
+            return Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), AdditionalQueryParameters);
         }
 
         public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -189,7 +194,7 @@ namespace Octopus.Client.Repositories
             {
                 var stillRunning =
                 (from task in tasks
-                    let currentStatus = Client.Get<TaskResource>(task.Link("Self"))
+                    let currentStatus = Client.Get<TaskResource>(task.Link("Self"), AdditionalQueryParameters)
                     select currentStatus).ToArray();
 
                 interval?.Invoke(stillRunning);
@@ -212,5 +217,11 @@ namespace Octopus.Client.Repositories
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
         public List<TaskResource> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
+
+        public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new TaskRepository(Client, newParameters);
+        }
     }
 }

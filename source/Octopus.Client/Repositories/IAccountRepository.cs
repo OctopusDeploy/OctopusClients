@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories
 
         public void PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
         {
-            Client.Paginate(Client.RootDocument.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
+            Client.Paginate(Client.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
         }
 
         public TAccount FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource

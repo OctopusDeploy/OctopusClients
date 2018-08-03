@@ -20,12 +20,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<MigrationPartialExportResource> PartialExport(MigrationPartialExportResource resource)
         {
-            return await client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource).ConfigureAwait(false);
+            return await client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.Link("MigrationsPartialExport"), resource).ConfigureAwait(false);
         }
 
         public async Task<MigrationImportResource> Import(MigrationImportResource resource)
         {
-            return await client.Post<MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource).ConfigureAwait(false);
+            return await client.Post<MigrationImportResource, MigrationImportResource>(client.Link("MigrationsImport"), resource).ConfigureAwait(false);
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IEventRepository : IGet<EventResource>
+    public interface IEventRepository : IGet<EventResource>, ICanLimitToSpaces<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -54,10 +55,14 @@ namespace Octopus.Client.Repositories.Async
             string documentTypes = null);
     }
 
-    class EventRepository : BasicRepository<EventResource>, IEventRepository
+    class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusAsyncClient client)
-            : base(client, "Events")
+            : base(client, "Events", null)
+        {
+        }
+
+        EventRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Events", spaceQueryParameters)
         {
         }
 
@@ -67,7 +72,7 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            return Client.List<EventResource>(Client.Link("Events"), new
             {
                 skip,
                 user = filterByUserId,
@@ -95,7 +100,7 @@ namespace Octopus.Client.Repositories.Async
             long? toAutoId = null,
             string documentTypes = null)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 take,
@@ -116,6 +121,14 @@ namespace Octopus.Client.Repositories.Async
                 toAutoId,
                 documentTypes
             });
+
+            return Client.List<EventResource>(Client.Link("Events"), parameters);
+        }
+
+        public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        {
+            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            return new EventRepository(Client, newParameters);
         }
     }
 }

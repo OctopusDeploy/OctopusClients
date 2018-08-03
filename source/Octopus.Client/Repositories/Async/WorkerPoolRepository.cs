@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             bool? hideEmptyPools = false)
         {
-            return Client.Get<WorkerPoolsSummaryResource>(Client.RootDocument.Link("WorkerPoolsSummary"), new
+            return Client.Get<WorkerPoolsSummaryResource>(Client.Link("WorkerPoolsSummary"), new
             {
                 ids,
                 partialName,
@@ -84,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Sort(string[] workerPoolIdsInOrder)
         {
-            return Client.Put(Client.RootDocument.Link("WorkerPoolSortOrder"), workerPoolIdsInOrder);
+            return Client.Put(Client.Link("WorkerPoolSortOrder"), workerPoolIdsInOrder);
         }
 
         public Task<WorkerPoolEditor> CreateOrModify(string name)

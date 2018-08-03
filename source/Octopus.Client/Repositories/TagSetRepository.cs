@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
 
         public void Sort(string[] tagSetIdsInOrder)
         {
-            Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
+            Client.Put(Client.Link("TagSetSortOrder"), tagSetIdsInOrder);
         }
 
         public TagSetEditor CreateOrModify(string name)

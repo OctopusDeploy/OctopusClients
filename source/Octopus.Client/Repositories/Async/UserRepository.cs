@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(Client.Link("Register"), registerCommand).ConfigureAwait(false);
         }
 
         public Task SignIn(LoginCommand loginCommand)
@@ -74,7 +74,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
             }
-            return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+            return Client.Post(Client.Link("SignIn"), loginCommand);
         }
 
         public Task SignIn(string username, string password, bool rememberMe = false)
@@ -84,12 +84,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignOut()
         {
-            return Client.Post(Client.RootDocument.Link("SignOut"));
+            return Client.Post(Client.Link("SignOut"));
         }
 
         public Task<UserResource> GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return Client.Get<UserResource>(Client.Link("CurrentUser"));
         }
 
         public Task<UserPermissionSetResource> GetPermissions(UserResource user, string spaceId = null)

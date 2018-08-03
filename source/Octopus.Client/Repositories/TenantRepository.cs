@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories
         /// <returns></returns>
         public List<TenantResource> FindAll(string name, string[] tags, int pageSize = Int32.MaxValue)
         {
-            return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags, take = pageSize });
+            return Client.Get<List<TenantResource>>(Client.Link("Tenants"), new { id = "all", name, tags, take = pageSize });
         }
 
         public TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables)
@@ -48,7 +48,7 @@ namespace Octopus.Client.Repositories
 
         public List<TenantsMissingVariablesResource> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
         {
-            return Client.Get<List<TenantsMissingVariablesResource>>(Client.RootDocument.Link("TenantsMissingVariables"), new
+            return Client.Get<List<TenantsMissingVariablesResource>>(Client.Link("TenantsMissingVariables"), new
             {
                 tenantId = tenantId,
                 projectId = projectId,
@@ -58,7 +58,7 @@ namespace Octopus.Client.Repositories
 
         public MultiTenancyStatusResource Status()
         {
-            return Client.Get<MultiTenancyStatusResource>(Client.RootDocument.Link("TenantsStatus"));
+            return Client.Get<MultiTenancyStatusResource>(Client.Link("TenantsStatus"));
         }
 
         public void SetLogo(TenantResource tenant, string fileName, Stream contents)

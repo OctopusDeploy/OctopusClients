@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories
             // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
             // This allows pre-3.11 clients to still work.
             // The null check is just for tests.
-            return client.RootDocument == null || client.RootDocument.Links.ContainsKey("CertificateConfiguration")
+            return client?.HasLink("CertificateConfiguration") ?? true
                 ? "CertificateConfiguration"
                 : "Certificates";
         }

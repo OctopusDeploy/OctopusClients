@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -14,18 +17,20 @@ namespace Octopus.Client.Repositories.Async
         abstract class BasicRepository<TResource> where TResource : class, IResource
         {
             protected readonly string CollectionLinkName;
+            protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
             protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
             {
                 this.Client = client;
                 this.CollectionLinkName = collectionLinkName;
+                AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             }
 
             public IOctopusAsyncClient Client { get; }
 
             public Task<TResource> Create(TResource resource, object pathParameters = null)
             {
-                return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
+                return Client.Create(Client.Link(CollectionLinkName), resource, pathParameters);
             }
 
             public Task<TResource> Modify(TResource resource)
@@ -40,7 +45,8 @@ namespace Octopus.Client.Repositories.Async
 
             public Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
             {
-                return Client.Paginate(path ?? Client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+                var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
+                return Client.Paginate(path ?? Client.Link(CollectionLinkName), parameters, getNextPage);
             }
 
             public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -74,7 +80,8 @@ namespace Octopus.Client.Repositories.Async
 
             public Task<List<TResource>> GetAll()
             {
-                return Client.Get<List<TResource>>(Client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+                var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = "all" });
+                return Client.Get<List<TResource>>(Client.Link(CollectionLinkName), parameters);
             }
 
             public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -109,9 +116,10 @@ namespace Octopus.Client.Repositories.Async
                 if (string.IsNullOrWhiteSpace(idOrHref))
                     return null;
 
+                var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
                 return idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
-                    ? Client.Get<TResource>(idOrHref)
-                    : Client.Get<TResource>(Client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+                    ? Client.Get<TResource>(idOrHref, AdditionalQueryParameters)
+                    : Client.Get<TResource>(Client.Link(CollectionLinkName), parameters);
             }
 
             public virtual async Task<List<TResource>> Get(params string[] ids)
@@ -121,13 +129,14 @@ namespace Octopus.Client.Repositories.Async
                 if (actualIds.Length == 0) return new List<TResource>();
 
                 var resources = new List<TResource>();
-                var link = Client.RootDocument.Link(CollectionLinkName);
+                var link = Client.Link(CollectionLinkName);
                 if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                     link += "{?ids}";
 
+                var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
                 await Client.Paginate<TResource>(
                     link,
-                    new { ids = actualIds },
+                    parameters,
                     page =>
                     {
                         resources.AddRange(page.Items);
@@ -143,9 +152,9 @@ namespace Octopus.Client.Repositories.Async
                 if (resource == null) throw new ArgumentNullException("resource");
                 return Get(resource.Id);
             }
-        }
+    }
 
-        // ReSharper restore MemberCanBePrivate.Local
+    // ReSharper restore MemberCanBePrivate.Local
         // ReSharper restore UnusedMember.Local
         // ReSharper restore MemberCanBeProtected.Local
 }

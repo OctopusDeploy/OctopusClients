@@ -30,11 +30,14 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
+    Boolean HasLink(String)
+    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -108,11 +111,14 @@ Octopus.Client
     event Action<OctopusRequest> SendingOctopusRequest
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
+    Boolean HasLink(String)
+    String Link(String)
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
     IReadOnlyList<TResource> ListAll(String, Object)
     void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -195,6 +201,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
@@ -202,6 +209,8 @@ Octopus.Client
     Task<IOctopusAsyncClient> ForSpaceContext(String)
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
+    Boolean HasLink(String)
+    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
@@ -283,13 +292,16 @@ Octopus.Client
     .ctor(Octopus.Client.OctopusServerEndpoint, String)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     void Dispose()
     Octopus.Client.IOctopusClient ForSpaceContext(String)
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
+    Boolean HasLink(String)
     void Initialize()
+    String Link(String)
     Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
     IReadOnlyList<TResource> ListAll(String, Object)
     void Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
@@ -639,7 +651,7 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
     Octopus.Client.Editors.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Octopus.Client.Editors.SubscriptionEditor Save()
   }
@@ -954,7 +966,7 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
     Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Task<SubscriptionEditor> Save()
   }
@@ -1058,6 +1070,20 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
+  class InvalidIncludeGlobalConfigurationException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor()
+  }
+  class InvalidSpacesLimitationException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor()
+  }
   class OctopusDeserializationException
     ISerializable
     _Exception
@@ -3663,6 +3689,13 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection OwnerUsers { get; set; }
     Boolean TaskQueueStopped { get; set; }
   }
+  class SpaceRootResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+  }
   class SquidAttribute
     _Attribute
     Attribute
@@ -3696,6 +3729,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.EventNotificationSubscription EventNotificationSubscription { get; set; }
+    Boolean IncludeEventsFromSpaces { get; set; }
     Boolean IsDisabled { get; set; }
     String Name { get; set; }
     String SpaceId { get; set; }
@@ -5161,6 +5195,10 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
   }
+  interface ICanLimitToSpaces`1
+  {
+    Octopus.Client.Repositories.T LimitTo(Boolean, String[])
+  }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.IGet<CertificateConfigurationResource>
     Octopus.Client.Repositories.IFindByName<CertificateConfigurationResource>
@@ -5267,6 +5305,7 @@ Octopus.Client.Repositories
   }
   interface IEventRepository
     Octopus.Client.Repositories.IGet<EventResource>
+    Octopus.Client.Repositories.ICanLimitToSpaces<IEventRepository>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -5460,7 +5499,7 @@ Octopus.Client.Repositories
   }
   interface IRetentionPolicyRepository
   {
-    Octopus.Client.Model.TaskResource ApplyNow()
+    Octopus.Client.Model.TaskResource ApplyNow(String)
   }
   interface ISchedulerRepository
   {
@@ -5477,6 +5516,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.IGet<ScopedUserRoleResource>
+    Octopus.Client.Repositories.ICanLimitToSpaces<IScopedUserRoleRepository>
   {
   }
   interface IServerStatusRepository
@@ -5501,8 +5541,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<SubscriptionResource>
     Octopus.Client.Repositories.IGet<SubscriptionResource>
     Octopus.Client.Repositories.IDelete<SubscriptionResource>
+    Octopus.Client.Repositories.ICanLimitToSpaces<ISubscriptionRepository>
   {
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.ICreate<TagSetResource>
@@ -5521,15 +5562,16 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<TaskResource>
     Octopus.Client.Repositories.IGet<TaskResource>
     Octopus.Client.Repositories.ICreate<TaskResource>
+    Octopus.Client.Repositories.ICanLimitToSpaces<ITaskRepository>
   {
     void Cancel(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
-    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, String)
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
-    Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
+    Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[], String)
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
-    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
-    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[], String)
+    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[], String)
     List<TaskResource> GetAllActive(Int32)
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
@@ -5547,6 +5589,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<TeamResource>
     Octopus.Client.Repositories.IPaginate<TeamResource>
     Octopus.Client.Repositories.IGet<TeamResource>
+    Octopus.Client.Repositories.ICanLimitToSpaces<ITeamsRepository>
   {
     List<ScopedUserRoleResource> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }
@@ -5700,6 +5743,10 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
   }
+  interface ICanLimitToSpaces`1
+  {
+    Octopus.Client.Repositories.Async.T LimitTo(Boolean, String[])
+  }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>
     Octopus.Client.Repositories.Async.IFindByName<CertificateConfigurationResource>
@@ -5806,6 +5853,7 @@ Octopus.Client.Repositories.Async
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
     Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -5999,7 +6047,7 @@ Octopus.Client.Repositories.Async
   }
   interface IRetentionPolicyRepository
   {
-    Task<TaskResource> ApplyNow()
+    Task<TaskResource> ApplyNow(String)
   }
   interface ISchedulerRepository
   {
@@ -6016,6 +6064,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<IScopedUserRoleRepository>
   {
   }
   interface IServerStatusRepository
@@ -6040,8 +6089,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
     Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<ISubscriptionRepository>
   {
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.Async.ICreate<TagSetResource>
@@ -6060,15 +6110,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<TaskResource>
     Octopus.Client.Repositories.Async.IGet<TaskResource>
     Octopus.Client.Repositories.Async.ICreate<TaskResource>
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<ITaskRepository>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String)
+    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, String)
     Task<TaskResource> ExecuteBackup(String)
-    Task<TaskResource> ExecuteCalamariUpdate(String, String[])
+    Task<TaskResource> ExecuteCalamariUpdate(String, String[], String)
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
-    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
-    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[], String)
+    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[], String)
     Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
@@ -6087,6 +6138,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TeamResource>
     Octopus.Client.Repositories.Async.IPaginate<TeamResource>
     Octopus.Client.Repositories.Async.IGet<TeamResource>
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<ITeamsRepository>
   {
     Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }
