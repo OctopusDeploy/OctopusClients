@@ -1874,7 +1874,7 @@ Octopus.Client.Model
       OctopusProject = 4
       GitHub = 5
       Helm = 6
-      AwsElasticContainerRegistry = 6
+      AwsElasticContainerRegistry = 7
   }
   class FileUpload
   {
