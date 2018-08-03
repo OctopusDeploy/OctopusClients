@@ -14,6 +14,7 @@ namespace Octopus.Client.Serialization
                 {FeedType.Maven, typeof(MavenFeedResource)},
                 {FeedType.GitHub, typeof(GitHubFeedResource)},
                 {FeedType.AwsElasticContainerRegistry, typeof(AwsElasticContainerRegistryFeedResource)},
+                {FeedType.Helm, typeof(HelmFeedResource)},
                 {FeedType.OctopusProject, typeof(OctopusProjectFeedResource)}
             };
 

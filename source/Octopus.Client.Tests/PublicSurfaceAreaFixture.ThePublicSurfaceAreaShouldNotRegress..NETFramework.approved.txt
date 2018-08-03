@@ -2368,7 +2368,8 @@ Octopus.Client.Model
       Maven = 3
       OctopusProject = 4
       GitHub = 5
-      AwsElasticContainerRegistry = 6
+      Helm = 6
+      AwsElasticContainerRegistry = 7
   }
   class FileUpload
   {
@@ -2429,6 +2430,18 @@ Octopus.Client.Model
   {
       NeverDelete = 0
       DeleteAfterOfflineTimeout = 1
+  }
+  class HelmFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   interface IAuditedResource
   {
