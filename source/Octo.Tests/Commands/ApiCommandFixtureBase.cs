@@ -1,16 +1,16 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using Serilog;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     public abstract class ApiCommandFixtureBase
     {

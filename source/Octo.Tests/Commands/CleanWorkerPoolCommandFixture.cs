@@ -10,7 +10,7 @@ using Octopus.Cli.Commands.WorkerPools;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class CleanWorkerPoolCommandFixture : ApiCommandFixtureBase
