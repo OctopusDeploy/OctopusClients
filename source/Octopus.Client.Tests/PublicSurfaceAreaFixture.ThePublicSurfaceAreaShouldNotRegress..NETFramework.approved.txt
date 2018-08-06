@@ -3489,7 +3489,7 @@ Octopus.Client.Model
     .ctor(String, String)
     .ctor(String, String, String)
     String ActionName { get; set; }
-    String PackageReferenceName { get; set; }
+    String PackageReferenceName { get; }
     String StepName { get; set; }
     String Version { get; set; }
   }

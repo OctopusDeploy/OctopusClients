@@ -83,12 +83,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public List<SelectedPackage> GetSelections()
         {
-            return PackageSteps.Select(x => new SelectedPackage
-            {
-                ActionName = x.ActionName,
-                PackageReferenceName = x.PackageReferenceName,
-                Version = x.Version
-            }).ToList();
+            return PackageSteps.Select(x => new SelectedPackage(x.ActionName, x.PackageReferenceName, x.Version)).ToList();
         }
 
         public string GetHighestVersionNumber()

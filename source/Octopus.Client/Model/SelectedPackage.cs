@@ -22,7 +22,7 @@ namespace Octopus.Client.Model
         public SelectedPackage(string actionName, string packageReferenceName, string version)
         {
             ActionName = actionName;
-            PackageReferenceName = packageReferenceName;
+            PackageReferenceName = packageReferenceName ?? "";
             Version = version;
         }
 
@@ -41,8 +41,10 @@ namespace Octopus.Client.Model
         /// <summary>
         /// The name of the package reference <see cref="PackageReference.Name"/> 
         /// </summary>
-        /// <remarks>May be null or empty for steps which have a primary package</remarks>
-        public string PackageReferenceName { get; set; }
+        /// <remarks>May be empty for steps which have a primary package</remarks>
+        public string PackageReferenceName { 
+            get; 
+        }
         
         /// <summary>
         ///  The selected package version
