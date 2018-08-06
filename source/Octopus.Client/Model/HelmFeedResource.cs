@@ -2,15 +2,8 @@
 
 namespace Octopus.Client.Model
 {
-    public class GitHubFeedResource : FeedResource
-    {
-        public override FeedType FeedType => FeedType.GitHub;
-
-        [Writeable]
-        public int DownloadAttempts { get; set; } = 5;
-
-        [Writeable]
-        public int DownloadRetryBackoffSeconds { get; set; } = 10;
+    public class HelmFeedResource: FeedResource  {
+        public override FeedType FeedType => FeedType.Helm;
         
         [Writeable]
         public string FeedUri { get; set; }

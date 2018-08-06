@@ -1514,6 +1514,18 @@ Octopus.Client.Model
     String ReleaseId { get; }
     String TenantId { get; }
   }
+  class AwsElasticContainerRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String Region { get; set; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+  }
   class AzureRootResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2210,7 +2222,10 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
     String RegistryPath { get; set; }
+    String Username { get; set; }
   }
   EmailPriority
   {
@@ -2344,10 +2359,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
-    String FeedUri { get; set; }
     String Name { get; set; }
-    Octopus.Client.Model.SensitiveValue Password { get; set; }
-    String Username { get; set; }
   }
   FeedType
   {
@@ -2357,6 +2369,8 @@ Octopus.Client.Model
       Maven = 3
       OctopusProject = 4
       GitHub = 5
+      Helm = 6
+      AwsElasticContainerRegistry = 7
   }
   class FileUpload
   {
@@ -2374,6 +2388,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   GuidedFailureMode
   {
@@ -2409,6 +2426,18 @@ Octopus.Client.Model
   {
       FullHealthCheck = 0
       ConnectionTest = 1
+  }
+  class HelmFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   interface IAuditedResource
   {
@@ -2715,6 +2744,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   abstract class Migration
   {
@@ -2790,6 +2822,9 @@ Octopus.Client.Model
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   class NumericReportData
   {
@@ -4153,6 +4188,7 @@ Octopus.Client.Model.Accounts
       AzureServicePrincipal = 4
       AmazonWebServicesAccount = 5
       AmazonWebServicesRoleAccount = 6
+      Token = 7
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -4251,6 +4287,16 @@ Octopus.Client.Model.Accounts
   {
     .ctor(Octopus.Client.Model.Accounts.AccountType[])
     Octopus.Client.Model.Accounts.AccountType[] AccountTypes { get; }
+  }
+  class TokenAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    Octopus.Client.Model.SensitiveValue Token { get; set; }
   }
   class UsernamePasswordAccountResource
     Octopus.Client.Extensibility.IResource
@@ -4468,6 +4514,7 @@ Octopus.Client.Model.Endpoints
     String ClusterName { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
