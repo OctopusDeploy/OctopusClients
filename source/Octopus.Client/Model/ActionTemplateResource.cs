@@ -9,9 +9,6 @@ namespace Octopus.Client.Model
 {
     public class ActionTemplateResource : Resource, INamedResource
     {
-        readonly IDictionary<string, PropertyValueResource> properties = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-        readonly IList<ActionTemplateParameterResource> parameters = new List<ActionTemplateParameterResource>();
-
         [Required(ErrorMessage = "Please provide a name for the template.")]
         [Writeable]
         public string Name { get; set; }
@@ -28,15 +25,12 @@ namespace Octopus.Client.Model
         public string CommunityActionTemplateId { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public IDictionary<string, PropertyValueResource> Properties
-        {
-            get { return properties; }
-        }
+        public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public IList<ActionTemplateParameterResource> Parameters
-        {
-            get { return parameters; }
-        }
+        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
     }
 }
