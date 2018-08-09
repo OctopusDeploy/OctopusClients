@@ -1851,6 +1851,7 @@ Octopus.Client.Model
     Octopus.Client.Model.FeedType FeedType { get; }
     String FeedUri { get; set; }
     String Name { get; set; }
+    IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
@@ -2346,12 +2347,11 @@ Octopus.Client.Model
     String Name { get; set; }
     String Rank { get; set; }
   }
-  class PackageAcquisitionLocations
+  PackageAcquisitionLocation
   {
-    static System.String ExecutionTarget
-    static System.String NotAcquired
-    static System.String Server
-    .ctor()
+      Server = 0
+      ExecutionTarget = 1
+      NotAcquired = 2
   }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
@@ -2364,9 +2364,11 @@ Octopus.Client.Model
   }
   class PackageReference
   {
+    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String, String)
+    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocation)
     .ctor(String, String, String)
     .ctor(String, String)
-    .ctor(String, String, String, String)
     .ctor()
     String AcquisitionLocation { get; set; }
     String FeedId { get; set; }
@@ -2374,6 +2376,7 @@ Octopus.Client.Model
     String Name { get; set; }
     String PackageId { get; set; }
     IDictionary<String, String> Properties { get; }
+    Octopus.Client.Model.PackageReference Clone()
   }
   class PackageReferenceCollection
     ICollection<PackageReference>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -28,5 +30,11 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public virtual FeedType FeedType { get; }
+        
+        /// <summary>
+        /// The package-acquisition locations supported by the feed.
+        /// The first is considered the default.
+        /// </summary>
+        public IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; } = new List<PackageAcquisitionLocation>();
     }
 }
