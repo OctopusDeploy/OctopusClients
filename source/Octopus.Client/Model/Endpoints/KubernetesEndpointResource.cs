@@ -24,14 +24,6 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
-        public string ClusterName { get; set; }
-
-        [Trim]
-        [Writeable]
-        public string AwsRegion { get; set; }
-
-        [Trim]
-        [Writeable]
         public string Namespace { get; set; }
 
         [Trim]
