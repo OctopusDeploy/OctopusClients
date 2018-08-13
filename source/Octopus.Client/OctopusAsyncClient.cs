@@ -210,7 +210,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public bool HasLink(string name)
         {
-            return SpaceRootDocument?.HasLink(name) ?? RootDocument.HasLink(name);
+            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
         }
         
         public string Link(string name)
