@@ -82,6 +82,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -168,6 +169,7 @@ Octopus.Client
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -257,6 +259,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -365,6 +368,7 @@ Octopus.Client
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -1991,6 +1995,11 @@ Octopus.Client.Model
     Octopus.Client.Model.TenantedDeploymentMode TenantDeploymentMode { get; set; }
     Octopus.Client.Model.DashboardProjectResource Copy()
   }
+  DashboardRenderMode
+  {
+      VirtualizeColumns = 0
+      VirtualizeRowsAndColumns = 1
+  }
   class DashboardResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2477,11 +2486,6 @@ Octopus.Client.Model
       FullHealthCheck = 0
       ConnectionTest = 1
   }
-  HeartbeatDeletionPolicy
-  {
-      NeverDelete = 0
-      DeleteAfterOfflineTimeout = 1
-  }
   interface IAuditedResource
   {
     String LastModifiedBy { get; set; }
@@ -2903,18 +2907,6 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
   }
-  class OctopusServerNodeHeartbeatPolicy
-  {
-    static System.TimeSpan DefaultOfflineTimeout
-    .ctor()
-    Octopus.Client.Model.HeartbeatDeletionPolicy DeletionPolicy { get; set; }
-    TimeSpan OfflineTimeout { get; set; }
-    HeartbeatDeletionPolicy
-    {
-        NeverDelete = 0
-        DeleteAfterOfflineTimeout = 1
-    }
-  }
   class OctopusServerNodeResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2922,7 +2914,6 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.OctopusServerNodeHeartbeatPolicy HeartbeatPolicy { get; set; }
     Boolean IsInMaintenanceMode { get; set; }
     Boolean IsOffline { get; set; }
     String LastSeen { get; set; }
@@ -2956,6 +2947,14 @@ Octopus.Client.Model
     String Summary { get; set; }
     String Title { get; set; }
     String Version { get; set; }
+  }
+  class PerformanceConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.DashboardRenderMode DefaultDashboardRenderMode { get; set; }
   }
   Permission
   {
@@ -5427,6 +5426,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.TResource FindOne(Func<TResource, Boolean>, String, Object)
     void Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
   }
+  interface IPerformanceConfigurationRepository
+  {
+    Octopus.Client.Model.PerformanceConfigurationResource Get()
+    Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
     Octopus.Client.Repositories.IPaginate<ProjectGroupResource>
@@ -5680,6 +5684,13 @@ Octopus.Client.Repositories
     List<WorkerResource> FindByThumbprint(String)
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
+  }
+  class PerformanceConfigurationRepository
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Model.PerformanceConfigurationResource Get()
+    Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
 }
 Octopus.Client.Repositories.Async
@@ -5974,6 +5985,11 @@ Octopus.Client.Repositories.Async
     Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object)
     Task<TResource> FindOne(Func<TResource, Boolean>, String, Object)
     Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
+  }
+  interface IPerformanceConfigurationRepository
+  {
+    Task<PerformanceConfigurationResource> Get()
+    Task<PerformanceConfigurationResource> Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>
