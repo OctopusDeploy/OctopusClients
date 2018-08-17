@@ -3979,8 +3979,6 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     String AccountId { get; set; }
-    String ClientCertificate { get; set; }
-    String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultWorkerPoolId { get; set; }
