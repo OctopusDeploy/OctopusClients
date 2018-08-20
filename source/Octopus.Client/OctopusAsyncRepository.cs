@@ -57,6 +57,7 @@ namespace Octopus.Client
             Machines = new MachineRepository(client);
             Migrations = new MigrationRepository(client);
             OctopusServerNodes = new OctopusServerNodeRepository(client);
+            PerformanceConfiguration = new PerformanceConfigurationRepository(client);
             ProjectGroups = new ProjectGroupRepository(client);
             Projects = new ProjectRepository(client);
             ProjectTriggers = new ProjectTriggerRepository(client);
@@ -107,6 +108,7 @@ namespace Octopus.Client
         public IMachineRoleRepository MachineRoles { get; }
         public IMigrationRepository Migrations { get; }
         public IOctopusServerNodeRepository OctopusServerNodes { get; }
+        public IPerformanceConfigurationRepository PerformanceConfiguration { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }
