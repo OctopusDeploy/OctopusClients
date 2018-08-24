@@ -136,7 +136,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public void Add(string stepName, string packageVersion)
         {
-            Add(stepName, null, packageVersion);
+            Add(stepName, string.Empty, packageVersion);
         }
 
         public void Add(string stepName, string packageReferenceName, string packageVersion)
@@ -148,7 +148,7 @@ namespace Octopus.Cli.Commands.Releases
                 return;
             }
 
-            var key = new PackageKey(stepName, packageReferenceName);
+            var key = new PackageKey(stepName, packageReferenceName ?? string.Empty);
             if (stepNameToVersion.TryGetValue(key, out var current))
             {
                 var newVersion = SemanticVersion.Parse(packageVersion);
@@ -181,7 +181,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public string ResolveVersion(string stepName, string packageId)
         {
-            return ResolveVersion(stepName, packageId, null);
+            return ResolveVersion(stepName, packageId, string.Empty);
         }
 
         public string ResolveVersion(string stepName, string packageId, string packageReferenceName)
@@ -190,7 +190,7 @@ namespace Octopus.Cli.Commands.Releases
 
             // First attempt to get an exact match between step or package id and the package reference name
             return identifiers
-                    .Select(id => new PackageKey(id, packageReferenceName))
+                    .Select(id => new PackageKey(id, packageReferenceName ?? string.Empty))
                     .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
                     .FirstOrDefault(version => version != null)
                 ??
@@ -198,7 +198,7 @@ namespace Octopus.Cli.Commands.Releases
                 // and then on an exact step/package id and wildcard package reference name
                 identifiers
                     .SelectMany(id => new[]
-                        {new PackageKey(WildCard, packageReferenceName), new PackageKey(id, WildCard)})
+                        {new PackageKey(WildCard, packageReferenceName ?? string.Empty), new PackageKey(id, WildCard)})
                     .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
                     .FirstOrDefault(version => version != null)
                 ??
