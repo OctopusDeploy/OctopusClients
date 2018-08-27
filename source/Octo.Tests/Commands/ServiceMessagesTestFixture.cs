@@ -1,7 +1,6 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Diagnostics;
-using Octopus.Cli.Tests.Commands;
 
 namespace Octo.Tests.Commands
 {

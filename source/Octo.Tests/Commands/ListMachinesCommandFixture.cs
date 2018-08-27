@@ -12,7 +12,7 @@ using Octopus.Client.Model.Endpoints;
 
 #pragma warning disable 618
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListMachinesCommandFixture : ApiCommandFixtureBase

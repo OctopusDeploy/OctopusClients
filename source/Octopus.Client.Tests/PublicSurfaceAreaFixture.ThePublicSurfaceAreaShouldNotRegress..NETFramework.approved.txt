@@ -1299,6 +1299,7 @@ Octopus.Client.Model
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.PackageReferenceCollection Packages { get; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Int32 Version { get; set; }
@@ -1516,6 +1517,18 @@ Octopus.Client.Model
     static IEqualityComparer<AutoDeployReleaseOverrideResource> EnvironmentIdTenantIdComparer { get; }
     String ReleaseId { get; }
     String TenantId { get; }
+  }
+  class AwsElasticContainerRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String Region { get; set; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
   class AzureRootResource
     Octopus.Client.Extensibility.IResource
@@ -2024,6 +2037,7 @@ Octopus.Client.Model
     Boolean IsDisabled { get; set; }
     Boolean IsRequired { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.PackageReferenceCollection Packages { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
     String WorkerPoolId { get; set; }
@@ -2217,7 +2231,10 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
     String RegistryPath { get; set; }
+    String Username { get; set; }
   }
   EmailPriority
   {
@@ -2351,10 +2368,8 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
-    String FeedUri { get; set; }
     String Name { get; set; }
-    Octopus.Client.Model.SensitiveValue Password { get; set; }
-    String Username { get; set; }
+    IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; }
   }
   FeedType
   {
@@ -2364,6 +2379,8 @@ Octopus.Client.Model
       Maven = 3
       OctopusProject = 4
       GitHub = 5
+      Helm = 6
+      AwsElasticContainerRegistry = 7
   }
   class FileUpload
   {
@@ -2381,6 +2398,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   GuidedFailureMode
   {
@@ -2416,6 +2436,18 @@ Octopus.Client.Model
   {
       FullHealthCheck = 0
       ConnectionTest = 1
+  }
+  class HelmFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   interface IAuditedResource
   {
@@ -2722,6 +2754,9 @@ Octopus.Client.Model
     Int32 DownloadAttempts { get; set; }
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   abstract class Migration
   {
@@ -2797,6 +2832,9 @@ Octopus.Client.Model
     Int32 DownloadRetryBackoffSeconds { get; set; }
     Boolean EnhancedMode { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   class NumericReportData
   {
@@ -2833,6 +2871,12 @@ Octopus.Client.Model
     String Name { get; set; }
     String Rank { get; set; }
   }
+  PackageAcquisitionLocation
+  {
+      Server = 0
+      ExecutionTarget = 1
+      NotAcquired = 2
+  }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2841,6 +2885,39 @@ Octopus.Client.Model
     .ctor()
     String Hash { get; set; }
     Nullable<Int64> PackageSizeBytes { get; set; }
+  }
+  class PackageReference
+  {
+    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String, String)
+    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String)
+    .ctor(String, String)
+    .ctor()
+    String AcquisitionLocation { get; set; }
+    String FeedId { get; set; }
+    Boolean IsPrimaryPackage { get; }
+    String Name { get; set; }
+    String PackageId { get; set; }
+    IDictionary<String, String> Properties { get; }
+    Octopus.Client.Model.PackageReference Clone()
+  }
+  class PackageReferenceCollection
+    ICollection<PackageReference>
+    IEnumerable<PackageReference>
+    IEnumerable
+  {
+    .ctor()
+    Int32 Count { get; }
+    Boolean IsReadOnly { get; }
+    Octopus.Client.Model.PackageReference Item { get; }
+    Octopus.Client.Model.PackageReference PrimaryPackage { get; }
+    void Add(Octopus.Client.Model.PackageReference)
+    void Clear()
+    Boolean Contains(Octopus.Client.Model.PackageReference)
+    void CopyTo(Octopus.Client.Model.PackageReference[], Int32)
+    IEnumerator<PackageReference> GetEnumerator()
+    Boolean Remove(Octopus.Client.Model.PackageReference)
   }
   class PackageResource
     Octopus.Client.Extensibility.IResource
@@ -3261,6 +3338,7 @@ Octopus.Client.Model
     String NuGetFeedName { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
+    String PackageReferenceName { get; set; }
     String StepName { get; set; }
     String VersionSelectedLastRelease { get; set; }
   }
@@ -3446,7 +3524,9 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String)
+    .ctor(String, String, String)
     String ActionName { get; set; }
+    String PackageReferenceName { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
   }
@@ -4128,6 +4208,7 @@ Octopus.Client.Model.Accounts
       AzureServicePrincipal = 4
       AmazonWebServicesAccount = 5
       AmazonWebServicesRoleAccount = 6
+      Token = 7
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -4226,6 +4307,16 @@ Octopus.Client.Model.Accounts
   {
     .ctor(Octopus.Client.Model.Accounts.AccountType[])
     Octopus.Client.Model.Accounts.AccountType[] AccountTypes { get; }
+  }
+  class TokenAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    Octopus.Client.Model.SensitiveValue Token { get; set; }
   }
   class UsernamePasswordAccountResource
     Octopus.Client.Extensibility.IResource
@@ -4437,12 +4528,9 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     String AccountId { get; set; }
-    String AwsRegion { get; set; }
-    String ClientCertificate { get; set; }
-    String ClusterCertificate { get; set; }
-    String ClusterName { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
@@ -5504,7 +5592,7 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
-  }
+}
 }
 Octopus.Client.Repositories.Async
 {

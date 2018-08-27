@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using NSubstitute;
-using NUnit.Framework;
-using Octopus.Client.Model;
 using FluentAssertions;
 using Newtonsoft.Json;
+using NSubstitute;
+using NUnit.Framework;
 using Octopus.Cli.Commands.Environment;
 using Octopus.Cli.Infrastructure;
+using Octopus.Client.Model;
 
 #pragma warning disable 618
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class CleanEnvironmentCommandFixture : ApiCommandFixtureBase
