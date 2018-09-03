@@ -32,6 +32,9 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+        
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
 
         public DeploymentActionResource ClearAllConditions()
         {

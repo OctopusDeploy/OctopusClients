@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using NSubstitute;
-using Octopus.Cli.Tests.Commands;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using FluentAssertions;

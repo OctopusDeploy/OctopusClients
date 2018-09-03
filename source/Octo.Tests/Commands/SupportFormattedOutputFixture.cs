@@ -1,13 +1,11 @@
 using System;
 using System.IO;
-using FluentAssertions;
-using NUnit.Framework;
-using Octopus.Cli.Tests.Helpers;
-using Serilog;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class SupportFormattedOutputFixture : ApiCommandFixtureBase

@@ -2,9 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-#pragma warning disable 618
     public class DockerFeedResource : FeedResource
-#pragma warning restore 618
     {
         public override FeedType FeedType => FeedType.Docker;
 
@@ -13,5 +11,14 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string RegistryPath { get; set; }
+        
+        [Writeable]
+        public string FeedUri { get; set; }
+
+        [Writeable]
+        public string Username { get; set; }
+
+        [Writeable]
+        public SensitiveValue Password { get; set; }
     }
 }

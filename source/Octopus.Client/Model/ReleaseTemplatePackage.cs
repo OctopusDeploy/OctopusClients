@@ -22,6 +22,9 @@ namespace Octopus.Client.Model
 
         public string PackageId { get; set; }
 
+        // TODO: comment and review naming
+        public string PackageReferenceName { get; set; }
+
         [Obsolete("Replaced by FeedId")]
         public string NuGetFeedId
         {

@@ -14,7 +14,9 @@ namespace Octopus.Client.Serialization
                 {FeedType.Maven, typeof(MavenFeedResource)},
                 {FeedType.GitHub, typeof(GitHubFeedResource)},
                 {FeedType.OctopusProject, typeof(OctopusProjectFeedResource)},
-                {FeedType.BuiltIn, typeof(BuiltInFeedResource)}
+                {FeedType.BuiltIn, typeof(BuiltInFeedResource)},
+                {FeedType.AwsElasticContainerRegistry, typeof(AwsElasticContainerRegistryFeedResource)},
+                {FeedType.Helm, typeof(HelmFeedResource)},
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);

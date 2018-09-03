@@ -8,6 +8,8 @@
         Maven,
         OctopusProject,
         GitHub,
-        BuiltIn
+        BuiltIn,
+        Helm,
+        AwsElasticContainerRegistry
     }
 }
