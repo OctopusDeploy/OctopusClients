@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -11,19 +12,21 @@ namespace Octopus.Client.Repositories
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
         IDelete<SubscriptionResource>, 
-        ICanLimitToSpaces<ISubscriptionRepository>
+        ICanExpandSpaceContext<ISubscriptionRepository>
     {
         SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
     }
     
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
     {
-        public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions", null)
+
+        public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions")
         {
         }
 
-        SubscriptionRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Subscriptions", spaceQueryParameters)
+        SubscriptionRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Subscriptions")
         {
+            SpaceQueryParameters = spaceQueryParameters;
         }
 
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
@@ -31,10 +34,9 @@ namespace Octopus.Client.Repositories
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
         }
 
-        public ISubscriptionRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ISubscriptionRepository Including(bool includeGlobal, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new SubscriptionRepository(Client, newParameters);
+            return new SubscriptionRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
         }
     }
 }

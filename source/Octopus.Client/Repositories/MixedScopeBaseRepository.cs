@@ -8,17 +8,11 @@ namespace Octopus.Client.Repositories
 {
     abstract class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName, SpaceQueryParameters spaceQueryParameters) : base(client, collectionLinkName)
+        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName) : base(client, collectionLinkName)
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SetupSpaceParameters();
         }
 
-        protected SpaceQueryParameters CreateParameters(bool includeGlobal, string[] spaceIds)
-        {
-            var newParameters = new SpaceQueryParameters(includeGlobal, spaceIds);
-            ValidateSpaceParameters(newParameters);
-            return newParameters;
-        }
         protected SpaceQueryParameters SpaceQueryParameters { get; set; }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
@@ -35,22 +29,22 @@ namespace Octopus.Client.Repositories
             }
         }
 
-        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        void SetupSpaceParameters()
         {
-            if (SpaceQueryParameters == null)
+            switch (Client.SpaceContext.SpaceSelection)
             {
-                return;
-            }
-
-            if (newSpaceQueryParameters.IncludeGlobal && !SpaceQueryParameters.IncludeGlobal)
-            {
-                throw new InvalidIncludeGlobalConfigurationException();
-            }
-
-            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryParameters.SpaceIds);
-            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
-            {
-                throw new InvalidSpacesLimitationException();
+                case SpaceSelection.SpecificSpaceAndSystem:
+                    SpaceQueryParameters = new SpaceQueryParameters(true, new[] { Client.SpaceContext.SpaceId });
+                    break;
+                case SpaceSelection.DefaultSpaceAndSystem:
+                    SpaceQueryParameters = new SpaceQueryParameters(true, new[] { "default" });
+                    break;
+                case SpaceSelection.SpecificSpace:
+                    SpaceQueryParameters = new SpaceQueryParameters(false, new[] { Client.SpaceContext.SpaceId });
+                    break;
+                case SpaceSelection.SystemOnly:
+                    SpaceQueryParameters = new SpaceQueryParameters(true, null);
+                    break;
             }
         }
     }

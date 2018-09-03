@@ -13,11 +13,11 @@ namespace Octopus.Client
         public OctopusClientOptions()
         {
             Timeout = TimeSpan.FromMilliseconds(ApiConstants.DefaultClientRequestTimeout);
-
+            SpaceContext = SpaceContext.DefaultSpaceAndSystem();
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             SslProtocols = SslProtocols.Tls
-               | SslProtocols.Tls11
-               | SslProtocols.Tls12;
+                           | SslProtocols.Tls11
+                           | SslProtocols.Tls12;
 #endif
         }
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -36,6 +36,6 @@ namespace Octopus.Client
         public string Proxy { get; set; }
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
-        public string SpaceId { get; set; }
+        public SpaceContext SpaceContext { get; set; }
     }
 }

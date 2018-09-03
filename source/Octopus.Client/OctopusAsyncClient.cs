@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
@@ -134,9 +135,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = !string.IsNullOrEmpty(client.clientOptions.SpaceId) ? 
+                var spaceRootResource = !string.IsNullOrEmpty(client.clientOptions.SpaceContext.SpaceId) ? 
                     await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
-                        new {spaceId = client.clientOptions.SpaceId}).ConfigureAwait(false)
+                        new {spaceId = client.clientOptions.SpaceContext.SpaceId}).ConfigureAwait(false)
                     : null;
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
@@ -188,24 +189,28 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = !string.IsNullOrEmpty(clientOptions.SpaceId) 
-                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = clientOptions.SpaceId}).ConfigureAwait(false) 
+            var spaceRootDocument = !string.IsNullOrEmpty(clientOptions.SpaceContext.SpaceId) 
+                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = clientOptions.SpaceContext.SpaceId}).ConfigureAwait(false) 
                 : null;
             RootDocuments = new RootResources(rootDocument, spaceRootDocument);
             return rootDocument;
         }
 
-        public async Task<IOctopusAsyncClient> ForSpaceContext(string spaceId)
+        public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
         {
-            var newOptions = new OctopusClientOptions()
-            {
-                Proxy = clientOptions.Proxy,
-                ProxyPassword = clientOptions.ProxyPassword,
-                ProxyUsername = clientOptions.ProxyUsername,
-                SpaceId = spaceId,
-                Timeout = clientOptions.Timeout
-            };
-            return await Create(this.serverEndpoint, newOptions);
+            CheckSpaceId(spaceId);
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SpecificSpace, spaceId));
+        }
+
+        public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
+        {
+            CheckSpaceId(spaceId);
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SpecificSpaceAndSystem, spaceId));
+        }
+
+        public async Task<IOctopusAsyncClient> ForSystem()
+        {
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SystemOnly, null));
         }
 
         public bool HasLink(string name)
@@ -219,6 +224,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 ? value.AsString()
                 : RootDocument.Link(name);
         }
+
+        public SpaceContext SpaceContext => clientOptions.SpaceContext;
+
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
@@ -683,6 +691,45 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
+            }
+        }
+
+        private OctopusClientOptions CreateClientOptions(SpaceSelection spaceSelection, string spaceId)
+        {
+            var options = new OctopusClientOptions()
+            {
+                Proxy = clientOptions.Proxy,
+                ProxyPassword = clientOptions.ProxyPassword,
+                ProxyUsername = clientOptions.ProxyUsername,
+                Timeout = clientOptions.Timeout
+            };
+            switch (spaceSelection)
+            {
+                case SpaceSelection.DefaultSpaceAndSystem:
+                    options.SpaceContext = SpaceContext.DefaultSpaceAndSystem();
+                    break;
+                case SpaceSelection.SpecificSpace:
+                    options.SpaceContext = SpaceContext.SpecificSpace(spaceId);
+                    break;
+                case SpaceSelection.SpecificSpaceAndSystem:
+                    options.SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
+                    break;
+                case SpaceSelection.SystemOnly:
+                    options.SpaceContext = SpaceContext.SystemOnly();
+                    break;
+                default:
+                    options.SpaceContext = SpaceContext.DefaultSpaceAndSystem();
+                    break;
+            }
+
+            return options;
+        }
+
+        private void CheckSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
             }
         }
 

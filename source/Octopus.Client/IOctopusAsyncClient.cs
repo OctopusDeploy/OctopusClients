@@ -347,7 +347,20 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="spaceId">The ID of the space.</param>
         /// <returns>An instance of IOctopusClient</returns>
-        Task<IOctopusAsyncClient> ForSpaceContext(string spaceId);
+        Task<IOctopusAsyncClient> ForSpace(string spaceId);
+
+        /// <summary>
+        /// Requests an IOctopusAsyncClient which will operate within a given and the system space.
+        /// </summary>
+        /// <param name="spaceId">The ID of the space.</param>
+        /// <returns>An instance of IOctopusClient</returns>
+        Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId);
+
+        /// <summary>
+        /// Requests an IOctopusAsyncClient which will operate within the system space only.
+        /// </summary>
+        /// <returns>An instance of IOctopusClient</returns>
+        Task<IOctopusAsyncClient> ForSystem();
 
         /// <summary>
         /// Determines whether the specified link exists.
@@ -365,5 +378,10 @@ namespace Octopus.Client
         /// <returns></returns>
         /// <exception cref="System.Exception">If the link is not defined.</exception>
         string Link(string name);
+        
+        /// <summary>
+        /// The space context of the client
+        /// </summary>
+        SpaceContext SpaceContext { get; }
     }
 }

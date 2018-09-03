@@ -1,3 +1,4 @@
+using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -8,25 +9,25 @@ namespace Octopus.Client.Repositories
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
         IGet<ScopedUserRoleResource>,
-        ICanLimitToSpaces<IScopedUserRoleRepository>
+        ICanExpandSpaceContext<IScopedUserRoleRepository>
     {
     }
     
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusClient client)
-            : base(client, "ScopedUserRoles", null)
+            : base(client, "ScopedUserRoles")
         {
         }
 
-        ScopedUserRoleRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "ScopedUserRoles", spaceQueryParameters)
+        ScopedUserRoleRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "ScopedUserRoles")
         {
+            SpaceQueryParameters = spaceQueryParameters;
         }
 
-        public IScopedUserRoleRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public IScopedUserRoleRepository Including(bool includeGlobal, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new ScopedUserRoleRepository(Client, newParameters);
+            return new ScopedUserRoleRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
         }
     }
 }

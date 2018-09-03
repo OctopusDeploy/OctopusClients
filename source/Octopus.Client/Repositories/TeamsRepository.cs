@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -11,7 +12,7 @@ namespace Octopus.Client.Repositories
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        ICanLimitToSpaces<ITeamsRepository>
+        ICanExpandSpaceContext<ITeamsRepository>
     {
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
@@ -19,13 +20,13 @@ namespace Octopus.Client.Repositories
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusClient client)
-            : base(client, "Teams", null)
+            : base(client, "Teams")
         {
         }
 
-        TeamsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Teams", spaceQueryParameters)
+        TeamsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Teams")
         {
+            SpaceQueryParameters = spaceQueryParameters;
         }
 
         public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)
@@ -42,10 +43,9 @@ namespace Octopus.Client.Repositories
             return resources;
         }
 
-        public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ITeamsRepository Including(bool includeGlobal, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new TeamsRepository(Client, newParameters);
+            return new TeamsRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
         }
     }
 }

@@ -9,7 +9,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanLimitToSpaces<ITaskRepository>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanExpandSpaceContext<ITaskRepository>
     {
         Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
@@ -34,13 +34,13 @@ namespace Octopus.Client.Repositories.Async
     class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
         public TaskRepository(IOctopusAsyncClient client)
-            : base(client, "Tasks", null)
+            : base(client, "Tasks")
         {
         }
 
-        TaskRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Tasks", spaceQueryParameters)
+        TaskRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Tasks")
         {
+            SpaceQueryParameters = spaceQueryParameters;
         }
 
         public Task<TaskResource> ExecuteHealthCheck(
@@ -230,10 +230,9 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ITaskRepository Including(bool includeGlobal, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new TaskRepository(Client, newParameters);
+            return new TaskRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
         }
     }
 }

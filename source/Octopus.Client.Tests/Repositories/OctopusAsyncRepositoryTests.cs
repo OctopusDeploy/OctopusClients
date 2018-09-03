@@ -13,6 +13,7 @@ namespace Octopus.Client.Tests.Repositories
         public void AllPropertiesAreNotNull()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
+            client.SpaceContext.Returns(SpaceContext.DefaultSpaceAndSystem());
             client.RootDocument.Returns(new RootResource());
             var repository = new OctopusAsyncRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusAsyncRepository).GetTypeInfo().GetProperties()
