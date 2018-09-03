@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
         IGet<ScopedUserRoleResource>,
-        ICanExpandSpaceContext<IScopedUserRoleRepository>
+        ICanIncludeSpaces<IScopedUserRoleRepository>
     {
     }
 
@@ -28,6 +28,11 @@ namespace Octopus.Client.Repositories.Async
         public IScopedUserRoleRepository Including(bool includeGlobal, params string[] spaceIds)
         {
             return new ScopedUserRoleRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
+        }
+
+        public IScopedUserRoleRepository IncludingAllSpaces()
+        {
+            return new ScopedUserRoleRepository(Client, new SpaceQueryParameters(true, new []{"all"}));
         }
     }
 }

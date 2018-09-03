@@ -259,7 +259,6 @@ Octopus.Client
     Boolean IncludeSystem { get; }
     String SpaceId { get; }
     Octopus.Client.SpaceSelection SpaceSelection { get; }
-    static Octopus.Client.SpaceContext AllSpaces()
     static Octopus.Client.SpaceContext DefaultSpaceAndSystem()
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
@@ -603,18 +602,6 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
-  class InvalidIncludeGlobalConfigurationException
-    ISerializable
-    Exception
-  {
-    .ctor()
-  }
-  class InvalidSpacesLimitationException
-    ISerializable
-    Exception
-  {
-    .ctor()
-  }
   class MismatchSpaceContextException
     ISerializable
     Exception
@@ -4788,9 +4775,10 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
   }
-  interface ICanExpandSpaceContext`1
+  interface ICanIncludeSpaces`1
   {
     Octopus.Client.Repositories.Async.T Including(Boolean, String[])
+    Octopus.Client.Repositories.Async.T IncludingAllSpaces()
   }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>
@@ -4898,7 +4886,7 @@ Octopus.Client.Repositories.Async
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
-    Octopus.Client.Repositories.Async.ICanExpandSpaceContext<IEventRepository>
+    Octopus.Client.Repositories.Async.ICanIncludeSpaces<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
     Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -5114,7 +5102,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.ICanExpandSpaceContext<IScopedUserRoleRepository>
+    Octopus.Client.Repositories.Async.ICanIncludeSpaces<IScopedUserRoleRepository>
   {
   }
   interface IServerStatusRepository
@@ -5139,7 +5127,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
     Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
-    Octopus.Client.Repositories.Async.ICanExpandSpaceContext<ISubscriptionRepository>
+    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ISubscriptionRepository>
   {
     Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
   }
@@ -5160,7 +5148,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<TaskResource>
     Octopus.Client.Repositories.Async.IGet<TaskResource>
     Octopus.Client.Repositories.Async.ICreate<TaskResource>
-    Octopus.Client.Repositories.Async.ICanExpandSpaceContext<ITaskRepository>
+    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ITaskRepository>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
@@ -5188,7 +5176,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TeamResource>
     Octopus.Client.Repositories.Async.IPaginate<TeamResource>
     Octopus.Client.Repositories.Async.IGet<TeamResource>
-    Octopus.Client.Repositories.Async.ICanExpandSpaceContext<ITeamsRepository>
+    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ITeamsRepository>
   {
     Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }

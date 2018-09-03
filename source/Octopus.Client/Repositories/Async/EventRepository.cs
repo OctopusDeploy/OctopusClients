@@ -6,7 +6,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IEventRepository : IGet<EventResource>, ICanExpandSpaceContext<IEventRepository>
+    public interface IEventRepository : IGet<EventResource>, ICanIncludeSpaces<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -130,6 +130,11 @@ namespace Octopus.Client.Repositories.Async
         public IEventRepository Including(bool includeGlobal, params string[] spaceIds)
         {
             return new EventRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
+        }
+
+        public IEventRepository IncludingAllSpaces()
+        {
+            return new EventRepository(Client, new SpaceQueryParameters(true, new []{"all"}));
         }
     }
 }

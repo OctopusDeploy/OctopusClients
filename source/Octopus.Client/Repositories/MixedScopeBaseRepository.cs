@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories
                     SpaceQueryParameters = new SpaceQueryParameters(true, new[] { Client.SpaceContext.SpaceId });
                     break;
                 case SpaceSelection.DefaultSpaceAndSystem:
-                    SpaceQueryParameters = new SpaceQueryParameters(true, new[] { "default" });
+                    SpaceQueryParameters = null;
                     break;
                 case SpaceSelection.SpecificSpace:
                     SpaceQueryParameters = new SpaceQueryParameters(false, new[] { Client.SpaceContext.SpaceId });

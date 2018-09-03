@@ -8,7 +8,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanExpandSpaceContext<ITaskRepository>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanIncludeSpaces<ITaskRepository>
     {
         TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
         TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
@@ -222,6 +222,11 @@ namespace Octopus.Client.Repositories
         public ITaskRepository Including(bool includeGlobal, params string[] spaceIds)
         {
             return new TaskRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
+        }
+
+        public ITaskRepository IncludingAllSpaces()
+        {
+            return new TaskRepository(Client, new SpaceQueryParameters(true, new[] { "all" }));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
         IDelete<SubscriptionResource>,
-        ICanExpandSpaceContext<ISubscriptionRepository>
+        ICanIncludeSpaces<ISubscriptionRepository>
     {
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
     }
@@ -36,6 +36,11 @@ namespace Octopus.Client.Repositories.Async
         public ISubscriptionRepository Including(bool includeGlobal, params string[] spaceIds)
         {
             return new SubscriptionRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
+        }
+
+        public ISubscriptionRepository IncludingAllSpaces()
+        {
+            return new SubscriptionRepository(Client, new SpaceQueryParameters(true, new[] { "all" }));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        ICanExpandSpaceContext<ITeamsRepository>
+        ICanIncludeSpaces<ITeamsRepository>
     {
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
@@ -46,6 +46,11 @@ namespace Octopus.Client.Repositories.Async
         public ITeamsRepository Including(bool includeGlobal, params string[] spaceIds)
         {
             return new TeamsRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
+        }
+
+        public ITeamsRepository IncludingAllSpaces()
+        {
+            return new TeamsRepository(Client, new SpaceQueryParameters(true, new []{"all"}));
         }
     }
 }
