@@ -135,10 +135,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = !string.IsNullOrEmpty(client.clientOptions.SpaceContext.SpaceId) ? 
-                    await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
-                        new {spaceId = client.clientOptions.SpaceContext.SpaceId}).ConfigureAwait(false)
-                    : null;
+                // TODO: We might need to lazy load the spaceRootResource here.
+                var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
                 return client;
@@ -150,6 +148,21 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
+        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
+        {
+            if (client.clientOptions.SpaceContext == null)
+            {
+                var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
+                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
+                client.clientOptions.SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
+            }
+
+            return !string.IsNullOrEmpty(client.clientOptions.SpaceContext.SpaceId) ?
+                await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
+                    new { spaceId = client.clientOptions.SpaceContext.SpaceId }).ConfigureAwait(false)
+                : null;
+        }
 
 
         /// <summary>
@@ -705,9 +718,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             };
             switch (spaceSelection)
             {
-                case SpaceSelection.DefaultSpaceAndSystem:
-                    options.SpaceContext = SpaceContext.DefaultSpaceAndSystem();
-                    break;
                 case SpaceSelection.SpecificSpace:
                     options.SpaceContext = SpaceContext.SpecificSpace(spaceId);
                     break;
@@ -718,7 +728,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     options.SpaceContext = SpaceContext.SystemOnly();
                     break;
                 default:
-                    options.SpaceContext = SpaceContext.DefaultSpaceAndSystem();
+                    options.SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
                     break;
             }
 

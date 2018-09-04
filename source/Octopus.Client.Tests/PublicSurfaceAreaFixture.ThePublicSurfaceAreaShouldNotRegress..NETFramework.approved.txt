@@ -447,7 +447,6 @@ Octopus.Client
     Boolean IncludeSystem { get; }
     String SpaceId { get; }
     Octopus.Client.SpaceSelection SpaceSelection { get; }
-    static Octopus.Client.SpaceContext DefaultSpaceAndSystem()
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()

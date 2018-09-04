@@ -28,6 +28,7 @@ namespace Octopus.Client
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
         private Lazy<RootResources> rootResourcesLazy;
+        private string spaceId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -35,7 +36,6 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
-            SpaceContext = SpaceContext.DefaultSpaceAndSystem();
         }
 
         public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
@@ -45,7 +45,7 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
-            SpaceContext = SpaceContext.SpecificSpace(spaceId);
+            this.spaceId = spaceId;
         }
 
         /// <summary>
@@ -82,6 +82,17 @@ namespace Octopus.Client
         RootResources LoadInitialRootResources()
         {
             var root = EstablishSession();
+            if (this.spaceId == null)
+            {
+                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
+                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
+                SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
+            }
+            else
+            {
+                SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
+            }
             var spaceRoot = LoadSpaceResource(root);
             return new RootResources(root, spaceRoot);
         }
@@ -668,6 +679,10 @@ namespace Octopus.Client
             }
         }
 
+        private void LoadSpaceContext()
+        {
+
+        }
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

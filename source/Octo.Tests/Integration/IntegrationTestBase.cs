@@ -97,16 +97,30 @@ namespace Octopus.Cli.Tests.Integration
                      {
                          { "CurrentUser", TestRootPath + "/api/users/me" },
                          { "Environments", TestRootPath + "/api/environments{/id}{?skip,ids}" },
-                         { "PackageUpload", TestRootPath + "/api/packages/raw{?replace}" }
+                         { "PackageUpload", TestRootPath + "/api/packages/raw{?replace}" },
+                         { "SpaceHome", TestRootPath + "/api/{spaceId}" }
                      }
                 }
             ));
             Get($"{TestRootPath}/api/users/me", p => Response.AsJson(
                 new UserResource()
                 {
-
+                    Links = new LinkCollection()
+                    {
+                        {"Spaces", TestRootPath + "/api/users/users-1/spaces" }
+                    }
                 }
             ));
+            Get($"{TestRootPath}/api/users/users-1/spaces", p => Response.AsJson(
+                    new[] {
+                        new SpaceResource() { Id = "Spaces-1", IsDefault = true},
+                        new SpaceResource() { Id = "Spaces-2", IsDefault = false}
+                    }
+            ));
+            Get($"{TestRootPath}/api/spaces-1", p => Response.AsJson(
+                new SpaceRootResource()
+            ));
+
         }
 
         protected string TestRootPath { get; }
