@@ -28,7 +28,6 @@ namespace Octopus.Client
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
         private Lazy<RootResources> rootResourcesLazy;
-        private string spaceId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -36,16 +35,18 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
+            // TODO: we might need to lazy load this
+            LoadInitialRootResources();
         }
 
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext)
         {
+            SpaceContext = spaceContext;
             rootDocumentUri = "~/api";
             rootResourcesLazy = new Lazy<RootResources>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
-            this.spaceId = spaceId;
         }
 
         /// <summary>
@@ -82,24 +83,23 @@ namespace Octopus.Client
         RootResources LoadInitialRootResources()
         {
             var root = EstablishSession();
-            if (this.spaceId == null)
+            if (this.SpaceContext == null)
             {
                 var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
                 var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
                 SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
             }
-            else
-            {
-                SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
-            }
+
             var spaceRoot = LoadSpaceResource(root);
             return new RootResources(root, spaceRoot);
         }
         
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            return string.IsNullOrEmpty(SpaceContext.SpaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { SpaceContext.SpaceId });
+            // If user extend to multiple spaces, we still default to the very first one, any GET to space scoped doc will be within that space
+            var selectedSpaceId = SpaceContext.SpaceIds.Count > 0 ? SpaceContext.SpaceIds.First() : null; // TODO: Need a bit more thought
+            return string.IsNullOrEmpty(selectedSpaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { selectedSpaceId });
         }
 
         class RootResources
@@ -114,19 +114,26 @@ namespace Octopus.Client
             public SpaceRootResource SpaceRootResource { get; }
         }
 
+        public SpaceContext SpaceContext { get; private set; }
+
         public IOctopusClient ForSpace(string spaceId)
         {
-            return new OctopusClient(this.serverEndpoint, spaceId) {SpaceContext = SpaceContext.SpecificSpace(spaceId)};
+            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId));
         }
 
         public IOctopusClient ForSpaceAndSystem(string spaceId)
         {
-            return new OctopusClient(this.serverEndpoint, spaceId) {SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId)};
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId));
         }
 
         public IOctopusClient ForSystem()
         {
-            return new OctopusClient(this.serverEndpoint, SpaceContext.SpaceId) {SpaceContext = SpaceContext.SystemOnly()};
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly());
+        }
+
+        public IOctopusClient ForContext(SpaceContext spaceContext)
+        {
+            return new OctopusClient(this.serverEndpoint, spaceContext) ;
         }
 
         public bool HasLink(string name)
@@ -140,8 +147,6 @@ namespace Octopus.Client
                 ? value.AsString()
                 : RootDocument.Link(name);
         }
-
-        public SpaceContext SpaceContext { get; private set; }
 
         /// <summary>
         /// Occurs when a request is about to be sent.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
@@ -41,7 +42,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Delete(TResource resource)
         {
-            SpaceBoundaryCheck(resource);
+            ValidateSpaceId(resource);
             return Client.Delete(resource.Links["Self"]);
         }
 
@@ -157,50 +158,25 @@ namespace Octopus.Client.Repositories.Async
 
         void EnrichSpaceIdIfRequire(TResource resource)
         {
-            if (resource is IHaveSpaceResource spaceResource)
+            if (resource is IHaveSpaceResource spaceResource && this.GetType().GetTypeInfo().IsAssignableFrom(typeof(ICanIncludeSpaces<>)))
             {
-                switch (Client.SpaceContext.SpaceSelection)
+                ValidateSpaceId(resource);
+                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all")
                 {
-                    case SpaceSelection.SpecificSpaceAndSystem:
-                    case SpaceSelection.DefaultSpaceAndSystem:
-                        SpaceBoundaryCheck(resource);
-                        break;
-                    case SpaceSelection.SpecificSpace:
-                        spaceResource.SpaceId = Client.SpaceContext.SpaceId;
-                        break;
-                    case SpaceSelection.SystemOnly:
-                        spaceResource.SpaceId = null;
-                        break;
+                    spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
                 }
             }
         }
 
-        void SpaceBoundaryCheck(TResource resource)
+        void ValidateSpaceId(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                bool isValid = true;
-                switch (Client.SpaceContext.SpaceSelection)
+                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() == "all")
+                    return;
+                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && !Client.SpaceContext.SpaceIds.Contains(spaceResource.SpaceId))
                 {
-                    case SpaceSelection.SpecificSpaceAndSystem:
-                        if (spaceResource.SpaceId != Client.SpaceContext.SpaceId)
-                            isValid = false;
-                        break;
-                    case SpaceSelection.DefaultSpaceAndSystem:
-                        break;
-                    case SpaceSelection.SpecificSpace:
-                        if (spaceResource.SpaceId == null || spaceResource.SpaceId != Client.SpaceContext.SpaceId)
-                            isValid = false;
-                        break;
-                    case SpaceSelection.SystemOnly:
-                        if (spaceResource.SpaceId != null)
-                            isValid = false;
-                        break;
-                }
-                if (!isValid)
-                {
-                    throw new MismatchSpaceContextException(
-                        $"The space context of this client is set to with space Id {Client.SpaceContext.SpaceId}, it does not match the space Id in the resource");
+                    throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
                 }
             }
         }

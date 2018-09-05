@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Util;
 
@@ -9,7 +10,6 @@ namespace Octopus.Client.Repositories.Async
     {
         public MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName) : base(client, collectionLinkName)
         {
-            SetupSpaceParameters();
         }
 
         protected SpaceQueryParameters SpaceQueryParameters { get; set; }
@@ -27,25 +27,10 @@ namespace Octopus.Client.Repositories.Async
                 };
             }
         }
-
-
-        void SetupSpaceParameters()
+        protected SpaceContext CreateSpaceContext(SpaceContext spaceContext)
         {
-            switch (Client.SpaceContext.SpaceSelection)
-            {
-                case SpaceSelection.SpecificSpaceAndSystem:
-                    SpaceQueryParameters = new SpaceQueryParameters(true, new[] {Client.SpaceContext.SpaceId});
-                    break;
-                case SpaceSelection.DefaultSpaceAndSystem:
-                    SpaceQueryParameters = null;
-                    break;
-                case SpaceSelection.SpecificSpace:
-                    SpaceQueryParameters = new SpaceQueryParameters(false, new[] { Client.SpaceContext.SpaceId });
-                    break;
-                case SpaceSelection.SystemOnly:
-                    SpaceQueryParameters = new SpaceQueryParameters(true, null);
-                    break;
-            }
+            return new SpaceContext(Client.SpaceContext.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), spaceContext.IncludeSystem);
+
         }
     }
 }

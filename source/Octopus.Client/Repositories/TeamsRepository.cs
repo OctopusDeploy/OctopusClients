@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -24,7 +23,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        TeamsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Teams")
+        public TeamsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
+            : base(client, "Teams")
         {
             SpaceQueryParameters = spaceQueryParameters;
         }
@@ -43,14 +43,9 @@ namespace Octopus.Client.Repositories
             return resources;
         }
 
-        public ITeamsRepository Including(bool includeGlobal, params string[] spaceIds)
+        public ITeamsRepository Including(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
-        }
-
-        public ITeamsRepository IncludingAllSpaces()
-        {
-            return new TeamsRepository(Client, new SpaceQueryParameters(true, new[] { "all" }));
+            return new TeamsRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
         }
     }
 }

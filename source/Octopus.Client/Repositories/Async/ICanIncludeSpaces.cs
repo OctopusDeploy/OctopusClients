@@ -1,10 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories.Async
 {
     public interface ICanIncludeSpaces<out T>
     {
-        T Including(bool includeGlobal, params string[] spaceIds);
-        T IncludingAllSpaces();
+        T Including(SpaceContext spaceContext);
     }
 }

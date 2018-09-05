@@ -6,7 +6,6 @@ using Octopus.Client.Model;
 using System.Text.RegularExpressions;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
-using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
@@ -18,7 +17,7 @@ namespace Octopus.Client.Repositories
     {
         readonly IOctopusClient client;
         protected readonly string CollectionLinkName;
-        protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
+        protected Dictionary<string, object> AdditionalQueryParameters { get; }
 
         protected BasicRepository(IOctopusClient client, string collectionLinkName)
         {
@@ -35,6 +34,7 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            EnrichSpaceIdIfRequire(resource);
             return client.Create(client.Link(CollectionLinkName), resource, pathParameters);
         }
 
@@ -52,6 +52,7 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
+            // For space scoped, AdditionalQueryParameters is empty dic(not null), for mixed scope it should default to the Client spaceContext setting
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
             client.Paginate(path ?? client.Link(CollectionLinkName), parameters, getNextPage);
         }
@@ -155,6 +156,31 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
+        }
+
+        void EnrichSpaceIdIfRequire(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource && this.GetType().IsAssignableFrom(typeof(ICanIncludeSpaces<>)))
+            {
+                ValidateSpaceId(resource);
+                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all")
+                {
+                    spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
+                } 
+            }
+        }
+
+        void ValidateSpaceId(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+            {
+                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() == "all")
+                    return;
+                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && !Client.SpaceContext.SpaceIds.Contains(spaceResource.SpaceId))
+                {
+                    throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
+                }
+            }
         }
     }
 

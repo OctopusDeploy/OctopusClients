@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -33,14 +32,9 @@ namespace Octopus.Client.Repositories.Async
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
         }
 
-        public ISubscriptionRepository Including(bool includeGlobal, params string[] spaceIds)
+        public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, new SpaceQueryParameters(includeGlobal, SpaceQueryParameters.SpaceIds.Concat(spaceIds).ToArray()));
-        }
-
-        public ISubscriptionRepository IncludingAllSpaces()
-        {
-            return new SubscriptionRepository(Client, new SpaceQueryParameters(true, new[] { "all" }));
+            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
         }
     }
 }

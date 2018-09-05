@@ -27,6 +27,7 @@ Octopus.Client
     Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
+    Task<IOctopusAsyncClient> ForContext(Octopus.Client.SpaceContext)
     Task<IOctopusAsyncClient> ForSpace(String)
     Task<IOctopusAsyncClient> ForSpaceAndSystem(String)
     Task<IOctopusAsyncClient> ForSystem()
@@ -122,6 +123,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
+    Task<IOctopusAsyncClient> ForContext(Octopus.Client.SpaceContext)
     Task<IOctopusAsyncClient> ForSpace(String)
     Task<IOctopusAsyncClient> ForSpaceAndSystem(String)
     Task<IOctopusAsyncClient> ForSystem()
@@ -255,21 +257,21 @@ Octopus.Client
   }
   class SpaceContext
   {
-    .ctor(Octopus.Client.SpaceSelection, String, Boolean)
+    .ctor(IReadOnlyCollection<String>, Boolean)
     Boolean IncludeSystem { get; }
-    String SpaceId { get; }
-    Octopus.Client.SpaceSelection SpaceSelection { get; }
+    IReadOnlyCollection<String> SpaceIds { get; }
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()
+    Octopus.Client.Util.SpaceQueryParameters ToSpaceQueryParameters()
+    Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
   }
   SpaceSelection
   {
-      DefaultSpaceAndSystem = 0
-      SpecificSpace = 1
-      SpecificSpaceAndSystem = 2
-      SystemOnly = 3
-      AllSpaces = 4
+      SpecificSpace = 0
+      SpecificSpaceAndSystem = 1
+      SystemOnly = 2
+      AllSpaces = 3
   }
   class UrlTemplate
   {
@@ -4776,8 +4778,7 @@ Octopus.Client.Repositories.Async
   }
   interface ICanIncludeSpaces`1
   {
-    Octopus.Client.Repositories.Async.T Including(Boolean, String[])
-    Octopus.Client.Repositories.Async.T IncludingAllSpaces()
+    Octopus.Client.Repositories.Async.T Including(Octopus.Client.SpaceContext)
   }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>
@@ -5328,6 +5329,12 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
+  }
+  class SpaceQueryParameters
+  {
+    .ctor(Boolean, String[])
+    Boolean IncludeGlobal { get; }
+    String[] SpaceIds { get; }
   }
 }
 Octopus.Client.Validation

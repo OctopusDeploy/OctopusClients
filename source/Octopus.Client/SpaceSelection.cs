@@ -2,7 +2,6 @@
 {
     public enum SpaceSelection
     {
-        DefaultSpaceAndSystem,
         SpecificSpace,
         SpecificSpaceAndSystem,
         SystemOnly,

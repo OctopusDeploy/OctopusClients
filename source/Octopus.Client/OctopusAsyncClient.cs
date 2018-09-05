@@ -135,7 +135,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                // TODO: We might need to lazy load the spaceRootResource here.
+                // TODO: We might need to lazy load the RootDocuments here.
                 var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
@@ -155,12 +155,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
                 var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
+                // TODO: if no default space, =>SpaceContext.SystemOnly();
                 client.clientOptions.SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
             }
 
-            return !string.IsNullOrEmpty(client.clientOptions.SpaceContext.SpaceId) ?
+            var selectedSpaceId = GetSpaceId(client.SpaceContext);
+            return !string.IsNullOrEmpty(selectedSpaceId) ?
                 await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
-                    new { spaceId = client.clientOptions.SpaceContext.SpaceId }).ConfigureAwait(false)
+                    new { spaceId = selectedSpaceId }).ConfigureAwait(false)
                 : null;
         }
 
@@ -202,8 +204,9 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = !string.IsNullOrEmpty(clientOptions.SpaceContext.SpaceId) 
-                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = clientOptions.SpaceContext.SpaceId}).ConfigureAwait(false) 
+            var selectedSpaceId = GetSpaceId(SpaceContext);
+            var spaceRootDocument = !string.IsNullOrEmpty(selectedSpaceId) 
+                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = selectedSpaceId }).ConfigureAwait(false) 
                 : null;
             RootDocuments = new RootResources(rootDocument, spaceRootDocument);
             return rootDocument;
@@ -212,18 +215,23 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
         {
             CheckSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SpecificSpace, spaceId));
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpace(spaceId)));
         }
 
         public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
         {
             CheckSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SpecificSpaceAndSystem, spaceId));
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpaceAndSystem(spaceId)));
         }
 
         public async Task<IOctopusAsyncClient> ForSystem()
         {
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceSelection.SystemOnly, null));
+            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SystemOnly()));
+        }
+
+        public async Task<IOctopusAsyncClient> ForContext(SpaceContext spaceContext)
+        {
+            return await Create(this.serverEndpoint, CreateClientOptions(spaceContext));
         }
 
         public bool HasLink(string name)
@@ -707,32 +715,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        private OctopusClientOptions CreateClientOptions(SpaceSelection spaceSelection, string spaceId)
+        private OctopusClientOptions CreateClientOptions(SpaceContext spaceContext)
         {
-            var options = new OctopusClientOptions()
+            return new OctopusClientOptions()
             {
                 Proxy = clientOptions.Proxy,
                 ProxyPassword = clientOptions.ProxyPassword,
                 ProxyUsername = clientOptions.ProxyUsername,
-                Timeout = clientOptions.Timeout
+                Timeout = clientOptions.Timeout,
+                SpaceContext = spaceContext
             };
-            switch (spaceSelection)
-            {
-                case SpaceSelection.SpecificSpace:
-                    options.SpaceContext = SpaceContext.SpecificSpace(spaceId);
-                    break;
-                case SpaceSelection.SpecificSpaceAndSystem:
-                    options.SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
-                    break;
-                case SpaceSelection.SystemOnly:
-                    options.SpaceContext = SpaceContext.SystemOnly();
-                    break;
-                default:
-                    options.SpaceContext = SpaceContext.SpecificSpaceAndSystem(spaceId);
-                    break;
-            }
-
-            return options;
         }
 
         private void CheckSpaceId(string spaceId)
@@ -741,6 +733,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
+        }
+
+        private static string GetSpaceId(SpaceContext spaceContext)
+        {
+            // If user extend to multiple spaces, we still default to the very first one, any GET to space scoped doc will be within that space
+            return spaceContext.SpaceIds.Count > 0 ? spaceContext.SpaceIds.First() : null;
         }
 
         /// <summary>
