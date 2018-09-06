@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Util;
@@ -9,17 +10,23 @@ namespace Octopus.Client.Repositories
     {
         protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName) : base(client, collectionLinkName)
         {
+            SpaceContextExtension = new SpaceContextExtension(client.SpaceContext.IncludeSystem, client.SpaceContext.SpaceIds.ToArray());
         }
 
         protected SpaceContextExtension SpaceContextExtension { get; set; }
 
-        protected SpaceContext CreateSpaceContext(SpaceContext spaceContext)
+        protected override Dictionary<string, object> AdditionalQueryParameters
         {
-            if (Client.SpaceContext.IncludeSystem && !spaceContext.IncludeSystem)
+            get
             {
-                throw new ArgumentException("Cannot reset includeGlobal to false while it is already set to true");
+                if (SpaceContextExtension == null)
+                    return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["includeGlobal"] = SpaceContextExtension.IncludeSystem,
+                    ["spaces"] = SpaceContextExtension.SpaceIds
+                };
             }
-            return new SpaceContext(Client.SpaceContext.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), spaceContext.IncludeSystem);
         }
     }
 }

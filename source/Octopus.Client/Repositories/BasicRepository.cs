@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories
     {
         readonly IOctopusClient client;
         protected readonly string CollectionLinkName;
-        protected Dictionary<string, object> AdditionalQueryParameters { get; }
+        protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
         protected BasicRepository(IOctopusClient client, string collectionLinkName)
         {
