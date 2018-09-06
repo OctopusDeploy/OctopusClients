@@ -159,7 +159,7 @@ namespace Octopus.Client.Repositories.Async
 
         void EnrichSpaceIdIfRequire(TResource resource)
         {
-            if (resource is IHaveSpaceResource spaceResource && this.GetType().GetTypeInfo().IsAssignableFrom(typeof(ICanIncludeSpaces<>)))
+            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
             {
                 ValidateSpaceId(resource);
                 if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all")
