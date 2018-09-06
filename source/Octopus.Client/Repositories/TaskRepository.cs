@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -10,11 +11,11 @@ namespace Octopus.Client.Repositories
 {
     public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanIncludeSpaces<ITaskRepository>
     {
-        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
-        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null);
+        TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
+        TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         TaskResource ExecuteBackup(string description = null);
-        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null);
-        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null);
+        TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
+        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
@@ -36,79 +37,102 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public TaskRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
+        public TaskRepository(IOctopusClient client, SpaceContextExtension spaceQueryParameters)
             : base(client, "Tasks")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         public TaskResource ExecuteHealthCheck(
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, 
-            string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null
-            )
+            string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            var resource = new TaskResource(){SpaceId = spaceId};
-            resource.Name = BuiltInTasks.Health.Name;
-            resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description;
-            resource.Arguments = new Dictionary<string, object>
+            EnsureSingleSpaceContext();
+            var resource = new TaskResource
             {
-                {BuiltInTasks.Health.Arguments.Timeout, TimeSpan.FromMinutes(timeoutAfterMinutes)},
-                {BuiltInTasks.Health.Arguments.MachineTimeout, TimeSpan.FromMinutes(machineTimeoutAfterMinutes)},
-                {BuiltInTasks.Health.Arguments.EnvironmentId, environmentId},
-                {BuiltInTasks.Health.Arguments.WorkerpoolId, workerpoolId},
-                {BuiltInTasks.Health.Arguments.RestrictedTo, restrictTo},
-                {BuiltInTasks.Health.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
+                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                Name = BuiltInTasks.Health.Name,
+                Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description,
+                Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.Health.Arguments.Timeout, TimeSpan.FromMinutes(timeoutAfterMinutes)},
+                    {BuiltInTasks.Health.Arguments.MachineTimeout, TimeSpan.FromMinutes(machineTimeoutAfterMinutes)},
+                    {BuiltInTasks.Health.Arguments.EnvironmentId, environmentId},
+                    {BuiltInTasks.Health.Arguments.WorkerpoolId, workerpoolId},
+                    {BuiltInTasks.Health.Arguments.RestrictedTo, restrictTo},
+                    {
+                        BuiltInTasks.Health.Arguments.MachineIds,
+                        machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds
+                    }
+                }
             };
             return Create(resource);
         }
 
-        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null, string spaceId = null)
+        public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
-            var resource = new TaskResource(){SpaceId = spaceId};
-            resource.Name = BuiltInTasks.UpdateCalamari.Name;
-            resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description;
-            resource.Arguments = new Dictionary<string, object>
+            EnsureSingleSpaceContext();
+            var resource = new TaskResource
             {
-                {BuiltInTasks.UpdateCalamari.Arguments.MachineIds, machineIds }
+                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                Name = BuiltInTasks.UpdateCalamari.Name,
+                Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description,
+                Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.UpdateCalamari.Arguments.MachineIds, machineIds}
+                }
             };
             return Create(resource);
         }
 
         public TaskResource ExecuteBackup(string description = null)
         {
-            var resource = new TaskResource();
-            resource.Name = BuiltInTasks.Backup.Name;
-            resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual backup" : description;
-            return Create(resource);
+            var resource = new TaskResource
+            {
+                Name = BuiltInTasks.Backup.Name,
+                Description = string.IsNullOrWhiteSpace(description) ? "Manual backup" : description
+            };
+            return CreateSystemTask(resource);
         }
 
-        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null, string spaceId = null)
+        public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            var resource = new TaskResource(){SpaceId = spaceId};
-            resource.Name = BuiltInTasks.Upgrade.Name;
-            resource.Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description;
-            resource.Arguments = new Dictionary<string, object>
+            EnsureSingleSpaceContext();
+            var resource = new TaskResource
             {
-                {BuiltInTasks.Upgrade.Arguments.EnvironmentId, environmentId},
-                {BuiltInTasks.Upgrade.Arguments.WorkerpoolId, workerpoolId},
-                {BuiltInTasks.Upgrade.Arguments.RestrictedTo, restrictTo},
-                {BuiltInTasks.Upgrade.Arguments.MachineIds, machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds}
+                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                Name = BuiltInTasks.Upgrade.Name,
+                Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description,
+                Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.Upgrade.Arguments.EnvironmentId, environmentId},
+                    {BuiltInTasks.Upgrade.Arguments.WorkerpoolId, workerpoolId},
+                    {BuiltInTasks.Upgrade.Arguments.RestrictedTo, restrictTo},
+                    {
+                        BuiltInTasks.Upgrade.Arguments.MachineIds,
+                        machineIds?.Concat(workerIds ?? new string[0]).ToArray() ?? workerIds
+                    }
+                }
             };
             return Create(resource);
         }
 
-        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", string spaceId = null)
+        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            var resource = new TaskResource(){SpaceId = spaceId};
-            resource.Name = BuiltInTasks.AdHocScript.Name;
-            resource.Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description;
-            resource.Arguments = new Dictionary<string, object>
+            EnsureSingleSpaceContext();
+            var resource = new TaskResource
             {
-                {BuiltInTasks.AdHocScript.Arguments.EnvironmentIds, environmentIds},
-                {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
-                {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
-                {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
-                {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
+                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                Name = BuiltInTasks.AdHocScript.Name,
+                Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description,
+                Arguments = new Dictionary<string, object>
+                {
+                    {BuiltInTasks.AdHocScript.Arguments.EnvironmentIds, environmentIds},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
+                    {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
+                    {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
+                    {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
+                }
             };
             return Create(resource);
         }
@@ -134,11 +158,13 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)
         {
-            var resource = new TaskResource();
-            resource.Name = BuiltInTasks.SyncCommunityActionTemplates.Name;
-            resource.Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name;
+            var resource = new TaskResource
+            {
+                Name = BuiltInTasks.SyncCommunityActionTemplates.Name,
+                Description = description ?? "Run " + BuiltInTasks.SyncCommunityActionTemplates.Name
+            };
 
-            return Create(resource);
+            return CreateSystemTask(resource);
         }
 
         public TaskDetailsResource GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null)
@@ -160,16 +186,19 @@ namespace Octopus.Client.Repositories
 
         public void Rerun(TaskResource resource)
         {
+            EnsureTaskCanRunInTheCurrentContext(resource);
             Client.Post(resource.Link("Rerun"), (TaskResource)null);
         }
 
         public void Cancel(TaskResource resource)
         {
+            EnsureTaskCanRunInTheCurrentContext(resource);
             Client.Post(resource.Link("Cancel"), (TaskResource)null);
         }
 
         public void ModifyState(TaskResource resource, TaskState newState, string reason)
         {
+            EnsureTaskCanRunInTheCurrentContext(resource);
             Client.Post(resource.Link("State"), new { state = newState, reason = reason });
         }
 
@@ -223,6 +252,27 @@ namespace Octopus.Client.Repositories
         public ITaskRepository Including(SpaceContext spaceContext)
         {
             return new TaskRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+        }
+
+        void EnsureSingleSpaceContext()
+        {
+            if (!(SpaceContextExtension.SpaceIds.Length == 1 && SpaceContextExtension.SpaceIds.Single() != "all"))
+            {
+                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
+            }
+        }
+
+        void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
+        {
+            if (string.IsNullOrEmpty(task.SpaceId))
+                return;
+            if (SpaceContextExtension.SpaceIds.Contains(task.SpaceId))
+                throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
+        }
+
+        TaskResource CreateSystemTask(TaskResource task)
+        {
+            return Client.Create(Client.Link(CollectionLinkName), task);
         }
     }
 }

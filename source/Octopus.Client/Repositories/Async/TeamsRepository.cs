@@ -24,10 +24,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TeamsRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
+        TeamsRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
             : base(client, "Teams")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)

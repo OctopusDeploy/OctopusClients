@@ -135,7 +135,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                // TODO: We might need to lazy load the RootDocuments here.
                 var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
@@ -154,9 +153,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
-                // TODO: if no default space, =>SpaceContext.SystemOnly();
-                client.clientOptions.SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
+                var defaultSpace = userSpaces.SingleOrDefault(s => s.IsDefault);
+                client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
             }
 
             var selectedSpaceId = GetSpaceId(client.SpaceContext);
@@ -204,10 +202,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var selectedSpaceId = GetSpaceId(SpaceContext);
-            var spaceRootDocument = !string.IsNullOrEmpty(selectedSpaceId) 
-                ? await Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId = selectedSpaceId }).ConfigureAwait(false) 
-                : null;
+            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument);
             RootDocuments = new RootResources(rootDocument, spaceRootDocument);
             return rootDocument;
         }
@@ -737,8 +732,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static string GetSpaceId(SpaceContext spaceContext)
         {
-            // If user extend to multiple spaces, we still default to the very first one, any GET to space scoped doc will be within that space
-            return spaceContext.SpaceIds.Count > 0 ? spaceContext.SpaceIds.First() : null;
+            return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
         }
 
         /// <summary>

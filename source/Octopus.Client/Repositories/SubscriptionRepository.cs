@@ -24,9 +24,9 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public SubscriptionRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Subscriptions")
+        public SubscriptionRepository(IOctopusClient client, SpaceContextExtension spaceQueryParameters) : base(client, "Subscriptions")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)

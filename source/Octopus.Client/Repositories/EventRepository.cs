@@ -62,10 +62,10 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public EventRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
+        public EventRepository(IOctopusClient client, SpaceContextExtension spaceQueryParameters)
             : base(client, "Events")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]

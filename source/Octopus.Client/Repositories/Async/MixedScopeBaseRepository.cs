@@ -10,27 +10,23 @@ namespace Octopus.Client.Repositories.Async
     {
         public MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName) : base(client, collectionLinkName)
         {
+            SpaceContextExtension = new SpaceContextExtension(client.SpaceContext.IncludeSystem, client.SpaceContext.SpaceIds.ToArray());
         }
 
-        protected SpaceQueryParameters SpaceQueryParameters { get; set; }
+        protected SpaceContextExtension SpaceContextExtension { get; set; }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
         {
             get
             {
-                if (SpaceQueryParameters == null)
+                if (SpaceContextExtension == null)
                     return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeGlobal"] = SpaceQueryParameters.IncludeGlobal,
-                    ["spaces"] = SpaceQueryParameters.SpaceIds
+                    ["includeGlobal"] = SpaceContextExtension.IncludeSystem,
+                    ["spaces"] = SpaceContextExtension.SpaceIds
                 };
             }
-        }
-        protected SpaceContext CreateSpaceContext(SpaceContext spaceContext)
-        {
-            return new SpaceContext(Client.SpaceContext.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), spaceContext.IncludeSystem);
-
         }
     }
 }

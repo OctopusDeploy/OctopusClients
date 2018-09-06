@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        protected SpaceQueryParameters SpaceQueryParameters { get; set; }
+        protected SpaceContextExtension SpaceContextExtension { get; set; }
 
         protected SpaceContext CreateSpaceContext(SpaceContext spaceContext)
         {

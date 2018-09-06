@@ -37,6 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TResource> Modify(TResource resource)
         {
+            ValidateSpaceId(resource);
             return Client.Update(resource.Links["Self"], resource);
         }
 

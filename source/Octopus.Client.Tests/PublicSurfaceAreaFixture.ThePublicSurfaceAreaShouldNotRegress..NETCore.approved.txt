@@ -263,7 +263,7 @@ Octopus.Client
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()
-    Octopus.Client.Util.SpaceQueryParameters ToSpaceQueryParameters()
+    Octopus.Client.Util.SpaceContextExtension ToSpaceQueryParameters()
     Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
   }
   SpaceSelection
@@ -5152,12 +5152,12 @@ Octopus.Client.Repositories.Async
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, String)
+    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String)
     Task<TaskResource> ExecuteBackup(String)
-    Task<TaskResource> ExecuteCalamariUpdate(String, String[], String)
+    Task<TaskResource> ExecuteCalamariUpdate(String, String[])
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
-    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[], String)
-    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[], String)
+    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
     Task<List<TaskResource>> GetAllActive(Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
@@ -5330,10 +5330,10 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
   }
-  class SpaceQueryParameters
+  class SpaceContextExtension
   {
     .ctor(Boolean, String[])
-    Boolean IncludeGlobal { get; }
+    Boolean IncludeSystem { get; }
     String[] SpaceIds { get; }
   }
 }

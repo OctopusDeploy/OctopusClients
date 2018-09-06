@@ -63,10 +63,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        EventRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
+        EventRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
             : base(client, "Events")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
@@ -75,13 +75,13 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.Link("Events"), new
+            return Client.List<EventResource>(Client.Link("Events"), ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 user = filterByUserId,
                 regarding = regardingDocumentId,
                 @internal = includeInternalEvents.ToString()
-            });
+            }));
         }
 
         public Task<ResourceCollection<EventResource>> List(int skip = 0, 

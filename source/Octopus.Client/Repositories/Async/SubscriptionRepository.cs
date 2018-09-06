@@ -22,13 +22,14 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        SubscriptionRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters) : base(client, "Subscriptions")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
         {
+            // TODO: Maybe we should not take spaceId as an input, let it drive by the SpaceContext
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
         }
 

@@ -19,10 +19,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
+        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
             : base(client, "ScopedUserRoles")
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceContextExtension = spaceQueryParameters;
         }
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
