@@ -63,10 +63,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        EventRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
+        EventRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension)
             : base(client, "Events")
         {
-            SpaceContextExtension = spaceQueryParameters;
+            SpaceContextExtension = spaceContextExtension;
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
@@ -130,7 +130,7 @@ namespace Octopus.Client.Repositories.Async
 
         public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+            return new EventRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
         }
     }
 }

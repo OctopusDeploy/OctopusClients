@@ -24,9 +24,9 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public SubscriptionRepository(IOctopusClient client, SpaceContextExtension spaceQueryParameters) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusClient client, SpaceContextExtension spaceContextExtension) : base(client, "Subscriptions")
         {
-            SpaceContextExtension = spaceQueryParameters;
+            SpaceContextExtension = spaceContextExtension;
         }
 
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
         }
     }
 }

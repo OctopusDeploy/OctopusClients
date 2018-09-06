@@ -39,10 +39,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TaskRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
+        TaskRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension)
             : base(client, "Tasks")
         {
-            SpaceContextExtension = spaceQueryParameters;
+            SpaceContextExtension = spaceContextExtension;
         }
 
         public Task<TaskResource> ExecuteHealthCheck(
@@ -264,7 +264,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+            return new TaskRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
         }
 
         void EnsureSingleSpaceContext()

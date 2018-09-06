@@ -2,9 +2,9 @@
 {
     public class SpaceContextExtension
     {
-        public SpaceContextExtension(bool includeGlobal, string[] spaceIds)
+        public SpaceContextExtension(bool includeSystem, string[] spaceIds)
         {
-            IncludeSystem = includeGlobal;
+            IncludeSystem = includeSystem;
             SpaceIds = spaceIds;
         }
         public bool IncludeSystem { get; }

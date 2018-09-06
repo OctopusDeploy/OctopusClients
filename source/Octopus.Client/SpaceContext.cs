@@ -24,7 +24,7 @@ namespace Octopus.Client
             return new SpaceContext(this.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
         }
 
-        public SpaceContextExtension ToSpaceQueryParameters()
+        public SpaceContextExtension ToSpaceContextExtension()
         {
             return new SpaceContextExtension(IncludeSystem, SpaceIds.ToArray());
         }

@@ -22,9 +22,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        SubscriptionRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension) : base(client, "Subscriptions")
         {
-            SpaceContextExtension = spaceQueryParameters;
+            SpaceContextExtension = spaceContextExtension;
         }
 
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
@@ -35,7 +35,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
         }
     }
 }

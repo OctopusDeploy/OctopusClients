@@ -19,15 +19,15 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContextExtension spaceQueryParameters)
+        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension)
             : base(client, "ScopedUserRoles")
         {
-            SpaceContextExtension = spaceQueryParameters;
+            SpaceContextExtension = spaceContextExtension;
         }
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceQueryParameters());
+            return new ScopedUserRoleRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
         }
     }
 }
