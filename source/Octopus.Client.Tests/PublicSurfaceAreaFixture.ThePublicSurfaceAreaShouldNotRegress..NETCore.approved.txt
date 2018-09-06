@@ -263,7 +263,7 @@ Octopus.Client
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()
-    Octopus.Client.Util.SpaceContextExtension ToSpaceQueryParameters()
+    Octopus.Client.Util.SpaceContextExtension ToSpaceContextExtension()
     Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
   }
   SpaceSelection
