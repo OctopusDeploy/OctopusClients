@@ -5205,6 +5205,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<DeploymentResource>
     Octopus.Client.Repositories.ICreate<DeploymentResource>
     Octopus.Client.Repositories.IPaginate<DeploymentResource>
+    Octopus.Client.Repositories.IDelete<DeploymentResource>
   {
     Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> FindBy(String[], String[], Int32, Nullable<Int32>)
@@ -5592,7 +5593,7 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
-}
+  }
 }
 Octopus.Client.Repositories.Async
 {
@@ -5736,6 +5737,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
     Octopus.Client.Repositories.Async.ICreate<DeploymentResource>
     Octopus.Client.Repositories.Async.IPaginate<DeploymentResource>
+    Octopus.Client.Repositories.Async.IDelete<DeploymentResource>
   {
     Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
