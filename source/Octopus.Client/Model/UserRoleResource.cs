@@ -21,6 +21,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public List<Permission> GrantedSpacesPermissions { get; set; }
+
+        [Writeable]
         public List<Permission> GrantedSystemPermissions { get; set; }
 
         public bool CanBeDeleted { get; set; }
