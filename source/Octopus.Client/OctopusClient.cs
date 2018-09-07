@@ -97,9 +97,8 @@ namespace Octopus.Client
         
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            // If user extend to multiple spaces, we still default to the very first one, any GET to space scoped doc will be within that space
-            var selectedSpaceId = SpaceContext.SpaceIds.Count > 0 ? SpaceContext.SpaceIds.First() : null; // TODO: Need a bit more thought
-            return string.IsNullOrEmpty(selectedSpaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { selectedSpaceId });
+            var spaceId = SpaceContext.SpaceIds.Count == 1 ? SpaceContext.SpaceIds.First() : null;
+            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
         }
 
         class RootResources
