@@ -450,9 +450,11 @@ Octopus.Client
     .ctor(IReadOnlyCollection<String>, Boolean)
     Boolean IncludeSystem { get; }
     IReadOnlyCollection<String> SpaceIds { get; }
+    static Octopus.Client.SpaceContext AllSpaces(Boolean)
     void EnsureSingleSpaceContext()
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
+    static Octopus.Client.SpaceContext SpecificSpaces(Boolean, String[])
     static Octopus.Client.SpaceContext SystemOnly()
     Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
   }
@@ -5354,9 +5356,9 @@ Octopus.Client.Repositories
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
   {
-    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
-    void Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
-    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface IConfigurationRepository
   {
@@ -5914,9 +5916,9 @@ Octopus.Client.Repositories.Async
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
   {
-    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource, String)
-    Task Install(Octopus.Client.Model.CommunityActionTemplateResource, String)
-    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource, String)
+    Task<ActionTemplateResource> GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    Task UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
   }
   interface IConfigurationRepository
   {

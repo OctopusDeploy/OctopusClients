@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
@@ -7,9 +8,9 @@ namespace Octopus.Client.Repositories
 {
     public interface ICommunityActionTemplateRepository : IGet<CommunityActionTemplateResource>
     {
-        ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource, string spaceId = null);
-        void Install(CommunityActionTemplateResource resource, string spaceId = null);
-        void UpdateInstallation(CommunityActionTemplateResource resource, string spaceId = null);
+        ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource);
+        void Install(CommunityActionTemplateResource resource);
+        void UpdateInstallation(CommunityActionTemplateResource resource);
     }
     
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
@@ -18,19 +19,22 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        public void Install(CommunityActionTemplateResource resource, string spaceId = null)
+        public void Install(CommunityActionTemplateResource resource)
         {
-            Client.Post(resource.Links["Installation"].AppendSpaceId(spaceId));
+            Client.SpaceContext.EnsureSingleSpaceContext();
+            Client.Post(resource.Links["Installation"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
         }
 
-        public void UpdateInstallation(CommunityActionTemplateResource resource, string spaceId = null)
+        public void UpdateInstallation(CommunityActionTemplateResource resource)
         {
-            Client.Put(resource.Links["Installation"].AppendSpaceId(spaceId));
+            Client.SpaceContext.EnsureSingleSpaceContext();
+            Client.Put(resource.Links["Installation"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
         }
 
-        public ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource, string spaceId = null)
+        public ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource)
         {
-            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(spaceId));
+            Client.SpaceContext.EnsureSingleSpaceContext();
+            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
         }
     }
 }

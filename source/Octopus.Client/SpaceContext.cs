@@ -9,6 +9,8 @@ namespace Octopus.Client
     public class SpaceContext
     {
         public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(new [] {spaceId}, false);
+        public static SpaceContext SpecificSpaces(bool includeSystem, params string[] spaceIds) => new SpaceContext(spaceIds, includeSystem);
+        public static SpaceContext AllSpaces(bool includeSystem) => new SpaceContext(new []{"all"}, includeSystem);
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(new []{spaceId}, true);
         public static SpaceContext SystemOnly() => new SpaceContext(new string[0], true);
 
