@@ -2937,6 +2937,12 @@ Octopus.Client.Model
     String Title { get; set; }
     String Version { get; set; }
   }
+  class PackageSignatureResource
+  {
+    .ctor()
+    String BaseVersion { get; set; }
+    Byte[] Signature { get; set; }
+  }
   class PerformanceConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6181,6 +6187,11 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
+  }
+  class PackageIdentityParser
+  {
+    .ctor()
+    static Boolean TryParsePackageIdAndVersion(String, String&, Octopus.Client.Model.SemanticVersion&)
   }
 }
 Octopus.Client.Validation
