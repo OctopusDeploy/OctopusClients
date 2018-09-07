@@ -271,7 +271,7 @@ namespace Octopus.Client.Repositories.Async
         {
             if (string.IsNullOrEmpty(task.SpaceId))
                 return;
-            if (SpaceContext.SpaceIds.Contains(task.SpaceId))
+            if (!SpaceContext.SpaceIds.Contains(task.SpaceId))
                 throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
         }
 
