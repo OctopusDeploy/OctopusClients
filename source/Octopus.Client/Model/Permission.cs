@@ -160,8 +160,6 @@ namespace Octopus.Client.Model
 
         [Description("Delete accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountDelete,
 
-        [Description("View audit logs")] AuditView,
-
         [Description("Create tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantCreate,
 
         [Description("Edit tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantEdit,
