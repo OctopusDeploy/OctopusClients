@@ -5995,6 +5995,7 @@ Octopus.Client.Repositories.Async
     Task<Stream> GetRawLogs(String)
     Task Start()
     Task Start(String)
+    Task<SchedulerStatusResource> Status()
     Task Stop()
     Task Stop(String)
     Task Trigger(String)
