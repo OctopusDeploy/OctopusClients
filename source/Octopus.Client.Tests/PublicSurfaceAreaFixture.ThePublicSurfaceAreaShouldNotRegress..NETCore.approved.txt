@@ -4691,6 +4691,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
     Octopus.Client.Repositories.Async.ICreate<DeploymentResource>
     Octopus.Client.Repositories.Async.IPaginate<DeploymentResource>
+    Octopus.Client.Repositories.Async.IDelete<DeploymentResource>
   {
     Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
