@@ -14,6 +14,7 @@ namespace Octopus.Client.Repositories.Async
         Task Trigger(string taskName);
         Task<ScheduledTaskDetailsResource> GetLogs(string taskName);
         Task<Stream> GetRawLogs(string taskName);
+        Task<SchedulerStatusResource> Status();
     }
 
     class SchedulerRepository : ISchedulerRepository
@@ -58,6 +59,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<Stream> GetRawLogs(string taskName)
         {
             return client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
+        }
+
+        public Task<SchedulerStatusResource> Status()
+        {
+            return client.Get<SchedulerStatusResource>("~/api/scheduler");
         }
     }
 }
