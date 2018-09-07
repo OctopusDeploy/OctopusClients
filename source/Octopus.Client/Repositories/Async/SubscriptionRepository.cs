@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -13,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<SubscriptionResource>,
         ICanIncludeSpaces<ISubscriptionRepository>
     {
-        Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
+        Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
 
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
@@ -22,20 +24,20 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        SubscriptionRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceContext spaceContext) : base(client, "Subscriptions")
         {
-            SpaceContextExtension = spaceContextExtension;
+            SpaceContext = spaceContext;
         }
 
-        public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
+        public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            // TODO: Maybe we should not take spaceId as an input, let it drive by the SpaceContext
-            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
+            SpaceContext.EnsureSingleSpaceContext();
+            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
+            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext));
         }
     }
 }

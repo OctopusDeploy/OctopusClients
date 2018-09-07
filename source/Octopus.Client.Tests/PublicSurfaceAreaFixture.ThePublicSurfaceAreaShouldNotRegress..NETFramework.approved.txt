@@ -450,10 +450,10 @@ Octopus.Client
     .ctor(IReadOnlyCollection<String>, Boolean)
     Boolean IncludeSystem { get; }
     IReadOnlyCollection<String> SpaceIds { get; }
+    void EnsureSingleSpaceContext()
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()
-    Octopus.Client.Util.SpaceContextExtension ToSpaceContextExtension()
     Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
   }
   SpaceSelection
@@ -689,7 +689,7 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
     Octopus.Client.Editors.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Octopus.Client.Editors.SubscriptionEditor Save()
   }
@@ -1004,7 +1004,7 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.ISubscriptionRepository)
     Octopus.Client.Model.SubscriptionResource Instance { get; }
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
     Octopus.Client.Editors.Async.SubscriptionEditor Customize(Action<SubscriptionResource>)
     Task<SubscriptionEditor> Save()
   }
@@ -5665,7 +5665,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<SubscriptionResource>
     Octopus.Client.Repositories.ICanIncludeSpaces<ISubscriptionRepository>
   {
-    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.ICreate<TagSetResource>
@@ -6225,7 +6225,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
     Octopus.Client.Repositories.Async.ICanIncludeSpaces<ISubscriptionRepository>
   {
-    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean, String)
+    Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
   interface ITagSetRepository
     Octopus.Client.Repositories.Async.ICreate<TagSetResource>
@@ -6425,12 +6425,6 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
-  }
-  class SpaceContextExtension
-  {
-    .ctor(Boolean, String[])
-    Boolean IncludeSystem { get; }
-    String[] SpaceIds { get; }
   }
 }
 Octopus.Client.Validation

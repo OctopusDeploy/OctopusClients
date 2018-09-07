@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
         IDelete<SubscriptionResource>, 
         ICanIncludeSpaces<ISubscriptionRepository>
     {
-        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
+        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
     
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
@@ -24,19 +24,20 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        SubscriptionRepository(IOctopusClient client, SpaceContextExtension spaceContextExtension) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusClient client, SpaceContext spaceContext) : base(client, "Subscriptions")
         {
-            SpaceContextExtension = spaceContextExtension;
+            SpaceContext = spaceContext;
         }
 
-        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
+        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
+            SpaceContext.EnsureSingleSpaceContext();
+            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
+            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext));
         }
     }
 }

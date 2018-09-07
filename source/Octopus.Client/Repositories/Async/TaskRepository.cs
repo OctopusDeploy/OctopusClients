@@ -39,20 +39,20 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TaskRepository(IOctopusAsyncClient client, SpaceContextExtension spaceContextExtension)
+        TaskRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
             : base(client, "Tasks")
         {
-            SpaceContextExtension = spaceContextExtension;
+            SpaceContext = spaceContext;
         }
 
         public Task<TaskResource> ExecuteHealthCheck(
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null,
             string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            EnsureSingleSpaceContext();
+            SpaceContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                SpaceId = SpaceContext.SpaceIds.Single(),
                 Name = BuiltInTasks.Health.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description,
                 Arguments = new Dictionary<string, object>
@@ -73,10 +73,10 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
-            EnsureSingleSpaceContext();
+            SpaceContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                SpaceId = SpaceContext.SpaceIds.Single(),
                 Name = BuiltInTasks.UpdateCalamari.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description,
                 Arguments = new Dictionary<string, object>
@@ -99,10 +99,10 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            EnsureSingleSpaceContext();
+            SpaceContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                SpaceId = SpaceContext.SpaceIds.Single(),
                 Name = BuiltInTasks.Upgrade.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description,
                 Arguments = new Dictionary<string, object>
@@ -121,10 +121,10 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            EnsureSingleSpaceContext();
+            SpaceContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = SpaceContextExtension.SpaceIds.Single(),
+                SpaceId = SpaceContext.SpaceIds.Single(),
                 Name = BuiltInTasks.AdHocScript.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description,
                 Arguments = new Dictionary<string, object>
@@ -264,22 +264,14 @@ namespace Octopus.Client.Repositories.Async
 
         public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
-        }
-
-        void EnsureSingleSpaceContext()
-        {
-            if (!(SpaceContextExtension.SpaceIds.Length == 1 && SpaceContextExtension.SpaceIds.Single() != "all"))
-            {
-                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
-            }
+            return new TaskRepository(Client, Client.SpaceContext.Union(spaceContext));
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
         {
             if (string.IsNullOrEmpty(task.SpaceId))
                 return;
-            if (SpaceContextExtension.SpaceIds.Contains(task.SpaceId))
+            if (SpaceContext.SpaceIds.Contains(task.SpaceId))
                 throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
         }
 

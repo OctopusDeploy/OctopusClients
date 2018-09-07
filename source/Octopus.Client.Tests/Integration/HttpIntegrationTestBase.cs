@@ -119,7 +119,8 @@ namespace Octopus.Client.Tests.Integration
                      Links = new LinkCollection()
                      {
                          { "CurrentUser",$"{TestRootPath}/api/users/me" },
-                         { "SpaceHome", $"{TestRootPath}/api/{{spaceId}}" }
+                         { "SpaceHome", $"{TestRootPath}/api/{{spaceId}}" },
+                         { "Users", $"{TestRootPath}/api/users/{{id}}" },
                      }
                  }
              ));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -10,10 +11,11 @@ namespace Octopus.Client.Tests.Integration.Repository
     public class UnauthorisedTest : HttpIntegrationTestBase
     {
         const string ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again.";
+        private Queue queue = new Queue();
         public UnauthorisedTest()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
-            Get($"{TestRootPath}/api/users/me", p =>
+            Get($"{TestRootPath}/api/users/users-1", p =>
             {
                 var response = Response.AsJson(
                     new { ErrorMessage },
@@ -24,11 +26,10 @@ namespace Octopus.Client.Tests.Integration.Repository
         }
 
         [Test]
-        [Ignore("Create client now can fail as we are loging User", Until = "2018-09-07")]
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
             var repo = new OctopusAsyncRepository(AsyncClient);
-            Func<Task> getUser = () => repo.Users.GetCurrent();
+            Func<Task> getUser = () => repo.Users.Get("users-1");
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
     }

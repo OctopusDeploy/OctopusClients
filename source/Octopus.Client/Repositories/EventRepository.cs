@@ -62,10 +62,10 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        EventRepository(IOctopusClient client, SpaceContextExtension spaceContextExtension)
+        EventRepository(IOctopusClient client, SpaceContext spaceContext)
             : base(client, "Events")
         {
-            SpaceContextExtension = spaceContextExtension;
+            SpaceContext = spaceContext;
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
@@ -128,7 +128,7 @@ namespace Octopus.Client.Repositories
 
         public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Client, Client.SpaceContext.Union(spaceContext).ToSpaceContextExtension());
+            return new EventRepository(Client, Client.SpaceContext.Union(spaceContext));
         }
     }
 }
