@@ -3448,6 +3448,25 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
   }
+  class ScheduledTaskStatusResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsEnabled { get; set; }
+    String Name { get; set; }
+  }
+  class SchedulerStatusResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsRunning { get; set; }
+    Octopus.Client.Model.ScheduledTaskStatusResource[] TaskStatus { get; set; }
+  }
   ScopeField
   {
       Project = 0
@@ -5444,6 +5463,7 @@ Octopus.Client.Repositories
     Stream GetRawLogs(String)
     void Start()
     void Start(String)
+    Octopus.Client.Model.SchedulerStatusResource Status()
     void Stop()
     void Stop(String)
     void Trigger(String)
