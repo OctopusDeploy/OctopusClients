@@ -135,7 +135,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
+                var spaceRootResource = await LoadSpaceRootResource(client, rootResource, false);
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
                 return client;
@@ -147,18 +147,18 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
+        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource, bool hardReload)
         {
-            if (client.clientOptions.SpaceContext == null)
+            if (client.clientOptions.SpaceContext == null || hardReload)
             {
                 var defaultSpace = await TryGetDefaultSpace(client, rootResource);
                 client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
             }
 
-            var selectedSpaceId = GetSpaceId(client.SpaceContext);
-            return !string.IsNullOrEmpty(selectedSpaceId) ?
+            var spaceId = GetSpaceId(client.SpaceContext);
+            return !string.IsNullOrEmpty(spaceId) ?
                 await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
-                    new { spaceId = selectedSpaceId }).ConfigureAwait(false)
+                    new { spaceId }).ConfigureAwait(false)
                 : null;
         }
 
@@ -200,7 +200,15 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument);
+            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument, false);
+            RootDocuments = new RootResources(rootDocument, spaceRootDocument);
+            return rootDocument;
+        }
+
+        public async Task<RootResource> ReloadRootDocumentsAfterUserSignedIn()
+        {
+            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument, true);
             RootDocuments = new RootResources(rootDocument, spaceRootDocument);
             return rootDocument;
         }

@@ -328,6 +328,12 @@ namespace Octopus.Client
         RootResource RefreshRootDocument();
 
         /// <summary>
+        /// Both root and space root documents will be reloaded.
+        /// </summary>
+        /// <returns>A fresh copy of the root and space document.</returns>
+        RootResource ReloadRootDocumentsAfterUserSignedIn();
+
+        /// <summary>
         /// Requests an IOctopusClient which will operate within a given space.
         /// </summary>
         /// <param name="spaceId">The ID of the space.</param>

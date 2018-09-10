@@ -54,6 +54,7 @@ Octopus.Client
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
+    Task<RootResource> ReloadRootDocumentsAfterUserSignedIn()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
   interface IOctopusAsyncRepository
@@ -140,6 +141,7 @@ Octopus.Client
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Octopus.Client.Model.RootResource RefreshRootDocument()
+    Octopus.Client.Model.RootResource ReloadRootDocumentsAfterUserSignedIn()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
   }
   interface IOctopusClientFactory
@@ -237,6 +239,7 @@ Octopus.Client
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
+    Task<RootResource> ReloadRootDocumentsAfterUserSignedIn()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
   class OctopusAsyncRepository
@@ -333,6 +336,7 @@ Octopus.Client
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
     Octopus.Client.Model.RootResource RefreshRootDocument()
+    Octopus.Client.Model.RootResource ReloadRootDocumentsAfterUserSignedIn()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
   }
   class OctopusClientFactory

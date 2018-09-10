@@ -35,7 +35,6 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
-            LoadInitialRootResources();
         }
 
         public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext)
@@ -73,7 +72,20 @@ namespace Octopus.Client
             rootResourcesLazy = new Lazy<RootResources>(() =>
             {
                 var rootResource = Get<RootResource>(rootDocumentUri);
-                var spaceRootResource = LoadSpaceResource(rootResource);
+                var spaceId = GetSpaceId(SpaceContext);
+                var spaceRootResource = LoadSpaceResource(rootResource, spaceId);
+                return new RootResources(rootResource, spaceRootResource);
+            });
+            return rootResourcesLazy.Value.RootResource;
+        }
+
+        public RootResource ReloadRootDocumentsAfterUserSignedIn()
+        {
+            rootResourcesLazy = new Lazy<RootResources>(() =>
+            {
+                var rootResource = Get<RootResource>(rootDocumentUri);
+                var space = TryGetDefaultSpace(rootResource);
+                var spaceRootResource = LoadSpaceResource(rootResource, space?.Id);
                 return new RootResources(rootResource, spaceRootResource);
             });
             return rootResourcesLazy.Value.RootResource;
@@ -88,13 +100,13 @@ namespace Octopus.Client
                 SpaceContext =  defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
 
-            var spaceRoot = LoadSpaceResource(root);
+            var spaceId = GetSpaceId(SpaceContext);
+            var spaceRoot = string.IsNullOrEmpty(spaceId) ? null : LoadSpaceResource(root, spaceId);
             return new RootResources(root, spaceRoot);
         }
         
-        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
+        private SpaceRootResource LoadSpaceResource(RootResource rootDocument, string spaceId)
         {
-            var spaceId = SpaceContext.SpaceIds.Count == 1 ? SpaceContext.SpaceIds.Single() : null;
             return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
         }
 
@@ -688,6 +700,11 @@ namespace Octopus.Client
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
+        }
+
+        private static string GetSpaceId(SpaceContext spaceContext)
+        {
+            return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
         }
 
         private SpaceResource TryGetDefaultSpace(RootResource root)
