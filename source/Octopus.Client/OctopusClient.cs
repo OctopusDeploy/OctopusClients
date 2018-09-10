@@ -84,9 +84,7 @@ namespace Octopus.Client
             var root = EstablishSession();
             if (this.SpaceContext == null)
             {
-                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
-                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                var defaultSpace = userSpaces.SingleOrDefault(s => s.IsDefault);
+                var defaultSpace = TryGetDefaultSpace(root);
                 SpaceContext =  defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
 
@@ -691,6 +689,22 @@ namespace Octopus.Client
                 throw new ArgumentException("spaceId cannot be null");
             }
         }
+
+        private SpaceResource TryGetDefaultSpace(RootResource root)
+        {
+            try
+            {
+                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
+                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            catch (OctopusSecurityException)
+            {
+                // User might not have logged in yet
+                return null;
+            }
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

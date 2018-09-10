@@ -151,9 +151,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             if (client.clientOptions.SpaceContext == null)
             {
-                var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                var defaultSpace = userSpaces.SingleOrDefault(s => s.IsDefault);
+                var defaultSpace = await TryGetDefaultSpace(client, rootResource);
                 client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
             }
 
@@ -733,6 +731,21 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         private static string GetSpaceId(SpaceContext spaceContext)
         {
             return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
+        }
+
+        private static async Task<SpaceResource> TryGetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
+        {
+            try
+            {
+                var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
+                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            catch (OctopusSecurityException)
+            {
+                // User might not have logged in yet
+                return null;
+            }
         }
 
         /// <summary>
