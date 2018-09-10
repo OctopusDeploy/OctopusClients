@@ -3621,7 +3621,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Dictionary<Permission, List<UserPermissionRestriction>> Permissions { get; set; }
+    Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
+    Dictionary<Permission, List<UserPermissionRestriction>> SystemPermissions { get; set; }
     List<ProjectedTeamReferenceDataItem> Teams { get; set; }
   }
   class UserResource
