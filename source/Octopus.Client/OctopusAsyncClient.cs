@@ -209,13 +209,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
         {
-            CheckSpaceId(spaceId);
+            EnsureNotEmpty(spaceId);
             return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpace(spaceId)));
         }
 
         public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
         {
-            CheckSpaceId(spaceId);
+            EnsureNotEmpty(spaceId);
             return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpaceAndSystem(spaceId)));
         }
 
@@ -722,7 +722,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             };
         }
 
-        private void CheckSpaceId(string spaceId)
+        private void EnsureNotEmpty(string spaceId)
         {
             if (string.IsNullOrEmpty(spaceId))
             {

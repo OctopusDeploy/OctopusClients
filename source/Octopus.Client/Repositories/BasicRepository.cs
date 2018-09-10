@@ -52,7 +52,6 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            // For space scoped, AdditionalQueryParameters is empty dic(not null), for mixed scope it should default to the Client spaceContext setting
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
             client.Paginate(path ?? client.Link(CollectionLinkName), parameters, getNextPage);
         }

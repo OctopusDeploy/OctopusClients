@@ -35,7 +35,6 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
         {
-            // TODO: we might need to lazy load this
             LoadInitialRootResources();
         }
 
@@ -87,8 +86,8 @@ namespace Octopus.Client
             {
                 var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
                 var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                var selectedSpace = userSpaces.SingleOrDefault(s => s.IsDefault) ?? userSpaces.First(); // use the first space returned from the API if no default
-                SpaceContext = SpaceContext.SpecificSpaceAndSystem(selectedSpace.Id);
+                var defaultSpace = userSpaces.SingleOrDefault(s => s.IsDefault);
+                SpaceContext =  defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
 
             var spaceRoot = LoadSpaceResource(root);
@@ -97,7 +96,7 @@ namespace Octopus.Client
         
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            var spaceId = SpaceContext.SpaceIds.Count == 1 ? SpaceContext.SpaceIds.First() : null;
+            var spaceId = SpaceContext.SpaceIds.Count == 1 ? SpaceContext.SpaceIds.Single() : null;
             return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
         }
 
@@ -117,11 +116,13 @@ namespace Octopus.Client
 
         public IOctopusClient ForSpace(string spaceId)
         {
+            EnsureNotEmpty(spaceId);
             return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId));
         }
 
         public IOctopusClient ForSpaceAndSystem(string spaceId)
         {
+            EnsureNotEmpty(spaceId);
             return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId));
         }
 
@@ -683,9 +684,12 @@ namespace Octopus.Client
             }
         }
 
-        private void LoadSpaceContext()
+        private void EnsureNotEmpty(string spaceId)
         {
-
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
         }
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

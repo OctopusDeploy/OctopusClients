@@ -11,7 +11,6 @@ namespace Octopus.Client.Tests.Integration.Repository
     public class UnauthorisedTest : HttpIntegrationTestBase
     {
         const string ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again.";
-        private Queue queue = new Queue();
         public UnauthorisedTest()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
