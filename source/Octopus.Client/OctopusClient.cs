@@ -84,7 +84,7 @@ namespace Octopus.Client
             rootResourcesLazy = new Lazy<RootResources>(() =>
             {
                 var rootResource = Get<RootResource>(rootDocumentUri);
-                var space = TryGetDefaultSpace(rootResource);
+                var space = TryGetSpace(rootResource);
                 var spaceRootResource = LoadSpaceResource(rootResource, space?.Id);
                 return new RootResources(rootResource, spaceRootResource);
             });
@@ -96,7 +96,7 @@ namespace Octopus.Client
             var root = EstablishSession();
             if (this.SpaceContext == null)
             {
-                var defaultSpace = TryGetDefaultSpace(root);
+                var defaultSpace = TryGetSpace(root);
                 SpaceContext =  defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
 
@@ -707,13 +707,13 @@ namespace Octopus.Client
             return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
         }
 
-        private SpaceResource TryGetDefaultSpace(RootResource root)
+        private SpaceResource TryGetSpace(RootResource root)
         {
             try
             {
                 var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
                 var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
+                return userSpaces.Length == 1 ? userSpaces.Single() : userSpaces.SingleOrDefault(s => s.IsDefault);
             }
             catch (OctopusSecurityException)
             {

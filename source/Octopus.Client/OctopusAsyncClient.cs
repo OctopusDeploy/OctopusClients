@@ -151,7 +151,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             if (client.clientOptions.SpaceContext == null || hardReload)
             {
-                var defaultSpace = await TryGetDefaultSpace(client, rootResource);
+                var defaultSpace = await TryGetSpace(client, rootResource);
                 client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
             }
 
@@ -741,13 +741,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
         }
 
-        private static async Task<SpaceResource> TryGetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
+        private static async Task<SpaceResource> TryGetSpace(OctopusAsyncClient client, RootResource rootResource)
         {
             try
             {
                 var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
+                return userSpaces.Length == 1 ? userSpaces.Single() : userSpaces.SingleOrDefault(s => s.IsDefault);
             }
             catch (OctopusSecurityException)
             {

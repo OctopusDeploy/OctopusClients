@@ -162,7 +162,7 @@ namespace Octopus.Client.Repositories
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
             {
                 ValidateSpaceId(resource);
-                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all")
+                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all" && !Client.SpaceContext.IncludeSystem)
                 {
                     spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
                 } 
