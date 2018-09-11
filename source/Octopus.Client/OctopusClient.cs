@@ -112,7 +112,7 @@ namespace Octopus.Client
         }
 
         public SpaceContext SpaceContext { get; private set; }
-        public void SignIn(LoginCommand loginCommand)
+        public void SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null)
         {
             if (loginCommand.State == null)
             {
@@ -120,7 +120,7 @@ namespace Octopus.Client
             }
             Post(Link("SignIn"), loginCommand);
             signedIn = true;
-            SpaceContext = null;
+            SpaceContext = spaceContext;
             var closureRoot = this.RootDocument;
             rootResourcesLazy = new Lazy<RootResources>(() =>
             {

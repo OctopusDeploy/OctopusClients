@@ -175,8 +175,9 @@ namespace Octopus.Client.Repositories.Async
             return AdditionalQueryParameters["spaces"] is string[] spaceIds
                    && spaceIds.Length == 1 && spaceIds.Single() != "all"
                    && AdditionalQueryParameters["includeGlobal"] != null
-                   && bool.TryParse(AdditionalQueryParameters["includeGlobal"].ToString(), out bool inCludeSystem) &&
-                   !inCludeSystem;
+                   && bool.TryParse(AdditionalQueryParameters["includeGlobal"].ToString(), out bool inCludeSystem) && !inCludeSystem
+                   && !Client.SpaceContext.IncludeSystem
+                ;
         }
 
         void ValidateSpaceId(TResource resource)

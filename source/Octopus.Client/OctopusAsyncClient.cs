@@ -242,7 +242,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public SpaceContext SpaceContext => clientOptions.SpaceContext;
 
-        public async Task SignIn(LoginCommand loginCommand)
+        public async Task SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null)
         {
             if (loginCommand.State == null)
             {
@@ -250,7 +250,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
             await Post(Link("SignIn"), loginCommand);
             signedIn = true;
-            this.clientOptions.SpaceContext = null;
+            this.clientOptions.SpaceContext = spaceContext;
             var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
             RootDocuments = new RootResources(RootDocument, spaceRoot);
         }
