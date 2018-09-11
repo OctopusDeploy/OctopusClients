@@ -89,12 +89,6 @@ namespace Octopus.Client
 
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            if (!IsAuthenticated)
-            {
-                SpaceContext = SpaceContext.SystemOnly();
-                return null;
-            }
-
             if (this.SpaceContext == null)
             {
                 var defaultSpace = GetDefaultSpace(rootDocument);

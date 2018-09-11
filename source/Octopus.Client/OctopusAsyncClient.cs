@@ -151,12 +151,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
         {
-            if (!client.IsAuthenticated)
-            {
-                client.clientOptions.SpaceContext = SpaceContext.SystemOnly();
-                return null;
-            }
-                
             if (client.clientOptions.SpaceContext == null)
             {
                 var defaultSpace = await GetDefaultSpace(client, rootResource);
