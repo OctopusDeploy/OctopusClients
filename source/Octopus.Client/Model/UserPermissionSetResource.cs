@@ -23,7 +23,7 @@ namespace Octopus.Client.Model
         /// <summary>
         /// Lists individual system permissions granted, these do not have restrictions
         /// </summary>
-        public Dictionary<Permission, List<UserPermissionRestriction>> SystemPermissions { get; set; }
+        public List<Permission> SystemPermissions { get; set; }
 
         /// <summary>
         /// Gets the teams that the user is a member of.

@@ -3620,7 +3620,7 @@ Octopus.Client.Model
   {
     .ctor()
     Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
-    Dictionary<Permission, List<UserPermissionRestriction>> SystemPermissions { get; set; }
+    List<Permission> SystemPermissions { get; set; }
     List<ProjectedTeamReferenceDataItem> Teams { get; set; }
   }
   class UserResource
