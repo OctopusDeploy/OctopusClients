@@ -31,9 +31,9 @@ namespace Octopus.Client.Repositories
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
         }
 
-        public ISubscriptionRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ISubscriptionRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            var newParameters = this.CreateParameters(includeSystem, spaceIds);
             return new SubscriptionRepository(Client, newParameters);
         }
     }
