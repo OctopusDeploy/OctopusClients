@@ -37,7 +37,8 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
         private readonly string rootDocumentUri;
         private OctopusClientOptions clientOptions;
-        private bool authenticated = false;
+        private bool signedIn = false;
+        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -150,7 +151,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
         {
-            if (client.clientOptions.SpaceContext == null ||  client.RootDocuments.SpaceRootResource == null)
+            if (!client.IsAuthenticated)
+            {
+                client.clientOptions.SpaceContext = SpaceContext.SystemOnly();
+                return null;
+            }
+                
+            if (client.clientOptions.SpaceContext == null)
             {
                 var defaultSpace = await GetDefaultSpace(client, rootResource);
                 client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
@@ -248,7 +255,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             await Post(Link("SignIn"), loginCommand);
-            authenticated = true;
+            signedIn = true;
+            this.clientOptions.SpaceContext = null;
             var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
             RootDocuments = new RootResources(RootDocument, spaceRoot);
         }
@@ -747,7 +755,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
         {
-            if (client.authenticated || !string.IsNullOrEmpty(client.serverEndpoint.ApiKey))
+            if (client.IsAuthenticated)
             {
                 var currentUser =
                     await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);

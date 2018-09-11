@@ -28,7 +28,8 @@ namespace Octopus.Client
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
         private Lazy<RootResources> rootResourcesLazy;
-        private bool authenticated = false;
+        private bool signedIn = false;
+        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -88,7 +89,13 @@ namespace Octopus.Client
 
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
-            if (this.SpaceContext == null || SpaceRootDocument == null)
+            if (!IsAuthenticated)
+            {
+                SpaceContext = SpaceContext.SystemOnly();
+                return null;
+            }
+
+            if (this.SpaceContext == null)
             {
                 var defaultSpace = GetDefaultSpace(rootDocument);
                 SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
@@ -118,12 +125,13 @@ namespace Octopus.Client
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             Post(Link("SignIn"), loginCommand);
-            authenticated = true;
-
+            signedIn = true;
+            SpaceContext = null;
+            var closureRoot = this.RootDocument;
             rootResourcesLazy = new Lazy<RootResources>(() =>
             {
-                var spaceRoot = LoadSpaceResource(RootDocument);
-                return new RootResources(RootDocument, spaceRoot);
+                var spaceRoot = LoadSpaceResource(closureRoot);
+                return new RootResources(closureRoot, spaceRoot);
             });
         }
 
@@ -715,7 +723,7 @@ namespace Octopus.Client
 
         private SpaceResource GetDefaultSpace(RootResource root)
         {
-            if (authenticated || !string.IsNullOrEmpty(serverEndpoint.ApiKey))
+            if (IsAuthenticated)
             {
                 var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
                 var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
