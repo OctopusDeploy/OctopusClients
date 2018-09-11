@@ -37,6 +37,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
         private readonly string rootDocumentUri;
         private OctopusClientOptions clientOptions;
+        private bool authenticated = false;
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -135,7 +136,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = await LoadSpaceRootResource(client, rootResource, false);
+                var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
                 client.RootDocuments = new RootResources(rootResource, spaceRootResource);
                 client.Repository = new OctopusAsyncRepository(client);
                 return client;
@@ -147,18 +148,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource, bool hardReload)
+        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
         {
-            if (client.clientOptions.SpaceContext == null || hardReload)
+            if (client.clientOptions.SpaceContext == null ||  client.RootDocuments.SpaceRootResource == null)
             {
-                var defaultSpace = await TryGetSpace(client, rootResource);
+                var defaultSpace = await GetDefaultSpace(client, rootResource);
                 client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
             }
 
             var spaceId = GetSpaceId(client.SpaceContext);
             return !string.IsNullOrEmpty(spaceId) ?
-                await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"),
-                    new { spaceId }).ConfigureAwait(false)
+                await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"), new { spaceId }).ConfigureAwait(false)
                 : null;
         }
 
@@ -175,7 +175,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public SpaceRootResource SpaceRootDocument => RootDocuments.SpaceRootResource;
 
         RootResources RootDocuments { get; set; }
-        
+
         class RootResources
         {
             public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
@@ -200,15 +200,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public async Task<RootResource> RefreshRootDocument()
         {
             var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument, false);
-            RootDocuments = new RootResources(rootDocument, spaceRootDocument);
-            return rootDocument;
-        }
-
-        public async Task<RootResource> ReloadRootDocumentsAfterUserSignedIn()
-        {
-            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument, true);
+            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument);
             RootDocuments = new RootResources(rootDocument, spaceRootDocument);
             return rootDocument;
         }
@@ -239,7 +231,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
         }
-        
+
         public string Link(string name)
         {
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
@@ -248,6 +240,18 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         }
 
         public SpaceContext SpaceContext => clientOptions.SpaceContext;
+
+        public async Task SignIn(LoginCommand loginCommand)
+        {
+            if (loginCommand.State == null)
+            {
+                loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
+            }
+            await Post(Link("SignIn"), loginCommand);
+            authenticated = true;
+            var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
+            RootDocuments = new RootResources(RootDocument, spaceRoot);
+        }
 
         /// <summary>
         /// Occurs when a request is about to be sent.
@@ -602,7 +606,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 message.RequestUri = request.Uri;
                 message.Method = new HttpMethod(request.Method);
-                
+
                 if (request.Method == "PUT" || request.Method == "DELETE")
                 {
                     message.Method = HttpMethod.Post;
@@ -741,19 +745,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
         }
 
-        private static async Task<SpaceResource> TryGetSpace(OctopusAsyncClient client, RootResource rootResource)
+        private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
         {
-            try
+            if (client.authenticated || !string.IsNullOrEmpty(client.serverEndpoint.ApiKey))
             {
-                var currentUser = await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
+                var currentUser =
+                    await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                return userSpaces.Length == 1 ? userSpaces.Single() : userSpaces.SingleOrDefault(s => s.IsDefault);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
             }
-            catch (OctopusSecurityException)
-            {
-                // User might not have logged in yet
-                return null;
-            }
+
+            return null;
         }
 
         /// <summary>

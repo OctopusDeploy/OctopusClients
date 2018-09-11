@@ -70,12 +70,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
-            }
-            await Client.Post(Client.Link("SignIn"), loginCommand);
-            await Client.ReloadRootDocumentsAfterUserSignedIn();
+            await Client.SignIn(loginCommand);
         }
 
         public Task SignIn(string username, string password, bool rememberMe = false)

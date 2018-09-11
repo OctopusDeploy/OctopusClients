@@ -69,12 +69,7 @@ namespace Octopus.Client.Repositories
 
         public void SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection};
-            }
-            Client.Post(Client.Link("SignIn"), loginCommand);
-            Client.ReloadRootDocumentsAfterUserSignedIn();
+           Client.SignIn(loginCommand);
         }
 
         public void SignIn(string username, string password, bool rememberMe = false)

@@ -162,20 +162,31 @@ namespace Octopus.Client.Repositories.Async
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
             {
                 ValidateSpaceId(resource);
-                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() != "all" && !Client.SpaceContext.IncludeSystem)
+                
+                if (IsInSingleSpaceContext())
                 {
                     spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
                 }
             }
         }
 
+        bool IsInSingleSpaceContext()
+        {
+            return AdditionalQueryParameters["spaces"] is string[] spaceIds
+                   && spaceIds.Length == 1 && spaceIds.Single() != "all"
+                   && AdditionalQueryParameters["includeGlobal"] != null
+                   && bool.TryParse(AdditionalQueryParameters["includeGlobal"].ToString(), out bool inCludeSystem) &&
+                   !inCludeSystem;
+        }
+
         void ValidateSpaceId(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                if (Client.SpaceContext.SpaceIds.Count == 1 && Client.SpaceContext.SpaceIds.Single() == "all")
+                var spaceIds = AdditionalQueryParameters["spaces"] as string[];
+                if (spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() != "all")
                     return;
-                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && !Client.SpaceContext.SpaceIds.Contains(spaceResource.SpaceId))
+                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId))
                 {
                     throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
                 }
