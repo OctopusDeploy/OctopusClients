@@ -26,7 +26,7 @@ namespace Octopus.Client.Repositories
         public UserPermissionSetResource Get(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"), SpaceQueryParameters);
         }
 
         public IUserPermissionsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
