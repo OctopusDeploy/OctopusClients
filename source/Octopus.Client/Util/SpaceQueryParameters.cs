@@ -2,12 +2,12 @@
 {
     class SpaceQueryParameters
     {
-        public SpaceQueryParameters(bool includeGlobal, string[] spaceIds)
+        public SpaceQueryParameters(bool includeSystem, string[] spaceIds)
         {
-            IncludeGlobal = includeGlobal;
+            IncludeSystem = includeSystem;
             SpaceIds = spaceIds;
         }
-        public bool IncludeGlobal { get; }
+        public bool IncludeSystem { get; }
         public string[] SpaceIds { get; }
     }
 }

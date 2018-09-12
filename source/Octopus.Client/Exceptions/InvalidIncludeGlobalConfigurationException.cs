@@ -2,9 +2,9 @@
 
 namespace Octopus.Client.Exceptions
 {
-    public class InvalidIncludeGlobalConfigurationException : Exception
+    public class InvalidIncludeSystemConfigurationException : Exception
     {
-        public InvalidIncludeGlobalConfigurationException(): base("Cannot include global resources when global resources have already been excluded")
+        public InvalidIncludeSystemConfigurationException(): base("Cannot include system resources when system resources have already been excluded")
         {
         }
     }
