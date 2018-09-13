@@ -34,6 +34,7 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
             EnrichSpaceIdIfRequire(resource);
             return client.Create(client.Link(CollectionLinkName), resource, pathParameters);
         }
@@ -41,12 +42,14 @@ namespace Octopus.Client.Repositories
         public TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
             client.Delete(resource.Links["Self"]);
         }
 
@@ -161,11 +164,10 @@ namespace Octopus.Client.Repositories
         {
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
             {
-                ValidateSpaceId(resource);
                 if (IsInSingleSpaceContext())
                 {
                     spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
-                } 
+                }
             }
         }
 
@@ -175,7 +177,7 @@ namespace Octopus.Client.Repositories
                    && spaceIds.Length == 1 && spaceIds.Single() != "all"
                    && AdditionalQueryParameters["includeGlobal"] != null
                    && bool.TryParse(AdditionalQueryParameters["includeGlobal"].ToString(), out bool inCludeSystem) && !inCludeSystem
-                   && !client.SpaceContext.IncludeSystem
+                   && !Client.SpaceContext.IncludeSystem
                 ;
         }
 
@@ -183,10 +185,14 @@ namespace Octopus.Client.Repositories
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                var spaceIds = AdditionalQueryParameters["spaces"] as string[];
-                if (spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() != "all")
+                var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>));
+                var spaceIds = isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+                var isWildcard = spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() == "all";
+                if (isWildcard)
                     return;
-                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId))
+                var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&
+                                                                spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId);
+                if (contextDoesNotContainsSpaceIdFromResource)
                 {
                     throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
                 }

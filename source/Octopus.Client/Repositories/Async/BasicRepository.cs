@@ -31,6 +31,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TResource> Create(TResource resource, object pathParameters = null)
         {
+            ValidateSpaceId(resource);
             EnrichSpaceIdIfRequire(resource);
             return Client.Create(Client.Link(CollectionLinkName), resource, pathParameters);
         }
@@ -161,8 +162,6 @@ namespace Octopus.Client.Repositories.Async
         {
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
             {
-                ValidateSpaceId(resource);
-                
                 if (IsInSingleSpaceContext())
                 {
                     spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
@@ -184,10 +183,14 @@ namespace Octopus.Client.Repositories.Async
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                var spaceIds = AdditionalQueryParameters["spaces"] as string[];
-                if (spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() != "all")
+                var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>));
+                var spaceIds = isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+                var isWildcard = spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() == "all";
+                if (isWildcard)
                     return;
-                if (!string.IsNullOrEmpty(spaceResource.SpaceId) && spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId))
+                var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&
+                                                         spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId);
+                if (contextDoesNotContainsSpaceIdFromResource)
                 {
                     throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
                 }

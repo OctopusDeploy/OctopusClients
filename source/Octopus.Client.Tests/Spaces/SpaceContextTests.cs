@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Octopus.Client.Tests
+namespace Octopus.Client.Tests.Spaces
 {
     [TestFixture]
     public class SpaceContextTests
