@@ -20,7 +20,10 @@ namespace Octopus.Client.Model
         public List<string> PermissionDescriptions { get; set; }
 
         [Writeable]
-        public List<Permission> GrantedPermissions { get; set; }
+        public List<Permission> GrantedSpacePermissions { get; set; }
+
+        [Writeable]
+        public List<Permission> GrantedSystemPermissions { get; set; }
 
         public bool CanBeDeleted { get; set; }
     }
