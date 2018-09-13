@@ -23,8 +23,7 @@ namespace Octopus.Client.Repositories.Async
                     return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    // Server has not yet changed to includeSystem yet
-                    ["includeGlobal"] = ExtendedSpaceContext.IncludeSystem,
+                    ["includeSystem"] = ExtendedSpaceContext.IncludeSystem,
                     ["spaces"] = ExtendedSpaceContext.SpaceIds
                 };
             }

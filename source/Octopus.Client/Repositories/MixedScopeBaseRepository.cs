@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories
                     return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeGlobal"] = ExtendedSpaceContext.IncludeSystem,
+                    ["includeSystem"] = ExtendedSpaceContext.IncludeSystem,
                     ["spaces"] = ExtendedSpaceContext.SpaceIds
                 };
             }
