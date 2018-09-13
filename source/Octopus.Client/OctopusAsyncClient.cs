@@ -44,6 +44,7 @@ namespace Octopus.Client
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             clientOptions = options ?? new OctopusClientOptions();
+            cookieContainer = clientOptions.CookieContainer ?? cookieContainer;
             this.rootDocumentUri = "~/api";
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
@@ -242,7 +243,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public SpaceContext SpaceContext => clientOptions.SpaceContext;
 
-        public async Task SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null)
+        public async Task SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
@@ -250,7 +251,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
             await Post(Link("SignIn"), loginCommand);
             signedIn = true;
-            this.clientOptions.SpaceContext = spaceContext;
+            this.clientOptions.SpaceContext = null;
             var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
             RootDocuments = new RootResources(RootDocument, spaceRoot);
         }
@@ -730,7 +731,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 ProxyPassword = clientOptions.ProxyPassword,
                 ProxyUsername = clientOptions.ProxyUsername,
                 Timeout = clientOptions.Timeout,
-                SpaceContext = spaceContext
+                SpaceContext = spaceContext,
+                CookieContainer = this.cookieContainer
             };
         }
 

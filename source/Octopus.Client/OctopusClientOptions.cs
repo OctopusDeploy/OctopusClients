@@ -36,5 +36,6 @@ namespace Octopus.Client
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
         public SpaceContext SpaceContext { get; set; }
+        internal CookieContainer CookieContainer { get; set; }
     }
 }

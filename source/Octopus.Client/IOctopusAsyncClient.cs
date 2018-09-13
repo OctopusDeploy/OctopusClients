@@ -394,8 +394,7 @@ namespace Octopus.Client
         /// Sign in
         /// </summary>
         /// <param name="loginCommand"></param>
-        /// <param name="spaceContext"></param>
         /// <returns></returns>
-        Task SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null);
+        Task SignIn(LoginCommand loginCommand);
     }
 }

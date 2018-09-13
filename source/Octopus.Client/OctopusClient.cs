@@ -22,7 +22,7 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        readonly CookieContainer cookieContainer = new CookieContainer();
+        CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
@@ -47,6 +47,12 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
+        }
+
+        OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext,
+            CookieContainer preservedCookieContainer): this(serverEndpoint, spaceContext)
+        {
+            cookieContainer = preservedCookieContainer;
         }
 
         /// <summary>
@@ -112,7 +118,7 @@ namespace Octopus.Client
         }
 
         public SpaceContext SpaceContext { get; private set; }
-        public void SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null)
+        public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
@@ -120,7 +126,7 @@ namespace Octopus.Client
             }
             Post(Link("SignIn"), loginCommand);
             signedIn = true;
-            SpaceContext = spaceContext;
+            SpaceContext = null;
             var closureRoot = this.RootDocument;
             rootResourcesLazy = new Lazy<RootResources>(() =>
             {
@@ -132,23 +138,23 @@ namespace Octopus.Client
         public IOctopusClient ForSpace(string spaceId)
         {
             EnsureNotEmpty(spaceId);
-            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId));
+            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId), cookieContainer);
         }
 
         public IOctopusClient ForSpaceAndSystem(string spaceId)
         {
             EnsureNotEmpty(spaceId);
-            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId));
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId), cookieContainer);
         }
 
         public IOctopusClient ForSystem()
         {
-            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly());
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly(), cookieContainer);
         }
 
         public IOctopusClient ForContext(SpaceContext spaceContext)
         {
-            return new OctopusClient(this.serverEndpoint, spaceContext);
+            return new OctopusClient(this.serverEndpoint, spaceContext, cookieContainer);
         }
 
         public bool HasLink(string name)

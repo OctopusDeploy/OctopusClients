@@ -379,8 +379,7 @@ namespace Octopus.Client
         /// Sign in
         /// </summary>
         /// <param name="loginCommand"></param>
-        /// <param name="spaceContext"></param>
-        void SignIn(LoginCommand loginCommand, SpaceContext spaceContext = null);
+        void SignIn(LoginCommand loginCommand);
     }
 }
 #endif
