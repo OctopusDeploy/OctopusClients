@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        SubscriptionRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Subscriptions", spaceQueryParameters)
+        SubscriptionRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext): base(client, "Subscriptions", spaceQueryContext)
         {
         }
 
@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
 
         public ISubscriptionRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
+            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
             return new SubscriptionRepository(Client, newParameters);
         }
     }

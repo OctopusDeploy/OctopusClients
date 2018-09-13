@@ -1,8 +1,8 @@
 ﻿namespace Octopus.Client.Util
 {
-    class SpaceQueryParameters
+    class SpaceQueryContext
     {
-        public SpaceQueryParameters(bool includeSystem, string[] spaceIds)
+        public SpaceQueryContext(bool includeSystem, string[] spaceIds)
         {
             IncludeSystem = includeSystem;
             SpaceIds = spaceIds;
