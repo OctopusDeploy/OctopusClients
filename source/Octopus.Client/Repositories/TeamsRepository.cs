@@ -42,9 +42,9 @@ namespace Octopus.Client.Repositories
             return resources;
         }
 
-        public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ITeamsRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            var newParameters = this.CreateParameters(includeSystem, spaceIds);
             return new TeamsRepository(Client, newParameters);
         }
     }

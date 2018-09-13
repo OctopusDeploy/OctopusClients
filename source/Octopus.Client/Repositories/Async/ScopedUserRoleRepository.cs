@@ -24,9 +24,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public IScopedUserRoleRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public IScopedUserRoleRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            var newParameters = this.CreateParameters(includeSystem, spaceIds);
             return new ScopedUserRoleRepository(Client, newParameters);
         }
     }

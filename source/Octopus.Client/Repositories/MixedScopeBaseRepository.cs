@@ -15,11 +15,11 @@ namespace Octopus.Client.Repositories
             this.spaceQueryContext = spaceQueryContext;
         }
 
-        protected SpaceQueryContext CreateParameters(bool includeGlobal, string[] spaceIds)
+        protected SpaceQueryContext CreateParameters(bool includeSystem, string[] spaceIds)
         {
-            var newParameters = new SpaceQueryContext(includeGlobal, spaceIds);
-            ValidateSpaceParameters(newParameters);
-            return newParameters;
+            var newContext = new SpaceQueryContext(includeSystem, spaceIds);
+            ValidateSpaceParameters(newContext);
+            return newContext;
         }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories
                 
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeGlobal"] = spaceQueryContext.IncludeGlobal,
+                    ["includeSystem"] = spaceQueryContext.IncludeSystem,
                     ["spaces"] = spaceQueryContext.SpaceIds
                 };
             }
@@ -43,9 +43,9 @@ namespace Octopus.Client.Repositories
                 return;
             }
 
-            if (newSpaceQueryContext.IncludeGlobal && !spaceQueryContext.IncludeGlobal)
+            if (newSpaceQueryContext.IncludeSystem && !spaceQueryContext.IncludeSystem)
             {
-                throw new InvalidIncludeGlobalConfigurationException();
+                throw new InvalidIncludeSystemConfigurationException();
             }
 
             var previouslyDefinedSpaceIdsSet = new HashSet<string>(spaceQueryContext.SpaceIds);

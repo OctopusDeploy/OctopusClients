@@ -579,7 +579,7 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
-  class InvalidIncludeGlobalConfigurationException
+  class InvalidIncludeSystemConfigurationException
     ISerializable
     Exception
   {

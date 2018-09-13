@@ -2,12 +2,12 @@
 {
     class SpaceQueryContext
     {
-        public SpaceQueryContext(bool includeGlobal, string[] spaceIds)
+        public SpaceQueryContext(bool includeSystem, string[] spaceIds)
         {
-            IncludeGlobal = includeGlobal;
+            IncludeSystem = includeSystem;
             SpaceIds = spaceIds;
         }
-        public bool IncludeGlobal { get; }
+        public bool IncludeSystem { get; }
         public string[] SpaceIds { get; }
     }
 }
