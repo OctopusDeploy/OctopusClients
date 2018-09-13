@@ -23,8 +23,5 @@ namespace Octopus.Client.Model
         public EventNotificationSubscription EventNotificationSubscription { get; set; }
 
         public string SpaceId { get; set; }
-
-        [Writeable]
-        public bool IncludeEventsFromSpaces { get; set; }
     }
 }
