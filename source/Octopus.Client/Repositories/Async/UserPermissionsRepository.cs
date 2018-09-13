@@ -38,10 +38,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
         }
 
-        public IUserPermissionsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public IUserPermissionsRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new UserPermissionsRepository(Client, newParameters);
+            return new UserPermissionsRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
         }
     }
 }

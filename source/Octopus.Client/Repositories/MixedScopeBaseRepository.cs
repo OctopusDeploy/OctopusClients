@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
             this.spaceQueryContext = spaceQueryContext;
         }
 
-        protected SpaceQueryContext CreateParameters(bool includeSystem, string[] spaceIds)
+        protected SpaceQueryContext CreateSpaceQueryContext(bool includeSystem, string[] spaceIds)
         {
             var newContext = new SpaceQueryContext(includeSystem, spaceIds);
             ValidateSpaceParameters(newContext);

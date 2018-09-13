@@ -125,7 +125,7 @@ namespace Octopus.Client.Repositories
 
         public IEventRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
+            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
             return new EventRepository(Client, newParameters);
         }
     }

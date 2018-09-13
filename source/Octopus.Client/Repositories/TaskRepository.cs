@@ -220,7 +220,7 @@ namespace Octopus.Client.Repositories
 
         public ITaskRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
+            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
             return new TaskRepository(Client, newParameters);
         }
     }

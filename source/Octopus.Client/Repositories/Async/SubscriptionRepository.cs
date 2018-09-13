@@ -33,8 +33,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ISubscriptionRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
-            return new SubscriptionRepository(Client, newParameters);
+            return new SubscriptionRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
         }
     }
 }

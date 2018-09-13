@@ -232,8 +232,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITaskRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
-            return new TaskRepository(Client, newParameters);
+            return new TaskRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
         }
     }
 }
