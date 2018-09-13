@@ -2674,6 +2674,7 @@ Octopus.Client.Model
     .ctor(String, String, String)
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+    String ClonedFromProjectId { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentProcessId { get; set; }
