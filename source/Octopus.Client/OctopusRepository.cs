@@ -73,6 +73,7 @@ namespace Octopus.Client
             Workers = new WorkerRepository(client);
             WorkerPools = new WorkerPoolRepository(client);
             ScopedUserRoles = new ScopedUserRoleRepository(client);
+            UserPermissions = new UserPermissionsRepository(client);
         }
 
         public IOctopusClient Client { get; }
@@ -126,6 +127,7 @@ namespace Octopus.Client
         public IWorkerPoolRepository WorkerPools { get; }
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
+        public IUserPermissionsRepository UserPermissions { get; }
     }
 }
 #endif

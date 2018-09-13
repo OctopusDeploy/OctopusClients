@@ -19,6 +19,7 @@ namespace Octopus.Client.Repositories
             ValidateSpaceParameters(newParameters);
             return newParameters;
         }
+        
         protected SpaceQueryParameters SpaceQueryParameters { get; set; }
 
         protected override Dictionary<string, object> AdditionalQueryParameters

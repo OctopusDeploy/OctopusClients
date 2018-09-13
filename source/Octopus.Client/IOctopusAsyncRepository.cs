@@ -63,5 +63,6 @@ namespace Octopus.Client
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
+        IUserPermissionsRepository UserPermissions { get; }
     }
 }

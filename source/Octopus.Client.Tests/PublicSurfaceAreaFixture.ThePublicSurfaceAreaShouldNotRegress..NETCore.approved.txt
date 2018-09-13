@@ -92,6 +92,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
@@ -186,6 +187,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
@@ -3604,6 +3606,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection RestrictedToProjectGroupIds { get; set; }
     Octopus.Client.Model.ReferenceCollection RestrictedToProjectIds { get; set; }
     Octopus.Client.Model.ReferenceCollection RestrictedToTenantIds { get; set; }
+    String SpaceId { get; set; }
     static IEqualityComparer<UserPermissionRestriction> UserPermissionRestrictionComparer { get; }
     String ToString()
     class Comparer
@@ -5182,6 +5185,11 @@ Octopus.Client.Repositories.Async
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
   }
+  interface IUserPermissionsRepository
+    Octopus.Client.Repositories.Async.ICanLimitToSpaces<IUserPermissionsRepository>
+  {
+    Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
+  }
   interface IUserRepository
     Octopus.Client.Repositories.Async.IPaginate<UserResource>
     Octopus.Client.Repositories.Async.IGet<UserResource>
@@ -5194,7 +5202,6 @@ Octopus.Client.Repositories.Async
     Task<UserResource> CreateServiceAccount(String, String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
-    Task<UserPermissionSetResource> GetPermissions(Octopus.Client.Model.UserResource, String)
     Task<SpaceResource[]> GetSpaces(Octopus.Client.Model.UserResource)
     Task<InvitationResource> Invite(String)
     Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
