@@ -5718,6 +5718,7 @@ Octopus.Client.Repositories
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.ICanLimitToSpaces<IUserPermissionsRepository>
   {
+    Stream Export(Octopus.Client.Model.UserPermissionSetResource)
     Octopus.Client.Model.UserPermissionSetResource Get(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
@@ -6283,6 +6284,7 @@ Octopus.Client.Repositories.Async
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.Async.ICanLimitToSpaces<IUserPermissionsRepository>
   {
+    Task<Stream> Export(Octopus.Client.Model.UserPermissionSetResource)
     Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
