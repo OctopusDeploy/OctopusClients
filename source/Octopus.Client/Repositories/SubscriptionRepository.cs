@@ -26,12 +26,12 @@ namespace Octopus.Client.Repositories
 
         SubscriptionRepository(IOctopusClient client, SpaceContext spaceContext) : base(client, "Subscriptions")
         {
-            SpaceContext = spaceContext;
+            ExtendedSpaceContext = spaceContext;
         }
 
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            SpaceContext.EnsureSingleSpaceContext();
+            ExtendedSpaceContext.EnsureSingleSpaceContext();
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 

@@ -26,7 +26,7 @@ namespace Octopus.Client.Repositories
         TeamsRepository(IOctopusClient client, SpaceContext spaceContext)
             : base(client, "Teams")
         {
-            SpaceContext = spaceContext;
+            ExtendedSpaceContext = spaceContext;
         }
 
         public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)

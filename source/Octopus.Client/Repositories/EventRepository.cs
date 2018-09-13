@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories
         EventRepository(IOctopusClient client, SpaceContext spaceContext)
             : base(client, "Events")
         {
-            SpaceContext = spaceContext;
+            ExtendedSpaceContext = spaceContext;
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]

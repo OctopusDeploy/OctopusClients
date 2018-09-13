@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories.Async
         ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
             : base(client, "ScopedUserRoles")
         {
-            SpaceContext = spaceContext;
+            ExtendedSpaceContext = spaceContext;
         }
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
