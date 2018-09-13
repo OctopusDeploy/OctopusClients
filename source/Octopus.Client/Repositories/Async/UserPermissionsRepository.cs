@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<UserPermissionSetResource> Get(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"), AdditionalQueryParameters);
         }
         
         public Task<Stream> Export(UserPermissionSetResource userPermissions)
