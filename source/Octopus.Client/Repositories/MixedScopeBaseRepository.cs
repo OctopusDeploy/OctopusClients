@@ -8,16 +8,16 @@ namespace Octopus.Client.Repositories
 {
     abstract class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        private readonly SpaceQueryParameters spaceQueryParameters;
+        private readonly SpaceQueryContext spaceQueryContext;
 
-        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName, SpaceQueryParameters spaceQueryParameters) : base(client, collectionLinkName)
+        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName, SpaceQueryContext spaceQueryContext) : base(client, collectionLinkName)
         {
-            this.spaceQueryParameters = spaceQueryParameters;
+            this.spaceQueryContext = spaceQueryContext;
         }
 
-        protected SpaceQueryParameters CreateParameters(bool includeGlobal, string[] spaceIds)
+        protected SpaceQueryContext CreateParameters(bool includeGlobal, string[] spaceIds)
         {
-            var newParameters = new SpaceQueryParameters(includeGlobal, spaceIds);
+            var newParameters = new SpaceQueryContext(includeGlobal, spaceIds);
             ValidateSpaceParameters(newParameters);
             return newParameters;
         }
@@ -26,30 +26,30 @@ namespace Octopus.Client.Repositories
         {
             get
             {
-                if (spaceQueryParameters == null)return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                if (spaceQueryContext == null)return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                 
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeGlobal"] = spaceQueryParameters.IncludeGlobal,
-                    ["spaces"] = spaceQueryParameters.SpaceIds
+                    ["includeGlobal"] = spaceQueryContext.IncludeGlobal,
+                    ["spaces"] = spaceQueryContext.SpaceIds
                 };
             }
         }
 
-        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        void ValidateSpaceParameters(SpaceQueryContext newSpaceQueryContext)
         {
-            if (spaceQueryParameters == null)
+            if (spaceQueryContext == null)
             {
                 return;
             }
 
-            if (newSpaceQueryParameters.IncludeGlobal && !spaceQueryParameters.IncludeGlobal)
+            if (newSpaceQueryContext.IncludeGlobal && !spaceQueryContext.IncludeGlobal)
             {
                 throw new InvalidIncludeGlobalConfigurationException();
             }
 
-            var previouslyDefinedSpaceIdsSet = new HashSet<string>(spaceQueryParameters.SpaceIds);
-            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(spaceQueryContext.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryContext.SpaceIds))
             {
                 throw new InvalidSpacesLimitationException();
             }

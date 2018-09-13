@@ -18,8 +18,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        UserPermissionsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, null, spaceQueryParameters)
+        UserPermissionsRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, null, spaceQueryContext)
         {
         }
 

@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        SubscriptionRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Subscriptions", spaceQueryParameters)
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext) : base(client, "Subscriptions", spaceQueryContext)
         {
         }
 

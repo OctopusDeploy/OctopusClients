@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        TaskRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Tasks", spaceQueryParameters)
+        TaskRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext) : base(client, "Tasks", spaceQueryContext)
         {
         }
 

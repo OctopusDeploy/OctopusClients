@@ -23,8 +23,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        TeamsRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Teams", spaceQueryParameters)
+        TeamsRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, "Teams", spaceQueryContext)
         {
         }
 

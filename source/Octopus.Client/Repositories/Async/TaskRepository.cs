@@ -38,8 +38,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TaskRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Tasks", spaceQueryParameters)
+        TaskRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, "Tasks", spaceQueryContext)
         {
         }
 

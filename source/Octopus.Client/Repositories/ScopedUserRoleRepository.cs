@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        ScopedUserRoleRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "ScopedUserRoles", spaceQueryParameters)
+        ScopedUserRoleRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext): base(client, "ScopedUserRoles", spaceQueryContext)
         {
         }
 

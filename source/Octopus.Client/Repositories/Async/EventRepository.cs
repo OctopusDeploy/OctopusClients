@@ -62,7 +62,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        EventRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Events", spaceQueryParameters)
+        EventRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext): base(client, "Events", spaceQueryContext)
         {
         }
 

@@ -8,47 +8,47 @@ namespace Octopus.Client.Repositories.Async
 {
     class MixedScopeBaseRepository<TMixedScopeResource>: BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        public MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName, SpaceQueryParameters spaceQueryParameters) : base(client, collectionLinkName)
+        public MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName, SpaceQueryContext spaceQueryContext) : base(client, collectionLinkName)
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            SpaceQueryContext = spaceQueryContext;
         }
 
-        protected SpaceQueryParameters CreateParameters(bool includeGlobal, string[] spaceIds)
+        protected SpaceQueryContext CreateParameters(bool includeGlobal, string[] spaceIds)
         {
-            var newParameter = new SpaceQueryParameters(includeGlobal, spaceIds);
+            var newParameter = new SpaceQueryContext(includeGlobal, spaceIds);
             ValidateSpaceParameters(newParameter);
             return newParameter;
         }
-        protected SpaceQueryParameters SpaceQueryParameters { get; set; }
+        protected SpaceQueryContext SpaceQueryContext { get; set; }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
         {
             get
             {
-                if (SpaceQueryParameters == null)
+                if (SpaceQueryContext == null)
                     return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeGlobal"] = SpaceQueryParameters.IncludeGlobal,
-                    ["spaces"] = SpaceQueryParameters.SpaceIds
+                    ["includeGlobal"] = SpaceQueryContext.IncludeGlobal,
+                    ["spaces"] = SpaceQueryContext.SpaceIds
                 };
             }
         }
 
-        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        void ValidateSpaceParameters(SpaceQueryContext newSpaceQueryContext)
         {
-            if (SpaceQueryParameters == null)
+            if (SpaceQueryContext == null)
             {
                 return;
             }
 
-            if (newSpaceQueryParameters.IncludeGlobal && !SpaceQueryParameters.IncludeGlobal)
+            if (newSpaceQueryContext.IncludeGlobal && !SpaceQueryContext.IncludeGlobal)
             {
                 throw new InvalidIncludeGlobalConfigurationException();
             }
 
-            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryParameters.SpaceIds);
-            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryContext.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryContext.SpaceIds))
             {
                 throw new InvalidSpacesLimitationException();
             }

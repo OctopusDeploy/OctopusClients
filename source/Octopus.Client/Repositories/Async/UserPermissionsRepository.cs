@@ -19,8 +19,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        UserPermissionsRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, null, spaceQueryParameters)
+        UserPermissionsRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, null, spaceQueryContext)
         {
         }
 
