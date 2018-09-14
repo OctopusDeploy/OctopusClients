@@ -396,5 +396,11 @@ namespace Octopus.Client
         /// <param name="loginCommand"></param>
         /// <returns></returns>
         Task SignIn(LoginCommand loginCommand);
+
+        /// <summary>
+        /// Sign out
+        /// </summary>
+        /// <returns></returns>
+        Task SignOut();
     }
 }

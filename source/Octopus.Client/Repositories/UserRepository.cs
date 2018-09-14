@@ -79,7 +79,7 @@ namespace Octopus.Client.Repositories
 
         public void SignOut()
         {
-            Client.Post(Client.Link("SignOut"));
+            Client.SignOut();
         }
 
         public UserResource GetCurrent()

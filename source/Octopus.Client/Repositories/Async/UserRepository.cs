@@ -80,7 +80,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignOut()
         {
-            return Client.Post(Client.Link("SignOut"));
+            return Client.SignOut();
         }
 
         public Task<UserResource> GetCurrent()

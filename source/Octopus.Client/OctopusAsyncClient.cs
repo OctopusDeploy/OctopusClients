@@ -256,6 +256,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             RootDocuments = new RootResources(RootDocument, spaceRoot);
         }
 
+        public async Task SignOut()
+        {
+            await Post(Link("SignOut"));
+            signedIn = false;
+        }
+
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>

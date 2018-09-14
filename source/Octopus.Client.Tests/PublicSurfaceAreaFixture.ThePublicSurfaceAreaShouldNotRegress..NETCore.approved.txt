@@ -48,6 +48,7 @@ Octopus.Client
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
   interface IOctopusAsyncRepository
@@ -145,6 +146,7 @@ Octopus.Client
     Uri QualifyUri(String, Object)
     Task<RootResource> RefreshRootDocument()
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
   class OctopusAsyncRepository

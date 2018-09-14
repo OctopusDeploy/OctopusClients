@@ -380,6 +380,11 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="loginCommand"></param>
         void SignIn(LoginCommand loginCommand);
+
+        /// <summary>
+        /// Sign out
+        /// </summary>
+        void SignOut();
     }
 }
 #endif

@@ -135,6 +135,12 @@ namespace Octopus.Client
             });
         }
 
+        public void SignOut()
+        {
+            Post(Link("SignOut"));
+            signedIn = false;
+        }
+
         public IOctopusClient ForSpace(string spaceId)
         {
             EnsureNotEmpty(spaceId);
