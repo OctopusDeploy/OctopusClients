@@ -160,7 +160,7 @@ namespace Octopus.Client.Repositories.Async
 
         void EnrichSpaceIdIfRequire(TResource resource)
         {
-            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>)))
+            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
             {
                 if (IsInSingleSpaceContext())
                 {
@@ -183,9 +183,9 @@ namespace Octopus.Client.Repositories.Async
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanIncludeSpaces<>));
+                var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
                 var spaceIds = isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
-                var isWildcard = spaceIds != null && spaceIds.Length == 1 && spaceIds.Single() == "all";
+                var isWildcard = spaceIds != null && spaceIds.Contains("all");
                 if (isWildcard)
                     return;
                 var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&

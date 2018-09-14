@@ -5,7 +5,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IEventRepository : IGet<EventResource>, ICanIncludeSpaces<IEventRepository>
+    public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         ResourceCollection<EventResource> List(int skip = 0, 

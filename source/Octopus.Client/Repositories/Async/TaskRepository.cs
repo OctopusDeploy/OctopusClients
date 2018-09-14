@@ -10,7 +10,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanIncludeSpaces<ITaskRepository>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanExtendSpaceContext<ITaskRepository>
     {
         Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null);

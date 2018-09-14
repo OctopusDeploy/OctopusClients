@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Repositories
 {
-    public interface ICanIncludeSpaces<out T>
+    public interface ICanExtendSpaceContext<out T>
     {
         T Including(SpaceContext spaceContext);
     }

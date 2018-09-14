@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
         IDelete<SubscriptionResource>, 
-        ICanIncludeSpaces<ISubscriptionRepository>
+        ICanExtendSpaceContext<ISubscriptionRepository>
     {
         SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }

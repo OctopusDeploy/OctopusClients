@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
         IGet<ScopedUserRoleResource>,
-        ICanIncludeSpaces<IScopedUserRoleRepository>
+        ICanExtendSpaceContext<IScopedUserRoleRepository>
     {
     }
     

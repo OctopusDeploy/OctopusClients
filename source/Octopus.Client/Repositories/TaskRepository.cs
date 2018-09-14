@@ -9,7 +9,7 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanIncludeSpaces<ITaskRepository>
+    public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanExtendSpaceContext<ITaskRepository>
     {
         TaskResource ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
         TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);

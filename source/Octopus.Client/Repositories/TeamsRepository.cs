@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        ICanIncludeSpaces<ITeamsRepository>
+        ICanExtendSpaceContext<ITeamsRepository>
     {
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }

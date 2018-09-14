@@ -5318,7 +5318,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
   }
-  interface ICanIncludeSpaces`1
+  interface ICanExtendSpaceContext`1
   {
     Octopus.Client.Repositories.T Including(Octopus.Client.SpaceContext)
   }
@@ -5428,7 +5428,7 @@ Octopus.Client.Repositories
   }
   interface IEventRepository
     Octopus.Client.Repositories.IGet<EventResource>
-    Octopus.Client.Repositories.ICanIncludeSpaces<IEventRepository>
+    Octopus.Client.Repositories.ICanExtendSpaceContext<IEventRepository>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -5644,7 +5644,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.IGet<ScopedUserRoleResource>
-    Octopus.Client.Repositories.ICanIncludeSpaces<IScopedUserRoleRepository>
+    Octopus.Client.Repositories.ICanExtendSpaceContext<IScopedUserRoleRepository>
   {
   }
   interface IServerStatusRepository
@@ -5669,7 +5669,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<SubscriptionResource>
     Octopus.Client.Repositories.IGet<SubscriptionResource>
     Octopus.Client.Repositories.IDelete<SubscriptionResource>
-    Octopus.Client.Repositories.ICanIncludeSpaces<ISubscriptionRepository>
+    Octopus.Client.Repositories.ICanExtendSpaceContext<ISubscriptionRepository>
   {
     Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
@@ -5690,7 +5690,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<TaskResource>
     Octopus.Client.Repositories.IGet<TaskResource>
     Octopus.Client.Repositories.ICreate<TaskResource>
-    Octopus.Client.Repositories.ICanIncludeSpaces<ITaskRepository>
+    Octopus.Client.Repositories.ICanExtendSpaceContext<ITaskRepository>
   {
     void Cancel(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
@@ -5717,7 +5717,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<TeamResource>
     Octopus.Client.Repositories.IPaginate<TeamResource>
     Octopus.Client.Repositories.IGet<TeamResource>
-    Octopus.Client.Repositories.ICanIncludeSpaces<ITeamsRepository>
+    Octopus.Client.Repositories.ICanExtendSpaceContext<ITeamsRepository>
   {
     List<ScopedUserRoleResource> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }
@@ -5878,7 +5878,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
   }
-  interface ICanIncludeSpaces`1
+  interface ICanExtendSpaceContext`1
   {
     Octopus.Client.Repositories.Async.T Including(Octopus.Client.SpaceContext)
   }
@@ -5988,7 +5988,7 @@ Octopus.Client.Repositories.Async
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
-    Octopus.Client.Repositories.Async.ICanIncludeSpaces<IEventRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
     Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
@@ -6204,7 +6204,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IDelete<ScopedUserRoleResource>
     Octopus.Client.Repositories.Async.IGet<ScopedUserRoleResource>
-    Octopus.Client.Repositories.Async.ICanIncludeSpaces<IScopedUserRoleRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IScopedUserRoleRepository>
   {
   }
   interface IServerStatusRepository
@@ -6229,7 +6229,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<SubscriptionResource>
     Octopus.Client.Repositories.Async.IGet<SubscriptionResource>
     Octopus.Client.Repositories.Async.IDelete<SubscriptionResource>
-    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ISubscriptionRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<ISubscriptionRepository>
   {
     Task<SubscriptionEditor> CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }
@@ -6250,7 +6250,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<TaskResource>
     Octopus.Client.Repositories.Async.IGet<TaskResource>
     Octopus.Client.Repositories.Async.ICreate<TaskResource>
-    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ITaskRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<ITaskRepository>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
@@ -6278,7 +6278,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TeamResource>
     Octopus.Client.Repositories.Async.IPaginate<TeamResource>
     Octopus.Client.Repositories.Async.IGet<TeamResource>
-    Octopus.Client.Repositories.Async.ICanIncludeSpaces<ITeamsRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<ITeamsRepository>
   {
     Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }

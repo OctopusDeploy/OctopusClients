@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        ICanIncludeSpaces<ITeamsRepository>
+        ICanExtendSpaceContext<ITeamsRepository>
     {
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
