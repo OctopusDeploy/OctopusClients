@@ -209,24 +209,19 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
         {
-            EnsureNotEmpty(spaceId);
+            ValidateSpaceId(spaceId);
             return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpace(spaceId)));
         }
 
         public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
         {
-            EnsureNotEmpty(spaceId);
+            ValidateSpaceId(spaceId);
             return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpaceAndSystem(spaceId)));
         }
 
         public async Task<IOctopusAsyncClient> ForSystem()
         {
             return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SystemOnly()));
-        }
-
-        public async Task<IOctopusAsyncClient> ForContext(SpaceContext spaceContext)
-        {
-            return await Create(this.serverEndpoint, CreateClientOptions(spaceContext));
         }
 
         public bool HasLink(string name)
@@ -742,17 +737,22 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             };
         }
 
-        private void EnsureNotEmpty(string spaceId)
+        private void ValidateSpaceId(string spaceId)
         {
             if (string.IsNullOrEmpty(spaceId))
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
+
+            if (spaceId == "all")
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
         }
 
         private static string GetSpaceId(SpaceContext spaceContext)
         {
-            return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains("all") ? spaceContext.SpaceIds.Single() : null;
         }
 
         private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)

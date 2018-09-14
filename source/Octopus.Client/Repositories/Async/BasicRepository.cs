@@ -171,20 +171,30 @@ namespace Octopus.Client.Repositories.Async
 
         bool IsInSingleSpaceContext()
         {
-            return AdditionalQueryParameters["spaces"] is string[] spaceIds
-                   && spaceIds.Length == 1 && spaceIds.Single() != "all"
-                   && AdditionalQueryParameters["includeSystem"] != null
-                   && bool.TryParse(AdditionalQueryParameters["includeSystem"].ToString(), out bool inCludeSystem) && !inCludeSystem
-                   && !Client.SpaceContext.IncludeSystem
-                ;
+            var spaceIds = GetSpaceIds();
+            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains("all");
+            return isASpecificSpaceId && !IsIncludingSystem();
+        }
+
+        string[] GetSpaceIds()
+        {
+            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
+            return isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+        }
+
+        bool IsIncludingSystem()
+        {
+            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
+            return isMixedScope
+                ? bool.Parse(AdditionalQueryParameters["includeSystem"].ToString())
+                : Client.SpaceContext.IncludeSystem;
         }
 
         void ValidateSpaceId(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-                var spaceIds = isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+                var spaceIds = GetSpaceIds();
                 var isWildcard = spaceIds != null && spaceIds.Contains("all");
                 if (isWildcard)
                     return;

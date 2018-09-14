@@ -39,7 +39,7 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext = null)
         {
             SpaceContext = spaceContext;
             rootDocumentUri = "~/api";
@@ -143,24 +143,19 @@ namespace Octopus.Client
 
         public IOctopusClient ForSpace(string spaceId)
         {
-            EnsureNotEmpty(spaceId);
+            ValidateSpaceId(spaceId);
             return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId), cookieContainer);
         }
 
         public IOctopusClient ForSpaceAndSystem(string spaceId)
         {
-            EnsureNotEmpty(spaceId);
+            ValidateSpaceId(spaceId);
             return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId), cookieContainer);
         }
 
         public IOctopusClient ForSystem()
         {
             return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly(), cookieContainer);
-        }
-
-        public IOctopusClient ForContext(SpaceContext spaceContext)
-        {
-            return new OctopusClient(this.serverEndpoint, spaceContext, cookieContainer);
         }
 
         public bool HasLink(string name)
@@ -714,17 +709,21 @@ namespace Octopus.Client
             }
         }
 
-        private void EnsureNotEmpty(string spaceId)
+        private void ValidateSpaceId(string spaceId)
         {
             if (string.IsNullOrEmpty(spaceId))
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
+            if (spaceId == "all")
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
         }
 
         private static string GetSpaceId(SpaceContext spaceContext)
         {
-            return spaceContext.SpaceIds.Count == 1 ? spaceContext.SpaceIds.Single() : null;
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains("all") ? spaceContext.SpaceIds.Single() : null;
         }
 
         private SpaceResource GetDefaultSpace(RootResource root)

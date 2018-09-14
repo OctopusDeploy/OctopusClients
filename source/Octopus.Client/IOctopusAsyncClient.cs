@@ -363,12 +363,6 @@ namespace Octopus.Client
         Task<IOctopusAsyncClient> ForSystem();
 
         /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within the given space context.
-        /// </summary>
-        /// <returns>An instance of IOctopusClient</returns>
-        Task<IOctopusAsyncClient> ForContext(SpaceContext spaceContext);
-
-        /// <summary>
         /// Determines whether the specified link exists.
         /// </summary>
         /// <param name="name">The name/key of the link.</param>
