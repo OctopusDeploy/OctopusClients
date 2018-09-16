@@ -24,20 +24,19 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        SubscriptionRepository(IOctopusAsyncClient client, SpaceContext spaceContext) : base(client, "Subscriptions")
+        SubscriptionRepository(IOctopusAsyncClient client, SpaceContext spaceContext) : base(client, "Subscriptions", spaceContext)
         {
-            ExtendedSpaceContext = spaceContext;
         }
 
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            ExtendedSpaceContext.EnsureSingleSpaceContext();
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, Client.SpaceContext.Union(spaceContext));
+            return new SubscriptionRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }

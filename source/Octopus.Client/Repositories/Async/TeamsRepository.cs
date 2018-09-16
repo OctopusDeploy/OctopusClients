@@ -25,9 +25,8 @@ namespace Octopus.Client.Repositories.Async
         }
 
         TeamsRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
-            : base(client, "Teams")
+            : base(client, "Teams", spaceContext)
         {
-            ExtendedSpaceContext = spaceContext;
         }
 
         public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
@@ -46,7 +45,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITeamsRepository Including(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Client, Client.SpaceContext.Union(spaceContext));
+            return new TeamsRepository(Client, base.ExtendSpaceContext(spaceContext));
         }
     }
 }

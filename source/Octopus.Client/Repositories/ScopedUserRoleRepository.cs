@@ -21,14 +21,13 @@ namespace Octopus.Client.Repositories
         }
 
         ScopedUserRoleRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "ScopedUserRoles")
+            : base(client, "ScopedUserRoles", spaceContext)
         {
-            ExtendedSpaceContext = spaceContext;
         }
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Client, Client.SpaceContext.Union(spaceContext));
+            return new ScopedUserRoleRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }
