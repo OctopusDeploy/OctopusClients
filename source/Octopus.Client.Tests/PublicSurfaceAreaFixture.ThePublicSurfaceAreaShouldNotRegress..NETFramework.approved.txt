@@ -4175,7 +4175,8 @@ Octopus.Client.Model
     List<Permission> GrantedSpacePermissions { get; set; }
     List<Permission> GrantedSystemPermissions { get; set; }
     String Name { get; set; }
-    List<String> PermissionDescriptions { get; set; }
+    List<String> SpacePermissionDescriptions { get; set; }
+    List<String> SystemPermissionDescriptions { get; set; }
     List<String> SupportedRestrictions { get; set; }
   }
   class VariablePromptOptions
