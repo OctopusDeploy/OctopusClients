@@ -29,8 +29,7 @@ namespace Octopus.Client.Repositories
         {
             if (extendedSpaceContext == null)
                 extendedSpaceContext = new SpaceContext(Client.SpaceContext.SpaceIds, Client.SpaceContext.IncludeSystem);
-            extendedSpaceContext = extendedSpaceContext.Union(includingSpaceContext);
-            return extendedSpaceContext;
+            return extendedSpaceContext.Union(includingSpaceContext);
         }
 
         protected SpaceContext GetCurrentSpaceContext()
