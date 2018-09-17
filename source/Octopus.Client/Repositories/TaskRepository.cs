@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        TaskRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters) : base(client, "Tasks", spaceQueryParameters)
+        TaskRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext) : base(client, "Tasks", spaceQueryContext)
         {
         }
 
@@ -220,7 +220,7 @@ namespace Octopus.Client.Repositories
 
         public ITaskRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeSystem, spaceIds);
+            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
             return new TaskRepository(Client, newParameters);
         }
     }

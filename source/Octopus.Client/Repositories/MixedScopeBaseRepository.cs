@@ -8,47 +8,48 @@ namespace Octopus.Client.Repositories
 {
     abstract class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName, SpaceQueryParameters spaceQueryParameters) : base(client, collectionLinkName)
+        private readonly SpaceQueryContext spaceQueryContext;
+
+        protected MixedScopeBaseRepository(IOctopusClient client, string collectionLinkName, SpaceQueryContext spaceQueryContext) : base(client, collectionLinkName)
         {
-            SpaceQueryParameters = spaceQueryParameters;
+            this.spaceQueryContext = spaceQueryContext;
         }
 
-        protected SpaceQueryParameters CreateParameters(bool includeSystem, string[] spaceIds)
+        protected SpaceQueryContext CreateSpaceQueryContext(bool includeSystem, string[] spaceIds)
         {
-            var newParameters = new SpaceQueryParameters(includeSystem, spaceIds);
-            ValidateSpaceParameters(newParameters);
-            return newParameters;
+            var newContext = new SpaceQueryContext(includeSystem, spaceIds);
+            ValidateSpaceParameters(newContext);
+            return newContext;
         }
-        protected SpaceQueryParameters SpaceQueryParameters { get; set; }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
         {
             get
             {
-                if (SpaceQueryParameters == null)
-                    return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                if (spaceQueryContext == null)return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["includeSystem"] = SpaceQueryParameters.IncludeSystem,
-                    ["spaces"] = SpaceQueryParameters.SpaceIds
+                    ["includeSystem"] = spaceQueryContext.IncludeSystem,
+                    ["spaces"] = spaceQueryContext.SpaceIds
                 };
             }
         }
 
-        void ValidateSpaceParameters(SpaceQueryParameters newSpaceQueryParameters)
+        void ValidateSpaceParameters(SpaceQueryContext newSpaceQueryContext)
         {
-            if (SpaceQueryParameters == null)
+            if (spaceQueryContext == null)
             {
                 return;
             }
 
-            if (newSpaceQueryParameters.IncludeSystem && !SpaceQueryParameters.IncludeSystem)
+            if (newSpaceQueryContext.IncludeSystem && !spaceQueryContext.IncludeSystem)
             {
                 throw new InvalidIncludeSystemConfigurationException();
             }
 
-            var previouslyDefinedSpaceIdsSet = new HashSet<string>(SpaceQueryParameters.SpaceIds);
-            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryParameters.SpaceIds))
+            var previouslyDefinedSpaceIdsSet = new HashSet<string>(spaceQueryContext.SpaceIds);
+            if (!previouslyDefinedSpaceIdsSet.IsSupersetOf(newSpaceQueryContext.SpaceIds))
             {
                 throw new InvalidSpacesLimitationException();
             }

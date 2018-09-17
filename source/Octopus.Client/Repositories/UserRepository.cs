@@ -20,7 +20,6 @@ namespace Octopus.Client.Repositories
         void SignIn(string username, string password, bool rememberMe = false);
         void SignOut();
         UserResource GetCurrent();
-        UserPermissionSetResource GetPermissions(UserResource user, string spaceId = null);
         SpaceResource[] GetSpaces(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
@@ -89,12 +88,6 @@ namespace Octopus.Client.Repositories
         public UserResource GetCurrent()
         {
             return Client.Get<UserResource>(Client.Link("CurrentUser"));
-        }
-
-        public UserPermissionSetResource GetPermissions(UserResource user, string spaceId = null)
-        {
-            if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions").AppendSpaceId(spaceId));
         }
         
         public SpaceResource[] GetSpaces(UserResource user)
