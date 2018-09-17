@@ -46,7 +46,7 @@ namespace Octopus.Client.Repositories
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, 
             string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            EnsureSingleSpaceContext();
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
-            EnsureSingleSpaceContext();
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
@@ -96,7 +96,7 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            EnsureSingleSpaceContext();
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
@@ -118,7 +118,7 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            EnsureSingleSpaceContext();
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
@@ -251,14 +251,6 @@ namespace Octopus.Client.Repositories
         public ITaskRepository Including(SpaceContext spaceContext)
         {
             return new TaskRepository(Client, ExtendSpaceContext(spaceContext));
-        }
-
-        void EnsureSingleSpaceContext()
-        {
-            if (!(GetCurrentSpaceContext().SpaceIds.Count == 1 && GetCurrentSpaceContext().SpaceIds.Single() != "all"))
-            {
-                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
-            }
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
