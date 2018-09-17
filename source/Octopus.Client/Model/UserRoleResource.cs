@@ -17,7 +17,8 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
 
         public List<string> SupportedRestrictions { get; set; }
-        public List<string> PermissionDescriptions { get; set; }
+        public List<string> SpacesPermissionDescriptions { get; set; }
+        public List<string> SystemPermissionDescriptions { get; set; }
 
         [Writeable]
         public List<Permission> GrantedSpacePermissions { get; set; }
