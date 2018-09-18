@@ -5199,7 +5199,7 @@ Octopus.Client.Repositories.Async
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
   }
   interface IUserPermissionsRepository
-    Octopus.Client.Repositories.Async.ICanLimitToSpaces<IUserPermissionsRepository>
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IUserPermissionsRepository>
   {
     Task<Stream> Export(Octopus.Client.Model.UserPermissionSetResource)
     Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
