@@ -451,7 +451,6 @@ Octopus.Client
   }
   class SpaceContext
   {
-    .ctor(IReadOnlyCollection<String>, Boolean)
     Boolean IncludeSystem { get; }
     IReadOnlyCollection<String> SpaceIds { get; }
     void EnsureSingleSpaceContext()

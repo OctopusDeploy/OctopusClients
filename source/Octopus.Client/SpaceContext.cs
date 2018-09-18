@@ -12,7 +12,7 @@ namespace Octopus.Client
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(new []{spaceId}, true);
         public static SpaceContext SystemOnly() => new SpaceContext(new string[0], true);
 
-        public SpaceContext(IReadOnlyCollection<string> spaceIds, bool includeSystem)
+        internal SpaceContext(IReadOnlyCollection<string> spaceIds, bool includeSystem)
         {
             if (spaceIds.Count == 0 && !includeSystem)
                 throw new ArgumentException("At least 1 spaceId is required when includeSystem is set to false");
