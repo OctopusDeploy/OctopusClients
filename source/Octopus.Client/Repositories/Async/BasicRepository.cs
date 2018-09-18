@@ -85,7 +85,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<TResource>> GetAll()
         {
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = "all" });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
             return Client.Get<List<TResource>>(Client.Link(CollectionLinkName), parameters);
         }
 

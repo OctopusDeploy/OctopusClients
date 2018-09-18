@@ -88,7 +88,7 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = "all" });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
             return client.Get<List<TResource>>(client.Link(CollectionLinkName), parameters);
         }
 
