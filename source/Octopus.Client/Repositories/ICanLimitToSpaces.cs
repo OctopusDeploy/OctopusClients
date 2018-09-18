@@ -4,6 +4,6 @@ namespace Octopus.Client.Repositories
 {
     public interface ICanLimitToSpaces<out T>
     {
-        T LimitTo(bool includeGlobal, params String[] spaceIds);
+        T LimitTo(bool includeSystem, params String[] spaceIds);
     }
 }

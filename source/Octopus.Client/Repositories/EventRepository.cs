@@ -61,7 +61,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        EventRepository(IOctopusClient client, SpaceQueryParameters spaceQueryParameters): base(client, "Events", spaceQueryParameters)
+        EventRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext): base(client, "Events", spaceQueryContext)
         {
         }
 
@@ -123,9 +123,9 @@ namespace Octopus.Client.Repositories
             return Client.List<EventResource>(Client.Link("Events"), parameters);
         }
 
-        public IEventRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public IEventRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
+            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
             return new EventRepository(Client, newParameters);
         }
     }

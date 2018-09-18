@@ -38,8 +38,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TaskRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Tasks", spaceQueryParameters)
+        TaskRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, "Tasks", spaceQueryContext)
         {
         }
 
@@ -230,10 +230,9 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public ITaskRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ITaskRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new TaskRepository(Client, newParameters);
+            return new TaskRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
         }
     }
 }

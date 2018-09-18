@@ -24,8 +24,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TeamsRepository(IOctopusAsyncClient client, SpaceQueryParameters spaceQueryParameters)
-            : base(client, "Teams", spaceQueryParameters)
+        TeamsRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
+            : base(client, "Teams", spaceQueryContext)
         {
         }
 
@@ -43,10 +43,9 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public ITeamsRepository LimitTo(bool includeGlobal, params string[] spaceIds)
+        public ITeamsRepository LimitTo(bool includeSystem, params string[] spaceIds)
         {
-            var newParameters = this.CreateParameters(includeGlobal, spaceIds);
-            return new TeamsRepository(Client, newParameters);
+            return new TeamsRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
         }
     }
 }
