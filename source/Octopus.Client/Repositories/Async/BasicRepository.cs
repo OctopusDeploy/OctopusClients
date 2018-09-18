@@ -172,21 +172,21 @@ namespace Octopus.Client.Repositories.Async
         bool IsInSingleSpaceContext()
         {
             var spaceIds = GetSpaceIds();
-            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains("all");
+            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
             return isASpecificSpaceId && !IsIncludingSystem();
         }
 
         string[] GetSpaceIds()
         {
             var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope ? AdditionalQueryParameters["spaces"] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Client.SpaceContext.SpaceIds.ToArray();
         }
 
         bool IsIncludingSystem()
         {
             var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
             return isMixedScope
-                ? bool.Parse(AdditionalQueryParameters["includeSystem"].ToString())
+                ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
                 : Client.SpaceContext.IncludeSystem;
         }
 
@@ -195,7 +195,7 @@ namespace Octopus.Client.Repositories.Async
             if (resource is IHaveSpaceResource spaceResource)
             {
                 var spaceIds = GetSpaceIds();
-                var isWildcard = spaceIds != null && spaceIds.Contains("all");
+                var isWildcard = spaceIds != null && spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
                 if (isWildcard)
                     return;
                 var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&

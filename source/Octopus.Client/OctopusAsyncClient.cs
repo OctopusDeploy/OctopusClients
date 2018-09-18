@@ -744,7 +744,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 throw new ArgumentException("spaceId cannot be null");
             }
 
-            if (spaceId == "all")
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
             {
                 throw new ArgumentException("Invalid spaceId");
             }
@@ -752,7 +752,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static string GetSpaceId(SpaceContext spaceContext)
         {
-            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains("all") ? spaceContext.SpaceIds.Single() : null;
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
         }
 
         private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)

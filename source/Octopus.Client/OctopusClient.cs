@@ -715,7 +715,7 @@ namespace Octopus.Client
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
-            if (spaceId == "all")
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
             {
                 throw new ArgumentException("Invalid spaceId");
             }
@@ -723,7 +723,7 @@ namespace Octopus.Client
 
         private static string GetSpaceId(SpaceContext spaceContext)
         {
-            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains("all") ? spaceContext.SpaceIds.Single() : null;
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
         }
 
         private SpaceResource GetDefaultSpace(RootResource root)

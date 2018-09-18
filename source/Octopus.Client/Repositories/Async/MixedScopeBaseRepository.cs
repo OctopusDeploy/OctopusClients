@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories.Async
 
         protected override Dictionary<string, object> AdditionalQueryParameters => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {
-            ["includeSystem"] = extendedSpaceContext?.IncludeSystem ?? Client.SpaceContext.IncludeSystem,
-            ["spaces"] = extendedSpaceContext?.SpaceIds ?? Client.SpaceContext.SpaceIds
+            [MixedScopeConstants.QueryStringParameterIncludeSystem] = extendedSpaceContext?.IncludeSystem ?? Client.SpaceContext.IncludeSystem,
+            [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Client.SpaceContext.SpaceIds
         };
 
         protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)

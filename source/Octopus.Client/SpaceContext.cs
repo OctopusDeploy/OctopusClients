@@ -8,6 +8,7 @@ namespace Octopus.Client
 {
     public class SpaceContext
     {
+
         public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(new [] {spaceId}, false);
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(new []{spaceId}, true);
         public static SpaceContext SystemOnly() => new SpaceContext(new string[0], true);
@@ -30,7 +31,7 @@ namespace Octopus.Client
 
         public void EnsureSingleSpaceContext()
         {
-            if (!(SpaceIds.Count == 1 && SpaceIds.Single() != "all"))
+            if (!(SpaceIds.Count == 1 && SpaceIds.Single() != MixedScopeConstants.AllSpacesQueryStringParameterValue))
             {
                 throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
             }
