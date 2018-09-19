@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -11,30 +12,31 @@ namespace Octopus.Client.Repositories
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
         IDelete<SubscriptionResource>, 
-        ICanLimitToSpaces<ISubscriptionRepository>
+        ICanExtendSpaceContext<ISubscriptionRepository>
     {
-        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null);
+        SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
     
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
     {
-        public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions", null)
+
+        public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions")
         {
         }
 
-        SubscriptionRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext): base(client, "Subscriptions", spaceQueryContext)
+        SubscriptionRepository(IOctopusClient client, SpaceContext spaceContext) : base(client, "Subscriptions", spaceContext)
         {
         }
 
-        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId = null)
+        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled, spaceId);
+            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 
-        public ISubscriptionRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
-            return new SubscriptionRepository(Client, newParameters);
+            return new SubscriptionRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }

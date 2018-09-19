@@ -16,7 +16,7 @@ namespace Octopus.Client.Editors
 
         public SubscriptionResource Instance { get; private set; }
 
-        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId)
+        public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
             var existing = repository.FindByName(name);
 
@@ -27,8 +27,7 @@ namespace Octopus.Client.Editors
                     Name = name,
                     Type = SubscriptionType.Event,
                     IsDisabled = isDisabled,
-                    EventNotificationSubscription = eventNotificationSubscription,
-                    SpaceId = spaceId
+                    EventNotificationSubscription = eventNotificationSubscription
                 });
             }
             else

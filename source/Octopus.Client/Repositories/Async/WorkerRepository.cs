@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerResource>>(Client.Link("Workers"), new { id = "all", thumbprint });
+            return Client.Get<List<WorkerResource>>(Client.Link("Workers"), new { id = IdValueConstant.IdAll, thumbprint });
         }
 
         public Task<WorkerEditor> CreateOrModify(

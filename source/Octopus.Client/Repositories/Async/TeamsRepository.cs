@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
         IGet<TeamResource>,
-        ICanLimitToSpaces<ITeamsRepository>
+        ICanExtendSpaceContext<ITeamsRepository>
     {
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
@@ -20,12 +20,12 @@ namespace Octopus.Client.Repositories.Async
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusAsyncClient client)
-            : base(client, "Teams", null)
+            : base(client, "Teams")
         {
         }
 
-        TeamsRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
-            : base(client, "Teams", spaceQueryContext)
+        TeamsRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
+            : base(client, "Teams", spaceContext)
         {
         }
 
@@ -43,9 +43,9 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public ITeamsRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public ITeamsRepository Including(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
+            return new TeamsRepository(Client, base.ExtendSpaceContext(spaceContext));
         }
     }
 }

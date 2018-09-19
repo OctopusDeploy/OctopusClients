@@ -67,13 +67,9 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Post<UserResource,UserResource>(Client.Link("Register"), registerCommand).ConfigureAwait(false);
         }
 
-        public Task SignIn(LoginCommand loginCommand)
+        public async Task SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
-            }
-            return Client.Post(Client.Link("SignIn"), loginCommand);
+            await Client.SignIn(loginCommand);
         }
 
         public Task SignIn(string username, string password, bool rememberMe = false)
@@ -83,7 +79,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignOut()
         {
-            return Client.Post(Client.Link("SignOut"));
+            return Client.SignOut();
         }
 
         public Task<UserResource> GetCurrent()

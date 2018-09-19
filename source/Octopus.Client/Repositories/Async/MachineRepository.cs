@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<MachineResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<MachineResource>>(Client.Link("machines"), new { id = "all", thumbprint });
+            return Client.Get<List<MachineResource>>(Client.Link("machines"), new { id = IdValueConstant.IdAll, thumbprint });
         }
 
         /// <summary>

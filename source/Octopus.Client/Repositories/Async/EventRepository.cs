@@ -1,11 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IEventRepository : IGet<EventResource>, ICanLimitToSpaces<IEventRepository>
+    public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -58,11 +59,12 @@ namespace Octopus.Client.Repositories.Async
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusAsyncClient client)
-            : base(client, "Events", null)
+            : base(client, "Events")
         {
         }
 
-        EventRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext): base(client, "Events", spaceQueryContext)
+        EventRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
+            : base(client, "Events", spaceContext)
         {
         }
 
@@ -72,13 +74,13 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.Link("Events"), new
+            return Client.List<EventResource>(Client.Link("Events"), ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 user = filterByUserId,
                 regarding = regardingDocumentId,
                 @internal = includeInternalEvents.ToString()
-            });
+            }));
         }
 
         public Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -125,9 +127,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<EventResource>(Client.Link("Events"), parameters);
         }
 
-        public IEventRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
+            return new EventRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }
