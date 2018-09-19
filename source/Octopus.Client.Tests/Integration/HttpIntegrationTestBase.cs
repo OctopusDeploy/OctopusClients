@@ -109,19 +109,39 @@ namespace Octopus.Client.Tests.Integration
         {
             TestRootPath = "/";
             if (pathPrefixBehaviour == UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
-                TestRootPath = $"/{GetType().Name}/";
+                TestRootPath = $"/{GetType().Name}";
             
-            Get($"{TestRootPath}api", p => Response.AsJson(
+            Get($"{TestRootPath}/api", p => Response.AsJson(
                  new RootResource()
                  {
                      ApiVersion = "3.0.0",
                      InstallationId = InstallationId,
                      Links = new LinkCollection()
                      {
-                         { "CurrentUser",$"{TestRootPath}/api/users/me" }
+                         { "CurrentUser",$"{TestRootPath}/api/users/me" },
+                         { "SpaceHome", $"{TestRootPath}/api/{{spaceId}}" },
+                         { "Users", $"{TestRootPath}/api/users/{{id}}" },
                      }
                  }
              ));
+            Get($"{TestRootPath}/api/users/me", p => Response.AsJson(
+                new UserResource()
+                {
+                    Links = new LinkCollection()
+                    {
+                        {"Spaces", TestRootPath + "/api/users/users-1/spaces" }
+                    }
+                }
+            ));
+            Get($"{TestRootPath}/api/users/users-1/spaces", p => Response.AsJson(
+                new[] {
+                    new SpaceResource() { Id = "Spaces-1", IsDefault = true},
+                    new SpaceResource() { Id = "Spaces-2", IsDefault = false}
+                }
+            ));
+            Get($"{TestRootPath}/api/spaces-1", p => Response.AsJson(
+                new SpaceRootResource()
+            ));
         }
 
         public string TestRootPath { get; }

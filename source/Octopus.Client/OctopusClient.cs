@@ -22,13 +22,14 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        readonly CookieContainer cookieContainer = new CookieContainer();
+        CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
-        private readonly string spaceId;
         private Lazy<RootResources> rootResourcesLazy;
+        private bool signedIn = false;
+        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -38,14 +39,20 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext = null)
         {
+            SpaceContext = spaceContext;
             rootDocumentUri = "~/api";
             rootResourcesLazy = new Lazy<RootResources>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
-            this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
+        }
+
+        OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext,
+            CookieContainer preservedCookieContainer): this(serverEndpoint, spaceContext)
+        {
+            cookieContainer = preservedCookieContainer;
         }
 
         /// <summary>
@@ -85,9 +92,16 @@ namespace Octopus.Client
             var spaceRoot = LoadSpaceResource(root);
             return new RootResources(root, spaceRoot);
         }
-        
+
         private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
         {
+            if (this.SpaceContext == null)
+            {
+                var defaultSpace = GetDefaultSpace(rootDocument);
+                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
+            }
+
+            var spaceId = GetSpaceId(SpaceContext);
             return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
         }
 
@@ -103,9 +117,45 @@ namespace Octopus.Client
             public SpaceRootResource SpaceRootResource { get; }
         }
 
-        public IOctopusClient ForSpaceContext(string spaceId)
+        public SpaceContext SpaceContext { get; private set; }
+        public void SignIn(LoginCommand loginCommand)
         {
-            return new OctopusClient(this.serverEndpoint, spaceId);
+            if (loginCommand.State == null)
+            {
+                loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
+            }
+            Post(Link("SignIn"), loginCommand);
+            signedIn = true;
+            SpaceContext = null;
+            var closureRoot = this.RootDocument;
+            rootResourcesLazy = new Lazy<RootResources>(() =>
+            {
+                var spaceRoot = LoadSpaceResource(closureRoot);
+                return new RootResources(closureRoot, spaceRoot);
+            });
+        }
+
+        public void SignOut()
+        {
+            Post(Link("SignOut"));
+            signedIn = false;
+        }
+
+        public IOctopusClient ForSpace(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId), cookieContainer);
+        }
+
+        public IOctopusClient ForSpaceAndSystem(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId), cookieContainer);
+        }
+
+        public IOctopusClient ForSystem()
+        {
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly(), cookieContainer);
         }
 
         public bool HasLink(string name)
@@ -498,7 +548,7 @@ namespace Octopus.Client
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
             webRequest.UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
-            
+
             if (webRequest.Method == "PUT")
             {
                 webRequest.Headers["X-HTTP-Method-Override"] = "PUT";
@@ -531,9 +581,12 @@ namespace Octopus.Client
 
             try
             {
-                if (request.RequestResource == null) {
+                if (request.RequestResource == null)
+                {
                     webRequest.ContentLength = 0;
-                } else {
+                }
+                else
+                {
                     var requestStreamContent = request.RequestResource as Stream;
                     if (requestStreamContent != null)
                     {
@@ -557,12 +610,12 @@ namespace Octopus.Client
 
                             var requestStream = webRequest.GetRequestStream();
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
-                            
+
                             var headerTemplate = "Content-Disposition: form-data; filename=\"{0}\"\r\nContent-Type: application/octet-stream\r\n\r\n";
                             var header = string.Format(headerTemplate, fileUploadContent.FileName);
                             var headerbytes = Encoding.UTF8.GetBytes(header);
                             requestStream.Write(headerbytes, 0, headerbytes.Length);
-                            fileUploadContent.Contents.CopyTo(requestStream);                            
+                            fileUploadContent.Contents.CopyTo(requestStream);
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
                             requestStream.Flush();
                             requestStream.Close();
@@ -587,20 +640,20 @@ namespace Octopus.Client
                     var responseStream = webResponse.GetResponseStream();
                     if (responseStream != null)
                     {
-                        if (typeof (TResponseResource) == typeof (Stream))
+                        if (typeof(TResponseResource) == typeof(Stream))
                         {
                             var stream = new MemoryStream();
                             responseStream.CopyTo(stream);
                             stream.Seek(0, SeekOrigin.Begin);
                             resource = (TResponseResource)(object)stream;
                         }
-                        else if (typeof (TResponseResource) == typeof (byte[]))
+                        else if (typeof(TResponseResource) == typeof(byte[]))
                         {
                             var stream = new MemoryStream();
                             responseStream.CopyTo(stream);
                             resource = (TResponseResource)(object)stream.ToArray();
                         }
-                        else if (typeof (TResponseResource) == typeof (string))
+                        else if (typeof(TResponseResource) == typeof(string))
                         {
                             using (var reader = new StreamReader(responseStream))
                             {
@@ -618,7 +671,7 @@ namespace Octopus.Client
                                 }
                                 catch (Exception ex)
                                 {
-                                    throw new OctopusDeserializationException((int)webResponse.StatusCode, "Unable to process response from server: " + ex.Message + ". Response content: " +  (content.Length > 100 ? content.Substring(0, 100) : content), ex);
+                                    throw new OctopusDeserializationException((int)webResponse.StatusCode, "Unable to process response from server: " + ex.Message + ". Response content: " + (content.Length > 100 ? content.Substring(0, 100) : content), ex);
                                 }
                             }
                         }
@@ -648,12 +701,40 @@ namespace Octopus.Client
                     {
                         webResponse.Close();
                     }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }
                 }
             }
+        }
+
+        private void ValidateSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
+        }
+
+        private static string GetSpaceId(SpaceContext spaceContext)
+        {
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
+        }
+
+        private SpaceResource GetDefaultSpace(RootResource root)
+        {
+            if (IsAuthenticated)
+            {
+                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
+                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            return null;
         }
 
         /// <summary>

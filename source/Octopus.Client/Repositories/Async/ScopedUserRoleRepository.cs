@@ -8,25 +8,25 @@ namespace Octopus.Client.Repositories.Async
         IModify<ScopedUserRoleResource>,
         IDelete<ScopedUserRoleResource>,
         IGet<ScopedUserRoleResource>,
-        ICanLimitToSpaces<IScopedUserRoleRepository>
+        ICanExtendSpaceContext<IScopedUserRoleRepository>
     {
     }
 
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusAsyncClient client)
-            : base(client, "ScopedUserRoles", null)
+            : base(client, "ScopedUserRoles")
         {
         }
 
-        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceQueryContext spaceQueryContext)
-            : base(client, "ScopedUserRoles", spaceQueryContext)
+        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
+            : base(client, "ScopedUserRoles", spaceContext)
         {
         }
 
-        public IScopedUserRoleRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public IScopedUserRoleRepository Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
+            return new ScopedUserRoleRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }

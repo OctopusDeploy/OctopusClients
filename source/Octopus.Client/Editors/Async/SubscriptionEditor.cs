@@ -17,7 +17,7 @@ namespace Octopus.Client.Editors.Async
 
         public SubscriptionResource Instance { get; private set; }
 
-        public async Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, string spaceId)
+        public async Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
 
@@ -29,7 +29,6 @@ namespace Octopus.Client.Editors.Async
                         Type = SubscriptionType.Event,
                         IsDisabled = isDisabled,
                         EventNotificationSubscription = eventNotificationSubscription,
-                        SpaceId = spaceId
                     })
                     .ConfigureAwait(false);
             }

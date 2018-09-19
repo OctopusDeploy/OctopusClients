@@ -7,7 +7,7 @@ using Octopus.Client.Util;
 namespace Octopus.Client.Repositories
 {
     public interface IUserPermissionsRepository :
-        ICanLimitToSpaces<IUserPermissionsRepository>
+        ICanExtendSpaceContext<IUserPermissionsRepository>
     {
         UserPermissionSetResource Get(UserResource user);
         Stream Export(UserPermissionSetResource userPermissions);
@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        UserPermissionsRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext)
-            : base(client, null, spaceQueryContext)
+        UserPermissionsRepository(IOctopusClient client, SpaceContext spaceContext)
+            : base(client, null, spaceContext)
         {
         }
 
@@ -37,9 +37,9 @@ namespace Octopus.Client.Repositories
             return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
         }
 
-        public IUserPermissionsRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public IUserPermissionsRepository Including(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Client, CreateSpaceQueryContext(includeSystem, spaceIds));
+            return new UserPermissionsRepository(Client, base.ExtendSpaceContext(spaceContext));
         }
     }
 }

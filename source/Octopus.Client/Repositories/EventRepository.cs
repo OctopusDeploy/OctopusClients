@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IEventRepository : IGet<EventResource>, ICanLimitToSpaces<IEventRepository>
+    public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         ResourceCollection<EventResource> List(int skip = 0, 
@@ -57,11 +58,12 @@ namespace Octopus.Client.Repositories
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusClient client)
-            : base(client, "Events", null)
+            : base(client, "Events")
         {
         }
 
-        EventRepository(IOctopusClient client, SpaceQueryContext spaceQueryContext): base(client, "Events", spaceQueryContext)
+        EventRepository(IOctopusClient client, SpaceContext spaceContext)
+            : base(client, "Events", spaceContext)
         {
         }
 
@@ -123,10 +125,9 @@ namespace Octopus.Client.Repositories
             return Client.List<EventResource>(Client.Link("Events"), parameters);
         }
 
-        public IEventRepository LimitTo(bool includeSystem, params string[] spaceIds)
+        public IEventRepository Including(SpaceContext spaceContext)
         {
-            var newParameters = this.CreateSpaceQueryContext(includeSystem, spaceIds);
-            return new EventRepository(Client, newParameters);
+            return new EventRepository(Client, ExtendSpaceContext(spaceContext));
         }
     }
 }
