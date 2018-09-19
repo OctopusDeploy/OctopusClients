@@ -10,7 +10,7 @@ namespace Octopus.Client.Model
     public class UserPermissionSetResource : Resource
     {
         /// <summary>
-        /// Lists individual permissions granted, including restrictions where
+        /// Lists individual space permissions granted, including restrictions where
         /// applicable.
         /// </summary>
         /// <remarks>
@@ -18,7 +18,12 @@ namespace Octopus.Client.Model
         /// restrictions are applied. Duplicate or redundant entries may be
         /// excluded.
         /// </remarks>
-        public Dictionary<Permission, List<UserPermissionRestriction>> Permissions { get; set; }
+        public Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
+
+        /// <summary>
+        /// Lists individual system permissions granted, these do not have restrictions
+        /// </summary>
+        public List<Permission> SystemPermissions { get; set; }
 
         /// <summary>
         /// Gets the teams that the user is a member of.
