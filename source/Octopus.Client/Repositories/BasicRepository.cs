@@ -6,7 +6,6 @@ using Octopus.Client.Model;
 using System.Text.RegularExpressions;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
-using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
@@ -35,18 +34,22 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
+            EnrichSpaceIdIfRequire(resource);
             return client.Create(client.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            ValidateSpaceId(resource);
             client.Delete(resource.Links["Self"]);
         }
 
@@ -85,7 +88,7 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = "all" });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
             return client.Get<List<TResource>>(client.Link(CollectionLinkName), parameters);
         }
 
@@ -155,6 +158,55 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
+        }
+
+        void EnrichSpaceIdIfRequire(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
+            {
+                if (IsInSingleSpaceContext())
+                {
+                    spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
+                }
+            }
+        }
+
+        bool IsInSingleSpaceContext()
+        {
+            var spaceIds = GetSpaceIds();
+            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
+            return isASpecificSpaceId && !IsIncludingSystem();
+        }
+
+        string[] GetSpaceIds()
+        {
+            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
+            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+        }
+
+        bool IsIncludingSystem()
+        {
+            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
+            return isMixedScope
+                ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
+                : Client.SpaceContext.IncludeSystem;
+        }
+
+        void ValidateSpaceId(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+            {
+                var spaceIds = GetSpaceIds();
+                var isWildcard = spaceIds != null && spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
+                if (isWildcard)
+                    return;
+                var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&
+                                                                spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId);
+                if (contextDoesNotContainsSpaceIdFromResource)
+                {
+                    throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
+                }
+            }
         }
     }
 

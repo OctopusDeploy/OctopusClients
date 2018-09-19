@@ -19,6 +19,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_ActionOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
+            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
             var repository = new TaskRepository(client);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
@@ -47,6 +48,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_TaskOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
+            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
             var repository = new TaskRepository(client);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
@@ -74,6 +76,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletion_CancelsInATimelyManner()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
+            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
             var repository = new TaskRepository(client);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
