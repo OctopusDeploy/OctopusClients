@@ -65,7 +65,7 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId)
         {
             var existing = repository.FindByName(name);
 
@@ -77,7 +77,7 @@ namespace Octopus.Client.Editors
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
                     Description = description
-                });
+                }, new { clone = cloneId });
             }
             else
             {

@@ -448,7 +448,7 @@ Octopus.Client.Editors.Async
     Task<VariableSetEditor> Variables { get; }
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource> VariableTemplates { get; }
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Octopus.Client.Editors.Async.ProjectEditor Customize(Action<ProjectResource>)
     Octopus.Client.Editors.Async.ProjectEditor IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
     Task<ProjectEditor> Save()
@@ -2528,6 +2528,12 @@ Octopus.Client.Model
     String Title { get; set; }
     String Version { get; set; }
   }
+  class PackageSignatureResource
+  {
+    .ctor()
+    String BaseVersion { get; set; }
+    Byte[] Signature { get; set; }
+  }
   class PerformanceConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2766,6 +2772,7 @@ Octopus.Client.Model
     .ctor(String, String, String)
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+    String ClonedFromProjectId { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentProcessId { get; set; }
@@ -3045,6 +3052,25 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ActivityElement ActivityLog { get; set; }
+  }
+  class ScheduledTaskStatusResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsEnabled { get; set; }
+    String Name { get; set; }
+  }
+  class SchedulerStatusResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsRunning { get; set; }
+    Octopus.Client.Model.ScheduledTaskStatusResource[] TaskStatus { get; set; }
   }
   class ScopedUserRoleResource
     Octopus.Client.Extensibility.IResource
@@ -4859,6 +4885,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
     Octopus.Client.Repositories.Async.ICreate<DeploymentResource>
     Octopus.Client.Repositories.Async.IPaginate<DeploymentResource>
+    Octopus.Client.Repositories.Async.IDelete<DeploymentResource>
   {
     Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
@@ -5034,7 +5061,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
@@ -5091,6 +5118,7 @@ Octopus.Client.Repositories.Async
     Task<Stream> GetRawLogs(String)
     Task Start()
     Task Start(String)
+    Task<SchedulerStatusResource> Status()
     Task Stop()
     Task Stop(String)
     Task Trigger(String)
@@ -5332,6 +5360,11 @@ Octopus.Client.Util
     Octopus.Client.Util.HashCodeCombiner AddObject(Boolean)
     Octopus.Client.Util.HashCodeCombiner AddObject(Object)
     static Int32 GetHashCode(Object[])
+  }
+  class PackageIdentityParser
+  {
+    .ctor()
+    static Boolean TryParsePackageIdAndVersion(String, String&, Octopus.Client.Model.SemanticVersion&)
   }
 }
 Octopus.Client.Validation
