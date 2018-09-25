@@ -138,7 +138,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
                 client.RootDocument =rootResource;
-                await SetupRepository(client);
+                var spaceContext = client.clientOptions.SpaceId == null
+                    ? SpaceContext.SystemOnly()
+                    : SpaceContext.SpecificSpace(client.clientOptions.SpaceId);
+                client.Repository = await OctopusAsyncRepository.Create(client, spaceContext);
                 return client;
             }
             catch
@@ -182,7 +185,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
             await Post(Repository.Link("SignIn"), loginCommand);
             signedIn = true;
-            await SetupRepository(this);
+            var spaceContext = clientOptions.SpaceId == null
+                ? SpaceContext.SystemOnly()
+                : SpaceContext.SpecificSpace(clientOptions.SpaceId);
+            Repository = await OctopusAsyncRepository.Create(this, spaceContext);
         }
 
         public async Task SignOut()
@@ -656,33 +662,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
-        }
-
-        
-
-        private static async Task<SpaceResource> GetSpace(OctopusAsyncClient client, RootResource rootResource, string userProvidedSpaceId)
-        {
-            if (client.IsAuthenticated)
-            {
-                var currentUser =
-                    await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                // If user explicitly specified the spaceId e.g. from the command line, we might use it
-                return !string.IsNullOrEmpty(userProvidedSpaceId)
-                    ? userSpaces.Single(s => s.Id == userProvidedSpaceId)
-                    : userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-
-            return null;
-        }
-
-        private static async Task SetupRepository(OctopusAsyncClient client)
-        {
-            var space = await GetSpace(client, client.RootDocument, client.clientOptions?.SpaceId);
-            var spaceContext = space == null
-                ? SpaceContext.SystemOnly()
-                : SpaceContext.SpecificSpace(space.Id);
-            client.Repository = new OctopusAsyncRepository(client, spaceContext);
         }
 
         /// <summary>

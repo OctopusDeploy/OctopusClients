@@ -20,20 +20,14 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    Octopus.Client.SpaceContext SpaceContext { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
-    Task<IOctopusAsyncClient> ForSpace(String)
-    Task<IOctopusAsyncClient> ForSpaceAndSystem(String)
-    Task<IOctopusAsyncClient> ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
-    Boolean HasLink(String)
-    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
@@ -90,6 +84,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.SpaceContext SpaceContext { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
@@ -103,6 +99,11 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
+    Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(String)
+    Task<IOctopusAsyncRepository> ForSpaceContext(String)
+    Octopus.Client.IOctopusAsyncRepository ForSystemContext()
+    Boolean HasLink(String)
+    String Link(String)
   }
   interface IOctopusClientFactory
   {
@@ -116,22 +117,16 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    Octopus.Client.SpaceContext SpaceContext { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
-    Task<IOctopusAsyncClient> ForSpace(String)
-    Task<IOctopusAsyncClient> ForSpaceAndSystem(String)
-    Task<IOctopusAsyncClient> ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
-    Boolean HasLink(String)
-    String Link(String)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
@@ -151,7 +146,6 @@ Octopus.Client
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
   {
-    .ctor(Octopus.Client.IOctopusAsyncClient)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
@@ -190,6 +184,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.SpaceContext SpaceContext { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
@@ -203,6 +199,12 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
+    static Task<IOctopusAsyncRepository> Create(Octopus.Client.IOctopusAsyncClient, Octopus.Client.SpaceContext)
+    Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(String)
+    Task<IOctopusAsyncRepository> ForSpaceContext(String)
+    Octopus.Client.IOctopusAsyncRepository ForSystemContext()
+    Boolean HasLink(String)
+    String Link(String)
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
@@ -217,13 +219,13 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
-    Octopus.Client.SpaceContext SpaceContext { get; set; }
+    String SpaceId { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
   abstract class OctopusRepositoryExtensions
   {
-    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient)
+    static Task<IOctopusAsyncRepository> CreateRepository(Octopus.Client.IOctopusAsyncClient)
   }
   class OctopusRequest
   {

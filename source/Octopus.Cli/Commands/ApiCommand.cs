@@ -139,7 +139,7 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
-            Repository = repositoryFactory.CreateRepository(client);
+            Repository = await repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
             
             if (enableDebugging)

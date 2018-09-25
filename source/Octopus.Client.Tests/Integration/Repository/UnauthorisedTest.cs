@@ -27,7 +27,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
-            var repo = new OctopusAsyncRepository(AsyncClient);
+            var repo = OctopusAsyncRepository.Create(AsyncClient).Result;
             Func<Task> getUser = () => repo.Users.Get("users-1");
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
