@@ -20,20 +20,22 @@ namespace Octopus.Client.Repositories.Async
         protected readonly string CollectionLinkName;
         protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusAsyncClient client, string collectionLinkName)
+        protected BasicRepository(IOctopusAsyncRepository repository, string collectionLinkName)
         {
-            this.Client = client;
+            this.Client = repository.Client;
+            Repository = repository;
             this.CollectionLinkName = collectionLinkName;
             AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
         public IOctopusAsyncClient Client { get; }
+        public IOctopusAsyncRepository Repository { get; }
 
         public Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             ValidateSpaceId(resource);
             EnrichSpaceIdIfRequire(resource);
-            return Client.Create(Client.Link(CollectionLinkName), resource, pathParameters);
+            return Client.Create(Repository.Link(CollectionLinkName), resource, pathParameters);
         }
 
         public Task<TResource> Modify(TResource resource)
@@ -51,7 +53,7 @@ namespace Octopus.Client.Repositories.Async
         public Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
-            return Client.Paginate(path ?? Client.Link(CollectionLinkName), parameters, getNextPage);
+            return Client.Paginate(path ?? Repository.Link(CollectionLinkName), parameters, getNextPage);
         }
 
         public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -86,7 +88,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<List<TResource>> GetAll()
         {
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
-            return Client.Get<List<TResource>>(Client.Link(CollectionLinkName), parameters);
+            return Client.Get<List<TResource>>(Repository.Link(CollectionLinkName), parameters);
         }
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -124,7 +126,7 @@ namespace Octopus.Client.Repositories.Async
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
             return idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, AdditionalQueryParameters)
-                : Client.Get<TResource>(Client.Link(CollectionLinkName), parameters);
+                : Client.Get<TResource>(Repository.Link(CollectionLinkName), parameters);
         }
 
         public virtual async Task<List<TResource>> Get(params string[] ids)
@@ -134,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = Client.Link(CollectionLinkName);
+            var link = Repository.Link(CollectionLinkName);
             if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
 
@@ -164,7 +166,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 if (IsInSingleSpaceContext())
                 {
-                    spaceResource.SpaceId = Client.SpaceContext.SpaceIds.Single();
+                    spaceResource.SpaceId = Repository.SpaceContext.SpaceIds.Single();
                 }
             }
         }
@@ -179,7 +181,7 @@ namespace Octopus.Client.Repositories.Async
         string[] GetSpaceIds()
         {
             var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Client.SpaceContext.SpaceIds.ToArray();
+            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Repository.SpaceContext.SpaceIds.ToArray();
         }
 
         bool IsIncludingSystem()
@@ -187,7 +189,7 @@ namespace Octopus.Client.Repositories.Async
             var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
             return isMixedScope
                 ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
-                : Client.SpaceContext.IncludeSystem;
+                : Repository.SpaceContext.IncludeSystem;
         }
 
         void ValidateSpaceId(TResource resource)

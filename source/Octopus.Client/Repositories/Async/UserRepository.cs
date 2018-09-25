@@ -32,10 +32,10 @@ namespace Octopus.Client.Repositories.Async
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusAsyncClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new InvitationRepository(Repository);
         }
 
         public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(Client.Link("Register"), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(Repository.Link("Register"), registerCommand).ConfigureAwait(false);
         }
 
         public async Task SignIn(LoginCommand loginCommand)
@@ -84,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<UserResource> GetCurrent()
         {
-            return Client.Get<UserResource>(Client.Link("CurrentUser"));
+            return Client.Get<UserResource>(Repository.Link("CurrentUser"));
         }
 
         public Task<SpaceResource[]> GetSpaces(UserResource user)

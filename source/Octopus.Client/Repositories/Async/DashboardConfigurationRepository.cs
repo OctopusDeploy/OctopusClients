@@ -12,21 +12,21 @@ namespace Octopus.Client.Repositories.Async
 
     class DashboardConfigurationRepository : IDashboardConfigurationRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public DashboardConfigurationRepository(IOctopusAsyncClient client)
+        public DashboardConfigurationRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public Task<DashboardConfigurationResource> GetDashboardConfiguration()
         {
-            return client.Get<DashboardConfigurationResource>(client.Link("DashboardConfiguration"));
+            return repository.Client.Get<DashboardConfigurationResource>(repository.Link("DashboardConfiguration"));
         }
 
         public Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource)
         {
-            return client.Update(client.Link("DashboardConfiguration"), resource);
+            return repository.Client.Update(repository.Link("DashboardConfiguration"), resource);
         }
     }
 }

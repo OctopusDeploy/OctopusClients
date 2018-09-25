@@ -10,8 +10,8 @@ namespace Octopus.Client.Repositories
     
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        public DeploymentProcessRepository(IOctopusClient client)
-            : base(client, "DeploymentProcesses")
+        public DeploymentProcessRepository(IOctopusRepository repository)
+            : base(repository, "DeploymentProcesses")
         {
         }
 

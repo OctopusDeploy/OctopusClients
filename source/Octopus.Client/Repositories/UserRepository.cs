@@ -32,10 +32,10 @@ namespace Octopus.Client.Repositories
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new InvitationRepository(repository);
         }
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
@@ -63,7 +63,7 @@ namespace Octopus.Client.Repositories
         }
         public UserResource Register(RegisterCommand registerCommand)
         {
-            return Client.Post<UserResource, UserResource>(Client.Link("Register"), registerCommand);
+            return Client.Post<UserResource, UserResource>(Repository.Link("Register"), registerCommand);
         }
 
         public void SignIn(LoginCommand loginCommand)
@@ -83,7 +83,7 @@ namespace Octopus.Client.Repositories
 
         public UserResource GetCurrent()
         {
-            return Client.Get<UserResource>(Client.Link("CurrentUser"));
+            return Client.Get<UserResource>(Repository.Link("CurrentUser"));
         }
         
         public SpaceResource[] GetSpaces(UserResource user)

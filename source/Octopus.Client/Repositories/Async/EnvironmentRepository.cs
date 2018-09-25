@@ -37,8 +37,8 @@ namespace Octopus.Client.Repositories.Async
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
-        public EnvironmentRepository(IOctopusAsyncClient client)
-            : base(client, "Environments")
+        public EnvironmentRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Environments")
         {
         }
 
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             bool? hideEmptyEnvironments = false)
         {
-            return Client.Get<EnvironmentsSummaryResource>(Client.Link("EnvironmentsSummary"), new
+            return Client.Get<EnvironmentsSummaryResource>(Repository.Link("EnvironmentsSummary"), new
             {
                 ids,
                 partialName,
@@ -103,7 +103,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Sort(string[] environmentIdsInOrder)
         {
-            return Client.Put(Client.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+            return Client.Put(Repository.Link("EnvironmentSortOrder"), environmentIdsInOrder);
         }
 
         public Task<EnvironmentEditor> CreateOrModify(string name)

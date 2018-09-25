@@ -20,11 +20,11 @@ namespace Octopus.Client.Repositories
     class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
     {
 
-        public SubscriptionRepository(IOctopusClient client) : base(client, "Subscriptions")
+        public SubscriptionRepository(IOctopusRepository repository) : base(repository, "Subscriptions")
         {
         }
 
-        SubscriptionRepository(IOctopusClient client, SpaceContext spaceContext) : base(client, "Subscriptions", spaceContext)
+        SubscriptionRepository(IOctopusRepository repository, SpaceContext spaceContext) : base(repository, "Subscriptions", spaceContext)
         {
         }
 
@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
 
         public ISubscriptionRepository Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Client, ExtendSpaceContext(spaceContext));
+            return new SubscriptionRepository(Repository, ExtendSpaceContext(spaceContext));
         }
     }
 }

@@ -8,11 +8,11 @@ namespace Octopus.Client.Repositories.Async
     {
         private SpaceContext extendedSpaceContext;
 
-        public MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName) : base(client, collectionLinkName)
+        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
         }
 
-        protected MixedScopeBaseRepository(IOctopusAsyncClient client, string collectionLinkName, SpaceContext spaceContext) : base(client,
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext spaceContext) : base(repository,
             collectionLinkName)
         {
             extendedSpaceContext = spaceContext;
@@ -20,20 +20,20 @@ namespace Octopus.Client.Repositories.Async
 
         protected override Dictionary<string, object> AdditionalQueryParameters => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {
-            [MixedScopeConstants.QueryStringParameterIncludeSystem] = extendedSpaceContext?.IncludeSystem ?? Client.SpaceContext.IncludeSystem,
-            [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Client.SpaceContext.SpaceIds
+            [MixedScopeConstants.QueryStringParameterIncludeSystem] = extendedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
+            [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
         };
 
         protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)
         {
             if (extendedSpaceContext == null)
-                extendedSpaceContext = new SpaceContext(Client.SpaceContext.SpaceIds, Client.SpaceContext.IncludeSystem);
+                extendedSpaceContext = new SpaceContext(Repository.SpaceContext.SpaceIds, Repository.SpaceContext.IncludeSystem);
             return extendedSpaceContext.Union(includingSpaceContext);
         }
 
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return extendedSpaceContext ?? Client.SpaceContext;
+            return extendedSpaceContext ?? Repository.SpaceContext;
         }
     }
 }

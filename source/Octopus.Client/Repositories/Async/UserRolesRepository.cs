@@ -9,8 +9,8 @@ namespace Octopus.Client.Repositories.Async
 
     class UserRolesRepository : BasicRepository<UserRoleResource>, IUserRolesRepository
     {
-        public UserRolesRepository(IOctopusAsyncClient client)
-            : base(client, "UserRoles")
+        public UserRolesRepository(IOctopusAsyncRepository repository)
+            : base(repository, "UserRoles")
         {
         }
     }

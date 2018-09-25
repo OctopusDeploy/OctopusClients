@@ -11,8 +11,8 @@ namespace Octopus.Client.Repositories.Async
 
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        public DeploymentProcessRepository(IOctopusAsyncClient client)
-            : base(client, "DeploymentProcesses")
+        public DeploymentProcessRepository(IOctopusAsyncRepository repository)
+            : base(repository, "DeploymentProcesses")
         {
         }
 

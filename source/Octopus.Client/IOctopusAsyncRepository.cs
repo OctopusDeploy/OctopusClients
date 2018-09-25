@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
@@ -9,29 +11,19 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusAsyncRepository
     {
-        /// <summary>
-        /// The client over which the repository is run.
-        /// </summary>
-        IOctopusAsyncClient Client { get; }
-
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }
         IArtifactRepository Artifacts { get; }
-        IBackupRepository Backups { get; }
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         ICertificateConfigurationRepository CertificateConfiguration { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
-        IConfigurationRepository Configuration { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
         IDeploymentProcessRepository DeploymentProcesses { get; }
         IDeploymentRepository Deployments { get; }
         IEnvironmentRepository Environments { get; }
-        IEventRepository Events { get; }
-        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         IFeedRepository Feeds { get; }
         IInterruptionRepository Interruptions { get; }
         ILibraryVariableSetRepository LibraryVariableSets { get; }
@@ -39,9 +31,6 @@ namespace Octopus.Client
         IMachinePolicyRepository MachinePolicies { get; }
         IMachineRepository Machines { get; }
         IMachineRoleRepository MachineRoles { get; }
-        IMigrationRepository Migrations { get; }
-        IOctopusServerNodeRepository OctopusServerNodes { get; }
-        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
@@ -49,20 +38,53 @@ namespace Octopus.Client
         IReleaseRepository Releases { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
         ISchedulerRepository Schedulers { get; }
-        IServerStatusRepository ServerStatus { get; }
-        ISpaceRepository Spaces { get; }
         ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
-        ITaskRepository Tasks { get; }
-        ITeamsRepository Teams { get; }
         ITenantRepository Tenants { get; }
         ITenantVariablesRepository TenantVariables { get; }
-        IUserRepository Users { get; }
-        IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
+        IEventRepository Events { get; }
+        ITaskRepository Tasks { get; }
+        ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
         IUserPermissionsRepository UserPermissions { get; }
+        IBackupRepository Backups { get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+        IConfigurationRepository Configuration { get; }
+        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+        IMigrationRepository Migrations { get; }
+        IOctopusServerNodeRepository OctopusServerNodes { get; }
+        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+        IServerStatusRepository ServerStatus { get; }
+        ISpaceRepository Spaces { get; }
+        IUserRepository Users { get; }
+        IUserRolesRepository UserRoles { get; }
+        /// <summary>
+        /// The client over which the repository is run.
+        /// </summary>
+        IOctopusAsyncClient Client { get; }
+        SpaceContext SpaceContext { get; }
+        Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId);
+        Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(string spaceId);
+        IOctopusAsyncRepository ForSystemContext();
+        SpaceRootResource SpaceRootDocument { get; }
+        /// <summary>
+        /// Determines whether the specified link exists.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns>
+        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
+        /// </returns>
+        bool HasLink(string name);
+
+        /// <summary>
+        /// Gets the link with the specified name.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
+        string Link(string name);
     }
 }

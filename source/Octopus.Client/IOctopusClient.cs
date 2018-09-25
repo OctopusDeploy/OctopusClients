@@ -31,8 +31,6 @@ namespace Octopus.Client
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         RootResource RootDocument { get; }
-        
-        SpaceRootResource SpaceRootDocument { get; }
     
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -328,48 +326,6 @@ namespace Octopus.Client
         RootResource RefreshRootDocument();
 
         /// <summary>
-        /// Requests an IOctopusClient which will operate within a given space.
-        /// </summary>
-        /// <param name="spaceId">The ID of the space.</param>
-        /// <returns>An instance of IOctopusClient</returns>
-        IOctopusClient ForSpace(string spaceId);
-
-        /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within a given and the system space.
-        /// </summary>
-        /// <param name="spaceId">The ID of the space.</param>
-        /// <returns>An instance of IOctopusClient</returns>
-        IOctopusClient ForSpaceAndSystem(string spaceId);
-
-        /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within the system space only.
-        /// </summary>
-        /// <returns>An instance of IOctopusClient</returns>
-        IOctopusClient ForSystem();
-
-        /// <summary>
-        /// Determines whether the specified link exists.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns>
-        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
-        /// </returns>
-        bool HasLink(string name);
-
-        /// <summary>
-        /// Gets the link with the specified name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">If the link is not defined.</exception>
-        string Link(string name);
-        
-        /// <summary>
-        /// The space context of the client
-        /// </summary>
-        SpaceContext SpaceContext { get; }
-
-        /// <summary>
         /// Sign in
         /// </summary>
         /// <param name="loginCommand"></param>
@@ -379,6 +335,7 @@ namespace Octopus.Client
         /// Sign out
         /// </summary>
         void SignOut();
+        bool IsAuthenticated { get; }
     }
 }
 #endif

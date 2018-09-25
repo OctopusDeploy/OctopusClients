@@ -16,7 +16,7 @@ namespace Octopus.Cli.Commands.Releases
                 return ChannelVersionRuleTestResult.Null();
             }
 
-            var link = repository.Client.Link("VersionRuleTest");
+            var link = repository.Link("VersionRuleTest");
 
             var resource = new
             {

@@ -13,14 +13,14 @@ namespace Octopus.Client.Repositories.Async
 
     class VariableSetRepository : BasicRepository<VariableSetResource>, IVariableSetRepository
     {
-        public VariableSetRepository(IOctopusAsyncClient client)
-            : base(client, "Variables")
+        public VariableSetRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Variables")
         {
         }
 
         public Task<string[]> GetVariableNames(string project, string[] environments)
         {
-            return Client.Get<string[]>(Client.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
+            return Client.Get<string[]>(Repository.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
         }
 
         public override Task<List<VariableSetResource>> Get(params string[] ids)

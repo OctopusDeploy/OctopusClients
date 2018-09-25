@@ -14,13 +14,13 @@ namespace Octopus.Client.Repositories.Async
 
     class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
     {
-        public TagSetRepository(IOctopusAsyncClient client) : base(client, "TagSets")
+        public TagSetRepository(IOctopusAsyncRepository repository) : base(repository, "TagSets")
         {
         }
 
         public Task Sort(string[] tagSetIdsInOrder)
         {
-            return Client.Put(Client.Link("TagSetSortOrder"), tagSetIdsInOrder);
+            return Client.Put(Repository.Link("TagSetSortOrder"), tagSetIdsInOrder);
         }
 
         public Task<TagSetEditor> CreateOrModify(string name)

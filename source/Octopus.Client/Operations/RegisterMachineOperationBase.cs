@@ -98,7 +98,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public void Execute(OctopusRepository repository)
         {
-            Execute((IOctopusRepository)repository);
+            Execute((IOctopusRepository) repository);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Octopus.Client.Operations
         {
             using (var client = await clientFactory.CreateAsyncClient(serverEndpoint).ConfigureAwait(false))
             {
-                var repository = new OctopusAsyncRepository(client);
+                var repository = await OctopusAsyncRepository.Create(client);
 
                 await ExecuteAsync(repository).ConfigureAwait(false);
             }

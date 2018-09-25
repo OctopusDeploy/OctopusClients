@@ -12,21 +12,21 @@ namespace Octopus.Client.Repositories.Async
 
     class FeaturesConfigurationRepository : IFeaturesConfigurationRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public FeaturesConfigurationRepository(IOctopusAsyncClient client)
+        public FeaturesConfigurationRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public Task<FeaturesConfigurationResource> GetFeaturesConfiguration()
         {
-            return client.Get<FeaturesConfigurationResource>(client.Link("FeaturesConfiguration"));
+            return repository.Client.Get<FeaturesConfigurationResource>(repository.Link("FeaturesConfiguration"));
         }
 
         public Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
         {
-            return client.Update(client.Link("FeaturesConfiguration"), resource);
+            return repository.Client.Update(repository.Link("FeaturesConfiguration"), resource);
         }
     }
 }

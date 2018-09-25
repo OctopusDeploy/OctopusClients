@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Octopus.Client.Extensions;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -42,7 +43,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> SyncRepositories()
         {
             return from p in typeof(IOctopusRepository).GetProperties()
-                   where p.Name != "Client"
+                   where p.Name != "Client" && p.Name != nameof(SpaceContext) && p.Name != "SpaceRootDocument"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Sync)");
         }
@@ -50,7 +51,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> AsyncRepositories()
         {
             return from p in typeof(IOctopusAsyncRepository).GetProperties()
-                   where p.Name != "Client"
+                   where p.Name != "Client" && p.Name != nameof(SpaceContext) && p.Name != "SpaceRootDocument"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Async)");
         }

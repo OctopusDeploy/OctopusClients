@@ -1,4 +1,7 @@
 ﻿#if SYNC_CLIENT
+using System;
+using System.Linq;
+using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client
@@ -20,60 +23,63 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusRepository(IOctopusClient client)
+        public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
         {
-            this.Client = client;
-
-            Accounts = new AccountRepository(client);
-            ActionTemplates = new ActionTemplateRepository(client);
-            Artifacts = new ArtifactRepository(client);
-            Backups = new BackupRepository(client);
-            BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(client);
-            CertificateConfiguration = new CertificateConfigurationRepository(client);
-            Certificates = new CertificateRepository(client);
-            Channels = new ChannelRepository(client);
-            CommunityActionTemplates = new CommunityActionTemplateRepository(client);
-            Configuration = new ConfigurationRepository(client);
-            DashboardConfigurations = new DashboardConfigurationRepository(client);
-            Dashboards = new DashboardRepository(client);
-            Defects = new DefectsRepository(client);
-            DeploymentProcesses = new DeploymentProcessRepository(client);
-            Deployments = new DeploymentRepository(client);
-            Environments = new EnvironmentRepository(client);
-            Events = new EventRepository(client);
-            FeaturesConfiguration = new FeaturesConfigurationRepository(client);
-            Feeds = new FeedRepository(client);
-            Interruptions = new InterruptionRepository(client);
-            LibraryVariableSets = new LibraryVariableSetRepository(client);
-            Lifecycles = new LifecyclesRepository(client);
-            MachinePolicies = new MachinePolicyRepository(client);
-            MachineRoles = new MachineRoleRepository(client);
-            Machines = new MachineRepository(client);
-            Migrations = new MigrationRepository(client);
-            OctopusServerNodes = new OctopusServerNodeRepository(client);
-            PerformanceConfiguration = new PerformanceConfigurationRepository(client);
-            ProjectGroups = new ProjectGroupRepository(client);
-            Projects = new ProjectRepository(client);
-            ProjectTriggers = new ProjectTriggerRepository(client);
-            Proxies = new ProxyRepository(client);
-            Releases = new ReleaseRepository(client);
-            RetentionPolicies = new RetentionPolicyRepository(client);
-            Schedulers = new SchedulerRepository(client);
-            ServerStatus = new ServerStatusRepository(client);
-            Spaces = new SpaceRepository(client);
-            Subscriptions = new SubscriptionRepository(client);
-            TagSets = new TagSetRepository(client);
-            Tasks = new TaskRepository(client);
-            Teams = new TeamsRepository(client);
-            Tenants = new TenantRepository(client);
-            TenantVariables = new TenantVariablesRepository(client);
-            UserRoles = new UserRolesRepository(client);
-            Users = new UserRepository(client);
-            VariableSets = new VariableSetRepository(client);
-            Workers = new WorkerRepository(client);
-            WorkerPools = new WorkerPoolRepository(client);
-            ScopedUserRoles = new ScopedUserRoleRepository(client);
-            UserPermissions = new UserPermissionsRepository(client);
+            Client = client;
+            var spaceId = spaceContext?.SpaceIds.SingleOrDefault();
+            var space = GetSpace(spaceId);
+            SpaceContext = space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpace(space.Id);
+            SpaceRootDocument = LoadSpaceRootResource(space?.Id);
+            Accounts = new AccountRepository(this);
+            ActionTemplates = new ActionTemplateRepository(this);
+            Artifacts = new ArtifactRepository(this);
+            Backups = new BackupRepository(this);
+            BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(this);
+            CertificateConfiguration = new CertificateConfigurationRepository(this);
+            Certificates = new CertificateRepository(this);
+            Channels = new ChannelRepository(this);
+            CommunityActionTemplates = new CommunityActionTemplateRepository(this);
+            Configuration = new ConfigurationRepository(this);
+            DashboardConfigurations = new DashboardConfigurationRepository(this);
+            Dashboards = new DashboardRepository(this);
+            Defects = new DefectsRepository(this);
+            DeploymentProcesses = new DeploymentProcessRepository(this);
+            Deployments = new DeploymentRepository(this);
+            Environments = new EnvironmentRepository(this);
+            Events = new EventRepository(this);
+            FeaturesConfiguration = new FeaturesConfigurationRepository(this);
+            Feeds = new FeedRepository(this);
+            Interruptions = new InterruptionRepository(this);
+            LibraryVariableSets = new LibraryVariableSetRepository(this);
+            Lifecycles = new LifecyclesRepository(this);
+            MachinePolicies = new MachinePolicyRepository(this);
+            MachineRoles = new MachineRoleRepository(this);
+            Machines = new MachineRepository(this);
+            Migrations = new MigrationRepository(this);
+            OctopusServerNodes = new OctopusServerNodeRepository(this);
+            PerformanceConfiguration = new PerformanceConfigurationRepository(this);
+            ProjectGroups = new ProjectGroupRepository(this);
+            Projects = new ProjectRepository(this);
+            ProjectTriggers = new ProjectTriggerRepository(this);
+            Proxies = new ProxyRepository(this);
+            Releases = new ReleaseRepository(this);
+            RetentionPolicies = new RetentionPolicyRepository(this);
+            Schedulers = new SchedulerRepository(this);
+            ServerStatus = new ServerStatusRepository(this);
+            Spaces = new SpaceRepository(this);
+            Subscriptions = new SubscriptionRepository(this);
+            TagSets = new TagSetRepository(this);
+            Tasks = new TaskRepository(this);
+            Teams = new TeamsRepository(this);
+            Tenants = new TenantRepository(this);
+            TenantVariables = new TenantVariablesRepository(this);
+            UserRoles = new UserRolesRepository(this);
+            Users = new UserRepository(this);
+            VariableSets = new VariableSetRepository(this);
+            Workers = new WorkerRepository(this);
+            WorkerPools = new WorkerPoolRepository(this);
+            ScopedUserRoles = new ScopedUserRoleRepository(this);
+            UserPermissions = new UserPermissionsRepository(this);
         }
 
         public IOctopusClient Client { get; }
@@ -128,6 +134,76 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
+        public SpaceContext SpaceContext { get; }
+
+        public IOctopusRepository ForSpaceContext(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            LoadSpaceRootResource(spaceId);
+            return new OctopusRepository(Client, SpaceContext.SpecificSpace(spaceId));
+        }
+
+        public IOctopusRepository ForSpaceAndSystemContext(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            LoadSpaceRootResource(spaceId);
+            return new OctopusRepository(Client, SpaceContext.SpecificSpaceAndSystem(spaceId));
+        }
+
+        public IOctopusRepository ForSystemContext()
+        {
+            LoadSpaceRootResource(null);
+            return new OctopusRepository(Client, SpaceContext.SystemOnly());
+        }
+
+        public SpaceRootResource SpaceRootDocument { get; private set; }
+
+        public bool HasLink(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || Client.RootDocument.HasLink(name);
+        }
+
+        public string Link(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : Client.RootDocument.Link(name);
+        }
+
+        void ValidateSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
+
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
+        }
+
+        SpaceRootResource LoadSpaceRootResource(string spaceId)
+        {
+            return !string.IsNullOrEmpty(spaceId) ?
+                Client.Get<SpaceRootResource>(Client.RootDocument.Link("SpaceHome"), new { spaceId })
+                : null;
+        }
+
+        SpaceResource GetSpace(string userProvidedSpaceId)
+        {
+            if (Client.IsAuthenticated)
+            {
+                var currentUser =
+                    Client.Get<UserResource>(Client.RootDocument.Links["CurrentUser"]);
+                var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                // If user explicitly specified the spaceId e.g. from the command line, we might use it
+                return !string.IsNullOrEmpty(userProvidedSpaceId)
+                    ? userSpaces.Single(s => s.Id == userProvidedSpaceId)
+                    : userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            return null;
+        }
     }
 }
 #endif

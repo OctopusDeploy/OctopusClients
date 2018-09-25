@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories.Async
 
     class SpaceRepository : BasicRepository<SpaceResource>, ISpaceRepository
     {
-        public SpaceRepository(IOctopusAsyncClient client) : base(client, "Spaces")
+        public SpaceRepository(IOctopusAsyncRepository repository) : base(repository, "Spaces")
         {
         }
 

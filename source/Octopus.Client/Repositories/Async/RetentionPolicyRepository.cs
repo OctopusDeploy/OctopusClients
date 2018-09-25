@@ -12,14 +12,14 @@ namespace Octopus.Client.Repositories.Async
 
     class RetentionPolicyRepository : BasicRepository<RetentionPolicyResource>, IRetentionPolicyRepository
     {
-        public RetentionPolicyRepository(IOctopusAsyncClient client)
-            : base(client, "RetentionPolicies")
+        public RetentionPolicyRepository(IOctopusAsyncRepository repository)
+            : base(repository, "RetentionPolicies")
         {
         }
 
         public Task<TaskResource> ApplyNow(string spaceId = null)
         {
-            var tasks = new TaskRepository(Client);
+            var tasks = new TaskRepository(Repository);
             var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API", SpaceId = spaceId};
             return tasks.Create(task);
         }

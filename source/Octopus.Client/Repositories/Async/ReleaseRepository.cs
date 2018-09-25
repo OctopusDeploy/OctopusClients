@@ -32,8 +32,8 @@ namespace Octopus.Client.Repositories.Async
 
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
-        public ReleaseRepository(IOctopusAsyncClient client)
-            : base(client, "Releases")
+        public ReleaseRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Releases")
         {
         }
 
@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
         {
-            return Client.Create(Client.Link(CollectionLinkName), resource, new { ignoreChannelRules });
+            return Client.Create(Repository.Link(CollectionLinkName), resource, new { ignoreChannelRules });
         }
 
         public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)

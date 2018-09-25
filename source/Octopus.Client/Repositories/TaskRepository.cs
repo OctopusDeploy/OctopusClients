@@ -32,13 +32,13 @@ namespace Octopus.Client.Repositories
 
     class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
-        public TaskRepository(IOctopusClient client)
-            : base(client, "Tasks")
+        public TaskRepository(IOctopusRepository repository)
+            : base(repository, "Tasks")
         {
         }
 
-        TaskRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "Tasks", spaceContext)
+        TaskRepository(IOctopusRepository repository, SpaceContext spaceContext)
+            : base(repository, "Tasks", spaceContext)
         {
         }
 
@@ -250,7 +250,7 @@ namespace Octopus.Client.Repositories
 
         public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Client, ExtendSpaceContext(spaceContext));
+            return new TaskRepository(Repository, ExtendSpaceContext(spaceContext));
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
@@ -263,7 +263,7 @@ namespace Octopus.Client.Repositories
 
         TaskResource CreateSystemTask(TaskResource task)
         {
-            return Client.Create(Client.Link(CollectionLinkName), task);
+            return Client.Create(Repository.Link(CollectionLinkName), task);
         }
     }
 }

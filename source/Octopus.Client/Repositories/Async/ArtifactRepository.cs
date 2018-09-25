@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories.Async
 
     class ArtifactRepository : BasicRepository<ArtifactResource>, IArtifactRepository
     {
-        public ArtifactRepository(IOctopusAsyncClient client)
-            : base(client, "Artifacts")
+        public ArtifactRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Artifacts")
         {
         }
 
@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ResourceCollection<ArtifactResource>> FindRegarding(IResource resource)
         {
-            return Client.List<ArtifactResource>(Client.Link("Artifacts"), new { regarding = resource.Id });
+            return Client.List<ArtifactResource>(Repository.Link("Artifacts"), new { regarding = resource.Id });
         }
     }
 }

@@ -5,6 +5,7 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -14,128 +15,96 @@ namespace Octopus.Client.Tests.Spaces
     public class SpaceIdAsyncTests
     {
 
-        IOctopusAsyncClient SetupAsyncClient(string[] spaceIds, bool includeSystem)
+        IOctopusAsyncClient SetupAsyncClient(string spaceId)
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.SpaceContext.Returns(new SpaceContext(spaceIds, includeSystem));
+            client.IsAuthenticated.Returns(true);
+            client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
+            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = spaceId, IsDefault = true } });
+            client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
+            client.RootDocument.Returns(new RootResource()
+            {
+                Links =
+                {
+                    { "Teams", "" },
+                    { "ProjectGroups", "" },
+                    { "CurrentUser",  ""},
+                    { "SpaceHome",  ""},
+                }
+            });
             return client;
         }
 
         [Test]
-        [TestCase(new[] { "Spaces-1" }, false, TestName = "Space1")]
-        [TestCase(new[] { "Spaces-2" }, false, TestName = "Space2")]
-        public void MixedScoped_SingleSpaceContextShouldEnrichSpaceId(string[] spaceIds, bool includeSystem)
+        [TestCase("Spaces-1", TestName = "Space1")]
+        [TestCase("Spaces-2", TestName = "Space2")]
+        public void MixedScoped_SingleSpaceContextShouldEnrichSpaceId(string spaceId)
         {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
+            var client = SetupAsyncClient(spaceId);
             client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
             {
-                t.SpaceId.Should().Be(spaceIds.Single());
+                t.SpaceId.Should().Be(spaceId);
             }));
-            var teamRepo = new TeamsRepository(client);
+            var teamRepo = new TeamsRepository(OctopusAsyncRepository.Create(client, SpaceContext.SpecificSpace(spaceId)).Result);
             var created = teamRepo.Create(new TeamResource() { Name = "Test" }).Result;
         }
 
         [Test]
-        [TestCase(new[] { "Spaces-1" }, false, TestName = "Space1")]
-        [TestCase(new[] { "Spaces-2" }, false, TestName = "Space2")]
-        public void SpaceScoped_SingleSpaceContextShouldNotEnrichSpaceId(string[] spaceIds, bool includeSystem)
+        [TestCase("Spaces-1", TestName = "Space1")]
+        [TestCase("Spaces-2", TestName = "Space2")]
+        public void SpaceScoped_SingleSpaceContextShouldNotEnrichSpaceId(string spaceId)
         {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
+            var client = SetupAsyncClient(spaceId);
             client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t =>
             {
                 t.SpaceId.Should().BeNullOrEmpty();
             }));
-            var repo = new ProjectGroupRepository(client);
+            var repo = new ProjectGroupRepository(OctopusAsyncRepository.Create(client, SpaceContext.SpecificSpace(spaceId)).Result);
             var _ = repo.Create(new ProjectGroupResource { Name = "Test" }).Result;
         }
 
         [Test]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        [TestCase(new string[0], true, TestName = "System only")]
-        public void NonSingleSpaceContextShouldNotEnrichSpaceId(string[] spaceIds, bool includeSystem)
+        [TestCase("Spaces-2", false, TestName = "Spacific spaces")]
+        [TestCase("Spaces-2", true, TestName = "Specific space with system")]
+        [TestCase("Spaces-2", true, TestName = "Specific spaces with system")]
+        [TestCase(null, true, TestName = "System only")]
+        public void NonSingleSpaceContextShouldNotEnrichSpaceId(string includingSpaceId, bool includeSystem)
         {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
+            var client = SetupAsyncClient("Spaces-1");
             client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
             {
                 t.SpaceId.Should().BeNullOrEmpty();
             }));
-            var teamRepo = new TeamsRepository(client);
-            var _ = teamRepo.Create(new TeamResource() { Name = "Test" }).Result;
+            var includingSpaceContext = new SpaceContext(new []{includingSpaceId}, includeSystem);
+            var teamRepo = new TeamsRepository(OctopusAsyncRepository.Create(client).Result);
+            var multiScoped = teamRepo.Including(includingSpaceContext);
+            var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
         }
 
         [Test]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        public void NonSingleSpaceContextShouldNotChangeExistingSpaceId(string[] spaceIds, bool includeSystem)
+        [TestCase("Spaces-2", false, TestName = "Spacific spaces")]
+        [TestCase("Spaces-1", true, TestName = "Specific space with system")]
+        [TestCase("Spaces-2", true, TestName = "Specific spaces with system")]
+        public void NonSingleSpaceContextShouldNotChangeExistingSpaceId(string includingSpaceId, bool includeSystem)
         {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
+            var client = SetupAsyncClient("Spaces-1");
             client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().BeNullOrEmpty()));
-            var teamRepo = new TeamsRepository(client);
-            var _ = teamRepo.Create(new TeamResource() { Name = "Test" }).Result;
+            var teamRepo = new TeamsRepository(OctopusAsyncRepository.Create(client).Result);
+            var multiScoped = teamRepo.Including(new SpaceContext(new[] {includingSpaceId}, includeSystem));
+            var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
         }
 
         [Test]
-        [TestCase(new[] { "Spaces-1" }, false, TestName = "Specific space")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        [TestCase(new string[0], true, TestName = "System only")]
-        public void SpaceIdInResourceOutsideOfTheSpaceContextShouldThrowMismatchSpaceContextException(string[] spaceIds, bool includeSystem)
+        [TestCase("Spaces-2", false, TestName = "Spacific spaces")]
+        [TestCase(null, true, TestName = "Specific space with system")]
+        [TestCase("Spaces-2", true, TestName = "Specific spaces with system")]
+        public void SpaceIdInResourceOutsideOfTheSpaceContextShouldThrowMismatchSpaceContextException(string includingSpaceId, bool includeSystem)
         {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
+            var client = SetupAsyncClient("Spaces-1");
             client.Create(Arg.Any<string>(), Arg.Any<TeamResource>());
-            var teamRepo = new TeamsRepository(client);
-            Func<Task<TeamResource>> exec = () => teamRepo.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-NotWithinContext" });
-            exec.ShouldThrow<MismatchSpaceContextException>();
-        }
-
-
-
-
-
-        [Test]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        [TestCase(new string[0], true, TestName = "System only")]
-        public void SpaceScoped_NonSingleSpaceContextShouldNotEnrichSpaceId(string[] spaceIds, bool includeSystem)
-        {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
-            client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t =>
-            {
-                t.SpaceId.Should().BeNullOrEmpty();
-            }));
-            var teamRepo = new ProjectGroupRepository(client);
-            var _ = teamRepo.Create(new ProjectGroupResource() { Name = "Test" }).Result;
-        }
-
-        [Test]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        public void SpaceScoped_NonSingleSpaceContextShouldNotChangeExistingSpaceId(string[] spaceIds, bool includeSystem)
-        {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
-            client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t => t.SpaceId.Should().BeNullOrEmpty()));
-            var teamRepo = new ProjectGroupRepository(client);
-            var _ = teamRepo.Create(new ProjectGroupResource() { Name = "Test" }).Result;
-        }
-
-        [Test]
-        [TestCase(new[] { "Spaces-1" }, false, TestName = "Specific space")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, false, TestName = "Spacific spaces")]
-        [TestCase(new[] { "Spaces-1" }, true, TestName = "Specific space with system")]
-        [TestCase(new[] { "Spaces-1", "Spaces-2" }, true, TestName = "Specific spaces with system")]
-        [TestCase(new string[0], true, TestName = "System only")]
-        public void SpaceScoped_SpaceIdInResourceOutsideOfTheSpaceContextShouldThrowMismatchSpaceContextException(string[] spaceIds, bool includeSystem)
-        {
-            var client = SetupAsyncClient(spaceIds, includeSystem);
-            client.Create(Arg.Any<string>(), Arg.Any<ProjectGroupResource>());
-            var teamRepo = new ProjectGroupRepository(client);
-            Func<Task<ProjectGroupResource>> exec = () => teamRepo.Create(new ProjectGroupResource() { Name = "Test", SpaceId = "Spaces-NotWithinContext" });
+            var teamRepo = new TeamsRepository(OctopusAsyncRepository.Create(client).Result);
+            var multiScoped = teamRepo.Including(new SpaceContext(new[] {includingSpaceId}, includeSystem));
+            Func<Task<TeamResource>> exec = () => multiScoped.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-NotWithinContext" });
             exec.ShouldThrow<MismatchSpaceContextException>();
         }
     }

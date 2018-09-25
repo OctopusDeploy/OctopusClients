@@ -13,14 +13,14 @@ namespace Octopus.Client.Repositories.Async
     {
         public Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
         {
-            return Client.Get<List<TenantVariableResource>>(Client.Link("TenantVariables"), new
+            return Client.Get<List<TenantVariableResource>>(Repository.Link("TenantVariables"), new
             {
                 projectId = projectResource?.Id
             });
         }
 
-        public TenantVariablesRepository(IOctopusAsyncClient client) 
-            : base(client, "TenantVariables")
+        public TenantVariablesRepository(IOctopusAsyncRepository repository) 
+            : base(repository, "TenantVariables")
         {
         }
     }

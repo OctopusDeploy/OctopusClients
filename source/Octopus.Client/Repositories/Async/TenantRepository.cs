@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories.Async
 
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
     {
-        public TenantRepository(IOctopusAsyncClient client)
-            : base(client, "Tenants")
+        public TenantRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Tenants")
         {
         }
 
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TenantResource>> FindAll(string name, string[] tags, int pageSize = int.MaxValue)
         {
-            return Client.Get<List<TenantResource>>(Client.Link("Tenants"), new { id = IdValueConstant.IdAll, name, tags, take = pageSize });
+            return Client.Get<List<TenantResource>>(Repository.Link("Tenants"), new { id = IdValueConstant.IdAll, name, tags, take = pageSize });
         }
 
         public Task<TenantVariableResource> ModifyVariables(TenantResource tenant, TenantVariableResource variables)
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
         {
-            return Client.Get<List<TenantsMissingVariablesResource>>(Client.Link("TenantsMissingVariables"), new
+            return Client.Get<List<TenantsMissingVariablesResource>>(Repository.Link("TenantsMissingVariables"), new
             {
                 tenantId = tenantId,
                 projectId = projectId,
@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<MultiTenancyStatusResource> Status()
         {
-            return Client.Get<MultiTenancyStatusResource>(Client.Link("TenantsStatus"));
+            return Client.Get<MultiTenancyStatusResource>(Repository.Link("TenantsStatus"));
         }
 
         public Task SetLogo(TenantResource tenant, string fileName, Stream contents)

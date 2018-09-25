@@ -17,51 +17,51 @@ namespace Octopus.Client.Repositories
     
     class SchedulerRepository : ISchedulerRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public SchedulerRepository(IOctopusClient client)
+        public SchedulerRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public void Start()
         {
-            client.GetContent("~/api/scheduler/start");
+            repository.Client.GetContent("~/api/scheduler/start");
         }
 
         public void Start(string taskName)
         {
-            client.GetContent($"~/api/scheduler/start?task={taskName}");
+            repository.Client.GetContent($"~/api/scheduler/start?task={taskName}");
         }
 
         public void Trigger(string taskName)
         {
-            client.GetContent($"~/api/scheduler/trigger?task={taskName}");
+            repository.Client.GetContent($"~/api/scheduler/trigger?task={taskName}");
         }
 
         public void Stop()
         {
-            client.GetContent("~/api/scheduler/stop");
+            repository.Client.GetContent("~/api/scheduler/stop");
         }
 
         public void Stop(string taskName)
         {
-            client.GetContent($"~/api/scheduler/stop?task={taskName}");
+            repository.Client.GetContent($"~/api/scheduler/stop?task={taskName}");
         }
 
         public ScheduledTaskDetailsResource GetLogs(string taskName)
         {
-            return client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
+            return repository.Client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
         }
 
         public Stream GetRawLogs(string taskName)
         {
-            return client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
+            return repository.Client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
         }
 
         public SchedulerStatusResource Status()
         {
-            return client.Get<SchedulerStatusResource>("~/api/scheduler");
+            return repository.Client.Get<SchedulerStatusResource>("~/api/scheduler");
         }
     }
 }
