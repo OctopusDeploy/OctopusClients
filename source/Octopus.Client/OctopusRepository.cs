@@ -26,9 +26,10 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
         {
             Client = client;
-            var spaceId = spaceContext?.SpaceIds.SingleOrDefault();
-            var space = GetSpace(spaceId);
-            SpaceContext = space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpace(space.Id);
+            var space = TryGetSpace(spaceContext);
+            SpaceContext = space == null ? SpaceContext.SystemOnly() : 
+                spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
+
             SpaceRootDocument = LoadSpaceRootResource(space?.Id);
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
@@ -190,7 +191,7 @@ namespace Octopus.Client
                 : null;
         }
 
-        SpaceResource GetSpace(string userProvidedSpaceId)
+        SpaceResource TryGetSpace(SpaceContext spaceContext)
         {
             if (Client.IsAuthenticated)
             {
@@ -198,9 +199,8 @@ namespace Octopus.Client
                     Client.Get<UserResource>(Client.RootDocument.Links["CurrentUser"]);
                 var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 // If user explicitly specified the spaceId e.g. from the command line, we might use it
-                return !string.IsNullOrEmpty(userProvidedSpaceId)
-                    ? userSpaces.Single(s => s.Id == userProvidedSpaceId)
-                    : userSpaces.SingleOrDefault(s => s.IsDefault);
+                return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
+                    spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }
             return null;
         }

@@ -88,10 +88,12 @@ namespace Octopus.Client
 
         public static async Task<IOctopusAsyncRepository> Create(IOctopusAsyncClient client, SpaceContext spaceContext = null)
         {
-            var spaceId = spaceContext?.SpaceIds.SingleOrDefault();
-            var space = await GetSpace(client, spaceId);
+            var space = await TryGetSpace(client, spaceContext);
+            spaceContext = space == null ? SpaceContext.SystemOnly() :
+                spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
+
             var spaceRoot = await LoadSpaceRootResource(client, space?.Id);
-            return new OctopusAsyncRepository(client, space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpace(space.Id))
+            return new OctopusAsyncRepository(client, spaceContext)
             {
                 SpaceRootDocument = spaceRoot
             };
@@ -210,17 +212,16 @@ namespace Octopus.Client
                 : null;
         }
 
-        static async Task<SpaceResource> GetSpace(IOctopusAsyncClient client, string userProvidedSpaceId)
+        static async Task<SpaceResource> TryGetSpace(IOctopusAsyncClient client, SpaceContext spaceContext)
         {
             if (client.IsAuthenticated)
             {
                 var currentUser =
-                    await client.Get<UserResource>(client.RootDocument.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                    await client.Get<UserResource>(client.RootDocument.Links["CurrentUser"]);
+                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 // If user explicitly specified the spaceId e.g. from the command line, we might use it
-                return !string.IsNullOrEmpty(userProvidedSpaceId)
-                    ? userSpaces.Single(s => s.Id == userProvidedSpaceId)
-                    : userSpaces.SingleOrDefault(s => s.IsDefault);
+                return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
+                    spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }
 
             return null;
