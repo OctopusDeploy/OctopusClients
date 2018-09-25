@@ -22,7 +22,6 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        private readonly string spaceId;
         CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
@@ -36,16 +35,11 @@ namespace Octopus.Client
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
-        {
-        }
-
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId = null)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint)
         {
             rootDocumentUri = "~/api";
             rootResourcesLazy = new Lazy<RootResource>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
-            this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
         }

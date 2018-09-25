@@ -313,7 +313,6 @@ Octopus.Client
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
     .ctor(Octopus.Client.OctopusServerEndpoint)
-    .ctor(Octopus.Client.OctopusServerEndpoint, String)
     Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
@@ -352,7 +351,6 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
-    String SpaceId { get; set; }
     TimeSpan Timeout { get; set; }
   }
   class OctopusRepository

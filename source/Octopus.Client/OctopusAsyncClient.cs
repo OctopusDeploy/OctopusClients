@@ -138,10 +138,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
                 client.RootDocument =rootResource;
-                var spaceContext = client.clientOptions.SpaceId == null
-                    ? SpaceContext.SystemOnly()
-                    : SpaceContext.SpecificSpace(client.clientOptions.SpaceId);
-                client.Repository = await OctopusAsyncRepository.Create(client, spaceContext);
+                client.Repository = await OctopusAsyncRepository.Create(client);
                 return client;
             }
             catch
@@ -185,10 +182,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
             await Post(Repository.Link("SignIn"), loginCommand);
             signedIn = true;
-            var spaceContext = clientOptions.SpaceId == null
-                ? SpaceContext.SystemOnly()
-                : SpaceContext.SpecificSpace(clientOptions.SpaceId);
-            Repository = await OctopusAsyncRepository.Create(this, spaceContext);
+            Repository = await OctopusAsyncRepository.Create(this);
         }
 
         public async Task SignOut()

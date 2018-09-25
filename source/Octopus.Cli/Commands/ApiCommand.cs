@@ -68,7 +68,6 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
-            options.Add("spaceId=", $"[Optional] The specific spaceId the client should connect. If the spaceId is omitted, the default space is used if there is one. ", v => clientOptions.SpaceId = v);
             options.AddLogLevelOptions();
         }
 
