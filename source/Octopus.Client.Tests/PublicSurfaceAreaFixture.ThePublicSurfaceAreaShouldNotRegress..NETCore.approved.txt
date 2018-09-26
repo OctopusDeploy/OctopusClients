@@ -3292,7 +3292,6 @@ Octopus.Client.Model
     Boolean IsDefault { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeams { get; set; }
-    Octopus.Client.Model.ReferenceCollection OwnerUsers { get; set; }
     Boolean TaskQueueStopped { get; set; }
     Octopus.Client.Model.ReferenceCollection UsersToBeAddedToSpaceMangersTeam { get; set; }
   }
