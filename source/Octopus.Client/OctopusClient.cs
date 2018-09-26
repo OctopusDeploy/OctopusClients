@@ -22,15 +22,14 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        private readonly string spaceId;
         CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         readonly string rootDocumentUri;
-        private Lazy<RootResource> rootResourcesLazy;
+        private Lazy<RootResources> rootResourcesLazy;
         private bool signedIn = false;
-        public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -40,14 +39,20 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, string spaceId = null)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext = null)
         {
+            SpaceContext = spaceContext;
             rootDocumentUri = "~/api";
-            rootResourcesLazy = new Lazy<RootResource>(LoadInitialRootResources, true);
+            rootResourcesLazy = new Lazy<RootResources>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
-            this.spaceId = spaceId;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
+        }
+
+        OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext,
+            CookieContainer preservedCookieContainer) : this(serverEndpoint, spaceContext)
+        {
+            cookieContainer = preservedCookieContainer;
         }
 
         /// <summary>
@@ -57,7 +62,9 @@ namespace Octopus.Client
         /// that it is only requested once for
         /// the current <see cref="IOctopusClient" />.
         /// </summary>
-        public RootResource RootDocument => rootResourcesLazy.Value;
+        public RootResource RootDocument => rootResourcesLazy.Value.RootResource;
+
+        public SpaceRootResource SpaceRootDocument => rootResourcesLazy.Value.SpaceRootResource;
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -70,32 +77,97 @@ namespace Octopus.Client
         /// <returns>A fresh copy of the root document.</returns>
         public RootResource RefreshRootDocument()
         {
-            rootResourcesLazy = new Lazy<RootResource>(() =>
+            rootResourcesLazy = new Lazy<RootResources>(() =>
             {
-                return Get<RootResource>(rootDocumentUri);
+                var rootResource = Get<RootResource>(rootDocumentUri);
+                var spaceRootResource = LoadSpaceResource(rootResource);
+                return new RootResources(rootResource, spaceRootResource);
             });
-            return rootResourcesLazy.Value;
+            return rootResourcesLazy.Value.RootResource;
         }
 
-        RootResource LoadInitialRootResources()
+        RootResources LoadInitialRootResources()
         {
-            return EstablishSession();
+            var root = EstablishSession();
+            var spaceRoot = LoadSpaceResource(root);
+            return new RootResources(root, spaceRoot);
         }
 
+        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
+        {
+            if (this.SpaceContext == null)
+            {
+                var defaultSpace = GetDefaultSpace(rootDocument);
+                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
+            }
+
+            var spaceId = GetSpaceId(SpaceContext);
+            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
+        }
+
+        class RootResources
+        {
+            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
+            {
+                RootResource = rootResource;
+                SpaceRootResource = spaceRootResource;
+            }
+
+            public RootResource RootResource { get; }
+            public SpaceRootResource SpaceRootResource { get; }
+        }
+
+        public SpaceContext SpaceContext { get; private set; }
         public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            Post(RootDocument.Links["SignIn"], loginCommand);
+            Post(Link("SignIn"), loginCommand);
             signedIn = true;
+            SpaceContext = null;
+            var closureRoot = this.RootDocument;
+            rootResourcesLazy = new Lazy<RootResources>(() =>
+            {
+                var spaceRoot = LoadSpaceResource(closureRoot);
+                return new RootResources(closureRoot, spaceRoot);
+            });
         }
 
         public void SignOut()
         {
-            Post(RootDocument.Links["SignOut"]);
+            Post(Link("SignOut"));
             signedIn = false;
+        }
+
+        public IOctopusClient ForSpace(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId), cookieContainer);
+        }
+
+        public IOctopusClient ForSpaceAndSystem(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId), cookieContainer);
+        }
+
+        public IOctopusClient ForSystem()
+        {
+            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly(), cookieContainer);
+        }
+
+        public bool HasLink(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
+        }
+
+        public string Link(string name)
+        {
+            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : RootDocument.Link(name);
         }
 
         /// <summary>
@@ -125,6 +197,7 @@ namespace Octopus.Client
         {
             // Force the Lazy instance to be loaded
             RootDocument.Link("Self");
+            SpaceRootDocument.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -634,6 +707,34 @@ namespace Octopus.Client
                     }
                 }
             }
+        }
+
+        private void ValidateSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
+        }
+
+        private static string GetSpaceId(SpaceContext spaceContext)
+        {
+            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
+        }
+
+        private SpaceResource GetDefaultSpace(RootResource root)
+        {
+            if (IsAuthenticated)
+            {
+                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
+                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            return null;
         }
 
         /// <summary>

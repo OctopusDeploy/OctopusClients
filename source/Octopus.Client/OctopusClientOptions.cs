@@ -20,9 +20,9 @@ namespace Octopus.Client
 #endif
         }
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
-        /// <summary>
-        /// The allowed SSL Protocols
-        /// </summary>
+/// <summary>
+/// The allowed SSL Protocols
+/// </summary>
         public SslProtocols SslProtocols { get; set; }
 
         /// <summary>
@@ -35,6 +35,7 @@ namespace Octopus.Client
         public string Proxy { get; set; }
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
-        public string SpaceId { get; set; }
+        public SpaceContext SpaceContext { get; set; }
+        internal CookieContainer CookieContainer { get; set; }
     }
 }
