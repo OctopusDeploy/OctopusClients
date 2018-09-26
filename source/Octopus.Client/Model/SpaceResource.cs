@@ -6,8 +6,8 @@ namespace Octopus.Client.Model
     {
         public SpaceResource()
         {
-            OwnerTeams = new ReferenceCollection();
-            OwnerUsers = new ReferenceCollection();
+            SpaceManagersTeams = new ReferenceCollection();
+            UsersToBeAddedToSpaceMangersTeam = new ReferenceCollection();
         }
 
         [Writeable]
@@ -22,9 +22,9 @@ namespace Octopus.Client.Model
         public bool TaskQueueStopped { get; set; }
 
         [Writeable]
-        public ReferenceCollection OwnerTeams { get; set; }
+        public ReferenceCollection SpaceManagersTeams { get; set; }
         
         [Writeable]
-        public ReferenceCollection OwnerUsers { get; set; }
+        public ReferenceCollection UsersToBeAddedToSpaceMangersTeam { get; set; }
     }
 }
