@@ -137,8 +137,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                client.RootDocument =rootResource;
-                await SetupRepository(client);
+                client.Repository = await OctopusAsyncRepository.Create(client);
                 return client;
             }
             catch
@@ -149,30 +148,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         }
 
         /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusAsyncClient" />.
-        /// </summary>
-        public RootResource RootDocument { get; private set; }
-
-        /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public async Task<RootResource> RefreshRootDocument()
-        {
-            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            return rootDocument;
-        }
-
-        
 
         public async Task SignIn(LoginCommand loginCommand)
         {
@@ -656,33 +635,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
-        }
-
-        
-
-        private static async Task<SpaceResource> GetSpace(OctopusAsyncClient client, RootResource rootResource, string userProvidedSpaceId)
-        {
-            if (client.IsAuthenticated)
-            {
-                var currentUser =
-                    await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                // If user explicitly specified the spaceId e.g. from the command line, we might use it
-                return !string.IsNullOrEmpty(userProvidedSpaceId)
-                    ? userSpaces.Single(s => s.Id == userProvidedSpaceId)
-                    : userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-
-            return null;
-        }
-
-        private static async Task SetupRepository(OctopusAsyncClient client)
-        {
-            var space = await GetSpace(client, client.RootDocument, client.clientOptions?.SpaceId);
-            var spaceContext = space == null
-                ? SpaceContext.SystemOnly()
-                : SpaceContext.SpecificSpace(space.Id);
-            client.Repository = new OctopusAsyncRepository(client, spaceContext);
         }
 
         /// <summary>

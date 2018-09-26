@@ -1,6 +1,5 @@
 #if SYNC_CLIENT
 using System;
-using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client
@@ -25,7 +24,7 @@ namespace Octopus.Client
         ICertificateConfigurationRepository CertificateConfiguration { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates {get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
         IConfigurationRepository Configuration { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
@@ -67,27 +66,6 @@ namespace Octopus.Client
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
-        SpaceContext SpaceContext { get; }
-        IOctopusRepository ForSpaceContext(string spaceId);
-        IOctopusRepository ForSpaceAndSystemContext(string spaceId);
-        IOctopusRepository ForSystemContext();
-        SpaceRootResource SpaceRootDocument { get; }
-        /// <summary>
-        /// Determines whether the specified link exists.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns>
-        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
-        /// </returns>
-        bool HasLink(string name);
-
-        /// <summary>
-        /// Gets the link with the specified name.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">If the link is not defined.</exception>
-        string Link(string name);
     }
 }
 #endif
