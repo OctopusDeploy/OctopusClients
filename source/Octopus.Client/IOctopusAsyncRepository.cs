@@ -4,12 +4,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    /// <summary>
-    /// A simplified interface to commonly-used parts of the API.
-    /// Functionality not exposed by this interface can be accessed
-    /// using <see cref="IOctopusAsyncRepository.Client" />.
-    /// </summary>
-    public interface IOctopusAsyncRepository
+    public interface ISpaceScopedRepository
     {
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }
@@ -37,7 +32,6 @@ namespace Octopus.Client
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
-        ISchedulerRepository Schedulers { get; }
         ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }
@@ -45,46 +39,44 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
+        SpaceRootResource SpaceRootDocument { get; }
+    }
+
+    public interface ISystemScopedRepository
+    {
+        ISchedulerRepository Schedulers { get; }
+        IServerStatusRepository ServerStatus { get; }
+        ISpaceRepository Spaces { get; }
+        IUserRepository Users { get; }
+        IUserRolesRepository UserRoles { get; }
+        IBackupRepository Backups { get; }
+        IMigrationRepository Migrations { get; }
+        IOctopusServerNodeRepository OctopusServerNodes { get; }
+        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+        IConfigurationRepository Configuration { get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    }
+
+    /// <summary>
+    /// A simplified interface to commonly-used parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusAsyncRepository.Client" />.
+    /// </summary>
+    public interface IOctopusAsyncRepository : ISpaceScopedRepository, ISystemScopedRepository
+    {
+        RootResource RootDocument { get; }
         IEventRepository Events { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
         IUserPermissionsRepository UserPermissions { get; }
-        IBackupRepository Backups { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
-        IConfigurationRepository Configuration { get; }
-        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
-        IMigrationRepository Migrations { get; }
-        IOctopusServerNodeRepository OctopusServerNodes { get; }
-        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-        IServerStatusRepository ServerStatus { get; }
-        ISpaceRepository Spaces { get; }
-        IUserRepository Users { get; }
-        IUserRolesRepository UserRoles { get; }
-        /// <summary>
-        /// The client over which the repository is run.
-        /// </summary>
         IOctopusAsyncClient Client { get; }
         SpaceContext SpaceContext { get; }
-        Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId);
+        Task<ISystemScopedRepository> ForSystemContext();
+        Task<ISpaceScopedRepository> ForSpaceContext(string spaceId);
         Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(string spaceId);
-        IOctopusAsyncRepository ForSystemContext();
-        SpaceRootResource SpaceRootDocument { get; }
-        /// <summary>
-        /// Determines whether the specified link exists.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns>
-        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
-        /// </returns>
         bool HasLink(string name);
-
-        /// <summary>
-        /// Gets the link with the specified name.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">If the link is not defined.</exception>
         string Link(string name);
     }
 }
