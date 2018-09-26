@@ -18,7 +18,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_ActionOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.RootDocument.Returns(new RootResource());
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource(){ApiVersion = "3.0.0"});
             var repository = new TaskRepository(OctopusAsyncRepository.Create(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")).Result);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
@@ -47,7 +47,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_TaskOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.RootDocument.Returns(new RootResource());
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource() { ApiVersion = "3.0.0" });
             var repository = new TaskRepository(OctopusAsyncRepository.Create(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")).Result);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
@@ -75,7 +75,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletion_CancelsInATimelyManner()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.RootDocument.Returns(new RootResource());
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource() { ApiVersion = "3.0.0" });
             var repository = new TaskRepository(OctopusAsyncRepository.Create(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")).Result);
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 

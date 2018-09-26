@@ -88,6 +88,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
@@ -111,6 +112,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Task<RootResource> RefreshRootDocument()
   }
   interface IOctopusClient
     IDisposable
@@ -119,6 +121,7 @@ Octopus.Client
     event Action<OctopusRequest> SendingOctopusRequest
     Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
+    Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
@@ -182,6 +185,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
@@ -205,6 +209,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Octopus.Client.Model.RootResource RefreshRootDocument()
   }
   class OctopusAsyncClient
     Octopus.Client.IOctopusAsyncClient
@@ -278,6 +283,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
@@ -302,6 +308,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Task<RootResource> RefreshRootDocument()
   }
   class OctopusClient
     Octopus.Client.IHttpOctopusClient
@@ -315,6 +322,7 @@ Octopus.Client
     .ctor(Octopus.Client.OctopusServerEndpoint)
     Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
+    Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
@@ -393,6 +401,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
@@ -416,6 +425,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Octopus.Client.Model.RootResource RefreshRootDocument()
   }
   abstract class OctopusRepositoryExtensions
   {

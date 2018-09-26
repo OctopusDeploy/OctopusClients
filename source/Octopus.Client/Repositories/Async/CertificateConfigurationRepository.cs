@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories.Async
 
         static string DetermineCollectionLinkName(IOctopusAsyncRepository repository)
         {
-            if (repository.Client.RootDocument == null)
+            if (repository.RootDocument == null)
                 throw new NullReferenceException("The client root document is null");
 
             // For backwards compatibility. 

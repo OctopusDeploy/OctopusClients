@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -30,8 +33,11 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
-        OctopusAsyncRepository(IOctopusAsyncClient client, SpaceContext spaceContext = null)
+        private static readonly string rootDocumentUri = "~/api";
+        OctopusAsyncRepository(IOctopusAsyncClient client, RootResource rootDocument, SpaceRootResource spaceRootDocument, SpaceContext spaceContext = null)
         {
+            RootDocument = rootDocument;
+            SpaceRootDocument = spaceRootDocument;
             Client = client;
             SpaceContext = spaceContext;
             Accounts = new AccountRepository(this);
@@ -88,15 +94,13 @@ namespace Octopus.Client
 
         public static async Task<IOctopusAsyncRepository> Create(IOctopusAsyncClient client, SpaceContext spaceContext = null)
         {
-            var space = await TryGetSpace(client, spaceContext);
+            var rootDocument = await LoadRootDocument(client);
+            var space = await TryGetSpace(client, rootDocument, spaceContext);
             spaceContext = space == null ? SpaceContext.SystemOnly() :
                 spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
 
-            var spaceRoot = await LoadSpaceRootResource(client, space?.Id);
-            return new OctopusAsyncRepository(client, spaceContext)
-            {
-                SpaceRootDocument = spaceRoot
-            };
+            var spaceRoot = await LoadSpaceRootResource(client, rootDocument, space?.Id);
+            return new OctopusAsyncRepository(client, rootDocument, spaceRoot, spaceContext);
         }
 
         public IOctopusAsyncClient Client { get; }
@@ -156,40 +160,41 @@ namespace Octopus.Client
         public async Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            var spaceRoot = await LoadSpaceRootResource(Client, spaceId);
-            return new OctopusAsyncRepository(Client, SpaceContext.SpecificSpace(spaceId))
-            {
-                SpaceRootDocument = spaceRoot
-            };
+            var spaceRoot = await LoadSpaceRootResource(Client, RootDocument, spaceId);
+            return new OctopusAsyncRepository(Client, RootDocument, spaceRoot, SpaceContext.SpecificSpace(spaceId));
         }
 
         public async Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            var spaceRoot = await LoadSpaceRootResource(Client, spaceId);
-            return new OctopusAsyncRepository(Client, SpaceContext.SpecificSpaceAndSystem(spaceId))
-            {
-                SpaceRootDocument = spaceRoot
-            };
+            var spaceRoot = await LoadSpaceRootResource(Client, RootDocument, spaceId);
+            return new OctopusAsyncRepository(Client, RootDocument, spaceRoot, SpaceContext.SpecificSpaceAndSystem(spaceId));
         }
 
         public IOctopusAsyncRepository ForSystemContext()
         {
-            return new OctopusAsyncRepository(Client, SpaceContext.SystemOnly());
+            return new OctopusAsyncRepository(Client, RootDocument, null, SpaceContext.SystemOnly());
         }
 
         public SpaceRootResource SpaceRootDocument { get; private set; }
+        public RootResource RootDocument { get; private set; }
 
         public bool HasLink(string name)
         {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || Client.RootDocument.HasLink(name);
+            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
         }
 
         public string Link(string name)
         {
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
-                : Client.RootDocument.Link(name);
+                : RootDocument.Link(name);
+        }
+
+        public async Task<RootResource> RefreshRootDocument()
+        {
+            RootDocument = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+            return RootDocument;
         }
 
         void ValidateSpaceId(string spaceId)
@@ -205,19 +210,78 @@ namespace Octopus.Client
             }
         }
 
-        static async Task<SpaceRootResource> LoadSpaceRootResource(IOctopusAsyncClient client, string spaceId)
+        static async Task<RootResource> LoadRootDocument(IOctopusAsyncClient client)
+        {
+            RootResource server;
+
+            var watch = Stopwatch.StartNew();
+            Exception lastError = null;
+
+            // 60 second limit using Stopwatch alone makes debugging impossible.
+            var retries = 3;
+
+            while (true)
+            {
+                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
+                {
+                    if (lastError == null)
+                    {
+                        throw new Exception("Unable to connect to the Octopus Deploy server.");
+                    }
+
+                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
+                }
+
+                try
+                {
+                    server = await client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+                    break;
+                }
+                catch (HttpRequestException ex)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    lastError = ex;
+                }
+                catch (OctopusServerException ex)
+                {
+                    if (ex.HttpStatusCode != 503)
+                    {
+                        // 503 means the service is starting, so give it some time to start
+                        throw;
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    lastError = ex;
+                }
+                retries--;
+            }
+
+            if (string.IsNullOrWhiteSpace(server.ApiVersion))
+                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
+
+            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
+            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
+            var current = SemanticVersion.Parse(server.ApiVersion);
+
+            if (current < min || current > max)
+                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({server.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
+
+            return server;
+        }
+
+        static async Task<SpaceRootResource> LoadSpaceRootResource(IOctopusAsyncClient client, RootResource rootDocument, string spaceId)
         {
             return !string.IsNullOrEmpty(spaceId) ?
-                await client.Get<SpaceRootResource>(client.RootDocument.Link("SpaceHome"), new { spaceId }).ConfigureAwait(false)
+                await client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId }).ConfigureAwait(false)
                 : null;
         }
 
-        static async Task<SpaceResource> TryGetSpace(IOctopusAsyncClient client, SpaceContext spaceContext)
+        static async Task<SpaceResource> TryGetSpace(IOctopusAsyncClient client, RootResource rootDocument, SpaceContext spaceContext)
         {
             if (client.IsAuthenticated)
             {
                 var currentUser =
-                    await client.Get<UserResource>(client.RootDocument.Links["CurrentUser"]);
+                    await client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
                     spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;

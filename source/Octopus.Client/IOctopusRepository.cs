@@ -72,6 +72,7 @@ namespace Octopus.Client
         IOctopusRepository ForSpaceAndSystemContext(string spaceId);
         IOctopusRepository ForSystemContext();
         SpaceRootResource SpaceRootDocument { get; }
+        RootResource RootDocument { get; }
         /// <summary>
         /// Determines whether the specified link exists.
         /// </summary>
@@ -88,6 +89,7 @@ namespace Octopus.Client
         /// <returns></returns>
         /// <exception cref="System.Exception">If the link is not defined.</exception>
         string Link(string name);
+        RootResource RefreshRootDocument();
     }
 }
 #endif

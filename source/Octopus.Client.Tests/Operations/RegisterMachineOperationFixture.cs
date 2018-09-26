@@ -37,9 +37,14 @@ namespace Octopus.Client.Tests.Operations
             environments = new ResourceCollection<EnvironmentResource>(new EnvironmentResource[0], LinkCollection.Self("/foo"));
             machines = new ResourceCollection<MachineResource>(new MachineResource[0], LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(new MachinePolicyResource[0], LinkCollection.Self("/foo"));
+            client.Get<RootResource>(Arg.Any<string>()).Returns(Task.FromResult(
+                new RootResource
+                {
+                    ApiVersion = "3.0.0",
+                    Links = LinkCollection.Self("/api").Add("Environments", "/api/environments").Add("Machines", "/api/machines").Add("MachinePolicies", "/api/machinepolicies")
+                }));
             client.Repository.HasLink(Arg.Any<string>()).Returns(ci => client.RootDocument.HasLink(ci.Arg<string>()));
             client.Repository.Link(Arg.Any<string>()).Returns(ci => client.RootDocument.Link(ci.Arg<string>()));
-            client.RootDocument.Returns(new RootResource {Links = LinkCollection.Self("/api").Add("Environments", "/api/environments").Add("Machines", "/api/machines").Add("MachinePolicies", "/api/machinepolicies")});
 
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));

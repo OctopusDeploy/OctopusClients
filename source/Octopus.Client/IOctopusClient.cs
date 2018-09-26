@@ -13,6 +13,8 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusClient : IDisposable
     {
+        IOctopusRepository Repository { get; }
+
         /// <summary>
         /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
         /// server. Instead of hardcoding paths,

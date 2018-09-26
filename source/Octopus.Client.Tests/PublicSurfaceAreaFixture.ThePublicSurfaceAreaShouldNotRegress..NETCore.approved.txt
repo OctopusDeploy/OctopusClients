@@ -81,6 +81,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
@@ -104,6 +105,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Task<RootResource> RefreshRootDocument()
   }
   interface IOctopusClientFactory
   {
@@ -181,6 +183,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
@@ -205,6 +208,7 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
+    Task<RootResource> RefreshRootDocument()
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory

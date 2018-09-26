@@ -22,8 +22,9 @@ namespace Octopus.Client.Tests.Spaces
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = spaceId, IsDefault = true } });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
-            client.RootDocument.Returns(new RootResource()
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
+                ApiVersion = "3.0.0",
                 Links =
                 {
                     { "Teams", "" },

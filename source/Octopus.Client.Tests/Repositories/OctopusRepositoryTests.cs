@@ -19,8 +19,9 @@ namespace Octopus.Client.Tests.Repositories
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
-            client.RootDocument.Returns(new RootResource()
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
+                ApiVersion = "3.0.0",
                 Links =
                 {
                     {"CurrentUser",  ""},
@@ -42,7 +43,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             var client = Substitute.For<IOctopusClient>();
             client.IsAuthenticated.Returns(false);
-            client.RootDocument.Returns(new RootResource());
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource() { ApiVersion = "3.0.0" });
             var repository = new OctopusRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
                 where p.GetMethod.Invoke(repository, new object[0]) == null

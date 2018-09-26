@@ -1,6 +1,10 @@
 ﻿#if SYNC_CLIENT
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Threading;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -19,6 +23,7 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
+        readonly string rootDocumentUri = "~/api";
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
@@ -26,6 +31,7 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
         {
             Client = client;
+            RootDocument = LoadRootDocument();
             var space = TryGetSpace(spaceContext);
             SpaceContext = space == null ? SpaceContext.SystemOnly() : 
                 spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
@@ -84,7 +90,6 @@ namespace Octopus.Client
         }
 
         public IOctopusClient Client { get; }
-
         public IAccountRepository Accounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
@@ -155,17 +160,24 @@ namespace Octopus.Client
         }
 
         public SpaceRootResource SpaceRootDocument { get; private set; }
+        public RootResource RootDocument { get; private set; }
 
         public bool HasLink(string name)
         {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || Client.RootDocument.HasLink(name);
+            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
         }
 
         public string Link(string name)
         {
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
-                : Client.RootDocument.Link(name);
+                : RootDocument.Link(name);
+        }
+
+        public RootResource RefreshRootDocument()
+        {
+            RootDocument = Client.Get<RootResource>(rootDocumentUri);
+            return RootDocument;
         }
 
         void ValidateSpaceId(string spaceId)
@@ -184,7 +196,7 @@ namespace Octopus.Client
         SpaceRootResource LoadSpaceRootResource(string spaceId)
         {
             return !string.IsNullOrEmpty(spaceId) ?
-                Client.Get<SpaceRootResource>(Client.RootDocument.Link("SpaceHome"), new { spaceId })
+                Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId })
                 : null;
         }
 
@@ -193,13 +205,71 @@ namespace Octopus.Client
             if (Client.IsAuthenticated)
             {
                 var currentUser =
-                    Client.Get<UserResource>(Client.RootDocument.Links["CurrentUser"]);
+                    Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
                 var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 // If user explicitly specified the spaceId e.g. from the command line, we might use it
                 return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
                     spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }
             return null;
+        }
+        RootResource LoadRootDocument()
+        {
+            RootResource server;
+
+            var watch = Stopwatch.StartNew();
+            Exception lastError = null;
+
+            // 60 second limit using Stopwatch alone makes debugging impossible.
+            var retries = 3;
+
+            while (true)
+            {
+                if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
+                {
+                    if (lastError == null)
+                    {
+                        throw new Exception("Unable to connect to the Octopus Deploy server.");
+                    }
+
+                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
+                }
+
+                try
+                {
+                    server = Client.Get<RootResource>(this.rootDocumentUri);
+                    break;
+                }
+                catch (WebException ex)
+                {
+                    Thread.Sleep(1000);
+                    lastError = ex;
+                }
+                catch (OctopusServerException ex)
+                {
+                    if (ex.HttpStatusCode != 503)
+                    {
+                        // 503 means the service is starting, so give it some time to start
+                        throw;
+                    }
+
+                    Thread.Sleep(500);
+                    lastError = ex;
+                }
+                retries--;
+            }
+
+            if (string.IsNullOrWhiteSpace(server.ApiVersion))
+                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
+
+            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
+            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
+            var current = SemanticVersion.Parse(server.ApiVersion);
+
+            if (current < min || current > max)
+                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
+
+            return server;
         }
     }
 }

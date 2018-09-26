@@ -26,9 +26,8 @@ namespace Octopus.Client
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
-        readonly string rootDocumentUri;
-        private Lazy<RootResource> rootResourcesLazy;
-        private bool signedIn = false;
+        private Lazy<IOctopusRepository> lazyRepository;
+        bool signedIn = false;
         public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         /// <summary>
@@ -37,43 +36,26 @@ namespace Octopus.Client
         /// <param name="serverEndpoint">The server endpoint.</param>
         public OctopusClient(OctopusServerEndpoint serverEndpoint)
         {
-            rootDocumentUri = "~/api";
-            rootResourcesLazy = new Lazy<RootResource>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
+            lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
         }
 
-        /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusClient" />.
-        /// </summary>
-        public RootResource RootDocument => rootResourcesLazy.Value;
-
+        public IOctopusRepository Repository => lazyRepository.Value;
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
+
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
+        [Obsolete("This property is deprecated, please the one from Repository instead")]
+        public RootResource RootDocument => Repository.RootDocument;
+
+        [Obsolete("This method is deprecated, please the one from Repository instead")]
         public RootResource RefreshRootDocument()
         {
-            rootResourcesLazy = new Lazy<RootResource>(() =>
-            {
-                return Get<RootResource>(rootDocumentUri);
-            });
-            return rootResourcesLazy.Value;
-        }
-
-        RootResource LoadInitialRootResources()
-        {
-            return EstablishSession();
+            return Repository.RefreshRootDocument();
         }
 
         public void SignIn(LoginCommand loginCommand)
@@ -82,13 +64,13 @@ namespace Octopus.Client
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            Post(RootDocument.Links["SignIn"], loginCommand);
+            Post(Repository.RootDocument.Links["SignIn"], loginCommand);
             signedIn = true;
         }
 
         public void SignOut()
         {
-            Post(RootDocument.Links["SignOut"]);
+            Post(Repository.RootDocument.Links["SignOut"]);
             signedIn = false;
         }
 
@@ -118,7 +100,7 @@ namespace Octopus.Client
         public void Initialize()
         {
             // Force the Lazy instance to be loaded
-            RootDocument.Link("Self");
+            Repository.RootDocument.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -394,65 +376,6 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual RootResource EstablishSession()
-        {
-            RootResource server;
-
-            var watch = Stopwatch.StartNew();
-            Exception lastError = null;
-
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
-            while (true)
-            {
-                if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
-                {
-                    if (lastError == null)
-                    {
-                        throw new Exception("Unable to connect to the Octopus Deploy server.");
-                    }
-
-                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
-                }
-
-                try
-                {
-                    server = Get<RootResource>(this.rootDocumentUri);
-                    break;
-                }
-                catch (WebException ex)
-                {
-                    Thread.Sleep(1000);
-                    lastError = ex;
-                }
-                catch (OctopusServerException ex)
-                {
-                    if (ex.HttpStatusCode != 503)
-                    {
-                        // 503 means the service is starting, so give it some time to start
-                        throw;
-                    }
-
-                    Thread.Sleep(500);
-                    lastError = ex;
-                }
-                retries--;
-            }
-
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
-                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
-
-            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
-            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
-
-            if (current < min || current > max)
-                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
-
-            return server;
-        }
-
         protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
@@ -482,9 +405,9 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (rootResourcesLazy.IsValueCreated)
+            if (lazyRepository.IsValueCreated)
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
+                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{Repository.RootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
                     .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
@@ -628,6 +551,11 @@ namespace Octopus.Client
                     }
                 }
             }
+        }
+
+        IOctopusRepository LoadRepository()
+        {
+            return new OctopusRepository(this);
         }
 
         /// <summary>
