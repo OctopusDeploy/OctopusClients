@@ -26,8 +26,10 @@ namespace Octopus.Client.Tests.Conventions
         private static readonly TypeInfo[] RepositoryInterfaceTypes = ExportedTypes
             .Where(t => t.IsInterface && t.Name.EndsWith("Repository"))
             .Where(t => t.AsType() != typeof(IOctopusAsyncRepository) && t.AsType() != typeof(IResourceRepository))
+            .Where(t => t.AsType() != typeof(ISpaceScopedAsyncRepository) && t.AsType() != typeof(ISystemScopedAsyncRepository) && t.AsType() != typeof(IMixedScopeAsyncRepository))
 #if SYNC_CLIENT
             .Where(t => t.AsType() != typeof(IOctopusRepository) && t.AsType() != typeof(Sync.IResourceRepository))
+            .Where(t => t.AsType() != typeof(ISpaceScopedRepository) && t.AsType() != typeof(ISystemScopedRepository) && t.AsType() != typeof(IMixedScopeRepository))
 #endif
             .ToArray();
 
@@ -52,6 +54,9 @@ namespace Octopus.Client.Tests.Conventions
         public void AllAsyncRepositoriesShouldBeAvailableViaIOctopusAsyncRepository()
         {
             var exposedTypes = typeof(IOctopusAsyncRepository).GetProperties()
+                .Concat(typeof(ISpaceScopedAsyncRepository).GetProperties())
+                .Concat(typeof(ISystemScopedAsyncRepository).GetProperties())
+                .Concat(typeof(IMixedScopeAsyncRepository).GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
@@ -88,6 +93,9 @@ namespace Octopus.Client.Tests.Conventions
         public void AllSyncRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
             var exposedTypes = typeof(IOctopusRepository).GetProperties()
+                .Concat(typeof(ISpaceScopedRepository).GetProperties())
+                .Concat(typeof(ISystemScopedRepository).GetProperties())
+                .Concat(typeof(IMixedScopeRepository).GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 

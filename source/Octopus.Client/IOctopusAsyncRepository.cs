@@ -4,12 +4,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    /// <summary>
-    /// A simplified interface to commonly-used parts of the API.
-    /// Functionality not exposed by this interface can be accessed
-    /// using <see cref="IOctopusAsyncRepository.Client" />.
-    /// </summary>
-    public interface IOctopusAsyncRepository
+    public interface ISpaceScopedAsyncRepository
     {
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }
@@ -37,19 +32,18 @@ namespace Octopus.Client
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
-        ISchedulerRepository Schedulers { get; }
-        ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }
         ITenantVariablesRepository TenantVariables { get; }
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
-        IEventRepository Events { get; }
-        ITaskRepository Tasks { get; }
-        ITeamsRepository Teams { get; }
-        IScopedUserRoleRepository ScopedUserRoles { get; }
-        IUserPermissionsRepository UserPermissions { get; }
+        SpaceRootResource SpaceRootDocument { get; }
+    }
+
+    public interface ISystemScopedAsyncRepository
+    {
+        ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }
         ICommunityActionTemplateRepository CommunityActionTemplates { get; }
         IConfigurationRepository Configuration { get; }
@@ -61,30 +55,31 @@ namespace Octopus.Client
         ISpaceRepository Spaces { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
-        /// <summary>
-        /// The client over which the repository is run.
-        /// </summary>
+    }
+
+    public interface IMixedScopeAsyncRepository
+    {
+        ISubscriptionRepository Subscriptions { get; }
+        IEventRepository Events { get; }
+        ITaskRepository Tasks { get; }
+        ITeamsRepository Teams { get; }
+        IScopedUserRoleRepository ScopedUserRoles { get; }
+        IUserPermissionsRepository UserPermissions { get; }
+    }
+
+    /// <summary>
+    /// A simplified interface to commonly-used parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusAsyncRepository.Client" />.
+    /// </summary>
+    public interface IOctopusAsyncRepository : ISpaceScopedAsyncRepository, ISystemScopedAsyncRepository, IMixedScopeAsyncRepository
+    { 
         IOctopusAsyncClient Client { get; }
         SpaceContext SpaceContext { get; }
-        Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId);
+        Task<ISpaceScopedAsyncRepository> ForSpaceContext(string spaceId);
         Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(string spaceId);
-        IOctopusAsyncRepository ForSystemContext();
-        SpaceRootResource SpaceRootDocument { get; }
-        /// <summary>
-        /// Determines whether the specified link exists.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns>
-        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
-        /// </returns>
+        ISystemScopedAsyncRepository ForSystemContext();
         bool HasLink(string name);
-
-        /// <summary>
-        /// Gets the link with the specified name.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">If the link is not defined.</exception>
         string Link(string name);
     }
 }

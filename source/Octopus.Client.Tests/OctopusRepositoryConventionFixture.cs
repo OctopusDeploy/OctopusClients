@@ -11,8 +11,15 @@ namespace Octopus.Client.Tests
         [Test]
         public void EnsureAllRepositoryPropertiesHaveBeenAdded()
         {
-            var i = typeof(IOctopusAsyncRepository);
-            var interfaceProps = i.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
+            var rootRepo = typeof(IOctopusAsyncRepository);
+            var spaceRepo = typeof(ISpaceScopedAsyncRepository);
+            var systemRepo = typeof(ISystemScopedAsyncRepository);
+            var mixedScopeRepo = typeof(IMixedScopeAsyncRepository);
+            var interfaceProps = rootRepo.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository"))
+                .Concat(spaceRepo.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")))
+                .Concat(systemRepo.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")))
+                .Concat(mixedScopeRepo.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")))
+                .ToList();
             var t = typeof(OctopusAsyncRepository);
             var implementationProps = t.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
 
