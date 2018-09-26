@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -151,7 +152,7 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
 
-        public async Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId)
+        public async Task<ISpaceScopedRepository> ForSpaceContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
             var spaceRoot = await LoadSpaceRootResource(Client, spaceId);
@@ -171,7 +172,7 @@ namespace Octopus.Client
             };
         }
 
-        public IOctopusAsyncRepository ForSystemContext()
+        public ISystemScopedRepository ForSystemContext()
         {
             return new OctopusAsyncRepository(Client, SpaceContext.SystemOnly());
         }
