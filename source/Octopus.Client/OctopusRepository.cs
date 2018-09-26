@@ -137,7 +137,7 @@ namespace Octopus.Client
         public IUserPermissionsRepository UserPermissions { get; }
         public SpaceContext SpaceContext { get; }
 
-        public ISpaceScopedRepository ForSpaceContext(string spaceId)
+        public IOctopusRepository ForSpaceContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
             LoadSpaceRootResource(spaceId);
@@ -151,7 +151,7 @@ namespace Octopus.Client
             return new OctopusRepository(Client, SpaceContext.SpecificSpaceAndSystem(spaceId));
         }
 
-        public ISystemScopedRepository ForSystemContext()
+        public IOctopusRepository ForSystemContext()
         {
             LoadSpaceRootResource(null);
             return new OctopusRepository(Client, SpaceContext.SystemOnly());

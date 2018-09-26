@@ -20,24 +20,6 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
   }
-  interface IMixedScopeAsyncRepository
-  {
-    Octopus.Client.Repositories.Async.IEventRepository Events { get; }
-    Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
-    Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
-    Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
-    Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
-    Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
-  }
-  interface IMixedScopeRepository
-  {
-    Octopus.Client.Repositories.IEventRepository Events { get; }
-    Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
-    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
-    Octopus.Client.Repositories.ITaskRepository Tasks { get; }
-    Octopus.Client.Repositories.ITeamsRepository Teams { get; }
-    Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
-  }
   interface IOctopusAsyncClient
     IDisposable
   {
@@ -70,15 +52,63 @@ Octopus.Client
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
   }
   interface IOctopusAsyncRepository
-    Octopus.Client.ISpaceScopedAsyncRepository
-    Octopus.Client.ISystemScopedAsyncRepository
-    Octopus.Client.IMixedScopeAsyncRepository
   {
+    Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
+    Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+    Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
+    Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
+    Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
+    Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
+    Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
+    Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
+    Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
+    Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
+    Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
+    Octopus.Client.Repositories.Async.IEventRepository Events { get; }
+    Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
+    Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
+    Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
+    Octopus.Client.Repositories.Async.IMachinePolicyRepository MachinePolicies { get; }
+    Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
+    Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
+    Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
+    Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
+    Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
+    Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
+    Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
+    Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.SpaceContext SpaceContext { get; }
+    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
+    Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
+    Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
+    Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
+    Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
+    Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
+    Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
+    Octopus.Client.Repositories.Async.IUserRepository Users { get; }
+    Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
+    Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
     Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(String)
-    Task<ISpaceScopedAsyncRepository> ForSpaceContext(String)
-    Octopus.Client.ISystemScopedAsyncRepository ForSystemContext()
+    Task<IOctopusAsyncRepository> ForSpaceContext(String)
+    Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
   }
@@ -116,69 +146,26 @@ Octopus.Client
     Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
   }
   interface IOctopusRepository
-    Octopus.Client.ISpaceScopedRepository
-    Octopus.Client.ISystemScopedRepository
-    Octopus.Client.IMixedScopeRepository
-  {
-    Octopus.Client.IOctopusClient Client { get; }
-    Octopus.Client.SpaceContext SpaceContext { get; }
-    Octopus.Client.IOctopusRepository ForSpaceAndSystemContext(String)
-    Octopus.Client.ISpaceScopedRepository ForSpaceContext(String)
-    Octopus.Client.ISystemScopedRepository ForSystemContext()
-    Boolean HasLink(String)
-    String Link(String)
-  }
-  interface ISpaceScopedAsyncRepository
-  {
-    Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
-    Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
-    Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
-    Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
-    Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
-    Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
-    Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
-    Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
-    Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
-    Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
-    Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
-    Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
-    Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
-    Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
-    Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
-    Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
-    Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
-    Octopus.Client.Repositories.Async.IMachinePolicyRepository MachinePolicies { get; }
-    Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
-    Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
-    Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
-    Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
-    Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
-    Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
-    Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
-    Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
-    Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
-    Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
-    Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
-    Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
-    Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
-    Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
-  }
-  interface ISpaceScopedRepository
   {
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.IChannelRepository Channels { get; }
+    Octopus.Client.IOctopusClient Client { get; }
+    Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
+    Octopus.Client.Repositories.IEventRepository Events { get; }
+    Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
     Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
@@ -186,49 +173,38 @@ Octopus.Client
     Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
+    Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.SpaceContext SpaceContext { get; }
     Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
+    Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
+    Octopus.Client.Repositories.ITaskRepository Tasks { get; }
+    Octopus.Client.Repositories.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
+    Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
+    Octopus.Client.Repositories.IUserRepository Users { get; }
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
-  }
-  interface ISystemScopedAsyncRepository
-  {
-    Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
-    Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
-    Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
-    Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
-    Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
-    Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
-    Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-    Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
-    Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
-    Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
-    Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
-    Octopus.Client.Repositories.Async.IUserRepository Users { get; }
-  }
-  interface ISystemScopedRepository
-  {
-    Octopus.Client.Repositories.IBackupRepository Backups { get; }
-    Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
-    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
-    Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
-    Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
-    Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
-    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-    Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
-    Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
-    Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
-    Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
-    Octopus.Client.Repositories.IUserRepository Users { get; }
+    Octopus.Client.IOctopusRepository ForSpaceAndSystemContext(String)
+    Octopus.Client.IOctopusRepository ForSpaceContext(String)
+    Octopus.Client.IOctopusRepository ForSystemContext()
+    Boolean HasLink(String)
+    String Link(String)
   }
   class OctopusAsyncClient
     Octopus.Client.IOctopusAsyncClient
@@ -266,9 +242,6 @@ Octopus.Client
   }
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
-    Octopus.Client.ISpaceScopedAsyncRepository
-    Octopus.Client.ISystemScopedAsyncRepository
-    Octopus.Client.IMixedScopeAsyncRepository
   {
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
@@ -325,8 +298,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
     static Task<IOctopusAsyncRepository> Create(Octopus.Client.IOctopusAsyncClient, Octopus.Client.SpaceContext)
     Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(String)
-    Task<ISpaceScopedAsyncRepository> ForSpaceContext(String)
-    Octopus.Client.ISystemScopedAsyncRepository ForSystemContext()
+    Task<IOctopusAsyncRepository> ForSpaceContext(String)
+    Octopus.Client.IOctopusAsyncRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
   }
@@ -382,9 +355,6 @@ Octopus.Client
   }
   class OctopusRepository
     Octopus.Client.IOctopusRepository
-    Octopus.Client.ISpaceScopedRepository
-    Octopus.Client.ISystemScopedRepository
-    Octopus.Client.IMixedScopeRepository
   {
     .ctor(Octopus.Client.OctopusServerEndpoint)
     .ctor(Octopus.Client.IOctopusClient, Octopus.Client.SpaceContext)
@@ -442,8 +412,8 @@ Octopus.Client
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
     Octopus.Client.IOctopusRepository ForSpaceAndSystemContext(String)
-    Octopus.Client.ISpaceScopedRepository ForSpaceContext(String)
-    Octopus.Client.ISystemScopedRepository ForSystemContext()
+    Octopus.Client.IOctopusRepository ForSpaceContext(String)
+    Octopus.Client.IOctopusRepository ForSystemContext()
     Boolean HasLink(String)
     String Link(String)
   }

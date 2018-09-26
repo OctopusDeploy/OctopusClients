@@ -5,21 +5,36 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
-    public interface ISpaceScopedRepository
+    /// <summary>
+    /// A simplified interface to commonly-used parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusRepository.Client" />.
+    /// </summary>
+    public interface IOctopusRepository
     {
+        /// <summary>
+        /// The client over which the repository is run.
+        /// </summary>
+        IOctopusClient Client { get; }
+
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }
         IArtifactRepository Artifacts { get; }
+        IBackupRepository Backups { get; }
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         ICertificateConfigurationRepository CertificateConfiguration { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates {get; }
+        IConfigurationRepository Configuration { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
         IDeploymentProcessRepository DeploymentProcesses { get; }
         IDeploymentRepository Deployments { get; }
         IEnvironmentRepository Environments { get; }
+        IEventRepository Events { get; }
+        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         IFeedRepository Feeds { get; }
         IInterruptionRepository Interruptions { get; }
         ILibraryVariableSetRepository LibraryVariableSets { get; }
@@ -27,55 +42,51 @@ namespace Octopus.Client
         IMachinePolicyRepository MachinePolicies { get; }
         IMachineRepository Machines { get; }
         IMachineRoleRepository MachineRoles { get; }
+        IMigrationRepository Migrations { get; }
+        IOctopusServerNodeRepository OctopusServerNodes { get; }
+        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
+        ISchedulerRepository Schedulers { get; }
+        IServerStatusRepository ServerStatus { get; }
+        ISpaceRepository Spaces { get; }
+        ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
+        ITaskRepository Tasks { get; }
+        ITeamsRepository Teams { get; }
         ITenantRepository Tenants { get; }
         ITenantVariablesRepository TenantVariables { get; }
+        IUserRepository Users { get; }
+        IUserPermissionsRepository UserPermissions { get; }
+        IUserRolesRepository UserRoles { get; }
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
-        SpaceRootResource SpaceRootDocument { get; }
-    }
-
-    public interface ISystemScopedRepository
-    {
-        ISchedulerRepository Schedulers { get; }
-        IBackupRepository Backups { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
-        IConfigurationRepository Configuration { get; }
-        IFeaturesConfigurationRepository FeaturesConfiguration { get; }
-        IMigrationRepository Migrations { get; }
-        IOctopusServerNodeRepository OctopusServerNodes { get; }
-        IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-        IServerStatusRepository ServerStatus { get; }
-        ISpaceRepository Spaces { get; }
-        IUserRepository Users { get; }
-        IUserRolesRepository UserRoles { get; }
-    }
-
-    public interface IMixedScopeRepository
-    {
-        ISubscriptionRepository Subscriptions { get; }
-        IEventRepository Events { get; }
-        ITaskRepository Tasks { get; }
-        ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
-        IUserPermissionsRepository UserPermissions { get; }
-    }
-
-    public interface IOctopusRepository: ISpaceScopedRepository, ISystemScopedRepository, IMixedScopeRepository
-    {
-        IOctopusClient Client { get; }
         SpaceContext SpaceContext { get; }
-        ISpaceScopedRepository ForSpaceContext(string spaceId);
+        IOctopusRepository ForSpaceContext(string spaceId);
         IOctopusRepository ForSpaceAndSystemContext(string spaceId);
-        ISystemScopedRepository ForSystemContext();
+        IOctopusRepository ForSystemContext();
+        SpaceRootResource SpaceRootDocument { get; }
+        /// <summary>
+        /// Determines whether the specified link exists.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns>
+        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
+        /// </returns>
         bool HasLink(string name);
+
+        /// <summary>
+        /// Gets the link with the specified name.
+        /// </summary>
+        /// <param name="name">The name/key of the link.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
         string Link(string name);
     }
 }
