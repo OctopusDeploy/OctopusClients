@@ -219,7 +219,6 @@ namespace Octopus.Client
                 var currentUser =
                     await client.Get<UserResource>(client.RootDocument.Links["CurrentUser"]);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                // If user explicitly specified the spaceId e.g. from the command line, we might use it
                 return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
                     spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }

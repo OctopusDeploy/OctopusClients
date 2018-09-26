@@ -140,20 +140,17 @@ namespace Octopus.Client
         public IOctopusRepository ForSpaceContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            LoadSpaceRootResource(spaceId);
             return new OctopusRepository(Client, SpaceContext.SpecificSpace(spaceId));
         }
 
         public IOctopusRepository ForSpaceAndSystemContext(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            LoadSpaceRootResource(spaceId);
             return new OctopusRepository(Client, SpaceContext.SpecificSpaceAndSystem(spaceId));
         }
 
         public IOctopusRepository ForSystemContext()
         {
-            LoadSpaceRootResource(null);
             return new OctopusRepository(Client, SpaceContext.SystemOnly());
         }
 
