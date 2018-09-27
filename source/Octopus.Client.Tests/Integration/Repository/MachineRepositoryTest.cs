@@ -36,7 +36,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public void SyncGetTasksReturnsAllPages()
         {
             var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
-            var repository = new Client.Repositories.MachineRepository(new OctopusRepository(SyncClient));
+            var repository = new Client.Repositories.MachineRepository(SyncClient.Repository);
             var tasks = repository.GetTasks(machine);
 
             Assert.That(tasks.Count, Is.EqualTo(139));

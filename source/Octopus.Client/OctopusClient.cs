@@ -66,6 +66,7 @@ namespace Octopus.Client
             }
             Post(Repository.RootDocument.Links["SignIn"], loginCommand);
             signedIn = true;
+            lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
         }
 
         public void SignOut()

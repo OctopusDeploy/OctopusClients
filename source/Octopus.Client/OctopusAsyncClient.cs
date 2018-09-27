@@ -144,7 +144,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        [Obsolete("This property is deprecated, please the one from Repository instead")]
+        [Obsolete("This property is deprecated, please use the one from Repository instead")]
         public RootResource RootDocument => Repository?.RootDocument;
 
         /// <summary>
@@ -152,7 +152,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        [Obsolete("This method is deprecated, please the one from Repository instead")]
+        [Obsolete("This method is deprecated, please use the one from Repository instead")]
         public async Task<RootResource> RefreshRootDocument()
         {
             return await Repository.RefreshRootDocument();
