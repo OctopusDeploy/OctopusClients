@@ -24,7 +24,7 @@ namespace Octopus.Client
         ICertificateConfigurationRepository CertificateConfiguration { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates {get; }
+        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
         IConfigurationRepository Configuration { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }

@@ -50,7 +50,7 @@ namespace Octopus.Client
         }
 
         OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext,
-            CookieContainer preservedCookieContainer): this(serverEndpoint, spaceContext)
+            CookieContainer preservedCookieContainer) : this(serverEndpoint, spaceContext)
         {
             cookieContainer = preservedCookieContainer;
         }

@@ -20,9 +20,9 @@ namespace Octopus.Client
 #endif
         }
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
-        /// <summary>
-        /// The allowed SSL Protocols
-        /// </summary>
+/// <summary>
+/// The allowed SSL Protocols
+/// </summary>
         public SslProtocols SslProtocols { get; set; }
 
         /// <summary>

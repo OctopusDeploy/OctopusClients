@@ -97,7 +97,7 @@ namespace Octopus.Client.Repositories
             name = (name ?? string.Empty).Trim();
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
-                pathParameters = new {name = name};
+                pathParameters = new { name = name };
 
             return FindOne(r =>
             {
@@ -139,7 +139,7 @@ namespace Octopus.Client.Repositories
 
             var resources = new List<TResource>();
             var link = client.Link(CollectionLinkName);
-            if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
             client.Paginate<TResource>(

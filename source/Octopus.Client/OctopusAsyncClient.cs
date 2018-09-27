@@ -38,13 +38,12 @@ namespace Octopus.Client
         private readonly string rootDocumentUri;
         private OctopusClientOptions clientOptions;
         private bool signedIn = false;
-        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             clientOptions = options ?? new OctopusClientOptions();
-            cookieContainer = clientOptions.CookieContainer ?? cookieContainer;
             this.rootDocumentUri = "~/api";
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
@@ -138,9 +137,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             try
             {
                 var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
-                client.RootDocuments = new RootResources(rootResource, spaceRootResource);
-                client.Repository = new OctopusAsyncRepository(client);
+                client.Repository = await OctopusAsyncRepository.Create(client);
                 return client;
             }
             catch
@@ -150,93 +147,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
-        {
-            if (client.clientOptions.SpaceContext == null)
-            {
-                var defaultSpace = await GetDefaultSpace(client, rootResource);
-                client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
-            }
-
-            var spaceId = GetSpaceId(client.SpaceContext);
-            return !string.IsNullOrEmpty(spaceId) ?
-                await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"), new { spaceId }).ConfigureAwait(false)
-                : null;
-        }
-
-
-        /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusAsyncClient" />.
-        /// </summary>
-        public RootResource RootDocument => RootDocuments.RootResource;
-
-        public SpaceRootResource SpaceRootDocument => RootDocuments.SpaceRootResource;
-
-        RootResources RootDocuments { get; set; }
-
-        class RootResources
-        {
-            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
-            {
-                RootResource = rootResource;
-                SpaceRootResource = spaceRootResource;
-            }
-
-            public RootResource RootResource { get; }
-            public SpaceRootResource SpaceRootResource { get; }
-        }
-
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public async Task<RootResource> RefreshRootDocument()
-        {
-            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument);
-            RootDocuments = new RootResources(rootDocument, spaceRootDocument);
-            return rootDocument;
-        }
-
-        public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpace(spaceId)));
-        }
-
-        public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpaceAndSystem(spaceId)));
-        }
-
-        public async Task<IOctopusAsyncClient> ForSystem()
-        {
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SystemOnly()));
-        }
-
-        public bool HasLink(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
-        }
-
-        public string Link(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
-                ? value.AsString()
-                : RootDocument.Link(name);
-        }
-
-        public SpaceContext SpaceContext => clientOptions.SpaceContext;
 
         public async Task SignIn(LoginCommand loginCommand)
         {
@@ -244,16 +159,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(Link("SignIn"), loginCommand);
+            await Post(Repository.Link("SignIn"), loginCommand);
             signedIn = true;
-            this.clientOptions.SpaceContext = null;
-            var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
-            RootDocuments = new RootResources(RootDocument, spaceRoot);
+            await SetupRepository(this);
         }
 
         public async Task SignOut()
         {
-            await Post(Link("SignOut"));
+            await Post(Repository.Link("SignOut"));
             signedIn = false;
         }
 
@@ -617,7 +530,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (RootDocuments != null)
+                if (RootDocument != null)
                 {
                     var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
@@ -722,50 +635,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
-        }
-
-        private OctopusClientOptions CreateClientOptions(SpaceContext spaceContext)
-        {
-            return new OctopusClientOptions()
-            {
-                Proxy = clientOptions.Proxy,
-                ProxyPassword = clientOptions.ProxyPassword,
-                ProxyUsername = clientOptions.ProxyUsername,
-                Timeout = clientOptions.Timeout,
-                SpaceContext = spaceContext,
-                CookieContainer = this.cookieContainer
-            };
-        }
-
-        private void ValidateSpaceId(string spaceId)
-        {
-            if (string.IsNullOrEmpty(spaceId))
-            {
-                throw new ArgumentException("spaceId cannot be null");
-            }
-
-            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
-            {
-                throw new ArgumentException("Invalid spaceId");
-            }
-        }
-
-        private static string GetSpaceId(SpaceContext spaceContext)
-        {
-            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
-        }
-
-        private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
-        {
-            if (client.IsAuthenticated)
-            {
-                var currentUser =
-                    await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-
-            return null;
         }
 
         /// <summary>
