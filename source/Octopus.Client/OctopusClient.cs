@@ -97,6 +97,13 @@ namespace Octopus.Client
         {
             if (this.SpaceContext == null)
             {
+                // This check will allow Spaces aware Client to work with a pre-Spaces Server. 
+                if (!rootDocument.HasLink("Spaces"))
+                {
+                    SpaceContext = SpaceContext.SystemOnly();
+                    return null;
+                }
+
                 var defaultSpace = GetDefaultSpace(rootDocument);
                 SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
