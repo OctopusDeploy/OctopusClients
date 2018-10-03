@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace Octopus.Client.Model
+﻿namespace Octopus.Client.Model
 {
     public enum ScriptSyntax
     {
         PowerShell,
         Bash,
         CSharp,
-        FSharp
+        FSharp,
+        Python
     }
 }
