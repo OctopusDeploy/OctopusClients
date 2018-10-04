@@ -16,6 +16,7 @@ using Octopus.Client.Model;
 using System.Diagnostics;
 using Serilog;
 using Serilog.Events;
+using System.Runtime.InteropServices;
 
 namespace Octopus.Cli.Commands
 {
@@ -35,7 +36,7 @@ namespace Octopus.Cli.Commands
         public const string UsernameEnvVar = "OCTOPUS_CLI_USERNAME";
         /// <summary>
         /// The environment variable that can hold the password
-        /// </summary>   
+        /// </summary>
         public const string PasswordEnvVar = "OCTOPUS_CLI_PASSWORD";
         readonly IOctopusClientFactory clientFactory;
         readonly IOctopusAsyncRepositoryFactory repositoryFactory;
@@ -43,7 +44,7 @@ namespace Octopus.Cli.Commands
         string serverBaseUrl;
         bool enableDebugging;
         bool ignoreSslErrors;
-        
+
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
@@ -59,7 +60,7 @@ namespace Octopus.Cli.Commands
             options.Add("apiKey=", $"[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used. This key can also be set in the {ApiKeyEnvVar} environment variable.", v => apiKey = v);
             options.Add("user=", $"[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password. This Username can also be set in the {UsernameEnvVar} environment variable.", v => username = v);
             options.Add("pass=", $"[Optional] Password to use when authenticating with the server. This Password can also be set in the {PasswordEnvVar} environment variable.", v => password = v);
-            
+
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
             options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
@@ -76,15 +77,15 @@ namespace Octopus.Cli.Commands
         protected string ServerBaseUrl => string.IsNullOrWhiteSpace(serverBaseUrl)
                     ? System.Environment.GetEnvironmentVariable(ServerUrlEnvVar)
                     : serverBaseUrl;
-            
+
         string ApiKey => string.IsNullOrWhiteSpace(apiKey)
             ? System.Environment.GetEnvironmentVariable(ApiKeyEnvVar)
             : apiKey;
-        
+
         string Username => string.IsNullOrWhiteSpace(username)
             ? System.Environment.GetEnvironmentVariable(UsernameEnvVar)
             : username;
-        
+
         string Password => string.IsNullOrWhiteSpace(password)
             ? System.Environment.GetEnvironmentVariable(PasswordEnvVar)
             : password;
@@ -102,7 +103,7 @@ namespace Octopus.Cli.Commands
             if (printHelp)
             {
                 this.GetHelp(Console.Out, commandLineArguments);
-                
+
                 return;
             }
 
@@ -131,16 +132,18 @@ namespace Octopus.Cli.Commands
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             clientOptions.IgnoreSslErrors = ignoreSslErrors;
 #else
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                clientOptions.IgnoreSslErrors = ignoreSslErrors;
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
-            
+
             commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default || enableDebugging;
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
             Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
-            
+
             if (enableDebugging)
             {
                 Repository.Client.SendingOctopusRequest += request => commandOutputProvider.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
@@ -197,7 +200,7 @@ namespace Octopus.Cli.Commands
                 }
             }
         }
-        
+
         static NetworkCredential ParseCredentials(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -223,7 +226,7 @@ namespace Octopus.Cli.Commands
                 setter = tempBool;
             }
         }
-        
+
         protected List<string> ReadAdditionalInputsFromConfigurationFile(string configFile)
         {
             configFile = FileSystem.GetFullPath(configFile);
