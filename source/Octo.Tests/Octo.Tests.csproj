@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net452</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net452</TargetFrameworks>
     <AssemblyName>Octo.Tests</AssemblyName>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
   </PropertyGroup>
 
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <DefineConstants>$(DefineConstants);HAS_APP_CONTEXT</DefineConstants>
   </PropertyGroup>
 
@@ -42,7 +42,7 @@
   </ItemGroup>
 
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.0.0" />
@@ -63,10 +63,10 @@
   <Target Name="WriteExpectedVersion"
           BeforeTargets="BeforeBuild"
           DependsOnTargets="PrepareForBuild">
-    
+
     <PropertyGroup>
       <ExpectedVersionFileInIntermediateFolder>$(OurDir)ExpectedSdkVersion.txt</ExpectedVersionFileInIntermediateFolder>
-      
+
       <VersionFileContent>$(Version)</VersionFileContent>
       <ExistingVersionFileContent Condition=" Exists('$(ExpectedVersionFileInIntermediateFolder)') ">
         $([System.IO.File]::ReadAllText($(ExpectedVersionFileInIntermediateFolder)))
@@ -76,7 +76,7 @@
       <ShouldOverwriteVersionFile
         Condition=" '$(ExistingVersionFileContent.Trim())' != '$(VersionFileContent.Trim())' ">true</ShouldOverwriteVersionFile>
     </PropertyGroup>
-    
+
     <WriteLinesToFile File="$(ExpectedVersionFileInIntermediateFolder)"
                       Lines="$(VersionFileContent)"
                       Condition=" '$(ShouldOverwriteVersionFile)' == 'true' "
