@@ -15,7 +15,7 @@
       This package contains the .NET CLI library for interacting with the HTTP API in Octopus.</Description>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" ''$(RuntimeIdentifier)' == 'osx.10.10.-x64'">
+  <PropertyGroup Condition=" '$(RuntimeIdentifier)' == 'osx.10.10.-x64' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS</DefineConstants>
   </PropertyGroup>
 
