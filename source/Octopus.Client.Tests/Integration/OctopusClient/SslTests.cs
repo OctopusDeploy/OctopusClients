@@ -34,7 +34,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 }
                 else
                 {
-                    e.GetType().Name.Should().Be("CurlException");
+                    e.GetType().Name.Should().Be("AuthenticationException");
                     e.Message.Should().Be("Peer certificate cannot be authenticated with given CA certificates");
                 }
             }
