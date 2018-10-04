@@ -27,16 +27,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             catch (Exception ex)
             {
                 var e = ex.InnerException?.InnerException;
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    e.GetType().Name.Should().Be("WinHttpException");
-                    e.Message.Should().Be("A security error occurred");
-                }
-                else
-                {
-                    e.GetType().Name.Should().Be("AuthenticationException");
-                    e.Message.Should().Be("Peer certificate cannot be authenticated with given CA certificates");
-                }
+                e.GetType().Name.Should().Be("AuthenticationException");
+                e.Message.Should().Be("The remote certificate is invalid according to the validation procedure.");
             }
         }
 
