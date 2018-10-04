@@ -132,8 +132,6 @@ namespace Octopus.Cli.Commands
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             clientOptions.IgnoreSslErrors = ignoreSslErrors;
 #else
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                clientOptions.IgnoreSslErrors = ignoreSslErrors;
             ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
 #endif
 
