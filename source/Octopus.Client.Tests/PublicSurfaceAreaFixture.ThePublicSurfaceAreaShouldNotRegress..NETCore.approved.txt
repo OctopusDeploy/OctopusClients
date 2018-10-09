@@ -1334,6 +1334,7 @@ Octopus.Client.Model
       AzureCloudService = 7
       AzureServiceFabricCluster = 8
       Kubernetes = 9
+      BuiltIn = 10
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -4004,6 +4005,14 @@ Octopus.Client.Model.Endpoints
     String DefaultWorkerPoolId { get; set; }
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
+  }
+  class BuiltInWorkerEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
   abstract class CalamariDotNetCorePlatforms
   {
