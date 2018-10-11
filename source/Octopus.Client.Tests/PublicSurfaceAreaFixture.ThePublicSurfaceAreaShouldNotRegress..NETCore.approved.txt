@@ -5158,6 +5158,11 @@ Octopus.Client.Serialization
   {
     .ctor()
   }
+  class EndpointWithMultipleAuthenticationConverter
+    Octopus.Client.Serialization.InheritedClassConverter<IEndpointWithMultipleAuthenticationResource, MultipleAccountType>
+  {
+    .ctor()
+  }
   class FeedConverter
     Octopus.Client.Serialization.InheritedClassConverter<FeedResource, FeedType>
   {
