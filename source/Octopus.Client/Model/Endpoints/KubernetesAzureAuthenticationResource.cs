@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    class KubernetesAzureAuthenticationResource : KubernetesStandardAccountAuthenticationResource
+    public class KubernetesAzureAuthenticationResource : KubernetesStandardAccountAuthenticationResource
     {
         /// <summary>
         /// The name of the K8S cluster

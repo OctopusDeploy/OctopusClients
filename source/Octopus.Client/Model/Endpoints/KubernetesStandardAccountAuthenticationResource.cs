@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    class KubernetesStandardAccountAuthenticationResource : IEndpointWithMultipleAuthenticationResource
+    public class KubernetesStandardAccountAuthenticationResource : IEndpointWithMultipleAuthenticationResource
     {
         /// <summary>
         /// The account id

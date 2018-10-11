@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    class KubernetesCertificateAuthenticationResource : IEndpointWithMultipleAuthenticationResource
+    public class KubernetesCertificateAuthenticationResource : IEndpointWithMultipleAuthenticationResource
     {
         /// <summary>
         /// The client certificate id
