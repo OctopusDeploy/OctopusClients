@@ -1,4 +1,6 @@
-﻿using Octopus.Client.Repositories.Async;
+﻿using System.Threading.Tasks;
+using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
@@ -121,6 +123,12 @@ namespace Octopus.Client
         public ITagSetRepository TagSets { get; }
         public ITaskRepository Tasks { get; }
         public ITeamsRepository Teams { get; }
+        public RootResource RootDocument { get; }
+        public Task<RootResource> RefreshRootDocument()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ITenantRepository Tenants { get; }
         public ITenantVariablesRepository TenantVariables { get; }
         public IUserRepository Users { get; }
