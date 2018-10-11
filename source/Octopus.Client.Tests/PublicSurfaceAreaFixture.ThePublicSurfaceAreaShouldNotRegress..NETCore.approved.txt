@@ -2283,6 +2283,14 @@ Octopus.Client.Model
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
   }
+  MultipleAccountType
+  {
+      None = 0
+      KubernetesStandard = 1
+      KubernetesAws = 2
+      KubernetesAzure = 3
+      KubernetesCertificate = 4
+  }
   class NamedReferenceItem
   {
     .ctor()
@@ -4041,13 +4049,18 @@ Octopus.Client.Model.Endpoints
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
+  interface IEndpointWithMultipleAuthenticationResource
+  {
+    String AuthenticationType { get; }
+  }
   class KubernetesEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
-    String AccountId { get; set; }
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
+    String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultWorkerPoolId { get; set; }

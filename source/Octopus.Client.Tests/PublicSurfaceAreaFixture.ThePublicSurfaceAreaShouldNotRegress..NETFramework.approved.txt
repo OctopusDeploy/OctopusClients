@@ -2780,6 +2780,14 @@ Octopus.Client.Model
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
   }
+  MultipleAccountType
+  {
+      None = 0
+      KubernetesStandard = 1
+      KubernetesAws = 2
+      KubernetesAzure = 3
+      KubernetesCertificate = 4
+  }
   class NamedReferenceItem
   {
     .ctor()
@@ -4547,13 +4555,18 @@ Octopus.Client.Model.Endpoints
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
+  interface IEndpointWithMultipleAuthenticationResource
+  {
+    String AuthenticationType { get; }
+  }
   class KubernetesEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
-    String AccountId { get; set; }
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
+    String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultWorkerPoolId { get; set; }
@@ -5407,7 +5420,9 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
+    IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
