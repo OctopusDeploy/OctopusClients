@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    class KubernetesAwsAuthenticationResource : KubernetesStandardAccountAuthenticationResource
+    public class KubernetesAwsAuthenticationResource : KubernetesStandardAccountAuthenticationResource
     {
         /// <summary>
         /// The name of the EKS cluster
