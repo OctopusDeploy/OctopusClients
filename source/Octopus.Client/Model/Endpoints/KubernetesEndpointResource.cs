@@ -8,7 +8,7 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
-        public string AccountId { get; set; }
+        public string ClusterCertificate { get; set; }
 
         [Trim]
         [Writeable]
@@ -29,5 +29,8 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string DefaultWorkerPoolId { get; set; }
+
+        [Writeable]
+        public IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
     }
 }

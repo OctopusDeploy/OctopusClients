@@ -8,7 +8,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Serialization
 {
-    public abstract class InheritedClassConverter<TBaseResource, TEnumType> : JsonConverter where TBaseResource : Resource
+    public abstract class InheritedClassConverter<TBaseResource, TEnumType> : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
