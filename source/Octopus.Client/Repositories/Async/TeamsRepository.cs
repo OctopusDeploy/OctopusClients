@@ -8,7 +8,8 @@ namespace Octopus.Client.Repositories.Async
         IModify<TeamResource>,
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
-        IGet<TeamResource>
+        IGet<TeamResource>,
+        ICanExtendSpaceContext<ITeamsRepository>
     {
     }
 

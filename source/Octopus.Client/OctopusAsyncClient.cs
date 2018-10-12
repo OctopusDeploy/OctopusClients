@@ -151,16 +151,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public RootResource RootDocument { get; private set; }
 
-        public IAsyncSpaceRepository ForSpace(string spaceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IAsyncSystemRepository ForSystem()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
