@@ -38,10 +38,5 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        Task<SpaceRootResource> RefreshSpaceRootDocument();
     }
 }

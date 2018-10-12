@@ -319,5 +319,8 @@ namespace Octopus.Client
 
         Uri QualifyUri(string path, object parameters = null);
 
+        [Obsolete("This has been moved to IAsyncSystemRepository")]
+        RootResource RootDocument { get; }
+
     }
 }
