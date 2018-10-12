@@ -124,11 +124,6 @@ namespace Octopus.Client
         public ITaskRepository Tasks { get; }
         public ITeamsRepository Teams { get; }
         public RootResource RootDocument { get; }
-        public Task<RootResource> RefreshRootDocument()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public ITenantRepository Tenants { get; }
         public ITenantVariablesRepository TenantVariables { get; }
         public IUserRepository Users { get; }
