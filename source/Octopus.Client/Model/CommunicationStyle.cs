@@ -29,6 +29,8 @@ namespace Octopus.Client.Model
 
         AzureServiceFabricCluster = 8,
 
-        [SupportedAccountTypes(AccountType.UsernamePassword)] [ScriptConsoleSupported] Kubernetes = 9
+        [SupportedAccountTypes(AccountType.UsernamePassword)] [ScriptConsoleSupported] Kubernetes = 9,
+
+        [ScriptConsoleSupported] BuiltIn = 10
     }
 }
