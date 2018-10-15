@@ -2887,6 +2887,14 @@ Octopus.Client.Model
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
   }
+  MultipleAccountType
+  {
+      None = 0
+      KubernetesStandard = 1
+      KubernetesAws = 2
+      KubernetesAzure = 3
+      KubernetesCertificate = 4
+  }
   class MultiTenancyStatusResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4737,19 +4745,55 @@ Octopus.Client.Model.Endpoints
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
+  interface IEndpointWithMultipleAuthenticationResource
+  {
+    String AuthenticationType { get; }
+  }
+  class KubernetesAwsAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+    Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String ClusterName { get; set; }
+  }
+  class KubernetesAzureAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+    Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String ClusterName { get; set; }
+    String ClusterResourceGroup { get; set; }
+  }
+  class KubernetesCertificateAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String ClientCertificate { get; set; }
+  }
   class KubernetesEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.AgentlessEndpointResource
   {
     .ctor()
-    String AccountId { get; set; }
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
+    String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
+  }
+  class KubernetesStandardAccountAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+  {
+    .ctor()
+    String AccountId { get; set; }
+    String AuthenticationType { get; }
   }
   class ListeningTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -5602,7 +5646,9 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
+    IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
@@ -6169,7 +6215,9 @@ Octopus.Client.Repositories.Async
   {
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)
     Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ProjectResource)
+    Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
@@ -6416,6 +6464,11 @@ Octopus.Client.Serialization
   }
   class EndpointConverter
     Octopus.Client.Serialization.InheritedClassConverter<EndpointResource, CommunicationStyle>
+  {
+    .ctor()
+  }
+  class EndpointWithMultipleAuthenticationConverter
+    Octopus.Client.Serialization.InheritedClassConverter<IEndpointWithMultipleAuthenticationResource, MultipleAccountType>
   {
     .ctor()
   }
