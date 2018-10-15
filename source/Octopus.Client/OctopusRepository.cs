@@ -142,23 +142,6 @@ namespace Octopus.Client
         public IUserPermissionsRepository UserPermissions { get; }
         public SpaceContext SpaceContext { get; }
 
-        public IOctopusRepository ForSpaceContext(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return new OctopusRepository(Client, SpaceContext.SpecificSpace(spaceId));
-        }
-
-        public IOctopusRepository ForSpaceAndSystemContext(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return new OctopusRepository(Client, SpaceContext.SpecificSpaceAndSystem(spaceId));
-        }
-
-        public IOctopusRepository ForSystemContext()
-        {
-            return new OctopusRepository(Client, SpaceContext.SystemOnly());
-        }
-
         public SpaceRootResource SpaceRootDocument { get; private set; }
         public RootResource RootDocument { get; private set; }
 
@@ -172,25 +155,6 @@ namespace Octopus.Client
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
                 : RootDocument.Link(name);
-        }
-
-        public RootResource RefreshRootDocument()
-        {
-            RootDocument = Client.Get<RootResource>(rootDocumentUri);
-            return RootDocument;
-        }
-
-        void ValidateSpaceId(string spaceId)
-        {
-            if (string.IsNullOrEmpty(spaceId))
-            {
-                throw new ArgumentException("spaceId cannot be null");
-            }
-
-            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
-            {
-                throw new ArgumentException("Invalid spaceId");
-            }
         }
 
         SpaceRootResource LoadSpaceRootResource(string spaceId)

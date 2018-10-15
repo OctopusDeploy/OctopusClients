@@ -51,7 +51,9 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AllAsyncRepositoriesShouldBeAvailableViaIOctopusAsyncRepository()
         {
-            var exposedTypes = typeof(IOctopusAsyncRepository).GetProperties()
+            var exposedTypes = typeof(IOctopusAsyncRepository)
+                .GetInterfaces()
+                .SelectMany(i => i.GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 

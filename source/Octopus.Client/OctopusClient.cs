@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
@@ -29,6 +30,15 @@ namespace Octopus.Client
         private Lazy<IOctopusRepository> lazyRepository;
         bool signedIn = false;
         public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        public IOctopusSpaceRepository ForSpace(string spaceId)
+        {
+            return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
+        }
+
+        public IOctopusSystemRepository ForSystem()
+        {
+            return new OctopusRepository(this, SpaceContext.SystemOnly());
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -52,13 +62,6 @@ namespace Octopus.Client
 
         [Obsolete("This property is deprecated, please the one from Repository instead")]
         public RootResource RootDocument => Repository.RootDocument;
-
-        [Obsolete("This method is deprecated, please the one from Repository instead")]
-        public RootResource RefreshRootDocument()
-        {
-            return Repository.RefreshRootDocument();
-        }
-
         public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)

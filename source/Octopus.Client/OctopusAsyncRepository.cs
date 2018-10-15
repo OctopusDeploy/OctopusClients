@@ -157,25 +157,6 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
 
-        public async Task<IOctopusAsyncRepository> ForSpaceContext(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            var spaceRoot = await LoadSpaceRootResource(Client, RootDocument, spaceId);
-            return new OctopusAsyncRepository(Client, RootDocument, spaceRoot, SpaceContext.SpecificSpace(spaceId));
-        }
-
-        public async Task<IOctopusAsyncRepository> ForSpaceAndSystemContext(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            var spaceRoot = await LoadSpaceRootResource(Client, RootDocument, spaceId);
-            return new OctopusAsyncRepository(Client, RootDocument, spaceRoot, SpaceContext.SpecificSpaceAndSystem(spaceId));
-        }
-
-        public IOctopusAsyncRepository ForSystemContext()
-        {
-            return new OctopusAsyncRepository(Client, RootDocument, null, SpaceContext.SystemOnly());
-        }
-
         public SpaceRootResource SpaceRootDocument { get; private set; }
         public RootResource RootDocument { get; private set; }
 
@@ -189,25 +170,6 @@ namespace Octopus.Client
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
                 : RootDocument.Link(name);
-        }
-
-        public async Task<RootResource> RefreshRootDocument()
-        {
-            RootDocument = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            return RootDocument;
-        }
-
-        void ValidateSpaceId(string spaceId)
-        {
-            if (string.IsNullOrEmpty(spaceId))
-            {
-                throw new ArgumentException("spaceId cannot be null");
-            }
-
-            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
-            {
-                throw new ArgumentException("Invalid spaceId");
-            }
         }
 
         static async Task<RootResource> LoadRootDocument(IOctopusAsyncClient client)

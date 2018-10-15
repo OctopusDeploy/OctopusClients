@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
+using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
@@ -38,6 +39,15 @@ namespace Octopus.Client
         private OctopusClientOptions clientOptions;
         private bool signedIn = false;
         public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        public async Task<IOctopusSpaceAsyncRepository> ForSpace(string spaceId)
+        {
+            return await OctopusAsyncRepository.Create(this, SpaceContext.SpecificSpace(spaceId));
+        }
+
+        public async Task<IOctopusSystemAsyncRepository> ForSystem()
+        {
+            return await OctopusAsyncRepository.Create(this, SpaceContext.SystemOnly());
+        }
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -151,12 +161,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
-
-        [Obsolete("This method is deprecated, please use the one from Repository instead")]
-        public async Task<RootResource> RefreshRootDocument()
-        {
-            return await Repository.RefreshRootDocument();
-        }
 
         protected virtual Task<RootResource> EstablishSession()
         {
@@ -585,6 +589,19 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
+            }
+        }
+
+        private void ValidateSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
+
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            {
+                throw new ArgumentException("Invalid spaceId");
             }
         }
 
