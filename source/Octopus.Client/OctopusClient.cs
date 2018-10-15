@@ -49,6 +49,7 @@ namespace Octopus.Client
 
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
+
         [Obsolete("This property is deprecated, please the one from Repository instead")]
         public RootResource RootDocument => Repository.RootDocument;
 
