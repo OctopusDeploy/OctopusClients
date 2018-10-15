@@ -1,4 +1,4 @@
-
+#if SYNC_CLIENT
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -21,3 +21,4 @@ namespace Octopus.Client
         RootResource RootDocument { get; }
     }
 }
+#endif
