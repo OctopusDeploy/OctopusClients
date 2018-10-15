@@ -38,14 +38,9 @@ namespace Octopus.Client.Model
         /// <param name="feedId">The feed ID or a variable-expression</param>
         /// <param name="acquisitionLocation">The location the package should be acquired.
         /// May be one <see cref="PackageAcquisitionLocation"/> or a variable-expression.</param>
-        [JsonConstructor]
         public PackageReference(string name, string packageId, string feedId, string acquisitionLocation)
-            :this()
+            :this(null, name, packageId, feedId, acquisitionLocation)
         {
-            PackageId = packageId;
-            FeedId = feedId;
-            AcquisitionLocation = acquisitionLocation;
-            this.name = name;
         }
         
         /// <summary>
@@ -75,6 +70,28 @@ namespace Octopus.Client.Model
         {
            Properties = new Dictionary<string, string>(); 
         }
+        
+        /// <summary>
+        /// For JSON deserialization only
+        /// </summary>
+        [JsonConstructor]
+        protected PackageReference(string id, string name, string packageId, string feedId, string acquisitionLocation)
+            :this()
+        {
+            Id = id;
+            PackageId = packageId;
+            FeedId = feedId;
+            AcquisitionLocation = acquisitionLocation;
+            this.name = name;
+        }
+        
+        /// <summary>
+        /// The ID of the package reference.
+        /// It should be noted this is *not* the Package ID (e.g. Acme.Web)
+        /// This field is unique identifier which will be set by the Octopus Server when the package reference
+        /// is created.
+        /// </summary>
+        public string Id { get; private set; }
         
         /// <summary>
         /// An name for the package-reference.
