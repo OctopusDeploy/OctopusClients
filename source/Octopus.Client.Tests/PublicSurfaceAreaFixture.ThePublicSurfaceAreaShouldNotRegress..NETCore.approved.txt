@@ -3299,9 +3299,9 @@ Octopus.Client.Model
     String Description { get; set; }
     Boolean IsDefault { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpaceManagersTeamMembers { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeams { get; set; }
     Boolean TaskQueueStopped { get; set; }
-    Octopus.Client.Model.ReferenceCollection UsersToBeAddedToSpaceMangersTeam { get; set; }
   }
   class SpaceRootResource
     Octopus.Client.Extensibility.IResource

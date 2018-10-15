@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
         public SpaceResource()
         {
             SpaceManagersTeams = new ReferenceCollection();
-            UsersToBeAddedToSpaceMangersTeam = new ReferenceCollection();
+            SpaceManagersTeamMembers = new ReferenceCollection();
         }
 
         [Writeable]
@@ -25,6 +25,6 @@ namespace Octopus.Client.Model
         public ReferenceCollection SpaceManagersTeams { get; set; }
         
         [Writeable]
-        public ReferenceCollection UsersToBeAddedToSpaceMangersTeam { get; set; }
+        public ReferenceCollection SpaceManagersTeamMembers { get; set; }
     }
 }
