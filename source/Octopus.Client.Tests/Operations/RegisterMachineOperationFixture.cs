@@ -39,16 +39,15 @@ namespace Octopus.Client.Tests.Operations
             environments = new ResourceCollection<EnvironmentResource>(new EnvironmentResource[0], LinkCollection.Self("/foo"));
             machines = new ResourceCollection<MachineResource>(new MachineResource[0], LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(new MachinePolicyResource[0], LinkCollection.Self("/foo"));
-            client.Get<RootResource>(Arg.Any<string>()).Returns(Task.FromResult(
-                new RootResource
-                {
-                    ApiVersion = "3.0.0",
-                    Links = LinkCollection.Self("/api")
-                        .Add("Environments", "/api/environments")
-                        .Add("Machines", "/api/machines")
-                        .Add("MachinePolicies", "/api/machinepolicies")
-                        .Add("CurrentUser", "/api/users/me")
-                }));
+            client.RootDocument.Returns(new RootResource
+            {
+                ApiVersion = "3.0.0",
+                Links = LinkCollection.Self("/api")
+                    .Add("Environments", "/api/environments")
+                    .Add("Machines", "/api/machines")
+                    .Add("MachinePolicies", "/api/machinepolicies")
+                    .Add("CurrentUser", "/api/users/me")
+            });
             client.Get<UserResource>(Arg.Any<string>())
                 .Throws(new OctopusSecurityException(401, ""));
             client.Repository.HasLink(Arg.Any<string>()).Returns(ci => client.RootDocument.HasLink(ci.Arg<string>()));

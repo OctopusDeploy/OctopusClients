@@ -94,7 +94,10 @@ namespace Octopus.Client
 
         public static async Task<IOctopusAsyncRepository> Create(IOctopusAsyncClient client, SpaceContext spaceContext = null)
         {
-            var rootDocument = await LoadRootDocument(client);
+#pragma warning disable 612, 618
+            // Switch this to use LoadRootDocument once RootDocument is removed from OctopusAsyncClient
+            var rootDocument = client.RootDocument;
+#pragma warning restore 612, 618
             var space = await TryGetSpace(client, rootDocument, spaceContext);
             spaceContext = space == null ? SpaceContext.SystemOnly() :
                 spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
@@ -172,7 +175,7 @@ namespace Octopus.Client
                 : RootDocument.Link(name);
         }
 
-        static async Task<RootResource> LoadRootDocument(IOctopusAsyncClient client)
+        internal static async Task<RootResource> LoadRootDocument(IOctopusAsyncClient client)
         {
             RootResource server;
 

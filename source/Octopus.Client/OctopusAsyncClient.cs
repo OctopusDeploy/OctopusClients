@@ -26,14 +26,15 @@ namespace Octopus.Client
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
 
-        readonly OctopusServerEndpoint serverEndpoint;
-        readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+        private readonly OctopusServerEndpoint serverEndpoint;
+        private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
-        bool ignoreSslErrorMessageLogged = false;
+        private bool ignoreSslErrorMessageLogged = false;
         private OctopusClientOptions clientOptions;
+        private RootResource rootDocument;
         public async Task<IOctopusSpaceAsyncRepository> ForSpace(string spaceId)
         {
             ValidateSpaceId(spaceId);
@@ -140,6 +141,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
             try
             {
+                client.rootDocument = await client.EstablishSession().ConfigureAwait(false);
                 client.Repository = await OctopusAsyncRepository.Create(client);
                 return client;
             }
@@ -151,16 +153,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         }
 
         [Obsolete("This property is deprecated, please use the one from Repository instead")]
-        public RootResource RootDocument => Repository?.RootDocument;
+        public RootResource RootDocument => rootDocument;
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        protected virtual Task<RootResource> EstablishSession()
+        protected virtual async Task<RootResource> EstablishSession()
         {
-            return Task.FromResult(Repository.RootDocument);
+            return await OctopusAsyncRepository.LoadRootDocument(this);
         }
 
         public async Task SignIn(LoginCommand loginCommand)
