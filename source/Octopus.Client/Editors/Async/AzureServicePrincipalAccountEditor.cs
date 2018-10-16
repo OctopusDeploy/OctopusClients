@@ -22,6 +22,12 @@ namespace Octopus.Client.Editors.Async
             return Repository.Client.Get<List<AzureServicePrincipalAccountResource.WebSite>>(Instance.Link("WebSites"));
         }
 
+        public Task<List<AzureServicePrincipalAccountResource.WebSlot>> WebSlots(AzureServicePrincipalAccountResource.WebSite site)
+        {
+            return Repository.Client.Get<List<AzureServicePrincipalAccountResource.WebSlot>>(Instance.Link("WebSlots"),
+                new {id = Instance.Id, resourceGroupName = site.ResourceGroup, webSiteName = site.WebSpace});
+        }
+
         public Task<List<AzureStorageAccount>> StorageAccounts()
         {
             return Repository.Client.Get<List<AzureStorageAccount>>(Instance.Link("StorageAccounts"));
