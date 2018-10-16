@@ -24,12 +24,12 @@ namespace Octopus.Cli.Tests.Integration
         [TestCase("nupkg", "2016.02.01.09", false, Description = "NuGet should retain four-part versions with leading zeros")]
         [TestCase("zip", "1.0.0.0", false, Description = "Zip should retain four-part versions")]
         [TestCase("zip", "2016.02.01.09", false, Description = "Zip should retain four-part versions with leading zeros")]
-        [TestCase("nupkg", null, true, Description = "Should calculate a default version from the date")]
-        [TestCase("zip", null, true, Description = "Should calculate a default version from the date")]
-        [TestCase("nupkg", "1.0.0.0", true, Description = "NuGet should retain four-part versions")]
-        [TestCase("nupkg", "2016.02.01.09", true, Description = "NuGet should retain four-part versions with leading zeros")]
-        [TestCase("zip", "1.0.0.0", true, Description = "Zip should retain four-part versions")]
-        [TestCase("zip", "2016.02.01.09", true, Description = "Zip should retain four-part versions with leading zeros")]
+        [TestCase("nupkg", null, true, Description = "Should calculate a default version from the date using octopack file")]
+        [TestCase("zip", null, true, Description = "Should calculate a default version from the date using octopack file")]
+        [TestCase("nupkg", "1.0.0.0", true, Description = "NuGet should retain four-part versions using octopack file")]
+        [TestCase("nupkg", "2016.02.01.09", true, Description = "NuGet should retain four-part versions with leading zeros using octopack file")]
+        [TestCase("zip", "1.0.0.0", true, Description = "Zip should retain four-part versions using octopack file")]
+        [TestCase("zip", "2016.02.01.09", true, Description = "Zip should retain four-part versions with leading zeros using octopack file")]
         public void Execute(string format, string version, bool asOctoPackFile)
         {
             var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
