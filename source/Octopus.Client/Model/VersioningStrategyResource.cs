@@ -1,15 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Octopus.Client.Model
 {
     public class VersioningStrategyResource
     {
+        public VersioningStrategyResource()
+        {
+            additionalData = new Dictionary<string, JToken>();
+        }
+        
         public string Template { get; set; }
         
         public DeploymentActionPackageResource DonorPackage { get; set; }
         
-        // This property is maintained for backward-compatibility
-        [Obsolete("Replaced by DonorPackage")]
-        public string DonorPackageStepId { get; set; }
+        #region Backward Compatibiity
+        
+        [JsonExtensionData]
+        private IDictionary<string, JToken> additionalData;
+        
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if (additionalData.TryGetValue("DonorPackageStepId", out var donorPackageStepIdToken) && 
+                (DonorPackage == null || string.IsNullOrEmpty(DonorPackage.DeploymentAction)))
+            {
+                var legacyValue = donorPackageStepIdToken.Value<string>();
+
+                if (string.IsNullOrEmpty(legacyValue))
+                    return;
+                
+                DonorPackage = DeploymentActionPackageResource.FromLegacyStringFormat(legacyValue);
+            }
+        }
+        
+        [OnSerializing]
+        private void OnSerializing(StreamingContext context)
+        {
+            if (DonorPackage != null && !string.IsNullOrEmpty(DonorPackage.DeploymentAction))
+            {
+                additionalData["DonorPackageStepId"] = DonorPackage.ToLegacyStringFormat();
+            }
+        }
+        
+        #endregion 
     }
 }
