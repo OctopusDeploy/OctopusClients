@@ -48,8 +48,9 @@ namespace Octopus.Cli.Commands.Package
             nuget.Add("releaseNotesFile=", "[Optional] A file containing release notes for this version of the package", v => releaseNotesFile = v);
             
             var basic = Options.For("Basic options");
-            basic.Add("id=", "The ID of the package; e.g. MyCompany.MyApp", v => id = v);
-            basic.Add("format=", "Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward", fmt => packageBuilder = SelectFormat(fmt));
+            basic.Add("id=", "[Optional if --file used] The ID of the package; e.g. MyCompany.MyApp", v => id = v);
+            basic.Add("octoPackFile=", "[Optional] The path to a .octopack file", v => octoPackFile = v);
+            basic.Add("format=", "[Optional] Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward", fmt => packageBuilder = SelectFormat(fmt));
             basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v));
             basic.Add("outFolder=", "[Optional] The folder into which the generated NUPKG file will be written; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(outFolder)); outFolder = v;});
             basic.Add("basePath=", "[Optional] The root folder containing files and folders to pack; defaults to '.'", v => { v.CheckForIllegalPathCharacters(nameof(basePath)); basePath = v;});
@@ -72,9 +73,58 @@ namespace Octopus.Cli.Commands.Package
                 }
 
                 commandOutputProvider.PrintMessages = this.OutputFormat == OutputFormat.Default || this.verbose;
+                if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(octoPackFile))
+                    throw new CommandException("An ID or octoPackFile is required");
 
-                if (string.IsNullOrWhiteSpace(id))
-                    throw new CommandException("An ID is required");
+                if (!string.IsNullOrWhiteSpace(octoPackFile))
+                {
+                    if (!File.Exists(octoPackFile))
+                    {
+                        throw new CommandException($"octoPackFile {octoPackFile} doesn't exist");
+                    }
+
+                    if (Path.GetExtension(octoPackFile).ToLower() != ".octopack")
+                    {
+                        throw new CommandException($"octoPackFile {octoPackFile} is not a .octopack file");
+                    }
+
+                    var octoPackFileLines = File.ReadAllLines(octoPackFile);
+
+                    foreach (var octoPackFileLine in octoPackFileLines)
+                    {
+                        var arg = octoPackFileLine.Split(new[] { ' ' }, 2);
+                        switch (arg[0].ToLower())
+                        {
+                            case "id" when string.IsNullOrWhiteSpace(id):
+                                id = arg[1];
+                                break;
+                            case "version" when version == null:
+                                version = new SemanticVersion(arg[1]);
+                                break;
+                            case "title" when string.IsNullOrWhiteSpace(title):
+                                title = arg[1];
+                                break;
+                            case "description" when string.IsNullOrWhiteSpace(description):
+                                description = arg[1];
+                                break;
+                            case "releaseNotes" when string.IsNullOrWhiteSpace(releaseNotes):
+                                releaseNotes = arg[1];
+                                break;
+                            case "releaseNotesFile" when string.IsNullOrWhiteSpace(releaseNotesFile):
+                                releaseNotesFile = arg[1];
+                                break;
+                            case "basePath" when string.IsNullOrWhiteSpace(basePath):
+                                basePath = arg[1];
+                                break;
+                            case "author":
+                                authors.Add(arg[1]);
+                                break;
+                            case "include":
+                                includes.Add(arg[1]);
+                                break;
+                        }
+                    }
+                }
 
                 if (includes.All(string.IsNullOrWhiteSpace))
                     includes.Add("**");
