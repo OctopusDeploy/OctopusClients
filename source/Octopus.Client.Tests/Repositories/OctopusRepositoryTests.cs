@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using Octopus.Client.Exceptions;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Model;
 
@@ -15,7 +18,6 @@ namespace Octopus.Client.Tests.Repositories
         public void AllPropertiesAreNotNullForDefaultSpaceRepository()
         {
             var client = Substitute.For<IOctopusClient>();
-            client.IsAuthenticated.Returns(true);
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
@@ -42,8 +44,13 @@ namespace Octopus.Client.Tests.Repositories
         public void SpaceRootDocumentIsNullForSystemOnlyRepository()
         {
             var client = Substitute.For<IOctopusClient>();
-            client.IsAuthenticated.Returns(false);
-            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource() { ApiVersion = "3.0.0" });
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
+            {
+                ApiVersion = "3.0.0",
+                Links = LinkCollection.Self("/api")
+                    .Add("CurrentUser", "/api/users/me")
+            });
+            client.Get<UserResource>(Arg.Any<string>()).Throws(new OctopusSecurityException(401, "Test"));
             var repository = new OctopusRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
                 where p.GetMethod.Invoke(repository, new object[0]) == null

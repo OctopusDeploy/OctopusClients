@@ -351,8 +351,17 @@ namespace Octopus.Client
         /// <returns></returns>
         Task SignOut();
 
-        bool IsAuthenticated { get; }
+        /// <summary>
+        /// Get a repository for the given space
+        /// </summary>
+        /// <param name="spaceId"></param>
+        /// <returns></returns>
         Task<IOctopusSpaceAsyncRepository> ForSpace(string spaceId);
+
+        /// <summary>
+        /// Get a repository for system only
+        /// </summary>
+        /// <returns></returns>
         Task<IOctopusSystemAsyncRepository> ForSystem();
     }
 }

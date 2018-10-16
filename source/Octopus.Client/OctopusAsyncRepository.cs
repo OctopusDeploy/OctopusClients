@@ -240,16 +240,17 @@ namespace Octopus.Client
 
         static async Task<SpaceResource> TryGetSpace(IOctopusAsyncClient client, RootResource rootDocument, SpaceContext spaceContext)
         {
-            if (client.IsAuthenticated)
+            try
             {
-                var currentUser =
-                    await client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
+                var currentUser = await client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
                 var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
                     spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }
-
-            return null;
+            catch (OctopusSecurityException)
+            {
+                return null;
+            }
         }
     }
 }

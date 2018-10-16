@@ -334,7 +334,6 @@ namespace Octopus.Client
         /// Sign out
         /// </summary>
         void SignOut();
-        bool IsAuthenticated { get; }
         IOctopusSpaceRepository ForSpace(string spaceId);
         IOctopusSystemRepository ForSystem();
     }

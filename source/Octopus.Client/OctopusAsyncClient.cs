@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -14,10 +13,8 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
-using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
@@ -37,10 +34,9 @@ namespace Octopus.Client
         private readonly bool ignoreSslErrors = false;
         bool ignoreSslErrorMessageLogged = false;
         private OctopusClientOptions clientOptions;
-        private bool signedIn = false;
-        public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
         public async Task<IOctopusSpaceAsyncRepository> ForSpace(string spaceId)
         {
+            ValidateSpaceId(spaceId);
             return await OctopusAsyncRepository.Create(this, SpaceContext.SpecificSpace(spaceId));
         }
 
@@ -174,14 +170,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             await Post(Repository.Link("SignIn"), loginCommand);
-            signedIn = true;
             Repository = await OctopusAsyncRepository.Create(this);
         }
 
         public async Task SignOut()
         {
             await Post(Repository.Link("SignOut"));
-            signedIn = false;
         }
 
         /// <summary>
@@ -582,7 +576,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             try
             {
-                var s = str;
                 return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
             }
             catch (Exception ex)

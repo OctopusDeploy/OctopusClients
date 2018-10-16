@@ -33,7 +33,7 @@ namespace Octopus.Client
             Client = client;
             RootDocument = LoadRootDocument();
             var space = TryGetSpace(spaceContext);
-            SpaceContext = space == null ? SpaceContext.SystemOnly() : 
+            SpaceContext = space == null ? SpaceContext.SystemOnly() :
                 spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
 
             SpaceRootDocument = LoadSpaceRootResource(space?.Id);
@@ -166,7 +166,7 @@ namespace Octopus.Client
 
         SpaceResource TryGetSpace(SpaceContext spaceContext)
         {
-            if (Client.IsAuthenticated)
+            try
             {
                 var currentUser =
                     Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
@@ -175,7 +175,10 @@ namespace Octopus.Client
                 return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
                     spaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == spaceContext.SpaceIds.Single()) : null;
             }
-            return null;
+            catch (OctopusSecurityException)
+            {
+                return null;
+            }
         }
         RootResource LoadRootDocument()
         {
