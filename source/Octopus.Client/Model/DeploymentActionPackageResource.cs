@@ -21,7 +21,7 @@ namespace Octopus.Client.Model
         }
         
         /// <summary>
-        /// The name of the deployment-action containing the package reference.
+        /// The name (or ID) of the deployment-action containing the package reference.
         /// </summary>
         public string DeploymentAction { get; set; }
         

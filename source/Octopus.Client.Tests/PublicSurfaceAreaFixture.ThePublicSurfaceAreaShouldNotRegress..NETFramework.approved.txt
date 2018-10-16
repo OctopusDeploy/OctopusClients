@@ -1815,7 +1815,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ReferenceCollection Actions { get; set; }
+    ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
     String Tag { get; set; }
     String VersionRange { get; set; }
   }
@@ -2022,6 +2022,15 @@ Octopus.Client.Model
     {
       static System.String DeploymentId
     }
+  }
+  class DeploymentActionPackageResource
+  {
+    .ctor(String)
+    .ctor(String, String)
+    String DeploymentAction { get; set; }
+    String PackageReference { get; set; }
+    Boolean DeploymentActionNameMatches(String)
+    Boolean PackageReferenceNameMatches(String)
   }
   class DeploymentActionResource
     Octopus.Client.Extensibility.IResource
@@ -2904,6 +2913,7 @@ Octopus.Client.Model
     .ctor()
     String AcquisitionLocation { get; set; }
     String FeedId { get; set; }
+    String Id { get; }
     Boolean IsPrimaryPackage { get; }
     String Name { get; set; }
     String PackageId { get; set; }
@@ -3303,7 +3313,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ChannelId { get; set; }
-    String ReleaseCreationPackageStepId { get; set; }
+    Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
   }
   class ReleaseProgressionResource
   {
@@ -4141,7 +4151,7 @@ Octopus.Client.Model
   class VersioningStrategyResource
   {
     .ctor()
-    String DonorPackageStepId { get; set; }
+    Octopus.Client.Model.DeploymentActionPackageResource DonorPackage { get; set; }
     String Template { get; set; }
   }
   class WebPortalConfigResource
