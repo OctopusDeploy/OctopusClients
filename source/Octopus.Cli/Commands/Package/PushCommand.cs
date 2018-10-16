@@ -8,6 +8,9 @@ using Octopus.Cli.Model;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
+using Octopus.Client.Exceptions;
+using Octopus.Client.Model;
+using Octopus.Client.Util;
 using Serilog;
 
 namespace Octopus.Cli.Commands.Package
@@ -16,6 +19,7 @@ namespace Octopus.Cli.Commands.Package
     public class PushCommand : ApiCommand, ISupportFormattedOutput
     {
         private List<string> pushedPackages;
+        private List<string> existingPackages;
         private List<Tuple<string, Exception>> failedPackages;
 
         public PushCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
@@ -24,13 +28,16 @@ namespace Octopus.Cli.Commands.Package
             var options = Options.For("Package pushing");
             options.Add("package=", "Package file to push. Specify multiple packages by specifying this argument multiple times: \n--package package1 --package package2", package => Packages.Add(EnsurePackageExists(fileSystem, package)));
             options.Add("replace-existing", "If the package already exists in the repository, the default behavior is to reject the new package being pushed. You can pass this flag to overwrite the existing package.", replace => ReplaceExisting = true);
+            options.Add("ignore-existing", "If the package already exists in the repository, do nothing (a success will return)", replace => IgnoreExiting = true);
 
             pushedPackages = new List<string>();
+            existingPackages = new List<string>();
             failedPackages = new List<Tuple<string, Exception>>();
         }
 
         public HashSet<string> Packages { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase); 
         public bool ReplaceExisting { get; set; }
+        public bool IgnoreExiting { get; set; }
 
         public async Task Request()
         {
@@ -50,6 +57,20 @@ namespace Octopus.Cli.Commands.Package
 
                     pushedPackages.Add(package);
                 }
+                catch (OctopusValidationException ex) when (IgnoreExiting && ex.HttpStatusCode == 409)
+                {
+                    var packageExists = await CheckIfPackageExists(package);
+                    if (packageExists)
+                    {
+                        commandOutputProvider.Debug("Package already exists in repository: {Package:l}", package);
+                        existingPackages.Add(package);
+                    }
+                    else if (OutputFormat == OutputFormat.Default)
+                    {
+                        throw;
+                    }
+                    failedPackages.Add(new Tuple<string, Exception>(package, ex));
+                }
                 catch (Exception ex)
                 {
                     if (OutputFormat == OutputFormat.Default)
@@ -59,6 +80,35 @@ namespace Octopus.Cli.Commands.Package
                     failedPackages.Add(new Tuple<string, Exception>(package, ex));
                 }
             }
+        }
+
+        private async Task<bool> CheckIfPackageExists(string package)
+        {
+            if (!PackageIdentityParser.TryParsePackageIdAndVersion(Path.GetFileNameWithoutExtension(package), out var packageId, out var version))
+            {
+                return false;
+            }
+
+            var packages = new List<PackageFromBuiltInFeedResource>();
+            var moreToGet = true;
+            try
+            {
+                while (moreToGet)
+                {
+                    var retrieved = await Repository.BuiltInPackageRepository.ListPackages(packageId, packages.Count).ConfigureAwait(false);
+                    packages.AddRange(retrieved.Items);
+                    if (retrieved.TotalResults == packages.Count)
+                    {
+                        moreToGet = false;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return packages.Any(x => x.Version == version.ToString());
         }
 
         public void PrintDefaultOutput()
@@ -71,7 +121,8 @@ namespace Octopus.Cli.Commands.Package
             commandOutputProvider.Json(new
             {
                 SuccessfulPackages = pushedPackages,
-                FailedPackages = failedPackages.Select(x=>new { Package = x.Item1, Reason = x.Item2.Message.Replace("\r\n", string.Empty) })
+                AlreadyExistingPackage = existingPackages,
+                FailedPackages = failedPackages.Select(x => new { Package = x.Item1, Reason = x.Item2.Message.Replace("\r\n", string.Empty) })
             });
         }
 
