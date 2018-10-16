@@ -23,13 +23,13 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        CookieContainer cookieContainer = new CookieContainer();
+        readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         private Lazy<IOctopusRepository> lazyRepository;
-        bool signedIn = false;
-        public bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        readonly object rootDocumentLock = new object();
+        RootResource rootDocument;
         public IOctopusSpaceRepository ForSpace(string spaceId)
         {
             return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
@@ -61,7 +61,23 @@ namespace Octopus.Client
 
 
         [Obsolete("This property is deprecated, please the one from Repository instead")]
-        public RootResource RootDocument => Repository.RootDocument;
+        public RootResource RootDocument
+        {
+            get
+            {
+                if (rootDocument != null) return rootDocument;
+
+                lock (rootDocumentLock)
+                {
+                    if (rootDocument != null) return rootDocument;
+
+                    var root = EstablishSession();
+                    Thread.MemoryBarrier();
+                    rootDocument = root;
+                    return root;
+                }
+            }
+        }
         public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
@@ -69,14 +85,12 @@ namespace Octopus.Client
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             Post(Repository.RootDocument.Links["SignIn"], loginCommand);
-            signedIn = true;
             lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
         }
 
         public void SignOut()
         {
             Post(Repository.RootDocument.Links["SignOut"]);
-            signedIn = false;
         }
 
         /// <summary>
@@ -381,6 +395,11 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
+        protected virtual RootResource EstablishSession()
+        {
+            return OctopusRepository.LoadRootDocument(this);
+        }
+
         protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
@@ -410,9 +429,9 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (lazyRepository.IsValueCreated)
+            if (rootDocument != null)
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{Repository.RootDocument.InstallationId}";
+                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
                     .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
@@ -558,7 +577,7 @@ namespace Octopus.Client
             }
         }
 
-        IOctopusRepository LoadRepository()
+        private IOctopusRepository LoadRepository()
         {
             return new OctopusRepository(this);
         }

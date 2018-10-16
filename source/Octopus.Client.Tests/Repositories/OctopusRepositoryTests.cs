@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Repositories
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
-            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
+            client.RootDocument.Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Links =
@@ -44,7 +44,7 @@ namespace Octopus.Client.Tests.Repositories
         public void SpaceRootDocumentIsNullForSystemOnlyRepository()
         {
             var client = Substitute.For<IOctopusClient>();
-            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
+            client.RootDocument.Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Links = LinkCollection.Self("/api")

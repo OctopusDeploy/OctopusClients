@@ -339,7 +339,6 @@ Octopus.Client
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
     .ctor(Octopus.Client.OctopusServerEndpoint)
-    Boolean IsAuthenticated { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }

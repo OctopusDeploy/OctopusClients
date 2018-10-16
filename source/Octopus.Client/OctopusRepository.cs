@@ -23,7 +23,6 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
-        readonly string rootDocumentUri = "~/api";
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
@@ -31,7 +30,10 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
         {
             Client = client;
-            RootDocument = LoadRootDocument();
+#pragma warning disable 612, 618
+            // Switch this to use LoadRootDocument once RootDocument is removed from OctopusClient
+            RootDocument = client.RootDocument;
+#pragma warning restore 612, 618
             var space = TryGetSpace(spaceContext);
             SpaceContext = space == null ? SpaceContext.SystemOnly() :
                 spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
@@ -157,14 +159,14 @@ namespace Octopus.Client
                 : RootDocument.Link(name);
         }
 
-        SpaceRootResource LoadSpaceRootResource(string spaceId)
+        private SpaceRootResource LoadSpaceRootResource(string spaceId)
         {
             return !string.IsNullOrEmpty(spaceId) ?
                 Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId })
                 : null;
         }
 
-        SpaceResource TryGetSpace(SpaceContext spaceContext)
+        private SpaceResource TryGetSpace(SpaceContext spaceContext)
         {
             try
             {
@@ -180,7 +182,7 @@ namespace Octopus.Client
                 return null;
             }
         }
-        RootResource LoadRootDocument()
+        internal static RootResource LoadRootDocument(IOctopusClient client)
         {
             RootResource server;
 
@@ -204,7 +206,7 @@ namespace Octopus.Client
 
                 try
                 {
-                    server = Client.Get<RootResource>(this.rootDocumentUri);
+                    server = client.Get<RootResource>("~/api");
                     break;
                 }
                 catch (WebException ex)

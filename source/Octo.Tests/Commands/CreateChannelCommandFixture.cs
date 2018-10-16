@@ -32,7 +32,7 @@ namespace Octo.Tests.Commands
         [Test]
         public void ShouldThrowForOlderOctopusServers()
         {
-            Repository.Client.RootDocument.Returns(new RootResource
+            Repository.RootDocument.Returns(new RootResource
             {
                 Links = new LinkCollection()//.Add("Channels", "DOES_NOT_MATTER")
             });
