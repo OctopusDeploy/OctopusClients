@@ -48,7 +48,7 @@ namespace Octopus.Cli.Commands.Package
             nuget.Add("releaseNotesFile=", "[Optional] A file containing release notes for this version of the package", v => releaseNotesFile = v);
             
             var basic = Options.For("Basic options");
-            basic.Add("id=", "[Optional if --file used] The ID of the package; e.g. MyCompany.MyApp", v => id = v);
+            basic.Add("id=", "[Optional if --octoPackFile used] The ID of the package; e.g. MyCompany.MyApp", v => id = v);
             basic.Add("octoPackFile=", "[Optional] The path to a .octopack file", v => octoPackFile = v);
             basic.Add("format=", "[Optional] Package format. Options are: NuPkg, Zip. Defaults to NuPkg, though we recommend Zip going forward", fmt => packageBuilder = SelectFormat(fmt));
             basic.Add("version=", "[Optional] The version of the package; must be a valid SemVer; defaults to a timestamp-based version", v => version = string.IsNullOrWhiteSpace(v) ? null : new SemanticVersion(v));
@@ -93,6 +93,12 @@ namespace Octopus.Cli.Commands.Package
                     foreach (var octoPackFileLine in octoPackFileLines)
                     {
                         var arg = octoPackFileLine.Split(new[] { ' ' }, 2);
+
+                        if (arg.Length < 2 || string.IsNullOrWhiteSpace(arg[0]) || string.IsNullOrWhiteSpace(arg[1]))
+                        {
+                            throw new CommandException($"octoPackFile line {octoPackFileLine} in file {octoPackFile} is not valid");
+                        }
+
                         switch (arg[0].ToLower())
                         {
                             case "id" when string.IsNullOrWhiteSpace(id):
