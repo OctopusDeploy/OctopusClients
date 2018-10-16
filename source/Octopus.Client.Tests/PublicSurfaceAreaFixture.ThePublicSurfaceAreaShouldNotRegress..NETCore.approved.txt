@@ -2433,12 +2433,9 @@ Octopus.Client.Model
     void Clear()
     Boolean Contains(Octopus.Client.Model.PackageReference)
     void CopyTo(Octopus.Client.Model.PackageReference[], Int32)
-    Octopus.Client.Model.PackageReference GetById(String)
     Octopus.Client.Model.PackageReference GetByName(String)
     IEnumerator<PackageReference> GetEnumerator()
     Boolean Remove(Octopus.Client.Model.PackageReference)
-    Boolean TryGetById(String, Octopus.Client.Model.PackageReference&)
-    Boolean TryGetByIdOrName(String, Octopus.Client.Model.PackageReference&)
     Boolean TryGetByName(String, Octopus.Client.Model.PackageReference&)
   }
   class PackageResource

@@ -7,8 +7,10 @@ namespace Octopus.Client.Model
     public class PackageReferenceCollection : ICollection<PackageReference>
     {
         readonly Dictionary<string, PackageReference> nameMap = new Dictionary<string, PackageReference>(StringComparer.OrdinalIgnoreCase);
-        readonly Dictionary<string, PackageReference> idMap = new Dictionary<string, PackageReference>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Returns the primary (un-named) package reference, or null if it does not exist. 
+        /// </summary>
         public PackageReference PrimaryPackage => nameMap.ContainsKey("") ? nameMap[""] : null;
         
         public void Add(PackageReference item)
@@ -19,18 +21,9 @@ namespace Octopus.Client.Model
             if (nameMap.ContainsKey(item.Name))
                 throw new ArgumentException($"A package reference with the name '{item.Name}' already exists");
 
-            if (idMap.ContainsKey(item.Id))
-                throw new ArgumentException($"A package reference with the ID '{item.Id}' already exists");
-
             nameMap.Add(item.Name, item);
-            idMap.Add(item.Id, item);
         }
         
-        public PackageReference GetById(string id)
-        {
-            return idMap[id];
-        }
-
         public PackageReference GetByName(string name)
         {
             var key = name ?? "";
@@ -50,37 +43,12 @@ namespace Octopus.Client.Model
             return false;
         }
         
-        public bool TryGetById(string id, out PackageReference package)
-        {
-            if (!string.IsNullOrEmpty(id) && idMap.ContainsKey(id))
-            {
-                package = idMap[id];
-                return true;
-            }
-
-            package = null;
-            return false;
-        }
-
-        public bool TryGetByIdOrName(string idOrName, out PackageReference package)
-        {
-            if (TryGetById(idOrName, out package))
-            {
-                return true;
-            }
-
-            if (TryGetByName(idOrName, out package))
-            {
-                return true;
-            }
-
-            package = null;
-            return false;
-        }
-
+        /// <summary>
+        /// Returns true if a PackageReference with the same name exists; otherwise false. 
+        /// </summary>
         public bool Contains(PackageReference item)
         {
-            return idMap.ContainsKey(item.Id);
+            return nameMap.ContainsKey(item.Name);
         }
 
         public void CopyTo(PackageReference[] array, int arrayIndex)
@@ -88,17 +56,18 @@ namespace Octopus.Client.Model
             nameMap.Values.CopyTo(array, arrayIndex);
         }
 
+        /// <summary>
+        /// Remove the PackageReference with the matching name from the collection
+        /// </summary>
         public bool Remove(PackageReference item)
         {
-            nameMap.Remove(item.Name);
-            return idMap.Remove(item.Id);
+            return nameMap.Remove(item.Name);
         }
 
         public int Count => nameMap.Count; 
         
         public void Clear()
         {
-            idMap.Clear();
             nameMap.Clear();
         }
 
