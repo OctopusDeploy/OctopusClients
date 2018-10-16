@@ -95,7 +95,7 @@ namespace Octopus.Client.Model
         
         /// <summary>
         /// An name for the package-reference.
-        /// This may be empty.
+        /// This may be empty, and should be empty for deployment actions with a single package reference.
         /// This is used to discriminate the package-references. Package ID isn't suitable because an action may potentially
         /// have multiple references to the same package ID (e.g. if you wanted to use different versions of the same package).
         /// Also, the package ID may be a variable-expression. 
