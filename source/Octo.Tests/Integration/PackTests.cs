@@ -18,13 +18,19 @@ namespace Octopus.Cli.Tests.Integration
     public class PackTests
     {
         [Test]
-        [TestCase("nupkg", null, Description = "Should calculate a default version from the date")]
-        [TestCase("zip", null, Description = "Should calculate a default version from the date")]
-        [TestCase("nupkg", "1.0.0.0", Description = "NuGet should retain four-part versions")]
-        [TestCase("nupkg", "2016.02.01.09", Description = "NuGet should retain four-part versions with leading zeros")]
-        [TestCase("zip", "1.0.0.0", Description = "Zip should retain four-part versions")]
-        [TestCase("zip", "2016.02.01.09", Description = "Zip should retain four-part versions with leading zeros")]
-        public void Execute(string format, string version)
+        [TestCase("nupkg", null, false, Description = "Should calculate a default version from the date")]
+        [TestCase("zip", null, false, Description = "Should calculate a default version from the date")]
+        [TestCase("nupkg", "1.0.0.0", false, Description = "NuGet should retain four-part versions")]
+        [TestCase("nupkg", "2016.02.01.09", false, Description = "NuGet should retain four-part versions with leading zeros")]
+        [TestCase("zip", "1.0.0.0", false, Description = "Zip should retain four-part versions")]
+        [TestCase("zip", "2016.02.01.09", false, Description = "Zip should retain four-part versions with leading zeros")]
+        [TestCase("nupkg", null, true, Description = "Should calculate a default version from the date")]
+        [TestCase("zip", null, true, Description = "Should calculate a default version from the date")]
+        [TestCase("nupkg", "1.0.0.0", true, Description = "NuGet should retain four-part versions")]
+        [TestCase("nupkg", "2016.02.01.09", true, Description = "NuGet should retain four-part versions with leading zeros")]
+        [TestCase("zip", "1.0.0.0", true, Description = "Zip should retain four-part versions")]
+        [TestCase("zip", "2016.02.01.09", true, Description = "Zip should retain four-part versions with leading zeros")]
+        public void Execute(string format, string version, bool asOctoPackFile)
         {
             var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
             try
@@ -39,91 +45,36 @@ namespace Octopus.Cli.Tests.Integration
                 var args = new List<string>
                 {
                     "pack",
-                    "--id=TestPackage",
                     $"--basePath={inputDirectory.FullName}",
                     $"--outFolder={packagedDirectory.FullName}",
                     $"--format={format}"
                 };
 
-                if (!string.IsNullOrWhiteSpace(version))
+                if (asOctoPackFile)
                 {
-                    args.Add($"--version={version}");
-                }
+                    var octoPackFilePath = Path.Combine(rootDirectory.FullName, "TestPackage.octoPack");
+                    var octoPackFile = new List<string>
+                    {
+                        "id TestPackage"
+                    };
 
-                var now = DateTime.Now;
-                var result = new CliProgram().Run(args.ToArray());
+                    if (!string.IsNullOrWhiteSpace(version))
+                    {
+                        octoPackFile.Add($"version {version}");
+                    }
 
-                result.Should().Be(0);
-
-                if (!string.IsNullOrWhiteSpace(version))
-                {
-                    var expectedOutputFilePath = Path.Combine(packagedDirectory.FullName, $"TestPackage.{version}.{format}");
-                    File.Exists(expectedOutputFilePath)
-                        .Should()
-                        .BeTrue("the package should have been given the right name.");
+                    File.WriteAllLines(octoPackFilePath, octoPackFile);
+                    args.Add($"--octoPackFile={octoPackFilePath}");
                 }
                 else
                 {
-                    var searchPattern = $"TestPackage.{now.Year}.{now.Month}.{now.Day}.*.{format}";
-                    var files = Directory.GetFiles(packagedDirectory.FullName, searchPattern, SearchOption.TopDirectoryOnly);
-                    files.Should().HaveCount(1, "There should be a package where the version is calculated from the date");
+                    args.Add("--id=TestPackage");
+                    if (!string.IsNullOrWhiteSpace(version))
+                    {
+                        args.Add($"--version={version}");
+                    }
                 }
 
-                // TODO: It would be really nice to have a simple end-to-end test that proves we can pack/unpack files preserving filenames and timestamps etc...
-                //var calamariResult = SilentProcessRunner.ExecuteCommand(@"C:\dev\Calamari\source\Calamari\bin\Debug\netcoreapp1.0\win7-x64\Calamari.exe",
-                //    $"extract-package --package={expectedOutputFilePath} --target={extractedDirectory.FullName}", rootDirectory.FullName, Console.WriteLine, Console.WriteLine);
-                //calamariResult.Should().Be(0);
-
-                //var extractedFiles = Directory.GetFiles(extractedDirectory.FullName, "*", SearchOption.AllDirectories).Select(x => x.Replace(extractedDirectory.FullName, ""));
-                //var inputFiles = Directory.GetFiles(inputDirectory.FullName, "*", SearchOption.AllDirectories).Select(x => x.Replace(inputDirectory.FullName, ""));
-                //extractedFiles.ShouldAllBeEquivalentTo(inputFiles);
-            }
-            finally
-            {
-                Directory.Delete(tempFolder, true);
-            }
-        }
-
-        [Test]
-        [TestCase("nupkg", null, Description = "Should calculate a default version from the date")]
-        [TestCase("zip", null, Description = "Should calculate a default version from the date")]
-        [TestCase("nupkg", "1.0.0.0", Description = "NuGet should retain four-part versions")]
-        [TestCase("nupkg", "2016.02.01.09", Description = "NuGet should retain four-part versions with leading zeros")]
-        [TestCase("zip", "1.0.0.0", Description = "Zip should retain four-part versions")]
-        [TestCase("zip", "2016.02.01.09", Description = "Zip should retain four-part versions with leading zeros")]
-        public void ExecutePackFile(string format, string version)
-        {
-            var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-            try
-            {
-                var rootDirectory = Directory.CreateDirectory(tempFolder);
-                var inputDirectory = Directory.CreateDirectory(Path.Combine(rootDirectory.FullName, "input"));
-                var packagedDirectory = Directory.CreateDirectory(Path.Combine(rootDirectory.FullName, "packaged"));
-                var extractedDirectory = Directory.CreateDirectory(Path.Combine(rootDirectory.FullName, "extracted"));
-                var octoPackFilePath = Path.Combine(rootDirectory.FullName, "TestPackage.octoPack");
-                File.WriteAllText(Path.Combine(inputDirectory.FullName, "Test.txt"), "Test");
-                File.WriteAllText(Path.Combine(inputDirectory.FullName, "Test[squarebrackets].txt"), "Test");
-
-                var octoPackFile = new List<string>
-                {
-                    "id TestPackage"
-                };
-
-                if (!string.IsNullOrWhiteSpace(version))
-                {
-                    octoPackFile.Add($"version {version}");
-                }
-
-                File.WriteAllLines(octoPackFilePath, octoPackFile);
-
-                var args = new List<string>
-                {
-                    "pack",
-                    $"--octoPackFile={octoPackFilePath}",
-                    $"--basePath={inputDirectory.FullName}",
-                    $"--outFolder={packagedDirectory.FullName}",
-                    $"--format={format}"
-                };
 
                 var now = DateTime.Now;
                 var result = new CliProgram().Run(args.ToArray());
