@@ -19,6 +19,13 @@ namespace Octopus.Client.Model
         
         #region Backward Compatibiity
         
+        /* Before support for multiple packages per deployment-action was added, VersioningStrategyResource contained
+         * a property named 'DonorPackageStepId' which contained the Id of the deployment action, as this was sufficient
+         * to uniquely identify a package reference.
+         * In 2018.9 the DeploymentActionPackageResource class was added to better represent this relationship, but
+         * we still need to maintain backward-compatibility with older server versions. 
+         */
+        
         [JsonExtensionData]
         private IDictionary<string, JToken> additionalData;
         
