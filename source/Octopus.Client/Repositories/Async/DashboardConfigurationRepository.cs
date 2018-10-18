@@ -19,14 +19,14 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public Task<DashboardConfigurationResource> GetDashboardConfiguration()
+        public async Task<DashboardConfigurationResource> GetDashboardConfiguration()
         {
-            return repository.Client.Get<DashboardConfigurationResource>(repository.Link("DashboardConfiguration"));
+            return await repository.Client.Get<DashboardConfigurationResource>(await repository.Link("DashboardConfiguration"));
         }
 
-        public Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource)
+        public async Task<DashboardConfigurationResource> ModifyDashboardConfiguration(DashboardConfigurationResource resource)
         {
-            return repository.Client.Update(repository.Link("DashboardConfiguration"), resource);
+            return await repository.Client.Update(await repository.Link("DashboardConfiguration"), resource);
         }
     }
 }

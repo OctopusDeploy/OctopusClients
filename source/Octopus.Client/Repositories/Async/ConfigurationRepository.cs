@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         private async Task<ConfigurationItemResource> GetConfigurationItem(IResource instance)
         {
-            return await repository.Client.Get<ConfigurationItemResource>(repository.Link(collectionLinkName), new { instance.Id });
+            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName), new { instance.Id });
         }
     }
 }

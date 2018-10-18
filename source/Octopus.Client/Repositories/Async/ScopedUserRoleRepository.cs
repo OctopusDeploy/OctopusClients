@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -24,9 +25,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public IScopedUserRoleRepository Including(SpaceContext spaceContext)
+        public async Task<IScopedUserRoleRepository> Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new ScopedUserRoleRepository(Repository, await ExtendSpaceContext(spaceContext));
         }
     }
 }

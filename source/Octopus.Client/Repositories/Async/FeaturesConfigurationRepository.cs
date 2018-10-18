@@ -19,14 +19,14 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public Task<FeaturesConfigurationResource> GetFeaturesConfiguration()
+        public async Task<FeaturesConfigurationResource> GetFeaturesConfiguration()
         {
-            return repository.Client.Get<FeaturesConfigurationResource>(repository.Link("FeaturesConfiguration"));
+            return await repository.Client.Get<FeaturesConfigurationResource>(await repository.Link("FeaturesConfiguration"));
         }
 
-        public Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
+        public async Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
         {
-            return repository.Client.Update(repository.Link("FeaturesConfiguration"), resource);
+            return await repository.Client.Update(await repository.Link("FeaturesConfiguration"), resource);
         }
     }
 }

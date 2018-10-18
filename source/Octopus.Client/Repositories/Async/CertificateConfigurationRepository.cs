@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories.Async
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
     {
-        public CertificateConfigurationRepository(IOctopusAsyncRepository repository) : base(repository, DetermineCollectionLinkName(repository))
+        public CertificateConfigurationRepository(IOctopusAsyncRepository repository) : base(repository, async repo => await repository.HasLink("CertificateConfiguration") ? "CertificateConfiguration" : "Certificates")
         {
         }
 
@@ -25,19 +25,6 @@ namespace Octopus.Client.Repositories.Async
         public Task<Stream> GetPublicCertificate(CertificateConfigurationResource certificateConfiguration)
         {
             return Client.GetContent(certificateConfiguration.Links["PublicCer"]);
-        }
-
-        static string DetermineCollectionLinkName(IOctopusAsyncRepository repository)
-        {
-            if (repository.RootDocument == null)
-                throw new NullReferenceException("The client root document is null");
-
-            // For backwards compatibility. 
-            // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
-            // This allows pre-3.11 clients to still work.
-            return repository.HasLink("CertificateConfiguration")
-                ? "CertificateConfiguration"
-                : "Certificates";
         }
     }
 }

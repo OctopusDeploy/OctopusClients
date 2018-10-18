@@ -18,9 +18,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<string[]> GetVariableNames(string project, string[] environments)
+        public async Task<string[]> GetVariableNames(string project, string[] environments)
         {
-            return Client.Get<string[]>(Repository.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
+            return await Client.Get<string[]>(await Repository.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
         }
 
         public override Task<List<VariableSetResource>> Get(params string[] ids)

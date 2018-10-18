@@ -29,11 +29,10 @@ Octopus.Client
     event Action<OctopusRequest> SendingOctopusRequest
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
-    Task<IOctopusSpaceAsyncRepository> ForSpace(String)
-    Task<IOctopusSystemAsyncRepository> ForSystem()
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(String)
+    Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
@@ -58,8 +57,8 @@ Octopus.Client
   {
     Octopus.Client.IOctopusAsyncClient Client { get; }
     Octopus.Client.SpaceContext SpaceContext { get; }
-    Boolean HasLink(String)
-    String Link(String)
+    Task<Boolean> HasLink(String)
+    Task<String> Link(String)
   }
   interface IOctopusClient
     IDisposable
@@ -158,6 +157,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
+    Task<SpaceRootResource> LoadSpaceRootDocument()
   }
   interface IOctopusSpaceRepository
     Octopus.Client.IOctopusMixedScopeRepository
@@ -213,6 +213,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
+    Task<RootResource> LoadRootDocument()
   }
   interface IOctopusSystemRepository
     Octopus.Client.IOctopusMixedScopeRepository
@@ -241,13 +242,12 @@ Octopus.Client
     event Action<OctopusRequest> SendingOctopusRequest
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
-    Task<IOctopusSpaceAsyncRepository> ForSpace(String)
-    Task<IOctopusSystemAsyncRepository> ForSystem()
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(String)
+    Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
@@ -271,6 +271,7 @@ Octopus.Client
     Octopus.Client.IOctopusMixedScopeAsyncRepository
     Octopus.Client.IOctopusSystemAsyncRepository
   {
+    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.SpaceContext)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
@@ -325,9 +326,10 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
-    static Task<IOctopusAsyncRepository> Create(Octopus.Client.IOctopusAsyncClient, Octopus.Client.SpaceContext)
-    Boolean HasLink(String)
-    String Link(String)
+    Task<Boolean> HasLink(String)
+    Task<String> Link(String)
+    Task<RootResource> LoadRootDocument()
+    Task<SpaceRootResource> LoadSpaceRootDocument()
   }
   class OctopusClient
     Octopus.Client.IHttpOctopusClient
@@ -447,7 +449,7 @@ Octopus.Client
   }
   abstract class OctopusRepositoryExtensions
   {
-    static Task<IOctopusAsyncRepository> CreateRepository(Octopus.Client.IOctopusAsyncClient)
+    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient)
   }
   class OctopusRequest
   {
@@ -5985,7 +5987,7 @@ Octopus.Client.Repositories.Async
   }
   interface ICanExtendSpaceContext`1
   {
-    Octopus.Client.Repositories.Async.T Including(Octopus.Client.SpaceContext)
+    Task<T> Including(Octopus.Client.SpaceContext)
   }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>

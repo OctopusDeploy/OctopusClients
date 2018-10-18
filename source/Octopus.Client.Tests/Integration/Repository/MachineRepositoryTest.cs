@@ -25,7 +25,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public void AsyncGetTasksReturnsAllPages()
         {
             var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}"} } };
-            var repository = new MachineRepository(OctopusAsyncRepository.Create(AsyncClient).Result);
+            var repository = new MachineRepository(new OctopusAsyncRepository(AsyncClient));
             var tasks = repository.GetTasks(machine).Result;
 
             Assert.That(tasks.Count, Is.EqualTo(139));

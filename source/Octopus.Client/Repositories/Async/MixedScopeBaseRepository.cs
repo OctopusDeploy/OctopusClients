@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -24,10 +25,15 @@ namespace Octopus.Client.Repositories.Async
             [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
         };
 
-        protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)
+        protected async Task<SpaceContext> ExtendSpaceContext(SpaceContext includingSpaceContext)
         {
             if (extendedSpaceContext == null)
+            {
+                await Repository.LoadRootDocument();
+                await Repository.LoadSpaceRootDocument();
                 extendedSpaceContext = new SpaceContext(Repository.SpaceContext.SpaceIds, Repository.SpaceContext.IncludeSystem);
+            }
+                
             return extendedSpaceContext.Union(includingSpaceContext);
         }
 

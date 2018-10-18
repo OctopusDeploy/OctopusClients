@@ -74,7 +74,7 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public Task<EnvironmentsSummaryResource> Summary(
+        public async Task<EnvironmentsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             bool? hideEmptyEnvironments = false)
         {
-            return Client.Get<EnvironmentsSummaryResource>(Repository.Link("EnvironmentsSummary"), new
+            return await Client.Get<EnvironmentsSummaryResource>(await Repository.Link("EnvironmentsSummary"), new
             {
                 ids,
                 partialName,
@@ -101,9 +101,9 @@ namespace Octopus.Client.Repositories.Async
             });
         }
 
-        public Task Sort(string[] environmentIdsInOrder)
+        public async Task Sort(string[] environmentIdsInOrder)
         {
-            return Client.Put(Repository.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+            await Client.Put(await Repository.Link("EnvironmentSortOrder"), environmentIdsInOrder);
         }
 
         public Task<EnvironmentEditor> CreateOrModify(string name)

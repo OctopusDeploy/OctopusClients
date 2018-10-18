@@ -35,9 +35,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.PutContent(artifact.Link("Content"), contentStream);
         }
 
-        public Task<ResourceCollection<ArtifactResource>> FindRegarding(IResource resource)
+        public async Task<ResourceCollection<ArtifactResource>> FindRegarding(IResource resource)
         {
-            return Client.List<ArtifactResource>(Repository.Link("Artifacts"), new { regarding = resource.Id });
+            return await Client.List<ArtifactResource>(await Repository.Link("Artifacts"), new { regarding = resource.Id });
         }
     }
 }

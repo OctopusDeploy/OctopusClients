@@ -30,12 +30,12 @@ namespace Octopus.Cli.Commands.Releases
         public string FromEnvironmentName { get; set; }
         public bool UpdateVariableSnapshot { get; set; }
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(FromEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --from=XYZ");
 
-            base.ValidateParameters();
+            await base.ValidateParameters();
         }
 
         public async Task Request()

@@ -43,9 +43,9 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public ITeamsRepository Including(SpaceContext spaceContext)
+        public async Task<ITeamsRepository> Including(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Repository, base.ExtendSpaceContext(spaceContext));
+            return new TeamsRepository(Repository, await ExtendSpaceContext(spaceContext));
         }
     }
 }

@@ -51,7 +51,7 @@ namespace Octopus.Cli.Exporters
 
             var channelLifecycles = new List<ReferenceDataItem>();
             var channels = new ChannelResource[0];
-            if (Repository.SupportsChannels())
+            if (await Repository.SupportsChannels())
             {
                 Log.Debug("Finding channels for project");
                 var firstChannelPage = await Repository.Projects.GetChannels(project).ConfigureAwait(false);
@@ -186,7 +186,7 @@ namespace Octopus.Cli.Exporters
             var metadata = new ExportMetadata
             {
                 ExportedAt = DateTime.Now,
-                OctopusVersion = Repository.Client.RootDocument.Version,
+                OctopusVersion = Repository.RootDocument.Version,
                 Type = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
                 ContainerType = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };

@@ -38,9 +38,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
         }
 
-        public IUserPermissionsRepository Including(SpaceContext spaceContext)
+        public async Task<IUserPermissionsRepository> Including(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Repository, base.ExtendSpaceContext(spaceContext));
+            return new UserPermissionsRepository(Repository, await base.ExtendSpaceContext(spaceContext));
         }
     }
 }

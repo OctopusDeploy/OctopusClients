@@ -23,7 +23,7 @@ namespace Octopus.Client
         /// <returns>
         /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
         /// </returns>
-        bool HasLink(string name);
+        Task<bool> HasLink(string name);
 
         /// <summary>
         /// Gets the link with the specified name.
@@ -31,6 +31,6 @@ namespace Octopus.Client
         /// <param name="name">The name/key of the link.</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">If the link is not defined.</exception>
-        string Link(string name);
+        Task<string> Link(string name);
     }
 }

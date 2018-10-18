@@ -11,9 +11,9 @@ namespace Octopus.Client.Repositories.Async
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
     {
-        public Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
+        public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
         {
-            return Client.Get<List<TenantVariableResource>>(Repository.Link("TenantVariables"), new
+            return await Client.Get<List<TenantVariableResource>>(await Repository.Link("TenantVariables"), new
             {
                 projectId = projectResource?.Id
             });

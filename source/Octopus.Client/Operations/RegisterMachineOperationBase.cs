@@ -144,7 +144,7 @@ namespace Octopus.Client.Operations
         {
             using (var client = await clientFactory.CreateAsyncClient(serverEndpoint).ConfigureAwait(false))
             {
-                var repository = await OctopusAsyncRepository.Create(client);
+                var repository = new OctopusAsyncRepository(client);
 
                 await ExecuteAsync(repository).ConfigureAwait(false);
             }

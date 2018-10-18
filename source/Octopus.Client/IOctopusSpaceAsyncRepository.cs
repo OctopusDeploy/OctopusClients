@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -38,6 +39,7 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
+        Task<SpaceRootResource> LoadSpaceRootDocument();
         SpaceRootResource SpaceRootDocument { get; }
     }
 }

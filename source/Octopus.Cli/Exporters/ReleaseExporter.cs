@@ -90,7 +90,7 @@ namespace Octopus.Cli.Exporters
             var metadata = new ExportMetadata
             {
                 ExportedAt = DateTime.Now,
-                OctopusVersion = Repository.Client.RootDocument.Version,
+                OctopusVersion = Repository.RootDocument.Version,
                 Type = typeof (ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
                 ContainerType = typeof (ReleaseExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };

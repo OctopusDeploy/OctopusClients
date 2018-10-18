@@ -34,9 +34,9 @@ namespace Octopus.Client.Repositories.Async
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 
-        public ISubscriptionRepository Including(SpaceContext spaceContext)
+        public async Task<ISubscriptionRepository> Including(SpaceContext spaceContext)
         {
-            return new SubscriptionRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new SubscriptionRepository(Repository, await ExtendSpaceContext(spaceContext));
         }
     }
 }

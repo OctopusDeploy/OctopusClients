@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -17,6 +18,7 @@ namespace Octopus.Client
         ISpaceRepository Spaces { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
+        Task<RootResource> LoadRootDocument();
         RootResource RootDocument { get; }
     }
 }

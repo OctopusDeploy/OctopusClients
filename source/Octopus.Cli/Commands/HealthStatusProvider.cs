@@ -28,7 +28,7 @@ namespace Octopus.Cli.Commands
             this.statuses = statuses;
             this.healthStatuses = healthStatuses;
             this.commandOutputProvider = commandOutputProvider;
-            IsHealthStatusPendingDeprication = (new SemanticVersion(repository.Client.RootDocument.Version).Version >= new SemanticVersion("3.4.0").Version);
+            IsHealthStatusPendingDeprication = (new SemanticVersion(repository.RootDocument.Version).Version >= new SemanticVersion("3.4.0").Version);
             ValidateOptions();
         }
 

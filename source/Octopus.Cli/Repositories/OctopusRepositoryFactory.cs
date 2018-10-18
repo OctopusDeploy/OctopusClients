@@ -5,12 +5,12 @@ namespace Octopus.Cli.Repositories
 {
     public interface IOctopusAsyncRepositoryFactory
     {
-        Task<IOctopusAsyncRepository> CreateRepository(IOctopusAsyncClient client);
+        IOctopusAsyncRepository CreateRepository(IOctopusAsyncClient client);
     }
 
     public class OctopusRepositoryFactory : IOctopusAsyncRepositoryFactory
     {
-        public Task<IOctopusAsyncRepository> CreateRepository(IOctopusAsyncClient client)
+        public IOctopusAsyncRepository CreateRepository(IOctopusAsyncClient client)
         {
             return client.CreateRepository();
         }

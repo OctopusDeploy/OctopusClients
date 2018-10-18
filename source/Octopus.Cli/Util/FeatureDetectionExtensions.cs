@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -5,25 +6,25 @@ namespace Octopus.Cli.Util
 {
     public static class FeatureDetectionExtensions
     {
-        public static bool SupportsChannels(this IOctopusAsyncRepository repository)
+        public static async Task<bool> SupportsChannels(this IOctopusAsyncRepository repository)
         {
-            var hasChannelLink = repository?.HasLink("Channels") == true;
+            var hasChannelLink = await repository?.HasLink("Channels") == true;
             if (!hasChannelLink)
             {
                 // When default space is off and SpaceId is not provided, we check if it is in post space world, as channels are always available in spaces
-                return repository?.HasLink("SpaceHome") == true;
+                return await repository?.HasLink("SpaceHome") == true;
             }
 
             return true;
         }
         
-        public static bool SupportsTenants(this IOctopusAsyncRepository repository)
+        public static async Task<bool> SupportsTenants(this IOctopusAsyncRepository repository)
         {
-            var hasTenantLink = repository?.HasLink("Tenants") == true;
+            var hasTenantLink = await repository?.HasLink("Tenants") == true;
             if (!hasTenantLink)
             {
                 // When default space is off and SpaceId is not provided, we check if it is in post space world, as tenants are always available in spaces
-                return repository?.HasLink("SpaceHome") == true;
+                return await repository?.HasLink("SpaceHome") == true;
             }
 
             return true;

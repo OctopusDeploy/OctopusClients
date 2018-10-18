@@ -138,7 +138,7 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
-            Repository = await repositoryFactory.CreateRepository(client);
+            Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
             
             if (enableDebugging)
@@ -148,7 +148,7 @@ namespace Octopus.Cli.Commands
 
             commandOutputProvider.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
 
-            var root = Repository.Client.RootDocument;
+            var root = await Repository.LoadRootDocument();
 
             commandOutputProvider.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
@@ -163,11 +163,11 @@ namespace Octopus.Cli.Commands
                 commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
-            ValidateParameters();
+            await ValidateParameters();
             await Execute().ConfigureAwait(false);
         }
 
-        protected virtual void ValidateParameters() { }
+        protected virtual Task ValidateParameters() { return Task.WhenAll();}
 
         protected virtual async Task Execute()
         {

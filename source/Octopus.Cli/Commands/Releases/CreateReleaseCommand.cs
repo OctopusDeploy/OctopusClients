@@ -57,9 +57,9 @@ namespace Octopus.Cli.Commands.Releases
         public string VersionPreReleaseTag { get; set; }
         public bool WhatIf { get; set; }
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
-            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels())
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels())
                 throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
 
             base.ValidateParameters();
@@ -67,7 +67,7 @@ namespace Octopus.Cli.Commands.Releases
 
         public async Task Request()
         {
-            var serverSupportsChannels = ServerSupportsChannels();
+            var serverSupportsChannels = await ServerSupportsChannels();
             commandOutputProvider.Debug(serverSupportsChannels ? "This Octopus Server supports channels" : "This Octopus Server does not support channels");
 
             commandOutputProvider.Debug("Finding project: {Project:l}", ProjectName);
@@ -201,7 +201,7 @@ namespace Octopus.Cli.Commands.Releases
 
             // All Octopus 3.2+ servers should have the Channels hypermedia link, we should use the channel information
             // to select the most appropriate channel, or provide enough information to proceed from here
-            if (ServerSupportsChannels())
+            if (await ServerSupportsChannels())
             {
                 commandOutputProvider.Debug("Automatically selecting the best channel for this release...");
                 return await AutoSelectBestReleasePlanOrThrow(project).ConfigureAwait(false);
@@ -212,7 +212,7 @@ namespace Octopus.Cli.Commands.Releases
             return await releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag).ConfigureAwait(false);
         }
 
-        private bool ServerSupportsChannels()
+        private Task<bool> ServerSupportsChannels()
         {
             return Repository.HasLink("Channels");
         }

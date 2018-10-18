@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(Repository.Link("Register"), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(await Repository.Link("Register"), registerCommand).ConfigureAwait(false);
         }
 
         public async Task SignIn(LoginCommand loginCommand)
@@ -82,9 +82,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.SignOut();
         }
 
-        public Task<UserResource> GetCurrent()
+        public async Task<UserResource> GetCurrent()
         {
-            return Client.Get<UserResource>(Repository.Link("CurrentUser"));
+            return await Client.Get<UserResource>(await Repository.Link("CurrentUser"));
         }
 
         public Task<SpaceResource[]> GetSpaces(UserResource user)

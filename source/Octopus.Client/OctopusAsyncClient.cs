@@ -33,23 +33,22 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged = false;
-        private OctopusClientOptions clientOptions;
-        private RootResource rootDocument;
-        public async Task<IOctopusSpaceAsyncRepository> ForSpace(string spaceId)
+
+        public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            return await OctopusAsyncRepository.Create(this, SpaceContext.SpecificSpace(spaceId));
+            return new OctopusAsyncRepository(this, SpaceContext.SpecificSpace(spaceId));
         }
 
-        public async Task<IOctopusSystemAsyncRepository> ForSystem()
+        public IOctopusSystemAsyncRepository ForSystem()
         {
-            return await OctopusAsyncRepository.Create(this, SpaceContext.SystemOnly());
+            return new OctopusAsyncRepository(this, SpaceContext.SystemOnly());
         }
 
         // Use the Create method to instantiate
         private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
-            clientOptions = options ?? new OctopusClientOptions();
+            var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -81,6 +80,7 @@ namespace Octopus.Client
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
+            Repository = new OctopusAsyncRepository(this);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -136,33 +136,20 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        private static Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
-            try
-            {
-                client.rootDocument = await client.EstablishSession().ConfigureAwait(false);
-                client.Repository = await OctopusAsyncRepository.Create(client);
-                return client;
-            }
-            catch
-            {
-                client.Dispose();
-                throw;
-            }
+            IOctopusAsyncClient client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
+            return Task.FromResult(client);
         }
-
-        [Obsolete("This property is deprecated, please use the one from Repository instead")]
-        public RootResource RootDocument => rootDocument;
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        protected virtual async Task<RootResource> EstablishSession()
+        private async Task<RootResource> EstablishSession()
         {
-            return await OctopusAsyncRepository.LoadRootDocument(this);
+            return await Repository.LoadRootDocument();
         }
 
         public async Task SignIn(LoginCommand loginCommand)
@@ -171,13 +158,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(Repository.Link("SignIn"), loginCommand);
-            Repository = await OctopusAsyncRepository.Create(this);
+            await Post(await Repository.Link("SignIn"), loginCommand);
+            Repository = new OctopusAsyncRepository(this);
         }
 
         public async Task SignOut()
         {
-            await Post(Repository.Link("SignOut"));
+            await Post(await Repository.Link("SignOut"));
         }
 
         /// <summary>
@@ -481,7 +468,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (Repository?.RootDocument != null)
+                if (Repository.RootDocument != null)
                 {
                     var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{Repository.RootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)

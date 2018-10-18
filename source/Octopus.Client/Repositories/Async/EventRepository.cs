@@ -69,12 +69,12 @@ namespace Octopus.Client.Repositories.Async
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
-        public Task<ResourceCollection<EventResource>> List(int skip = 0, 
+        public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
                 string filterByUserId = null,
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Repository.Link("Events"), ParameterHelper.CombineParameters(AdditionalQueryParameters, new
+            return await Client.List<EventResource>(await Repository.Link("Events"), ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 user = filterByUserId,
@@ -83,7 +83,7 @@ namespace Octopus.Client.Repositories.Async
             }));
         }
 
-        public Task<ResourceCollection<EventResource>> List(int skip = 0, 
+        public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
             int? take = null,
             string from = null,
             string to = null,
@@ -124,12 +124,12 @@ namespace Octopus.Client.Repositories.Async
                 documentTypes
             });
 
-            return Client.List<EventResource>(Repository.Link("Events"), parameters);
+            return await Client.List<EventResource>(await Repository.Link("Events"), parameters);
         }
 
-        public IEventRepository Including(SpaceContext spaceContext)
+        public async Task<IEventRepository> Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new EventRepository(Repository, await ExtendSpaceContext(spaceContext));
         }
     }
 }

@@ -18,9 +18,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task Sort(string[] tagSetIdsInOrder)
+        public async Task Sort(string[] tagSetIdsInOrder)
         {
-            return Client.Put(Repository.Link("TagSetSortOrder"), tagSetIdsInOrder);
+            await Client.Put(await Repository.Link("TagSetSortOrder"), tagSetIdsInOrder);
         }
 
         public Task<TagSetEditor> CreateOrModify(string name)

@@ -33,13 +33,13 @@ namespace Octopus.Cli.Commands.Deployment
         public bool UpdateVariableSnapshot { get; set; }
 
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(VersionNumber)) throw new CommandException("Please specify a release version using the parameter: --version=1.0.0.0 or --version=latest for the latest release");
-            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
 
-            base.ValidateParameters();
+            await base.ValidateParameters();
         }
 
         public async Task Request()

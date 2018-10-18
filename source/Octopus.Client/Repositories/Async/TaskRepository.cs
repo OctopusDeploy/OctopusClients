@@ -261,9 +261,9 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public ITaskRepository Including(SpaceContext spaceContext)
+        public async Task<ITaskRepository> Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new TaskRepository(Repository, await ExtendSpaceContext(spaceContext));
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
@@ -274,9 +274,9 @@ namespace Octopus.Client.Repositories.Async
                 throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
         }
 
-        Task<TaskResource> CreateSystemTask(TaskResource task)
+        async Task<TaskResource> CreateSystemTask(TaskResource task)
         {
-            return Client.Create(Repository.Link(CollectionLinkName), task);
+            return await Client.Create(await Repository.Link(CollectionLinkName), task);
         }
     }
 }

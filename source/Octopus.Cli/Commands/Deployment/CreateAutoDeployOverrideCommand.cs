@@ -48,9 +48,9 @@ namespace Octopus.Cli.Commands.Deployment
         public List<string> TenantNames { get; set; } = new List<string>();
         public List<string> TenantTags { get; set; } = new List<string>();
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
-            base.ValidateParameters();
+            await base.ValidateParameters();
 
             if (string.IsNullOrEmpty(ProjectName))
             {

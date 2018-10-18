@@ -35,9 +35,9 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
+        public async Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<WorkerResource>(Repository.Link("DiscoverMachine"), new { host, port, type });
+            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverMachine"), new { host, port, type });
         }
 
         public Task<MachineConnectionStatus> GetConnectionStatus(WorkerResource worker)
@@ -46,10 +46,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<MachineConnectionStatus>(worker.Link("Connection"));
         }
 
-        public Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
+        public async Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerResource>>(Repository.Link("Workers"), new { id = IdValueConstant.IdAll, thumbprint });
+            return await Client.Get<List<WorkerResource>>(await Repository.Link("Workers"), new { id = IdValueConstant.IdAll, thumbprint });
         }
 
         public Task<WorkerEditor> CreateOrModify(
@@ -60,7 +60,7 @@ namespace Octopus.Client.Repositories.Async
             return new WorkerEditor(this).CreateOrModify(name, endpoint, workerpools);
         }
 
-        public Task<ResourceCollection<WorkerResource>> List(int skip = 0,
+        public async Task<ResourceCollection<WorkerResource>> List(int skip = 0,
             int? take = null,
             string ids = null,
             string name = null,
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             string workerpoolIds = null)
         {
-            return Client.List<WorkerResource>(Repository.Link("Workers"), new
+            return await Client.List<WorkerResource>(await Repository.Link("Workers"), new
             {
                 skip,
                 take,

@@ -19,7 +19,7 @@ namespace Octo.Tests.Commands
         public void SetUp()
         {
             cleanPoolCommand = new CleanWorkerPoolCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
-            Repository.Client.RootDocument.Version = "2018.6.0";
+            Repository.RootDocument.Version = "2018.6.0";
         }
 
         CleanWorkerPoolCommand cleanPoolCommand;

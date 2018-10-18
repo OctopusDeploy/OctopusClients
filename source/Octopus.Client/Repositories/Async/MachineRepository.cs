@@ -58,8 +58,8 @@ namespace Octopus.Client.Repositories.Async
                 Type = type
             });
 
-        public Task<MachineResource> Discover(DiscoverMachineOptions options)
-            => Client.Get<MachineResource>(Repository.Link("DiscoverMachine"), new
+        public async Task<MachineResource> Discover(DiscoverMachineOptions options)
+            => await Client.Get<MachineResource>(await Repository.Link("DiscoverMachine"), new
             {
                 host = options.Host,
                 port = options.Port,
@@ -73,10 +73,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<MachineConnectionStatus>(machine.Link("Connection"));
         }
 
-        public Task<List<MachineResource>> FindByThumbprint(string thumbprint)
+        public async Task<List<MachineResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<MachineResource>>(Repository.Link("machines"), new { id = IdValueConstant.IdAll, thumbprint });
+            return await Client.Get<List<MachineResource>>(await Repository.Link("machines"), new { id = IdValueConstant.IdAll, thumbprint });
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Octopus.Client.Repositories.Async
             return new MachineEditor(this).CreateOrModify(name, endpoint, environments, roles);
         }
 
-        public Task<ResourceCollection<MachineResource>> List(int skip = 0,
+        public async Task<ResourceCollection<MachineResource>> List(int skip = 0,
             int? take = null,
             string ids = null,
             string name = null,
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             string environmentIds = null)
         {
-            return Client.List<MachineResource>(Repository.Link("Machines"), new
+            return await Client.List<MachineResource>(await Repository.Link("Machines"), new
             {
                 skip,
                 take,

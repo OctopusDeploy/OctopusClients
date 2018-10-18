@@ -150,6 +150,7 @@ namespace Octopus.Client.Tests.Integration
         public async Task Setup()
         {
             AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
+            await AsyncClient.Repository.LoadRootDocument();
 #if SYNC_CLIENT
             SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
 #endif

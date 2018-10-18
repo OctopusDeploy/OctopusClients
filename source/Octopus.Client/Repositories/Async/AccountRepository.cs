@@ -86,9 +86,9 @@ namespace Octopus.Client.Repositories.Async
             return new {accountType};
         }
 
-        public Task PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
+        public async Task PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
         {
-            return Client.Paginate(Repository.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
+            await Client.Paginate(await Repository.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
         }
 
         public async Task<TAccount> FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource
