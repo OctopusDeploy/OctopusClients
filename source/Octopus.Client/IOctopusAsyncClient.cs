@@ -39,7 +39,7 @@ namespace Octopus.Client
         /// <summary>
         /// A simplified interface to commonly-used parts of the API.
         /// </summary>
-        IOctopusAsyncRepository Repository { get; }
+        IOctopusAsyncRepository Repository { get;}
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.

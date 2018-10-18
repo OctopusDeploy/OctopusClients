@@ -80,7 +80,7 @@ namespace Octopus.Client
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
-            Repository = new OctopusAsyncRepository(this);
+            Repository = Repository ?? new OctopusAsyncRepository(this);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -136,10 +136,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        private static Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
         {
-            IOctopusAsyncClient client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
-            return Task.FromResult(client);
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
+            // Just to trigger the exception 
+            // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
+            client.Repository = new OctopusAsyncRepository(client);
+            await client.Repository.LoadRootDocument();
+            return client;
         }
 
         /// <summary>

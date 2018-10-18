@@ -17,7 +17,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        [Ignore("client.Create no longer do IO and hence no exception")]
         public async Task InvalidSslCertificateIsRejected()
         {
             try
