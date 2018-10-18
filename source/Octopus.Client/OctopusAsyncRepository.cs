@@ -243,7 +243,7 @@ namespace Octopus.Client
                 var currentUser = await Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
                 var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 return SpaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
-                    SpaceContext.SpaceIds.Any() ? userSpaces.Single(s => s.Id == SpaceContext.SpaceIds.Single()) : null;
+                    SpaceContext.SpaceIds.Any() ? userSpaces.SingleOrDefault(s => s.Id == SpaceContext.SpaceIds.Single()) : null;
             }
             catch (OctopusSecurityException)
             {
