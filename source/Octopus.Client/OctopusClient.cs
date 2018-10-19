@@ -28,17 +28,7 @@ namespace Octopus.Client
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         private Lazy<IOctopusRepository> lazyRepository;
-        readonly object rootDocumentLock = new object();
-        RootResource rootDocument;
-        public IOctopusSpaceRepository ForSpace(string spaceId)
-        {
-            return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
-        }
-
-        public IOctopusSystemRepository ForSystem()
-        {
-            return new OctopusRepository(this, SpaceContext.SystemOnly());
-        }
+        private RootResource rootDocument;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -53,44 +43,35 @@ namespace Octopus.Client
         }
 
         public IOctopusRepository Repository => lazyRepository.Value;
+
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
-
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-
-        [Obsolete("This property is deprecated, please the one from Repository instead")]
-        public RootResource RootDocument
+        public IOctopusSpaceRepository ForSpace(string spaceId)
         {
-            get
-            {
-                if (rootDocument != null) return rootDocument;
-
-                lock (rootDocumentLock)
-                {
-                    if (rootDocument != null) return rootDocument;
-
-                    var root = EstablishSession();
-                    Thread.MemoryBarrier();
-                    rootDocument = root;
-                    return root;
-                }
-            }
+            return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
         }
+
+        public IOctopusSystemRepository ForSystem()
+        {
+            return new OctopusRepository(this, SpaceContext.SystemOnly());
+        }
+
         public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            Post(Repository.RootDocument.Links["SignIn"], loginCommand);
+            Post(Repository.LoadRootDocument().Links["SignIn"], loginCommand);
             lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
         }
 
         public void SignOut()
         {
-            Post(Repository.RootDocument.Links["SignOut"]);
+            Post(Repository.LoadRootDocument().Links["SignOut"]);
         }
 
         /// <summary>
@@ -119,7 +100,7 @@ namespace Octopus.Client
         public void Initialize()
         {
             // Force the Lazy instance to be loaded
-            Repository.RootDocument.Link("Self");
+            Repository.LoadRootDocument();
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -395,11 +376,6 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual RootResource EstablishSession()
-        {
-            return OctopusRepository.LoadRootDocument(this);
-        }
-
         protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
@@ -579,7 +555,9 @@ namespace Octopus.Client
 
         private IOctopusRepository LoadRepository()
         {
-            return new OctopusRepository(this);
+            var repo = new OctopusRepository(this);
+            rootDocument = repo.LoadRootDocument();
+            return repo;
         }
 
         /// <summary>

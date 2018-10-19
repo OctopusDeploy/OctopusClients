@@ -39,7 +39,7 @@ namespace Octopus.Client
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
-        SpaceRootResource SpaceRootDocument { get; }
+        SpaceRootResource LoadSpaceRootDocument();
     }
 }
 #endif

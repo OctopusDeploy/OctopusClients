@@ -58,7 +58,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             // Force the root document to load
-            var rootDocument = client.RootDocument;
+            var repo = client.Repository.LoadRootDocument();
             
             // Simulate getting the auth and antiforgery cookies
             var firstResponse = client.Get<TestDto>(TestRootPath);

@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Repositories
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
-            client.RootDocument.Returns(new RootResource()
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Links =
@@ -30,6 +30,25 @@ namespace Octopus.Client.Tests.Repositories
                     {"SpaceHome",  ""},
                 }
             });
+            Assertion(client);
+        }
+
+        [Test]
+        public void AllPropertiesAreNotNullForSystemOnlyRepository()
+        {
+            var client = Substitute.For<IOctopusClient>();
+            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
+            {
+                ApiVersion = "3.0.0",
+                Links = LinkCollection.Self("/api")
+                    .Add("CurrentUser", "/api/users/me")
+            });
+            client.Get<UserResource>(Arg.Any<string>()).Throws(new OctopusSecurityException(401, "Test"));
+            Assertion(client);
+        }
+
+        private void Assertion(IOctopusClient client)
+        {
             var repository = new OctopusRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
                 where p.GetMethod.Invoke(repository, new object[0]) == null
@@ -38,26 +57,6 @@ namespace Octopus.Client.Tests.Repositories
             var nullProperties = nullPropertiesQ.ToArray();
             if (nullProperties.Any())
                 Assert.Fail("The following properties are null after OctopusAsyncRepository instantiation: " + nullProperties.CommaSeperate());
-        }
-
-        [Test]
-        public void SpaceRootDocumentIsNullForSystemOnlyRepository()
-        {
-            var client = Substitute.For<IOctopusClient>();
-            client.RootDocument.Returns(new RootResource()
-            {
-                ApiVersion = "3.0.0",
-                Links = LinkCollection.Self("/api")
-                    .Add("CurrentUser", "/api/users/me")
-            });
-            client.Get<UserResource>(Arg.Any<string>()).Throws(new OctopusSecurityException(401, "Test"));
-            var repository = new OctopusRepository(client);
-            var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
-                where p.GetMethod.Invoke(repository, new object[0]) == null
-                select p.Name;
-
-            var nullProperties = nullPropertiesQ.ToArray();
-            nullProperties.Single().Should().Be("SpaceRootDocument");
         }
     }
 }

@@ -107,7 +107,7 @@ namespace Octopus.Client.Tests.Repositories.Async
 
         void SetupClient(IOctopusAsyncClient client)
         {
-            client.Repository.RootDocument.Returns(new RootResource()
+            client.Repository.LoadRootDocument().Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Links = LinkCollection.Self("/api")

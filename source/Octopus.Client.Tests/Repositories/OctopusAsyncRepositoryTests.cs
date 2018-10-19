@@ -14,7 +14,7 @@ namespace Octopus.Client.Tests.Repositories
         public void AllPropertiesAreNotNull()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.Repository.RootDocument.Returns(new RootResource());
+            client.Repository.LoadRootDocument().Returns(new RootResource());
             var repository = new OctopusAsyncRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusAsyncRepository).GetTypeInfo().GetProperties()
                 where !delayInitialisedProperties.Contains(p.Name)

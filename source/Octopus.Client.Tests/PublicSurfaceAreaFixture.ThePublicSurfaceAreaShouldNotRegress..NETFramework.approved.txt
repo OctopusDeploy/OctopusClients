@@ -67,7 +67,6 @@ Octopus.Client
     event Action<OctopusRequest> SendingOctopusRequest
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     Octopus.Client.IOctopusSpaceRepository ForSpace(String)
@@ -188,7 +187,6 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
@@ -196,6 +194,7 @@ Octopus.Client
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
+    Octopus.Client.Model.SpaceRootResource LoadSpaceRootDocument()
   }
   interface IOctopusSystemAsyncRepository
     Octopus.Client.IOctopusMixedScopeAsyncRepository
@@ -225,12 +224,12 @@ Octopus.Client
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
+    Octopus.Client.Model.RootResource LoadRootDocument()
   }
   class OctopusAsyncClient
     Octopus.Client.IOctopusAsyncClient
@@ -343,7 +342,6 @@ Octopus.Client
     .ctor(Octopus.Client.OctopusServerEndpoint)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     void Dispose()
@@ -425,12 +423,10 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.SpaceContext SpaceContext { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
@@ -446,6 +442,8 @@ Octopus.Client
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
     Boolean HasLink(String)
     String Link(String)
+    Octopus.Client.Model.RootResource LoadRootDocument()
+    Octopus.Client.Model.SpaceRootResource LoadSpaceRootDocument()
   }
   abstract class OctopusRepositoryExtensions
   {

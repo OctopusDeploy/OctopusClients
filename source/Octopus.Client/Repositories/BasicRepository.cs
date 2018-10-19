@@ -15,9 +15,10 @@ namespace Octopus.Client.Repositories
     // ReSharper disable MemberCanBeProtected.Local
     abstract class BasicRepository<TResource> where TResource : class, IResource
     {
+        private readonly Func<IOctopusRepository, string> getCollectionLinkName;
         public IOctopusRepository Repository { get; }
         readonly IOctopusClient client;
-        protected readonly string CollectionLinkName;
+        protected string CollectionLinkName;
         protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
         protected BasicRepository(IOctopusRepository repository, string collectionLinkName)
@@ -28,13 +29,19 @@ namespace Octopus.Client.Repositories
             AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
+        protected BasicRepository(IOctopusRepository repository, Func<IOctopusRepository, string> getCollectionLinkName) : this(repository, (string)null)
+        {
+            this.getCollectionLinkName = getCollectionLinkName;
+        }
+
         public IOctopusClient Client => client;
 
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            var link = ResolveLink();
             EnrichSpaceIdIfRequire(resource);
-            return client.Create(Repository.Link(CollectionLinkName), resource, pathParameters);
+            return client.Create(link, resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
@@ -51,8 +58,9 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
+            var link = ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
-            client.Paginate(path ?? Repository.Link(CollectionLinkName), parameters, getNextPage);
+            client.Paginate(path ?? link, parameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -84,8 +92,9 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
+            var link = ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
-            return client.Get<List<TResource>>(Repository.Link(CollectionLinkName), parameters);
+            return client.Get<List<TResource>>(link, parameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
@@ -118,13 +127,13 @@ namespace Octopus.Client.Repositories
         {
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
-
+            var link = ResolveLink();
             if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 return client.Get<TResource>(idOrHref, AdditionalQueryParameters);
             }
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
-            return client.Get<TResource>(Repository.Link(CollectionLinkName), parameters);
+            return client.Get<TResource>(link, parameters);
         }
 
         public virtual List<TResource> Get(params string[] ids)
@@ -134,8 +143,8 @@ namespace Octopus.Client.Repositories
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = Repository.Link(CollectionLinkName);
-            if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+            var link = ResolveLink();
+            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
             client.Paginate<TResource>(
@@ -186,6 +195,13 @@ namespace Octopus.Client.Repositories
             return isMixedScope
                 ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
                 : Repository.SpaceContext.IncludeSystem;
+        }
+
+        string ResolveLink()
+        {
+            if (CollectionLinkName == null && getCollectionLinkName != null)
+                CollectionLinkName = getCollectionLinkName(Repository);
+            return Repository.Link(CollectionLinkName);
         }
     }
 

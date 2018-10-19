@@ -18,7 +18,7 @@ namespace Octopus.Client
         ISpaceRepository Spaces { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
-        RootResource RootDocument { get; }
+        RootResource LoadRootDocument();
     }
 }
 #endif

@@ -23,6 +23,8 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
+        private RootResource rootDocument;
+        private SpaceRootResource spaceRootDocument;
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
@@ -30,18 +32,7 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
         {
             Client = client;
-#pragma warning disable 612, 618
-            // Switch this to use LoadRootDocument once RootDocument is removed from OctopusClient
-            RootDocument = client.RootDocument;
-#pragma warning restore 612, 618
             SpaceContext = spaceContext;
-            if (SpaceContext == null)
-            {
-                var space = TryGetDefaultSpace();
-                SpaceContext = space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(space.Id);
-            }
-            if (SpaceContext.SpaceIds.Any())
-                SpaceRootDocument = LoadSpaceRootResource(SpaceContext.SpaceIds.SingleOrDefault());
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
@@ -145,46 +136,41 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
-        public SpaceContext SpaceContext { get; }
-
-        public SpaceRootResource SpaceRootDocument { get; private set; }
-        public RootResource RootDocument { get; private set; }
+        public SpaceContext SpaceContext { get; private set; }
+       
 
         public bool HasLink(string name)
         {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
+            LoadRootDocuments();
+            return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
         }
 
         public string Link(string name)
         {
-            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
+            LoadRootDocuments();
+            return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
-                : RootDocument.Link(name);
+                : rootDocument.Link(name);
         }
 
-        private SpaceRootResource LoadSpaceRootResource(string spaceId)
+        public SpaceRootResource LoadSpaceRootDocument()
         {
-            return !string.IsNullOrEmpty(spaceId) ?
-                Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId })
-                : null;
+            if (spaceRootDocument != null)
+                return spaceRootDocument;
+            if (SpaceContext == null)
+            {
+                var defaultSpace = TryGetDefaultSpace();
+                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
+            }
+
+            spaceRootDocument = SpaceContext.SpaceIds.Any() ?
+                Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
+            return spaceRootDocument;
         }
 
-        private SpaceResource TryGetDefaultSpace()
+        public RootResource LoadRootDocument()
         {
-            try
-            {
-                var currentUser = Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
-                var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-            catch (OctopusSecurityException)
-            {
-                return null;
-            }
-        }
-        internal static RootResource LoadRootDocument(IOctopusClient client)
-        {
-            RootResource server;
+            if (rootDocument != null) return rootDocument;
 
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
@@ -206,7 +192,7 @@ namespace Octopus.Client
 
                 try
                 {
-                    server = client.Get<RootResource>("~/api");
+                    rootDocument = Client.Get<RootResource>("~/api");
                     break;
                 }
                 catch (WebException ex)
@@ -228,17 +214,37 @@ namespace Octopus.Client
                 retries--;
             }
 
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
+            if (string.IsNullOrWhiteSpace(rootDocument.ApiVersion))
                 throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
 
             var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
             var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
+            var current = SemanticVersion.Parse(rootDocument.ApiVersion);
 
             if (current < min || current > max)
-                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
+                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", rootDocument.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
 
-            return server;
+            return rootDocument;
+        }
+
+        private SpaceResource TryGetDefaultSpace()
+        {
+            try
+            {
+                var currentUser = Client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
+                var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
+            }
+            catch (OctopusSecurityException)
+            {
+                return null;
+            }
+        }
+
+        private void LoadRootDocuments()
+        {
+            LoadRootDocument();
+            LoadSpaceRootDocument();
         }
     }
 }
