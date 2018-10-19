@@ -34,7 +34,8 @@ namespace Octopus.Client
             // Switch this to use LoadRootDocument once RootDocument is removed from OctopusClient
             RootDocument = client.RootDocument;
 #pragma warning restore 612, 618
-            if (spaceContext == null)
+            SpaceContext = spaceContext;
+            if (SpaceContext == null)
             {
                 var space = TryGetDefaultSpace();
                 SpaceContext = space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(space.Id);
