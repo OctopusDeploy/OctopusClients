@@ -39,8 +39,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
+            var link = await ResolveLink();
             EnrichSpaceIdIfRequire(resource);
-            return await Client.Create(await ResolveLink(), resource, pathParameters);
+            return await Client.Create(link, resource, pathParameters);
         }
 
         public Task<TResource> Modify(TResource resource)
@@ -55,9 +56,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
+            var link = await ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
-            
-            await Client.Paginate(path ?? await ResolveLink(), parameters, getNextPage);
+            await Client.Paginate(path ?? link, parameters, getNextPage);
         }
 
         public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -91,8 +92,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<TResource>> GetAll()
         {
+            var link = await ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
-            return await Client.Get<List<TResource>>(await ResolveLink(), parameters);
+            return await Client.Get<List<TResource>>(link, parameters);
         }
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -127,10 +129,11 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
 
+            var link = await ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
             var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, AdditionalQueryParameters)
-                : Client.Get<TResource>(await ResolveLink(), parameters);
+                : Client.Get<TResource>(link, parameters);
             return await getTask;
         }
 
