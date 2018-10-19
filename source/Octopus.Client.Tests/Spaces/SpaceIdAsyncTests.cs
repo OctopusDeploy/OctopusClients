@@ -93,19 +93,5 @@ namespace Octopus.Client.Tests.Spaces
             var multiScoped = await teamRepo.Including(new SpaceContext(new[] {includingSpaceId}, includeSystem));
             var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
         }
-
-        [Test]
-        [TestCase("Spaces-2", false, TestName = "Spacific spaces")]
-        [TestCase(null, true, TestName = "Specific space with system")]
-        [TestCase("Spaces-2", true, TestName = "Specific spaces with system")]
-        public async Task SpaceIdInResourceOutsideOfTheSpaceContextShouldThrowMismatchSpaceContextException(string includingSpaceId, bool includeSystem)
-        {
-            var client = SetupAsyncClient("Spaces-1");
-            await client.Create(Arg.Any<string>(), Arg.Any<TeamResource>());
-            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client));
-            var multiScoped = await teamRepo.Including(new SpaceContext(new[] {includingSpaceId}, includeSystem));
-            Func<Task<TeamResource>> exec = () => multiScoped.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-NotWithinContext" });
-            exec.ShouldThrow<MismatchSpaceContextException>();
-        }
     }
 }
