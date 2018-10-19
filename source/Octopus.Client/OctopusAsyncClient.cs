@@ -164,6 +164,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
             await Post(await Repository.Link("SignIn"), loginCommand);
             Repository = new OctopusAsyncRepository(this);
+            await Repository.LoadRootDocument();
         }
 
         public async Task SignOut()
