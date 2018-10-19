@@ -226,24 +226,24 @@ namespace Octopus.Client
         {
             if (SpaceRootDocument != null)
                 return SpaceRootDocument;
+            if (SpaceContext == null)
+            {
+                var defaultSpace = await TryGetDefaultSpace();
+                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
+            }
 
-            var space = await TryGetSpace();
-            SpaceContext = space == null ? SpaceContext.SystemOnly() :
-                SpaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
-
-            return !string.IsNullOrEmpty(space?.Id) ?
-                await Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId = space.Id }).ConfigureAwait(false)
+            return SpaceContext.SpaceIds.Any() ?
+                await Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }).ConfigureAwait(false)
                 : null;
         }
 
-        async Task<SpaceResource> TryGetSpace()
+        async Task<SpaceResource> TryGetDefaultSpace()
         {
             try
             {
                 var currentUser = await Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
                 var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return SpaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
-                    SpaceContext.SpaceIds.Any() ? userSpaces.SingleOrDefault(s => s.Id == SpaceContext.SpaceIds.Single()) : null;
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
             }
             catch (OctopusSecurityException)
             {

@@ -33,7 +33,6 @@ namespace Octopus.Client.Repositories
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            ValidateSpaceId(resource);
             EnrichSpaceIdIfRequire(resource);
             return client.Create(Repository.Link(CollectionLinkName), resource, pathParameters);
         }
@@ -41,14 +40,12 @@ namespace Octopus.Client.Repositories
         public TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            ValidateSpaceId(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            ValidateSpaceId(resource);
             client.Delete(resource.Links["Self"]);
         }
 
@@ -189,23 +186,6 @@ namespace Octopus.Client.Repositories
             return isMixedScope
                 ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
                 : Repository.SpaceContext.IncludeSystem;
-        }
-
-        void ValidateSpaceId(TResource resource)
-        {
-            if (resource is IHaveSpaceResource spaceResource)
-            {
-                var spaceIds = GetSpaceIds();
-                var isWildcard = spaceIds != null && spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
-                if (isWildcard)
-                    return;
-                var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&
-                                                                spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId);
-                if (contextDoesNotContainsSpaceIdFromResource)
-                {
-                    throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
-                }
-            }
         }
     }
 

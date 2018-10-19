@@ -34,11 +34,13 @@ namespace Octopus.Client
             // Switch this to use LoadRootDocument once RootDocument is removed from OctopusClient
             RootDocument = client.RootDocument;
 #pragma warning restore 612, 618
-            var space = TryGetSpace(spaceContext);
-            SpaceContext = space == null ? SpaceContext.SystemOnly() :
-                spaceContext?.IncludeSystem == true ? SpaceContext.SpecificSpaceAndSystem(space.Id) : SpaceContext.SpecificSpace(space.Id);
-
-            SpaceRootDocument = LoadSpaceRootResource(space?.Id);
+            if (spaceContext == null)
+            {
+                var space = TryGetDefaultSpace();
+                SpaceContext = space == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(space.Id);
+            }
+            if (SpaceContext.SpaceIds.Any())
+                SpaceRootDocument = LoadSpaceRootResource(SpaceContext.SpaceIds.SingleOrDefault());
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
@@ -166,15 +168,13 @@ namespace Octopus.Client
                 : null;
         }
 
-        private SpaceResource TryGetSpace(SpaceContext spaceContext)
+        private SpaceResource TryGetDefaultSpace()
         {
             try
             {
-                var currentUser =
-                    Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
+                var currentUser = Client.Get<UserResource>(RootDocument.Links["CurrentUser"]);
                 var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return spaceContext == null ? userSpaces.SingleOrDefault(s => s.IsDefault) :
-                    spaceContext.SpaceIds.Any() ? userSpaces.SingleOrDefault(s => s.Id == spaceContext.SpaceIds.Single()) : null;
+                return userSpaces.SingleOrDefault(s => s.IsDefault);
             }
             catch (OctopusSecurityException)
             {

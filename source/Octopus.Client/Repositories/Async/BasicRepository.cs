@@ -39,20 +39,17 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
-            ValidateSpaceId(resource);
             EnrichSpaceIdIfRequire(resource);
             return await Client.Create(await ResolveLink(), resource, pathParameters);
         }
 
         public Task<TResource> Modify(TResource resource)
         {
-            ValidateSpaceId(resource);
             return Client.Update(resource.Links["Self"], resource);
         }
 
         public Task Delete(TResource resource)
         {
-            ValidateSpaceId(resource);
             return Client.Delete(resource.Links["Self"]);
         }
 
@@ -199,23 +196,6 @@ namespace Octopus.Client.Repositories.Async
             return isMixedScope
                 ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
                 : Repository.SpaceContext.IncludeSystem;
-        }
-
-        void ValidateSpaceId(TResource resource)
-        {
-            if (resource is IHaveSpaceResource spaceResource)
-            {
-                var spaceIds = GetSpaceIds();
-                var isWildcard = spaceIds != null && spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
-                if (isWildcard)
-                    return;
-                var contextDoesNotContainsSpaceIdFromResource = !string.IsNullOrEmpty(spaceResource.SpaceId) &&
-                                                         spaceIds != null && !spaceIds.Contains(spaceResource.SpaceId);
-                if (contextDoesNotContainsSpaceIdFromResource)
-                {
-                    throw new MismatchSpaceContextException("The space Id in the resource is not allowed in the current space context");
-                }
-            }
         }
 
         async Task<string> ResolveLink()
