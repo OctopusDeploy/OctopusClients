@@ -154,7 +154,7 @@ namespace Octopus.Client
 
         public async Task<string> Link(string name)
         {
-            await LoadRootDocument();
+            await LoadRootDocuments();
             return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
                 : RootDocument.Link(name);
