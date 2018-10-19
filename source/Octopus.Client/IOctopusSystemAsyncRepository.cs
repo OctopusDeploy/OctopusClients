@@ -19,6 +19,5 @@ namespace Octopus.Client
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         Task<RootResource> LoadRootDocument();
-        RootResource RootDocument { get; }
     }
 }

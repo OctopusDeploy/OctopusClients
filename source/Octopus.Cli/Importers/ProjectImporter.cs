@@ -53,7 +53,8 @@ namespace Octopus.Cli.Importers
             var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
-            if (new SemanticVersion(Repository.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
+            var rootDocument = await Repository.LoadRootDocument();
+            if (new SemanticVersion(rootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
             {
                 var existingLifecycle = await CheckProjectLifecycle(importedObject.Lifecycle).ConfigureAwait(false);
                 if (existingLifecycle == null)

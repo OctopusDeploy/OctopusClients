@@ -148,7 +148,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
@@ -206,7 +205,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
@@ -239,6 +237,7 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
+    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions, Boolean)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
@@ -306,12 +305,10 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.SpaceContext SpaceContext { get; }
-    Octopus.Client.Model.SpaceRootResource SpaceRootDocument { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }

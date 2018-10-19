@@ -25,7 +25,7 @@ namespace Octopus.Cli.Commands.Releases
                 preReleaseTag = rule.Tag
             };
 
-            var response = repository.RootDocument.UsePostForChannelVersionRuleTest()
+            var response = (await repository.LoadRootDocument()).UsePostForChannelVersionRuleTest()
                 ? repository.Client.Post<object, ChannelVersionRuleTestResult>(link, resource)
                 : repository.Client.Get<ChannelVersionRuleTestResult>(link, resource);
 

@@ -52,8 +52,8 @@ namespace Octopus.Client.Tests.Operations
             client.Repository.LoadRootDocument().Returns(rootDocument);
             client.Get<UserResource>(Arg.Any<string>())
                 .Throws(new OctopusSecurityException(401, ""));
-            client.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
-            client.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
+            client.Repository.HasLink(Arg.Any<string>()).Returns(async ci => (await client.Repository.LoadRootDocument()).HasLink(ci.Arg<string>()));
+            client.Repository.Link(Arg.Any<string>()).Returns(async ci => (await client.Repository.LoadRootDocument()).Link(ci.Arg<string>()));
 
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));

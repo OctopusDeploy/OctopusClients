@@ -186,7 +186,7 @@ namespace Octopus.Cli.Exporters
             var metadata = new ExportMetadata
             {
                 ExportedAt = DateTime.Now,
-                OctopusVersion = Repository.RootDocument.Version,
+                OctopusVersion = (await Repository.LoadRootDocument()).Version,
                 Type = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.Name),
                 ContainerType = typeof (ProjectExporter).GetAttributeValue((ExporterAttribute ea) => ea.EntityType)
             };

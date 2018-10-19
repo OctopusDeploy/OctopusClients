@@ -40,6 +40,5 @@ namespace Octopus.Client
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
         Task<SpaceRootResource> LoadSpaceRootDocument();
-        SpaceRootResource SpaceRootDocument { get; }
     }
 }

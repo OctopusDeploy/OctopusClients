@@ -16,10 +16,10 @@ namespace Octo.Tests.Commands
     public class CleanWorkerPoolCommandFixture : ApiCommandFixtureBase
     {
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
             cleanPoolCommand = new CleanWorkerPoolCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
-            Repository.RootDocument.Version = "2018.6.0";
+            (await Repository.LoadRootDocument()).Version = "2018.6.0";
         }
 
         CleanWorkerPoolCommand cleanPoolCommand;

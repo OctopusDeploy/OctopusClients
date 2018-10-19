@@ -33,20 +33,10 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged = false;
-
-        public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return new OctopusAsyncRepository(this, SpaceContext.SpecificSpace(spaceId));
-        }
-
-        public IOctopusSystemAsyncRepository ForSystem()
-        {
-            return new OctopusAsyncRepository(this, SpaceContext.SystemOnly());
-        }
+        private OctopusAsyncRepository repositoryClassInstance => Repository as OctopusAsyncRepository;
 
         // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        public OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
@@ -118,6 +108,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return false;
         }
 
+        public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusAsyncRepository(this, SpaceContext.SpecificSpace(spaceId));
+        }
+
+        public IOctopusSystemAsyncRepository ForSystem()
+        {
+            return new OctopusAsyncRepository(this, SpaceContext.SystemOnly());
+        }
+
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -150,11 +151,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
-
-        private async Task<RootResource> EstablishSession()
-        {
-            return await Repository.LoadRootDocument();
-        }
 
         public async Task SignIn(LoginCommand loginCommand)
         {
@@ -473,9 +469,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (Repository.RootDocument != null)
+                if (repositoryClassInstance.RootDocumentLoaded)
                 {
-                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{Repository.RootDocument.InstallationId}";
+                    var rootDocument = await Repository.LoadRootDocument();
+                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                         .Cast<Cookie>()
                         .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));

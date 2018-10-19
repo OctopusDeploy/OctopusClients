@@ -9,9 +9,9 @@ namespace Octopus.Client.Tests.Repositories
 {
     public class OctopusAsyncRepositoryTests
     {
-        private readonly string[] delayInitialisedProperties = { nameof(OctopusAsyncRepository.RootDocument), nameof(OctopusAsyncRepository.SpaceRootDocument), nameof(OctopusAsyncRepository.SpaceContext) };
+        private readonly string[] delayInitialisedProperties = { nameof(OctopusAsyncRepository.SpaceContext) };
         [Test]
-        public void AllPropertiesAreNotNull()
+        public void AllPropertiesAreNotNullExceptDelayInitialised()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             client.Repository.LoadRootDocument().Returns(new RootResource());

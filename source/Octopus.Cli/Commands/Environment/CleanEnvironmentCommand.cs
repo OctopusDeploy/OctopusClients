@@ -50,7 +50,7 @@ namespace Octopus.Cli.Commands.Environment
             environmentResource = await GetEnvironment().ConfigureAwait(false);
             
             machines = await FilterByEnvironment(environmentResource).ConfigureAwait(false);
-            machines = FilterByState(machines);
+            machines = await FilterByState(machines);
 
             await CleanUpEnvironment(machines.ToList(), environmentResource);
         }
@@ -90,9 +90,10 @@ namespace Octopus.Cli.Commands.Environment
             }
         }
 
-        private IEnumerable<MachineResource> FilterByState(IEnumerable<MachineResource> environmentMachines)
+        private async Task<IEnumerable<MachineResource>> FilterByState(IEnumerable<MachineResource> environmentMachines)
         {
-            var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider);
+            var rootDocument = await Repository.LoadRootDocument();
+            var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider, rootDocument);
             environmentMachines = provider.Filter(environmentMachines);
 
             if (isDisabled.HasValue)

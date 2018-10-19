@@ -90,6 +90,7 @@ namespace Octopus.Client
             UserPermissions = new UserPermissionsRepository(this);
         }
 
+        internal bool RootDocumentLoaded => RootDocument != null;
         public IOctopusAsyncClient Client { get; }
         public SpaceContext SpaceContext { get; private set; }
         public IAccountRepository Accounts { get; }
@@ -143,8 +144,8 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
 
-        public SpaceRootResource SpaceRootDocument { get; private set; }
-        public RootResource RootDocument { get; private set; }
+        private SpaceRootResource SpaceRootDocument { get; set; }
+        private RootResource RootDocument { get; set; }
 
         public async Task<bool> HasLink(string name)
         {
@@ -164,8 +165,6 @@ namespace Octopus.Client
         {
             if (RootDocument != null)
                 return RootDocument;
-
-            RootResource server;
 
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
@@ -187,7 +186,7 @@ namespace Octopus.Client
 
                 try
                 {
-                    server = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+                    RootDocument = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
                     break;
                 }
                 catch (HttpRequestException ex)
@@ -209,17 +208,16 @@ namespace Octopus.Client
                 retries--;
             }
 
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
+            if (string.IsNullOrWhiteSpace(RootDocument.ApiVersion))
                 throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
 
             var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
             var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
+            var current = SemanticVersion.Parse(RootDocument.ApiVersion);
 
             if (current < min || current > max)
-                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({server.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
-            RootDocument = server;
-            return server;
+                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({RootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
+            return RootDocument;
         }
 
         public async Task<SpaceRootResource> LoadSpaceRootDocument()

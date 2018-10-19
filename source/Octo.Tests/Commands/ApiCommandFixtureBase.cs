@@ -50,9 +50,8 @@ namespace Octo.Tests.Commands
 
             Repository = Substitute.For<IOctopusAsyncRepository>();
             Repository.LoadRootDocument().Returns(rootDocument);
-            Repository.RootDocument.Returns(rootDocument);
-            Repository.HasLink(Arg.Any<string>()).Returns(call => Repository.RootDocument.HasLink(call.Arg<string>()));
-            Repository.Link(Arg.Any<string>()).Returns(call => Repository.RootDocument.Link(call.Arg<string>()));
+            Repository.HasLink(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).HasLink(call.Arg<string>()));
+            Repository.Link(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).Link(call.Arg<string>()));
 
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
