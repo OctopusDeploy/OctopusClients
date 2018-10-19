@@ -170,7 +170,7 @@ namespace Octopus.Client.Repositories.Async
         {
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
             {
-                if (IsInSingleSpaceContext())
+                if (IsInSingleSpaceContext() && string.IsNullOrEmpty(spaceResource.SpaceId))
                 {
                     spaceResource.SpaceId = Repository.SpaceContext.SpaceIds.Single();
                 }
