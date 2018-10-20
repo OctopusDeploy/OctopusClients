@@ -25,7 +25,7 @@ namespace Octopus.Client
     public class OctopusAsyncClient : IOctopusAsyncClient
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
-
+     
         private readonly OctopusServerEndpoint serverEndpoint;
         private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
@@ -33,7 +33,8 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged = false;
-        private OctopusAsyncRepository repositoryClassInstance => Repository as OctopusAsyncRepository;
+        private RootResource rootDocument;
+        private bool isLoadingRootDocument = false;
 
         // Use the Create method to instantiate
         public OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -469,9 +470,15 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (repositoryClassInstance.RootDocumentLoaded)
+                if (rootDocument == null && !isLoadingRootDocument)
                 {
-                    var rootDocument = await Repository.LoadRootDocument();
+                    isLoadingRootDocument = true;
+                    rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+                    isLoadingRootDocument = false;
+                }
+
+                if (rootDocument != null)
+                {
                     var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                         .Cast<Cookie>()

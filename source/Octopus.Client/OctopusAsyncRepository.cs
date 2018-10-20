@@ -90,7 +90,6 @@ namespace Octopus.Client
             UserPermissions = new UserPermissionsRepository(this);
         }
 
-        internal bool RootDocumentLoaded => RootDocument != null;
         public IOctopusAsyncClient Client { get; }
         public SpaceContext SpaceContext { get; private set; }
         public IAccountRepository Accounts { get; }
