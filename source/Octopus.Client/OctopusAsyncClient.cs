@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
@@ -35,6 +36,7 @@ namespace Octopus.Client
         private bool ignoreSslErrorMessageLogged = false;
         private RootResource rootDocument;
         private bool isLoadingRootDocument = false;
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
         // Use the Create method to instantiate
         public OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -472,9 +474,19 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                 if (rootDocument == null && !isLoadingRootDocument)
                 {
-                    isLoadingRootDocument = true;
-                    rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
-                    isLoadingRootDocument = false;
+                    // Multiple repositories share the same client, we want to make only 1 thread can load at a time
+                    await semaphoreSlim.WaitAsync();
+                    try
+                    {
+                        // We donn't care which repository trigger the load
+                        isLoadingRootDocument = true;
+                        rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+                        isLoadingRootDocument = false;
+                    }
+                    finally
+                    {
+                        semaphoreSlim.Release();
+                    }
                 }
 
                 if (rootDocument != null)
