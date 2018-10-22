@@ -261,9 +261,9 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public async Task<ITaskRepository> Including(SpaceContext spaceContext)
+        public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Repository, await ExtendSpaceContext(spaceContext));
+            return new TaskRepository(Repository, ExtendSpaceContext(spaceContext));
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)

@@ -11,8 +11,7 @@ namespace Octopus.Client.Repositories
         ICreate<SubscriptionResource>, 
         IModify<SubscriptionResource>, 
         IGet<SubscriptionResource>, 
-        IDelete<SubscriptionResource>, 
-        ICanExtendSpaceContext<ISubscriptionRepository>
+        IDelete<SubscriptionResource>
     {
         SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
@@ -24,19 +23,10 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        SubscriptionRepository(IOctopusRepository repository, SpaceContext spaceContext) : base(repository, "Subscriptions", spaceContext)
-        {
-        }
-
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
             GetCurrentSpaceContext().EnsureSingleSpaceContext();
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
-        }
-
-        public ISubscriptionRepository Including(SpaceContext spaceContext)
-        {
-            return new SubscriptionRepository(Repository, ExtendSpaceContext(spaceContext));
         }
     }
 }

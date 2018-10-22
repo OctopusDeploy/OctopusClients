@@ -127,9 +127,9 @@ namespace Octopus.Client.Repositories.Async
             return await Client.List<EventResource>(await Repository.Link("Events"), parameters);
         }
 
-        public async Task<IEventRepository> Including(SpaceContext spaceContext)
+        public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, await ExtendSpaceContext(spaceContext));
+            return new EventRepository(Repository, ExtendSpaceContext(spaceContext));
         }
     }
 }

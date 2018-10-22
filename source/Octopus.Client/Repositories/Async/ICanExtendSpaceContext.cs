@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ICanExtendSpaceContext<T>
+    public interface ICanExtendSpaceContext<out T>
     {
-        Task<T> Including(SpaceContext spaceContext);
+        T Including(SpaceContext spaceContext);
     }
 }

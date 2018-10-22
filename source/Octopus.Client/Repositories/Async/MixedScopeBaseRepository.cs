@@ -25,12 +25,10 @@ namespace Octopus.Client.Repositories.Async
             [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
         };
 
-        protected async Task<SpaceContext> ExtendSpaceContext(SpaceContext includingSpaceContext)
+        protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)
         {
             if (extendedSpaceContext == null)
             {
-                await Repository.LoadRootDocument();
-                await Repository.LoadSpaceRootDocument();
                 extendedSpaceContext = new SpaceContext(Repository.SpaceContext.SpaceIds, Repository.SpaceContext.IncludeSystem);
             }
                 
