@@ -24,8 +24,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TeamsRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
-            : base(repository, "Teams", spaceContext)
+        TeamsRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
+            : base(repository, "Teams", includingSpaceContext, extendedSpaceContext)
         {
         }
 
@@ -45,7 +45,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITeamsRepository Including(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Repository, spaceContext);
+            return new TeamsRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }
     }
 }

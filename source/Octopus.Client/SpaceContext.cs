@@ -26,7 +26,7 @@ namespace Octopus.Client
 
         public SpaceContext Union(SpaceContext spaceContext)
         {
-            return new SpaceContext(this.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
+            return new SpaceContext(this.SpaceIds.Concat(spaceContext.SpaceIds).Distinct().ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
         }
 
         public void EnsureSingleSpaceContext()

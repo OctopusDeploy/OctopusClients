@@ -39,8 +39,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TaskRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
-            : base(repository, "Tasks", spaceContext)
+        TaskRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
+            : base(repository, "Tasks", includingSpaceContext, extendedSpaceContext)
         {
         }
 
@@ -263,7 +263,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Repository, spaceContext);
+            return new TaskRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)

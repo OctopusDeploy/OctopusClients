@@ -20,14 +20,14 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        ScopedUserRoleRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
-            : base(repository, "ScopedUserRoles", spaceContext)
+        ScopedUserRoleRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
+            : base(repository, "ScopedUserRoles", includingSpaceContext, extendedSpaceContext)
         {
         }
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Repository, spaceContext);
+            return new ScopedUserRoleRepository(Repository, spaceContext, this.GetCurrentSpaceContext());
         }
     }
 }

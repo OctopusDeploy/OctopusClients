@@ -62,8 +62,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        EventRepository(IOctopusRepository repository, SpaceContext spaceContext)
-            : base(repository, "Events", spaceContext)
+        EventRepository(IOctopusRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
+            : base(repository, "Events", includingSpaceContext, extendedSpaceContext)
         {
         }
 
@@ -127,7 +127,7 @@ namespace Octopus.Client.Repositories
 
         public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, spaceContext);
+            return new EventRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }
     }
 }

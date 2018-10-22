@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -13,10 +12,10 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext spaceContext) : base(repository,
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) : base(repository,
             collectionLinkName)
         {
-            extendedSpaceContext = spaceContext;
+            this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
         }
 
         protected override Dictionary<string, object> AdditionalQueryParameters
@@ -35,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
 
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return extendedSpaceContext ?? Repository.SpaceContext;
+            return extendedSpaceContext ?? Repository?.SpaceContext;
         }
     }
 }

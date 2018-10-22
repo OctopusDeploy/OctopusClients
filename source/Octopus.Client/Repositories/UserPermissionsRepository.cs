@@ -16,12 +16,12 @@ namespace Octopus.Client.Repositories
     class UserPermissionsRepository : MixedScopeBaseRepository<UserPermissionSetResource>, IUserPermissionsRepository
     {
         public UserPermissionsRepository(IOctopusRepository repository)
-            : base(repository, null, null)
+            : base(repository, null)
         {
         }
 
-        UserPermissionsRepository(IOctopusRepository repository, SpaceContext spaceContext)
-            : base(repository, null, spaceContext)
+        UserPermissionsRepository(IOctopusRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
+            : base(repository, null, includingSpaceContext, extendedSpaceContext)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories
 
         public IUserPermissionsRepository Including(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Repository, spaceContext);
+            return new UserPermissionsRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }
     }
 }
