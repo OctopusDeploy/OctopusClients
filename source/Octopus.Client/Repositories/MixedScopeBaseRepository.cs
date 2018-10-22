@@ -17,17 +17,18 @@ namespace Octopus.Client.Repositories
             extendedSpaceContext = spaceContext;
         }
 
-        protected override Dictionary<string, object> AdditionalQueryParameters => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        protected override Dictionary<string, object> AdditionalQueryParameters
         {
-            [MixedScopeConstants.QueryStringParameterIncludeSystem] = extendedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
-            [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
-        };
+            get
+            {
+                var combinedSpaceContext = extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
+                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = combinedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
+                    [MixedScopeConstants.QueryStringParameterSpaces] = combinedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
+                };
 
-        protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)
-        {
-            if (extendedSpaceContext == null)
-                extendedSpaceContext = new SpaceContext(Repository.SpaceContext.SpaceIds, Repository.SpaceContext.IncludeSystem);
-            return extendedSpaceContext.Union(includingSpaceContext);
+            }
         }
 
         protected SpaceContext GetCurrentSpaceContext()

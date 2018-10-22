@@ -7,7 +7,7 @@ namespace Octopus.Client.Repositories.Async
 {
     class MixedScopeBaseRepository<TMixedScopeResource>: BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        private SpaceContext extendedSpaceContext;
+        private readonly SpaceContext extendedSpaceContext;
 
         public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
@@ -19,20 +19,18 @@ namespace Octopus.Client.Repositories.Async
             extendedSpaceContext = spaceContext;
         }
 
-        protected override Dictionary<string, object> AdditionalQueryParameters => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        protected override Dictionary<string, object> AdditionalQueryParameters
         {
-            [MixedScopeConstants.QueryStringParameterIncludeSystem] = extendedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
-            [MixedScopeConstants.QueryStringParameterSpaces] = extendedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
-        };
-
-        protected SpaceContext ExtendSpaceContext(SpaceContext includingSpaceContext)
-        {
-            if (extendedSpaceContext == null)
+            get
             {
-                extendedSpaceContext = new SpaceContext(Repository.SpaceContext.SpaceIds, Repository.SpaceContext.IncludeSystem);
+                var combinedSpaceContext = extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
+                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = combinedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
+                    [MixedScopeConstants.QueryStringParameterSpaces] = combinedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
+                };
+
             }
-                
-            return extendedSpaceContext.Union(includingSpaceContext);
         }
 
         protected SpaceContext GetCurrentSpaceContext()

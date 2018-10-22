@@ -250,7 +250,7 @@ namespace Octopus.Client.Repositories
 
         public ITaskRepository Including(SpaceContext spaceContext)
         {
-            return new TaskRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new TaskRepository(Repository, spaceContext);
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)

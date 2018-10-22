@@ -5766,7 +5766,6 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<SubscriptionResource>
     Octopus.Client.Repositories.IGet<SubscriptionResource>
     Octopus.Client.Repositories.IDelete<SubscriptionResource>
-    Octopus.Client.Repositories.ICanExtendSpaceContext<ISubscriptionRepository>
   {
     Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
   }

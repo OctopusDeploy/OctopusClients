@@ -127,7 +127,7 @@ namespace Octopus.Client.Repositories
 
         public IEventRepository Including(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new EventRepository(Repository, spaceContext);
         }
     }
 }

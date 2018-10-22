@@ -40,7 +40,7 @@ namespace Octopus.Client.Repositories.Async
 
         public IUserPermissionsRepository Including(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new UserPermissionsRepository(Repository, spaceContext);
         }
     }
 }

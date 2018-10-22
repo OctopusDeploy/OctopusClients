@@ -27,7 +27,7 @@ namespace Octopus.Client.Repositories
 
         public IScopedUserRoleRepository Including(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Repository, ExtendSpaceContext(spaceContext));
+            return new ScopedUserRoleRepository(Repository, spaceContext);
         }
     }
 }
