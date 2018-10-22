@@ -34,9 +34,7 @@ namespace Octopus.Client
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged = false;
-        private RootResource rootDocument;
-        private bool isLoadingRootDocument = false;
-        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private string antiforgeryCookieName = null;
 
         // Use the Create method to instantiate
         public OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
@@ -162,13 +160,19 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             await Post(await Repository.Link("SignIn"), loginCommand);
+
+            // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
             Repository = new OctopusAsyncRepository(this);
-            await Repository.LoadRootDocument();
         }
 
         public async Task SignOut()
         {
             await Post(await Repository.Link("SignOut"));
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -472,29 +476,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (rootDocument == null && !isLoadingRootDocument)
+                if (!string.IsNullOrEmpty(antiforgeryCookieName))
                 {
-                    // Multiple repositories share the same client, we want to make only 1 thread can load at a time
-                    await semaphoreSlim.WaitAsync();
-                    try
-                    {
-                        // We donn't care which repository trigger the load
-                        isLoadingRootDocument = true;
-                        rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
-                        isLoadingRootDocument = false;
-                    }
-                    finally
-                    {
-                        semaphoreSlim.Release();
-                    }
-                }
-
-                if (rootDocument != null)
-                {
-                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                         .Cast<Cookie>()
-                        .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                        .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                     if (antiforgeryCookie != null)
                     {
                         message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);

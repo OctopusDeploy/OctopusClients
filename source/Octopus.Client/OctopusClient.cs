@@ -28,7 +28,7 @@ namespace Octopus.Client
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
         private Lazy<IOctopusRepository> lazyRepository;
-        private RootResource rootDocument;
+        private string antiforgeryCookieName = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -66,6 +66,11 @@ namespace Octopus.Client
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
             Post(Repository.LoadRootDocument().Links["SignIn"], loginCommand);
+
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
             lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
         }
 
@@ -405,12 +410,11 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (rootDocument != null)
+            if (!string.IsNullOrEmpty(antiforgeryCookieName))
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
-                    .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                    .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                 if (antiforgeryCookie != null)
                 {
                     webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
@@ -555,9 +559,8 @@ namespace Octopus.Client
 
         private IOctopusRepository LoadRepository()
         {
-            var repo = new OctopusRepository(this);
-            rootDocument = repo.LoadRootDocument();
-            return repo;
+            return new OctopusRepository(this);
+
         }
 
         /// <summary>
