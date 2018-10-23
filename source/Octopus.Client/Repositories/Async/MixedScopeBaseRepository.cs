@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -23,11 +25,11 @@ namespace Octopus.Client.Repositories.Async
         {
             get
             {
-                var combinedSpaceContext = extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
+                ValidateExtension();
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = combinedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = combinedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
+                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = CombineSpaceContext().IncludeSystem,
+                    [MixedScopeConstants.QueryStringParameterSpaces] = CombineSpaceContext().SpaceIds
                 };
             }
         }
@@ -35,6 +37,17 @@ namespace Octopus.Client.Repositories.Async
         protected SpaceContext GetCurrentSpaceContext()
         {
             return extendedSpaceContext ?? Repository?.SpaceContext;
+        }
+
+        SpaceContext CombineSpaceContext()
+        {
+            return extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
+        }
+
+        void ValidateExtension()
+        {
+            if (Repository.SpaceContext.SpaceIds.Any() && CombineSpaceContext().SpaceIds.Count > 1)
+                throw new SpaceContextExtensionException($"The Repository is scoped to {Repository.SpaceContext.SpaceIds.Single()}, you cannot include more spaces beyond the Repository scope");
         }
     }
 }

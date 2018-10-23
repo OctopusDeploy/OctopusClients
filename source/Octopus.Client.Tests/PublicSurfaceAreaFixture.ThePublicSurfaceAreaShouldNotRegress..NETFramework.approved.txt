@@ -1223,6 +1223,13 @@ Octopus.Client.Exceptions
     ReadOnlyCollection<String> Errors { get; }
     Octopus.Client.Exceptions.TDetails DetailsAs()
   }
+  class SpaceContextExtensionException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(String)
+  }
   class UnsupportedApiVersionException
     ISerializable
     _Exception
@@ -3847,6 +3854,7 @@ Octopus.Client.Model
   class SpaceResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
     .ctor()

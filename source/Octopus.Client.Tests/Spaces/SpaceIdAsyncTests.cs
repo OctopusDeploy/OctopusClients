@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Client.Exceptions;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -38,29 +34,29 @@ namespace Octopus.Client.Tests.Spaces
         [Test]
         [TestCase("Spaces-1", TestName = "Space1")]
         [TestCase("Spaces-2", TestName = "Space2")]
-        public void MixedScoped_SingleSpaceContextShouldEnrichSpaceId(string spaceId)
+        public async Task MixedScoped_SingleSpaceContextShouldEnrichSpaceId(string spaceId)
         {
             var client = SetupAsyncClient(spaceId);
-            client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
+            await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t =>
             {
                 t.SpaceId.Should().Be(spaceId);
             }));
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, SpaceContext.SpecificSpace(spaceId)));
-            var created = teamRepo.Create(new TeamResource() { Name = "Test" }).Result;
+            var created = await teamRepo.Create(new TeamResource() { Name = "Test" });
         }
 
         [Test]
         [TestCase("Spaces-1", TestName = "Space1")]
         [TestCase("Spaces-2", TestName = "Space2")]
-        public void SpaceScoped_SingleSpaceContextShouldNotEnrichSpaceId(string spaceId)
+        public async Task SpaceScoped_SingleSpaceContextShouldNotEnrichSpaceId(string spaceId)
         {
             var client = SetupAsyncClient(spaceId);
-            client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t =>
+            await client.Create(Arg.Any<string>(), Arg.Do<ProjectGroupResource>(t =>
             {
                 t.SpaceId.Should().BeNullOrEmpty();
             }));
             var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, SpaceContext.SpecificSpace(spaceId)));
-            var _ = repo.Create(new ProjectGroupResource { Name = "Test" }).Result;
+            var _ = await repo.Create(new ProjectGroupResource { Name = "Test" });
         }
 
         [Test]
@@ -76,9 +72,9 @@ namespace Octopus.Client.Tests.Spaces
                 t.SpaceId.Should().BeNullOrEmpty();
             }));
             var includingSpaceContext = new SpaceContext(new []{includingSpaceId}, includeSystem);
-            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client));
+            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, SpaceContext.SystemOnly()));
             var multiScoped = teamRepo.Including(includingSpaceContext);
-            var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
+            var _ = await multiScoped.Create(new TeamResource() { Name = "Test" });
         }
 
         [Test]
@@ -89,7 +85,7 @@ namespace Octopus.Client.Tests.Spaces
         {
             var client = SetupAsyncClient("Spaces-1");
             await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().BeNullOrEmpty()));
-            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client));
+            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, SpaceContext.SystemOnly()));
             var multiScoped = teamRepo.Including(new SpaceContext(new[] {includingSpaceId}, includeSystem));
             var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
         }
