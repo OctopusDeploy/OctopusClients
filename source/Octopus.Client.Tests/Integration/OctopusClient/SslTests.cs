@@ -21,8 +21,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             try
             {
-                var client = await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath));
-                await client.Repository.LoadRootDocument();
+                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath));
                 Assert.Fail("Exception expected");
             }
             catch (Exception ex)
