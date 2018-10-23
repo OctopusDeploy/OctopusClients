@@ -25,6 +25,7 @@ namespace Octopus.Client.Repositories
         {
             Repository = repository;
             client = repository.Client;
+            AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.getCollectionLinkName = getCollectionLinkName;
         }
 
