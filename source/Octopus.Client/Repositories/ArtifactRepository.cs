@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
     class ArtifactRepository : BasicRepository<ArtifactResource>, IArtifactRepository
     {
         public ArtifactRepository(IOctopusRepository repository)
-            : base(repository, _ => "Artifacts")
+            : base(repository, "Artifacts")
         {
         }
 

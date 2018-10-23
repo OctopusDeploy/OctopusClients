@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories.Async
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
         public EnvironmentRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Environments"))
+            : base(repository, "Environments")
         {
         }
 

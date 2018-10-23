@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
 
     class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
     {
-        public TagSetRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("TagSets"))
+        public TagSetRepository(IOctopusAsyncRepository repository) : base(repository, "TagSets")
         {
         }
 

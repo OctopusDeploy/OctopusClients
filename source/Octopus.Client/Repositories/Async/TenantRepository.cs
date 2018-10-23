@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
     {
         public TenantRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Tenants"))
+            : base(repository, "Tenants")
         {
         }
 

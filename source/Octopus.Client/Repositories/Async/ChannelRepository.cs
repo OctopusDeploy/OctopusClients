@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
     class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
     {
         public ChannelRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Channels"))
+            : base(repository, "Channels")
         {
         }
 

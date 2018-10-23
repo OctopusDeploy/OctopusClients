@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
     class LibraryVariableSetRepository : BasicRepository<LibraryVariableSetResource>, ILibraryVariableSetRepository
     {
         public LibraryVariableSetRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("LibraryVariables"))
+            : base(repository, "LibraryVariables")
         {
         }
 

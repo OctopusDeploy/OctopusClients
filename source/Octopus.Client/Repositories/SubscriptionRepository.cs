@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
     class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
     {
 
-        public SubscriptionRepository(IOctopusRepository repository) : base(repository, _ => "Subscriptions")
+        public SubscriptionRepository(IOctopusRepository repository) : base(repository, "Subscriptions")
         {
         }
 

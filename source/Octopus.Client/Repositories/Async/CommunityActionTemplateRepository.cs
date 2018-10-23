@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
 
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
     {
-        public CommunityActionTemplateRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("CommunityActionTemplates"))
+        public CommunityActionTemplateRepository(IOctopusAsyncRepository repository) : base(repository, "CommunityActionTemplates")
         {
         }
 

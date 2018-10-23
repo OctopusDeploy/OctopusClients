@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
     {
-        public ActionTemplateRepository(IOctopusRepository repository) : base(repository, _ => "ActionTemplates")
+        public ActionTemplateRepository(IOctopusRepository repository) : base(repository, "ActionTemplates")
         {
         }
 

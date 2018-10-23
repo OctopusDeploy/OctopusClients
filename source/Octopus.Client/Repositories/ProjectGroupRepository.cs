@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
     class ProjectGroupRepository : BasicRepository<ProjectGroupResource>, IProjectGroupRepository
     {
         public ProjectGroupRepository(IOctopusRepository repository)
-            : base(repository, _ => "ProjectGroups")
+            : base(repository, "ProjectGroups")
         {
         }
 

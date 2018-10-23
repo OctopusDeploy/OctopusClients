@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories
 
     class WorkerRepository : BasicRepository<WorkerResource>, IWorkerRepository
     {
-        public WorkerRepository(IOctopusRepository repository) : base(repository, _ => "Workers")
+        public WorkerRepository(IOctopusRepository repository) : base(repository, "Workers")
         {
         }
 

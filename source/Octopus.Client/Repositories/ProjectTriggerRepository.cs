@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
         public ProjectTriggerRepository(IOctopusRepository repository)
-            : base(repository, _ => "ProjectTriggers")
+            : base(repository, "ProjectTriggers")
         {
         }
 

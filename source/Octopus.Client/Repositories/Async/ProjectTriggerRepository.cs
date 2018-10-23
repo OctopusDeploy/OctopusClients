@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories.Async
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
         public ProjectTriggerRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("ProjectTriggers"))
+            : base(repository, "ProjectTriggers")
         {
         }
 

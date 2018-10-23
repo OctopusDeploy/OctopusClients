@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
     class DefectsRepository : BasicRepository<DefectResource>, IDefectsRepository
     {
         public DefectsRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Defects"))
+            : base(repository, "Defects")
         {
         }
 

@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories
     class InterruptionRepository : BasicRepository<InterruptionResource>, IInterruptionRepository
     {
         public InterruptionRepository(IOctopusRepository repository)
-            : base(repository, _ => "Interruptions")
+            : base(repository, "Interruptions")
         {
         }
 

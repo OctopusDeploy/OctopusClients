@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
         public ProjectRepository(IOctopusRepository repository)
-            : base(repository, _ => "Projects")
+            : base(repository, "Projects")
         {
         }
 

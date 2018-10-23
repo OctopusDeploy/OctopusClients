@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories.Async
     class RetentionPolicyRepository : BasicRepository<RetentionPolicyResource>, IRetentionPolicyRepository
     {
         public RetentionPolicyRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("RetentionPolicies"))
+            : base(repository, "RetentionPolicies")
         {
         }
 

@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
     class VariableSetRepository : BasicRepository<VariableSetResource>, IVariableSetRepository
     {
         public VariableSetRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Variables"))
+            : base(repository, "Variables")
         {
         }
 

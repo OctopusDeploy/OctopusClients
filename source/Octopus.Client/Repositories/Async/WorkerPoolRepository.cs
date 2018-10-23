@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories.Async
     class WorkerPoolRepository : BasicRepository<WorkerPoolResource>, IWorkerPoolRepository
     {
         public WorkerPoolRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("WorkerPools"))
+            : base(repository, "WorkerPools")
         {
         }
 

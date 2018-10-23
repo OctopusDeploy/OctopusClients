@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
     {
         public OctopusServerNodeRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("OctopusServerNodes"))
+            : base(repository, "OctopusServerNodes")
         {
         }
     }

@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
     class ProxyRepository : BasicRepository<ProxyResource>, IProxyRepository
     {
         public ProxyRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Proxies"))
+            : base(repository, "Proxies")
         {
 
         }

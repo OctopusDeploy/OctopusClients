@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
         public EnvironmentRepository(IOctopusRepository repository)
-            : base(repository, _ => "Environments")
+            : base(repository, "Environments")
         {
         }
 

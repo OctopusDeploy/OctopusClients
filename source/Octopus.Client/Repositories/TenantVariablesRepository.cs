@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
         }
 
         public TenantVariablesRepository(IOctopusRepository repository) 
-            : base(repository, _ => "TenantVariables")
+            : base(repository, "TenantVariables")
         {
         }
     }

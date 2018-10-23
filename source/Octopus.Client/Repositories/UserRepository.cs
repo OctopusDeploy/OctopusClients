@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
         readonly BasicRepository<InvitationResource> invitations;
 
         public UserRepository(IOctopusRepository repository)
-            : base(repository, _ => "Users")
+            : base(repository, "Users")
         {
             invitations = new InvitationRepository(repository);
         }

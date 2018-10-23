@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         }
 
         public TenantVariablesRepository(IOctopusAsyncRepository repository) 
-            : base(repository, _ => Task.FromResult("TenantVariables"))
+            : base(repository, "TenantVariables")
         {
         }
     }

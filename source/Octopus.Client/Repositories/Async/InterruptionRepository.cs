@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories.Async
     class InterruptionRepository : BasicRepository<InterruptionResource>, IInterruptionRepository
     {
         public InterruptionRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("Interruptions"))
+            : base(repository, "Interruptions")
         {
         }
 

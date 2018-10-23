@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories.Async
 
     class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
     {
-        public SubscriptionRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("Subscriptions"))
+        public SubscriptionRepository(IOctopusAsyncRepository repository) : base(repository, "Subscriptions")
         {
         }
 

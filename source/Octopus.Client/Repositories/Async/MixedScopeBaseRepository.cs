@@ -9,12 +9,12 @@ namespace Octopus.Client.Repositories.Async
     {
         private readonly SpaceContext extendedSpaceContext;
 
-        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, _ => Task.FromResult(collectionLinkName))
+        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
         }
 
         protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) : base(repository,
-            _ => Task.FromResult(collectionLinkName))
+            collectionLinkName)
         {
             this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
         }

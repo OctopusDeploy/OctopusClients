@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories
 
     class SpaceRepository : BasicRepository<SpaceResource>, ISpaceRepository
     {
-        public SpaceRepository(IOctopusRepository repository) : base(repository, _ => "Spaces")
+        public SpaceRepository(IOctopusRepository repository) : base(repository, "Spaces")
         {
         }
 

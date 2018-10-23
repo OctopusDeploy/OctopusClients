@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
     class UserRolesRepository : BasicRepository<UserRoleResource>, IUserRolesRepository
     {
         public UserRolesRepository(IOctopusAsyncRepository repository)
-            : base(repository, _ => Task.FromResult("UserRoles"))
+            : base(repository, "UserRoles")
         {
         }
     }
