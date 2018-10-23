@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
         public ReleaseRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Releases")
+            : base(repository, _ => Task.FromResult("Releases"))
         {
         }
 

@@ -16,16 +16,15 @@ namespace Octopus.Client.Repositories
         SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
     
-    class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
+    class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
     {
 
-        public SubscriptionRepository(IOctopusRepository repository) : base(repository, "Subscriptions")
+        public SubscriptionRepository(IOctopusRepository repository) : base(repository, _ => "Subscriptions")
         {
         }
 
         public SubscriptionEditor CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
     }

@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
     {
-        public CertificateConfigurationRepository(IOctopusRepository repository) : base(repository, DetermineCollectionLinkName(repository))
+        public CertificateConfigurationRepository(IOctopusRepository repository) : base(repository, DetermineCollectionLinkName)
         {
         }
 

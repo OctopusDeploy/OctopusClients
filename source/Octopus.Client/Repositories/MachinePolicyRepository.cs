@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     
     class MachinePolicyRepository : BasicRepository<MachinePolicyResource>, IMachinePolicyRepository
     {
-        public MachinePolicyRepository(IOctopusRepository repository) : base(repository, "MachinePolicies")
+        public MachinePolicyRepository(IOctopusRepository repository) : base(repository, _ => "MachinePolicies")
         {
         }
 

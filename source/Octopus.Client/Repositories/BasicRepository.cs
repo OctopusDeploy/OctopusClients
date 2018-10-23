@@ -21,16 +21,10 @@ namespace Octopus.Client.Repositories
         protected string CollectionLinkName;
         protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusRepository repository, string collectionLinkName)
+        protected BasicRepository(IOctopusRepository repository, Func<IOctopusRepository, string> getCollectionLinkName)
         {
             Repository = repository;
             client = repository.Client;
-            CollectionLinkName = collectionLinkName;
-            AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        }
-
-        protected BasicRepository(IOctopusRepository repository, Func<IOctopusRepository, string> getCollectionLinkName) : this(repository, (string)null)
-        {
             this.getCollectionLinkName = getCollectionLinkName;
         }
 

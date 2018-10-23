@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
     {
         public ServerStatusRepository(IOctopusRepository repository)
-            : base(repository, (string)null) // Not a collection
+            : base(repository, null) // Not a collection
         {
         }
 

@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
     class ArtifactRepository : BasicRepository<ArtifactResource>, IArtifactRepository
     {
         public ArtifactRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Artifacts")
+            : base(repository, _ => Task.FromResult("Artifacts"))
         {
         }
 

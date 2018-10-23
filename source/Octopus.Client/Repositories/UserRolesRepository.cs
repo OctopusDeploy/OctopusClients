@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     class UserRolesRepository : BasicRepository<UserRoleResource>, IUserRolesRepository
     {
         public UserRolesRepository(IOctopusRepository repository)
-            : base(repository, "UserRoles")
+            : base(repository, _ => "UserRoles")
         {
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -8,12 +9,12 @@ namespace Octopus.Client.Repositories.Async
     {
         private readonly SpaceContext extendedSpaceContext;
 
-        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
+        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, _ => Task.FromResult(collectionLinkName))
         {
         }
 
         protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) : base(repository,
-            collectionLinkName)
+            _ => Task.FromResult(collectionLinkName))
         {
             this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
         }
@@ -28,7 +29,6 @@ namespace Octopus.Client.Repositories.Async
                     [MixedScopeConstants.QueryStringParameterIncludeSystem] = combinedSpaceContext?.IncludeSystem ?? Repository.SpaceContext.IncludeSystem,
                     [MixedScopeConstants.QueryStringParameterSpaces] = combinedSpaceContext?.SpaceIds ?? Repository.SpaceContext.SpaceIds
                 };
-
             }
         }
 

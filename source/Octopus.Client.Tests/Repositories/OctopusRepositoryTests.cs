@@ -14,6 +14,7 @@ namespace Octopus.Client.Tests.Repositories
 {
     public class OctopusRepositoryTests
     {
+        private readonly string[] delayInitialisedProperties = { nameof(OctopusAsyncRepository.SpaceContext) };
         [Test]
         public void AllPropertiesAreNotNullForDefaultSpaceRepository()
         {
@@ -51,6 +52,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             var repository = new OctopusRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
+                where !delayInitialisedProperties.Contains(p.Name)
                 where p.GetMethod.Invoke(repository, new object[0]) == null
                 select p.Name;
 

@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
 
     class MachinePolicyRepository : BasicRepository<MachinePolicyResource>, IMachinePolicyRepository
     {
-        public MachinePolicyRepository(IOctopusAsyncRepository repository) : base(repository, "MachinePolicies")
+        public MachinePolicyRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("MachinePolicies"))
         {
         }
 

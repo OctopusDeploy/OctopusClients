@@ -47,7 +47,7 @@ namespace Octopus.Client.Repositories.Async
 
     class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
     {
-        public MachineRepository(IOctopusAsyncRepository repository) : base(repository, "Machines")
+        public MachineRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("Machines"))
         {
         }
 

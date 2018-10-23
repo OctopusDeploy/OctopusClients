@@ -21,16 +21,11 @@ namespace Octopus.Client.Repositories.Async
         protected string CollectionLinkName;
         protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusAsyncRepository repository, string collectionLinkName)
+        protected BasicRepository(IOctopusAsyncRepository repository, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName)
         {
             Client = repository.Client;
             Repository = repository;
-            CollectionLinkName = collectionLinkName;
             AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        }
-
-        protected BasicRepository(IOctopusAsyncRepository repository, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName): this(repository, (string)null)
-        {
             this.getCollectionLinkName = getCollectionLinkName;
         }
 

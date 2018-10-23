@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -10,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
     class UserRolesRepository : BasicRepository<UserRoleResource>, IUserRolesRepository
     {
         public UserRolesRepository(IOctopusAsyncRepository repository)
-            : base(repository, "UserRoles")
+            : base(repository, _ => Task.FromResult("UserRoles"))
         {
         }
     }

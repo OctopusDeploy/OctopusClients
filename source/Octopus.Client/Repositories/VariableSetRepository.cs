@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
     class VariableSetRepository : BasicRepository<VariableSetResource>, IVariableSetRepository
     {
         public VariableSetRepository(IOctopusRepository repository)
-            : base(repository, "Variables")
+            : base(repository, _ => "Variables")
         {
         }
 

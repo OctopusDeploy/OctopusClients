@@ -62,8 +62,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void SyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
-            // Force the root document to load
-            var repo = client.Repository.LoadRootDocument();
             
             // Simulate getting the auth and antiforgery cookies
             client.SignIn(new LoginCommand());

@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories
     
     class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
     {
-        public TagSetRepository(IOctopusRepository repository) : base(repository, "TagSets")
+        public TagSetRepository(IOctopusRepository repository) : base(repository, _ => "TagSets")
         {
         }
 

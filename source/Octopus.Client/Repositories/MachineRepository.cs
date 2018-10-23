@@ -47,7 +47,7 @@ namespace Octopus.Client.Repositories
     
     class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
     {
-        public MachineRepository(IOctopusRepository repository) : base(repository, "Machines")
+        public MachineRepository(IOctopusRepository repository) : base(repository, _ => "Machines")
         {
         }
 

@@ -14,15 +14,14 @@ namespace Octopus.Client.Repositories.Async
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
     }
 
-    class SubscriptionRepository : MixedScopeBaseRepository<SubscriptionResource>, ISubscriptionRepository
+    class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
     {
-        public SubscriptionRepository(IOctopusAsyncRepository repository) : base(repository, "Subscriptions")
+        public SubscriptionRepository(IOctopusAsyncRepository repository) : base(repository, _ => Task.FromResult("Subscriptions"))
         {
         }
 
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }
 

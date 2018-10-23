@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
     
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
     {
-        public CommunityActionTemplateRepository(IOctopusRepository repository) : base(repository, "CommunityActionTemplates")
+        public CommunityActionTemplateRepository(IOctopusRepository repository) : base(repository, _ => "CommunityActionTemplates")
         {
         }
 

@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
     {
         public OctopusServerNodeRepository(IOctopusRepository repository)
-            : base(repository, "OctopusServerNodes")
+            : base(repository, _ => "OctopusServerNodes")
         {
         }
     }

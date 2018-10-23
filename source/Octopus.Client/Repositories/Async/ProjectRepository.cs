@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories.Async
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
         public ProjectRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Projects")
+            : base(repository, _ => Task.FromResult("Projects"))
         {
         }
 

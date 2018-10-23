@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories.Async
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
     {
         public AccountRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Accounts")
+            : base(repository, _ => Task.FromResult("Accounts"))
         {
         }
 

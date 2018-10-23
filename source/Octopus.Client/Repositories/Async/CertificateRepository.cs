@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories.Async
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
     {
         public CertificateRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Certificates")
+            : base(repository, _ => Task.FromResult("Certificates"))
         {
         }
 

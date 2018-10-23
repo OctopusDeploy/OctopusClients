@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
     {
         public AccountRepository(IOctopusRepository repository)
-            : base(repository, "Accounts")
+            : base(repository, _ => "Accounts")
         {
         }
         public TAccount GetOfType<TAccount>(string idOrHref) where TAccount : AccountResource

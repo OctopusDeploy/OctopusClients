@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
         readonly BasicRepository<InvitationResource> invitations;
 
         public UserRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Users")
+            : base(repository, _ => Task.FromResult("Users"))
         {
             invitations = new InvitationRepository(Repository);
         }

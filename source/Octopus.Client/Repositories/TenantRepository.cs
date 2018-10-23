@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
     {
         public TenantRepository(IOctopusRepository repository)
-            : base(repository, "Tenants")
+            : base(repository, _ => "Tenants")
         {
         }
 

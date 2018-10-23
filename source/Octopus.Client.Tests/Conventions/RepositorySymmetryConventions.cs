@@ -43,7 +43,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> SyncRepositories()
         {
             return from p in typeof(IOctopusRepository).GetProperties()
-                   where p.Name != "Client" && p.Name != nameof(SpaceContext) && p.Name != "SpaceRootDocument" && p.Name != "RootDocument"
+                   where p.Name != "Client" && p.Name != nameof(SpaceContext)
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Sync)");
         }
@@ -51,7 +51,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> AsyncRepositories()
         {
             return from p in typeof(IOctopusAsyncRepository).GetProperties()
-                   where p.Name != "Client" && p.Name != nameof(SpaceContext) && p.Name != "SpaceRootDocument" && p.Name != "RootDocument"
+                   where p.Name != "Client" && p.Name != nameof(SpaceContext)
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Async)");
         }

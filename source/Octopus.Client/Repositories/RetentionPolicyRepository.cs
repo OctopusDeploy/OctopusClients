@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
     class RetentionPolicyRepository : BasicRepository<RetentionPolicyResource>, IRetentionPolicyRepository
     {
         public RetentionPolicyRepository(IOctopusRepository repository)
-            : base(repository, "RetentionPolicies")
+            : base(repository, _ => "RetentionPolicies")
         {
         }
 

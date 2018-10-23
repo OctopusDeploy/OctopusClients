@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
         public ReleaseRepository(IOctopusRepository repository)
-            : base(repository, "Releases")
+            : base(repository, _ => "Releases")
         {
         }
 

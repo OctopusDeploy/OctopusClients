@@ -8,12 +8,12 @@ namespace Octopus.Client.Repositories
     {
         private readonly SpaceContext extendedSpaceContext;
 
-        protected MixedScopeBaseRepository(IOctopusRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
+        protected MixedScopeBaseRepository(IOctopusRepository repository, string collectionLinkName) : base(repository, _ => collectionLinkName)
         {
         }
 
         protected MixedScopeBaseRepository(IOctopusRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) 
-            : base(repository, collectionLinkName)
+            : base(repository, _ => collectionLinkName)
         {
             this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
         }

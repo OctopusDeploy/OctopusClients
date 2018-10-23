@@ -27,7 +27,6 @@ namespace Octopus.Client
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
-        private Lazy<IOctopusRepository> lazyRepository;
         private string antiforgeryCookieName = null;
 
         /// <summary>
@@ -39,10 +38,10 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
-            lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
+            Repository = new OctopusRepository(this);
         }
 
-        public IOctopusRepository Repository => lazyRepository.Value;
+        public IOctopusRepository Repository { get; private set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -51,6 +50,7 @@ namespace Octopus.Client
 
         public IOctopusSpaceRepository ForSpace(string spaceId)
         {
+            ValidateSpaceId(spaceId);
             return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
         }
 
@@ -71,12 +71,13 @@ namespace Octopus.Client
                 .Cast<Cookie>()
                 .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
 
-            lazyRepository = new Lazy<IOctopusRepository>(LoadRepository, true);
+            Repository = new OctopusRepository(this);
         }
 
         public void SignOut()
         {
             Post(Repository.LoadRootDocument().Links["SignOut"]);
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -104,8 +105,7 @@ namespace Octopus.Client
         /// </summary>
         public void Initialize()
         {
-            // Force the Lazy instance to be loaded
-            Repository.LoadRootDocument();
+            Repository.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -557,17 +557,24 @@ namespace Octopus.Client
             }
         }
 
-        private IOctopusRepository LoadRepository()
-        {
-            return new OctopusRepository(this);
-
-        }
-
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
+        }
+
+        private void ValidateSpaceId(string spaceId)
+        {
+            if (string.IsNullOrEmpty(spaceId))
+            {
+                throw new ArgumentException("spaceId cannot be null");
+            }
+
+            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            {
+                throw new ArgumentException("Invalid spaceId");
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     class ProxyRepository : BasicRepository<ProxyResource>, IProxyRepository
     {
         public ProxyRepository(IOctopusRepository repository)
-            : base(repository, "Proxies")
+            : base(repository, _ => "Proxies")
         {
 
         }

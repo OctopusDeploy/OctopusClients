@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
     {
         public CertificateRepository(IOctopusRepository repository)
-            : base(repository, "Certificates")
+            : base(repository, _ => "Certificates")
         {
         }
 
