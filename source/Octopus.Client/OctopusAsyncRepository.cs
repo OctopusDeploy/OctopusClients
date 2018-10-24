@@ -79,10 +79,10 @@ namespace Octopus.Client
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
         private static readonly string rootDocumentUri = "~/api";
-        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope spaceContext = null)
+        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
         {
             Client = client;
-            Scope = spaceContext ?? RepositoryScope.Unspecified();
+            Scope = repositoryScope ?? RepositoryScope.Unspecified();
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);

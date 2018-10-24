@@ -17,7 +17,7 @@ namespace Octopus.Client.Tests.Spaces
         public void CanIncludeMoreSpacesFromSystemOnlyContext()
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.Scope.Returns(SpaceContext.SystemOnly());
+            repository.Scope.Returns(RepositoryScope.ForSystem());
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = new[] {"Spaces-2", "Spaces-3"}.Aggregate(teamRepo,
                 (repo, spaceId) => repo.UsingContext(SpaceContext.SpecificSpace(spaceId)));
@@ -31,7 +31,7 @@ namespace Octopus.Client.Tests.Spaces
         public void CanNotIncludeMoreSpacesFromSpecificSpaceContext()
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.Scope.Returns(SpaceContext.SpecificSpace("Spaces-1"));
+            repository.Scope.Returns(RepositoryScope.ForSpace("Spaces-1"));
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = teamRepo.UsingContext(SpaceContext.SpecificSpace("Spaces-2"));
             Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
@@ -42,7 +42,7 @@ namespace Octopus.Client.Tests.Spaces
         public void CanNotIncludeMoreSpacesFromSpecificSpaceAndSystemContext()
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.Scope.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
+            repository.Scope.Returns(RepositoryScope.ForSpace("Spaces-1"));
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = teamRepo.UsingContext(SpaceContext.SpecificSpace("Spaces-2"));
             Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
@@ -53,7 +53,7 @@ namespace Octopus.Client.Tests.Spaces
         public void CanIncludeSystemFromSpecificSpaceContext()
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.Scope.Returns(SpaceContext.SpecificSpace("Spaces-1"));
+            repository.Scope.Returns(RepositoryScope.ForSpace("Spaces-1"));
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = teamRepo.UsingContext(SpaceContext.SystemOnly());
 

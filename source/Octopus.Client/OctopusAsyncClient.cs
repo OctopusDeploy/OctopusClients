@@ -112,12 +112,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            return new OctopusAsyncRepository(this, SpaceContext.SpecificSpace(spaceId));
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(spaceId));
         }
 
         public IOctopusSystemAsyncRepository ForSystem()
         {
-            return new OctopusAsyncRepository(this, SpaceContext.SystemOnly());
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
         }
 
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)

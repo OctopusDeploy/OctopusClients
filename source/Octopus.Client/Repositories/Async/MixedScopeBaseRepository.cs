@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
 {
-    class MixedScopeBaseRepository<TMixedScopeResource>: BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
+    class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
         private readonly SpaceContext extendedSpaceContext;
 
@@ -22,17 +22,14 @@ namespace Octopus.Client.Repositories.Async
             this.extendedSpaceContext = userDefinedSpaceContext;
         }
 
-        protected override async Task<Dictionary<string, object>> AdditionalQueryParameters
+        protected override async Task<Dictionary<string, object>> GetAdditionalQueryParameters()
         {
-            get
+            var spaceContext = await GetCurrentSpaceContext();
+            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
-                var spaceContext = await GetCurrentSpaceContext();
-                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-                {
-                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.SpaceIds
-                };
-            }
+                [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
+                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.SpaceIds
+            };
         }
 
         void ValidateThatICanUseACustomSpaceContext()

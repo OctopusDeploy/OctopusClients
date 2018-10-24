@@ -24,8 +24,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        TeamsRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, "Teams", includingSpaceContext, extendedSpaceContext)
+        TeamsRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
+            : base(repository, "Teams", spaceContext)
         {
         }
 
@@ -34,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
-            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), AdditionalQueryParameters, page =>
+            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), await GetAdditionalQueryParameters(), page =>
             {
                 resources.AddRange(page.Items);
                 return true;
@@ -45,7 +45,7 @@ namespace Octopus.Client.Repositories.Async
 
         public ITeamsRepository UsingContext(SpaceContext spaceContext)
         {
-            return new TeamsRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new TeamsRepository(Repository, spaceContext);
         }
     }
 }
