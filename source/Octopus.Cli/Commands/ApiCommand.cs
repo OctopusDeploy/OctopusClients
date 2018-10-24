@@ -47,6 +47,7 @@ namespace Octopus.Cli.Commands
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
+        string spaceName;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
@@ -68,6 +69,7 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
+            options.Add("spaceName=", $"[Optional] The space this command will run against, default space will be used if it is not set. ", v => spaceName = v);
             options.AddLogLevelOptions();
         }
 
@@ -138,6 +140,13 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(spaceName))
+            {
+                var space = await client.ForSystem().Spaces.FindByName(spaceName);
+                if (space == null)
+                    throw new CommandException($"Cannot find the space with name {spaceName}");
+                Repository = repositoryFactory.CreateRepository(client, SpaceContext.SpecificSpace(space.Id));
+            }
             Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
             
