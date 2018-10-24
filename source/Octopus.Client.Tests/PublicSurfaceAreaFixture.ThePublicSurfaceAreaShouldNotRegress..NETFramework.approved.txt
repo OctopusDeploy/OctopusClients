@@ -56,7 +56,7 @@ Octopus.Client
     Octopus.Client.IOctopusSystemAsyncRepository
   {
     Octopus.Client.IOctopusAsyncClient Client { get; }
-    Octopus.Client.SpaceContext SpaceContext { get; }
+    Octopus.Client.RepositoryScope Scope { get; }
     Task<Boolean> HasLink(String)
     Task<String> Link(String)
   }
@@ -269,7 +269,7 @@ Octopus.Client
     Octopus.Client.IOctopusMixedScopeAsyncRepository
     Octopus.Client.IOctopusSystemAsyncRepository
   {
-    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.SpaceContext)
+    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
@@ -306,9 +306,9 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.RepositoryScope Scope { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
-    Octopus.Client.SpaceContext SpaceContext { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
@@ -480,15 +480,46 @@ Octopus.Client
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
   }
+  class RepositoryScope
+  {
+    .ctor(Octopus.Client.RepositoryScopeType, String)
+    String SpaceId { get; }
+    Octopus.Client.RepositoryScopeType Type { get; }
+    static Octopus.Client.RepositoryScope ForSpace(String)
+    static Octopus.Client.RepositoryScope ForSystem()
+    Task<SpaceContext> ToSpaceContext(Octopus.Client.IOctopusSpaceAsyncRepository)
+    static Octopus.Client.RepositoryScope Unspecified()
+    RepositoryScopeType
+    {
+        Space = 0
+        System = 1
+        Unspecified = 2
+    }
+  }
+  RepositoryScopeType
+  {
+      Space = 0
+      System = 1
+      Unspecified = 2
+  }
   class SpaceContext
   {
     Boolean IncludeSystem { get; }
     IReadOnlyCollection<String> SpaceIds { get; }
+    Octopus.Client.SpaceSelection SpaceSelection { get; }
+    static Octopus.Client.SpaceContext DefaultSpaceAndSystem()
     void EnsureSingleSpaceContext()
     static Octopus.Client.SpaceContext SpecificSpace(String)
     static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
     static Octopus.Client.SpaceContext SystemOnly()
     Octopus.Client.SpaceContext Union(Octopus.Client.SpaceContext)
+  }
+  SpaceSelection
+  {
+      AllSpaces = 0
+      DefaultSpace = 1
+      DefaultSpaceAndSystem = 2
+      SpecificSpaces = 3
   }
   class UrlTemplate
   {
@@ -5989,7 +6020,7 @@ Octopus.Client.Repositories.Async
   }
   interface ICanExtendSpaceContext`1
   {
-    Octopus.Client.Repositories.Async.T Including(Octopus.Client.SpaceContext)
+    Octopus.Client.Repositories.Async.T UsingContext(Octopus.Client.SpaceContext)
   }
   interface ICertificateConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<CertificateConfigurationResource>
