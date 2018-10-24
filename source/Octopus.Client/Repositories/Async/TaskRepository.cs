@@ -48,10 +48,10 @@ namespace Octopus.Client.Repositories.Async
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null,
             string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            // Default space enabled -> Creates it in the default space
+            // Default space disabled -> Fails
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.Health.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description,
                 Arguments = new Dictionary<string, object>
@@ -72,10 +72,8 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.UpdateCalamari.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description,
                 Arguments = new Dictionary<string, object>
@@ -261,7 +259,7 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public ITaskRepository Including(SpaceContext spaceContext)
+        public ITaskRepository UsingContext(SpaceContext spaceContext)
         {
             return new TaskRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }

@@ -15,39 +15,38 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) : base(repository,
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) : base(repository,
             collectionLinkName)
         {
-            this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
+            ValidateThatICanUseACustomSpaceContext();
+            this.extendedSpaceContext = userDefinedSpaceContext;
         }
 
-        protected override Dictionary<string, object> AdditionalQueryParameters
+        protected override async Task<Dictionary<string, object>> AdditionalQueryParameters
         {
             get
             {
-                ValidateExtension();
+                var spaceContext = await GetCurrentSpaceContext();
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
-                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = CombineSpaceContext().IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = CombineSpaceContext().SpaceIds
+                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
+                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.SpaceIds
                 };
             }
         }
 
-        protected SpaceContext GetCurrentSpaceContext()
+        void ValidateThatICanUseACustomSpaceContext()
         {
-            return extendedSpaceContext ?? Repository?.SpaceContext;
+            if (Repository.Scope.Type != RepositoryScope.RepositoryScopeType.Unspecified)
+            {
+                throw new Exception(
+                    "Can't use custom context if you have set up an explicit context for your repository");
+            }
         }
 
-        SpaceContext CombineSpaceContext()
+        protected async Task<SpaceContext> GetCurrentSpaceContext()
         {
-            return extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
-        }
-
-        void ValidateExtension()
-        {
-            if (Repository.SpaceContext.SpaceIds.Any() && CombineSpaceContext().SpaceIds.Count > 1)
-                throw new SpaceContextExtensionException($"The Repository is scoped to {Repository.SpaceContext.SpaceIds.Single()}, you cannot include more spaces beyond the Repository scope");
+            return extendedSpaceContext ?? await Repository.Scope.ToSpaceContext(Repository);
         }
     }
 }

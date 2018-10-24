@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public ITeamsRepository Including(SpaceContext spaceContext)
+        public ITeamsRepository UsingContext(SpaceContext spaceContext)
         {
             return new TeamsRepository(Repository, spaceContext, GetCurrentSpaceContext());
         }

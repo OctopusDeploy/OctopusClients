@@ -17,6 +17,51 @@ namespace Octopus.Client
         }
     }
 
+    public class RepositoryScope
+    {
+        public RepositoryScopeType Type { get; }
+        public string SpaceId { get; }
+        public static RepositoryScope ForSpace(string spaceId) => new RepositoryScope(RepositoryScopeType.Space, spaceId);
+        public static RepositoryScope ForSystem() => new RepositoryScope(RepositoryScopeType.System, null);
+        public static RepositoryScope Unspecified() => new RepositoryScope(RepositoryScopeType.Unspecified, null);
+
+        public RepositoryScope(RepositoryScopeType type, string spaceId)
+        {
+            if (type == RepositoryScopeType.Space && string.IsNullOrEmpty(spaceId))
+            {
+                throw new Exception("invalid");
+            }
+
+            this.Type = type;
+            this.SpaceId = spaceId;
+        }
+
+        public enum RepositoryScopeType
+        {
+            Space, // ForSpace
+            System, // ForSystem
+            Unspecified // .Repository
+        }
+
+        public async Task<SpaceContext> ToSpaceContext(IOctopusSpaceAsyncRepository repo)
+        {
+            switch(Type)
+            {
+                case RepositoryScopeType.Space:
+                    return SpaceContext.SpecificSpace(SpaceId);
+                case RepositoryScopeType.System:
+                    return SpaceContext.SystemOnly();
+                case RepositoryScopeType.Unspecified:
+                    var spaceRootDocument = await repo.LoadSpaceRootDocument();
+                    return spaceRootDocument == null ? SpaceContext.SystemOnly() : SpaceContext.DefaultSpaceAndSystem();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+
+
     /// <summary>
     /// A simplified interface to commonly-used parts of the API.
     /// Functionality not exposed by this interface can be accessed
@@ -34,10 +79,10 @@ namespace Octopus.Client
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
         private static readonly string rootDocumentUri = "~/api";
-        public OctopusAsyncRepository(IOctopusAsyncClient client, SpaceContext spaceContext = null)
+        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope spaceContext = null)
         {
             Client = client;
-            SpaceContext = spaceContext;
+            Scope = spaceContext ?? RepositoryScope.Unspecified();
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
@@ -91,7 +136,7 @@ namespace Octopus.Client
         }
 
         public IOctopusAsyncClient Client { get; }
-        public SpaceContext SpaceContext { get; private set; }
+        public RepositoryScope Scope { get; private set; }
         public IAccountRepository Accounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
@@ -223,15 +268,21 @@ namespace Octopus.Client
         {
             if (SpaceRootDocument != null)
                 return SpaceRootDocument;
-            if (SpaceContext == null)
+            if (Scope.Type == RepositoryScope.RepositoryScopeType.Unspecified)
             {
                 var defaultSpace = await TryGetDefaultSpace();
-                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
+                return await Client
+                    .Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new {spaceId = defaultSpace.Id})
+                    .ConfigureAwait(false);
             }
 
-            return SpaceContext.SpaceIds.Any() ?
-                await Client.Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }).ConfigureAwait(false)
-                : null;
+            if (Scope.Type == RepositoryScope.RepositoryScopeType.Space)
+            {
+                return await Client
+                    .Get<SpaceRootResource>(RootDocument.Link("SpaceHome"), new {spaceId = Scope.SpaceId})
+                    .ConfigureAwait(false);
+            }
+            return null;
         }
 
         async Task<SpaceResource> TryGetDefaultSpace()

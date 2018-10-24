@@ -31,7 +31,7 @@ namespace Octopus.Client.Tests.Operations
         {
             clientFactory = Substitute.For<IOctopusClientFactory>();
             client = Substitute.For<IOctopusAsyncClient>();
-            client.Repository.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
+            client.Repository.Scope.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
             clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
             operation = new RegisterMachineOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");

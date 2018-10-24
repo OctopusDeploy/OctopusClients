@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -20,20 +21,30 @@ namespace Octopus.Client.Repositories.Async
 
         public Task Install(CommunityActionTemplateResource resource)
         {
-            Repository.SpaceContext.EnsureSingleSpaceContext();
-            return Client.Post(resource.Links["Installation"].AppendSpaceId(Repository.SpaceContext.SpaceIds.Single()));
+            var baseLink = resource.Links["Installation"];
+            var isValidContext = Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space ||
+                    Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Unspecified;
+            if (!isValidContext)
+            {
+                throw new Exception("");
+            }
+
+            string link = Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space
+                ? baseLink.AppendSpaceId(Repository.Scope.SpaceId)
+                : baseLink.ToString();
+            return Client.Post(link);
         }
 
         public Task UpdateInstallation(CommunityActionTemplateResource resource)
         {
-            Repository.SpaceContext.EnsureSingleSpaceContext();
-            return Client.Put(resource.Links["Installation"].AppendSpaceId(Repository.SpaceContext.SpaceIds.Single()));
+            Repository.Scope.EnsureSingleSpaceContext();
+            return Client.Put(resource.Links["Installation"].AppendSpaceId(Repository.Scope.SpaceIds.Single()));
         }
 
         public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource)
         {
-            Repository.SpaceContext.EnsureSingleSpaceContext();
-            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(Repository.SpaceContext.SpaceIds.Single()));
+            Repository.Scope.EnsureSingleSpaceContext();
+            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(Repository.Scope.SpaceIds.Single()));
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
             var link = await ResolveLink();
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
+            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), pathParameters);
             await Client.Paginate(path ?? link, parameters, getNextPage);
         }
 
@@ -171,30 +171,15 @@ namespace Octopus.Client.Repositories.Async
             {
                 if (IsInSingleSpaceContext() && string.IsNullOrEmpty(spaceResource.SpaceId))
                 {
-                    spaceResource.SpaceId = Repository.SpaceContext.SpaceIds.Single();
+                    spaceResource.SpaceId = Repository.Scope.SpaceId;
                 }
             }
         }
 
         bool IsInSingleSpaceContext()
         {
-            var spaceIds = GetSpaceIds();
-            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
-            return isASpecificSpaceId && !IsIncludingSystem();
-        }
-
-        string[] GetSpaceIds()
-        {
-            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Repository.SpaceContext.SpaceIds.ToArray();
-        }
-
-        bool IsIncludingSystem()
-        {
-            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope
-                ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
-                : Repository.SpaceContext.IncludeSystem;
+            // TODO: won't work for mixed scope repos, come back to this
+            return Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space;
         }
 
         async Task<string> ResolveLink()

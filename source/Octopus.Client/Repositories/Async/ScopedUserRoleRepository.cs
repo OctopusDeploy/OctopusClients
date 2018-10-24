@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        public IScopedUserRoleRepository Including(SpaceContext spaceContext)
+        public IScopedUserRoleRepository UsingContext(SpaceContext spaceContext)
         {
             return new ScopedUserRoleRepository(Repository, spaceContext, this.GetCurrentSpaceContext());
         }

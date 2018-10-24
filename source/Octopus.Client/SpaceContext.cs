@@ -6,12 +6,20 @@ using Octopus.Client.Util;
 
 namespace Octopus.Client
 {
+    public enum SpaceSelection
+    {
+        AllSpaces,
+        DefaultSpace,
+        SpecificSpaces
+    }
+
     public class SpaceContext
     {
 
         public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(new [] {spaceId}, false);
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(new []{spaceId}, true);
         public static SpaceContext SystemOnly() => new SpaceContext(new string[0], true);
+        public static SpaceContext DefaultSpaceAndSystem() => new SpaceContext(new[] { }, true);
 
         internal SpaceContext(IReadOnlyCollection<string> spaceIds, bool includeSystem)
         {

@@ -63,8 +63,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        EventRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, "Events", includingSpaceContext, extendedSpaceContext)
+        EventRepository(IOctopusAsyncRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Events", userDefinedSpaceContext)
         {
         }
 
@@ -127,9 +127,9 @@ namespace Octopus.Client.Repositories.Async
             return await Client.List<EventResource>(await Repository.Link("Events"), parameters);
         }
 
-        public IEventRepository Including(SpaceContext spaceContext)
+        public IEventRepository UsingContext(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new EventRepository(Repository, spaceContext);
         }
     }
 }
