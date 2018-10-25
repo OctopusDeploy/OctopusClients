@@ -23,8 +23,8 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
-        private RootResource rootDocument;
-        private SpaceRootResource spaceRootDocument;
+        private readonly Lazy<RootResource> loadRootResource;
+        private readonly Lazy<SpaceRootResource> loadSpaceRootResource;
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
@@ -83,6 +83,9 @@ namespace Octopus.Client
             WorkerPools = new WorkerPoolRepository(this);
             ScopedUserRoles = new ScopedUserRoleRepository(this);
             UserPermissions = new UserPermissionsRepository(this);
+
+            loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
+            loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
         }
 
         public IOctopusClient Client { get; }
@@ -137,47 +140,44 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
         public SpaceContext SpaceContext { get; private set; }
-       
 
         public bool HasLink(string name)
         {
-            LoadRootDocuments();
-            return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
+            return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.HasLink(name) || loadRootResource.Value.HasLink(name);
         }
 
         public string Link(string name)
         {
-            LoadRootDocuments();
-            return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
+            return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.Links.TryGetValue(name, out var value)
                 ? value.AsString()
-                : rootDocument.Link(name);
+                : loadRootResource.Value.Link(name);
         }
 
-        public SpaceRootResource LoadSpaceRootDocument()
+        public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+
+        SpaceRootResource LoadSpaceRootDocumentInner()
         {
-            if (spaceRootDocument != null)
-                return spaceRootDocument;
             if (SpaceContext == null)
             {
                 var defaultSpace = TryGetDefaultSpace();
                 SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
 
-            spaceRootDocument = SpaceContext.SpaceIds.Any() ?
-                Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
-            return spaceRootDocument;
+            return SpaceContext.SpaceIds.Any() ?
+                Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
         }
 
-        public RootResource LoadRootDocument()
-        {
-            if (rootDocument != null) return rootDocument;
+        public RootResource LoadRootDocument() => loadRootResource.Value;
 
+        RootResource LoadRootDocumentInner()
+        {
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
 
             // 60 second limit using Stopwatch alone makes debugging impossible.
             var retries = 3;
 
+            RootResource rootDocument;
             while (true)
             {
                 if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
@@ -231,7 +231,7 @@ namespace Octopus.Client
         {
             try
             {
-                var currentUser = Client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
+                var currentUser = Client.Get<UserResource>(loadRootResource.Value.Links["CurrentUser"]);
                 var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                 return userSpaces.SingleOrDefault(s => s.IsDefault);
             }
@@ -239,12 +239,6 @@ namespace Octopus.Client
             {
                 return null;
             }
-        }
-
-        private void LoadRootDocuments()
-        {
-            LoadRootDocument();
-            LoadSpaceRootDocument();
         }
     }
 }
