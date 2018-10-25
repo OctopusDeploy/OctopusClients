@@ -36,7 +36,6 @@ namespace Octopus.Client
         private bool ignoreSslErrorMessageLogged = false;
         private string antiforgeryCookieName = null;
 
-        // Use the Create method to instantiate
         public OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
             var clientOptions = options ?? new OctopusClientOptions();
