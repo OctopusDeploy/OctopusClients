@@ -170,9 +170,12 @@ namespace Octopus.Client.Repositories.Async
 
         async Task EnrichSpaceIdIfRequire(TResource resource)
         {
+            if (Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Unspecified)
+                return;
+
             if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
             {
-                if (await IsInSingleSpaceContext() && string.IsNullOrEmpty(spaceResource.SpaceId))
+                if (await IsInSingleSpaceContext().ConfigureAwait(false) && string.IsNullOrEmpty(spaceResource.SpaceId))
                 {
                     spaceResource.SpaceId = Repository.Scope.SpaceId;
                 }
@@ -183,9 +186,9 @@ namespace Octopus.Client.Repositories.Async
         {
             var extendedSpaceContext = await GetAdditionalQueryParameters();
             var extendedSpaceIds = extendedSpaceContext[MixedScopeConstants.QueryStringParameterSpaces] as string[];
-            if (extendedSpaceIds?.Length > 1)
-                return false;
-            return Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space;
+            var includeSystem = bool.Parse(extendedSpaceContext[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString());
+            var isASpecificSpaceId = extendedSpaceIds?.Length == 1 && !extendedSpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
+            return isASpecificSpaceId && !includeSystem;
         }
 
         async Task<string> ResolveLink()
