@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Octopus.Client
 {
     /// <summary>
-    /// Describes a request made to the Octopus server by the client.
+    /// Describes a request made to the Octopus Server by the client.
     /// </summary>
     public class OctopusRequest
     {

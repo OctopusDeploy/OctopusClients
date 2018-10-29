@@ -12,7 +12,7 @@ using Serilog;
 
 namespace Octopus.Cli.Commands.Package
 {
-    [Command("push", Description = "Pushes a package (.nupkg, .zip, .tar.gz, etc.) package to the built-in NuGet repository in an Octopus server.")]
+    [Command("push", Description = "Pushes a package (.nupkg, .zip, .tar.gz, etc.) package to the built-in NuGet repository in an Octopus Server.")]
     public class PushCommand : ApiCommand, ISupportFormattedOutput
     {
         private List<string> pushedPackages;
