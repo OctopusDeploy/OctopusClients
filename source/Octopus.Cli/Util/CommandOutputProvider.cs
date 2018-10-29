@@ -47,19 +47,6 @@ namespace Octopus.Cli.Util
             }
         }
 
-        public void PrintCommandHelpFooter(string executable, string commandName, TextWriter textWriter)
-        {
-            if (PrintMessages)
-            {
-                textWriter.WriteLine();
-                textWriter.Write("Or use ");
-                Console.ForegroundColor = ConsoleColor.White;
-                textWriter.Write(executable + " help <command>");
-                Console.ResetColor();
-                textWriter.WriteLine(" for more details.");
-            }
-        }
-
         public void PrintCommandOptions(Options options, TextWriter writer)
         {
             if (PrintMessages)
