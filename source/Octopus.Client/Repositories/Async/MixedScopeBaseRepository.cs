@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories.Async
             return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.SpaceIds
+                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces, () => "all")
             };
         }
 
@@ -53,17 +53,22 @@ namespace Octopus.Client.Repositories.Async
             base.EnrichSpaceId(resource);
 
             if (resource is IHaveSpaceResource spaceResource 
-                && extendedSpaceContext != null 
-                && extendedSpaceContext.SpaceSelection == SpaceSelection.SpecificSpaces)
+                && extendedSpaceContext != null)
             {
-                if (extendedSpaceContext.SpaceIds.Count == 1 && !extendedSpaceContext.IncludeSystem)
+                spaceResource.SpaceId = extendedSpaceContext.ApplySpaceSelection(spaceIds =>
                 {
-                    spaceResource.SpaceId = extendedSpaceContext.SpaceIds.Single();
-                }
-                else if (!extendedSpaceContext.SpaceIds.Any() && extendedSpaceContext.IncludeSystem)
-                {
-                    spaceResource.SpaceId = null;
-                }
+                    if (spaceIds.Count == 1 && !extendedSpaceContext.IncludeSystem)
+                    {
+                        return spaceIds.Single();
+                    }
+
+                    if (spaceIds.Count == 0 && extendedSpaceContext.IncludeSystem)
+                    {
+                        return null;
+                    }
+
+                    return spaceResource.SpaceId;
+                }, () => spaceResource.SpaceId);
             }
         }
 
@@ -78,26 +83,20 @@ namespace Octopus.Client.Repositories.Async
                         return; // Assumes the default space
                     }
 
-                    switch (extendedSpaceContext.SpaceSelection)
+                    extendedSpaceContext.ApplySpaceSelection(spaces =>
                     {
-                        case SpaceSelection.AllSpaces:
-                            throw new SingleSpaceOperationInMultiSpaceContextException();
-                        case SpaceSelection.SpecificSpaces:
-                            var numberOfSpaces = extendedSpaceContext.SpaceIds.Count;
-                            if (numberOfSpaces == 0)
-                            {
-                                // We must be in a system context
-                                throw new SpaceScopedOperationInSystemContextException();
-                            }
-                            else if (numberOfSpaces > 1)
-                            {
-                                throw new SingleSpaceOperationInMultiSpaceContextException();
-                            }
+                        var numberOfSpaces = spaces.Count;
+                        if (numberOfSpaces == 0)
+                        {
+                            // We must be in a system context
+                            throw new SpaceScopedOperationInSystemContextException();
+                        }
 
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                        if (numberOfSpaces > 1)
+                        {
+                            throw new SingleSpaceOperationInMultiSpaceContextException();
+                        }
+                    }, () => throw new SingleSpaceOperationInMultiSpaceContextException());
                 });
         }
     }

@@ -266,15 +266,29 @@ namespace Octopus.Client.Repositories.Async
         {
             if (string.IsNullOrEmpty(task.SpaceId))
                 return;
-            var repositoryContext = GetCurrentSpaceContext();
+            var spaceContext = GetCurrentSpaceContext();
             
-            if (!repositoryContext.SpaceIds.Contains(task.SpaceId))
-                throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
+            spaceContext.ApplySpaceSelection(spaceIds =>
+            {
+                if (!spaceIds.Contains(task.SpaceId))
+                {
+                    throw new SpaceScopedOperationOutsideOfCurrentSpaceContextException(task.SpaceId, spaceContext);
+                }
+            }, () => { });
         }
 
         async Task<TaskResource> CreateSystemTask(TaskResource task)
         {
             return await Client.Create(await Repository.Link(CollectionLinkName), task);
+        }
+    }
+
+    public class SpaceScopedOperationOutsideOfCurrentSpaceContextException : Exception
+    {
+        public SpaceScopedOperationOutsideOfCurrentSpaceContextException(string spaceId, SpaceContext context) 
+            : base($"Attempted to perform a space scoped operation within space {spaceId}, but your current space context does not contain that space id. " +
+                   $"Current Space Context: {context.ApplySpaceSelection(spaces => string.Join(", ", spaces), () => "all spaces")}")
+        {
         }
     }
 }
