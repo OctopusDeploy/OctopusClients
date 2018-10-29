@@ -7,11 +7,11 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
 {
-    class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
+    internal class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
         private readonly SpaceContext userDefinedSpaceContext;
 
-        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
         }
 

@@ -7,7 +7,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Repositories
 {
-    abstract class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
+    internal abstract class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
         private readonly SpaceContext userDefinedSpaceContext;
 

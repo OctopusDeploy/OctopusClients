@@ -4,7 +4,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    public interface IOctopusSpaceAsyncRepository: IOctopusMixedScopeAsyncRepository
+    public interface IOctopusSpaceAsyncRepository: IOctopusCommonAsyncRepository
     {
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }

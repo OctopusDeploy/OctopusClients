@@ -28,12 +28,12 @@ namespace Octopus.Client.Tests.Conventions
             .Where(t => t.AsType() != typeof(IOctopusAsyncRepository) && t.AsType() != typeof(IResourceRepository))
             .Where(t => t.AsType() != typeof(IOctopusSpaceAsyncRepository))
             .Where(t => t.AsType() != typeof(IOctopusSystemAsyncRepository))
-            .Where(t => t.AsType() != typeof(IOctopusMixedScopeAsyncRepository))
+            .Where(t => t.AsType() != typeof(IOctopusCommonAsyncRepository))
 #if SYNC_CLIENT
             .Where(t => t.AsType() != typeof(IOctopusRepository) && t.AsType() != typeof(Sync.IResourceRepository))
             .Where(t => t.AsType() != typeof(IOctopusSpaceRepository))
             .Where(t => t.AsType() != typeof(IOctopusSystemRepository))
-            .Where(t => t.AsType() != typeof(IOctopusMixedScopeRepository))
+            .Where(t => t.AsType() != typeof(IOctopusCommonRepository))
 #endif
             .ToArray();
 

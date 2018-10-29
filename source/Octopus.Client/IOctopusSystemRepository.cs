@@ -4,7 +4,7 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
-    public interface IOctopusSystemRepository: IOctopusMixedScopeRepository
+    public interface IOctopusSystemRepository: IOctopusCommonRepository
     {
         ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }

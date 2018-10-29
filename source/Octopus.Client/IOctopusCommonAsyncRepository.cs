@@ -1,9 +1,8 @@
-#if SYNC_CLIENT
-using Octopus.Client.Repositories;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    public interface IOctopusMixedScopeRepository
+    public interface IOctopusCommonAsyncRepository
     {
         IEventRepository Events { get; }
         ITaskRepository Tasks { get; }
@@ -12,4 +11,3 @@ namespace Octopus.Client
         IUserPermissionsRepository UserPermissions { get; }
     }
 }
-#endif
