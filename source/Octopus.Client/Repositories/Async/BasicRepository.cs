@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink();
-            await EnrichSpaceIdIfRequire(resource);
+            EnrichSpaceIdIfRequire(resource);
             return await Client.Create(link, resource, pathParameters);
         }
 
@@ -168,17 +168,13 @@ namespace Octopus.Client.Repositories.Async
             return Get(resource.Id);
         }
 
-        async Task EnrichSpaceIdIfRequire(TResource resource)
+        void EnrichSpaceIdIfRequire(TResource resource)
         {
-            if (Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Unspecified)
-                return;
-
-            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
+            if (resource is IHaveSpaceResource spaceResource)
             {
-                if (await IsInSingleSpaceContext().ConfigureAwait(false) && string.IsNullOrEmpty(spaceResource.SpaceId))
-                {
-                    spaceResource.SpaceId = Repository.Scope.SpaceId;
-                }
+                spaceResource.SpaceId = Repository.Scope.Apply(spaceId => spaceId,
+                    () => null,
+                    () => spaceResource.SpaceId);
             }
         }
 

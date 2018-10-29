@@ -17,51 +17,6 @@ namespace Octopus.Client
         }
     }
 
-    public class RepositoryScope
-    {
-        public RepositoryScopeType Type { get; }
-        public string SpaceId { get; }
-        public static RepositoryScope ForSpace(string spaceId) => new RepositoryScope(RepositoryScopeType.Space, spaceId);
-        public static RepositoryScope ForSystem() => new RepositoryScope(RepositoryScopeType.System, null);
-        public static RepositoryScope Unspecified() => new RepositoryScope(RepositoryScopeType.Unspecified, null);
-
-        public RepositoryScope(RepositoryScopeType type, string spaceId)
-        {
-            if (type == RepositoryScopeType.Space && string.IsNullOrEmpty(spaceId))
-            {
-                throw new Exception("invalid");
-            }
-
-            this.Type = type;
-            this.SpaceId = spaceId;
-        }
-
-        public enum RepositoryScopeType
-        {
-            Space, // ForSpace
-            System, // ForSystem
-            Unspecified // .Repository
-        }
-
-        public async Task<SpaceContext> ToSpaceContext(IOctopusSpaceAsyncRepository repo)
-        {
-            switch(Type)
-            {
-                case RepositoryScopeType.Space:
-                    return SpaceContext.SpecificSpace(SpaceId);
-                case RepositoryScopeType.System:
-                    return SpaceContext.SystemOnly();
-                case RepositoryScopeType.Unspecified:
-                    var spaceRootDocument = await repo.LoadSpaceRootDocument();
-                    return spaceRootDocument == null ? SpaceContext.SystemOnly() : SpaceContext.DefaultSpaceAndSystem();
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-    }
-
-
-
     /// <summary>
     /// A simplified interface to commonly-used parts of the API.
     /// Functionality not exposed by this interface can be accessed
@@ -269,13 +224,36 @@ namespace Octopus.Client
             return rootDocument;
         }
         
-        async Task<SpaceRootResource> LoadSpaceRootDocumentInner()
+        Task<SpaceRootResource> LoadSpaceRootDocumentInner()
         {
-            if (Scope.Type != RepositoryScope.RepositoryScopeType.Space) return null;
-            await Client.Get<SpaceRootResource>((await loadRootResource.Value.ConfigureAwait(false)).Link("SpaceHome"), new { spaceId = Scope.SpaceId }).ConfigureAwait(false);
-            return await Client
-                .Get<SpaceRootResource>((await loadRootResource.Value.ConfigureAwait(false)).Link("SpaceHome"), new { spaceId = Scope.SpaceId })
-                .ConfigureAwait(false);
+            return Scope.Apply(LoadSpaceRootResourceFor,
+                () => Task.FromResult<SpaceRootResource>(null),
+                async () =>
+                {
+                    var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
+                    return await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false);
+                });
+
+            async Task<SpaceRootResource> LoadSpaceRootResourceFor(string spaceId)
+            {
+                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId}).ConfigureAwait(false);
+            }
+
+            async Task<SpaceResource> TryGetDefaultSpace()
+            {
+                try
+                {
+                    var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                    var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"]).ConfigureAwait(false);
+                    var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                    return userSpaces.SingleOrDefault(s => s.IsDefault);
+                }
+                catch (OctopusSecurityException)
+                {
+                    return null;
+                }
+            }
         }
     }
 }

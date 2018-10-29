@@ -23,32 +23,28 @@ namespace Octopus.Client.Repositories.Async
         public Task Install(CommunityActionTemplateResource resource)
         {
             var baseLink = resource.Links["Installation"];
-            ValidateRepositoryScope();
-
-            var link = Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space
-                ? baseLink.AppendSpaceId(Repository.Scope.SpaceId)
-                : baseLink.ToString();
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
             return Client.Post(link);
         }
 
         public Task UpdateInstallation(CommunityActionTemplateResource resource)
         {
-            ValidateRepositoryScope();
-            return Client.Put(resource.Links["Installation"].AppendSpaceId(Repository.Scope.SpaceId));
+            var baseLink = resource.Links["Installation"];
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
+            return Client.Put(link);
         }
 
         public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource)
         {
-            ValidateRepositoryScope();
-            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(Repository.Scope.SpaceId));
-        }
-
-        void ValidateRepositoryScope()
-        {
-            var isValidContext = Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Space ||
-                                 Repository.Scope.Type == RepositoryScope.RepositoryScopeType.Unspecified;
-            if (!isValidContext)
-                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
+            var baseLink = resource.Links["InstalledTemplate"];
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
+            return Client.Get<ActionTemplateResource>(link);
         }
     }
 }
