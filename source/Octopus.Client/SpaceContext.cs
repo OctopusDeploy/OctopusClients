@@ -14,10 +14,14 @@ namespace Octopus.Client
 
     public class SpaceContext
     {
-
+        public static SpaceContext AllSpaces() => new SpaceContext(SpaceSelection.AllSpaces, new string[] { }, false);
         public static SpaceContext AllSpacesAndSystem() => new SpaceContext(SpaceSelection.AllSpaces, new string[] { }, true);
         public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new [] {spaceId}, false);
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new []{spaceId}, true);
+        public static SpaceContext SpecificSpaces(IEnumerable<string> spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds.ToArray(), false);
+        public static SpaceContext SpecificSpacesAndSystem(IEnumerable<string> spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds.ToArray(), true);
+        public static SpaceContext SpecificSpaces(params string[] spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds, false);
+        public static SpaceContext SpecificSpacesAndSystem(params string[] spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds, true);
         public static SpaceContext SystemOnly() => new SpaceContext(SpaceSelection.SpecificSpaces, new string[0], true);
 
         internal SpaceContext(SpaceSelection spaceSelection, IReadOnlyCollection<string> spaceIds, bool includeSystem)
