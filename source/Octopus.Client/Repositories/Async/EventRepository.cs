@@ -74,7 +74,7 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return await Client.List<EventResource>(await Repository.Link("Events"), ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), new
+            return await Client.List<EventResource>(await Repository.Link("Events"), ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
             {
                 skip,
                 user = filterByUserId,
@@ -102,7 +102,7 @@ namespace Octopus.Client.Repositories.Async
             long? toAutoId = null,
             string documentTypes = null)
         {
-            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), new
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
             {
                 skip,
                 take,

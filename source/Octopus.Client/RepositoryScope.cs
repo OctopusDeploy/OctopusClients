@@ -44,16 +44,5 @@ namespace Octopus.Client
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        public Task<SpaceContext> ToSpaceContext(IOctopusSpaceAsyncRepository repo)
-        {
-            return Apply(id => Task.FromResult(SpaceContext.SpecificSpace(id)),
-                () => Task.FromResult(SpaceContext.SystemOnly()),
-                async () =>
-                {
-                    var spaceRootDocument = await repo.LoadSpaceRootDocument().ConfigureAwait(false);
-                    return spaceRootDocument == null ? SpaceContext.SystemOnly() : SpaceContext.DefaultSpaceAndSystem();
-                });
-        }
     }
 }

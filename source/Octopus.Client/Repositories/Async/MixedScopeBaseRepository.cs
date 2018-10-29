@@ -22,9 +22,9 @@ namespace Octopus.Client.Repositories.Async
             this.extendedSpaceContext = userDefinedSpaceContext;
         }
 
-        protected override async Task<Dictionary<string, object>> GetAdditionalQueryParameters()
+        protected override Dictionary<string, object> GetAdditionalQueryParameters()
         {
-            var spaceContext = await GetCurrentSpaceContext();
+            var spaceContext = GetCurrentSpaceContext();
             return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
@@ -41,9 +41,30 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        protected async Task<SpaceContext> GetCurrentSpaceContext()
+        protected SpaceContext GetCurrentSpaceContext()
         {
-            return extendedSpaceContext ?? await Repository.Scope.ToSpaceContext(Repository);
+            return extendedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
+                       SpaceContext.SystemOnly, 
+                       SpaceContext.AllSpacesAndSystem);
+        }
+
+        protected override void EnrichSpaceId(TMixedScopeResource resource)
+        {
+            base.EnrichSpaceId(resource);
+
+            if (resource is IHaveSpaceResource spaceResource 
+                && extendedSpaceContext != null 
+                && extendedSpaceContext.SpaceSelection == SpaceSelection.SpecificSpaces)
+            {
+                if (extendedSpaceContext.SpaceIds.Count == 1 && !extendedSpaceContext.IncludeSystem)
+                {
+                    spaceResource.SpaceId = extendedSpaceContext.SpaceIds.Single();
+                }
+                else if (!extendedSpaceContext.SpaceIds.Any() && extendedSpaceContext.IncludeSystem)
+                {
+                    spaceResource.SpaceId = null;
+                }
+            }
         }
     }
 

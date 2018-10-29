@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
-using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -28,17 +25,18 @@ namespace Octopus.Client.Repositories.Async
             this.getCollectionLinkName = getCollectionLinkName;
         }
 
-        protected virtual Task<Dictionary<string, object>> GetAdditionalQueryParameters()
+        protected virtual Dictionary<string, object> GetAdditionalQueryParameters()
         {
-            return Task.FromResult(new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
+            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
+
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
         public async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink();
-            EnrichSpaceIdIfRequire(resource);
+            EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters);
         }
 
@@ -55,7 +53,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
             var link = await ResolveLink();
-            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), pathParameters);
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), pathParameters);
             await Client.Paginate(path ?? link, parameters, getNextPage);
         }
 
@@ -91,7 +89,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<List<TResource>> GetAll()
         {
             var link = await ResolveLink();
-            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
             return await Client.Get<List<TResource>>(link, parameters);
         }
 
@@ -128,7 +126,7 @@ namespace Octopus.Client.Repositories.Async
                 return null;
 
             var link = await ResolveLink();
-            var additionalQueryParameters = await GetAdditionalQueryParameters();
+            var additionalQueryParameters = GetAdditionalQueryParameters();
             var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new { id = idOrHref });
             var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, additionalQueryParameters)
@@ -148,7 +146,7 @@ namespace Octopus.Client.Repositories.Async
             if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
 
-            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), new { ids = actualIds });
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { ids = actualIds });
             await Client.Paginate<TResource>(
                 link,
                 parameters,
@@ -168,7 +166,7 @@ namespace Octopus.Client.Repositories.Async
             return Get(resource.Id);
         }
 
-        void EnrichSpaceIdIfRequire(TResource resource)
+        protected virtual void EnrichSpaceId(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
@@ -176,15 +174,6 @@ namespace Octopus.Client.Repositories.Async
                     () => null,
                     () => spaceResource.SpaceId);
             }
-        }
-
-        async Task<bool> IsInSingleSpaceContext()
-        {
-            var extendedSpaceContext = await GetAdditionalQueryParameters();
-            var extendedSpaceIds = extendedSpaceContext[MixedScopeConstants.QueryStringParameterSpaces] as string[];
-            var includeSystem = bool.Parse(extendedSpaceContext[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString());
-            var isASpecificSpaceId = extendedSpaceIds?.Length == 1 && !extendedSpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
-            return isASpecificSpaceId && !includeSystem;
         }
 
         async Task<string> ResolveLink()

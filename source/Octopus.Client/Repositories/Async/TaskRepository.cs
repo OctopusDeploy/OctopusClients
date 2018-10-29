@@ -96,7 +96,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            var repositoryContext = await GetCurrentSpaceContext();
+            var repositoryContext = GetCurrentSpaceContext();
             repositoryContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
@@ -118,7 +118,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            var repositoryContext = await GetCurrentSpaceContext();
+            var repositoryContext = GetCurrentSpaceContext();
             repositoryContext.EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
@@ -175,36 +175,36 @@ namespace Octopus.Client.Repositories.Async
 
             if (tail.HasValue)
                 args.Add("tail", tail.Value);
-            var parameters = ParameterHelper.CombineParameters(await GetAdditionalQueryParameters(), args);
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), args);
             return await Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters);
         }
 
         public async Task<string> GetRawOutputLog(TaskResource resource)
         {
-            return await Client.Get<string>(resource.Link("Raw"), await GetAdditionalQueryParameters());
+            return await Client.Get<string>(resource.Link("Raw"), GetAdditionalQueryParameters());
         }
 
         public async Task Rerun(TaskResource resource)
         {
-            await EnsureTaskCanRunInTheCurrentContext(resource);
+            EnsureTaskCanRunInTheCurrentContext(resource);
             await Client.Post(resource.Link("Rerun"), (TaskResource)null);
         }
 
         public async Task Cancel(TaskResource resource)
         {
-            await EnsureTaskCanRunInTheCurrentContext(resource);
+            EnsureTaskCanRunInTheCurrentContext(resource);
             await Client.Post(resource.Link("Cancel"), (TaskResource)null);
         }
 
         public async Task ModifyState(TaskResource resource, TaskState newState, string reason)
         {
-            await EnsureTaskCanRunInTheCurrentContext(resource);
+            EnsureTaskCanRunInTheCurrentContext(resource);
             await Client.Post(resource.Link("State"), new { state = newState, reason = reason });
         }
 
         public async Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource)
         {
-            return await Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), await GetAdditionalQueryParameters());
+            return await Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), GetAdditionalQueryParameters());
         }
 
         public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -229,7 +229,7 @@ namespace Octopus.Client.Repositories.Async
             var start = Stopwatch.StartNew();
             if (tasks == null || tasks.Length == 0)
                 return;
-            var additionalQueryParameters = await GetAdditionalQueryParameters();
+            var additionalQueryParameters = GetAdditionalQueryParameters();
             while (true)
             {
                 var stillRunning = await Task.WhenAll(
@@ -264,11 +264,11 @@ namespace Octopus.Client.Repositories.Async
             return new TaskRepository(Repository, spaceContext);
         }
 
-        async Task EnsureTaskCanRunInTheCurrentContext(TaskResource task)
+        void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
         {
             if (string.IsNullOrEmpty(task.SpaceId))
                 return;
-            var repositoryContext = await GetCurrentSpaceContext();
+            var repositoryContext = GetCurrentSpaceContext();
             
             if (!repositoryContext.SpaceIds.Contains(task.SpaceId))
                 throw new MismatchSpaceContextException("You cannot perform this task in the current space context");

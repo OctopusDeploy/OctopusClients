@@ -9,18 +9,16 @@ namespace Octopus.Client
     public enum SpaceSelection
     {
         AllSpaces,
-        DefaultSpace,
-        DefaultSpaceAndSystem,
         SpecificSpaces
     }
 
     public class SpaceContext
     {
 
+        public static SpaceContext AllSpacesAndSystem() => new SpaceContext(SpaceSelection.AllSpaces, new string[] { }, true);
         public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new [] {spaceId}, false);
         public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new []{spaceId}, true);
         public static SpaceContext SystemOnly() => new SpaceContext(SpaceSelection.SpecificSpaces, new string[0], true);
-        public static SpaceContext DefaultSpaceAndSystem() => new SpaceContext(SpaceSelection.DefaultSpaceAndSystem, new string[0], true);
 
         internal SpaceContext(SpaceSelection spaceSelection, IReadOnlyCollection<string> spaceIds, bool includeSystem)
         {

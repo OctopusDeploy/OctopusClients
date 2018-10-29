@@ -29,13 +29,13 @@ namespace Octopus.Client.Repositories.Async
         public async Task<UserPermissionSetResource> Get(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), await GetAdditionalQueryParameters());
+            return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), GetAdditionalQueryParameters());
         }
         
         public async Task<Stream> Export(UserPermissionSetResource userPermissions)
         {
             if (userPermissions == null) throw new ArgumentNullException(nameof(userPermissions));
-            return await Client.GetContent(userPermissions.Link("Export"), await GetAdditionalQueryParameters());
+            return await Client.GetContent(userPermissions.Link("Export"), GetAdditionalQueryParameters());
         }
 
         public IUserPermissionsRepository UsingContext(SpaceContext spaceContext)
