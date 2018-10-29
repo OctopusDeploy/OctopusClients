@@ -20,12 +20,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<PerformanceConfigurationResource> Get()
         {
-            return await repository.Client.Get<PerformanceConfigurationResource>(await repository.Link("PerformanceConfiguration"));
+            return await repository.Client.Get<PerformanceConfigurationResource>(await repository.Link("PerformanceConfiguration").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public async Task<PerformanceConfigurationResource> Modify(PerformanceConfigurationResource resource)
         {
-            return await repository.Client.Update(await repository.Link("PerformanceConfiguration"), resource);
+            return await repository.Client.Update(await repository.Link("PerformanceConfiguration").ConfigureAwait(false), resource).ConfigureAwait(false);
         }
     }
 }

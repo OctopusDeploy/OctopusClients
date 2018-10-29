@@ -113,10 +113,10 @@ namespace Octopus.Cli.Commands.Deployment
 
         public async Task Request()
         {
-            projectsById = await LoadProjects();
+            projectsById = await LoadProjects().ConfigureAwait(false);
             projectsFilter = projectsById.Keys.ToArray();
 
-            environmentsById = await LoadEnvironments();
+            environmentsById = await LoadEnvironments().ConfigureAwait(false);
             environmentsFilter = environmentsById.Keys.ToArray();
 
             commandOutputProvider.Debug("Loading dashboard...");

@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories.Async
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
     {
-        public CertificateConfigurationRepository(IOctopusAsyncRepository repository) : base(repository, null, async repo => await repository.HasLink("CertificateConfiguration") ? "CertificateConfiguration" : "Certificates")
+        public CertificateConfigurationRepository(IOctopusAsyncRepository repository) : base(repository, null, async repo => await repository.HasLink("CertificateConfiguration").ConfigureAwait(false) ? "CertificateConfiguration" : "Certificates")
         {
         }
 

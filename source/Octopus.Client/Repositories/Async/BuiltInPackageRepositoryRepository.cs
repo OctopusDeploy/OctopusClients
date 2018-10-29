@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
             try
             {
-                var deltaResult = await AttemptDeltaPush(fileName, contents, replaceExisting);
+                var deltaResult = await AttemptDeltaPush(fileName, contents, replaceExisting).ConfigureAwait(false);
                 if (deltaResult != null)
                     return deltaResult;
             }
@@ -51,9 +51,9 @@ namespace Octopus.Client.Repositories.Async
                 
             contents.Seek(0, SeekOrigin.Begin);
             var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                await repository.Link("PackageUpload"),
+                await repository.Link("PackageUpload").ConfigureAwait(false),
                 new FileUpload() {Contents = contents, FileName = fileName},
-                new {replace = replaceExisting});
+                new {replace = replaceExisting}).ConfigureAwait(false);
                 
             Logger.Info("Package transfer completed");
 
@@ -62,7 +62,7 @@ namespace Octopus.Client.Repositories.Async
 
         private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, bool replaceExisting)
         {
-            if (! await repository.HasLink("PackageDeltaSignature"))
+            if (! await repository.HasLink("PackageDeltaSignature").ConfigureAwait(false))
             {
                 Logger.Info("Server does not support delta compression for package push");
                 return null;
@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories.Async
             try
             {
                 Logger.Info($"Requesting signature for delta compression from the server for upload of a package with id '{packageId}' and version '{version}'");
-                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature"), new {packageId, version});
+                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature").ConfigureAwait(false), new {packageId, version}).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -95,9 +95,9 @@ namespace Octopus.Client.Repositories.Async
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
                     var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                        await repository.Link("PackageDeltaUpload"),
+                        await repository.Link("PackageDeltaUpload").ConfigureAwait(false),
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
-                        new {replace = replaceExisting, packageId, signatureResult.BaseVersion});
+                        new {replace = replaceExisting, packageId, signatureResult.BaseVersion}).ConfigureAwait(false);
 
                     Logger.Info($"Delta transfer completed");
                     return result;
@@ -107,21 +107,21 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip });
         }
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages"), new { latest = true, take, skip });
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { latest = true, take, skip });
         }
 
         public async Task DeletePackage(PackageResource package)
         {
-            await repository.Client.Delete(await repository.Link("Packages"), new { id = package.Id });
+            await repository.Client.Delete(await repository.Link("Packages"), new { id = package.Id }).ConfigureAwait(false);
         }
 
         public async Task DeletePackages(IReadOnlyList<PackageResource> packages)
-            => await repository.Client.Delete(await repository.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
+            => await repository.Client.Delete(await repository.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
         
     }
 }

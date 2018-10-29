@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverMachine"), new { host, port, type });
+            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverMachine").ConfigureAwait(false), new { host, port, type }).ConfigureAwait(false);
         }
 
         public Task<MachineConnectionStatus> GetConnectionStatus(WorkerResource worker)
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return await Client.Get<List<WorkerResource>>(await Repository.Link("Workers"), new { id = IdValueConstant.IdAll, thumbprint });
+            return await Client.Get<List<WorkerResource>>(await Repository.Link("Workers").ConfigureAwait(false), new { id = IdValueConstant.IdAll, thumbprint }).ConfigureAwait(false);
         }
 
         public Task<WorkerEditor> CreateOrModify(
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             string workerpoolIds = null)
         {
-            return await Client.List<WorkerResource>(await Repository.Link("Workers"), new
+            return await Client.List<WorkerResource>(await Repository.Link("Workers").ConfigureAwait(false), new
             {
                 skip,
                 take,
@@ -81,7 +81,7 @@ namespace Octopus.Client.Repositories.Async
                 healthStatuses,
                 commStyles,
                 workerpoolIds
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

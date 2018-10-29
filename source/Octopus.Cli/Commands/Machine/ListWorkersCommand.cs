@@ -38,7 +38,7 @@ namespace Octopus.Cli.Commands.Machine
 
         public async Task Request()
         {
-            var rootDocument = await Repository.LoadRootDocument();
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
             provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider, rootDocument);
 
             workerpoolResources = await GetPools().ConfigureAwait(false);

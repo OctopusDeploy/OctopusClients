@@ -124,16 +124,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true);
+                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors");
-                return await Create(serverEndpoint, options, false);
+                return await Create(serverEndpoint, options, false).ConfigureAwait(false);
             }
 #else
-            return await Create(serverEndpoint, options, false);
+            return await Create(serverEndpoint, options, false).ConfigureAwait(false);
 #endif
         }
 
@@ -142,7 +142,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
-            await client.Repository.LoadRootDocument();
+            await client.Repository.LoadRootDocument().ConfigureAwait(false);
             return client;
         }
 
@@ -157,7 +157,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(await Repository.Link("SignIn"), loginCommand);
+            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand).ConfigureAwait(false);
 
             // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
             antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
@@ -169,7 +169,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         public async Task SignOut()
         {
-            await Post(await Repository.Link("SignOut"));
+            await Post(await Repository.Link("SignOut").ConfigureAwait(false)).ConfigureAwait(false);
             antiforgeryCookieName = null;
         }
 
@@ -245,7 +245,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 resources.AddRange(r.Items);
                 return true;
-            });
+            }).ConfigureAwait(false);
             return resources;
         }
 

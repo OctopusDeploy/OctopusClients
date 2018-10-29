@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return await Client.List<InterruptionResource>(await Repository.Link("Interruptions"), new { skip, take, pendingOnly, regarding = regardingDocumentId });
+            return await Client.List<InterruptionResource>(await Repository.Link("Interruptions").ConfigureAwait(false), new { skip, take, pendingOnly, regarding = regardingDocumentId }).ConfigureAwait(false);
         }
 
         public Task Submit(InterruptionResource interruption)

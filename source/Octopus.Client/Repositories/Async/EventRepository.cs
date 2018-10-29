@@ -74,13 +74,13 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return await Client.List<EventResource>(await Repository.Link("Events"), ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
+            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
             {
                 skip,
                 user = filterByUserId,
                 regarding = regardingDocumentId,
                 @internal = includeInternalEvents.ToString()
-            }));
+            })).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -124,7 +124,7 @@ namespace Octopus.Client.Repositories.Async
                 documentTypes
             });
 
-            return await Client.List<EventResource>(await Repository.Link("Events"), parameters);
+            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), parameters).ConfigureAwait(false);
         }
 
         public IEventRepository UsingContext(SpaceContext spaceContext)

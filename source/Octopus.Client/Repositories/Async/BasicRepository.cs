@@ -35,9 +35,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
-            var link = await ResolveLink();
+            var link = await ResolveLink().ConfigureAwait(false);
             EnrichSpaceId(resource);
-            return await Client.Create(link, resource, pathParameters);
+            return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
 
         public Task<TResource> Modify(TResource resource)
@@ -52,9 +52,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            var link = await ResolveLink();
+            var link = await ResolveLink().ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), pathParameters);
-            await Client.Paginate(path ?? link, parameters, getNextPage);
+            await Client.Paginate(path ?? link, parameters, getNextPage).ConfigureAwait(false);
         }
 
         public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -88,9 +88,9 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<TResource>> GetAll()
         {
-            var link = await ResolveLink();
+            var link = await ResolveLink().ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
-            return await Client.Get<List<TResource>>(link, parameters);
+            return await Client.Get<List<TResource>>(link, parameters).ConfigureAwait(false);
         }
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -125,12 +125,12 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
 
-            var link = await ResolveLink();
+            var link = await ResolveLink().ConfigureAwait(false);
             var additionalQueryParameters = GetAdditionalQueryParameters();
             var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new { id = idOrHref });
             var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
-                ? Client.Get<TResource>(idOrHref, additionalQueryParameters)
-                : Client.Get<TResource>(link, parameters);
+                ? Client.Get<TResource>(idOrHref, additionalQueryParameters).ConfigureAwait(false)
+                : Client.Get<TResource>(link, parameters).ConfigureAwait(false);
             return await getTask;
         }
 
@@ -142,7 +142,7 @@ namespace Octopus.Client.Repositories.Async
 
             var resources = new List<TResource>();
 
-            var link = await ResolveLink();
+            var link = await ResolveLink().ConfigureAwait(false);
             if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
 
@@ -179,8 +179,8 @@ namespace Octopus.Client.Repositories.Async
         async Task<string> ResolveLink()
         {
             if (CollectionLinkName == null && getCollectionLinkName != null)
-                CollectionLinkName = await getCollectionLinkName(Repository);
-            return await Repository.Link(CollectionLinkName);
+                CollectionLinkName = await getCollectionLinkName(Repository).ConfigureAwait(false);
+            return await Repository.Link(CollectionLinkName).ConfigureAwait(false);
         }
     }
 

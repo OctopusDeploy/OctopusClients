@@ -59,7 +59,7 @@ namespace Octopus.Cli.Commands.Releases
 
         protected override async Task ValidateParameters()
         {
-            if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels())
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels().ConfigureAwait(false))
                 throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
 
             base.ValidateParameters();
@@ -201,7 +201,7 @@ namespace Octopus.Cli.Commands.Releases
 
             // All Octopus 3.2+ servers should have the Channels hypermedia link, we should use the channel information
             // to select the most appropriate channel, or provide enough information to proceed from here
-            if (await ServerSupportsChannels())
+            if (await ServerSupportsChannels().ConfigureAwait(false))
             {
                 commandOutputProvider.Debug("Automatically selecting the best channel for this release...");
                 return await AutoSelectBestReleasePlanOrThrow(project).ConfigureAwait(false);

@@ -114,7 +114,7 @@ namespace Octopus.Client.Repositories.Async
                     }
                 }
             };
-            return await Create(resource);
+            return await Create(resource).ConfigureAwait(false);
         }
 
         public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
@@ -133,7 +133,7 @@ namespace Octopus.Client.Repositories.Async
                     {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
                 }
             };
-            return await Create(resource);
+            return await Create(resource).ConfigureAwait(false);
         }
 
         public Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
@@ -176,35 +176,35 @@ namespace Octopus.Client.Repositories.Async
             if (tail.HasValue)
                 args.Add("tail", tail.Value);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), args);
-            return await Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters);
+            return await Client.Get<TaskDetailsResource>(resource.Link("Details"), parameters).ConfigureAwait(false);
         }
 
         public async Task<string> GetRawOutputLog(TaskResource resource)
         {
-            return await Client.Get<string>(resource.Link("Raw"), GetAdditionalQueryParameters());
+            return await Client.Get<string>(resource.Link("Raw"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
         public async Task Rerun(TaskResource resource)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            await Client.Post(resource.Link("Rerun"), (TaskResource)null);
+            await Client.Post(resource.Link("Rerun"), (TaskResource)null).ConfigureAwait(false);
         }
 
         public async Task Cancel(TaskResource resource)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            await Client.Post(resource.Link("Cancel"), (TaskResource)null);
+            await Client.Post(resource.Link("Cancel"), (TaskResource)null).ConfigureAwait(false);
         }
 
         public async Task ModifyState(TaskResource resource, TaskState newState, string reason)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            await Client.Post(resource.Link("State"), new { state = newState, reason = reason });
+            await Client.Post(resource.Link("State"), new { state = newState, reason = reason }).ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource)
         {
-            return await Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), GetAdditionalQueryParameters());
+            return await Client.ListAll<TaskResource>(resource.Link("QueuedBehind"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
         public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -248,7 +248,7 @@ namespace Octopus.Client.Repositories.Async
                     throw new TimeoutException($"One or more tasks did not complete before the timeout was reached. We waited {start.Elapsed:hh\\:mm\\:ss}  for the tasks to complete.");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(pollIntervalSeconds));
+                await Task.Delay(TimeSpan.FromSeconds(pollIntervalSeconds)).ConfigureAwait(false);
             }
         }
 
@@ -281,7 +281,7 @@ namespace Octopus.Client.Repositories.Async
 
         async Task<TaskResource> CreateSystemTask(TaskResource task)
         {
-            return await Client.Create(await Repository.Link(CollectionLinkName), task);
+            return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), task).ConfigureAwait(false);
         }
     }
 

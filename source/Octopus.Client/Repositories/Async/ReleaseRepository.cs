@@ -59,13 +59,13 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ReleaseResource> SnapshotVariables(ReleaseResource release)
         {
-            await Client.Post(release.Link("SnapshotVariables"));
-            return await Get(release.Id);
+            await Client.Post(release.Link("SnapshotVariables")).ConfigureAwait(false);
+            return await Get(release.Id).ConfigureAwait(false);
         }
 
         public async Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
         {
-            return await Client.Create(await Repository.Link(CollectionLinkName), resource, new { ignoreChannelRules });
+            return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), resource, new { ignoreChannelRules }).ConfigureAwait(false);
         }
 
         public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)
