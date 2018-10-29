@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
 {
     class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        private readonly SpaceContext extendedSpaceContext;
+        private readonly SpaceContext userDefinedSpaceContext;
 
         public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
             collectionLinkName)
         {
             ValidateThatICanUseACustomSpaceContext();
-            this.extendedSpaceContext = userDefinedSpaceContext;
+            this.userDefinedSpaceContext = userDefinedSpaceContext;
         }
 
         protected override Dictionary<string, object> GetAdditionalQueryParameters()
@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories.Async
 
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return extendedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
+            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
                        SpaceContext.SystemOnly, 
                        SpaceContext.AllSpacesAndSystem);
         }
@@ -53,17 +53,21 @@ namespace Octopus.Client.Repositories.Async
             base.EnrichSpaceId(resource);
 
             if (resource is IHaveSpaceResource spaceResource 
-                && extendedSpaceContext != null)
+                && userDefinedSpaceContext != null)
             {
-                spaceResource.SpaceId = extendedSpaceContext.ApplySpaceSelection(spaceIds =>
+                spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaceIds =>
                 {
-                    if (spaceIds.Count == 1 && !extendedSpaceContext.IncludeSystem)
+                    if (spaceIds.Count == 1 && !userDefinedSpaceContext.IncludeSystem)
                     {
                         return spaceIds.Single();
                     }
 
-                    if (spaceIds.Count == 0 && extendedSpaceContext.IncludeSystem)
+                    if (spaceIds.Count == 0 && userDefinedSpaceContext.IncludeSystem)
                     {
+                        // This assumes that the resource we are sending can actually apply at the system level.
+                        // This is not always true, for example Tasks that can only apply at the space level.
+                        // In those specific cases, we should perform separate pre-condition checks to ensure that you are not in a system context
+                        // Usually this involves calling `EnsureSingleSpaceContext`
                         return null;
                     }
 
@@ -78,12 +82,12 @@ namespace Octopus.Client.Repositories.Async
                 () => throw new SpaceScopedOperationInSystemContextException(),
                 () => 
                 {
-                    if (extendedSpaceContext == null)
+                    if (userDefinedSpaceContext == null)
                     {
                         return; // Assumes the default space
                     }
 
-                    extendedSpaceContext.ApplySpaceSelection(spaces =>
+                    userDefinedSpaceContext.ApplySpaceSelection(spaces =>
                     {
                         var numberOfSpaces = spaces.Count;
                         if (numberOfSpaces == 0)

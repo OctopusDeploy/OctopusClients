@@ -50,6 +50,7 @@ namespace Octopus.Client.Repositories.Async
         {
             // Default space enabled -> Creates it in the default space
             // Default space disabled -> Fails
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.Health.Name,
@@ -72,6 +73,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.UpdateCalamari.Name,

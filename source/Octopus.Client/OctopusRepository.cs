@@ -162,7 +162,7 @@ namespace Octopus.Client
                 var defaultSpace = TryGetDefaultSpace();
                 SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
             }
-
+            
             return SpaceContext.SpaceIds.Any() ?
                 Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
         }
