@@ -96,8 +96,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            var repositoryContext = GetCurrentSpaceContext();
-            repositoryContext.EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.Upgrade.Name,
@@ -118,8 +117,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            var repositoryContext = GetCurrentSpaceContext();
-            repositoryContext.EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.AdHocScript.Name,

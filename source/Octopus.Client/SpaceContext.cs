@@ -37,12 +37,13 @@ namespace Octopus.Client
         public IReadOnlyCollection<string> SpaceIds { get; } 
         public bool IncludeSystem { get; }
 
+        //TODO: Remove me later
         public SpaceContext Union(SpaceContext spaceContext)
         {
-            //TODO: Remove me later
             return new SpaceContext(SpaceSelection.SpecificSpaces, this.SpaceIds.Concat(spaceContext.SpaceIds).Distinct().ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
         }
 
+        // TODO: Remove me later
         public void EnsureSingleSpaceContext()
         {
             if (!(SpaceIds.Count == 1 && SpaceIds.Single() != MixedScopeConstants.AllSpacesQueryStringParameterValue))

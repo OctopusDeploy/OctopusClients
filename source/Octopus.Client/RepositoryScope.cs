@@ -44,5 +44,12 @@ namespace Octopus.Client
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public void Apply(Action<string> whenSpaceScoped, Action whenSystemScoped, Action whenUnspecifiedScope)
+        {
+            Apply(id => { whenSpaceScoped(id); return 1; },
+                () => { whenSystemScoped(); return 1; },
+                () => { whenUnspecifiedScope(); return 1; });
+        }
     }
 }

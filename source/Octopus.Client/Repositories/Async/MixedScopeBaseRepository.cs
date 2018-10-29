@@ -66,6 +66,40 @@ namespace Octopus.Client.Repositories.Async
                 }
             }
         }
+
+        protected void EnsureSingleSpaceContext()
+        {
+            Repository.Scope.Apply(_ => {},
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => 
+                {
+                    if (extendedSpaceContext == null)
+                    {
+                        return; // Assumes the default space
+                    }
+
+                    switch (extendedSpaceContext.SpaceSelection)
+                    {
+                        case SpaceSelection.AllSpaces:
+                            throw new SingleSpaceOperationInMultiSpaceContextException();
+                        case SpaceSelection.SpecificSpaces:
+                            var numberOfSpaces = extendedSpaceContext.SpaceIds.Count;
+                            if (numberOfSpaces == 0)
+                            {
+                                // We must be in a system context
+                                throw new SpaceScopedOperationInSystemContextException();
+                            }
+                            else if (numberOfSpaces > 1)
+                            {
+                                throw new SingleSpaceOperationInMultiSpaceContextException();
+                            }
+
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                });
+        }
     }
 
     public class SpaceContextSwitchException : Exception
