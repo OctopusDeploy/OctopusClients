@@ -48,7 +48,7 @@ namespace Octopus.Client.Operations
 
         /// <summary>
         /// The communication style to use with the Tentacle. Allowed values are: TentacleActive, in which case the
-        /// Tentacle will connect to the Octopus server for instructions; or, TentaclePassive, in which case the
+        /// Tentacle will connect to the Octopus Server for instructions; or, TentaclePassive, in which case the
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         CommunicationStyle CommunicationStyle { get; set; }

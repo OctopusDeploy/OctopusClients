@@ -86,7 +86,7 @@ namespace Octopus.Client.Model
         public DateTimeOffset? StartTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the time that the Octopus server last updated the status of this task. For a running task this should
+        /// Gets or sets the time that the Octopus Server last updated the status of this task. For a running task this should
         /// happen
         /// at least every couple of minutes.
         /// </summary>
@@ -100,7 +100,7 @@ namespace Octopus.Client.Model
         public DateTimeOffset? CompletedTime { get; set; }
 
         /// <summary>
-        /// Gets the ID of the Octopus server that created and will control this task.
+        /// Gets the ID of the Octopus Server that created and will control this task.
         /// </summary>
         [JsonProperty(Order = 15)]
         public string ServerNode { get; set; }

@@ -65,7 +65,7 @@ namespace Octopus.Client.Operations
 
         /// <summary>
         /// The communication style to use with the Tentacle. Allowed values are: TentacleActive, in which case the
-        /// Tentacle will connect to the Octopus server for instructions; or, TentaclePassive, in which case the
+        /// Tentacle will connect to the Octopus Server for instructions; or, TentaclePassive, in which case the
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         public CommunicationStyle CommunicationStyle { get; set; }
@@ -221,8 +221,8 @@ namespace Octopus.Client.Operations
         protected static string CouldNotFindMessage(string modelType, params string[] missing)
         {
             return missing.Length == 1
-                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus server. Ensure the {modelType} exists and you have permission to access it."
-                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus server. Ensure the {modelType}s exist and you have permission to access them.";
+                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus Server. Ensure the {modelType} exists and you have permission to access it."
+                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus Server. Ensure the {modelType}s exist and you have permission to access them.";
         }
     }
 }

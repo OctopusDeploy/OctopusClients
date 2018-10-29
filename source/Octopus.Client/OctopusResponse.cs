@@ -4,7 +4,7 @@ using System.Net;
 namespace Octopus.Client
 {
     /// <summary>
-    /// Describes a response from the Octopus server.
+    /// Describes a response from the Octopus Server.
     /// </summary>
     /// <typeparam name="TResponseResource">The resource type associated with the response.</typeparam>
     public class OctopusResponse<TResponseResource> : OctopusResponse
@@ -20,7 +20,7 @@ namespace Octopus.Client
     }
 
     /// <summary>
-    /// Describes a response from the Octopus server.
+    /// Describes a response from the Octopus Server.
     /// </summary>
     public class OctopusResponse
     {
