@@ -46,11 +46,19 @@ namespace Octopus.Client.Tests.Operations
                     .Add("Machines", "/api/machines")
                     .Add("MachinePolicies", "/api/machinepolicies")
                     .Add("CurrentUser", "/api/users/me")
+                    .Add("SpaceHome", "/api/spaces")
             };
             client.Get<RootResource>(Arg.Any<string>()).Returns(rootDocument);
             client.Repository.LoadRootDocument().Returns(rootDocument);
-            client.Get<UserResource>(Arg.Any<string>())
-                .Throws(new OctopusSecurityException(401, ""));
+            client.Get<SpaceResource[]>(Arg.Any<string>())
+                .Returns(new[] {new SpaceResource() {Id = "Spaces-1", IsDefault = true}});
+            client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource()
+            {
+                Links =
+                {
+                    {"Spaces", ""}
+                }
+            });
             client.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
             client.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
 

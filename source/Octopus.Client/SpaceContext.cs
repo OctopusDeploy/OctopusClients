@@ -28,8 +28,6 @@ namespace Octopus.Client
 
         private SpaceContext(SpaceSelection spaceSelection, IReadOnlyCollection<string> spaceIds, bool includeSystem)
         {
-            if (spaceIds.Count == 0 && !includeSystem)
-                throw new ArgumentException("At least 1 spaceId is required when includeSystem is set to false");
             this.spaceSelection = spaceSelection;
             this.spaceIds = spaceIds;
             this.IncludeSystem = includeSystem;
