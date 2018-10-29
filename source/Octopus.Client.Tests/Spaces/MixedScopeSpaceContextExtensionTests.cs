@@ -5,7 +5,6 @@ using System.Reflection;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Tests.Spaces
@@ -35,7 +34,7 @@ namespace Octopus.Client.Tests.Spaces
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = teamRepo.UsingContext(SpaceContext.SpecificSpace("Spaces-2"));
             Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
-            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextExtensionException>();
+            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextSwitchException>();
         }
 
         [Test]
@@ -46,7 +45,7 @@ namespace Octopus.Client.Tests.Spaces
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             teamRepo = teamRepo.UsingContext(SpaceContext.SpecificSpace("Spaces-2"));
             Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
-            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextExtensionException>();
+            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextSwitchException>();
         }
 
         [Test]
