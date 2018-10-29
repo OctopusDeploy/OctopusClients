@@ -16,8 +16,6 @@ namespace Octopus.Cli.Util
 
         void PrintCommandOptions(Options options, TextWriter textWriter);
 
-        void PrintCommandHelpFooter(string executable, string commandName, TextWriter textWriter);
-
         void Debug(string template, string propertyValue);
 
         void Debug(string template, params object[] propertyValues);
