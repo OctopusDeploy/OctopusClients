@@ -4,7 +4,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    public interface IOctopusSystemAsyncRepository: IOctopusMixedScopeAsyncRepository
+    public interface IOctopusSystemAsyncRepository: IOctopusCommonAsyncRepository
     {
         ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }

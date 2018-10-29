@@ -35,7 +35,7 @@ namespace Octopus.Cli.Commands.Releases
             if (DeployToEnvironmentNames.Count == 0) throw new CommandException("Please specify an environment using the parameter: --deployto=XYZ");
             if (string.IsNullOrWhiteSpace(FromEnvironmentName)) throw new CommandException("Please specify a source environment name using the parameter: --from=XYZ");
 
-            await base.ValidateParameters();
+            await base.ValidateParameters().ConfigureAwait(false);
         }
 
         public async Task Request()
@@ -69,7 +69,7 @@ namespace Octopus.Cli.Commands.Releases
             if (UpdateVariableSnapshot)
             {
                 commandOutputProvider.Debug("Updating the release variable snapshot with variables from the project");
-                await Repository.Releases.SnapshotVariables(release);
+                await Repository.Releases.SnapshotVariables(release).ConfigureAwait(false);
             }
 
             await DeployRelease(project, release).ConfigureAwait(false);

@@ -21,12 +21,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<FeaturesConfigurationResource> GetFeaturesConfiguration()
         {
-            return await repository.Client.Get<FeaturesConfigurationResource>(await repository.Link("FeaturesConfiguration"));
+            return await repository.Client.Get<FeaturesConfigurationResource>(await repository.Link("FeaturesConfiguration").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public async Task<FeaturesConfigurationResource> ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
         {
-            return await repository.Client.Update(await repository.Link("FeaturesConfiguration"), resource);
+            return await repository.Client.Update(await repository.Link("FeaturesConfiguration").ConfigureAwait(false), resource).ConfigureAwait(false);
         }
     }
 }

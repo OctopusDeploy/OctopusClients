@@ -53,7 +53,7 @@ namespace Octopus.Cli.Importers
             var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
-            var rootDocument = await Repository.LoadRootDocument();
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
             if (new SemanticVersion(rootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
             {
                 var existingLifecycle = await CheckProjectLifecycle(importedObject.Lifecycle).ConfigureAwait(false);
@@ -157,9 +157,9 @@ namespace Octopus.Cli.Importers
                     (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
                         .ToDictionary(k => k.Key, v => v.Value);
 
-                await MapReleaseCreationStrategyChannel(importedProject, importedChannels);
+                await MapReleaseCreationStrategyChannel(importedProject, importedChannels).ConfigureAwait(false);
 
-                await MapChannelsToAction(importeDeploymentProcess, importedChannels, oldActionChannels);
+                await MapChannelsToAction(importeDeploymentProcess, importedChannels, oldActionChannels).ConfigureAwait(false);
 
                 await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
 

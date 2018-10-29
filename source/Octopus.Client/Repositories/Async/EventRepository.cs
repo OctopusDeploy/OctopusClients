@@ -63,8 +63,8 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        EventRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, "Events", includingSpaceContext, extendedSpaceContext)
+        EventRepository(IOctopusAsyncRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Events", userDefinedSpaceContext)
         {
         }
 
@@ -74,13 +74,13 @@ namespace Octopus.Client.Repositories.Async
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
         {
-            return await Client.List<EventResource>(await Repository.Link("Events"), ParameterHelper.CombineParameters(AdditionalQueryParameters, new
+            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
             {
                 skip,
                 user = filterByUserId,
                 regarding = regardingDocumentId,
                 @internal = includeInternalEvents.ToString()
-            }));
+            })).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
@@ -102,7 +102,7 @@ namespace Octopus.Client.Repositories.Async
             long? toAutoId = null,
             string documentTypes = null)
         {
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new
             {
                 skip,
                 take,
@@ -124,12 +124,12 @@ namespace Octopus.Client.Repositories.Async
                 documentTypes
             });
 
-            return await Client.List<EventResource>(await Repository.Link("Events"), parameters);
+            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), parameters).ConfigureAwait(false);
         }
 
-        public IEventRepository Including(SpaceContext spaceContext)
+        public IEventRepository UsingContext(SpaceContext spaceContext)
         {
-            return new EventRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new EventRepository(Repository, spaceContext);
         }
     }
 }

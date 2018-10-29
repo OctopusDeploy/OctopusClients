@@ -24,14 +24,14 @@ namespace Octopus.Client.Editors.Async
                 throw new ArgumentException($"A certificate with the name {name} already exists");
             }
             
-            Instance = await repository.Create(new CertificateResource(name, certificateData));
+            Instance = await repository.Create(new CertificateResource(name, certificateData)).ConfigureAwait(false);
             
             return this;
         }
 
         public async Task<CertificateEditor> FindByName(string name)
         {
-            var existing = await repository.FindByName(name);
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
                 throw new ArgumentException($"A certificate with the name {name} could not be found");
@@ -52,13 +52,13 @@ namespace Octopus.Client.Editors.Async
 
         public async Task<CertificateEditor> Save()
         {
-            Instance = await repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
         }
 
         public async Task<CertificateUsageResource> Usages()
         {
-            return await repository.Client.Get<CertificateUsageResource>(Instance.Link("Usages"));
+            return await repository.Client.Get<CertificateUsageResource>(Instance.Link("Usages")).ConfigureAwait(false);
         }
     }
 }

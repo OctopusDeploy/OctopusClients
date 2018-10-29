@@ -32,12 +32,12 @@ namespace Octopus.Client.Repositories.Async
         public async Task<T> Modify<T>(T configurationResource) where T : class, IResource, new()
         {
             var configurationItem = await GetConfigurationItem(configurationResource).ConfigureAwait(false);
-            return await repository.Client.Update(configurationItem.Link("Values"), configurationResource);
+            return await repository.Client.Update(configurationItem.Link("Values"), configurationResource).ConfigureAwait(false);
         }
 
         private async Task<ConfigurationItemResource> GetConfigurationItem(IResource instance)
         {
-            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName), new { instance.Id });
+            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName).ConfigureAwait(false), new { instance.Id }).ConfigureAwait(false);
         }
     }
 }

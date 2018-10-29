@@ -49,10 +49,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             // Simulate getting the auth and antiforgery cookies
-            await AsyncClient.SignIn(new LoginCommand());
+            await AsyncClient.SignIn(new LoginCommand()).ConfigureAwait(false);
 
             // Prove we copy the antiforgery cookie value to the header if it exists
-            var secondResponse = await AsyncClient.Get<TestDto>(TestRootPath);
+            var secondResponse = await AsyncClient.Get<TestDto>(TestRootPath).ConfigureAwait(false);
             secondResponse.AntiforgeryTokenValue.Should()
                 .Be(AntiforgeryCookieValue, $"The antiforgery cookie should have been copied to the {ApiConstants.AntiforgeryTokenHttpHeaderName} header.");
         }

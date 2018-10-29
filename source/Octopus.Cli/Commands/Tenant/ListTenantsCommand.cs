@@ -21,7 +21,7 @@ namespace Octopus.Cli.Commands.Tenant
 
         public async Task Request()
         {
-            var multiTenancyStatus = await Repository.Tenants.Status();
+            var multiTenancyStatus = await Repository.Tenants.Status().ConfigureAwait(false);
             if (multiTenancyStatus.Enabled)
             {
                 tenants = await Repository.Tenants.FindAll().ConfigureAwait(false);

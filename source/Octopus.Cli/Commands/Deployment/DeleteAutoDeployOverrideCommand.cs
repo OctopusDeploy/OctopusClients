@@ -43,7 +43,7 @@ namespace Octopus.Cli.Commands.Deployment
 
         protected override async Task ValidateParameters()
         {
-            await base.ValidateParameters();
+            await base.ValidateParameters().ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(ProjectName))
             {

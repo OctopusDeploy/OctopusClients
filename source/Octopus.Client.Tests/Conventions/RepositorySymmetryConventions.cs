@@ -43,7 +43,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> SyncRepositories()
         {
             return from p in typeof(IOctopusRepository).GetProperties()
-                   where p.Name != "Client" && p.Name != nameof(SpaceContext)
+                   where p.Name != "Client"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Sync)");
         }
@@ -51,7 +51,7 @@ namespace Octopus.Client.Tests.Conventions
         public static IEnumerable<TestCaseData> AsyncRepositories()
         {
             return from p in typeof(IOctopusAsyncRepository).GetProperties()
-                   where p.Name != "Client" && p.Name != nameof(SpaceContext)
+                   where p.Name != "Client"
                    select new TestCaseData(p.PropertyType)
                        .SetName(p.PropertyType.Name + " (Async)");
         }
@@ -85,7 +85,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var asyncRepository = typeof(IOctopusAsyncRepository).Assembly
                 .GetExportedTypes()
-                .FirstOrDefault(t => t.Name == syncRepository.Name && t.Namespace.EndsWith("Async"));
+                .FirstOrDefault(t => t.Name == syncRepository.Name && (t.Namespace.EndsWith("Async") || t.Name == "RepositoryScope"));
 
             if (asyncRepository == null)
                 Assert.Fail("Async repository not found");
@@ -127,7 +127,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var asyncRepository = typeof(IOctopusAsyncRepository).Assembly
                 .GetExportedTypes()
-                .FirstOrDefault(t => t.Name == syncRepository.Name && t.Namespace.EndsWith("Async"));
+                .FirstOrDefault(t => t.Name == syncRepository.Name && (t.Namespace.EndsWith("Async") || t.Name == "RepositoryScope"));
 
             if (asyncRepository == null)
                 Assert.Fail("Async repository not found");

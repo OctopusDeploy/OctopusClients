@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Tests.Spaces
@@ -13,54 +10,31 @@ namespace Octopus.Client.Tests.Spaces
     [TestFixture]
     public class MixedScopeSpaceContextExtensionTests
     {
-        [Test]
-        public void CanIncludeMoreSpacesFromSystemOnlyContext()
+        [Test, TestCaseSource(nameof(TestCases))]
+        public void CannotSwitchSpaceContextWhenTheRepositoryScopeIsSpecified(RepositoryScope scope)
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.SpaceContext.Returns(SpaceContext.SystemOnly());
+            repository.Scope.Returns(scope);
             ITeamsRepository teamRepo = new TeamsRepository(repository);
-            teamRepo = new[] {"Spaces-2", "Spaces-3"}.Aggregate(teamRepo,
-                (repo, spaceId) => repo.Including(SpaceContext.SpecificSpace(spaceId)));
-            var additionalQueryParameters =
-                teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo) as Dictionary<string, object>;
-            additionalQueryParameters["includeSystem"].Should().Be(true);
-            additionalQueryParameters["spaces"].ShouldBeEquivalentTo(new[] { "Spaces-2", "Spaces-3" });
+            Action switchContext = () => teamRepo.UsingContext(SpaceContext.AllSpaces());
+            switchContext.ShouldThrow<SpaceContextSwitchException>();
         }
 
         [Test]
-        public void CanNotIncludeMoreSpacesFromSpecificSpaceContext()
+        public void CanSwitchSpaceContextWhenRepositoryScopeIsUnspecified()
         {
             var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.SpaceContext.Returns(SpaceContext.SpecificSpace("Spaces-1"));
-            ITeamsRepository teamRepo = new TeamsRepository(repository);
-            teamRepo = teamRepo.Including(SpaceContext.SpecificSpace("Spaces-2"));
-            Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
-            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextExtensionException>();
+            repository.Scope.Returns(RepositoryScope.Unspecified());
+            repository.Teams.UsingContext(SpaceContext.AllSpaces());
         }
 
-        [Test]
-        public void CanNotIncludeMoreSpacesFromSpecificSpaceAndSystemContext()
+        static IEnumerable<TestCaseData> TestCases()
         {
-            var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
-            ITeamsRepository teamRepo = new TeamsRepository(repository);
-            teamRepo = teamRepo.Including(SpaceContext.SpecificSpace("Spaces-2"));
-            Action getParameters = () => teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo);
-            getParameters.ShouldThrow<TargetInvocationException>().WithInnerException<SpaceContextExtensionException>();
-        }
-
-        [Test]
-        public void CanIncludeSystemFromSpecificSpaceContext()
-        {
-            var repository = Substitute.For<IOctopusAsyncRepository>();
-            repository.SpaceContext.Returns(SpaceContext.SpecificSpace("Spaces-1"));
-            ITeamsRepository teamRepo = new TeamsRepository(repository);
-            teamRepo = teamRepo.Including(SpaceContext.SystemOnly());
-
-            var additionalQueryParameters =
-                teamRepo.GetType().GetTypeInfo().BaseType.GetProperty("AdditionalQueryParameters", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(teamRepo) as Dictionary<string, object>;
-            additionalQueryParameters["includeSystem"].Should().Be(true);
-            additionalQueryParameters["spaces"].ShouldBeEquivalentTo(new[] { "Spaces-1"});
+            return new[]
+            {
+                new TestCaseData(RepositoryScope.ForSystem()),
+                new TestCaseData(RepositoryScope.ForSpace("Spaces-1")),
+            };
         }
     }
 }

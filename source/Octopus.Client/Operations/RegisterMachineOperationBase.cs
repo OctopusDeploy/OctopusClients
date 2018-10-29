@@ -158,7 +158,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public async Task ExecuteAsync(OctopusAsyncRepository repository)
         {
-            await ExecuteAsync((IOctopusAsyncRepository) repository);
+            await ExecuteAsync((IOctopusAsyncRepository) repository).ConfigureAwait(false);
         }
 
         /// <summary>

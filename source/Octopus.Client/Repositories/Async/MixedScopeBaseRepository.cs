@@ -7,47 +7,102 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
 {
-    class MixedScopeBaseRepository<TMixedScopeResource>: BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
+    internal class MixedScopeBaseRepository<TMixedScopeResource> : BasicRepository<TMixedScopeResource> where TMixedScopeResource : class, IResource
     {
-        private readonly SpaceContext extendedSpaceContext;
+        private readonly SpaceContext userDefinedSpaceContext;
 
-        public MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
         {
         }
 
-        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext) : base(repository,
+        protected MixedScopeBaseRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) : base(repository,
             collectionLinkName)
         {
-            this.extendedSpaceContext = extendedSpaceContext == null ? includingSpaceContext : extendedSpaceContext.Union(includingSpaceContext);
+            ValidateThatICanUseACustomSpaceContext();
+            this.userDefinedSpaceContext = userDefinedSpaceContext;
         }
 
-        protected override Dictionary<string, object> AdditionalQueryParameters
+        protected override Dictionary<string, object> GetAdditionalQueryParameters()
         {
-            get
+            var spaceContext = GetCurrentSpaceContext();
+            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
-                ValidateExtension();
-                return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-                {
-                    [MixedScopeConstants.QueryStringParameterIncludeSystem] = CombineSpaceContext().IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = CombineSpaceContext().SpaceIds
-                };
+                [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
+                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces, 
+                    () => MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            };
+        }
+
+        void ValidateThatICanUseACustomSpaceContext()
+        {
+            var scopeIsSpecified = Repository.Scope.Apply(_ => true, () => true, () => false);
+            if (scopeIsSpecified)
+            {
+                throw new SpaceContextSwitchException();
             }
         }
 
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return extendedSpaceContext ?? Repository?.SpaceContext;
+            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
+                       SpaceContext.SystemOnly, 
+                       SpaceContext.AllSpacesAndSystem);
         }
 
-        SpaceContext CombineSpaceContext()
+        protected override void EnrichSpaceId(TMixedScopeResource resource)
         {
-            return extendedSpaceContext == null ? Repository.SpaceContext : Repository.SpaceContext.Union(extendedSpaceContext);
+            base.EnrichSpaceId(resource);
+
+            if (resource is IHaveSpaceResource spaceResource 
+                && userDefinedSpaceContext != null)
+            {
+                spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaceIds =>
+                {
+                    if (spaceIds.Count == 1 && !userDefinedSpaceContext.IncludeSystem)
+                    {
+                        return spaceIds.Single();
+                    }
+
+                    if (spaceIds.Count == 0 && userDefinedSpaceContext.IncludeSystem)
+                    {
+                        // This assumes that the resource we are sending can actually apply at the system level.
+                        // This is not always true, for example Tasks that can only apply at the space level.
+                        // In those specific cases, we should perform separate pre-condition checks to ensure that you are not in a system context
+                        // Usually this involves calling `EnsureSingleSpaceContext`
+                        return null;
+                    }
+
+                    return spaceResource.SpaceId;
+                }, () => spaceResource.SpaceId);
+            }
         }
 
-        void ValidateExtension()
+        protected void EnsureSingleSpaceContext()
         {
-            if (Repository.SpaceContext.SpaceIds.Any() && CombineSpaceContext().SpaceIds.Count > 1)
-                throw new SpaceContextExtensionException($"The Repository is scoped to {Repository.SpaceContext.SpaceIds.Single()}, you cannot include more spaces beyond the Repository scope");
+            Repository.Scope.Apply(_ => {},
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => 
+                {
+                    if (userDefinedSpaceContext == null)
+                    {
+                        return; // Assumes the default space
+                    }
+
+                    userDefinedSpaceContext.ApplySpaceSelection(spaces =>
+                    {
+                        var numberOfSpaces = spaces.Count;
+                        if (numberOfSpaces == 0)
+                        {
+                            // We must be in a system context
+                            throw new SpaceScopedOperationInSystemContextException();
+                        }
+
+                        if (numberOfSpaces > 1)
+                        {
+                            throw new SingleSpaceOperationInMultiSpaceContextException();
+                        }
+                    }, () => throw new SingleSpaceOperationInMultiSpaceContextException());
+                });
         }
     }
 }

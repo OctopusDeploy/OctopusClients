@@ -59,13 +59,13 @@ namespace Octopus.Client.Repositories.Async
             });
 
         public async Task<MachineResource> Discover(DiscoverMachineOptions options)
-            => await Client.Get<MachineResource>(await Repository.Link("DiscoverMachine"), new
+            => await Client.Get<MachineResource>(await Repository.Link("DiscoverMachine").ConfigureAwait(false), new
             {
                 host = options.Host,
                 port = options.Port,
                 type = options.Type,
                 proxyId = options.Proxy?.Id
-            });
+            }).ConfigureAwait(false);
 
         public Task<MachineConnectionStatus> GetConnectionStatus(MachineResource machine)
         {
@@ -76,7 +76,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<List<MachineResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return await Client.Get<List<MachineResource>>(await Repository.Link("machines"), new { id = IdValueConstant.IdAll, thumbprint });
+            return await Client.Get<List<MachineResource>>(await Repository.Link("machines").ConfigureAwait(false), new { id = IdValueConstant.IdAll, thumbprint }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             string environmentIds = null)
         {
-            return await Client.List<MachineResource>(await Repository.Link("Machines"), new
+            return await Client.List<MachineResource>(await Repository.Link("Machines").ConfigureAwait(false), new
             {
                 skip,
                 take,
@@ -150,7 +150,7 @@ namespace Octopus.Client.Repositories.Async
                 tenantIds,
                 tenantTags,
                 environmentIds,
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

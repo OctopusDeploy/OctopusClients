@@ -8,11 +8,11 @@ namespace Octopus.Cli.Util
     {
         public static async Task<bool> SupportsChannels(this IOctopusAsyncRepository repository)
         {
-            var hasChannelLink = await repository?.HasLink("Channels") == true;
+            var hasChannelLink = await repository.HasLink("Channels").ConfigureAwait(false) == true;
             if (!hasChannelLink)
             {
                 // When default space is off and SpaceId is not provided, we check if it is in post space world, as channels are always available in spaces
-                return await repository?.HasLink("SpaceHome") == true;
+                return await repository.HasLink("SpaceHome").ConfigureAwait(false) == true;
             }
 
             return true;
@@ -20,11 +20,11 @@ namespace Octopus.Cli.Util
         
         public static async Task<bool> SupportsTenants(this IOctopusAsyncRepository repository)
         {
-            var hasTenantLink = await repository?.HasLink("Tenants") == true;
+            var hasTenantLink = await repository.HasLink("Tenants").ConfigureAwait(false) == true;
             if (!hasTenantLink)
             {
                 // When default space is off and SpaceId is not provided, we check if it is in post space world, as tenants are always available in spaces
-                return await repository?.HasLink("SpaceHome") == true;
+                return await repository.HasLink("SpaceHome").ConfigureAwait(false) == true;
             }
 
             return true;

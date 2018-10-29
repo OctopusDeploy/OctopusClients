@@ -14,7 +14,7 @@ namespace Octopus.Client
         /// The client over which the repository is run.
         /// </summary>
         IOctopusAsyncClient Client { get; }
-        SpaceContext SpaceContext { get; }
+        RepositoryScope Scope { get; }
         
         /// <summary>
         /// Determines whether the specified link exists.

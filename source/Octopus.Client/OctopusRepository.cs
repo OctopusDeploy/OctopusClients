@@ -23,16 +23,16 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusRepository : IOctopusRepository
     {
-        private RootResource rootDocument;
-        private SpaceRootResource spaceRootDocument;
+        private readonly Lazy<RootResource> loadRootResource;
+        private readonly Lazy<SpaceRootResource> loadSpaceRootResource;
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
 
-        public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
+        public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
         {
             Client = client;
-            SpaceContext = spaceContext;
+            Scope = repositoryScope;
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
@@ -83,9 +83,13 @@ namespace Octopus.Client
             WorkerPools = new WorkerPoolRepository(this);
             ScopedUserRoles = new ScopedUserRoleRepository(this);
             UserPermissions = new UserPermissionsRepository(this);
+
+            loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
+            loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
         }
 
         public IOctopusClient Client { get; }
+        public RepositoryScope Scope { get; }
         public IAccountRepository Accounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
@@ -136,48 +140,31 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
-        public SpaceContext SpaceContext { get; private set; }
-       
 
         public bool HasLink(string name)
         {
-            LoadRootDocuments();
-            return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
+            return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.HasLink(name) || loadRootResource.Value.HasLink(name);
         }
 
         public string Link(string name)
         {
-            LoadRootDocuments();
-            return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
+            return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.Links.TryGetValue(name, out var value)
                 ? value.AsString()
-                : rootDocument.Link(name);
+                : loadRootResource.Value.Link(name);
         }
 
-        public SpaceRootResource LoadSpaceRootDocument()
+        public RootResource LoadRootDocument() => loadRootResource.Value;
+        public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+
+        RootResource LoadRootDocumentInner()
         {
-            if (spaceRootDocument != null)
-                return spaceRootDocument;
-            if (SpaceContext == null)
-            {
-                var defaultSpace = TryGetDefaultSpace();
-                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
-            }
-
-            spaceRootDocument = SpaceContext.SpaceIds.Any() ?
-                Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
-            return spaceRootDocument;
-        }
-
-        public RootResource LoadRootDocument()
-        {
-            if (rootDocument != null) return rootDocument;
-
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
 
             // 60 second limit using Stopwatch alone makes debugging impossible.
             var retries = 3;
 
+            RootResource rootDocument;
             while (true)
             {
                 if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
@@ -227,24 +214,34 @@ namespace Octopus.Client
             return rootDocument;
         }
 
-        private SpaceResource TryGetDefaultSpace()
+        SpaceRootResource LoadSpaceRootDocumentInner()
         {
-            try
-            {
-                var currentUser = Client.Get<UserResource>(rootDocument.Links["CurrentUser"]);
-                var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-            catch (OctopusSecurityException)
-            {
-                return null;
-            }
-        }
+            return Scope.Apply(LoadSpaceRootResourceFor,
+                () => null,
+                () =>
+                {
+                    var defaultSpace = TryGetDefaultSpace();
+                    return LoadSpaceRootResourceFor(defaultSpace.Id);
+                });
 
-        private void LoadRootDocuments()
-        {
-            LoadRootDocument();
-            LoadSpaceRootDocument();
+            SpaceRootResource LoadSpaceRootResourceFor(string spaceId)
+            {
+                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {spaceId});
+            }
+
+            SpaceResource TryGetDefaultSpace()
+            {
+                try
+                {
+                    var currentUser = Client.Get<UserResource>(loadRootResource.Value.Links["CurrentUser"]);
+                    var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                    return userSpaces.SingleOrDefault(s => s.IsDefault);
+                }
+                catch (OctopusSecurityException)
+                {
+                    return null;
+                }
+            }
         }
     }
 }

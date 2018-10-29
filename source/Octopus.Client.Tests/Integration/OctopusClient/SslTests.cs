@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             try
             {
-                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath));
+                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).ConfigureAwait(false);
                 Assert.Fail("Exception expected");
             }
             catch (Exception ex)
@@ -48,8 +48,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 var client = await OctopusAsyncClient.Create(
                     new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
                     new OctopusClientOptions() {IgnoreSslErrors = true}
-                );
-                var result = await client.Get<string>("~/");
+                ).ConfigureAwait(false);
+                var result = await client.Get<string>("~/").ConfigureAwait(false);
 
                 result.Should().Be("Data");
             }

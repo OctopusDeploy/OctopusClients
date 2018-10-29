@@ -21,26 +21,26 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
-        UserPermissionsRepository(IOctopusAsyncRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, null, includingSpaceContext, extendedSpaceContext)
+        UserPermissionsRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
+            : base(repository, null, spaceContext)
         {
         }
 
-        public Task<UserPermissionSetResource> Get(UserResource user)
+        public async Task<UserPermissionSetResource> Get(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"), AdditionalQueryParameters);
+            return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
         
-        public Task<Stream> Export(UserPermissionSetResource userPermissions)
+        public async Task<Stream> Export(UserPermissionSetResource userPermissions)
         {
             if (userPermissions == null) throw new ArgumentNullException(nameof(userPermissions));
-            return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
+            return await Client.GetContent(userPermissions.Link("Export"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
-        public IUserPermissionsRepository Including(SpaceContext spaceContext)
+        public IUserPermissionsRepository UsingContext(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new UserPermissionsRepository(Repository, spaceContext);
         }
     }
 }

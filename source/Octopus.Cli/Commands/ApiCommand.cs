@@ -157,13 +157,13 @@ namespace Octopus.Cli.Commands
 
             commandOutputProvider.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
 
-            var root = await Repository.LoadRootDocument();
+            var root = await Repository.LoadRootDocument().ConfigureAwait(false);
 
             commandOutputProvider.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
             if (!string.IsNullOrWhiteSpace(Username))
             {
-                await Repository.Users.SignIn(Username, Password);
+                await Repository.Users.SignIn(Username, Password).ConfigureAwait(false);
             }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
@@ -172,7 +172,7 @@ namespace Octopus.Cli.Commands
                 commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
-            await ValidateParameters();
+            await ValidateParameters().ConfigureAwait(false);
             await Execute().ConfigureAwait(false);
         }
 

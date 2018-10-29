@@ -51,7 +51,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     FileName = "foo.txt"
                 };
                 _recieved = false;
-                await AsyncClient.Post("~/", file);
+                await AsyncClient.Post("~/", file).ConfigureAwait(false);
                 _recieved.Should().BeTrue();
             }
         }

@@ -23,8 +23,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        TeamsRepository(IOctopusRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, "Teams", includingSpaceContext, extendedSpaceContext)
+        TeamsRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Teams", userDefinedSpaceContext)
         {
         }
 
@@ -42,9 +42,9 @@ namespace Octopus.Client.Repositories
             return resources;
         }
 
-        public ITeamsRepository Including(SpaceContext spaceContext)
+        public ITeamsRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new TeamsRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new TeamsRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

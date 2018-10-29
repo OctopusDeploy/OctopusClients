@@ -92,7 +92,7 @@ namespace Octopus.Cli.Commands.Environment
 
         private async Task<IEnumerable<MachineResource>> FilterByState(IEnumerable<MachineResource> environmentMachines)
         {
-            var rootDocument = await Repository.LoadRootDocument();
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
             var provider = new HealthStatusProvider(Repository, statuses, healthStatuses, commandOutputProvider, rootDocument);
             environmentMachines = provider.Filter(environmentMachines);
 

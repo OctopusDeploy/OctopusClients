@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             SetupClient(client);
-            var repository = new TaskRepository(new OctopusAsyncRepository(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")));
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
@@ -50,7 +50,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             SetupClient(client);
-            var repository = new TaskRepository(new OctopusAsyncRepository(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")));
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
@@ -78,7 +78,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             SetupClient(client);
-            var repository = new TaskRepository(new OctopusAsyncRepository(client, SpaceContext.SpecificSpaceAndSystem("Spaces-1")));
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));

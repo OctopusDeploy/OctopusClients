@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ServerStatusResource> GetServerStatus()
         {
-            return await Client.Get<ServerStatusResource>(await Repository.Link("ServerStatus"));
+            return await Client.Get<ServerStatusResource>(await Repository.Link("ServerStatus").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task<SystemInfoResource> GetSystemInfo(ServerStatusResource status)

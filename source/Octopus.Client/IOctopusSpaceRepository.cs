@@ -4,7 +4,7 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
-    public interface IOctopusSpaceRepository: IOctopusMixedScopeRepository
+    public interface IOctopusSpaceRepository: IOctopusCommonRepository
     {
         IAccountRepository Accounts { get; }
         IActionTemplateRepository ActionTemplates { get; }

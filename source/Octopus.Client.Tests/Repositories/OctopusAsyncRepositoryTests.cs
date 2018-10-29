@@ -9,7 +9,7 @@ namespace Octopus.Client.Tests.Repositories
 {
     public class OctopusAsyncRepositoryTests
     {
-        private readonly string[] delayInitialisedProperties = { nameof(OctopusAsyncRepository.SpaceContext) };
+        private readonly string[] delayInitialisedProperties = { nameof(OctopusAsyncRepository.Scope) };
         [Test]
         public void AllPropertiesAreNotNullExceptDelayInitialised()
         {

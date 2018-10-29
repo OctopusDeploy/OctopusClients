@@ -13,10 +13,10 @@ namespace Octopus.Client.Repositories.Async
     {
         public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
         {
-            return await Client.Get<List<TenantVariableResource>>(await Repository.Link("TenantVariables"), new
+            return await Client.Get<List<TenantVariableResource>>(await Repository.Link("TenantVariables").ConfigureAwait(false), new
             {
                 projectId = projectResource?.Id
-            });
+            }).ConfigureAwait(false);
         }
 
         public TenantVariablesRepository(IOctopusAsyncRepository repository) 
