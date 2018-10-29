@@ -107,21 +107,21 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip });
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { latest = true, take, skip });
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { latest = true, take, skip }).ConfigureAwait(false);
         }
 
         public async Task DeletePackage(PackageResource package)
         {
-            await repository.Client.Delete(await repository.Link("Packages"), new { id = package.Id }).ConfigureAwait(false);
+            await repository.Client.Delete(await repository.Link("Packages").ConfigureAwait(false), new { id = package.Id }).ConfigureAwait(false);
         }
 
         public async Task DeletePackages(IReadOnlyList<PackageResource> packages)
-            => await repository.Client.Delete(await repository.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
+            => await repository.Client.Delete(await repository.Link("PackagesBulk").ConfigureAwait(false), new { ids = packages.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
         
     }
 }
