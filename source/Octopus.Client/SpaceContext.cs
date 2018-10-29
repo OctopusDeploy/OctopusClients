@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
@@ -53,21 +52,6 @@ namespace Octopus.Client
         public void ApplySpaceSelection(Action<IReadOnlyCollection<string>> handleSpecificSpaces, Action handleAllSpaces)
         {
             ApplySpaceSelection(spaces => { handleSpecificSpaces(spaces); return 1; }, () => { handleAllSpaces(); return 1; });
-        }
-
-        //TODO: Remove me later
-        public SpaceContext Union(SpaceContext spaceContext)
-        {
-            return new SpaceContext(SpaceSelection.SpecificSpaces, this.spaceIds.Concat(spaceContext.spaceIds).Distinct().ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
-        }
-
-        // TODO: Remove me later
-        public void EnsureSingleSpaceContext()
-        {
-            if (!(spaceIds.Count == 1 && spaceIds.Single() != MixedScopeConstants.AllSpacesQueryStringParameterValue))
-            {
-                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
-            }
         }
     }
 }

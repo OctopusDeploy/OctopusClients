@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        UserPermissionsRepository(IOctopusRepository repository, SpaceContext includingSpaceContext, SpaceContext extendedSpaceContext)
-            : base(repository, null, includingSpaceContext, extendedSpaceContext)
+        UserPermissionsRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, null, userDefinedSpaceContext)
         {
         }
 
@@ -37,9 +37,9 @@ namespace Octopus.Client.Repositories
             return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
         }
 
-        public IUserPermissionsRepository Including(SpaceContext spaceContext)
+        public IUserPermissionsRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new UserPermissionsRepository(Repository, spaceContext, GetCurrentSpaceContext());
+            return new UserPermissionsRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

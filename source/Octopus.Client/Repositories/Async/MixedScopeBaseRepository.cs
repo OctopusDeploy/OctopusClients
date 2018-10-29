@@ -28,7 +28,8 @@ namespace Octopus.Client.Repositories.Async
             return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces, () => "all")
+                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces, 
+                    () => MixedScopeConstants.AllSpacesQueryStringParameterValue)
             };
         }
 
@@ -102,15 +103,6 @@ namespace Octopus.Client.Repositories.Async
                         }
                     }, () => throw new SingleSpaceOperationInMultiSpaceContextException());
                 });
-        }
-    }
-
-    public class SpaceContextSwitchException : Exception
-    {
-        public SpaceContextSwitchException() : base(
-            "Cannot switch to a custom space context when the repository has already been explicitly scoped to a context. " +
-            "Use client.Repository to obtain a repository that has NOT been explicitly scoped to a context")
-        {
         }
     }
 }

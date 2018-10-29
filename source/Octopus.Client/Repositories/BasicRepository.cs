@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
             var link = ResolveLink();
-            EnrichSpaceIdIfRequire(resource);
+            EnrichSpaceId(resource);
             return client.Create(link, resource, pathParameters);
         }
 
@@ -161,36 +161,14 @@ namespace Octopus.Client.Repositories
             return Get(resource.Id);
         }
 
-        void EnrichSpaceIdIfRequire(TResource resource)
+        protected virtual void EnrichSpaceId(TResource resource)
         {
-            if (resource is IHaveSpaceResource spaceResource && TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>)))
+            if (resource is IHaveSpaceResource spaceResource)
             {
-                if (IsInSingleSpaceContext() && string.IsNullOrEmpty(spaceResource.SpaceId))
-                {
-                    spaceResource.SpaceId = Repository.SpaceContext.SpaceIds.Single();
-                }
+                spaceResource.SpaceId = Repository.Scope.Apply(spaceId => spaceId,
+                    () => null,
+                    () => spaceResource.SpaceId);
             }
-        }
-
-        bool IsInSingleSpaceContext()
-        {
-            var spaceIds = GetSpaceIds();
-            var isASpecificSpaceId = spaceIds.Length == 1 && !spaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue);
-            return isASpecificSpaceId && !IsIncludingSystem();
-        }
-
-        string[] GetSpaceIds()
-        {
-            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope ? AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterSpaces] as string[] : Repository.SpaceContext.SpaceIds.ToArray();
-        }
-
-        bool IsIncludingSystem()
-        {
-            var isMixedScope = TypeUtil.IsAssignableToGenericType(this.GetType(), typeof(ICanExtendSpaceContext<>));
-            return isMixedScope
-                ? bool.Parse(AdditionalQueryParameters[MixedScopeConstants.QueryStringParameterIncludeSystem].ToString())
-                : Repository.SpaceContext.IncludeSystem;
         }
 
         string ResolveLink()

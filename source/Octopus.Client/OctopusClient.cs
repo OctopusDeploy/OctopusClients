@@ -51,12 +51,12 @@ namespace Octopus.Client
         public IOctopusSpaceRepository ForSpace(string spaceId)
         {
             ValidateSpaceId(spaceId);
-            return new OctopusRepository(this, SpaceContext.SpecificSpace(spaceId));
+            return new OctopusRepository(this, RepositoryScope.ForSpace(spaceId));
         }
 
         public IOctopusSystemRepository ForSystem()
         {
-            return new OctopusRepository(this, SpaceContext.SystemOnly());
+            return new OctopusRepository(this, RepositoryScope.ForSystem());
         }
 
         public void SignIn(LoginCommand loginCommand)

@@ -29,10 +29,10 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusRepository(IOctopusClient client, SpaceContext spaceContext = null)
+        public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
         {
             Client = client;
-            SpaceContext = spaceContext;
+            Scope = repositoryScope;
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
@@ -89,6 +89,7 @@ namespace Octopus.Client
         }
 
         public IOctopusClient Client { get; }
+        public RepositoryScope Scope { get; }
         public IAccountRepository Accounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
@@ -139,7 +140,6 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
-        public SpaceContext SpaceContext { get; private set; }
 
         public bool HasLink(string name)
         {
@@ -153,21 +153,8 @@ namespace Octopus.Client
                 : loadRootResource.Value.Link(name);
         }
 
-        public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
-
-        SpaceRootResource LoadSpaceRootDocumentInner()
-        {
-            if (SpaceContext == null)
-            {
-                var defaultSpace = TryGetDefaultSpace();
-                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
-            }
-            
-            return SpaceContext.SpaceIds.Any() ?
-                Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new { spaceId = SpaceContext.SpaceIds.Single() }) : null;
-        }
-
         public RootResource LoadRootDocument() => loadRootResource.Value;
+        public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
 
         RootResource LoadRootDocumentInner()
         {
@@ -227,17 +214,33 @@ namespace Octopus.Client
             return rootDocument;
         }
 
-        private SpaceResource TryGetDefaultSpace()
+        SpaceRootResource LoadSpaceRootDocumentInner()
         {
-            try
+            return Scope.Apply(LoadSpaceRootResourceFor,
+                () => null,
+                () =>
+                {
+                    var defaultSpace = TryGetDefaultSpace();
+                    return LoadSpaceRootResourceFor(defaultSpace.Id);
+                });
+
+            SpaceRootResource LoadSpaceRootResourceFor(string spaceId)
             {
-                var currentUser = Client.Get<UserResource>(loadRootResource.Value.Links["CurrentUser"]);
-                var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
+                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {spaceId});
             }
-            catch (OctopusSecurityException)
+
+            SpaceResource TryGetDefaultSpace()
             {
-                return null;
+                try
+                {
+                    var currentUser = Client.Get<UserResource>(loadRootResource.Value.Links["CurrentUser"]);
+                    var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
+                    return userSpaces.SingleOrDefault(s => s.IsDefault);
+                }
+                catch (OctopusSecurityException)
+                {
+                    return null;
+                }
             }
         }
     }
