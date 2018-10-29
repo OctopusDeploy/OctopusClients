@@ -71,7 +71,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().BeNullOrEmpty();
             }));
-            var includingSpaceContext = new SpaceContext(SpaceSelection.SpecificSpaces, new []{includingSpaceId}, includeSystem);
+            var includingSpaceContext = includeSystem ? SpaceContext.SpecificSpaceAndSystem(includingSpaceId) : SpaceContext.SpecificSpace(includingSpaceId);
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSystem()));
             var multiScoped = teamRepo.UsingContext(includingSpaceContext);
             var _ = await multiScoped.Create(new TeamResource() { Name = "Test" });
@@ -86,7 +86,7 @@ namespace Octopus.Client.Tests.Spaces
             var client = SetupAsyncClient("Spaces-1");
             await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().BeNullOrEmpty()));
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSystem()));
-            var multiScoped = teamRepo.UsingContext(new SpaceContext(SpaceSelection.SpecificSpaces, new[] {includingSpaceId}, includeSystem));
+            var multiScoped = teamRepo.UsingContext(includeSystem ? SpaceContext.SpecificSpaceAndSystem(includingSpaceId) : SpaceContext.SpecificSpace(includingSpaceId));
             var _ = multiScoped.Create(new TeamResource() { Name = "Test" }).Result;
         }
     }

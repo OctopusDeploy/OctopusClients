@@ -34,8 +34,8 @@ namespace Octopus.Client.Repositories.Async
 
         void ValidateThatICanUseACustomSpaceContext()
         {
-            var scopeIsUnspecified = Repository.Scope.Apply(_ => false, () => false, () => true);
-            if (scopeIsUnspecified)
+            var scopeIsSpecified = Repository.Scope.Apply(_ => true, () => true, () => false);
+            if (scopeIsSpecified)
             {
                 throw new SpaceContextSwitchException();
             }
