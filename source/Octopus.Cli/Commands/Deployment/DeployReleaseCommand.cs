@@ -22,7 +22,7 @@ namespace Octopus.Cli.Commands.Deployment
         {
             var options = Options.For("Deployment");
             options.Add("project=", "Name of the project", v => ProjectName = v);
-            options.Add("deployto=", "Environment to deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("deployto=", "Environment to deploy to, e.g., Production; specify this argument multiple times to deploy to multiple environments", v => DeployToEnvironmentNames.Add(v));
             options.Add("releaseNumber=|version=", "Version number of the release to deploy. Or specify --version=latest for the latest release.", v => VersionNumber = v);
             options.Add("channel=", "[Optional] Channel to use when getting the release to deploy", v => ChannelName = v);
             options.Add("updateVariables", "Overwrite the variable snapshot for the release by re-importing the variables from the project", v => UpdateVariableSnapshot = true);
