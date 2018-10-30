@@ -154,7 +154,7 @@ namespace Octopus.Cli.Commands
             else
             {
                 Repository = repositoryFactory.CreateRepository(client);
-                commandOutputProvider.Debug("Space name unspecified, process will try to run in the default space context if it is enabled");
+                commandOutputProvider.Debug("Space name unspecified, process will try to run in the default space context if it is enabled, or in backwards compatible mode for older versions of Octopus Server");
             }
             
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
