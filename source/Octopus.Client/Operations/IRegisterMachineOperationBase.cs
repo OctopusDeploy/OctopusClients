@@ -72,7 +72,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        void Execute(IOctopusRepository repository);
+        void Execute(IOctopusSpaceRepository repository);
 #endif
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
@@ -90,6 +90,6 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        Task ExecuteAsync(IOctopusAsyncRepository repository);
+        Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
     }
 }
