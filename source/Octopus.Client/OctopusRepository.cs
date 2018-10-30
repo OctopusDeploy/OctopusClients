@@ -221,7 +221,7 @@ namespace Octopus.Client
                 () =>
                 {
                     var defaultSpace = TryGetDefaultSpace();
-                    return LoadSpaceRootResourceFor(defaultSpace.Id);
+                    return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace.Id) : null;
                 });
 
             SpaceRootResource LoadSpaceRootResourceFor(string spaceId)

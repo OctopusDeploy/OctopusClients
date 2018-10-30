@@ -231,7 +231,9 @@ namespace Octopus.Client
                 async () =>
                 {
                     var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
-                    return await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false);
+                    return defaultSpace != null
+                        ? await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false)
+                        : null;
                 });
 
             async Task<SpaceRootResource> LoadSpaceRootResourceFor(string spaceId)
