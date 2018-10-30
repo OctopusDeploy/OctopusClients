@@ -444,7 +444,7 @@ Octopus.Client
   }
   abstract class OctopusRepositoryExtensions
   {
-    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient)
+    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
   }
   class OctopusRequest
   {
