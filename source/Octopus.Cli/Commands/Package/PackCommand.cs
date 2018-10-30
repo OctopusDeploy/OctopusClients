@@ -31,6 +31,7 @@ namespace Octopus.Cli.Commands.Package
         SemanticVersion version;
         IPackageBuilder packageBuilder;
         string allReleaseNotes;
+        string compressionLevel;
 
         public PackCommand(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
@@ -39,6 +40,9 @@ namespace Octopus.Cli.Commands.Package
             var common = Options.For("Advanced options");
             common.Add("include=", "[Optional, Multiple] Add a file pattern to include, relative to the base path e.g. /bin/*.dll - if none are specified, defaults to **", v => includes.Add(v));
             common.Add("overwrite", "[Optional] Allow an existing package file of the same ID/version to be overwritten", v => overwrite = true);
+
+            var zip = Options.For("Zip packages");
+            zip.Add("compressionlevel=", "[Optional] Set compression level of package: none, fast, optimal (default).", c => compressionLevel = c);
 
             var nuget = Options.For("NuGet packages");
             nuget.Add("author=", "[Optional, Multiple] Add an author to the package metadata; defaults to the current user", v => authors.Add(v));
@@ -133,7 +137,7 @@ namespace Octopus.Cli.Commands.Package
                 if (!string.IsNullOrWhiteSpace(title))
                     metadata.Title = title;
 
-                
+                packageBuilder.SetCompression(compressionLevel);
                 if (verbose)
                     commandOutputProvider.Information("Verbose logging");
                 commandOutputProvider.Information("Packing {id:l} version {Version}...", id, version);

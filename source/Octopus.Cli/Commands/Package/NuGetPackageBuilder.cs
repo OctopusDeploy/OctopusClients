@@ -53,5 +53,11 @@ namespace Octopus.Cli.Commands.Package
             using (var outStream = fileSystem.OpenFile(output, FileMode.Create))
                 nugetPkgBuilder.Save(outStream);
         }
+
+        public void SetCompression(string level)
+        {
+            // does nothing
+            return;
+        }
     }
 }
