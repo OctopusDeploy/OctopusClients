@@ -32,7 +32,7 @@ namespace Octopus.Client
         public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
         {
             Client = client;
-            Scope = repositoryScope;
+            Scope = repositoryScope ?? RepositoryScope.Unspecified();
             Accounts = new AccountRepository(this);
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
