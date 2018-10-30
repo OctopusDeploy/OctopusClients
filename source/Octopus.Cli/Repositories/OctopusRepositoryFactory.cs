@@ -12,7 +12,7 @@ namespace Octopus.Cli.Repositories
     {
         public IOctopusAsyncRepository CreateRepository(IOctopusAsyncClient client, RepositoryScope scope = null)
         {
-            return client.CreateRepository();
+            return client.CreateRepository(scope);
         }
     }
 }

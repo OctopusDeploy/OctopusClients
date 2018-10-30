@@ -69,7 +69,7 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
-            options.Add("spaceName=", $"[Optional] The space name of a space, resource will be created, executed within the context of given the space, default space will be used if it is omitted. ", v => spaceName = v);
+            options.Add("space=", $"[Optional] The space name of a space, resource will be created, executed within the context of given the space, default space will be used if it is omitted. ", v => spaceName = v);
             options.AddLogLevelOptions();
         }
 
@@ -140,17 +140,21 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
+
             if (!string.IsNullOrEmpty(spaceName))
             {
+                commandOutputProvider.Debug("Finding space: {Space:l}", spaceName);
                 var space = await client.ForSystem().Spaces.FindByName(spaceName).ConfigureAwait(false);
                 if (space == null)
                     throw new CommandException($"Cannot find the space with name {spaceName}");
-                
+
                 Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space.Id));
+                commandOutputProvider.Debug("Space name specified, process is now running in the context of space: {space:l}", spaceName);
             }
             else
             {
                 Repository = repositoryFactory.CreateRepository(client);
+                commandOutputProvider.Debug("Space name unspecified, process will try to run in the default space context if it is enabled");
             }
             
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);

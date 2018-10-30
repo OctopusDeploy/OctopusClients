@@ -83,7 +83,7 @@ namespace Octo.Tests.Commands
             client.ForSystem().Returns(Repository);
 
             apiCommand = new DummyApiCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
-            var argsWithSpaceName = CommandLineArgs.Concat(new []{"--spaceName=abc"});
+            var argsWithSpaceName = CommandLineArgs.Concat(new []{"--space=abc"});
             return apiCommand.Execute(argsWithSpaceName.ToArray());
         }
     }
