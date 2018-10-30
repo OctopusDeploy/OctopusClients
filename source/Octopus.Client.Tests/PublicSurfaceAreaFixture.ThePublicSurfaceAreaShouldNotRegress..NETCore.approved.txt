@@ -4778,7 +4778,7 @@ Octopus.Client.Operations
     String TentacleThumbprint { get; set; }
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
-    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
   }
   interface IRegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -4797,7 +4797,7 @@ Octopus.Client.Operations
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
-    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
   }
   abstract class RegisterMachineOperationBase
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -4814,7 +4814,7 @@ Octopus.Client.Operations
     String TentacleThumbprint { get; set; }
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
-    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
   }
   class RegisterWorkerOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -4824,7 +4824,7 @@ Octopus.Client.Operations
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
     String[] WorkerPoolNames { get; set; }
-    Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+    Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
   }
 }
 Octopus.Client.Repositories.Async
