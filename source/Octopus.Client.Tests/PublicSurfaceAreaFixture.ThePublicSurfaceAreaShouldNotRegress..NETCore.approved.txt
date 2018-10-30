@@ -128,7 +128,6 @@ Octopus.Client
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
-    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions, Boolean)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
