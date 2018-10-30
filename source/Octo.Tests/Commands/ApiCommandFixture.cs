@@ -76,18 +76,13 @@ namespace Octo.Tests.Commands
         [Test]
         public Task ShouldExecuteCommandWhenCorrectCommandLineParametersArePassedWithSpaceName()
         {
-            var clientFactory = Substitute.For<IOctopusClientFactory>();
             var client = Substitute.For<IOctopusAsyncClient>();
+            ClientFactory.CreateAsyncClient(null).ReturnsForAnyArgs(client);
 
-            var repositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();
-            
-            clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>(), Arg.Any<OctopusClientOptions>())
-                .Returns(client);
-            var systemRepository = Substitute.For<IOctopusSystemAsyncRepository>();
-            systemRepository.Spaces.FindByName(Arg.Any<string>()).Returns(new SpaceResource {Id = "Spaces-2"});
-            client.ForSystem().Returns(systemRepository);
+            Repository.Spaces.FindByName(Arg.Any<string>()).Returns(new SpaceResource {Id = "Spaces-2"});
+            client.ForSystem().Returns(Repository);
 
-            apiCommand = new DummyApiCommand(repositoryFactory, FileSystem, clientFactory, CommandOutputProvider);
+            apiCommand = new DummyApiCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
             var argsWithSpaceName = CommandLineArgs.Concat(new []{"--spaceName=abc"});
             return apiCommand.Execute(argsWithSpaceName.ToArray());
         }
