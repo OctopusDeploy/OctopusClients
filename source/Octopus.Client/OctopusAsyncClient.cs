@@ -189,7 +189,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public event Action<OctopusRequest> SendingOctopusRequest;
 
         /// <summary>
-        /// Occurs when a response is received from the Octopus server.
+        /// Occurs when a response is received from the Octopus Server.
         /// </summary>
         public event Action<OctopusResponse> ReceivedOctopusResponse;
 

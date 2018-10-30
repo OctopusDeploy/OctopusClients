@@ -268,7 +268,10 @@ namespace Octo.Tests.Commands
             deploymentProcessResource.Steps.Add(deploymentStepResource);
             channelResource.AddRule(new ChannelVersionRuleResource
             {
-                Actions = new ReferenceCollection(action.Name + ":Acme"),
+                ActionPackages = new List<DeploymentActionPackageResource>
+                {
+                    new DeploymentActionPackageResource(action.Name, "Acme")
+                },
                 VersionRange = "(,1.0)"
             });
             

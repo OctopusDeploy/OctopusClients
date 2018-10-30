@@ -87,7 +87,6 @@ namespace Octopus.Cli.Commands
         {
             commandOutputProvider.PrintCommandHelpHeader(executable, commandName, writer);
             commandOutputProvider.PrintCommandOptions(Options, writer);
-            commandOutputProvider.PrintCommandHelpFooter(executable, commandName, writer);
         }
 
         private void PrintJsonHelpOutput(string commandName)

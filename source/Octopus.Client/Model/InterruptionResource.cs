@@ -6,7 +6,7 @@ using Octopus.Client.Model.Forms;
 namespace Octopus.Client.Model
 {
     /// <summary>
-    /// An interruption is a request by a process running in the Octopus server for
+    /// An interruption is a request by a process running in the Octopus Server for
     /// user action or input.
     /// </summary>
     public class InterruptionResource : Resource, IHaveSpaceResource
