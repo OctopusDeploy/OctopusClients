@@ -145,7 +145,8 @@ namespace Octopus.Cli.Commands
                 var space = await client.ForSystem().Spaces.FindByName(spaceName);
                 if (space == null)
                     throw new CommandException($"Cannot find the space with name {spaceName}");
-                Repository = repositoryFactory.CreateRepository(client, SpaceContext.SpecificSpace(space.Id));
+                
+                Repository = new OctopusAsyncRepository(client, RepositoryScope.ForSpace(space.Id));
             }
             Repository = repositoryFactory.CreateRepository(client);
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);

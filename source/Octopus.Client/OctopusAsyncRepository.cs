@@ -11,9 +11,9 @@ namespace Octopus.Client
 {
     public static class OctopusRepositoryExtensions
     {
-        public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client, SpaceContext spaceContext = null)
+        public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client)
         {
-            return new OctopusAsyncRepository(client, spaceContext);
+            return new OctopusAsyncRepository(client);
         }
     }
 
