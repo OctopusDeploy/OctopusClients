@@ -83,7 +83,7 @@ namespace Octopus.Cli.Commands.Releases
                 foreach (var step in plan.PackageSteps)
                 {
                     // Note the rule can be null, meaning: anything goes
-                    var rule = channel.Rules.SingleOrDefault(r => r.Actions.Select(ActionPackageReferenceName.Parse).Any(actionPackage => actionPackage.ActionNameMatches(step.ActionName) && actionPackage.PackageReferenceNameMatches(step.PackageReferenceName)));
+                    var rule = channel.Rules.SingleOrDefault(r => r.ActionPackages.Any(pkg => pkg.DeploymentActionNameMatches(step.ActionName) && pkg.PackageReferenceNameMatches(step.PackageReferenceName)));
                     var result = await versionRuleTester.Test(repository, rule, step.Version).ConfigureAwait(false);
                     step.SetChannelVersionRuleTestResult(result);
                 }
@@ -99,7 +99,7 @@ namespace Octopus.Cli.Commands.Releases
             if (channel == null)
                 return filters;
 
-            var rule = channel.Rules.FirstOrDefault(r => r.Actions.Select(ActionPackageReferenceName.Parse).Any(actionPackage => actionPackage.ActionNameMatches(stepName) && actionPackage.PackageReferenceNameMatches(packageReferenceName)));
+            var rule = channel.Rules.FirstOrDefault(r => r.ActionPackages.Any(pkg => pkg.DeploymentActionNameMatches(stepName) && pkg.PackageReferenceNameMatches(packageReferenceName)));
             
             if (rule == null)
                 return filters;

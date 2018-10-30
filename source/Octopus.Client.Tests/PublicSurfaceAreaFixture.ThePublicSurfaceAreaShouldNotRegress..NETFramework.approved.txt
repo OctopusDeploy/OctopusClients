@@ -1899,7 +1899,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ReferenceCollection Actions { get; set; }
+    ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
     String Tag { get; set; }
     String VersionRange { get; set; }
   }
@@ -2108,6 +2108,15 @@ Octopus.Client.Model
     {
       static System.String DeploymentId
     }
+  }
+  class DeploymentActionPackageResource
+  {
+    .ctor(String)
+    .ctor(String, String)
+    String DeploymentAction { get; set; }
+    String PackageReference { get; set; }
+    Boolean DeploymentActionNameMatches(String)
+    Boolean PackageReferenceNameMatches(String)
   }
   class DeploymentActionResource
     Octopus.Client.Extensibility.IResource
@@ -3021,6 +3030,7 @@ Octopus.Client.Model
     .ctor()
     String AcquisitionLocation { get; set; }
     String FeedId { get; set; }
+    String Id { get; }
     Boolean IsPrimaryPackage { get; }
     String Name { get; set; }
     String PackageId { get; set; }
@@ -3035,14 +3045,15 @@ Octopus.Client.Model
     .ctor()
     Int32 Count { get; }
     Boolean IsReadOnly { get; }
-    Octopus.Client.Model.PackageReference Item { get; }
     Octopus.Client.Model.PackageReference PrimaryPackage { get; }
     void Add(Octopus.Client.Model.PackageReference)
     void Clear()
     Boolean Contains(Octopus.Client.Model.PackageReference)
     void CopyTo(Octopus.Client.Model.PackageReference[], Int32)
+    Octopus.Client.Model.PackageReference GetByName(String)
     IEnumerator<PackageReference> GetEnumerator()
     Boolean Remove(Octopus.Client.Model.PackageReference)
+    Boolean TryGetByName(String, Octopus.Client.Model.PackageReference&)
   }
   class PackageResource
     Octopus.Client.Extensibility.IResource
@@ -3432,7 +3443,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ChannelId { get; set; }
-    String ReleaseCreationPackageStepId { get; set; }
+    Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
   }
   class ReleaseProgressionResource
   {
@@ -4319,7 +4330,7 @@ Octopus.Client.Model
   class VersioningStrategyResource
   {
     .ctor()
-    String DonorPackageStepId { get; set; }
+    Octopus.Client.Model.DeploymentActionPackageResource DonorPackage { get; set; }
     String Template { get; set; }
   }
   class WebPortalConfigResource
@@ -4805,6 +4816,18 @@ Octopus.Client.Model.Endpoints
     String ProxyId { get; set; }
     String Uri { get; set; }
   }
+  class OfflineDropDestinationResource
+  {
+    .ctor()
+    .ctor(String)
+    Octopus.Client.Model.Endpoints.OfflineDropDestinationType DestinationType { get; set; }
+    String DropFolderPath { get; set; }
+  }
+  OfflineDropDestinationType
+  {
+      Artifact = 0
+      FileSystem = 1
+  }
   class OfflineDropEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4813,7 +4836,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String ApplicationsDirectory { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    String DropFolderPath { get; set; }
+    Octopus.Client.Model.Endpoints.OfflineDropDestinationResource Destination { get; set; }
     String OctopusWorkingDirectory { get; set; }
     Octopus.Client.Model.SensitiveValue SensitiveVariablesEncryptionPassword { get; set; }
   }

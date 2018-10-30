@@ -56,7 +56,7 @@ namespace Octopus.Client
         }
 
         /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
+        /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
         /// server. Instead of hardcoding paths,
         /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
         /// that it is only requested once for
@@ -193,7 +193,7 @@ namespace Octopus.Client
         public event Action<OctopusRequest> SendingOctopusRequest;
 
         /// <summary>
-        /// Occurs when a response is received from the Octopus server.
+        /// Occurs when a response is received from the Octopus Server.
         /// </summary>
         public event Action<OctopusResponse> ReceivedOctopusResponse;
 

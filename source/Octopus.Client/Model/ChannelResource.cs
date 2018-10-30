@@ -64,13 +64,20 @@ namespace Octopus.Client.Model
             return AddRule(versionRange, tagRegex, actionsWithPackage);
         }
 
+        /// <summary>
+        /// Creates a rule for all packages used in the supplied actions 
+        /// </summary>
         public ChannelResource AddRule(string versionRange, string tagRegex, params DeploymentActionResource[] actions)
         {
             Rules.Add(new ChannelVersionRuleResource
             {
-                Actions = new ReferenceCollection(actions.Select(a => a.Id)),
                 VersionRange = versionRange,
-                Tag = tagRegex
+                Tag = tagRegex,
+                ActionPackages = ( 
+                    from action in actions 
+                    from package in action.Packages
+                    select new DeploymentActionPackageResource(action.Name, package.Name) 
+                    ).ToList()
             });
 
             return this;
