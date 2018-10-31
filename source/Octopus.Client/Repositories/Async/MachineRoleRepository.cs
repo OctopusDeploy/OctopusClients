@@ -12,16 +12,16 @@ namespace Octopus.Client.Repositories.Async
 
     class MachineRoleRepository : IMachineRoleRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public MachineRoleRepository(IOctopusAsyncClient client)
+        public MachineRoleRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public async Task<List<string>> GetAllRoleNames()
         {
-            var result = await client.Get<string[]>(client.Link("MachineRoles")).ConfigureAwait(false);
+            var result = await repository.Client.Get<string[]>(await repository.Link("MachineRoles").ConfigureAwait(false)).ConfigureAwait(false);
             return result.ToList();
         }
     }

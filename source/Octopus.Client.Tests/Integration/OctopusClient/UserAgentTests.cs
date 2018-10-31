@@ -25,7 +25,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task AsyncClient_ShouldProvideUserAgent_WithNameAndVersion()
         {
-            var response = await AsyncClient.Get<TestDto>(TestRootPath);
+            var response = await AsyncClient.Get<TestDto>(TestRootPath).ConfigureAwait(false);
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}", "We should set the standard User-Agent header");
         }
 

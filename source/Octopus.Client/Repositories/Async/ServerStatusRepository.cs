@@ -12,14 +12,14 @@ namespace Octopus.Client.Repositories.Async
 
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
     {
-        public ServerStatusRepository(IOctopusAsyncClient client)
-            : base(client, null) // Not a collection
+        public ServerStatusRepository(IOctopusAsyncRepository repository)
+            : base(repository, "") // Not a collection
         {
         }
 
-        public Task<ServerStatusResource> GetServerStatus()
+        public async Task<ServerStatusResource> GetServerStatus()
         {
-            return Client.Get<ServerStatusResource>(Client.Link("ServerStatus"));
+            return await Client.Get<ServerStatusResource>(await Repository.Link("ServerStatus").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task<SystemInfoResource> GetSystemInfo(ServerStatusResource status)

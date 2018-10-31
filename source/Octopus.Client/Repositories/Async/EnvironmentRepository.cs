@@ -37,8 +37,8 @@ namespace Octopus.Client.Repositories.Async
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
-        public EnvironmentRepository(IOctopusAsyncClient client)
-            : base(client, "Environments")
+        public EnvironmentRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Environments")
         {
         }
 
@@ -74,7 +74,7 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public Task<EnvironmentsSummaryResource> Summary(
+        public async Task<EnvironmentsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories.Async
             string tenantTags = null,
             bool? hideEmptyEnvironments = false)
         {
-            return Client.Get<EnvironmentsSummaryResource>(Client.Link("EnvironmentsSummary"), new
+            return await Client.Get<EnvironmentsSummaryResource>(await Repository.Link("EnvironmentsSummary").ConfigureAwait(false), new
             {
                 ids,
                 partialName,
@@ -98,12 +98,12 @@ namespace Octopus.Client.Repositories.Async
                 tenantIds,
                 tenantTags,
                 hideEmptyEnvironments,
-            });
+            }).ConfigureAwait(false);
         }
 
-        public Task Sort(string[] environmentIdsInOrder)
+        public async Task Sort(string[] environmentIdsInOrder)
         {
-            return Client.Put(Client.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+            await Client.Put(await Repository.Link("EnvironmentSortOrder").ConfigureAwait(false), environmentIdsInOrder).ConfigureAwait(false);
         }
 
         public Task<EnvironmentEditor> CreateOrModify(string name)

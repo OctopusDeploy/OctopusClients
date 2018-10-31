@@ -57,13 +57,13 @@ namespace Octopus.Client.Repositories
     
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
-        public EventRepository(IOctopusClient client)
-            : base(client, "Events")
+        public EventRepository(IOctopusRepository repository)
+            : base(repository, "Events")
         {
         }
 
-        EventRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "Events", spaceContext)
+        EventRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Events", userDefinedSpaceContext)
         {
         }
 
@@ -73,7 +73,7 @@ namespace Octopus.Client.Repositories
             string regardingDocumentId = null,
             bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.Link("Events"), new
+            return Client.List<EventResource>(Repository.Link("Events"), new
             {
                 skip,
                 user = filterByUserId,
@@ -122,12 +122,12 @@ namespace Octopus.Client.Repositories
                 toAutoId,
                 documentTypes
             });
-            return Client.List<EventResource>(Client.Link("Events"), parameters);
+            return Client.List<EventResource>(Repository.Link("Events"), parameters);
         }
 
-        public IEventRepository Including(SpaceContext spaceContext)
+        public IEventRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new EventRepository(Client, ExtendSpaceContext(spaceContext));
+            return new EventRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

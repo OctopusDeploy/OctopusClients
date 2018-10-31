@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -19,8 +20,8 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_ActionOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
-            var repository = new TaskRepository(client);
+            SetupClient(client);
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
@@ -48,8 +49,8 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletionReportsProgress_TaskOverload()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
-            var repository = new TaskRepository(client);
+            SetupClient(client);
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
@@ -76,8 +77,8 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void WaitForCompletion_CancelsInATimelyManner()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
-            client.SpaceContext.Returns(SpaceContext.SpecificSpaceAndSystem("Spaces-1"));
-            var repository = new TaskRepository(client);
+            SetupClient(client);
+            var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
             client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
@@ -102,6 +103,17 @@ namespace Octopus.Client.Tests.Repositories.Async
 
             sw.Elapsed.Should().BeGreaterOrEqualTo(TimeSpan.FromSeconds(3), "Should run until the cancel time");
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(5), "Should complete close to cancel time");
+        }
+
+        void SetupClient(IOctopusAsyncClient client)
+        {
+            client.Repository.LoadRootDocument().Returns(new RootResource()
+            {
+                ApiVersion = "3.0.0",
+                Links = LinkCollection.Self("/api")
+                    .Add("CurrentUser", "/api/users/me")
+            });
+            client.Get<UserResource>(Arg.Any<string>()).Throws(new OctopusSecurityException(401, "Test"));
         }
     }
 }

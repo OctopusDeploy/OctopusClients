@@ -1,8 +1,9 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class SpaceResource : Resource
+    public class SpaceResource : Resource, INamedResource
     {
         public SpaceResource()
         {

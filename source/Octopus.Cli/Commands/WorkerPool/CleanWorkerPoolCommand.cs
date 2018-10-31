@@ -45,9 +45,9 @@ namespace Octopus.Cli.Commands.WorkerPools
             workerPoolResource = await GetWorkerPool().ConfigureAwait(false);
 
             machines = await FilterByWorkerPool(workerPoolResource).ConfigureAwait(false);
-            machines = FilterByState(machines);
+            machines = await FilterByState(machines).ConfigureAwait(false);
 
-            await CleanUpPool(machines.ToList(), workerPoolResource);
+            await CleanUpPool(machines.ToList(), workerPoolResource).ConfigureAwait(false);
         }
 
         private async Task CleanUpPool(List<WorkerResource> filteredMachines, WorkerPoolResource poolResource)
@@ -85,9 +85,10 @@ namespace Octopus.Cli.Commands.WorkerPools
             }
         }
 
-        private IEnumerable<WorkerResource> FilterByState(IEnumerable<WorkerResource> workers)
+        private async Task<IEnumerable<WorkerResource>> FilterByState(IEnumerable<WorkerResource> workers)
         {
-            var provider = new HealthStatusProvider(Repository, new HashSet<string>(StringComparer.OrdinalIgnoreCase), healthStatuses, commandOutputProvider);
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+            var provider = new HealthStatusProvider(Repository, new HashSet<string>(StringComparer.OrdinalIgnoreCase), healthStatuses, commandOutputProvider, rootDocument);
             workers = provider.Filter(workers);
 
             if (isDisabled.HasValue)

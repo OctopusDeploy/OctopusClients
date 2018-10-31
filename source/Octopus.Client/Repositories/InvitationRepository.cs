@@ -5,8 +5,8 @@ namespace Octopus.Client.Repositories
 {
     class InvitationRepository : BasicRepository<InvitationResource>, ICreate<InvitationResource>
     {
-        public InvitationRepository(IOctopusClient client)
-            : base(client, "Invitations")
+        public InvitationRepository(IOctopusRepository repository)
+            : base(repository, "Invitations")
         {
         }
     }

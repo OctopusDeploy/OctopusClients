@@ -12,11 +12,12 @@ namespace Octopus.Client.Tests
         public void EnsureAllRepositoryPropertiesHaveBeenAdded()
         {
             var i = typeof(IOctopusAsyncRepository);
+            var implementedInterfacesProps = i.GetInterfaces().SelectMany(thisInterface => thisInterface.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository"))).ToList();
             var interfaceProps = i.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
             var t = typeof(OctopusAsyncRepository);
             var implementationProps = t.GetProperties().Where(p => p.PropertyType.Name.EndsWith("Repository")).ToList();
 
-            Assert.That(interfaceProps.Count(), Is.EqualTo(implementationProps.Count()), GetDifferenceMessage(interfaceProps, implementationProps));
+            Assert.That(interfaceProps.Count + implementedInterfacesProps.Count, Is.EqualTo(implementationProps.Count()), GetDifferenceMessage(interfaceProps, implementationProps));
         }
 
         static string GetDifferenceMessage(IEnumerable<PropertyInfo> interfaceProps, IEnumerable<PropertyInfo> implementationProps)

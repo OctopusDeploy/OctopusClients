@@ -6,16 +6,7 @@ namespace Octopus.Client.Util
     {
         public static string AppendSpaceId(this Href link, string spaceId)
         {
-            return AppendSpaceId(link.ToString(), spaceId);
-        }
-
-        public static string AppendSpaceId(this string link, string spaceId)
-        {
-            if (!string.IsNullOrEmpty(spaceId))
-            {
-                link += $"/{spaceId}";
-            }
-            return link;
+            return $"{link}/{spaceId}";
         }
     }
 }

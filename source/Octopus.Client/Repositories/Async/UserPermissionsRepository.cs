@@ -16,31 +16,31 @@ namespace Octopus.Client.Repositories.Async
     
     class UserPermissionsRepository : MixedScopeBaseRepository<UserPermissionSetResource>, IUserPermissionsRepository
     {
-        public UserPermissionsRepository(IOctopusAsyncClient client)
-            : base(client, null, null)
+        public UserPermissionsRepository(IOctopusAsyncRepository repository)
+            : base(repository, null)
         {
         }
 
-        UserPermissionsRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
-            : base(client, null, spaceContext)
+        UserPermissionsRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
+            : base(repository, null, spaceContext)
         {
         }
 
-        public Task<UserPermissionSetResource> Get(UserResource user)
+        public async Task<UserPermissionSetResource> Get(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"), AdditionalQueryParameters);
+            return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
         
-        public Task<Stream> Export(UserPermissionSetResource userPermissions)
+        public async Task<Stream> Export(UserPermissionSetResource userPermissions)
         {
             if (userPermissions == null) throw new ArgumentNullException(nameof(userPermissions));
-            return Client.GetContent(userPermissions.Link("Export"), AdditionalQueryParameters);
+            return await Client.GetContent(userPermissions.Link("Export"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
-        public IUserPermissionsRepository Including(SpaceContext spaceContext)
+        public IUserPermissionsRepository UsingContext(SpaceContext spaceContext)
         {
-            return new UserPermissionsRepository(Client, base.ExtendSpaceContext(spaceContext));
+            return new UserPermissionsRepository(Repository, spaceContext);
         }
     }
 }

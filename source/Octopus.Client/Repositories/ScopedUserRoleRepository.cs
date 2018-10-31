@@ -15,19 +15,19 @@ namespace Octopus.Client.Repositories
     
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
-        public ScopedUserRoleRepository(IOctopusClient client)
-            : base(client, "ScopedUserRoles")
+        public ScopedUserRoleRepository(IOctopusRepository repository)
+            : base(repository, "ScopedUserRoles")
         {
         }
 
-        ScopedUserRoleRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "ScopedUserRoles", spaceContext)
+        ScopedUserRoleRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "ScopedUserRoles", userDefinedSpaceContext)
         {
         }
 
-        public IScopedUserRoleRepository Including(SpaceContext spaceContext)
+        public IScopedUserRoleRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new ScopedUserRoleRepository(Client, ExtendSpaceContext(spaceContext));
+            return new ScopedUserRoleRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

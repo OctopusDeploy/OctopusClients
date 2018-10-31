@@ -47,6 +47,7 @@ namespace Octopus.Cli.Commands
         string password;
         string username;
         readonly OctopusClientOptions clientOptions = new OctopusClientOptions();
+        string spaceName;
 
         protected ApiCommand(IOctopusClientFactory clientFactory, IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
@@ -68,6 +69,7 @@ namespace Octopus.Cli.Commands
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
             options.Add("proxyUser=", $"[Optional] The username for the proxy.", v => clientOptions.ProxyUsername = v);
             options.Add("proxyPass=", $"[Optional] The password for the proxy. If both the username and password are omitted and proxyAddress is specified, the default credentials are used. ", v => clientOptions.ProxyPassword = v);
+            options.Add("space=", $"[Optional] The name of a space within which this command will be executed. The default space will be used if it is omitted. ", v => spaceName = v);
             options.AddLogLevelOptions();
         }
 
@@ -138,7 +140,23 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
-            Repository = repositoryFactory.CreateRepository(client);
+
+            if (!string.IsNullOrEmpty(spaceName))
+            {
+                commandOutputProvider.Debug("Finding space: {Space:l}", spaceName);
+                var space = await client.ForSystem().Spaces.FindByName(spaceName).ConfigureAwait(false);
+                if (space == null)
+                    throw new CommandException($"Cannot find the space with name {spaceName}");
+
+                Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space.Id));
+                commandOutputProvider.Debug("Space name specified, process is now running in the context of space: {space:l}", spaceName);
+            }
+            else
+            {
+                Repository = repositoryFactory.CreateRepository(client);
+                commandOutputProvider.Debug("Space name unspecified, process will try to run in the default space context if it is enabled, or in backwards compatible mode for older versions of Octopus Server");
+            }
+            
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
             
             if (enableDebugging)
@@ -148,13 +166,13 @@ namespace Octopus.Cli.Commands
 
             commandOutputProvider.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
 
-            var root = Repository.Client.RootDocument;
+            var root = await Repository.LoadRootDocument().ConfigureAwait(false);
 
             commandOutputProvider.Debug("Handshake successful. Octopus version: {Version:l}; API version: {ApiVersion:l}", root.Version, root.ApiVersion);
 
             if (!string.IsNullOrWhiteSpace(Username))
             {
-                await Repository.Users.SignIn(Username, Password);
+                await Repository.Users.SignIn(Username, Password).ConfigureAwait(false);
             }
 
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
@@ -163,11 +181,11 @@ namespace Octopus.Cli.Commands
                 commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
-            ValidateParameters();
+            await ValidateParameters().ConfigureAwait(false);
             await Execute().ConfigureAwait(false);
         }
 
-        protected virtual void ValidateParameters() { }
+        protected virtual Task ValidateParameters() { return Task.WhenAll();}
 
         protected virtual async Task Execute()
         {

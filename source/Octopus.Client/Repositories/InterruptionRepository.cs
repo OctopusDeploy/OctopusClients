@@ -21,14 +21,14 @@ namespace Octopus.Client.Repositories
     
     class InterruptionRepository : BasicRepository<InterruptionResource>, IInterruptionRepository
     {
-        public InterruptionRepository(IOctopusClient client)
-            : base(client, "Interruptions")
+        public InterruptionRepository(IOctopusRepository repository)
+            : base(repository, "Interruptions")
         {
         }
 
         public ResourceCollection<InterruptionResource> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return Client.List<InterruptionResource>(Client.Link("Interruptions"), new { skip,take, pendingOnly, regarding = regardingDocumentId });
+            return Client.List<InterruptionResource>(Repository.Link("Interruptions"), new { skip,take, pendingOnly, regarding = regardingDocumentId });
         }
 
         public void Submit(InterruptionResource interruption)

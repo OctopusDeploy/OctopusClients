@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
@@ -22,159 +23,61 @@ namespace Octopus.Client
     public class OctopusClient : IHttpOctopusClient
     {
         readonly OctopusServerEndpoint serverEndpoint;
-        CookieContainer cookieContainer = new CookieContainer();
+        readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly SemanticVersion clientVersion;
-        readonly string rootDocumentUri;
-        private Lazy<RootResources> rootResourcesLazy;
-        private bool signedIn = false;
-        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        private string antiforgeryCookieName = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint) : this(serverEndpoint, null)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint)
         {
-        }
-
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext = null)
-        {
-            SpaceContext = spaceContext;
-            rootDocumentUri = "~/api";
-            rootResourcesLazy = new Lazy<RootResources>(LoadInitialRootResources, true);
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             clientVersion = GetType().GetSemanticVersion();
+            Repository = new OctopusRepository(this);
         }
 
-        OctopusClient(OctopusServerEndpoint serverEndpoint, SpaceContext spaceContext,
-            CookieContainer preservedCookieContainer): this(serverEndpoint, spaceContext)
-        {
-            cookieContainer = preservedCookieContainer;
-        }
-
-        /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusClient" />.
-        /// </summary>
-        public RootResource RootDocument => rootResourcesLazy.Value.RootResource;
-
-        public SpaceRootResource SpaceRootDocument => rootResourcesLazy.Value.SpaceRootResource;
+        public IOctopusRepository Repository { get; private set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public RootResource RefreshRootDocument()
+        public IOctopusSpaceRepository ForSpace(string spaceId)
         {
-            rootResourcesLazy = new Lazy<RootResources>(() =>
-            {
-                var rootResource = Get<RootResource>(rootDocumentUri);
-                var spaceRootResource = LoadSpaceResource(rootResource);
-                return new RootResources(rootResource, spaceRootResource);
-            });
-            return rootResourcesLazy.Value.RootResource;
+            ValidateSpaceId(spaceId);
+            return new OctopusRepository(this, RepositoryScope.ForSpace(spaceId));
         }
 
-        RootResources LoadInitialRootResources()
+        public IOctopusSystemRepository ForSystem()
         {
-            var root = EstablishSession();
-            var spaceRoot = LoadSpaceResource(root);
-            return new RootResources(root, spaceRoot);
+            return new OctopusRepository(this, RepositoryScope.ForSystem());
         }
 
-        private SpaceRootResource LoadSpaceResource(RootResource rootDocument)
-        {
-            if (this.SpaceContext == null)
-            {
-                // This check will allow Spaces aware Client to work with a pre-Spaces Server. 
-                if (!rootDocument.HasLink("Spaces"))
-                {
-                    SpaceContext = SpaceContext.SystemOnly();
-                    return null;
-                }
-
-                var defaultSpace = GetDefaultSpace(rootDocument);
-                SpaceContext = defaultSpace == null ? SpaceContext.SystemOnly() : SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id);
-            }
-
-            var spaceId = GetSpaceId(SpaceContext);
-            return string.IsNullOrEmpty(spaceId) ? null : Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new { spaceId });
-        }
-
-        class RootResources
-        {
-            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
-            {
-                RootResource = rootResource;
-                SpaceRootResource = spaceRootResource;
-            }
-
-            public RootResource RootResource { get; }
-            public SpaceRootResource SpaceRootResource { get; }
-        }
-
-        public SpaceContext SpaceContext { get; private set; }
         public void SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            Post(Link("SignIn"), loginCommand);
-            signedIn = true;
-            SpaceContext = null;
-            var closureRoot = this.RootDocument;
-            rootResourcesLazy = new Lazy<RootResources>(() =>
-            {
-                var spaceRoot = LoadSpaceResource(closureRoot);
-                return new RootResources(closureRoot, spaceRoot);
-            });
+            Post(Repository.LoadRootDocument().Links["SignIn"], loginCommand);
+
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
+            Repository = new OctopusRepository(this);
         }
 
         public void SignOut()
         {
-            Post(Link("SignOut"));
-            signedIn = false;
-        }
-
-        public IOctopusClient ForSpace(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return new OctopusClient(this.serverEndpoint, SpaceContext = SpaceContext.SpecificSpace(spaceId), cookieContainer);
-        }
-
-        public IOctopusClient ForSpaceAndSystem(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return new OctopusClient(this.serverEndpoint, SpaceContext.SpecificSpaceAndSystem(spaceId), cookieContainer);
-        }
-
-        public IOctopusClient ForSystem()
-        {
-            return new OctopusClient(this.serverEndpoint, SpaceContext.SystemOnly(), cookieContainer);
-        }
-
-        public bool HasLink(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
-        }
-
-        public string Link(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
-                ? value.AsString()
-                : RootDocument.Link(name);
+            Post(Repository.LoadRootDocument().Links["SignOut"]);
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -202,9 +105,7 @@ namespace Octopus.Client
         /// </summary>
         public void Initialize()
         {
-            // Force the Lazy instance to be loaded
-            RootDocument.Link("Self");
-            SpaceRootDocument.Link("Self");
+            Repository.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -480,65 +381,6 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual RootResource EstablishSession()
-        {
-            RootResource server;
-
-            var watch = Stopwatch.StartNew();
-            Exception lastError = null;
-
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
-            while (true)
-            {
-                if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
-                {
-                    if (lastError == null)
-                    {
-                        throw new Exception("Unable to connect to the Octopus Deploy server.");
-                    }
-
-                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
-                }
-
-                try
-                {
-                    server = Get<RootResource>(this.rootDocumentUri);
-                    break;
-                }
-                catch (WebException ex)
-                {
-                    Thread.Sleep(1000);
-                    lastError = ex;
-                }
-                catch (OctopusServerException ex)
-                {
-                    if (ex.HttpStatusCode != 503)
-                    {
-                        // 503 means the service is starting, so give it some time to start
-                        throw;
-                    }
-
-                    Thread.Sleep(500);
-                    lastError = ex;
-                }
-                retries--;
-            }
-
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
-                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
-
-            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
-            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
-
-            if (current < min || current > max)
-                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
-
-            return server;
-        }
-
         protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
@@ -568,12 +410,11 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (rootResourcesLazy.IsValueCreated)
+            if (!string.IsNullOrEmpty(antiforgeryCookieName))
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
-                    .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                    .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                 if (antiforgeryCookie != null)
                 {
                     webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
@@ -716,39 +557,24 @@ namespace Octopus.Client
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
         private void ValidateSpaceId(string spaceId)
         {
             if (string.IsNullOrEmpty(spaceId))
             {
                 throw new ArgumentException("spaceId cannot be null");
             }
+
             if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
             {
                 throw new ArgumentException("Invalid spaceId");
             }
-        }
-
-        private static string GetSpaceId(SpaceContext spaceContext)
-        {
-            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
-        }
-
-        private SpaceResource GetDefaultSpace(RootResource root)
-        {
-            if (IsAuthenticated)
-            {
-                var currentUser = Get<UserResource>(root.Links["CurrentUser"]);
-                var userSpaces = Get<SpaceResource[]>(currentUser.Links["Spaces"]);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -13,8 +12,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
@@ -27,25 +26,19 @@ namespace Octopus.Client
     public class OctopusAsyncClient : IOctopusAsyncClient
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
-
-        readonly OctopusServerEndpoint serverEndpoint;
-        readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+     
+        private readonly OctopusServerEndpoint serverEndpoint;
+        private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
-        bool ignoreSslErrorMessageLogged = false;
-        private readonly string rootDocumentUri;
-        private OctopusClientOptions clientOptions;
-        private bool signedIn = false;
-        private bool IsAuthenticated => (signedIn || !string.IsNullOrEmpty(this.serverEndpoint.ApiKey));
+        private bool ignoreSslErrorMessageLogged = false;
+        private string antiforgeryCookieName = null;
 
-        // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
         {
-            clientOptions = options ?? new OctopusClientOptions();
-            cookieContainer = clientOptions.CookieContainer ?? cookieContainer;
-            this.rootDocumentUri = "~/api";
+            var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -77,6 +70,7 @@ namespace Octopus.Client
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
+            Repository = new OctopusAsyncRepository(this);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -114,80 +108,42 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return false;
         }
 
+        public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
+        {
+            ValidateSpaceId(spaceId);
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(spaceId));
+        }
+
+        public IOctopusSystemAsyncRepository ForSystem()
+        {
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
+        }
+
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true);
+                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors");
-                return await Create(serverEndpoint, options, false);
+                return await Create(serverEndpoint, options, false).ConfigureAwait(false);
             }
 #else
-            return await Create(serverEndpoint, options, false);
+            return await Create(serverEndpoint, options, false).ConfigureAwait(false);
 #endif
         }
 
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
         {
             var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
-            try
-            {
-                var rootResource = await client.EstablishSession().ConfigureAwait(false);
-                var spaceRootResource = await LoadSpaceRootResource(client, rootResource);
-                client.RootDocuments = new RootResources(rootResource, spaceRootResource);
-                client.Repository = new OctopusAsyncRepository(client);
-                return client;
-            }
-            catch
-            {
-                client.Dispose();
-                throw;
-            }
-        }
-
-        private static async Task<SpaceRootResource> LoadSpaceRootResource(OctopusAsyncClient client, RootResource rootResource)
-        {
-            if (client.clientOptions.SpaceContext == null)
-            {
-                var defaultSpace = await GetDefaultSpace(client, rootResource);
-                client.clientOptions.SpaceContext = defaultSpace != null ? SpaceContext.SpecificSpaceAndSystem(defaultSpace.Id) : SpaceContext.SystemOnly();
-            }
-
-            var spaceId = GetSpaceId(client.SpaceContext);
-            return !string.IsNullOrEmpty(spaceId) ?
-                await client.Get<SpaceRootResource>(rootResource.Link("SpaceHome"), new { spaceId }).ConfigureAwait(false)
-                : null;
-        }
-
-
-        /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusAsyncClient" />.
-        /// </summary>
-        public RootResource RootDocument => RootDocuments.RootResource;
-
-        public SpaceRootResource SpaceRootDocument => RootDocuments.SpaceRootResource;
-
-        RootResources RootDocuments { get; set; }
-
-        class RootResources
-        {
-            public RootResources(RootResource rootResource, SpaceRootResource spaceRootResource)
-            {
-                RootResource = rootResource;
-                SpaceRootResource = spaceRootResource;
-            }
-
-            public RootResource RootResource { get; }
-            public SpaceRootResource SpaceRootResource { get; }
+            // User used to see this exception 
+            // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
+            await client.Repository.LoadRootDocument().ConfigureAwait(false);
+            return client;
         }
 
         /// <summary>
@@ -195,66 +151,26 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public async Task<RootResource> RefreshRootDocument()
-        {
-            var rootDocument = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-            var spaceRootDocument = await LoadSpaceRootResource(this, rootDocument);
-            RootDocuments = new RootResources(rootDocument, spaceRootDocument);
-            return rootDocument;
-        }
-
-        public async Task<IOctopusAsyncClient> ForSpace(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpace(spaceId)));
-        }
-
-        public async Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId)
-        {
-            ValidateSpaceId(spaceId);
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SpecificSpaceAndSystem(spaceId)));
-        }
-
-        public async Task<IOctopusAsyncClient> ForSystem()
-        {
-            return await Create(this.serverEndpoint, CreateClientOptions(SpaceContext.SystemOnly()));
-        }
-
-        public bool HasLink(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.HasLink(name) || RootDocument.HasLink(name);
-        }
-
-        public string Link(string name)
-        {
-            return SpaceRootDocument != null && SpaceRootDocument.Links.TryGetValue(name, out var value)
-                ? value.AsString()
-                : RootDocument.Link(name);
-        }
-
-        public SpaceContext SpaceContext => clientOptions.SpaceContext;
-
         public async Task SignIn(LoginCommand loginCommand)
         {
             if (loginCommand.State == null)
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(Link("SignIn"), loginCommand);
-            signedIn = true;
-            this.clientOptions.SpaceContext = null;
-            var spaceRoot = await LoadSpaceRootResource(this, RootDocument);
-            RootDocuments = new RootResources(RootDocument, spaceRoot);
+            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand).ConfigureAwait(false);
+
+            // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
+            Repository = new OctopusAsyncRepository(this);
         }
 
         public async Task SignOut()
         {
-            await Post(Link("SignOut"));
-            signedIn = false;
+            await Post(await Repository.Link("SignOut").ConfigureAwait(false)).ConfigureAwait(false);
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -329,7 +245,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 resources.AddRange(r.Items);
                 return true;
-            });
+            }).ConfigureAwait(false);
             return resources;
         }
 
@@ -545,65 +461,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual async Task<RootResource> EstablishSession()
-        {
-            RootResource server;
-
-            var watch = Stopwatch.StartNew();
-            Exception lastError = null;
-
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
-            while (true)
-            {
-                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
-                {
-                    if (lastError == null)
-                    {
-                        throw new Exception("Unable to connect to the Octopus Deploy server.");
-                    }
-
-                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
-                }
-
-                try
-                {
-                    server = await Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
-                    break;
-                }
-                catch (HttpRequestException ex)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                    lastError = ex;
-                }
-                catch (OctopusServerException ex)
-                {
-                    if (ex.HttpStatusCode != 503)
-                    {
-                        // 503 means the service is starting, so give it some time to start
-                        throw;
-                    }
-
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
-                    lastError = ex;
-                }
-                retries--;
-            }
-
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
-                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
-
-            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
-            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
-
-            if (current < min || current > max)
-                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({server.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
-
-            return server;
-        }
-
         protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             using (var message = new HttpRequestMessage())
@@ -617,12 +474,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (RootDocuments != null)
+                if (!string.IsNullOrEmpty(antiforgeryCookieName))
                 {
-                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                         .Cast<Cookie>()
-                        .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                        .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                     if (antiforgeryCookie != null)
                     {
                         message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
@@ -714,7 +570,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             try
             {
-                var s = str;
                 return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
             }
             catch (Exception ex)
@@ -722,19 +577,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
-        }
-
-        private OctopusClientOptions CreateClientOptions(SpaceContext spaceContext)
-        {
-            return new OctopusClientOptions()
-            {
-                Proxy = clientOptions.Proxy,
-                ProxyPassword = clientOptions.ProxyPassword,
-                ProxyUsername = clientOptions.ProxyUsername,
-                Timeout = clientOptions.Timeout,
-                SpaceContext = spaceContext,
-                CookieContainer = this.cookieContainer
-            };
         }
 
         private void ValidateSpaceId(string spaceId)
@@ -748,24 +590,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 throw new ArgumentException("Invalid spaceId");
             }
-        }
-
-        private static string GetSpaceId(SpaceContext spaceContext)
-        {
-            return spaceContext.SpaceIds.Count == 1 && !spaceContext.SpaceIds.Contains(MixedScopeConstants.AllSpacesQueryStringParameterValue) ? spaceContext.SpaceIds.Single() : null;
-        }
-
-        private static async Task<SpaceResource> GetDefaultSpace(OctopusAsyncClient client, RootResource rootResource)
-        {
-            if (client.IsAuthenticated)
-            {
-                var currentUser =
-                    await client.Get<UserResource>(rootResource.Links["CurrentUser"]).ConfigureAwait(false);
-                var userSpaces = await client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
-                return userSpaces.SingleOrDefault(s => s.IsDefault);
-            }
-
-            return null;
         }
 
         /// <summary>

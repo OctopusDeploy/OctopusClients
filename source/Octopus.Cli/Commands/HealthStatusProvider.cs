@@ -23,12 +23,12 @@ namespace Octopus.Cli.Commands
         public static readonly string[] StatusNames = Enum.GetNames(typeof(MachineModelStatus));
         public static readonly string[] HealthStatusNames = Enum.GetNames(typeof(MachineModelHealthStatus));
 
-        public HealthStatusProvider(IOctopusAsyncRepository repository, HashSet<string> statuses, HashSet<string> healthStatuses, ICommandOutputProvider commandOutputProvider)
+        public HealthStatusProvider(IOctopusAsyncRepository repository, HashSet<string> statuses, HashSet<string> healthStatuses, ICommandOutputProvider commandOutputProvider, RootResource rootDocument)
         {
             this.statuses = statuses;
             this.healthStatuses = healthStatuses;
             this.commandOutputProvider = commandOutputProvider;
-            IsHealthStatusPendingDeprication = (new SemanticVersion(repository.Client.RootDocument.Version).Version >= new SemanticVersion("3.4.0").Version);
+            IsHealthStatusPendingDeprication = (new SemanticVersion(rootDocument.Version).Version >= new SemanticVersion("3.4.0").Version);
             ValidateOptions();
         }
 

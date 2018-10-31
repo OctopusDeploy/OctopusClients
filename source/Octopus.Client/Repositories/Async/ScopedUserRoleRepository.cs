@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 
@@ -14,19 +15,19 @@ namespace Octopus.Client.Repositories.Async
 
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
-        public ScopedUserRoleRepository(IOctopusAsyncClient client)
-            : base(client, "ScopedUserRoles")
+        public ScopedUserRoleRepository(IOctopusAsyncRepository repository)
+            : base(repository, "ScopedUserRoles")
         {
         }
 
-        ScopedUserRoleRepository(IOctopusAsyncClient client, SpaceContext spaceContext)
-            : base(client, "ScopedUserRoles", spaceContext)
+        ScopedUserRoleRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
+            : base(repository, "ScopedUserRoles", spaceContext)
         {
         }
 
-        public IScopedUserRoleRepository Including(SpaceContext spaceContext)
+        public IScopedUserRoleRepository UsingContext(SpaceContext spaceContext)
         {
-            return new ScopedUserRoleRepository(Client, ExtendSpaceContext(spaceContext));
+            return new ScopedUserRoleRepository(Repository, spaceContext);
         }
     }
 }

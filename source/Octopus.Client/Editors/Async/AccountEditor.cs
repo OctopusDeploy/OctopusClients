@@ -21,13 +21,13 @@ namespace Octopus.Client.Editors.Async
 
         public async Task<TAccountEditor> CreateOrModify(string name)
         {
-            var existing = await Repository.FindByName(name);
+            var existing = await Repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
                 Instance = (TAccountResource)await Repository.Create(new TAccountResource
                 {
                     Name = name
-                });
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -44,7 +44,7 @@ namespace Octopus.Client.Editors.Async
 
         public async Task<TAccountEditor> FindByName(string name)
         {
-            var existing = await Repository.FindByName(name);
+            var existing = await Repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {
                 throw new ArgumentException($"An account with the name {name} could not be found");

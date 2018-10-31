@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories
     
     class DashboardRepository : IDashboardRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public DashboardRepository(IOctopusClient client)
+        public DashboardRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public DashboardResource GetDashboard()
         {
-            return client.Get<DashboardResource>(client.Link("Dashboard"));
+            return repository.Client.Get<DashboardResource>(repository.Link("Dashboard"));
         }
 
         public DashboardResource GetDynamicDashboard(string[] projects, string[] environments)
         {
-            return client.Get<DashboardResource>(client.Link("DashboardDynamic"), new { projects, environments });
+            return repository.Client.Get<DashboardResource>(repository.Link("DashboardDynamic"), new { projects, environments });
         }
     }
 }

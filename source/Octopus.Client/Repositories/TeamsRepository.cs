@@ -18,13 +18,13 @@ namespace Octopus.Client.Repositories
     
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
-        public TeamsRepository(IOctopusClient client)
-            : base(client, "Teams")
+        public TeamsRepository(IOctopusRepository repository)
+            : base(repository, "Teams")
         {
         }
 
-        TeamsRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "Teams", spaceContext)
+        TeamsRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Teams", userDefinedSpaceContext)
         {
         }
 
@@ -42,9 +42,9 @@ namespace Octopus.Client.Repositories
             return resources;
         }
 
-        public ITeamsRepository Including(SpaceContext spaceContext)
+        public ITeamsRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new TeamsRepository(Client, ExtendSpaceContext(spaceContext));
+            return new TeamsRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

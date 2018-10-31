@@ -15,26 +15,35 @@ namespace Octopus.Client.Repositories
     
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
     {
-        public CommunityActionTemplateRepository(IOctopusClient client) : base(client, "CommunityActionTemplates")
+        public CommunityActionTemplateRepository(IOctopusRepository repository) : base(repository, "CommunityActionTemplates")
         {
         }
 
         public void Install(CommunityActionTemplateResource resource)
         {
-            Client.SpaceContext.EnsureSingleSpaceContext();
-            Client.Post(resource.Links["Installation"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
+            var baseLink = resource.Links["Installation"];
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
+            Client.Post(link);
         }
 
         public void UpdateInstallation(CommunityActionTemplateResource resource)
         {
-            Client.SpaceContext.EnsureSingleSpaceContext();
-            Client.Put(resource.Links["Installation"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
+            var baseLink = resource.Links["Installation"];
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
+            Client.Put(link);
         }
 
         public ActionTemplateResource GetInstalledTemplate(CommunityActionTemplateResource resource)
         {
-            Client.SpaceContext.EnsureSingleSpaceContext();
-            return Client.Get<ActionTemplateResource>(resource.Links["InstalledTemplate"].AppendSpaceId(Client.SpaceContext.SpaceIds.Single()));
+            var baseLink = resource.Links["InstalledTemplate"];
+            var link = Repository.Scope.Apply(spaceId => baseLink.AppendSpaceId(spaceId),
+                () => throw new SpaceScopedOperationInSystemContextException(),
+                () => baseLink.ToString()); // Link without a space id acts on the default space
+            return Client.Get<ActionTemplateResource>(link);
         }
     }
 }

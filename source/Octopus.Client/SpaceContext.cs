@@ -1,40 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
 {
+    public enum SpaceSelection
+    {
+        AllSpaces,
+        SpecificSpaces
+    }
+
     public class SpaceContext
     {
+        public static SpaceContext AllSpaces() => new SpaceContext(SpaceSelection.AllSpaces, new string[] { }, false);
+        public static SpaceContext AllSpacesAndSystem() => new SpaceContext(SpaceSelection.AllSpaces, new string[] { }, true);
+        public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new [] {spaceId}, false);
+        public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(SpaceSelection.SpecificSpaces, new []{spaceId}, true);
+        public static SpaceContext SpecificSpaces(IEnumerable<string> spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds.ToArray(), false);
+        public static SpaceContext SpecificSpacesAndSystem(IEnumerable<string> spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds.ToArray(), true);
+        public static SpaceContext SpecificSpaces(params string[] spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds, false);
+        public static SpaceContext SpecificSpacesAndSystem(params string[] spaceIds) => new SpaceContext(SpaceSelection.SpecificSpaces, spaceIds, true);
+        public static SpaceContext SystemOnly() => new SpaceContext(SpaceSelection.SpecificSpaces, new string[0], true);
+        
+        private readonly SpaceSelection spaceSelection;
+        private readonly IReadOnlyCollection<string> spaceIds;
 
-        public static SpaceContext SpecificSpace(string spaceId) => new SpaceContext(new [] {spaceId}, false);
-        public static SpaceContext SpecificSpaceAndSystem(string spaceId) => new SpaceContext(new []{spaceId}, true);
-        public static SpaceContext SystemOnly() => new SpaceContext(new string[0], true);
-
-        internal SpaceContext(IReadOnlyCollection<string> spaceIds, bool includeSystem)
+        private SpaceContext(SpaceSelection spaceSelection, IReadOnlyCollection<string> spaceIds, bool includeSystem)
         {
-            if (spaceIds.Count == 0 && !includeSystem)
-                throw new ArgumentException("At least 1 spaceId is required when includeSystem is set to false");
-            this.SpaceIds = spaceIds;
+            this.spaceSelection = spaceSelection;
+            this.spaceIds = spaceIds;
             this.IncludeSystem = includeSystem;
         }
 
-        public IReadOnlyCollection<string> SpaceIds { get; } 
         public bool IncludeSystem { get; }
-
-        public SpaceContext Union(SpaceContext spaceContext)
+        public T ApplySpaceSelection<T>(Func<IReadOnlyCollection<string>, T> handleSpecificSpaces, Func<T> handleAllSpaces)
         {
-            return new SpaceContext(this.SpaceIds.Concat(spaceContext.SpaceIds).ToArray(), this.IncludeSystem || spaceContext.IncludeSystem);
+            switch (spaceSelection)
+            {
+                case SpaceSelection.AllSpaces:
+                    return handleAllSpaces();
+                case SpaceSelection.SpecificSpaces:
+                    return handleSpecificSpaces(spaceIds);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        public void EnsureSingleSpaceContext()
+        public void ApplySpaceSelection(Action<IReadOnlyCollection<string>> handleSpecificSpaces, Action handleAllSpaces)
         {
-            if (!(SpaceIds.Count == 1 && SpaceIds.Single() != MixedScopeConstants.AllSpacesQueryStringParameterValue))
-            {
-                throw new MismatchSpaceContextException("You need to be within a single space context in order to execute this task");
-            }
+            ApplySpaceSelection(spaces => { handleSpecificSpaces(spaces); return 1; }, () => { handleAllSpaces(); return 1; });
         }
     }
 }

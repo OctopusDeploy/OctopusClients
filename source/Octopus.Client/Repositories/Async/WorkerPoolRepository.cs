@@ -30,8 +30,8 @@ namespace Octopus.Client.Repositories.Async
 
     class WorkerPoolRepository : BasicRepository<WorkerPoolResource>, IWorkerPoolRepository
     {
-        public WorkerPoolRepository(IOctopusAsyncClient client)
-            : base(client, "WorkerPools")
+        public WorkerPoolRepository(IOctopusAsyncRepository repository)
+            : base(repository, "WorkerPools")
         {
         }
 
@@ -61,7 +61,7 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public Task<WorkerPoolsSummaryResource> Summary(
+        public async Task<WorkerPoolsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             bool? hideEmptyPools = false)
         {
-            return Client.Get<WorkerPoolsSummaryResource>(Client.Link("WorkerPoolsSummary"), new
+            return await Client.Get<WorkerPoolsSummaryResource>(await Repository.Link("WorkerPoolsSummary").ConfigureAwait(false), new
             {
                 ids,
                 partialName,
@@ -79,12 +79,12 @@ namespace Octopus.Client.Repositories.Async
                 healthStatuses,
                 commStyles,
                 hideEmptyPools,
-            });
+            }).ConfigureAwait(false);
         }
 
-        public Task Sort(string[] workerPoolIdsInOrder)
+        public async Task Sort(string[] workerPoolIdsInOrder)
         {
-            return Client.Put(Client.Link("WorkerPoolSortOrder"), workerPoolIdsInOrder);
+            await Client.Put(await Repository.Link("WorkerPoolSortOrder").ConfigureAwait(false), workerPoolIdsInOrder).ConfigureAwait(false);
         }
 
         public Task<WorkerPoolEditor> CreateOrModify(string name)

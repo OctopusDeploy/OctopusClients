@@ -1,12 +1,19 @@
-﻿using Octopus.Client.Repositories.Async;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
+using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
     public static class OctopusRepositoryExtensions
     {
-        public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client)
+        public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client, RepositoryScope scope = null)
         {
-            return new OctopusAsyncRepository(client);
+            return new OctopusAsyncRepository(client, scope);
         }
     }
 
@@ -26,64 +33,70 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
-        public OctopusAsyncRepository(IOctopusAsyncClient client)
+        private readonly Lazy<Task<RootResource>> loadRootResource;
+        private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
+        private static readonly string rootDocumentUri = "~/api";
+        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
         {
-            this.Client = client;
+            Client = client;
+            Scope = repositoryScope ?? RepositoryScope.Unspecified();
+            Accounts = new AccountRepository(this);
+            ActionTemplates = new ActionTemplateRepository(this);
+            Artifacts = new ArtifactRepository(this);
+            Backups = new BackupRepository(this);
+            BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(this);
+            CertificateConfiguration = new CertificateConfigurationRepository(this);
+            Certificates = new CertificateRepository(this);
+            Channels = new ChannelRepository(this);
+            CommunityActionTemplates = new CommunityActionTemplateRepository(this);
+            Configuration = new ConfigurationRepository(this);
+            DashboardConfigurations = new DashboardConfigurationRepository(this);
+            Dashboards = new DashboardRepository(this);
+            Defects = new DefectsRepository(this);
+            DeploymentProcesses = new DeploymentProcessRepository(this);
+            Deployments = new DeploymentRepository(this);
+            Environments = new EnvironmentRepository(this);
+            Events = new EventRepository(this);
+            FeaturesConfiguration = new FeaturesConfigurationRepository(this);
+            Feeds = new FeedRepository(this);
+            Interruptions = new InterruptionRepository(this);
+            LibraryVariableSets = new LibraryVariableSetRepository(this);
+            Lifecycles = new LifecyclesRepository(this);
+            MachinePolicies = new MachinePolicyRepository(this);
+            MachineRoles = new MachineRoleRepository(this);
+            Machines = new MachineRepository(this);
+            Migrations = new MigrationRepository(this);
+            OctopusServerNodes = new OctopusServerNodeRepository(this);
+            PerformanceConfiguration = new PerformanceConfigurationRepository(this);
+            ProjectGroups = new ProjectGroupRepository(this);
+            Projects = new ProjectRepository(this);
+            ProjectTriggers = new ProjectTriggerRepository(this);
+            Proxies = new ProxyRepository(this);
+            Releases = new ReleaseRepository(this);
+            RetentionPolicies = new RetentionPolicyRepository(this);
+            Schedulers = new SchedulerRepository(this);
+            ServerStatus = new ServerStatusRepository(this);
+            Spaces = new SpaceRepository(this);
+            Subscriptions = new SubscriptionRepository(this);
+            TagSets = new TagSetRepository(this);
+            Tasks = new TaskRepository(this);
+            Teams = new TeamsRepository(this);
+            Tenants = new TenantRepository(this);
+            TenantVariables = new TenantVariablesRepository(this);
+            UserRoles = new UserRolesRepository(this);
+            Users = new UserRepository(this);
+            VariableSets = new VariableSetRepository(this);
+            Workers = new WorkerRepository(this);
+            WorkerPools = new WorkerPoolRepository(this);
+            ScopedUserRoles = new ScopedUserRoleRepository(this);
+            UserPermissions = new UserPermissionsRepository(this);
 
-            Accounts = new AccountRepository(client);
-            ActionTemplates = new ActionTemplateRepository(client);
-            Artifacts = new ArtifactRepository(client);
-            Backups = new BackupRepository(client);
-            BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(client);
-            CertificateConfiguration = new CertificateConfigurationRepository(client);
-            Certificates = new CertificateRepository(client);
-            Channels = new ChannelRepository(client);
-            CommunityActionTemplates = new CommunityActionTemplateRepository(client);
-            Configuration = new ConfigurationRepository(client);
-            DashboardConfigurations = new DashboardConfigurationRepository(client);
-            Dashboards = new DashboardRepository(client);
-            Defects = new DefectsRepository(client);
-            DeploymentProcesses = new DeploymentProcessRepository(client);
-            Deployments = new DeploymentRepository(client);
-            Environments = new EnvironmentRepository(client);
-            Events = new EventRepository(client);
-            FeaturesConfiguration = new FeaturesConfigurationRepository(client);
-            Feeds = new FeedRepository(client);
-            Interruptions = new InterruptionRepository(client);
-            LibraryVariableSets = new LibraryVariableSetRepository(client);
-            Lifecycles = new LifecyclesRepository(client);
-            MachinePolicies = new MachinePolicyRepository(client);
-            MachineRoles = new MachineRoleRepository(client);
-            Machines = new MachineRepository(client);
-            Migrations = new MigrationRepository(client);
-            OctopusServerNodes = new OctopusServerNodeRepository(client);
-            PerformanceConfiguration = new PerformanceConfigurationRepository(client);
-            ProjectGroups = new ProjectGroupRepository(client);
-            Projects = new ProjectRepository(client);
-            ProjectTriggers = new ProjectTriggerRepository(client);
-            Proxies = new ProxyRepository(client);
-            Releases = new ReleaseRepository(client);
-            RetentionPolicies = new RetentionPolicyRepository(client);
-            Schedulers = new SchedulerRepository(client);
-            ServerStatus = new ServerStatusRepository(client);
-            Spaces = new SpaceRepository(client);
-            Subscriptions = new SubscriptionRepository(client);
-            TagSets = new TagSetRepository(client);
-            Tasks = new TaskRepository(client);
-            Teams = new TeamsRepository(client);
-            Tenants = new TenantRepository(client);
-            TenantVariables = new TenantVariablesRepository(client);
-            UserRoles = new UserRolesRepository(client);
-            Users = new UserRepository(client);
-            VariableSets = new VariableSetRepository(client);
-            Workers = new WorkerRepository(client);
-            WorkerPools = new WorkerPoolRepository(client);
-            ScopedUserRoles = new ScopedUserRoleRepository(client);
-            UserPermissions = new UserPermissionsRepository(client);
+            loadRootResource = new Lazy<Task<RootResource>>(LoadRootDocumentInner, true);
+            loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
         }
 
         public IOctopusAsyncClient Client { get; }
-
+        public RepositoryScope Scope { get; private set; }
         public IAccountRepository Accounts { get; }
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
@@ -134,5 +147,115 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
+
+        public async Task<bool> HasLink(string name)
+        {
+            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+            return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
+        }
+
+        public async Task<string> Link(string name)
+        {
+            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+            return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
+                ? value.AsString()
+                : rootDocument.Link(name);
+        }
+
+        public Task<RootResource> LoadRootDocument() => loadRootResource.Value;
+        public Task<SpaceRootResource> LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+
+        async Task<RootResource> LoadRootDocumentInner()
+        {
+            var watch = Stopwatch.StartNew();
+            Exception lastError = null;
+
+            // 60 second limit using Stopwatch alone makes debugging impossible.
+            var retries = 3;
+
+            RootResource rootDocument;
+            while (true)
+            {
+                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
+                {
+                    if (lastError == null)
+                    {
+                        throw new Exception("Unable to connect to the Octopus Deploy server.");
+                    }
+
+                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
+                }
+
+                try
+                {
+                    rootDocument = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+                    break;
+                }
+                catch (HttpRequestException ex)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                    lastError = ex;
+                }
+                catch (OctopusServerException ex)
+                {
+                    if (ex.HttpStatusCode != 503)
+                    {
+                        // 503 means the service is starting, so give it some time to start
+                        throw;
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(0.5)).ConfigureAwait(false);
+                    lastError = ex;
+                }
+                retries--;
+            }
+
+            if (string.IsNullOrWhiteSpace(rootDocument.ApiVersion))
+                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
+
+            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
+            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
+            var current = SemanticVersion.Parse(rootDocument.ApiVersion);
+
+            if (current < min || current > max)
+                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({rootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
+            return rootDocument;
+        }
+        
+        Task<SpaceRootResource> LoadSpaceRootDocumentInner()
+        {
+            return Scope.Apply(LoadSpaceRootResourceFor,
+                () => Task.FromResult<SpaceRootResource>(null),
+                async () =>
+                {
+                    var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
+                    return defaultSpace != null
+                        ? await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false)
+                        : null;
+                });
+
+            async Task<SpaceRootResource> LoadSpaceRootResourceFor(string spaceId)
+            {
+                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId}).ConfigureAwait(false);
+            }
+
+            async Task<SpaceResource> TryGetDefaultSpace()
+            {
+                try
+                {
+                    var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                    var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"]).ConfigureAwait(false);
+                    var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
+                    return userSpaces.SingleOrDefault(s => s.IsDefault);
+                }
+                catch (OctopusSecurityException)
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

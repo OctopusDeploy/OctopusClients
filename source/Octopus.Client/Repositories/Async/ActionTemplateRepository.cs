@@ -15,13 +15,13 @@ namespace Octopus.Client.Repositories.Async
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
     {
-        public ActionTemplateRepository(IOctopusAsyncClient client) : base(client, "ActionTemplates")
+        public ActionTemplateRepository(IOctopusAsyncRepository repository) : base(repository, "ActionTemplates")
         {
         }
 
-        public Task<List<ActionTemplateSearchResource>> Search()
+        public async Task<List<ActionTemplateSearchResource>> Search()
         {
-            return Client.Get<List<ActionTemplateSearchResource>>(Client.Link("ActionTemplatesSearch"));
+            return await Client.Get<List<ActionTemplateSearchResource>>(await Repository.Link("ActionTemplatesSearch").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version)

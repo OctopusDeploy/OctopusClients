@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
     
     class FeedRepository : BasicRepository<FeedResource>, IFeedRepository
     {
-        public FeedRepository(IOctopusClient client) : base(client, "Feeds")
+        public FeedRepository(IOctopusRepository repository) : base(repository, "Feeds")
         {
         }
 

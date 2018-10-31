@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -9,8 +10,8 @@ namespace Octopus.Client.Repositories.Async
 
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
     {
-        public OctopusServerNodeRepository(IOctopusAsyncClient client)
-            : base(client, "OctopusServerNodes")
+        public OctopusServerNodeRepository(IOctopusAsyncRepository repository)
+            : base(repository, "OctopusServerNodes")
         {
         }
     }

@@ -13,8 +13,8 @@ namespace Octopus.Client.Repositories
     
     class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
     {
-        public ChannelRepository(IOctopusClient client)
-            : base(client, "Channels")
+        public ChannelRepository(IOctopusRepository repository)
+            : base(repository, "Channels")
         {
         }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
@@ -32,13 +33,13 @@ namespace Octopus.Client.Repositories
 
     class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
     {
-        public TaskRepository(IOctopusClient client)
-            : base(client, "Tasks")
+        public TaskRepository(IOctopusRepository repository)
+            : base(repository, "Tasks")
         {
         }
 
-        TaskRepository(IOctopusClient client, SpaceContext spaceContext)
-            : base(client, "Tasks", spaceContext)
+        TaskRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Tasks", userDefinedSpaceContext)
         {
         }
 
@@ -46,10 +47,9 @@ namespace Octopus.Client.Repositories
             string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, 
             string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.Health.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual health check" : description,
                 Arguments = new Dictionary<string, object>
@@ -70,10 +70,9 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.UpdateCalamari.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual Calamari update" : description,
                 Arguments = new Dictionary<string, object>
@@ -96,10 +95,9 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null)
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.Upgrade.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Manual upgrade" : description,
                 Arguments = new Dictionary<string, object>
@@ -118,10 +116,9 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
         {
-            GetCurrentSpaceContext().EnsureSingleSpaceContext();
+            EnsureSingleSpaceContext();
             var resource = new TaskResource
             {
-                SpaceId = GetCurrentSpaceContext().SpaceIds.Single(),
                 Name = BuiltInTasks.AdHocScript.Name,
                 Description = string.IsNullOrWhiteSpace(description) ? "Run ad-hoc PowerShell script" : description,
                 Arguments = new Dictionary<string, object>
@@ -248,22 +245,29 @@ namespace Octopus.Client.Repositories
         /// <returns></returns>
         public List<TaskResource> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
-        public ITaskRepository Including(SpaceContext spaceContext)
+        public ITaskRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
-            return new TaskRepository(Client, ExtendSpaceContext(spaceContext));
+            return new TaskRepository(Repository, userDefinedSpaceContext);
         }
 
         void EnsureTaskCanRunInTheCurrentContext(TaskResource task)
         {
             if (string.IsNullOrEmpty(task.SpaceId))
                 return;
-            if (!GetCurrentSpaceContext().SpaceIds.Contains(task.SpaceId))
-                throw new MismatchSpaceContextException("You cannot perform this task in the current space context");
+            var spaceContext = GetCurrentSpaceContext();
+            
+            spaceContext.ApplySpaceSelection(spaceIds =>
+            {
+                if (!spaceIds.Contains(task.SpaceId))
+                {
+                    throw new SpaceScopedOperationOutsideOfCurrentSpaceContextException(task.SpaceId, spaceContext);
+                }
+            }, () => { });
         }
 
         TaskResource CreateSystemTask(TaskResource task)
         {
-            return Client.Create(Client.Link(CollectionLinkName), task);
+            return Client.Create(Repository.Link(CollectionLinkName), task);
         }
     }
 }

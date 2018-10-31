@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
@@ -13,26 +15,6 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusAsyncClient : IDisposable
     {
-        /// <summary>
-        /// Gets a document that identifies the Octopus server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusAsyncClient" />.
-        /// </summary>
-        /// <exception cref="OctopusSecurityException">
-        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
-        /// account is disabled, or they don't have permission to perform the specified action.
-        /// </exception>
-        /// <exception cref="OctopusServerException">
-        /// If any other error is successfully returned from the server (e.g., a 500
-        /// server error).
-        /// </exception>
-        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
-        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
-        RootResource RootDocument { get; }
-        
-        SpaceRootResource SpaceRootDocument { get; }
 
         /// <summary>
         /// Occurs when a request is about to be sent.
@@ -57,7 +39,7 @@ namespace Octopus.Client
         /// <summary>
         /// A simplified interface to commonly-used parts of the API.
         /// </summary>
-        IOctopusAsyncRepository Repository { get; }
+        IOctopusAsyncRepository Repository { get;}
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -337,54 +319,6 @@ namespace Octopus.Client
         Uri QualifyUri(string path, object parameters = null);
 
         /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        Task<RootResource> RefreshRootDocument();
-
-        /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within a given space.
-        /// </summary>
-        /// <param name="spaceId">The ID of the space.</param>
-        /// <returns>An instance of IOctopusClient</returns>
-        Task<IOctopusAsyncClient> ForSpace(string spaceId);
-
-        /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within a given and the system space.
-        /// </summary>
-        /// <param name="spaceId">The ID of the space.</param>
-        /// <returns>An instance of IOctopusClient</returns>
-        Task<IOctopusAsyncClient> ForSpaceAndSystem(string spaceId);
-
-        /// <summary>
-        /// Requests an IOctopusAsyncClient which will operate within the system space only.
-        /// </summary>
-        /// <returns>An instance of IOctopusClient</returns>
-        Task<IOctopusAsyncClient> ForSystem();
-
-        /// <summary>
-        /// Determines whether the specified link exists.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns>
-        /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
-        /// </returns>
-        bool HasLink(string name);
-
-        /// <summary>
-        /// Gets the link with the specified name.
-        /// </summary>
-        /// <param name="name">The name/key of the link.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">If the link is not defined.</exception>
-        string Link(string name);
-        
-        /// <summary>
-        /// The space context of the client
-        /// </summary>
-        SpaceContext SpaceContext { get; }
-
-        /// <summary>
         /// Sign in
         /// </summary>
         /// <param name="loginCommand"></param>
@@ -396,5 +330,18 @@ namespace Octopus.Client
         /// </summary>
         /// <returns></returns>
         Task SignOut();
+
+        /// <summary>
+        /// Get a repository for the given space
+        /// </summary>
+        /// <param name="spaceId"></param>
+        /// <returns></returns>
+        IOctopusSpaceAsyncRepository ForSpace(string spaceId);
+
+        /// <summary>
+        /// Get a repository for system only
+        /// </summary>
+        /// <returns></returns>
+        IOctopusSystemAsyncRepository ForSystem();
     }
 }

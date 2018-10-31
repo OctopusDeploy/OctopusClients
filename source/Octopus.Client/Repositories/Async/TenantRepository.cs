@@ -20,8 +20,8 @@ namespace Octopus.Client.Repositories.Async
 
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
     {
-        public TenantRepository(IOctopusAsyncClient client)
-            : base(client, "Tenants")
+        public TenantRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Tenants")
         {
         }
 
@@ -37,9 +37,9 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="tags"></param>
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
-        public Task<List<TenantResource>> FindAll(string name, string[] tags, int pageSize = int.MaxValue)
+        public async Task<List<TenantResource>> FindAll(string name, string[] tags, int pageSize = int.MaxValue)
         {
-            return Client.Get<List<TenantResource>>(Client.Link("Tenants"), new { id = IdValueConstant.IdAll, name, tags, take = pageSize });
+            return await Client.Get<List<TenantResource>>(await Repository.Link("Tenants").ConfigureAwait(false), new { id = IdValueConstant.IdAll, name, tags, take = pageSize }).ConfigureAwait(false);
         }
 
         public Task<TenantVariableResource> ModifyVariables(TenantResource tenant, TenantVariableResource variables)
@@ -47,19 +47,19 @@ namespace Octopus.Client.Repositories.Async
             return Client.Post<TenantVariableResource, TenantVariableResource>(tenant.Link("Variables"), variables);
         }
 
-        public Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
+        public async Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
         {
-            return Client.Get<List<TenantsMissingVariablesResource>>(Client.Link("TenantsMissingVariables"), new
+            return await Client.Get<List<TenantsMissingVariablesResource>>(await Repository.Link("TenantsMissingVariables").ConfigureAwait(false), new
             {
                 tenantId = tenantId,
                 projectId = projectId,
                 environmentId = environmentId
-            });
+            }).ConfigureAwait(false);
         }
 
-        public Task<MultiTenancyStatusResource> Status()
+        public async Task<MultiTenancyStatusResource> Status()
         {
-            return Client.Get<MultiTenancyStatusResource>(Client.Link("TenantsStatus"));
+            return await Client.Get<MultiTenancyStatusResource>(await Repository.Link("TenantsStatus").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task SetLogo(TenantResource tenant, string fileName, Stream contents)
