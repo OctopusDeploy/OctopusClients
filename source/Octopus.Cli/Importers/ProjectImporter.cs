@@ -550,7 +550,7 @@ namespace Octopus.Cli.Importers
                 existingProject.IncludedLibraryVariableSetIds.Clear();
                 existingProject.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets.Values.Select(v => v.Id));
                 existingProject.Slug = project.Slug;
-                existingProject.VersioningStrategy.DonorPackageStepId = project.VersioningStrategy.DonorPackageStepId;
+                existingProject.VersioningStrategy.DonorPackage = project.VersioningStrategy.DonorPackage;
                 existingProject.VersioningStrategy.Template = project.VersioningStrategy.Template;
 
                 return await Repository.Projects.Modify(existingProject).ConfigureAwait(false);

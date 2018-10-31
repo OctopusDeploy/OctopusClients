@@ -22,7 +22,7 @@ namespace Octopus.Cli.Commands
     public abstract class ApiCommand : CommandBase, ICommand
     {
         /// <summary>
-        /// The environment variable that can hold the Octopus server
+        /// The environment variable that can hold the Octopus Server
         /// </summary>
         public const string ServerUrlEnvVar = "OCTOPUS_CLI_SERVER";
         /// <summary>
@@ -56,14 +56,14 @@ namespace Octopus.Cli.Commands
             this.FileSystem = fileSystem;
 
             var options = Options.For("Common options");
-            options.Add("server=", $"[Optional] The base URL for your Octopus server - e.g., http://your-octopus/. This URL can also be set in the {ServerUrlEnvVar} environment variable.", v => serverBaseUrl = v);
+            options.Add("server=", $"[Optional] The base URL for your Octopus Server - e.g., http://your-octopus/. This URL can also be set in the {ServerUrlEnvVar} environment variable.", v => serverBaseUrl = v);
             options.Add("apiKey=", $"[Optional] Your API key. Get this from the user profile page. Your must provide an apiKey or username and password. If the guest account is enabled, a key of API-GUEST can be used. This key can also be set in the {ApiKeyEnvVar} environment variable.", v => apiKey = v);
             options.Add("user=", $"[Optional] Username to use when authenticating with the server. Your must provide an apiKey or username and password. This Username can also be set in the {UsernameEnvVar} environment variable.", v => username = v);
             options.Add("pass=", $"[Optional] Password to use when authenticating with the server. This Password can also be set in the {PasswordEnvVar} environment variable.", v => password = v);
             
             options.Add("configFile=", "[Optional] Text file of default values, with one 'key = value' per line.", v => ReadAdditionalInputsFromConfigurationFile(v));
             options.Add("debug", "[Optional] Enable debug logging", v => enableDebugging = true);
-            options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
+            options.Add("ignoreSslErrors", "[Optional] Set this flag if your Octopus Server uses HTTPS but the certificate is not trusted on this machine. Any certificate errors will be ignored. WARNING: this option may create a security vulnerability.", v => ignoreSslErrors = true);
             options.Add("enableServiceMessages", "[Optional] Enable TeamCity or Team Foundation Build service messages when logging.", v => commandOutputProvider.EnableServiceMessages());
             options.Add("timeout=", $"[Optional] Timeout in seconds for network operations. Default is {ApiConstants.DefaultClientRequestTimeout/1000}.", v => clientOptions.Timeout = TimeSpan.FromSeconds(int.Parse(v)));
             options.Add("proxy=", $"[Optional] The URI of the proxy to use, eg http://example.com:8080.", v => clientOptions.Proxy = v);
@@ -164,7 +164,7 @@ namespace Octopus.Cli.Commands
                 Repository.Client.SendingOctopusRequest += request => commandOutputProvider.Debug("{Method:l} {Uri:l}", request.Method, request.Uri);
             }
 
-            commandOutputProvider.Debug("Handshaking with Octopus server: {Url:l}", ServerBaseUrl);
+            commandOutputProvider.Debug("Handshaking with Octopus Server: {Url:l}", ServerBaseUrl);
 
             var root = await Repository.LoadRootDocument().ConfigureAwait(false);
 

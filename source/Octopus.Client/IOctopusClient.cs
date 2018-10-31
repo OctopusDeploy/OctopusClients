@@ -27,7 +27,7 @@ namespace Octopus.Client
         event Action<OctopusRequest> SendingOctopusRequest;
 
         /// <summary>
-        /// Occurs when a response is received from the Octopus server.
+        /// Occurs when a response is received from the Octopus Server.
         /// </summary>
         event Action<OctopusResponse> ReceivedOctopusResponse;
 
@@ -258,7 +258,7 @@ namespace Octopus.Client
         /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb. Deletes in Octopus happen
         /// asynchronously via a background task
-        /// that is executed by the Octopus server. The payload returned by delete will be the task that was created on the
+        /// that is executed by the Octopus Server. The payload returned by delete will be the task that was created on the
         /// server.
         /// </summary>
         /// <exception cref="OctopusSecurityException">

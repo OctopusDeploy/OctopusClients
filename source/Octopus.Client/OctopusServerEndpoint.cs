@@ -35,7 +35,7 @@ namespace Octopus.Client
         /// will assume Octopus runs under a virtual directory.
         /// </param>
         /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus server. For more information on API keys, please
+        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
         /// see the API documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </param>
@@ -53,7 +53,7 @@ namespace Octopus.Client
         /// will assume Octopus runs under a virtual directory.
         /// </param>
         /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus server. For more information on API keys, please
+        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
         /// see the API documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </param>
@@ -64,11 +64,11 @@ namespace Octopus.Client
         public OctopusServerEndpoint(string octopusServerAddress, string apiKey, ICredentials credentials)
         {
             if (string.IsNullOrWhiteSpace(octopusServerAddress))
-                throw new ArgumentException("An Octopus server URI was not specified.");
+                throw new ArgumentException("An Octopus Server URI was not specified.");
 
             Uri uri;
             if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out uri) || !uri.Scheme.StartsWith("http"))
-                throw new ArgumentException("The Octopus server URI given was invalid. The URI should start with http:// or https:// and be a valid URI.");
+                throw new ArgumentException("The Octopus Server URI given was invalid. The URI should start with http:// or https:// and be a valid URI.");
 
             octopusServer = new DefaultLinkResolver(new Uri(octopusServerAddress));
             this.apiKey = apiKey;
@@ -80,7 +80,7 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="octopusServer">The resolver that should be used to turn relative links into full URIs.</param>
         /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus server. For more information on API keys, please
+        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
         /// see the API documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </param>
@@ -110,7 +110,7 @@ namespace Octopus.Client
         public bool IsUsingSecureConnection => octopusServer.IsUsingSecureConnection;
         
         /// <summary>
-        /// Gets the API key to use when connecting to the Octopus server. For more information on API keys, please see the API
+        /// Gets the API key to use when connecting to the Octopus Server. For more information on API keys, please see the API
         /// documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </summary>

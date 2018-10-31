@@ -80,7 +80,7 @@ namespace Octopus.Cli.Commands.Deployment
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
 
             if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
-                throw new CommandException("Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+                throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
 
             base.ValidateParameters();
         }
@@ -236,7 +236,7 @@ namespace Octopus.Cli.Commands.Deployment
 
                     if (missing.Any())
                         throw new ArgumentException(
-                            $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                            $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus Server.");
 
                     deployableTenants.AddRange(tenantsByName);
                     deployableTenants.AddRange(tenantsById);
