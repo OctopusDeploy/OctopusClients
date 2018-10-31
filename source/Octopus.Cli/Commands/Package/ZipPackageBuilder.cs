@@ -14,6 +14,7 @@ namespace Octopus.Cli.Commands.Package
         readonly IOctopusFileSystem fileSystem;
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly List<string> files;
+        private CompressionLevel compressionLevel = CompressionLevel.Optimal;
 
         public ZipPackageBuilder(IOctopusFileSystem fileSystem, ICommandOutputProvider commandOutputProvider)
         {
@@ -61,7 +62,7 @@ namespace Octopus.Cli.Commands.Package
 
                         files.Add(relativePath);
 
-                        var entry = archive.CreateEntry(relativePath, CompressionLevel.Optimal);
+                        var entry = archive.CreateEntry(relativePath, compressionLevel);
                         UpdateLastWriteTime(file, entry);
 
                         using (var entryStream = entry.Open())
@@ -72,6 +73,28 @@ namespace Octopus.Cli.Commands.Package
                     }
                 }
             }
+        }
+
+        public void SetCompression(string level)
+        {
+            if (string.IsNullOrWhiteSpace(level))
+            {
+                compressionLevel = CompressionLevel.Optimal;
+            }
+            else if (level.Equals("none", StringComparison.CurrentCultureIgnoreCase))
+            {
+                compressionLevel = CompressionLevel.NoCompression;
+            }
+            else if (level.Equals("fast", StringComparison.CurrentCultureIgnoreCase))
+            {
+                compressionLevel = CompressionLevel.Fastest;
+            }
+            else
+            {
+                compressionLevel = CompressionLevel.Optimal;
+            }
+
+            commandOutputProvider.Information($"Setting Zip compression level to {compressionLevel.ToString()}");
         }
 
         private static readonly DateTime MinDatetime = new DateTime(1980, 1, 1);
