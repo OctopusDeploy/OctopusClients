@@ -9,7 +9,6 @@ namespace Octopus.Client
         ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }
         ICertificateConfigurationRepository CertificateConfiguration { get; }
-        ICommunityActionTemplateRepository CommunityActionTemplates { get; }
         IConfigurationRepository Configuration { get; }
         IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         IMigrationRepository Migrations { get; }
