@@ -48,10 +48,6 @@ Octopus.Client
     Octopus.Client.IOctopusCommonAsyncRepository
     Octopus.Client.IOctopusSystemAsyncRepository
   {
-    Octopus.Client.IOctopusAsyncClient Client { get; }
-    Octopus.Client.RepositoryScope Scope { get; }
-    Task<Boolean> HasLink(String)
-    Task<String> Link(String)
   }
   interface IOctopusClientFactory
   {
@@ -59,12 +55,16 @@ Octopus.Client
   }
   interface IOctopusCommonAsyncRepository
   {
+    Octopus.Client.IOctopusAsyncClient Client { get; }
     Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
+    Octopus.Client.RepositoryScope Scope { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
+    Task<Boolean> HasLink(String)
+    Task<String> Link(String)
   }
   interface IOctopusSpaceAsyncRepository
     Octopus.Client.IOctopusCommonAsyncRepository

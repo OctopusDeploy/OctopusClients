@@ -4,6 +4,11 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
+    /// <summary>
+    /// A simplified interface to space-scoped parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusCommonRepository.Client" />.
+    /// </summary>
     public interface IOctopusSpaceRepository: IOctopusCommonRepository
     {
         IAccountRepository Accounts { get; }
