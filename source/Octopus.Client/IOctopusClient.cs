@@ -30,6 +30,7 @@ namespace Octopus.Client
         /// </exception>
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("Access the root document through the IOctopusSystemRepository instead: client.Repository.LoadRootDocument()", false)]
         RootResource RootDocument { get; }
         IOctopusRepository Repository { get; }
