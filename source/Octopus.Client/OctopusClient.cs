@@ -41,6 +41,7 @@ namespace Octopus.Client
             Repository = new OctopusRepository(this);
         }
 
+        public RootResource RootDocument => Repository.LoadRootDocument();
         public IOctopusRepository Repository { get; private set; }
 
         /// <summary>

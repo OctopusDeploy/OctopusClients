@@ -183,6 +183,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public event Action<HttpResponseMessage> AfterReceivedHttpResponse;
 
+        public RootResource RootDocument => Repository.LoadRootDocument().GetAwaiter().GetResult();
+
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
