@@ -5,6 +5,11 @@ using Octopus.Client.Exceptions;
 
 namespace Octopus.Client
 {
+    /// <summary>
+    /// A simplified interface to system-scoped parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusCommonRepository.Client" />.
+    /// </summary>
     public interface IOctopusSystemRepository: IOctopusCommonRepository
     {
         ISchedulerRepository Schedulers { get; }

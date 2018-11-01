@@ -4,6 +4,11 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
+    /// <summary>
+    /// A simplified interface to space-specific parts of the API.
+    /// Functionality not exposed by this interface can be accessed
+    /// using <see cref="IOctopusCommonAsyncRepository.Client" />.
+    /// </summary>
     public interface IOctopusSpaceAsyncRepository: IOctopusCommonAsyncRepository
     {
         IAccountRepository Accounts { get; }
@@ -12,6 +17,7 @@ namespace Octopus.Client
         IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         ICertificateRepository Certificates { get; }
         IChannelRepository Channels { get; }
+        ICommunityActionTemplateInstallationRepository CommunityActionTemplateInstallation { get; }
         IDashboardConfigurationRepository DashboardConfigurations { get; }
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
