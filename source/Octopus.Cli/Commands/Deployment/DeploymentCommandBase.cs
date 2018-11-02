@@ -26,6 +26,7 @@ namespace Octopus.Cli.Commands.Deployment
             : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             SpecificMachineNames = new List<string>();
+            ExcludedMachineNames = new List<string>();
             SkipStepNames = new List<string>();
             DeployToEnvironmentNames = new List<string>();
             TenantTags = new List<string>();
@@ -40,7 +41,8 @@ namespace Octopus.Cli.Commands.Deployment
             options.Add("cancelontimeout", "[Optional] Whether to cancel the deployment if the deployment timeout is reached (flag, default false).", v => CancelOnTimeout = true);
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
-            options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("specificmachines=", "[Optional] A comma-separated list of machine names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("excludemachines=", "[Optional] A comma-separated list of machine names to exclude in the deployed environment. If not specified all machines in the environment will be considered.", v => ExcludedMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
             options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
             options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
             options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
@@ -59,6 +61,7 @@ namespace Octopus.Cli.Commands.Deployment
         protected bool CancelOnTimeout { get; set; }
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; } = TimeSpan.FromSeconds(10);
         protected List<string> SpecificMachineNames { get; set; }
+        protected List<string> ExcludedMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
         public string ProjectName { get; set; }
@@ -103,11 +106,11 @@ namespace Octopus.Cli.Commands.Deployment
                 return new List<DeploymentResource>();
 
             var environment = DeployToEnvironmentNames[0];
-            var specificMachineIdsTask = GetSpecificMachines();
             var releaseTemplate = await Repository.Releases.GetTemplate(release).ConfigureAwait(false);
             
             deploymentTenants = await GetTenants(project, environment, release, releaseTemplate).ConfigureAwait(false);
-            var specificMachineIds = await specificMachineIdsTask.ConfigureAwait(false);
+            var specificMachineIds = await GetSpecificMachines().ConfigureAwait(false);
+            var excludedMachineIds = await GetExcludedMachines().ConfigureAwait(false);
 
             LogScheduledDeployment();
             
@@ -118,7 +121,7 @@ namespace Octopus.Cli.Commands.Deployment
                         .First(t => t.Id == tenant.Id).PromoteTo
                         .First(tt => tt.Name.Equals(environment, StringComparison.CurrentCultureIgnoreCase));
                 promotionTargets.Add(promotion);
-                return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
+                return CreateDeploymentTask(project, release, promotion, specificMachineIds, excludedMachineIds, tenant);
             });
 
             return await Task.WhenAll(createTasks).ConfigureAwait(false);
@@ -149,6 +152,24 @@ namespace Octopus.Cli.Commands.Deployment
                 specificMachineIds.AddRange(machines.Select(m => m.Id));
             }
             return specificMachineIds;
+        }
+
+        private async Task<ReferenceCollection> GetExcludedMachines()
+        {
+            var excludedMachineIds = new ReferenceCollection();
+            if (ExcludedMachineNames.Any())
+            {
+                var machines = await Repository.Machines.FindByNames(ExcludedMachineNames).ConfigureAwait(false);
+                var missing = ExcludedMachineNames
+                    .Except(machines.Select(m => m.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                if (missing.Any())
+                {
+                    commandOutputProvider.Debug($"The following excluded machines could not be found: {missing.ReadableJoin()}");
+                }
+
+                excludedMachineIds.AddRange(machines.Select(m => m.Id));
+            }
+            return excludedMachineIds;
         }
 
         protected async Task DeployRelease(ProjectResource project, ReleaseResource release)
@@ -193,8 +214,9 @@ namespace Octopus.Cli.Commands.Deployment
 
             LogScheduledDeployment();
             var specificMachineIds = await GetSpecificMachines().ConfigureAwait(false);
+            var excludedMachineIds = await GetExcludedMachines().ConfigureAwait(false);
 
-            var createTasks = promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds));
+            var createTasks = promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds, excludedMachineIds));
             return await Task.WhenAll(createTasks).ConfigureAwait(false);
         }
 
@@ -301,7 +323,7 @@ namespace Octopus.Cli.Commands.Deployment
             return deployableTenants;
         }
 
-        private async Task<DeploymentResource> CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, TenantResource tenant = null)
+        private async Task<DeploymentResource> CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, ReferenceCollection excludedMachineIds, TenantResource tenant = null)
         {
             var preview = await Repository.Releases.GetPreview(promotionTarget).ConfigureAwait(false);
 
@@ -363,6 +385,7 @@ namespace Octopus.Cli.Commands.Deployment
                 ForcePackageDownload = ForcePackageDownload,
                 UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
                 SpecificMachineIds = specificMachineIds,
+                ExcludedMachineIds = excludedMachineIds,
                 ForcePackageRedeployment = ForcePackageRedeployment,
                 FormValues = (preview.Form ?? new Form()).Values,
                 QueueTime = DeployAt == null ? null : (DateTimeOffset?) DeployAt.Value
