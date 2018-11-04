@@ -244,9 +244,14 @@ namespace Octopus.Client
 
             async Task<SpaceResource> TryGetDefaultSpace()
             {
+                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                var spacesIsSupported = rootDocument.HasLink("Spaces");
+                if (!spacesIsSupported)
+                {
+                    return null;
+                }
                 try
                 {
-                    var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
                     var currentUser = await Client.Get<UserResource>(rootDocument.Links["CurrentUser"]).ConfigureAwait(false);
                     var userSpaces = await Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]).ConfigureAwait(false);
                     return userSpaces.SingleOrDefault(s => s.IsDefault);
