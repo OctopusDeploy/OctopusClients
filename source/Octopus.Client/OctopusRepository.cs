@@ -231,9 +231,13 @@ namespace Octopus.Client
 
             SpaceResource TryGetDefaultSpace()
             {
+                var rootResource = loadRootResource.Value;
+                var spacesIsSupported = rootResource.HasLink("Spaces");
+                if (!spacesIsSupported)
+                    return null;
                 try
                 {
-                    var currentUser = Client.Get<UserResource>(loadRootResource.Value.Links["CurrentUser"]);
+                    var currentUser = Client.Get<UserResource>(rootResource.Links["CurrentUser"]);
                     var userSpaces = Client.Get<SpaceResource[]>(currentUser.Links["Spaces"]);
                     return userSpaces.SingleOrDefault(s => s.IsDefault);
                 }
