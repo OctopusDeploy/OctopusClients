@@ -384,8 +384,8 @@ namespace Octopus.Cli.Commands.Deployment
                 ReleaseId = release.Id,
                 ForcePackageDownload = ForcePackageDownload,
                 UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
-                SpecificMachineIds = specificMachineIds,
-                ExcludedMachineIds = excludedMachineIds,
+                SpecificDeploymentTargetIds = specificMachineIds,
+                ExcludedDeploymentTargetIds = excludedMachineIds,
                 ForcePackageRedeployment = ForcePackageRedeployment,
                 FormValues = (preview.Form ?? new Form()).Values,
                 QueueTime = DeployAt == null ? null : (DateTimeOffset?) DeployAt.Value

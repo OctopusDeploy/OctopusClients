@@ -39,13 +39,21 @@ namespace Octopus.Client.Model
         /// empty, all enabled machines are deployed.
         /// </summary>
         [WriteableOnCreate]
+        [Obsolete]
         public ReferenceCollection SpecificMachineIds { get; set; }
+
+        [WriteableOnCreate]
+        public ReferenceCollection SpecificDeploymentTargetIds { get; set; }
 
         /// <summary>
         /// A collection of machines in the target environment that should be excluded from the deployment.
         /// </summary>
         [WriteableOnCreate]
+        [Obsolete]
         public ReferenceCollection ExcludedMachineIds { get; set; }
+
+        [WriteableOnCreate]
+        public ReferenceCollection ExcludedDeploymentTargetIds { get; set; }
 
         public string DeploymentProcessId { get; set; }
         public string ManifestVariableSetId { get; set; }

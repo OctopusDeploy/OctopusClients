@@ -94,8 +94,8 @@ namespace Octopus.Cli.Commands.Deployment
                         EnvironmentName = promotionTargets.FirstOrDefault(x => x.Id == d.EnvironmentId)?.Name
                     },
                     d.SkipActions,
-                    d.SpecificMachineIds,
-                    d.ExcludedMachineIds,
+                    d.SpecificDeploymentTargetIds,
+                    d.ExcludedDeploymentTargetIds,
                     d.Created,
                     d.Name,
                     d.QueueTime,
