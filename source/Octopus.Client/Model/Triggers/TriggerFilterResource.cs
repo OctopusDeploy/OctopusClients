@@ -1,12 +1,8 @@
-﻿using System;
-
-namespace Octopus.Client.Model.Triggers
+﻿namespace Octopus.Client.Model.Triggers
 {
     public enum TriggerFilterType
     {
-        [Obsolete("MachineFilter is obsolete, please use DeploymentTargetFilter instead")]
         MachineFilter,
-        DeploymentTargetFilter,
         DailySchedule,
         DaysPerWeekSchedule,
         DaysPerMonthSchedule,

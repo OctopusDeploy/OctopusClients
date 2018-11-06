@@ -1,9 +1,7 @@
-﻿using System;
-using Octopus.Client.Extensibility.Attributes;
+﻿using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Triggers
 {
-    [Obsolete("MachineFilterResource is obsolete, please use DeploymentTargetFilterResource instead")]
     public class MachineFilterResource : TriggerFilterResource
     {
         public override TriggerFilterType FilterType => TriggerFilterType.MachineFilter;

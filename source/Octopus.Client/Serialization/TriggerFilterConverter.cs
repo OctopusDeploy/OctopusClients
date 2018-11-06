@@ -10,10 +10,7 @@ namespace Octopus.Client.Serialization
         static readonly IDictionary<TriggerFilterType, Type> FilterTypes =
           new Dictionary<TriggerFilterType, Type>
           {
-#pragma warning disable 618
               { TriggerFilterType.MachineFilter, typeof (MachineFilterResource)},
-#pragma warning restore 618
-              { TriggerFilterType.DeploymentTargetFilter, typeof (DeploymentTargetFilterResource)},
               { TriggerFilterType.DailySchedule, typeof (DailyScheduledTriggerFilterResource)},
               { TriggerFilterType.DaysPerWeekSchedule, typeof (DaysPerWeekScheduledTriggerFilterResource)},
               { TriggerFilterType.DaysPerMonthSchedule, typeof (DaysPerMonthScheduledTriggerFilterResource)},

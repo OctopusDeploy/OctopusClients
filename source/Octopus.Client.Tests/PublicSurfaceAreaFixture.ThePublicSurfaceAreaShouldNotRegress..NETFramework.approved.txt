@@ -4848,18 +4848,6 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
   }
-  class DeploymentTargetFilterResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.TriggerFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ReferenceCollection EventCategories { get; set; }
-    Octopus.Client.Model.ReferenceCollection EventGroups { get; set; }
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Octopus.Client.Model.ReferenceCollection Roles { get; set; }
-  }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4904,11 +4892,10 @@ Octopus.Client.Model.Triggers
   TriggerFilterType
   {
       MachineFilter = 0
-      DeploymentTargetFilter = 1
-      DailySchedule = 2
-      DaysPerWeekSchedule = 3
-      DaysPerMonthSchedule = 4
-      CronExpressionSchedule = 5
+      DailySchedule = 1
+      DaysPerWeekSchedule = 2
+      DaysPerMonthSchedule = 3
+      CronExpressionSchedule = 4
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
