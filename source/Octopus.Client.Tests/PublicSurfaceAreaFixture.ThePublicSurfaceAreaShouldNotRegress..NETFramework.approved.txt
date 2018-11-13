@@ -1782,6 +1782,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    ICollection<MachineResource> DeploymentTargetUsages { get; set; }
     ICollection<LibraryVariableSetResource> LibraryVariableSetUsages { get; set; }
     ICollection<ProjectResource> ProjectUsages { get; set; }
     ICollection<TenantResource> TenantUsages { get; set; }
