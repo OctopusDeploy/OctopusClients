@@ -1343,6 +1343,21 @@ Octopus.Client.Model
       Success = 0
       ManualMergeRequired = 1
       DefaultParamterValueMissing = 2
+      RemovedPackageInUse = 3
+  }
+  ActionUpdatePackageUsedBy
+  {
+      ProjectVersionStrategy = 0
+      ProjectReleaseCreationStrategy = 1
+      ChannelRule = 2
+  }
+  class ActionUpdateRemovedPackageUsage
+  {
+    .ctor(String, Octopus.Client.Model.ActionUpdatePackageUsedBy, String, String)
+    String PackageReference { get; }
+    Octopus.Client.Model.ActionUpdatePackageUsedBy UsedBy { get; }
+    String UsedById { get; }
+    String UsedByName { get; }
   }
   class ActionUpdateResultResource
     Octopus.Client.Extensibility.IResource
@@ -1353,6 +1368,7 @@ Octopus.Client.Model
     IDictionary<String, String[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
     String[] NamesOfNewParametersMissingDefaultValue { get; set; }
     Octopus.Client.Model.ActionUpdateOutcome Outcome { get; set; }
+    ICollection<ActionUpdateRemovedPackageUsage> RemovedPackageUsages { get; set; }
   }
   class ActivityElement
   {
