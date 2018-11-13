@@ -23,7 +23,7 @@
     <PackageReference Include="NuGet.Packaging.Core" Version="3.6.0-octopus-58679" />
     <PackageReference Include="NuGet.Packaging.Core.Types" Version="3.6.0-octopus-58679" />
     <PackageReference Include="NuGet.Versioning" Version="3.6.0-octopus-58679" />
-    <PackageReference Include="Octostache" Version="2.0.4" />
+    <PackageReference Include="Octostache" Version="2.3.0" />
     <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.Trace" Version="2.0.0" />
     <PackageReference Include="Sprache" Version="2.1.0" />
