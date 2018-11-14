@@ -4182,6 +4182,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Boolean IsDefault { get; set; }
     String Name { get; set; }
     Int32 SortOrder { get; set; }
