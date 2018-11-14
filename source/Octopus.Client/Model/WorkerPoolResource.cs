@@ -9,6 +9,11 @@ namespace Octopus.Client.Model
     /// </summary>
     public class WorkerPoolResource : Resource, INamedResource
     {
+        public WorkerPoolResource()
+        {
+            EnvironmentIds = new ReferenceCollection();
+        }
+
         /// <summary>
         /// Gets or sets the name of this pool. This should be short, preferably 5-20 characters.
         /// </summary>
