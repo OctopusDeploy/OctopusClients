@@ -37,5 +37,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public int SortOrder { get; set; }
+
+        /// <summary>
+        /// The environments this pool is restricted to.  If a pool is restricted to particular environments,
+        /// it can only be used in deployments to those environments.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection EnvironmentIds { get; set; }
     }
 }
