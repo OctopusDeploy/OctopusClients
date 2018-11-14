@@ -33,6 +33,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Post<ActionsUpdateResource, ActionUpdateResultResource[]>(actionTemplate.Links["ActionsUpdate"], update, new { actionTemplate.Id });
         }
+        
         public Task SetLogo(ActionTemplateResource resource, string fileName, Stream contents)
         {
             return Client.Post(resource.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);

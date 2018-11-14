@@ -6,6 +6,7 @@ namespace Octopus.Client.Model
     {
         Success = 0,
         ManualMergeRequired = 1,
-        DefaultParamterValueMissing = 2
+        DefaultParamterValueMissing = 2,
+        RemovedPackageInUse = 3
     }
 }
