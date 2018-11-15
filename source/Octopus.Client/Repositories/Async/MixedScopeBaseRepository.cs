@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -112,21 +110,12 @@ namespace Octopus.Client.Repositories.Async
                 () => { },
                 () => 
                 {
-                    if (userDefinedSpaceContext == null)
+                    if (userDefinedSpaceContext == null || userDefinedSpaceContext.IncludeSystem)
                     {
-                        return; // Assumes the default space
+                        return;
                     }
 
-                    userDefinedSpaceContext.ApplySpaceSelection(spaces =>
-                    {
-                        var numberOfSpaces = spaces.Count;
-                        if (numberOfSpaces == 0)
-                        {
-                            // We must be in a system context
-                        }
-
-                        throw exception;
-                    }, () => throw exception);
+                    throw exception;
                 });
         }
     }
