@@ -85,6 +85,7 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteBackup(string description = null)
         {
+            EnsureSystemContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.Backup.Name,
@@ -154,6 +155,7 @@ namespace Octopus.Client.Repositories
 
         public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)
         {
+            EnsureSystemContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.SyncCommunityActionTemplates.Name,

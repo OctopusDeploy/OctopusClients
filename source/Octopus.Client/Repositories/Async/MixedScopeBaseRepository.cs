@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async
@@ -102,6 +100,22 @@ namespace Octopus.Client.Repositories.Async
                             throw new SingleSpaceOperationInMultiSpaceContextException();
                         }
                     }, () => throw new SingleSpaceOperationInMultiSpaceContextException());
+                });
+        }
+
+        protected void EnsureSystemContext()
+        {
+            var exception = new InvalidOperationException("Attempted to perform a system operation in a space scoped context. Ensure you are in system context first by using client.ForSystem()");
+            Repository.Scope.Apply(_ => throw exception,
+                () => { },
+                () => 
+                {
+                    if (userDefinedSpaceContext == null || userDefinedSpaceContext.IncludeSystem)
+                    {
+                        return;
+                    }
+
+                    throw exception;
                 });
         }
     }

@@ -88,6 +88,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteBackup(string description = null)
         {
+            EnsureSystemContext();
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.Backup.Name,
@@ -157,6 +158,8 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null)
         {
+            EnsureSystemContext();
+
             // SpaceId always need to be null, use a different Create method to handle that
             var resource = new TaskResource
             {
