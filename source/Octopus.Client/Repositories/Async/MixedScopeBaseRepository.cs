@@ -105,7 +105,7 @@ namespace Octopus.Client.Repositories.Async
 
         protected void EnsureSystemContext()
         {
-            var exception = new Exception("Attempted to perform a system operation in a space scoped context. Ensure you are in system context first by using client.ForSystem()");
+            var exception = new InvalidOperationException("Attempted to perform a system operation in a space scoped context. Ensure you are in system context first by using client.ForSystem()");
             Repository.Scope.Apply(_ => throw exception,
                 () => { },
                 () => 
