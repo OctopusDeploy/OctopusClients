@@ -2430,7 +2430,7 @@ Octopus.Client.Model
     .ctor()
     String AcquisitionLocation { get; set; }
     String FeedId { get; set; }
-    String Id { get; }
+    String Id { get; set; }
     Boolean IsPrimaryPackage { get; }
     String Name { get; set; }
     String PackageId { get; set; }
