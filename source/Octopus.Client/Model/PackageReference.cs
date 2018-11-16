@@ -91,7 +91,7 @@ namespace Octopus.Client.Model
         /// This field is unique identifier which will be set by the Octopus Server when the package reference
         /// is created.
         /// </summary>
-        public string Id { get; private set; }
+        public string Id { get; set; }
         
         /// <summary>
         /// An name for the package-reference.
