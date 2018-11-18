@@ -35,5 +35,7 @@ namespace Octopus.Client.Model
             WorkerPoolIds.Clear();
             return this;
         }
+
+        public bool IsBuiltInWorker => Endpoint is BuiltInWorkerEndpointResource;
     }
 }
