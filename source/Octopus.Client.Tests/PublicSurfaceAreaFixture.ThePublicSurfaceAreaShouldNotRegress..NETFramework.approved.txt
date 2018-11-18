@@ -4222,6 +4222,7 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
+    Boolean IsBuiltInWorker { get; }
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
     Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
     Octopus.Client.Model.WorkerResource ClearWorkerPools()
