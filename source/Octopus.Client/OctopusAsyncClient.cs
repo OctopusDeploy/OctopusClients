@@ -70,7 +70,8 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-            client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
+            client.DefaultRequestHeaders.Add("User-Agent", OctopusCustomHeaders.UserAgent(GetType().GetSemanticVersion()));
+            client.DefaultRequestHeaders.Add(ApiConstants.BuildServerHeaderName, OctopusCustomHeaders.DetermineBuildServer().ToString());
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
