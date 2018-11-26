@@ -15,6 +15,7 @@ namespace Octopus.Client.Model
         public ActionUpdateOutcome Outcome { get; set; }
         public IDictionary<string, string[]> ManualMergeRequiredReasonsByPropertyName { get; set; }
         public string[] NamesOfNewParametersMissingDefaultValue { get; set; }
+        public ICollection<ActionUpdateRemovedPackageUsage> RemovedPackageUsages { get; set; } = new List<ActionUpdateRemovedPackageUsage>();
         public LinkCollection Links { get; set; }
     }
 }
