@@ -69,11 +69,6 @@ namespace Octopus.Client.Repositories.Async
             return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
         }
 
-        public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
-        {
-            return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
-        }
-
         public Task SetLogo(ProjectResource project, string fileName, Stream contents)
         {
             return Client.Post(project.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
