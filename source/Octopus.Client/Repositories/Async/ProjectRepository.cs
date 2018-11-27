@@ -63,7 +63,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
         }
-
+        
         public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
         {
             return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));

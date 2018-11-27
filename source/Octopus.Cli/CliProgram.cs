@@ -66,6 +66,8 @@ namespace Octopus.Cli
                .WriteTo.Trace()
                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
                .CreateLogger();
+            
+            Client.Logging.LogProvider.SetCurrentLogProvider(new CliSerilogLogProvider(Log.Logger));
         }
 
         static IContainer BuildContainer()
