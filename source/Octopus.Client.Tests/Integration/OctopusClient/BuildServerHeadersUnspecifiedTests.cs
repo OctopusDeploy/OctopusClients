@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => string.Empty;
         protected override string EnvironmentVariableValue => string.Empty;
-        protected override BuildServer ExpectedBuildServer => BuildServer.Unspecified;
+        internal override BuildServer ExpectedBuildServer => BuildServer.Unspecified;
     }
 }

@@ -24,7 +24,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected abstract string EnvironmentVariableName { get; }
         protected abstract string EnvironmentVariableValue { get; }
-        protected abstract BuildServer ExpectedBuildServer { get; }
+        internal abstract BuildServer ExpectedBuildServer { get; }
 
         protected override void SetupEnvironmentVariables()
         {

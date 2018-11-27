@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public static class OctopusCustomHeaders
+    internal static class OctopusCustomHeaders
     {
         public static readonly string EnvVar_TeamCity = "TEAMCITY_VERSION";
         public static readonly string EnvVar_Bamboo = "bamboo_agentId";
@@ -16,7 +16,7 @@ namespace Octopus.Client.Model
 
         public static BuildServer DetermineBuildServer()
         {
-            BuildServer buildServer = BuildServer.Unspecified;
+            var buildServer = BuildServer.Unspecified;
 
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(EnvVar_TeamCity)))
             {

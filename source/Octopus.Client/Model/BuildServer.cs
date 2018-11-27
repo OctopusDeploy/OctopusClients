@@ -1,6 +1,6 @@
 ﻿namespace Octopus.Client.Model
 {
-    public enum BuildServer
+    internal enum BuildServer
     {
         Unspecified,
         Bamboo,
