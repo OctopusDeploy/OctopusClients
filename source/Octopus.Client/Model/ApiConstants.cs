@@ -12,6 +12,5 @@ namespace Octopus.Client.Model
         public static readonly string AntiforgeryTokenCookiePrefix = "Octopus-Csrf-Token";
         public static readonly string AntiforgeryTokenHttpHeaderName = "X-Octopus-Csrf-Token";
         public static readonly string OctopusUserAgentProductName = "OctopusClient-dotnet";
-        internal static readonly string BuildServerHeaderName = "X-Octopus-BuildServer";
     }
 }

@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
 
         public static string UserAgent(SemanticVersion version)
         {
-            return $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()}";
+            return $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()} {DetermineBuildServer().ToString()}";
         }
 
         public static BuildServer DetermineBuildServer()

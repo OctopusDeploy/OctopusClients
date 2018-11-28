@@ -460,7 +460,6 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-            webRequest.Headers[ApiConstants.BuildServerHeaderName] = OctopusCustomHeaders.DetermineBuildServer().ToString();
             webRequest.UserAgent = OctopusCustomHeaders.UserAgent(clientVersion);
             
             if (webRequest.Method == "PUT")

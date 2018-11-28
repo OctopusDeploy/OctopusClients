@@ -15,7 +15,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             Get(TestRootPath, p =>
             {
-                var buildServerValue = Request.Headers[ApiConstants.BuildServerHeaderName]?.FirstOrDefault();
+                var buildServerValue = Request.Headers.UserAgent.Split(' ').Last();
 
                 return Response.AsJson(new TestDto { BuildServerValue = buildServerValue })
                     .WithStatusCode(HttpStatusCode.OK);
