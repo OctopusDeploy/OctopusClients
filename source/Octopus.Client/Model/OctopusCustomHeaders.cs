@@ -9,34 +9,36 @@ namespace Octopus.Client.Model
         internal static readonly string EnvVar_Bamboo = "bamboo_agentId";
         internal static readonly string EnvVar_AzureDevOps = "TF_BUILD";
 
-        internal OctopusCustomHeaders(string buildEnvironmentContext = null)
+        internal OctopusCustomHeaders(string requestingTool = null)
         {
             BuildEnvironment = DetermineBuildEnvironment();
-            var buildEnvironmentContextString = BuildEnvironment.ToString();
-            if (!string.IsNullOrWhiteSpace(buildEnvironmentContext))
+            var automationContext = BuildEnvironment.ToString();
+            if (!string.IsNullOrWhiteSpace(requestingTool))
             {
-                buildEnvironmentContextString += $"/{buildEnvironmentContext}";
+                automationContext += $"/{requestingTool}";
             }
 
             var version = typeof(OctopusCustomHeaders).GetSemanticVersion();
 
-            UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()} {buildEnvironmentContextString}";
+            UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()} {automationContext}";
         }
 
         internal string UserAgent { get; }
         internal BuildEnvironment BuildEnvironment { get; }
 
+        internal static Func<string, string> GetEnvironmentVariable = Environment.GetEnvironmentVariable;
+
         static BuildEnvironment DetermineBuildEnvironment()
         {
             var buildEnvironment = BuildEnvironment.Unspecified;
 
-            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(EnvVar_TeamCity)))
+            if (!string.IsNullOrWhiteSpace(GetEnvironmentVariable(EnvVar_TeamCity)))
             {
                 buildEnvironment = BuildEnvironment.TeamCity;
-            } else if (Environment.GetEnvironmentVariable(EnvVar_AzureDevOps) == "True")
+            } else if (GetEnvironmentVariable(EnvVar_AzureDevOps) == "True")
             {
                 buildEnvironment = BuildEnvironment.AzureDevOps;
-            } else if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(EnvVar_Bamboo)))
+            } else if (!string.IsNullOrWhiteSpace(GetEnvironmentVariable(EnvVar_Bamboo)))
             {
                 buildEnvironment = BuildEnvironment.Bamboo;
             }

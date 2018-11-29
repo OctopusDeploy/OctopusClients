@@ -35,7 +35,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
         // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string buildEnvironmentContext)
+        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             options = options ?? new OctopusClientOptions();
 
@@ -69,7 +69,7 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(buildEnvironmentContext).UserAgent);
+            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -125,27 +125,27 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string buildEnvironmentContext)
+        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string requestingTool)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true, buildEnvironmentContext);
+                return await Create(serverEndpoint, options, true, requestingTool);
             }
             catch (PlatformNotSupportedException)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors");
-                return await Create(serverEndpoint, options, false, buildEnvironmentContext);
+                return await Create(serverEndpoint, options, false, requestingTool);
             }
 #else
-            return await Create(serverEndpoint, options, false, buildEnvironmentContext);
+            return await Create(serverEndpoint, options, false, requestingTool);
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string buildEnvironmentContext = null)
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, buildEnvironmentContext);
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool);
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);

@@ -30,7 +30,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
             {
-                Environment.SetEnvironmentVariable(EnvironmentVariableName, EnvironmentVariableValue);
+                OctopusCustomHeaders.GetEnvironmentVariable = variableName => variableName == EnvironmentVariableName ? EnvironmentVariableValue : null;
             }
         }
 
@@ -38,7 +38,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
             {
-                Environment.SetEnvironmentVariable(EnvironmentVariableName, string.Empty);
+                OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
             }
         }
 

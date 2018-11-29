@@ -37,11 +37,11 @@ namespace Octopus.Client
         {
         }
 
-        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string buildEnvironmentContext)
+        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string requestingTool)
         {
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
-            octopusCustomHeaders = new OctopusCustomHeaders(buildEnvironmentContext);
+            octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
         }
 
 
