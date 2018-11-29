@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,6 +22,17 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     .WithStatusCode(HttpStatusCode.OK);
             });
         }
+
+        protected override void SetupEnvironmentVariables()
+        {
+            OctopusCustomHeaders.GetEnvironmentVariable = variableName => null;
+        }
+
+        protected override void CleanupEnvironmentVariables()
+        {
+            OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
+        }
+
 
         [Test]
         public async Task AsyncClient_ShouldProvideUserAgent_WithNameAndVersion()
