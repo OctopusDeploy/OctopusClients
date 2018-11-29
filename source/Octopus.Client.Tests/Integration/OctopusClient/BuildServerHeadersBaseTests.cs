@@ -15,9 +15,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             Get(TestRootPath, p =>
             {
-                var buildServerValue = Request.Headers.UserAgent.Split(' ').Last();
+                var automationContext = Request.Headers.UserAgent.Split(' ')[1];
 
-                return Response.AsJson(new TestDto { BuildEnvironmentValue = buildServerValue })
+                return Response.AsJson(new TestDto { AutomationContext = automationContext })
                     .WithStatusCode(HttpStatusCode.OK);
             });
         }
@@ -46,7 +46,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldProvideBuildServer_WithCorrectValue()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.BuildEnvironmentValue.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
+            response.AutomationContext.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
         }
 
 #if SYNC_CLIENT
@@ -55,13 +55,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.BuildEnvironmentValue.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
+            response.AutomationContext.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
         }
 #endif
 
         public class TestDto
         {
-            public string BuildEnvironmentValue { get; set; }
+            public string AutomationContext { get; set; }
         }
     }
 }
