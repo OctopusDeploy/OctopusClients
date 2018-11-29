@@ -28,18 +28,12 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override void SetupEnvironmentVariables()
         {
-            if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
-            {
-                OctopusCustomHeaders.GetEnvironmentVariable = variableName => variableName == EnvironmentVariableName ? EnvironmentVariableValue : null;
-            }
+            OctopusCustomHeaders.GetEnvironmentVariable = variableName => variableName == EnvironmentVariableName ? EnvironmentVariableValue : null;
         }
 
         protected override void CleanupEnvironmentVariables()
         {
-            if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
-            {
-                OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
-            }
+            OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
         }
 
         [Test]
