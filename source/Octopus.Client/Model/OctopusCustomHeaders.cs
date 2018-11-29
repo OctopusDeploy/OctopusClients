@@ -1,35 +1,47 @@
 ﻿using System;
+using Octopus.Client.Extensions;
 
 namespace Octopus.Client.Model
 {
-    internal static class OctopusCustomHeaders
+    internal class OctopusCustomHeaders
     {
-        public static readonly string EnvVar_TeamCity = "TEAMCITY_VERSION";
-        public static readonly string EnvVar_Bamboo = "bamboo_agentId";
-        public static readonly string EnvVar_AzureDevOps = "TF_BUILD";
-        public static readonly string[] BuildServerEnvVars = new[] {EnvVar_TeamCity, EnvVar_Bamboo, EnvVar_AzureDevOps};
+        internal static readonly string EnvVar_TeamCity = "TEAMCITY_VERSION";
+        internal static readonly string EnvVar_Bamboo = "bamboo_agentId";
+        internal static readonly string EnvVar_AzureDevOps = "TF_BUILD";
 
-        public static string UserAgent(SemanticVersion version)
+        internal OctopusCustomHeaders(string buildEnvironmentContext = null)
         {
-            return $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()} {DetermineBuildServer().ToString()}";
+            BuildEnvironment = DetermineBuildEnvironment();
+            var buildEnvironmentContextString = BuildEnvironment.ToString();
+            if (!string.IsNullOrWhiteSpace(buildEnvironmentContext))
+            {
+                buildEnvironmentContextString += $"/{buildEnvironmentContext}";
+            }
+
+            var version = typeof(OctopusCustomHeaders).GetSemanticVersion();
+
+            UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{version.ToNormalizedString()} {buildEnvironmentContextString}";
         }
 
-        public static BuildServer DetermineBuildServer()
+        internal string UserAgent { get; }
+        internal BuildEnvironment BuildEnvironment { get; }
+
+        static BuildEnvironment DetermineBuildEnvironment()
         {
-            var buildServer = BuildServer.Unspecified;
+            var buildEnvironment = BuildEnvironment.Unspecified;
 
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(EnvVar_TeamCity)))
             {
-                buildServer = BuildServer.TeamCity;
+                buildEnvironment = BuildEnvironment.TeamCity;
             } else if (Environment.GetEnvironmentVariable(EnvVar_AzureDevOps) == "True")
             {
-                buildServer = BuildServer.AzureDevOps;
+                buildEnvironment = BuildEnvironment.AzureDevOps;
             } else if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(EnvVar_Bamboo)))
             {
-                buildServer = BuildServer.Bamboo;
+                buildEnvironment = BuildEnvironment.Bamboo;
             }
 
-            return buildServer;
+            return buildEnvironment;
         }
     }
 }

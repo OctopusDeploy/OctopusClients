@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => OctopusCustomHeaders.EnvVar_AzureDevOps;
         protected override string EnvironmentVariableValue => "True";
-        internal override BuildServer ExpectedBuildServer => BuildServer.AzureDevOps;
+        internal override BuildEnvironment ExpectedBuildEnvironment => BuildEnvironment.AzureDevOps;
     }
 }

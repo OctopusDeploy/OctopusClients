@@ -27,18 +27,23 @@ namespace Octopus.Client
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
-        private readonly SemanticVersion clientVersion;
+        readonly OctopusCustomHeaders octopusCustomHeaders;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint) :this(serverEndpoint, null)
+        {
+        }
+
+        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string buildEnvironmentContext)
         {
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
-            clientVersion = GetType().GetSemanticVersion();
+            octopusCustomHeaders = new OctopusCustomHeaders(buildEnvironmentContext);
         }
+
 
         /// <summary>
         /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
@@ -460,7 +465,7 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-            webRequest.UserAgent = OctopusCustomHeaders.UserAgent(clientVersion);
+            webRequest.UserAgent = octopusCustomHeaders.UserAgent;
             
             if (webRequest.Method == "PUT")
             {

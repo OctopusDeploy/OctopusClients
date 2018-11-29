@@ -8,6 +8,13 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClientFactory : IOctopusClientFactory
     {
+        private static string buildEnvironmentContext;
+
+        internal static void SetBuildEnvironmentContext(string context)
+        {
+            buildEnvironmentContext = context;
+        }
+
 #if SYNC_CLIENT
         /// <summary>
         /// Creates an instance of the client.
@@ -16,7 +23,7 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
         public IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint)
         {
-            return new OctopusClient(serverEndpoint);
+            return new OctopusClient(serverEndpoint, buildEnvironmentContext);
         }
 #endif
 
@@ -28,7 +35,7 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
         public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null)
         {
-            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions);
+            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions, buildEnvironmentContext);
         }
     }
 }

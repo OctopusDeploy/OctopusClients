@@ -26,7 +26,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldProvideUserAgent_WithNameAndVersion()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} {BuildServer.Unspecified}", "We should set the standard User-Agent header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} {BuildEnvironment.Unspecified}", "We should set the standard User-Agent header");
         }
 
 #if SYNC_CLIENT
@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} {BuildServer.Unspecified}", "We should set the standard User-Agent header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} {BuildEnvironment.Unspecified}", "We should set the standard User-Agent header");
         }
 #endif
 

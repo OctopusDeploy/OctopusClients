@@ -17,25 +17,28 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var buildServerValue = Request.Headers.UserAgent.Split(' ').Last();
 
-                return Response.AsJson(new TestDto { BuildServerValue = buildServerValue })
+                return Response.AsJson(new TestDto { BuildEnvironmentValue = buildServerValue })
                     .WithStatusCode(HttpStatusCode.OK);
             });
         }
 
         protected abstract string EnvironmentVariableName { get; }
         protected abstract string EnvironmentVariableValue { get; }
-        internal abstract BuildServer ExpectedBuildServer { get; }
+        internal abstract BuildEnvironment ExpectedBuildEnvironment { get; }
 
         protected override void SetupEnvironmentVariables()
         {
-            foreach (var envVar in OctopusCustomHeaders.BuildServerEnvVars)
-            {
-                Environment.SetEnvironmentVariable(envVar, string.Empty);
-            }
-
             if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
             {
                 Environment.SetEnvironmentVariable(EnvironmentVariableName, EnvironmentVariableValue);
+            }
+        }
+
+        protected override void CleanupEnvironmentVariables()
+        {
+            if (!string.IsNullOrWhiteSpace(EnvironmentVariableName))
+            {
+                Environment.SetEnvironmentVariable(EnvironmentVariableName, string.Empty);
             }
         }
 
@@ -43,7 +46,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldProvideBuildServer_WithCorrectValue()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.BuildServerValue.Should().Be(ExpectedBuildServer.ToString(), $"We should set the {ExpectedBuildServer} X-Octopus-BuildServer header");
+            response.BuildEnvironmentValue.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
         }
 
 #if SYNC_CLIENT
@@ -52,13 +55,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.BuildServerValue.Should().Be(ExpectedBuildServer.ToString(), $"We should set the {ExpectedBuildServer} X-Octopus-BuildServer header");
+            response.BuildEnvironmentValue.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
         }
 #endif
 
         public class TestDto
         {
-            public string BuildServerValue { get; set; }
+            public string BuildEnvironmentValue { get; set; }
         }
     }
 }

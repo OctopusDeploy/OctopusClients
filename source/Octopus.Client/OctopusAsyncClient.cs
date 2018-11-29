@@ -14,7 +14,6 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
@@ -36,7 +35,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
         // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string buildEnvironmentContext)
         {
             options = options ?? new OctopusClientOptions();
 
@@ -70,7 +69,7 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-            client.DefaultRequestHeaders.Add("User-Agent", OctopusCustomHeaders.UserAgent(GetType().GetSemanticVersion()));
+            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(buildEnvironmentContext).UserAgent);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -126,9 +125,27 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string buildEnvironmentContext)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            try
+            {
+                return await Create(serverEndpoint, options, true, buildEnvironmentContext);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                if (options?.IgnoreSslErrors ?? false)
+                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                return await Create(serverEndpoint, options, false, buildEnvironmentContext);
+            }
+#else
+            return await Create(serverEndpoint, options, false, buildEnvironmentContext);
+#endif
+        }
+
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string buildEnvironmentContext = null)
+        {
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, buildEnvironmentContext);
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);

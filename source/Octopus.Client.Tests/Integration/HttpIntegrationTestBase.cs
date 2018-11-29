@@ -127,7 +127,7 @@ namespace Octopus.Client.Tests.Integration
         public string TestRootPath { get; }
 
         [SetUp]
-        public async Task Setup()
+        public virtual async Task Setup()
         {
             SetupEnvironmentVariables();
             AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
@@ -152,6 +152,11 @@ namespace Octopus.Client.Tests.Integration
 #if SYNC_CLIENT
             SyncClient?.Dispose();
 #endif
+            CleanupEnvironmentVariables();
+        }
+
+        protected virtual void CleanupEnvironmentVariables()
+        {
         }
 
         protected Response CreateErrorResponse(string message)

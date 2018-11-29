@@ -91,6 +91,7 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
+            OctopusClientFactory.SetBuildEnvironmentContext("octo");
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
