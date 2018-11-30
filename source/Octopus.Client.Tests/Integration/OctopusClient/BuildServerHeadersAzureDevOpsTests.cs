@@ -4,7 +4,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 {
     public class BuildServerHeadersAzureDevOpsTests : BuildServerHeadersBaseTests
     {
-        protected override string EnvironmentVariableName => OctopusCustomHeaders.EnvVar_AzureDevOps;
+        protected override string EnvironmentVariableName => "TF_BUILD";
         protected override string EnvironmentVariableValue => "True";
         internal override BuildEnvironment ExpectedBuildEnvironment => BuildEnvironment.AzureDevOps;
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -28,7 +27,14 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override void SetupEnvironmentVariables()
         {
-            OctopusCustomHeaders.GetEnvironmentVariable = variableName => variableName == EnvironmentVariableName ? EnvironmentVariableValue : null;
+            OctopusCustomHeaders.GetEnvironmentVariable = GetBuildServerEnvironmentVariableForThisTest;
+        }
+
+        private string GetBuildServerEnvironmentVariableForThisTest(string variableName)
+        {
+            return variableName == EnvironmentVariableName ? 
+                EnvironmentVariableValue : 
+                null;
         }
 
         protected override void CleanupEnvironmentVariables()
