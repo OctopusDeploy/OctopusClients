@@ -1,8 +1,9 @@
 ﻿namespace Octopus.Client.Model
 {
-    internal enum BuildEnvironment
+    internal enum AutomationEnvironment
     {
-        Unspecified,
+        NoneOrUnknown,
+        Octopus,
         Bamboo,
         TeamCity,
         AzureDevOps,

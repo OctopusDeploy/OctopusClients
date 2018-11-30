@@ -3,51 +3,23 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Octopus.Client.AutomationEnvironments;
 using Octopus.Client.Model;
 using Serilog;
 
 namespace Octopus.Cli.Diagnostics
 {
-    public enum BuildEnvironment
-    {
-        NoneOrUnknown = 0,
-        TeamCity = 1,
-        TeamFoundationBuild = 2
-    }
-
-    public interface IEnvironmentVariableReader
-    {
-        string GetVariableValue(string name);
-    }
-
-    public class EnvironmentVariableReader : IEnvironmentVariableReader
-    {
-        public string GetVariableValue(string name)
-        {
-            return Environment.GetEnvironmentVariable(name);
-        }
-    }
-
     public static class LogExtensions
     {
         static readonly Dictionary<string, string> Escapes;
         static bool serviceMessagesEnabled;
-        static BuildEnvironment buildEnvironment;
-        public static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
-
-        /// <summary>
-        /// This dictionary holds a record of the environment variables the code will check to define on which build environment is running on.
-        /// </summary>
-        public static Dictionary<BuildEnvironment,string[]> KnownEnvironmentVariables = new Dictionary<BuildEnvironment, string[]>()
-        {
-            {BuildEnvironment.TeamFoundationBuild ,new[]{"BUILD_BUILDID", "AGENT_WORKFOLDER" }},
-            {BuildEnvironment.TeamCity,new[]{"TEAMCITY_VERSION"}}
-        };
+        static AutomationEnvironment buildEnvironment;
+        internal static IAutomationEnvironmentProvider automationEnvironmentProvider = new AutomationEnvironmentProvider();
 
         static LogExtensions()
         {
             serviceMessagesEnabled = false;
-            buildEnvironment = BuildEnvironment.NoneOrUnknown;
+            buildEnvironment = AutomationEnvironment.NoneOrUnknown;
 
             // As per: http://confluence.jetbrains.com/display/TCD65/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-ServiceMessages
             Escapes = new Dictionary<string, string>
@@ -66,19 +38,14 @@ namespace Octopus.Cli.Diagnostics
 
         public static bool IsKnownEnvironment()
         {
-            return buildEnvironment != BuildEnvironment.NoneOrUnknown;
-        }
-
-        public static bool EnvironmentVariableHasValue(string variableName)
-        {
-            return !string.IsNullOrEmpty(environmentVariableReader.GetVariableValue(variableName));
+            return buildEnvironment != AutomationEnvironment.NoneOrUnknown;
         }
 
         public static void EnableServiceMessages(this ILogger log)
         {
             serviceMessagesEnabled = true;
             
-            buildEnvironment = KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
+            buildEnvironment = automationEnvironmentProvider.DetermineAutomationEnvironment();
         }
 
         public static void DisableServiceMessages(this ILogger log)
@@ -93,7 +60,7 @@ namespace Octopus.Cli.Diagnostics
 
         public static bool IsVSTS(this ILogger log)
         {
-            return buildEnvironment == BuildEnvironment.TeamFoundationBuild;
+            return buildEnvironment == AutomationEnvironment.AzureDevOps;
         }
 
         public static void ServiceMessage(this ILogger log, string messageName, string value)
@@ -101,7 +68,7 @@ namespace Octopus.Cli.Diagnostics
             if (!serviceMessagesEnabled)
                 return;
 
-            if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            if (buildEnvironment == AutomationEnvironment.TeamCity || buildEnvironment == AutomationEnvironment.NoneOrUnknown)
             {
                 log.Information("##teamcity[{MessageName:l} {Value:l}]", messageName, EscapeValue(value));
             }
@@ -117,7 +84,7 @@ namespace Octopus.Cli.Diagnostics
                 return;
 
             var valueSummary = string.Join(" ", values.Select(v => $"{v.Key}='{EscapeValue(v.Value)}'"));
-            if (buildEnvironment == BuildEnvironment.TeamCity || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            if (buildEnvironment == AutomationEnvironment.TeamCity || buildEnvironment == AutomationEnvironment.NoneOrUnknown)
             {
                 log.Information("##teamcity[{MessageName:l} {ValueSummary:l}]", messageName, valueSummary);
             }
@@ -148,7 +115,7 @@ namespace Octopus.Cli.Diagnostics
         {
             if (!serviceMessagesEnabled)
                 return;
-            if (buildEnvironment == BuildEnvironment.TeamFoundationBuild || buildEnvironment == BuildEnvironment.NoneOrUnknown)
+            if (buildEnvironment == AutomationEnvironment.AzureDevOps || buildEnvironment == AutomationEnvironment.NoneOrUnknown)
             {
                 var workingDirectory = Environment.GetEnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY") ?? new System.IO.FileInfo(typeof(LogExtensions).GetTypeInfo().Assembly.Location).DirectoryName;
                 var selflink = new Uri(new Uri(serverBaseUrl), release.Links["Web"].AsString());

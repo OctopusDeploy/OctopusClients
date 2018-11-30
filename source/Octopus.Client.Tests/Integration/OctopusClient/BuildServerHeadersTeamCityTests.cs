@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => "TEAMCITY_VERSION";
         protected override string EnvironmentVariableValue => "2018.1.3";
-        internal override BuildEnvironment ExpectedBuildEnvironment => BuildEnvironment.TeamCity;
+        internal override AutomationEnvironment ExpectedAutomationEnvironment => AutomationEnvironment.TeamCity;
     }
 }

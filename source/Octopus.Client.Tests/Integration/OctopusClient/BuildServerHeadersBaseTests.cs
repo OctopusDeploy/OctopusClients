@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
+using Octopus.Client.AutomationEnvironments;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
@@ -23,30 +24,41 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected abstract string EnvironmentVariableName { get; }
         protected abstract string EnvironmentVariableValue { get; }
-        internal abstract BuildEnvironment ExpectedBuildEnvironment { get; }
+        internal abstract AutomationEnvironment ExpectedAutomationEnvironment { get; }
 
         protected override void SetupEnvironmentVariables()
         {
-            OctopusCustomHeaders.GetEnvironmentVariable = GetBuildServerEnvironmentVariableForThisTest;
+            AutomationEnvironmentProvider.environmentVariableReader = new ServerEnvironmentVariablesForTest(EnvironmentVariableName, EnvironmentVariableValue);
         }
 
-        private string GetBuildServerEnvironmentVariableForThisTest(string variableName)
+        private class ServerEnvironmentVariablesForTest : IEnvironmentVariableReader
         {
-            return variableName == EnvironmentVariableName ? 
-                EnvironmentVariableValue : 
-                null;
+            public ServerEnvironmentVariablesForTest(string environmentVariableName, string environmentVariableValue)
+            {
+                EnvironmentVariableName = environmentVariableName;
+                EnvironmentVariableValue = environmentVariableValue;
+            }
+
+            private string EnvironmentVariableName { get; set; }
+            private string EnvironmentVariableValue { get; set; }
+            public string GetVariableValue(string name)
+            {
+                return name == EnvironmentVariableName ?
+                    EnvironmentVariableValue :
+                    null;
+            }
         }
 
         protected override void CleanupEnvironmentVariables()
         {
-            OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
+            AutomationEnvironmentProvider.environmentVariableReader = new EnvironmentVariableReader();
         }
 
         [Test]
         public async Task AsyncClient_ShouldProvideBuildServer_WithCorrectValue()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.AutomationContext.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
+            response.AutomationContext.Should().Be(ExpectedAutomationEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedAutomationEnvironment} when {EnvironmentVariableName} is set");
         }
 
 #if SYNC_CLIENT
@@ -55,7 +67,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.AutomationContext.Should().Be(ExpectedBuildEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedBuildEnvironment} when {EnvironmentVariableName} is set");
+            response.AutomationContext.Should().Be(ExpectedAutomationEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedAutomationEnvironment} when {EnvironmentVariableName} is set");
         }
 #endif
 

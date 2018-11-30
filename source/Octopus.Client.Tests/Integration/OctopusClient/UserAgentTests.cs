@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
 using NUnit.Framework;
+using Octopus.Client.AutomationEnvironments;
 using Octopus.Client.Model;
 using Octopus.Client.Extensions;
 
@@ -25,12 +26,20 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override void SetupEnvironmentVariables()
         {
-            OctopusCustomHeaders.GetEnvironmentVariable = variableName => null;
+            AutomationEnvironmentProvider.environmentVariableReader = new ServerEnvironmentVariablesForTest();
+        }
+
+        private class ServerEnvironmentVariablesForTest : IEnvironmentVariableReader
+        {
+            public string GetVariableValue(string name)
+            {
+                return null;
+            }
         }
 
         protected override void CleanupEnvironmentVariables()
         {
-            OctopusCustomHeaders.GetEnvironmentVariable = Environment.GetEnvironmentVariable;
+            AutomationEnvironmentProvider.environmentVariableReader = new EnvironmentVariableReader();
         }
 
 
@@ -38,7 +47,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldProvideUserAgent_WithNameAndVersion()
         {
             var response = await AsyncClient.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} Unspecified", "We should set the standard User-Agent header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} NoneOrUnknown", "We should set the standard User-Agent header");
         }
 
 #if SYNC_CLIENT
@@ -47,7 +56,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
             var response = client.Get<TestDto>(TestRootPath);
-            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} Unspecified", "We should set the standard User-Agent header");
+            response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} NoneOrUnknown", "We should set the standard User-Agent header");
         }
 #endif
 
