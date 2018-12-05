@@ -39,7 +39,7 @@ namespace Octopus.Cli.Commands.Channel
 
         public async Task Request()
         {
-            if (!Repository.SupportsChannels()) throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server to start using channels.");
+            if (!Repository.SupportsChannels()) throw new CommandException("Your Octopus Server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus Server to start using channels.");
             if (string.IsNullOrWhiteSpace(projectName)) throw new CommandException("Please specify a project using the parameter: --project=ProjectXYZ");
             if (string.IsNullOrWhiteSpace(channelName)) throw new CommandException("Please specify a channel name using the parameter: --channel=ChannelXYZ");
 

@@ -176,7 +176,7 @@ namespace Octo.Tests.Commands
         }
 
         [Test]
-        public void SinglePackageStep_ShouldBeViblePlan()
+        public void SinglePackageStep_ShouldBeViablePlan()
         {
             // arrange
             var deploymentStepResource = ResourceBuilderHelpers.GetStep();
@@ -222,7 +222,6 @@ namespace Octo.Tests.Commands
         }
 
         [Test]
-
         public void MultipleSteps_OneNotResolvable_ShouldNotBeViablePlan()
         {
             // arrange
@@ -256,6 +255,39 @@ namespace Octo.Tests.Commands
 
             // assert
             plan.IsViableReleasePlan().Should().BeTrue();
+        }
+
+        [Test]
+        public void ChannelVersionRuleForNamedPackageReference_ShouldBeUsedToFilterPackages()
+        {
+            // arrange
+            var deploymentStepResource = ResourceBuilderHelpers.GetStep();
+            var action = ResourceBuilderHelpers.GetAction();
+            action.Packages.Add(new PackageReference("Acme", "Acme", "feeds-builtin", PackageAcquisitionLocation.Server));
+            deploymentStepResource.Actions.Add(action);
+            deploymentProcessResource.Steps.Add(deploymentStepResource);
+            channelResource.AddRule(new ChannelVersionRuleResource
+            {
+                ActionPackages = new List<DeploymentActionPackageResource>
+                {
+                    new DeploymentActionPackageResource(action.Name, "Acme")
+                },
+                VersionRange = "(,1.0)"
+            });
+            
+            packages.Add(new PackageResource { Version = "1.0.1"});
+
+            releaseTemplateResource.Packages.Add(new ReleaseTemplatePackage{ActionName = action.Name, PackageReferenceName = "Acme", IsResolvable = true});
+            channelVersionRuleTestResult.IsSatified();
+            
+            repository.Client
+                .Get<List<PackageResource>>(Arg.Any<string>(), Arg.Is<IDictionary<string, object>>(d => d.ContainsKey("versionRange") && (string)d["versionRange"] == "(,1.0)")).Returns(new List<PackageResource>());
+            
+            // act
+            var plan = ExecuteBuild();
+
+            // assert
+            plan.IsViableReleasePlan().Should().BeFalse();
         }
 
         private static ReleaseTemplatePackage GetReleaseTemplatePackage()

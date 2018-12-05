@@ -13,11 +13,13 @@ namespace Octopus.Client.Repositories.Async
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project);
+        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project);
         Task<ProgressionResource> GetProgression(ProjectResource project);
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
+        Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project);
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
-        Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId);
+        Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
@@ -47,6 +49,11 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ChannelResource>(project.Link("Channels"));
         }
 
+        public Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project)
+        {
+            return Client.ListAll<ChannelResource>(project.Link("Channels"));
+        }
+
         public Task<ProgressionResource> GetProgression(ProjectResource project)
         {
             return Client.Get<ProgressionResource>(project.Link("Progression"));
@@ -55,6 +62,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project)
         {
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
+        }
+        
+        public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
+        {
+            return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
         }
 
         public Task SetLogo(ProjectResource project, string fileName, Stream contents)
@@ -67,7 +79,7 @@ namespace Octopus.Client.Repositories.Async
             return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle);
         }
 
-        public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId)
+        public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
             return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
         }

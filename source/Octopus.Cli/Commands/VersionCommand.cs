@@ -14,9 +14,14 @@ namespace Octopus.Cli.Commands
 
         public Task Execute(string[] commandLineArgs)
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
             {
-                Console.WriteLine($"{typeof(CliProgram).GetInformationalVersion()}");
+                Options.Parse(commandLineArgs);
+
+                if (printHelp)
+                    GetHelp(Console.Out, commandLineArgs);
+                else
+                    Console.WriteLine($"{typeof(CliProgram).GetInformationalVersion()}");
             });
         }
 

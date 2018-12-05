@@ -10,5 +10,7 @@ namespace Octopus.Cli.Commands.Package
         string PackageFormat { get; }
 
         void BuildPackage(string basePath, IList<string> includes, ManifestMetadata metadata, string outFolder, bool overwrite, bool verboseInfo);
+
+        void SetCompression(string level);
     }
 }
