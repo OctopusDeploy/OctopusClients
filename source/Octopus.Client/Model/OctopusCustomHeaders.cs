@@ -12,8 +12,7 @@ namespace Octopus.Client.Model
         {
             var systemInformation = string.Join("; ", environmentHelper.SafelyGetEnvironmentInformation());
 
-            AutomationEnvironment = automationEnvironmentProvider.DetermineAutomationEnvironment();
-            var automationContext = AutomationEnvironment.ToString();
+            var automationContext = automationEnvironmentProvider.DetermineAutomationEnvironmentWithVersion();
             if (!string.IsNullOrWhiteSpace(requestingTool))
             {
                 automationContext += $" {requestingTool}";
@@ -25,6 +24,5 @@ namespace Octopus.Client.Model
         }
 
         internal string UserAgent { get; }
-        internal AutomationEnvironment AutomationEnvironment { get; }
     }
 }

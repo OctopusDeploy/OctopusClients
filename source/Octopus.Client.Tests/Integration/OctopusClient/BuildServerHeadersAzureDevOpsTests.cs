@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => "TF_BUILD";
         protected override string EnvironmentVariableValue => "True";
-        internal override AutomationEnvironment ExpectedAutomationEnvironment => AutomationEnvironment.AzureDevOps;
+        internal override string ExpectedAutomationEnvironment => "AzureDevOps";
     }
 }

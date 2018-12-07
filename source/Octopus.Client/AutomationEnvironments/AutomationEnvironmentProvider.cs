@@ -10,8 +10,11 @@ namespace Octopus.Client.AutomationEnvironments
         internal static readonly Dictionary<AutomationEnvironment, string[]> KnownEnvironmentVariables = new Dictionary<AutomationEnvironment, string[]>
         {
             { AutomationEnvironment.Octopus, new []{"AgentProgramDirectoryPath"}},
+            // https://confluence.jetbrains.com/display/TCD9/Predefined+Build+Parameters
             { AutomationEnvironment.TeamCity, new [] {"TEAMCITY_VERSION"}},
+            // https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables
             { AutomationEnvironment.AzureDevOps, new [] {"TF_BUILD", "BUILD_BUILDID", "AGENT_WORKFOLDER"}},
+            // https://confluence.atlassian.com/bamboo/bamboo-variables-289277087.html
             { AutomationEnvironment.Bamboo, new [] {"bamboo_agentId"}},
             { AutomationEnvironment.AppVeyor, new [] {"APPVEYOR"}},
             { AutomationEnvironment.BitBucket, new [] {"BITBUCKET_BUILD_NUMBER"}},
@@ -48,10 +51,22 @@ namespace Octopus.Client.AutomationEnvironments
         {
             return KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
         }
+
+        public string DetermineAutomationEnvironmentWithVersion()
+        {
+            var environment = DetermineAutomationEnvironment();
+            if (environment == AutomationEnvironment.TeamCity)
+            {
+                return $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First())}";
+            }
+
+            return environment.ToString();
+        }
     }
 
     internal interface IAutomationEnvironmentProvider
     {
         AutomationEnvironment DetermineAutomationEnvironment();
+        string DetermineAutomationEnvironmentWithVersion();
     }
 }

@@ -24,7 +24,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected abstract string EnvironmentVariableName { get; }
         protected abstract string EnvironmentVariableValue { get; }
-        internal abstract AutomationEnvironment ExpectedAutomationEnvironment { get; }
+        internal abstract string ExpectedAutomationEnvironment { get; }
 
         protected override void SetupEnvironmentVariables()
         {

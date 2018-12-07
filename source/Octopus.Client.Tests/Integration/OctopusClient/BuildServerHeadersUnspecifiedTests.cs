@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => string.Empty;
         protected override string EnvironmentVariableValue => string.Empty;
-        internal override AutomationEnvironment ExpectedAutomationEnvironment => AutomationEnvironment.NoneOrUnknown;
+        internal override string ExpectedAutomationEnvironment => "NoneOrUnknown";
     }
 }

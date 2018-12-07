@@ -6,6 +6,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
     {
         protected override string EnvironmentVariableName => "bamboo_agentId";
         protected override string EnvironmentVariableValue => "123";
-        internal override AutomationEnvironment ExpectedAutomationEnvironment => AutomationEnvironment.Bamboo;
+        internal override string ExpectedAutomationEnvironment => "Bamboo";
     }
 }
