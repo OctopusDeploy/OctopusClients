@@ -15,7 +15,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             Get(TestRootPath, p =>
             {
-                var automationContext = Request.Headers.UserAgent.Split(' ')[1];
+                var automationContext = Request.Headers.UserAgent.Replace("; ", ";").Split(' ')[2];
 
                 return Response.AsJson(new TestDto { AutomationContext = automationContext })
                     .WithStatusCode(HttpStatusCode.OK);
@@ -28,7 +28,16 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override void SetupEnvironmentVariables()
         {
+            OctopusCustomHeaders.environmentHelper = new TestEnvironmentHelper();
             AutomationEnvironmentProvider.environmentVariableReader = new ServerEnvironmentVariablesForTest(EnvironmentVariableName, EnvironmentVariableValue);
+        }
+
+        private class TestEnvironmentHelper : IEnvironmentHelper
+        {
+            public string[] SafelyGetEnvironmentInformation()
+            {
+                return new[] { "TestOS", "x64" };
+            }
         }
 
         private class ServerEnvironmentVariablesForTest : IEnvironmentVariableReader
@@ -51,6 +60,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override void CleanupEnvironmentVariables()
         {
+            OctopusCustomHeaders.environmentHelper = new EnvironmentHelper();
             AutomationEnvironmentProvider.environmentVariableReader = new EnvironmentVariableReader();
         }
 
