@@ -91,7 +91,15 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
-            OctopusClientFactory.SetRequestingTool("octo");
+            var requestingTool = "octo";
+
+            var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
+            if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
+            {
+                requestingTool += $" plugin/{octoExtensionVersion}";
+            }
+
+            OctopusClientFactory.SetRequestingTool(requestingTool);
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
