@@ -40,6 +40,11 @@ namespace Octopus.Client.Model
         public string IdentityEstablishedWith { get; set; }
 
         /// <summary>
+        /// Gets or sets the user agent header value from the request that triggered the event
+        /// </summary>
+        public string UserAgent { get; set; }
+
+        /// <summary>
         /// Gets or sets the date/time that the event took place.
         /// </summary>
         public DateTimeOffset Occurred { get; set; }
