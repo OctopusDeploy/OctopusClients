@@ -2357,6 +2357,7 @@ Octopus.Client.Model
     List<EventReference> MessageReferences { get; set; }
     DateTimeOffset Occurred { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
+    String UserAgent { get; set; }
     String UserId { get; set; }
     String Username { get; set; }
   }
