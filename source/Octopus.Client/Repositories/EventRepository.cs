@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories
         /// <param name="fromAutoId"></param>
         /// <param name="toAutoId"></param>
         /// <param name="documentTypes"></param>
-        /// <param name="eventInitiators"></param>
+        /// <param name="eventAgents"></param>
         /// <returns></returns>
         ResourceCollection<EventResource> List(int skip = 0, 
             int? take = null,
@@ -52,7 +52,7 @@ namespace Octopus.Client.Repositories
             long? fromAutoId = null,
             long? toAutoId = null,
             string documentTypes = null,
-            string eventInitiators = null);
+            string eventAgents = null);
     }
     
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -95,7 +95,7 @@ namespace Octopus.Client.Repositories
             long? fromAutoId = null,
             long? toAutoId = null,
             string documentTypes = null,
-            string eventInitiators = null)
+            string eventAgents = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -117,7 +117,7 @@ namespace Octopus.Client.Repositories
                 fromAutoId,
                 toAutoId,
                 documentTypes,
-                eventInitiators
+                eventAgents
             });
         }
     }
