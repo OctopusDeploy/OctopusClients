@@ -68,7 +68,7 @@ namespace Octopus.Cli.Diagnostics
             if (!serviceMessagesEnabled)
                 return;
 
-            if (buildEnvironment == AutomationEnvironment.TeamCity || buildEnvironment == AutomationEnvironment.NoneOrUnknown)
+            if (buildEnvironment == AutomationEnvironment.TeamCity)
             {
                 log.Information("##teamcity[{MessageName:l} {Value:l}]", messageName, EscapeValue(value));
             }
@@ -84,7 +84,7 @@ namespace Octopus.Cli.Diagnostics
                 return;
 
             var valueSummary = string.Join(" ", values.Select(v => $"{v.Key}='{EscapeValue(v.Value)}'"));
-            if (buildEnvironment == AutomationEnvironment.TeamCity || buildEnvironment == AutomationEnvironment.NoneOrUnknown)
+            if (buildEnvironment == AutomationEnvironment.TeamCity)
             {
                 log.Information("##teamcity[{MessageName:l} {ValueSummary:l}]", messageName, valueSummary);
             }

@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Logging;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.AutomationEnvironments
 {
     internal class AutomationEnvironmentProvider : IAutomationEnvironmentProvider
     {
+        private static readonly ILog Logger = LogProvider.For<AutomationEnvironmentProvider>();
+
         internal static readonly Dictionary<AutomationEnvironment, string[]> KnownEnvironmentVariables = new Dictionary<AutomationEnvironment, string[]>
         {
             { AutomationEnvironment.Octopus, new []{"AgentProgramDirectoryPath"}},
@@ -55,12 +59,17 @@ namespace Octopus.Client.AutomationEnvironments
         public string DetermineAutomationEnvironmentWithVersion()
         {
             var environment = DetermineAutomationEnvironment();
+            var envString = environment.ToString();
+
             if (environment == AutomationEnvironment.TeamCity)
             {
-                return $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First())}";
+                // the TeamCity version is formatted like "2018.1.3 (Build 12345)", we just want the bit before the first space
+                envString = $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First()).Split(' ').First()}";
             }
 
-            return environment.ToString();
+            Logger.InfoFormat("Detected automation environment: {environment}", envString);
+
+            return envString;
         }
     }
 
