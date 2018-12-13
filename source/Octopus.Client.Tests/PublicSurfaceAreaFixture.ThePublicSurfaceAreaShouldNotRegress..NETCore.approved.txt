@@ -2974,6 +2974,7 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     String Application { get; set; }
+    Boolean HasLongTermSupport { get; set; }
     Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
