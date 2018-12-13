@@ -33,6 +33,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="fromAutoId"></param>
         /// <param name="toAutoId"></param>
         /// <param name="documentTypes"></param>
+        /// <param name="eventAgents"></param>
         /// <returns></returns>
         Task<ResourceCollection<EventResource>> List(int skip = 0,
             int? take = null,
@@ -51,7 +52,8 @@ namespace Octopus.Client.Repositories.Async
             string tags = null,
             long? fromAutoId = null,
             long? toAutoId = null,
-            string documentTypes = null);
+            string documentTypes = null,
+            string eventAgents = null);
     }
 
     class EventRepository : BasicRepository<EventResource>, IEventRepository
@@ -93,7 +95,8 @@ namespace Octopus.Client.Repositories.Async
             string tags = null,
             long? fromAutoId = null,
             long? toAutoId = null,
-            string documentTypes = null)
+            string documentTypes = null,
+            string eventAgents = null)
         {
             return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
             {
@@ -114,7 +117,8 @@ namespace Octopus.Client.Repositories.Async
                 tags,
                 fromAutoId,
                 toAutoId,
-                documentTypes
+                documentTypes,
+                eventAgents
             });
         }
     }
