@@ -26,20 +26,25 @@ namespace Octopus.Client
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
-        readonly SemanticVersion clientVersion;
+        readonly OctopusCustomHeaders octopusCustomHeaders;
         private string antiforgeryCookieName = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint) :this(serverEndpoint, null)
+        {
+        }
+
+        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string requestingTool)
         {
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
-            clientVersion = GetType().GetSemanticVersion();
+            octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
             Repository = new OctopusRepository(this);
         }
+
 
         public RootResource RootDocument => Repository.LoadRootDocument();
         public IOctopusRepository Repository { get; private set; }
@@ -397,7 +402,7 @@ namespace Octopus.Client
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
-            webRequest.UserAgent = $"{ApiConstants.OctopusUserAgentProductName}/{clientVersion.ToNormalizedString()}";
+            webRequest.UserAgent = octopusCustomHeaders.UserAgent;
 
             if (webRequest.Method == "PUT")
             {

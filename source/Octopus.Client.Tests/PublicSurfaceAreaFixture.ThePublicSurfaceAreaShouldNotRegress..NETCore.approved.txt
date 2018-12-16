@@ -1942,6 +1942,7 @@ Octopus.Client.Model
     .ctor()
     IList<String> DocumentTypes { get; set; }
     IList<String> Environments { get; set; }
+    IList<String> EventAgents { get; set; }
     IList<String> EventCategories { get; set; }
     IList<String> EventGroups { get; set; }
     IList<String> Projects { get; set; }
@@ -1973,6 +1974,7 @@ Octopus.Client.Model
     DateTimeOffset Occurred { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     String SpaceId { get; set; }
+    String UserAgent { get; set; }
     String UserId { get; set; }
     String Username { get; set; }
   }
@@ -3121,6 +3123,7 @@ Octopus.Client.Model
     .ctor()
     String ApiVersion { get; set; }
     String Application { get; set; }
+    Boolean HasLongTermSupport { get; set; }
     Guid InstallationId { get; set; }
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
@@ -5043,7 +5046,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String)
+    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
