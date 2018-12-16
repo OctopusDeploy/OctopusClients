@@ -14,7 +14,6 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
@@ -36,7 +35,7 @@ namespace Octopus.Client
         private bool ignoreSslErrorMessageLogged = false;
         private string antiforgeryCookieName = null;
 
-        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
@@ -69,7 +68,7 @@ namespace Octopus.Client
             client.Timeout = clientOptions.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-            client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
+            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
             Repository = new OctopusAsyncRepository(this);
         }
 
@@ -137,9 +136,27 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string requestingTool)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            try
+            {
+                return await Create(serverEndpoint, options, true, requestingTool);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                if (options?.IgnoreSslErrors ?? false)
+                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                return await Create(serverEndpoint, options, false, requestingTool);
+            }
+#else
+            return await Create(serverEndpoint, options, false, requestingTool);
+#endif
+        }
+
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
+        {
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
             await client.Repository.LoadRootDocument().ConfigureAwait(false);

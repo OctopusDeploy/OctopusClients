@@ -14,5 +14,9 @@ namespace Octopus.Client.Model
         [DefaultValue(false)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool IsEarlyAccessProgram { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public bool HasLongTermSupport { get; set; }
     }
 }
