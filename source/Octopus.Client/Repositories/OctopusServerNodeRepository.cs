@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -9,9 +10,17 @@ namespace Octopus.Client.Repositories
     
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
     {
+        private readonly IOctopusRepository repository;
+
         public OctopusServerNodeRepository(IOctopusRepository repository)
             : base(repository, "OctopusServerNodes")
         {
+            this.repository = repository;
+        }
+
+        public List<OctopusServerNodeRunningTasksResource> Running()
+        {
+            return repository.Client.Get<List<OctopusServerNodeRunningTasksResource>>(repository.Link("OctopusServerNodesRunningTasks"));
         }
     }
 }

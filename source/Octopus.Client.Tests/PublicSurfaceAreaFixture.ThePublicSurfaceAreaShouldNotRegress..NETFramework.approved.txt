@@ -3086,6 +3086,14 @@ Octopus.Client.Model
     String Name { get; set; }
     String Rank { get; set; }
   }
+  class OctopusServerNodeRunningTasksResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Int32 RunningTasks { get; set; }
+  }
   PackageAcquisitionLocation
   {
       Server = 0
