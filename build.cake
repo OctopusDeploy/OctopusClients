@@ -167,7 +167,7 @@ Task("MergeOctoExe")
             $"{outputFolder}/Octo.exe",
             $"{inputFolder}/Octo.exe",
             System.IO.Directory.EnumerateFiles(inputFolder, "*.dll")
-				.Union(System.IO.Directory.EnumerateFiles(inputFolder, "octodiff.exe")
+				.Union(System.IO.Directory.EnumerateFiles(inputFolder, "octodiff.exe"))
 				.Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
