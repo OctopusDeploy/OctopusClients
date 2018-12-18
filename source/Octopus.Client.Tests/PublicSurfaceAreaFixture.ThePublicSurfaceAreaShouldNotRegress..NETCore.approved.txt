@@ -1642,7 +1642,7 @@ Octopus.Client.Model
     DateTimeOffset Created { get; set; }
     String Filename { get; set; }
     String LogCorrelationId { get; set; }
-    Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
+    String ServerTaskId { get; set; }
     String Source { get; set; }
     String SpaceId { get; set; }
   }
