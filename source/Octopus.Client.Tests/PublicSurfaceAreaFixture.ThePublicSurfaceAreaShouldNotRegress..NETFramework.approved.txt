@@ -2353,6 +2353,7 @@ Octopus.Client.Model
     String Comments { get; set; }
     String Details { get; set; }
     String IdentityEstablishedWith { get; set; }
+    Boolean IsService { get; set; }
     String Message { get; set; }
     String MessageHtml { get; set; }
     List<EventReference> MessageReferences { get; set; }
