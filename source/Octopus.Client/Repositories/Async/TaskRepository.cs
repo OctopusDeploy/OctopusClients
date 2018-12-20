@@ -20,6 +20,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);
         Task<string> GetRawOutputLog(TaskResource resource);
+        Task<TaskTypeResource[]> GetTaskTypes();
         Task Rerun(TaskResource resource);
         Task Cancel(TaskResource resource);
         Task ModifyState(TaskResource resource, TaskState newState, string reason);
@@ -150,6 +151,11 @@ namespace Octopus.Client.Repositories.Async
         public Task<string> GetRawOutputLog(TaskResource resource)
         {
             return Client.Get<string>(resource.Link("Raw"));
+        }
+
+        public Task<TaskTypeResource[]> GetTaskTypes()
+        {
+            return Client.Get<TaskTypeResource[]>(Client.RootDocument.Links["TaskTypes"]);
         }
 
         public Task Rerun(TaskResource resource)
