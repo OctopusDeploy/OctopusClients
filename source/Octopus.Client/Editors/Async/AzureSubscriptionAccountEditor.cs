@@ -25,5 +25,23 @@ namespace Octopus.Client.Editors.Async
         {
             return Repository.Client.Get<List<AzureSubscriptionAccountResource.WebSite>>(account.Link("WebSites"));
         }
+
+        public Task<List<AzureSubscriptionAccountResource.WebSite>> WebSites()
+        {
+            return Repository.Client.Get<List<AzureSubscriptionAccountResource.WebSite>>(Instance.Link("WebSites"));
+        }
+
+        public Task<List<AzureSubscriptionAccountResource.WebSlot>> WebSlots(AzureSubscriptionAccountResource account,
+            AzureSubscriptionAccountResource.WebSite site)
+        {
+            return Repository.Client.Get<List<AzureSubscriptionAccountResource.WebSlot>>(account.Link("WebSlots"),
+                new { resourceGroupName = site.ResourceGroup, webSiteName = site.WebSpace});
+        }
+
+        public Task<List<AzureSubscriptionAccountResource.WebSlot>> WebSlots(AzureSubscriptionAccountResource.WebSite site)
+        {
+            return Repository.Client.Get<List<AzureSubscriptionAccountResource.WebSlot>>(Instance.Link("WebSlots"),
+                new { resourceGroupName = site.ResourceGroup, webSiteName = site.WebSpace });
+        }
     }
 }

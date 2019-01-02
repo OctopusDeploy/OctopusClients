@@ -66,6 +66,8 @@ namespace Octopus.Cli
                .WriteTo.Trace()
                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
                .CreateLogger();
+            
+            Client.Logging.LogProvider.SetCurrentLogProvider(new CliSerilogLogProvider(Log.Logger));
         }
 
         static IContainer BuildContainer()
@@ -89,6 +91,15 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
+            var requestingTool = "octo";
+
+            var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
+            if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
+            {
+                requestingTool += $" plugin/{octoExtensionVersion}";
+            }
+
+            OctopusClientFactory.SetRequestingTool(requestingTool);
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 

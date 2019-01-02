@@ -127,12 +127,17 @@ namespace Octopus.Client.Tests.Integration
         public string TestRootPath { get; }
 
         [SetUp]
-        public async Task Setup()
+        public virtual async Task Setup()
         {
+            SetupEnvironmentVariables();
             AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
 #if SYNC_CLIENT
             SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
 #endif
+        }
+
+        protected virtual void SetupEnvironmentVariables()
+        {
         }
 
         protected virtual OctopusClientOptions GetClientOptions()
@@ -140,12 +145,18 @@ namespace Octopus.Client.Tests.Integration
             return new OctopusClientOptions();
         }
 
-        public void TearDown()
+        [TearDown]
+        public virtual void TearDown()
         {
             AsyncClient?.Dispose();
 #if SYNC_CLIENT
             SyncClient?.Dispose();
 #endif
+            CleanupEnvironmentVariables();
+        }
+
+        protected virtual void CleanupEnvironmentVariables()
+        {
         }
 
         protected Response CreateErrorResponse(string message)

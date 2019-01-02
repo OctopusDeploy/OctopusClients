@@ -19,6 +19,7 @@ namespace Octopus.Client.Repositories
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
         TaskDetailsResource GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         string GetRawOutputLog(TaskResource resource);
+        TaskTypeResource[] GetTaskTypes();
         void Rerun(TaskResource resource);
         void Cancel(TaskResource resource);
         void ModifyState(TaskResource resource, TaskState newState, string reason);
@@ -149,6 +150,11 @@ namespace Octopus.Client.Repositories
         public string GetRawOutputLog(TaskResource resource)
         {
             return Client.Get<string>(resource.Link("Raw"));
+        }
+
+        public TaskTypeResource[] GetTaskTypes()
+        {
+            return Client.Get<TaskTypeResource[]>(Client.RootDocument.Links["TaskTypes"]);
         }
 
         public void Rerun(TaskResource resource)
