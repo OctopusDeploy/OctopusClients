@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model
 {
-    public class OctopusServerNodeRunningTasksResource : Resource
+    public class OctopusServerNodeDetailsResource : Resource
     {
         [Writeable]
         public int RunningTasks { get; set; }

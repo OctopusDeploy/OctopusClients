@@ -2528,6 +2528,14 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
   }
+  class OctopusServerNodeDetailsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Int32 RunningTasks { get; set; }
+  }
   class OctopusServerNodeResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2541,14 +2549,6 @@ Octopus.Client.Model
     Int32 MaxConcurrentTasks { get; set; }
     String Name { get; set; }
     String Rank { get; set; }
-  }
-  class OctopusServerNodeRunningTasksResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Int32 RunningTasks { get; set; }
   }
   PackageAcquisitionLocation
   {

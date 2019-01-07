@@ -19,9 +19,9 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<List<OctopusServerNodeRunningTasksResource>> Running()
+        public async Task<List<OctopusServerNodeDetailsResource>> Running()
         {
-            return await repository.Client.Get<List<OctopusServerNodeRunningTasksResource>>(await repository.Link("OctopusServerNodesRunningTasks"));
+            return await repository.Client.Get<List<OctopusServerNodeDetailsResource>>(await repository.Link("OctopusServerNodesRunningTasks"));
         }
     }
 }
