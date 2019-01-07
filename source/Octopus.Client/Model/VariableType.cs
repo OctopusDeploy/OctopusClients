@@ -6,6 +6,7 @@
         Sensitive,
         Certificate,
         AmazonWebServicesAccount,
-        AzureAccount
+        AzureAccount,
+        WorkerPool
     }
 }
