@@ -12,7 +12,7 @@ Please see [Contributing](CONTRIBUTING.md)
 ## Development
 You need:
 - VSCode or Visual Studio 15.3 to compile the solution
-- dotnet core 2.0-preview1 SDK
+- dotnet core 2.1.302 SDK
 
 Run `Build.cmd` to build, test and package the project. Do this before pushing as it will run the surface area tests as well,
 which require approval on almost every change.
