@@ -5165,6 +5165,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<OctopusServerNodeResource>
     Octopus.Client.Repositories.Async.IPaginate<OctopusServerNodeResource>
   {
+    Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
   }
   interface IPaginate`1
   {

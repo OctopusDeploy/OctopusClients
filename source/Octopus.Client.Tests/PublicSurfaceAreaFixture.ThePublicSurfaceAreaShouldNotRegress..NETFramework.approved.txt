@@ -5723,6 +5723,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<OctopusServerNodeResource>
     Octopus.Client.Repositories.IPaginate<OctopusServerNodeResource>
   {
+    Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
   }
   interface IPaginate`1
   {
@@ -6291,6 +6292,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<OctopusServerNodeResource>
     Octopus.Client.Repositories.Async.IPaginate<OctopusServerNodeResource>
   {
+    Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
   }
   interface IPaginate`1
   {

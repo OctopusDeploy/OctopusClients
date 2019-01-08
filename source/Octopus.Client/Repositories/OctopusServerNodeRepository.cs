@@ -6,6 +6,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IOctopusServerNodeRepository : IModify<OctopusServerNodeResource>, IDelete<OctopusServerNodeResource>, IGet<OctopusServerNodeResource>, IFindByName<OctopusServerNodeResource>
     {
+        OctopusServerNodeDetailsResource Details(OctopusServerNodeResource node);
     }
     
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
@@ -18,9 +19,9 @@ namespace Octopus.Client.Repositories
             this.repository = repository;
         }
 
-        public List<OctopusServerNodeDetailsResource> Running()
+        public OctopusServerNodeDetailsResource Details(OctopusServerNodeResource node)
         {
-            return repository.Client.Get<List<OctopusServerNodeDetailsResource>>(repository.Link("OctopusServerNodesRunningTasks"));
+            return repository.Client.Get<OctopusServerNodeDetailsResource>(node.Link("Details"));
         }
     }
 }
