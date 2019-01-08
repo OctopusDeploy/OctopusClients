@@ -354,9 +354,9 @@ namespace Octopus.Client
         /// <summary>
         /// Get a repository for the given space
         /// </summary>
-        /// <param name="spaceId"></param>
+        /// <param name="space"></param>
         /// <returns></returns>
-        IOctopusSpaceAsyncRepository ForSpace(string spaceId);
+        IOctopusSpaceAsyncRepository ForSpace(SpaceResource space);
 
         /// <summary>
         /// Get a repository for system only

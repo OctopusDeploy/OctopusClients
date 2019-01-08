@@ -12,9 +12,9 @@ namespace Octopus.Client
 {
     public static partial class OctopusRepositoryExtensions
     {
-        public static IOctopusRepository ForSpace(this IOctopusRepository repo, string spaceId)
+        public static IOctopusRepository ForSpace(this IOctopusRepository repo, SpaceResource space)
         {
-            return repo.Client.ForSpace(spaceId).Client.Repository;
+            return repo.Client.ForSpace(space).Client.Repository;
         }
     }
 

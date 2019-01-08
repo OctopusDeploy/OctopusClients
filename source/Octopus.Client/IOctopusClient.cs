@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using Octopus.Client.Exceptions;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
 namespace Octopus.Client
@@ -332,7 +331,7 @@ namespace Octopus.Client
         /// Sign out
         /// </summary>
         void SignOut();
-        IOctopusSpaceRepository ForSpace(string spaceId);
+        IOctopusSpaceRepository ForSpace(SpaceResource space);
         IOctopusSystemRepository ForSystem();
     }
 }

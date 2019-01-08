@@ -12,7 +12,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
@@ -107,10 +106,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return false;
         }
 
-        public IOctopusSpaceAsyncRepository ForSpace(string spaceId)
+        public IOctopusSpaceAsyncRepository ForSpace(SpaceResource space)
         {
-            ValidateSpaceId(spaceId);
-            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(spaceId));
+            ValidateSpaceId(space);
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(space.Id));
         }
 
         public IOctopusSystemAsyncRepository ForSystem()
@@ -598,16 +597,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             }
         }
 
-        private void ValidateSpaceId(string spaceId)
+        private void ValidateSpaceId(SpaceResource space)
         {
-            if (string.IsNullOrEmpty(spaceId))
+            if (space == null)
             {
-                throw new ArgumentException("spaceId cannot be null");
+                throw new ArgumentNullException(nameof(space));
             }
 
-            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
+            if (space.Id == MixedScopeConstants.AllSpacesQueryStringParameterValue)
             {
-                throw new ArgumentException("Invalid spaceId");
+                throw new ArgumentException("Invalid space", nameof(space));
             }
         }
 
