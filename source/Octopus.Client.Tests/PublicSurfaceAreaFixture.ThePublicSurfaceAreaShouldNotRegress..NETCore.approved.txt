@@ -238,7 +238,8 @@ Octopus.Client
   abstract class OctopusRepositoryExtensions
   {
     static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
-    static Octopus.Client.IOctopusAsyncRepository ForSpace(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.IOctopusSystemAsyncRepository ForSystem(Octopus.Client.IOctopusAsyncRepository)
   }
   class OctopusRequest
   {

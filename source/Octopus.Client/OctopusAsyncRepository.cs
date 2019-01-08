@@ -16,9 +16,14 @@ namespace Octopus.Client
             return new OctopusAsyncRepository(client, scope);
         }
 
-        public static IOctopusAsyncRepository ForSpace(this IOctopusAsyncRepository repo, SpaceResource space)
+        public static IOctopusSpaceAsyncRepository ForSpace(this IOctopusAsyncRepository repo, SpaceResource space)
         {
-            return repo.Client.ForSpace(space).Client.Repository;
+            return repo.Client.ForSpace(space);
+        }
+
+        public static IOctopusSystemAsyncRepository ForSystem(this IOctopusAsyncRepository repo)
+        {
+            return repo.Client.ForSystem();
         }
     }
 

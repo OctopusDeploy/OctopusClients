@@ -576,11 +576,6 @@ namespace Octopus.Client
             {
                 throw new ArgumentNullException(nameof(space));
             }
-
-            if (space.Id == MixedScopeConstants.AllSpacesQueryStringParameterValue)
-            {
-                throw new ArgumentException("Invalid space", nameof(space));
-            }
         }
     }
 }
