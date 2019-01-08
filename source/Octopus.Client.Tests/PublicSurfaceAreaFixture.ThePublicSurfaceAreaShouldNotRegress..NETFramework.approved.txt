@@ -4140,6 +4140,14 @@ Octopus.Client.Model
       Success = 6
       Cancelling = 8
   }
+  class TaskTypeResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    String Name { get; set; }
+  }
   class TeamResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5924,6 +5932,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     String GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    Octopus.Client.Model.TaskTypeResource[] GetTaskTypes()
     void ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     void Rerun(Octopus.Client.Model.TaskResource)
     void WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
@@ -6492,6 +6501,7 @@ Octopus.Client.Repositories.Async
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    Task<TaskTypeResource[]> GetTaskTypes()
     Task ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     Task Rerun(Octopus.Client.Model.TaskResource)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
