@@ -148,7 +148,7 @@ namespace Octopus.Cli.Commands
                 if (space == null)
                     throw new CommandException($"Cannot find the space with name {spaceName}");
 
-                Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space.Id));
+                Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space));
                 commandOutputProvider.Debug("Space name specified, process is now running in the context of space: {space:l}", spaceName);
             }
             else

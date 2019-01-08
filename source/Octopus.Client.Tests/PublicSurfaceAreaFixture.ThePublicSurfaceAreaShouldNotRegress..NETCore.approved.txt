@@ -279,7 +279,7 @@ Octopus.Client
   {
     Octopus.Client.T Apply(Func<String, T>, Func<T>, Func<T>)
     void Apply(Action<String>, Action, Action)
-    static Octopus.Client.RepositoryScope ForSpace(String)
+    static Octopus.Client.RepositoryScope ForSpace(Octopus.Client.Model.SpaceResource)
     static Octopus.Client.RepositoryScope ForSystem()
     static Octopus.Client.RepositoryScope Unspecified()
   }

@@ -10,7 +10,6 @@ namespace Octopus.Client.Tests.Spaces
     [TestFixture]
     public class SpaceIdAsyncTests
     {
-
         IOctopusAsyncClient SetupAsyncClient()
         {
             var client = Substitute.For<IOctopusAsyncClient>();
@@ -41,7 +40,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().Be(spaceId);
             })).ConfigureAwait(false);
-            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(spaceId)));
+            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(new SpaceResource().WithId(spaceId))));
             var created = await teamRepo.Create(new TeamResource() { Name = "Test" }).ConfigureAwait(false);
         }
 
@@ -55,7 +54,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().Be(spaceId);
             }));
-            var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(spaceId)));
+            var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(new SpaceResource().WithId(spaceId))));
             var _ = await repo.Create(new ProjectGroupResource { Name = "Test" }).ConfigureAwait(false);
         }
 

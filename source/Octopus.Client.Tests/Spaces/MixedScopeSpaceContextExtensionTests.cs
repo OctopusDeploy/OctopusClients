@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Tests.Spaces
@@ -33,7 +34,7 @@ namespace Octopus.Client.Tests.Spaces
             return new[]
             {
                 new TestCaseData(RepositoryScope.ForSystem()),
-                new TestCaseData(RepositoryScope.ForSpace("Spaces-1")),
+                new TestCaseData(RepositoryScope.ForSpace(new SpaceResource().WithId("Spaces-1")))
             };
         }
     }

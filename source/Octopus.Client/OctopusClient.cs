@@ -57,7 +57,7 @@ namespace Octopus.Client
         public IOctopusSpaceRepository ForSpace(SpaceResource space)
         {
             ValidateSpaceId(space);
-            return new OctopusRepository(this, RepositoryScope.ForSpace(space.Id));
+            return new OctopusRepository(this, RepositoryScope.ForSpace(space));
         }
 
         public IOctopusSystemRepository ForSystem()

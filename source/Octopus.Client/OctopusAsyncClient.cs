@@ -109,7 +109,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public IOctopusSpaceAsyncRepository ForSpace(SpaceResource space)
         {
             ValidateSpaceId(space);
-            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(space.Id));
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(space));
         }
 
         public IOctopusSystemAsyncRepository ForSystem()

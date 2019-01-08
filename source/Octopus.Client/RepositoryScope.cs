@@ -1,26 +1,26 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Octopus.Client.Model;
 
 namespace Octopus.Client
 {
     public class RepositoryScope
     {
-        public static RepositoryScope ForSpace(string spaceId) => new RepositoryScope(RepositoryScopeType.Space, spaceId);
+        public static RepositoryScope ForSpace(SpaceResource space) => new RepositoryScope(RepositoryScopeType.Space, space);
         public static RepositoryScope ForSystem() => new RepositoryScope(RepositoryScopeType.System, null);
         public static RepositoryScope Unspecified() => new RepositoryScope(RepositoryScopeType.Unspecified, null);
 
         private readonly RepositoryScopeType type;
-        private readonly string spaceId;
+        private readonly SpaceResource space;
 
-        private RepositoryScope(RepositoryScopeType type, string spaceId)
+        private RepositoryScope(RepositoryScopeType type, SpaceResource space)
         {
-            if (type == RepositoryScopeType.Space && string.IsNullOrEmpty(spaceId))
+            if (type == RepositoryScopeType.Space && space == null)
             {
-                throw new Exception("invalid");
+                throw new ArgumentNullException(nameof(space));
             }
 
             this.type = type;
-            this.spaceId = spaceId;
+            this.space = space;
         }
 
         private enum RepositoryScopeType
@@ -35,7 +35,7 @@ namespace Octopus.Client
             switch (type)
             {
                 case RepositoryScopeType.Space:
-                    return whenSpaceScoped(spaceId);
+                    return whenSpaceScoped(space.Id);
                 case RepositoryScopeType.System:
                     return whenSystemScoped();
                 case RepositoryScopeType.Unspecified:
