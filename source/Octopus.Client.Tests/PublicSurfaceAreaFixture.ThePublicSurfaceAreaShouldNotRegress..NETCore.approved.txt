@@ -2828,9 +2828,10 @@ Octopus.Client.Model
   class ProjectedTeamReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem
   {
-    .ctor(String, String, Boolean, String[])
+    .ctor(String, String, String, Boolean, String[])
     String[] ExternalGroupNames { get; set; }
     Boolean IsDirectlyAssigned { get; set; }
+    String SpaceId { get; set; }
   }
   class ProjectGroupResource
     Octopus.Client.Extensibility.IResource
