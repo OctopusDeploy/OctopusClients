@@ -185,7 +185,7 @@ namespace Octopus.Client.Repositories
 
         public TaskTypeResource[] GetTaskTypes()
         {
-            return Client.Get<TaskTypeResource[]>(Client.RootDocument.Links["TaskTypes"]);
+            return Client.Get<TaskTypeResource[]>(Client.Repository.LoadRootDocument().Links["TaskTypes"]);
         }
 
         public void Rerun(TaskResource resource)

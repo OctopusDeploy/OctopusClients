@@ -188,9 +188,9 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Get<string>(resource.Link("Raw"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
-        public Task<TaskTypeResource[]> GetTaskTypes()
+        public async Task<TaskTypeResource[]> GetTaskTypes()
         {
-            return Client.Get<TaskTypeResource[]>(Client.RootDocument.Links["TaskTypes"]);
+            return await Client.Get<TaskTypeResource[]>((await Client.Repository.LoadRootDocument()).Links["TaskTypes"]);
         }
 
         public async Task Rerun(TaskResource resource)
