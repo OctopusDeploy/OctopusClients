@@ -10,6 +10,14 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
+    public static partial class OctopusRepositoryExtensions
+    {
+        public static IOctopusRepository ForSpace(this IOctopusRepository repo, string spaceId)
+        {
+            return repo.Client.ForSpace(spaceId).Client.Repository;
+        }
+    }
+
     /// <summary>
     /// A simplified interface to commonly-used parts of the API.
     /// Functionality not exposed by this interface can be accessed

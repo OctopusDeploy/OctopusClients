@@ -9,11 +9,16 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    public static class OctopusRepositoryExtensions
+    public static partial class OctopusRepositoryExtensions
     {
         public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client, RepositoryScope scope = null)
         {
             return new OctopusAsyncRepository(client, scope);
+        }
+
+        public static IOctopusAsyncRepository ForSpace(this IOctopusAsyncRepository repo, string spaceId)
+        {
+            return repo.Client.ForSpace(spaceId).Client.Repository;
         }
     }
 
