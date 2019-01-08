@@ -387,6 +387,7 @@ Octopus.Client
     Octopus.Client.IOctopusSystemRepository
   {
     .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.RepositoryScope)
     .ctor(Octopus.Client.IOctopusClient, Octopus.Client.RepositoryScope)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }

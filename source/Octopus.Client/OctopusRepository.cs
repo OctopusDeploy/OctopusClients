@@ -25,7 +25,12 @@ namespace Octopus.Client
     {
         private readonly Lazy<RootResource> loadRootResource;
         private readonly Lazy<SpaceRootResource> loadSpaceRootResource;
+        
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
+        {
+        }
+
+        public OctopusRepository(OctopusServerEndpoint endpoint, RepositoryScope repositoryScope) : this(new OctopusClient(endpoint), repositoryScope)
         {
         }
 
