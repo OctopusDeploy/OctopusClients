@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility.Attributes;
+using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
@@ -78,5 +79,7 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
+
+        public List<WorkItem> WorkItems { get; set; }
     }
 }

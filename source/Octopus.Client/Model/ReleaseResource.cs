@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
+using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
@@ -46,5 +47,7 @@ namespace Octopus.Client.Model
 
         public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
+
+        public List<WorkItem> WorkItems { get; set; }
     }
 }

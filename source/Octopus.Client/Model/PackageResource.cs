@@ -1,4 +1,5 @@
 ﻿using System;
+using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
@@ -27,6 +28,7 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
         public string Published { get; set; }
         public string ReleaseNotes { get; set; }
+        public WorkItem[] WorkItems { get; set; }
         public string FileExtension { get; set; }
     }
 }
