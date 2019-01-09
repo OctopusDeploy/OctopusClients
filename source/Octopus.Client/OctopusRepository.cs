@@ -239,12 +239,12 @@ namespace Octopus.Client
                 () =>
                 {
                     var defaultSpace = TryGetDefaultSpace();
-                    return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace.Id) : null;
+                    return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace) : null;
                 });
 
-            SpaceRootResource LoadSpaceRootResourceFor(string spaceId)
+            SpaceRootResource LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {spaceId});
+                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {space.Id});
             }
 
             SpaceResource TryGetDefaultSpace()

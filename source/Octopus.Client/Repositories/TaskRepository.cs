@@ -264,9 +264,9 @@ namespace Octopus.Client.Repositories
                 return;
             var spaceContext = GetCurrentSpaceContext();
             
-            spaceContext.ApplySpaceSelection(spaceIds =>
+            spaceContext.ApplySpaceSelection(spaces =>
             {
-                if (!spaceIds.Contains(task.SpaceId))
+                if (spaces.All(space => space.Id != task.SpaceId))
                 {
                     throw new SpaceScopedOperationOutsideOfCurrentSpaceContextException(task.SpaceId, spaceContext);
                 }

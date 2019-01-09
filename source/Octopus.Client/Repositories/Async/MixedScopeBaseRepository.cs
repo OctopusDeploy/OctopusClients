@@ -54,14 +54,14 @@ namespace Octopus.Client.Repositories.Async
             if (resource is IHaveSpaceResource spaceResource 
                 && userDefinedSpaceContext != null)
             {
-                spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaceIds =>
+                spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaces =>
                 {
-                    if (spaceIds.Count == 1 && !userDefinedSpaceContext.IncludeSystem)
+                    if (spaces.Count == 1 && !userDefinedSpaceContext.IncludeSystem)
                     {
-                        return spaceIds.Single();
+                        return spaces.Single().Id;
                     }
 
-                    if (spaceIds.Count == 0 && userDefinedSpaceContext.IncludeSystem)
+                    if (spaces.Count == 0 && userDefinedSpaceContext.IncludeSystem)
                     {
                         // This assumes that the resource we are sending can actually apply at the system level.
                         // This is not always true, for example Tasks that can only apply at the space level.

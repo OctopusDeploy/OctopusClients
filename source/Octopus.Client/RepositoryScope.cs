@@ -30,12 +30,12 @@ namespace Octopus.Client
             Unspecified
         }
 
-        public T Apply<T>(Func<string, T> whenSpaceScoped, Func<T> whenSystemScoped, Func<T> whenUnspecifiedScope)
+        public T Apply<T>(Func<SpaceResource, T> whenSpaceScoped, Func<T> whenSystemScoped, Func<T> whenUnspecifiedScope)
         {
             switch (type)
             {
                 case RepositoryScopeType.Space:
-                    return whenSpaceScoped(space.Id);
+                    return whenSpaceScoped(space);
                 case RepositoryScopeType.System:
                     return whenSystemScoped();
                 case RepositoryScopeType.Unspecified:
@@ -45,9 +45,9 @@ namespace Octopus.Client
             }
         }
 
-        public void Apply(Action<string> whenSpaceScoped, Action whenSystemScoped, Action whenUnspecifiedScope)
+        public void Apply(Action<SpaceResource> whenSpaceScoped, Action whenSystemScoped, Action whenUnspecifiedScope)
         {
-            Apply(id => { whenSpaceScoped(id); return 1; },
+            Apply(space => { whenSpaceScoped(space); return 1; },
                 () => { whenSystemScoped(); return 1; },
                 () => { whenUnspecifiedScope(); return 1; });
         }

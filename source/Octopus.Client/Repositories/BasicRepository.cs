@@ -165,7 +165,7 @@ namespace Octopus.Client.Repositories
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
-                spaceResource.SpaceId = Repository.Scope.Apply(spaceId => spaceId,
+                spaceResource.SpaceId = Repository.Scope.Apply(space => space.Id,
                     () => null,
                     () => spaceResource.SpaceId);
             }

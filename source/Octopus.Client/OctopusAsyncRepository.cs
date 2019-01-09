@@ -242,14 +242,14 @@ namespace Octopus.Client
                 {
                     var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
                     return defaultSpace != null
-                        ? await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false)
+                        ? await LoadSpaceRootResourceFor(defaultSpace).ConfigureAwait(false)
                         : null;
                 });
 
-            async Task<SpaceRootResource> LoadSpaceRootResourceFor(string spaceId)
+            async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
                 var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
-                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId}).ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {space.Id}).ConfigureAwait(false);
             }
 
             async Task<SpaceResource> TryGetDefaultSpace()
