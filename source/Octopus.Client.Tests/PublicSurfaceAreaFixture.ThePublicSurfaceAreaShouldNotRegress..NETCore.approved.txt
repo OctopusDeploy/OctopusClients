@@ -1652,6 +1652,7 @@ Octopus.Client.Model
     String TaskId { get; set; }
     String TenantId { get; set; }
     Boolean UseGuidedFailure { get; set; }
+    List<WorkItem> WorkItems { get; set; }
   }
   DeploymentStepCondition
   {
@@ -2479,6 +2480,7 @@ Octopus.Client.Model
     String Summary { get; set; }
     String Title { get; set; }
     String Version { get; set; }
+    Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }
   }
   class PackageSignatureResource
   {
@@ -2867,6 +2869,7 @@ Octopus.Client.Model
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
+    List<WorkItem> WorkItems { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -4353,6 +4356,18 @@ Octopus.Client.Model.Forms
     String Name { get; }
     Object CoerceValue(String)
     Type GetNativeValueType()
+  }
+}
+Octopus.Client.Model.IssueTrackers
+{
+  class WorkItem
+  {
+    .ctor()
+    String Id { get; set; }
+    String IssueTrackerId { get; set; }
+    String LinkText { get; set; }
+    String LinkUrl { get; set; }
+    String ReleaseNotes { get; set; }
   }
 }
 Octopus.Client.Model.Migrations
