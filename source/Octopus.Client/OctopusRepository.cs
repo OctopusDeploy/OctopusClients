@@ -10,6 +10,19 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
+    public static partial class OctopusRepositoryExtensions
+    {
+        public static IOctopusSpaceRepository ForSpace(this IOctopusRepository repo, SpaceResource space)
+        {
+            return repo.Client.ForSpace(space);
+        }
+
+        public static IOctopusSystemRepository ForSystem(this IOctopusRepository repo)
+        {
+            return repo.Client.ForSystem();
+        }
+    }
+
     /// <summary>
     /// A simplified interface to commonly-used parts of the API.
     /// Functionality not exposed by this interface can be accessed
@@ -25,7 +38,12 @@ namespace Octopus.Client
     {
         private readonly Lazy<RootResource> loadRootResource;
         private readonly Lazy<SpaceRootResource> loadSpaceRootResource;
+        
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
+        {
+        }
+
+        public OctopusRepository(OctopusServerEndpoint endpoint, RepositoryScope repositoryScope) : this(new OctopusClient(endpoint), repositoryScope)
         {
         }
 
@@ -221,12 +239,12 @@ namespace Octopus.Client
                 () =>
                 {
                     var defaultSpace = TryGetDefaultSpace();
-                    return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace.Id) : null;
+                    return defaultSpace != null ? LoadSpaceRootResourceFor(defaultSpace) : null;
                 });
 
-            SpaceRootResource LoadSpaceRootResourceFor(string spaceId)
+            SpaceRootResource LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {spaceId});
+                return Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new {space.Id});
             }
 
             SpaceResource TryGetDefaultSpace()

@@ -54,10 +54,10 @@ namespace Octopus.Client
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        public IOctopusSpaceRepository ForSpace(string spaceId)
+        public IOctopusSpaceRepository ForSpace(SpaceResource space)
         {
-            ValidateSpaceId(spaceId);
-            return new OctopusRepository(this, RepositoryScope.ForSpace(spaceId));
+            ValidateSpaceId(space);
+            return new OctopusRepository(this, RepositoryScope.ForSpace(space));
         }
 
         public IOctopusSystemRepository ForSystem()
@@ -570,16 +570,11 @@ namespace Octopus.Client
         {
         }
 
-        private void ValidateSpaceId(string spaceId)
+        private void ValidateSpaceId(SpaceResource space)
         {
-            if (string.IsNullOrEmpty(spaceId))
+            if (space == null)
             {
-                throw new ArgumentException("spaceId cannot be null");
-            }
-
-            if (spaceId == MixedScopeConstants.AllSpacesQueryStringParameterValue)
-            {
-                throw new ArgumentException("Invalid spaceId");
+                throw new ArgumentNullException(nameof(space));
             }
         }
     }

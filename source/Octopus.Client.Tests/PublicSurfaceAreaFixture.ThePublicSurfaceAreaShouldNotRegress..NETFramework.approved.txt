@@ -32,7 +32,7 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
-    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(String)
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
@@ -67,7 +67,7 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
-    Octopus.Client.IOctopusSpaceRepository ForSpace(String)
+    Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
@@ -246,7 +246,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object)
     void Dispose()
-    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(String)
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
     Task<Stream> GetContent(String, Object)
@@ -345,7 +345,7 @@ Octopus.Client
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object)
     void Dispose()
-    Octopus.Client.IOctopusSpaceRepository ForSpace(String)
+    Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
     Stream GetContent(String, Object)
@@ -387,6 +387,7 @@ Octopus.Client
     Octopus.Client.IOctopusSystemRepository
   {
     .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.RepositoryScope)
     .ctor(Octopus.Client.IOctopusClient, Octopus.Client.RepositoryScope)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
@@ -448,6 +449,10 @@ Octopus.Client
   abstract class OctopusRepositoryExtensions
   {
     static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
+    static Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.IOctopusRepository, Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.IOctopusSystemAsyncRepository ForSystem(Octopus.Client.IOctopusAsyncRepository)
+    static Octopus.Client.IOctopusSystemRepository ForSystem(Octopus.Client.IOctopusRepository)
   }
   class OctopusRequest
   {
@@ -485,9 +490,9 @@ Octopus.Client
   }
   class RepositoryScope
   {
-    Octopus.Client.T Apply(Func<String, T>, Func<T>, Func<T>)
-    void Apply(Action<String>, Action, Action)
-    static Octopus.Client.RepositoryScope ForSpace(String)
+    Octopus.Client.T Apply(Func<SpaceResource, T>, Func<T>, Func<T>)
+    void Apply(Action<SpaceResource>, Action, Action)
+    static Octopus.Client.RepositoryScope ForSpace(Octopus.Client.Model.SpaceResource)
     static Octopus.Client.RepositoryScope ForSystem()
     static Octopus.Client.RepositoryScope Unspecified()
   }
@@ -503,14 +508,14 @@ Octopus.Client
     Boolean IncludeSystem { get; }
     static Octopus.Client.SpaceContext AllSpaces()
     static Octopus.Client.SpaceContext AllSpacesAndSystem()
-    Octopus.Client.T ApplySpaceSelection(Func<IReadOnlyCollection<String>, T>, Func<T>)
-    void ApplySpaceSelection(Action<IReadOnlyCollection<String>>, Action)
-    static Octopus.Client.SpaceContext SpecificSpace(String)
-    static Octopus.Client.SpaceContext SpecificSpaceAndSystem(String)
-    static Octopus.Client.SpaceContext SpecificSpaces(IEnumerable<String>)
-    static Octopus.Client.SpaceContext SpecificSpaces(String[])
-    static Octopus.Client.SpaceContext SpecificSpacesAndSystem(IEnumerable<String>)
-    static Octopus.Client.SpaceContext SpecificSpacesAndSystem(String[])
+    Octopus.Client.T ApplySpaceSelection(Func<IReadOnlyCollection<SpaceResource>, T>, Func<T>)
+    void ApplySpaceSelection(Action<IReadOnlyCollection<SpaceResource>>, Action)
+    static Octopus.Client.SpaceContext SpecificSpace(Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.SpaceContext SpecificSpaceAndSystem(Octopus.Client.Model.SpaceResource)
+    static Octopus.Client.SpaceContext SpecificSpaces(IEnumerable<SpaceResource>)
+    static Octopus.Client.SpaceContext SpecificSpaces(Octopus.Client.Model.SpaceResource[])
+    static Octopus.Client.SpaceContext SpecificSpacesAndSystem(IEnumerable<SpaceResource>)
+    static Octopus.Client.SpaceContext SpecificSpacesAndSystem(Octopus.Client.Model.SpaceResource[])
     static Octopus.Client.SpaceContext SystemOnly()
   }
   class SpaceContextSwitchException

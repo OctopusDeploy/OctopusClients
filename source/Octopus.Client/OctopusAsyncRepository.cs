@@ -9,11 +9,21 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
-    public static class OctopusRepositoryExtensions
+    public static partial class OctopusRepositoryExtensions
     {
         public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client, RepositoryScope scope = null)
         {
             return new OctopusAsyncRepository(client, scope);
+        }
+
+        public static IOctopusSpaceAsyncRepository ForSpace(this IOctopusAsyncRepository repo, SpaceResource space)
+        {
+            return repo.Client.ForSpace(space);
+        }
+
+        public static IOctopusSystemAsyncRepository ForSystem(this IOctopusAsyncRepository repo)
+        {
+            return repo.Client.ForSystem();
         }
     }
 
@@ -232,14 +242,14 @@ namespace Octopus.Client
                 {
                     var defaultSpace = await TryGetDefaultSpace().ConfigureAwait(false);
                     return defaultSpace != null
-                        ? await LoadSpaceRootResourceFor(defaultSpace.Id).ConfigureAwait(false)
+                        ? await LoadSpaceRootResourceFor(defaultSpace).ConfigureAwait(false)
                         : null;
                 });
 
-            async Task<SpaceRootResource> LoadSpaceRootResourceFor(string spaceId)
+            async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
                 var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
-                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {spaceId}).ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {space.Id}).ConfigureAwait(false);
             }
 
             async Task<SpaceResource> TryGetDefaultSpace()

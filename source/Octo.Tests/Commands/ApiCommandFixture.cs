@@ -102,9 +102,9 @@ namespace Octo.Tests.Commands
             bool isInRightSpaceContext = false;
             RepositoryFactory.CreateRepository(client, Arg.Do<RepositoryScope>(x =>
             {
-                x.Apply(spaceId =>
+                x.Apply(space =>
                 {
-                    spaceId.Should().Be("Spaces-2");
+                    space.Id.Should().Be("Spaces-2");
                     isInRightSpaceContext = true;
                 }, () => { }, () => { });
             }));
