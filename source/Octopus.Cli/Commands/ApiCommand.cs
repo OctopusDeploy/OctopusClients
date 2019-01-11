@@ -140,13 +140,21 @@ namespace Octopus.Cli.Commands
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
+            var serverHasSpaces = await client.ForSystem().HasLink("Spaces").ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(spaceName))
             {
+                if (!serverHasSpaces)
+                {
+                    throw new CommandException($"The server {endpoint.OctopusServer} has no spaces. Try invoking the Octo tool without specifying the space name as an argument");
+                }
+
                 commandOutputProvider.Debug("Finding space: {Space:l}", spaceName);
                 var space = await client.ForSystem().Spaces.FindByName(spaceName).ConfigureAwait(false);
                 if (space == null)
+                {
                     throw new CommandException($"Cannot find the space with name {spaceName}");
+                }
 
                 Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space));
                 commandOutputProvider.Debug("Space name specified, process is now running in the context of space: {space:l}", spaceName);
@@ -154,7 +162,23 @@ namespace Octopus.Cli.Commands
             else
             {
                 Repository = repositoryFactory.CreateRepository(client);
-                commandOutputProvider.Debug("Space name unspecified, process will try to run in the default space context if it is enabled, or in backwards compatible mode for older versions of Octopus Server");
+
+                if (!serverHasSpaces)
+                {
+                    commandOutputProvider.Debug("Process will run in backwards compatible mode for older versions of Octopus Server");
+                }
+                else
+                {
+                    var defaultSpace = await client.ForSystem().Spaces.FindOne(space => space.IsDefault)
+                        .ConfigureAwait(false);
+
+                    if (defaultSpace == null)
+                    {
+                        throw new CommandException("Octopus Server does not have a default space enabled, hence you need to specify the space name as an argument");
+                    }
+
+                    commandOutputProvider.Debug("Space name unspecified, process will run in the default space context");
+                }
             }
             
             RepositoryCommonQueries = new OctopusRepositoryCommonQueries(Repository, commandOutputProvider);
