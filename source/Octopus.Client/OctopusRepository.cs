@@ -244,7 +244,7 @@ namespace Octopus.Client
 
             SpaceRootResource LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new {space.Id});
+                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {space.Id});
             }
 
             SpaceResource TryGetDefaultSpace()
