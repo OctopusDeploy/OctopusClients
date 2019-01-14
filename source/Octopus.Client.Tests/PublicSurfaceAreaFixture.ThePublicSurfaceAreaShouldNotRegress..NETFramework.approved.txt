@@ -2379,6 +2379,12 @@ Octopus.Client.Model
       Release = 2
       Deployment = 3
   }
+  class ExtensionSettingsValues
+  {
+    .ctor()
+    String ExtensionId { get; set; }
+    String Values { get; set; }
+  }
   class ExternalSecurityGroupResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3229,6 +3235,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
+    List<ExtensionSettingsValues> ExtensionSettings { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
     String LifecycleId { get; set; }
@@ -3254,7 +3261,14 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.ProjectResource Clear()
+    Octopus.Client.Model.TSettings GetExtensionSettings(String)
     Octopus.Client.Model.ProjectResource IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
+    class ExtensionSettingsValues
+    {
+      .ctor()
+      String ExtensionId { get; set; }
+      String Values { get; set; }
+    }
   }
   class ProjectTriggerResource
     Octopus.Client.Extensibility.IResource

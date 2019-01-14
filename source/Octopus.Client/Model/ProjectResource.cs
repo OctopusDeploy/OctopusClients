@@ -106,7 +106,7 @@ namespace Octopus.Client.Model
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
 
         [Writeable]
-        public List<ExtensionSettingsValues> ExtensionSettings { get; private set; }
+        public List<ExtensionSettingsValues> ExtensionSettings { get; set; }
 
         public ProjectResource Clear()
         {
