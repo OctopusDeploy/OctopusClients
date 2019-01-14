@@ -219,14 +219,14 @@ namespace Octopus.Client.Model
             if (settings == null)
                 return default(TSettings);
 
-            var instance = JsonConvert.DeserializeObject<TSettings>(settings.Values);
+            var instance = JsonConvert.DeserializeObject<TSettings>(settings.Values.ToString());
             return instance;
         }
 
         public class ExtensionSettingsValues
         {
             public string ExtensionId { get; set; }
-            public string Values { get; set; }
+            public object Values { get; set; }
         }
     }
 }
