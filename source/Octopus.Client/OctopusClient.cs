@@ -314,6 +314,20 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="resource">The resource to create.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        public void Put<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+        }
+
+        /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>

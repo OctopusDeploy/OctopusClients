@@ -46,6 +46,7 @@ namespace Octopus.Client
         private readonly Lazy<Task<RootResource>> loadRootResource;
         private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
         private static readonly string rootDocumentUri = "~/api";
+
         public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
         {
             Client = client;
@@ -248,8 +249,7 @@ namespace Octopus.Client
 
             async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
-                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
-                return await Client.Get<SpaceRootResource>(rootDocument.Link("SpaceHome"), new {space.Id}).ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new {space.Id}).ConfigureAwait(false);
             }
 
             async Task<SpaceResource> TryGetDefaultSpace()

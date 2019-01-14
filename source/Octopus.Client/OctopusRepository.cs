@@ -174,7 +174,7 @@ namespace Octopus.Client
         public RootResource LoadRootDocument() => loadRootResource.Value;
         public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
 
-        RootResource LoadRootDocumentInner()
+        RootResource LoadRootDocumentInner()                                                                                    
         {
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
@@ -244,7 +244,7 @@ namespace Octopus.Client
 
             SpaceRootResource LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return Client.Get<SpaceRootResource>(loadRootResource.Value.Link("SpaceHome"), new {space.Id});
+                return Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new {space.Id});
             }
 
             SpaceResource TryGetDefaultSpace()

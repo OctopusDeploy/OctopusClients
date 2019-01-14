@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
                     [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces, 
+                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces.Select(s => s.Id).ToArray(), 
                         () => MixedScopeConstants.AllSpacesQueryStringParameterValue)
                 };
 
