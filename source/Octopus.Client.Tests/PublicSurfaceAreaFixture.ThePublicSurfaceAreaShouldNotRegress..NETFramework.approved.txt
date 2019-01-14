@@ -2383,7 +2383,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ExtensionId { get; set; }
-    String Values { get; set; }
+    Object Values { get; set; }
   }
   class ExternalSecurityGroupResource
     Octopus.Client.Extensibility.IResource
@@ -3267,7 +3267,7 @@ Octopus.Client.Model
     {
       .ctor()
       String ExtensionId { get; set; }
-      String Values { get; set; }
+      Object Values { get; set; }
     }
   }
   class ProjectTriggerResource
