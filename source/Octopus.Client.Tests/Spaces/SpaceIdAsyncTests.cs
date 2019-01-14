@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -15,7 +17,7 @@ namespace Octopus.Client.Tests.Spaces
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
-            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true } });
+            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource { Id = "Spaces-1", IsDefault = true, Links = new LinkCollection{{"SpaceHome", String.Empty}}} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
             client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
@@ -41,7 +43,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().Be(spaceId);
             })).ConfigureAwait(false);
-            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(new SpaceResource().WithId(spaceId))));
+            var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(CreateSpaceResource(spaceId))));
             var created = await teamRepo.Create(new TeamResource() { Name = "Test" }).ConfigureAwait(false);
         }
 
@@ -55,7 +57,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().Be(spaceId);
             }));
-            var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(new SpaceResource().WithId(spaceId))));
+            var repo = new ProjectGroupRepository(new OctopusAsyncRepository(client, RepositoryScope.ForSpace(CreateSpaceResource(spaceId))));
             var _ = await repo.Create(new ProjectGroupResource { Name = "Test" }).ConfigureAwait(false);
         }
 
@@ -70,7 +72,7 @@ namespace Octopus.Client.Tests.Spaces
             {
                 t.SpaceId.Should().BeNullOrEmpty();
             })).ConfigureAwait(false);
-            var includingSpaceContext = includeSystem ? SpaceContext.SpecificSpaceAndSystem(new SpaceResource().WithId(includingSpaceId)) : SpaceContext.SpecificSpace(new SpaceResource().WithId(includingSpaceId));
+            var includingSpaceContext = includeSystem ? SpaceContext.SpecificSpaceAndSystem(CreateSpaceResource(includingSpaceId)) : SpaceContext.SpecificSpace(CreateSpaceResource(includingSpaceId));
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.Unspecified()));
             var multiScoped = teamRepo.UsingContext(includingSpaceContext);
             var _ = await multiScoped.Create(new TeamResource() { Name = "Test" }).ConfigureAwait(false);
@@ -86,8 +88,17 @@ namespace Octopus.Client.Tests.Spaces
             var client = SetupAsyncClient();
             await client.Create(Arg.Any<string>(), Arg.Do<TeamResource>(t => t.SpaceId.Should().Be("Spaces-4"))).ConfigureAwait(false);
             var teamRepo = new TeamsRepository(new OctopusAsyncRepository(client, RepositoryScope.Unspecified()));
-            var multiScoped = teamRepo.UsingContext(SpaceContext.SpecificSpacesAndSystem(spaceIds.Select(id => new SpaceResource().WithId(id))));
+            var multiScoped = teamRepo.UsingContext(SpaceContext.SpecificSpacesAndSystem(spaceIds.Select(CreateSpaceResource)));
             var _ = await multiScoped.Create(new TeamResource() { Name = "Test", SpaceId = "Spaces-4" }).ConfigureAwait(false);
+        }
+
+        SpaceResource CreateSpaceResource(string id)
+        {
+            return new SpaceResource
+            {
+                Id = id,
+                Links = new LinkCollection{{"SpaceHome", String.Empty}}
+            };
         }
     }
 }
