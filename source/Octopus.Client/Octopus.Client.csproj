@@ -25,14 +25,11 @@ This package contains the client library for the HTTP API in Octopus.</Descripti
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);SYNC_CLIENT</DefineConstants>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS;LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <Compile Remove="Repositories\*.cs;Editors\*.cs" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1">
       <PrivateAssets>All</PrivateAssets>

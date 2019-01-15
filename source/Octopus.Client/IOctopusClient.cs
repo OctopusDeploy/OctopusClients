@@ -1,5 +1,4 @@
-﻿#if SYNC_CLIENT
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Exceptions;
@@ -325,4 +324,3 @@ namespace Octopus.Client
         RootResource RefreshRootDocument();
     }
 }
-#endif
