@@ -37,5 +37,7 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
+
+        public bool IsBuiltInWorker => Endpoint is BuiltInWorkerEndpointResource;
     }
 }

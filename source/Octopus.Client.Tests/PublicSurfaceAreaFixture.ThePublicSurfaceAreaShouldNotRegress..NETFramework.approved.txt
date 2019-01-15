@@ -2011,6 +2011,7 @@ Octopus.Client.Model
       AzureCloudService = 7
       AzureServiceFabricCluster = 8
       Kubernetes = 9
+      BuiltIn = 10
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -3301,13 +3302,15 @@ Octopus.Client.Model
       UserEdit = 102
       ConfigureServer = 103
       FeedEdit = 104
-      WorkerView = 105
-      WorkerEdit = 106
-      RunSystem = 107
-      SpaceEdit = 108
-      SpaceView = 109
-      SpaceDelete = 110
-      SpaceCreate = 111
+      WorkerPoolView = 105
+      WorkerPoolEdit = 106
+      WorkerView = 107
+      WorkerEdit = 108
+      RunSystem = 109
+      SpaceEdit = 110
+      SpaceView = 111
+      SpaceDelete = 112
+      SpaceCreate = 113
   }
   class PermissionDescription
   {
@@ -4444,6 +4447,7 @@ Octopus.Client.Model
       Certificate = 2
       AmazonWebServicesAccount = 3
       AzureAccount = 4
+      WorkerPool = 5
   }
   class VersioningStrategyResource
   {
@@ -4478,6 +4482,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Boolean IsDefault { get; set; }
     String Name { get; set; }
     Int32 SortOrder { get; set; }
@@ -4503,6 +4508,7 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
+    Boolean IsBuiltInWorker { get; }
     String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
     Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
@@ -4872,6 +4878,14 @@ Octopus.Client.Model.Endpoints
     String ResourceGroupName { get; set; }
     String WebAppName { get; set; }
     String WebAppSlotName { get; set; }
+  }
+  class BuiltInWorkerEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+  {
+    .ctor()
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
   }
   abstract class CalamariDotNetCorePlatforms
   {

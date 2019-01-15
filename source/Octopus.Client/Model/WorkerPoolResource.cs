@@ -9,6 +9,11 @@ namespace Octopus.Client.Model
     /// </summary>
     public class WorkerPoolResource : Resource, INamedResource, IHaveSpaceResource
     {
+        public WorkerPoolResource()
+        {
+            EnvironmentIds = new ReferenceCollection();
+        }
+
         /// <summary>
         /// Gets or sets the name of this pool. This should be short, preferably 5-20 characters.
         /// </summary>
@@ -25,7 +30,7 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
 
         /// <summary>
-        /// Is this the default pool.  The default pool is used for steps that don't specify a worker pool.  
+        /// Is this the default pool.  The default pool is used for steps that don't specify a worker pool.
         /// The default pool, if empty, uses the builtin worker to run steps.
         /// </summary>
         [Writeable]
@@ -39,5 +44,12 @@ namespace Octopus.Client.Model
         public int SortOrder { get; set; }
 
         public string SpaceId { get; set; }
+
+        /// <summary>
+        /// The environments this pool is restricted to.  If a pool is restricted to particular environments,
+        /// it can only be used in deployments to those environments.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection EnvironmentIds { get; set; }
     }
 }

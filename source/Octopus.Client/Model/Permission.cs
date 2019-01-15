@@ -217,23 +217,27 @@ namespace Octopus.Client.Model
         [Description("Export certificate private-keys")] [SupportsRestriction(PermissionScope.Environments, PermissionScope.Tenants)] CertificateExportPrivateKey,
 
         [Description("Edit users")] UserEdit,
-        
+
         [Description("Configure server settings like Authentication, SMTP, and HTTP Security Headers")] ConfigureServer,
 
         [Description("Edit feeds")] FeedEdit,
 
-        [Description("View the workers in worker pools")] WorkerView,
+        [Description("View worker pools")] [SupportsRestriction(PermissionScope.Environments)] WorkerPoolView,
 
-        [Description("Edit workers and worker pools")] WorkerEdit,
+        [Description("Edit worker pools")] [SupportsRestriction(PermissionScope.Environments)]  WorkerPoolEdit,
+
+        [Description("View the workers in worker pools")] [SupportsRestriction(PermissionScope.Environments)]  WorkerView,
+
+        [Description("Edit workers in worker pools")] [SupportsRestriction(PermissionScope.Environments)]  WorkerEdit,
 
         [Description("Run background actions that don't require user principal")] RunSystem,
-        
+
         [Description("Edit spaces")] SpaceEdit,
-        
+
         [Description("View spaces")] SpaceView,
-        
+
         [Description("Delete spaces")] SpaceDelete,
-        
+
         [Description("Create spaces")] SpaceCreate
     }
 }
