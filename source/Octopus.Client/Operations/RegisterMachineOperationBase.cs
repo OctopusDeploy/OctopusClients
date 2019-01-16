@@ -72,7 +72,6 @@ namespace Octopus.Client.Operations
 
         public Uri SubscriptionId { get; set; }
 
-#if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -132,7 +131,6 @@ namespace Octopus.Client.Operations
             }
             return proxy;
         }
-#endif
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.

@@ -10,11 +10,6 @@ namespace Octopus.Client.Editors
         {
         }
 
-        public List<AzureCloudService> CloudServices(AzureSubscriptionAccountResource account)
-        {
-            return Repository.Client.Get<List<AzureCloudService>>(account.Link("CloudServices"));
-        }
-
         public List<AzureStorageAccount> StorageAccounts(AzureSubscriptionAccountResource account)
         {
             return Repository.Client.Get<List<AzureStorageAccount>>(account.Link("StorageAccounts"));

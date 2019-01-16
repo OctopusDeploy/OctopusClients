@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client
@@ -35,4 +34,3 @@ namespace Octopus.Client
         string Link(string name);
     }
 }
-#endif

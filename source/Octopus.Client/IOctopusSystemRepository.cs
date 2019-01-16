@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 using Octopus.Client.Exceptions;
@@ -45,4 +44,3 @@ namespace Octopus.Client
         RootResource LoadRootDocument();
     }
 }
-#endif
