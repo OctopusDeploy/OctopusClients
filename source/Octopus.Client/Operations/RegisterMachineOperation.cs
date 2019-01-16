@@ -57,8 +57,6 @@ namespace Octopus.Client.Operations
         /// </summary>
         public TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
 
-#if SYNC_CLIENT
-
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -140,7 +138,6 @@ namespace Octopus.Client.Operations
             }
             return existing ?? new MachineResource();
         }
-#endif
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.

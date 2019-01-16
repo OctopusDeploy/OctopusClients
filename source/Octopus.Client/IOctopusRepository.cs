@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 namespace Octopus.Client
 {
     /// <summary>
@@ -10,4 +9,3 @@ namespace Octopus.Client
     {
     }
 }
-#endif

@@ -15,7 +15,6 @@ namespace Octopus.Client
             requestingTool = toolName;
         }
 
-#if SYNC_CLIENT
         /// <summary>
         /// Creates an instance of the client.
         /// </summary>
@@ -25,7 +24,6 @@ namespace Octopus.Client
         {
             return new OctopusClient(serverEndpoint, requestingTool);
         }
-#endif
 
         /// <summary>
         /// Creates an instance of the client.

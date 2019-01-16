@@ -1,4 +1,3 @@
-﻿#if SYNC_CLIENT
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -267,4 +266,3 @@ namespace Octopus.Client
         }
     }
 }
-#endif
