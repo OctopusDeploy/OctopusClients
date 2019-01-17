@@ -14,12 +14,11 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
-{
+{   
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
@@ -36,7 +35,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
         // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback)
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             options = options ?? new OctopusClientOptions();
 
@@ -70,7 +69,7 @@ namespace Octopus.Client
             client.Timeout = options.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
-            client.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()}");
+            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -126,9 +125,27 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #endif
         }
 
-        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler)
+        internal static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, string requestingTool)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler);
+#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
+            try
+            {
+                return await Create(serverEndpoint, options, true, requestingTool);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                if (options?.IgnoreSslErrors ?? false)
+                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                return await Create(serverEndpoint, options, false, requestingTool);
+            }
+#else
+            return await Create(serverEndpoint, options, false, requestingTool);
+#endif
+        }
+
+        private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
+        {
+            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool);
             try
             {
                 client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
@@ -149,7 +166,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusAsyncClient" />.
         /// </summary>
-        public RootResource RootDocument { get; private set; }
+        public RootResource RootDocument { get; protected set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -203,7 +220,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return response.ResponseResource;
         }
 
-        public IOctopusAsyncRepository Repository { get; private set; }
+        public IOctopusAsyncRepository Repository { get; protected set; }
 
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be

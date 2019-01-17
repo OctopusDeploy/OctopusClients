@@ -55,7 +55,6 @@ namespace Octopus.Client.Operations
 
         Uri SubscriptionId { get; set; }
 
-#if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -73,7 +72,7 @@ namespace Octopus.Client.Operations
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
         void Execute(IOctopusRepository repository);
-#endif
+
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>

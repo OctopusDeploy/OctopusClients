@@ -8,7 +8,13 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClientFactory : IOctopusClientFactory
     {
-#if SYNC_CLIENT
+        private static string requestingTool;
+
+        internal static void SetRequestingTool(string toolName)
+        {
+            requestingTool = toolName;
+        }
+
         /// <summary>
         /// Creates an instance of the client.
         /// </summary>
@@ -16,9 +22,8 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
         public IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint)
         {
-            return new OctopusClient(serverEndpoint);
+            return new OctopusClient(serverEndpoint, requestingTool);
         }
-#endif
 
         /// <summary>
         /// Creates an instance of the client.
@@ -28,7 +33,7 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
         public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null)
         {
-            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions);
+            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions, requestingTool);
         }
     }
 }

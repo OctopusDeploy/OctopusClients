@@ -34,10 +34,20 @@ namespace Octopus.Client.Model
         public string Username { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the user who created the event is a service user or an interactive user.
+        /// </summary>
+        public bool IsService { get; set; }
+
+        /// <summary>
         /// Gets or sets a description of how the user performing the event
         /// identified themselves to Octopus.
         /// </summary>
         public string IdentityEstablishedWith { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user agent header value from the request that triggered the event
+        /// </summary>
+        public string UserAgent { get; set; }
 
         /// <summary>
         /// Gets or sets the date/time that the event took place.
