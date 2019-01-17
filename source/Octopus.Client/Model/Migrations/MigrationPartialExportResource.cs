@@ -1,12 +1,15 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 using System.Collections.Generic;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class MigrationPartialExportResource : Resource
+    public class MigrationPartialExportResource : Resource, IHaveSpaceResource
     {
         [Writeable]
         public string PackageId { get; set; }
+        [Writeable]
+        public string SpaceId { get; set; }
         [Writeable]
         public string PackageVersion { get; set; }
         [Writeable]
@@ -29,6 +32,8 @@ namespace Octopus.Client.Model.Migrations
         public string DestinationApiKey { get; set; }
         [Writeable]
         public string DestinationPackageFeed { get; set; }
+        [Writeable]
+        public string DestinationSpaceId { get; set; }
         [Writeable]
         public string SuccessCallbackUri { get; set; }
         [Writeable]
