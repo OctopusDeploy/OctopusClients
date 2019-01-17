@@ -29,11 +29,11 @@ namespace Octopus.Client.Model.Migrations
         [Writeable]
         public bool EncryptPackage { get; set; }
         [Writeable]
+        public string DestinationSpaceId { get; set; }
+        [Writeable]
         public string DestinationApiKey { get; set; }
         [Writeable]
         public string DestinationPackageFeed { get; set; }
-        [Writeable]
-        public string DestinationSpaceId { get; set; }
         [Writeable]
         public string SuccessCallbackUri { get; set; }
         [Writeable]
