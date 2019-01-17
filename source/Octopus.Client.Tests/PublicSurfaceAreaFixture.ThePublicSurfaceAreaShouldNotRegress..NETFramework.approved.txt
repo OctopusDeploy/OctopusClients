@@ -2812,6 +2812,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Boolean HasLatestCalamari { get; set; }
     Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
     Boolean IsDisabled { get; set; }
@@ -2914,7 +2915,6 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
-    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }

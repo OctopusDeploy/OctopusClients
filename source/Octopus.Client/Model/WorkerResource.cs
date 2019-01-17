@@ -10,6 +10,7 @@ namespace Octopus.Client.Model
         public WorkerResource()
         {
             WorkerPoolIds = new ReferenceCollection();
+            EnvironmentIds = new ReferenceCollection();
         }
 
         [Writeable]

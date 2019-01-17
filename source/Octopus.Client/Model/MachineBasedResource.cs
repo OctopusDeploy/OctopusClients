@@ -28,6 +28,9 @@ namespace Octopus.Client.Model
         public string Uri { get; set; }
 
         [Writeable]
+        public ReferenceCollection EnvironmentIds { get; set; }
+
+        [Writeable]
         public bool IsDisabled { get; set; }
 
         [Writeable]

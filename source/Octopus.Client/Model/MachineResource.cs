@@ -14,9 +14,6 @@ namespace Octopus.Client.Model
         }
 
         [Writeable]
-        public ReferenceCollection EnvironmentIds { get; set; }
-
-        [Writeable]
         public ReferenceCollection Roles { get; set; }
 
         // Nullable backing-field is to support backwards-compatibility
