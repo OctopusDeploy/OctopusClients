@@ -29,10 +29,10 @@ namespace Octopus.Client.Model.Migrations
         [Writeable]
         public bool EncryptPackage { get; set; }
         /// <summary>
-        /// This is the DestinationSpaceId for the Feed only, which is currently leveraged to get data into the remote instance
+        /// This is the DestinationPackageFeedSpaceId for the Feed only, which is currently leveraged to get data into the remote instance
         /// </summary>
         [Writeable]
-        public string FeedDestinationSpaceId { get; set; }
+        public string DestinationPackageFeedSpaceId { get; set; }
         [Writeable]
         public string DestinationApiKey { get; set; }
         [Writeable]
