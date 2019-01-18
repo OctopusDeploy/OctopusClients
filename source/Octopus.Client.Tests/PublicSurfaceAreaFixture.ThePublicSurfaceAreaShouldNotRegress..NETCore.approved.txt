@@ -5111,6 +5111,7 @@ Octopus.Client.Model.Migrations
   class MigrationImportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -5122,17 +5123,20 @@ Octopus.Client.Model.Migrations
     String PackageId { get; set; }
     String PackageVersion { get; set; }
     String Password { get; set; }
+    String SpaceId { get; set; }
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
   }
   class MigrationPartialExportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
     String DestinationApiKey { get; set; }
     String DestinationPackageFeed { get; set; }
+    String DestinationPackageFeedSpaceId { get; set; }
     Boolean EncryptPackage { get; set; }
     String FailureCallbackUri { get; set; }
     Boolean IgnoreCertificates { get; set; }
@@ -5144,6 +5148,7 @@ Octopus.Client.Model.Migrations
     String PackageVersion { get; set; }
     String Password { get; set; }
     List<String> Projects { get; set; }
+    String SpaceId { get; set; }
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
   }
