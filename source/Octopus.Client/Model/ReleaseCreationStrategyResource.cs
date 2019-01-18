@@ -15,6 +15,8 @@ namespace Octopus.Client.Model
         
         public DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
 
+        public DeploymentActionPackageResource WorkItemPackage { get; set; }
+
         public string ChannelId { get; set; }
         
         #region Backward Compatibility

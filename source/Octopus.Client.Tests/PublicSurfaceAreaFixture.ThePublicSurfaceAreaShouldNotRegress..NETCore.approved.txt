@@ -2855,6 +2855,7 @@ Octopus.Client.Model
     .ctor()
     String ChannelId { get; set; }
     Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
+    Octopus.Client.Model.DeploymentActionPackageResource WorkItemPackage { get; set; }
   }
   class ReleaseProgressionResource
   {
