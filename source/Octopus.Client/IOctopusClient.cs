@@ -1,5 +1,4 @@
-﻿#if SYNC_CLIENT
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -353,4 +352,3 @@ namespace Octopus.Client
         IOctopusSystemRepository ForSystem();
     }
 }
-#endif

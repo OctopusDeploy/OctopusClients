@@ -35,8 +35,6 @@ namespace Octopus.Client.Operations
         /// </summary>
         public string[] WorkerPoolNames { get; set; }
 
-#if SYNC_CLIENT
-
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -86,7 +84,6 @@ namespace Octopus.Client.Operations
             }
             return existing ?? new WorkerResource();
         }
-#endif
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.

@@ -1,12 +1,15 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 using System.Collections.Generic;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class MigrationPartialExportResource : Resource
+    public class MigrationPartialExportResource : Resource, IHaveSpaceResource
     {
         [Writeable]
         public string PackageId { get; set; }
+        [Writeable]
+        public string SpaceId { get; set; }
         [Writeable]
         public string PackageVersion { get; set; }
         [Writeable]
@@ -25,6 +28,11 @@ namespace Octopus.Client.Model.Migrations
         public bool IncludeTaskLogs { get; set; }
         [Writeable]
         public bool EncryptPackage { get; set; }
+        /// <summary>
+        /// This is the DestinationPackageFeedSpaceId for the Feed only, which is currently leveraged to get data into the remote instance
+        /// </summary>
+        [Writeable]
+        public string DestinationPackageFeedSpaceId { get; set; }
         [Writeable]
         public string DestinationApiKey { get; set; }
         [Writeable]

@@ -1,5 +1,4 @@
-﻿#if SYNC_CLIENT
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
@@ -183,4 +182,3 @@ namespace Octopus.Client.Repositories
     // ReSharper restore UnusedMember.Local
     // ReSharper restore MemberCanBeProtected.Local
 }
-#endif

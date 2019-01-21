@@ -17,7 +17,7 @@ using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
-{
+{   
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
@@ -34,7 +34,8 @@ namespace Octopus.Client
         private bool ignoreSslErrorMessageLogged = false;
         private string antiforgeryCookieName = null;
 
-        OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
+        // Use the Create method to instantiate
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
@@ -199,6 +200,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public event Action<HttpResponseMessage> AfterReceivedHttpResponse;
 
+        /// <summary>
+        /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
+        /// server. Instead of hardcoding paths,
+        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
+        /// that it is only requested once for
+        /// the current <see cref="IOctopusAsyncClient" />.
+        /// </summary>
         public RootResource RootDocument => Repository.LoadRootDocument().GetAwaiter().GetResult();
 
         /// <summary>
@@ -228,7 +236,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return response.ResponseResource;
         }
 
-        public IOctopusAsyncRepository Repository { get; private set; }
+        public IOctopusAsyncRepository Repository { get; protected set; }
 
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be

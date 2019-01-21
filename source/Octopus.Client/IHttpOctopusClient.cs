@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 using System;
 using System.Net;
 
@@ -20,4 +19,3 @@ namespace Octopus.Client
         event Action<WebResponse> AfterReceivingHttpResponse;
     }
 }
-#endif
