@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class MigrationPartialExportResource : Resource, IHaveSpaceResource
+    public class MigrationPartialExportResource : Resource
     {
         [Writeable]
         public string PackageId { get; set; }

@@ -3,12 +3,12 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class MigrationImportResource : Resource, IHaveSpaceResource
+    public class MigrationImportResource : Resource
     {
         [Writeable]
         public string PackageId { get; set; }
         [Writeable]
-        public string SpaceId { get; set; }
+        public string PackageFeedSpaceId { get; set; }
         [Writeable]
         public string PackageVersion { get; set; }
         [Writeable]
