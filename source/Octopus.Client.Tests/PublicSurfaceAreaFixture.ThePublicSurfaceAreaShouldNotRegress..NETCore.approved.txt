@@ -4384,7 +4384,6 @@ Octopus.Client.Model.IssueTrackers
     String IssueTrackerId { get; set; }
     String LinkText { get; set; }
     String LinkUrl { get; set; }
-    String ReleaseNotes { get; set; }
   }
 }
 Octopus.Client.Model.Migrations
