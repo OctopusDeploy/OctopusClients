@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
     /// <summary>
     /// Represents a collection of variables that is attached to a document.
     /// </summary>
-    public class VariableSetResource : Resource
+    public class VariableSetResource : Resource, IHaveSpaceResource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="VariableSetResource" /> class.
@@ -164,5 +165,7 @@ namespace Octopus.Client.Model
 
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

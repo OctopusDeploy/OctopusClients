@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories
     
     class BackupRepository : IBackupRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public BackupRepository(IOctopusClient client)
+        public BackupRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public BackupConfigurationResource GetConfiguration()
         {
-            return client.Get<BackupConfigurationResource>(client.RootDocument.Link("BackupConfiguration"));
+            return repository.Client.Get<BackupConfigurationResource>(repository.Link("BackupConfiguration"));
         }
 
         public BackupConfigurationResource ModifyConfiguration(BackupConfigurationResource backupConfiguration)
         {
-            return client.Update(backupConfiguration.Link("Self"), backupConfiguration);
+            return repository.Client.Update(backupConfiguration.Link("Self"), backupConfiguration);
         }
     }
 }

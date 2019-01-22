@@ -31,8 +31,8 @@ namespace Octopus.Client.Repositories
     
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
-        public ReleaseRepository(IOctopusClient client)
-            : base(client, "Releases")
+        public ReleaseRepository(IOctopusRepository repository)
+            : base(repository, "Releases")
         {
         }
 
@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories
 
         public ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false)
         {
-            return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, new { ignoreChannelRules });
+            return Client.Create(Repository.Link(CollectionLinkName), resource, new { ignoreChannelRules });
         }
 
         public ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false)

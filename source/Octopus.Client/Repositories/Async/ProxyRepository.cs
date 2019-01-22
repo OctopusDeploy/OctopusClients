@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -9,8 +10,8 @@ namespace Octopus.Client.Repositories.Async
 
     class ProxyRepository : BasicRepository<ProxyResource>, IProxyRepository
     {
-        public ProxyRepository(IOctopusAsyncClient client)
-            : base(client, "Proxies")
+        public ProxyRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Proxies")
         {
 
         }

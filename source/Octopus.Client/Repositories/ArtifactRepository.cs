@@ -19,8 +19,8 @@ namespace Octopus.Client.Repositories
     
     class ArtifactRepository : BasicRepository<ArtifactResource>, IArtifactRepository
     {
-        public ArtifactRepository(IOctopusClient client)
-            : base(client, "Artifacts")
+        public ArtifactRepository(IOctopusRepository repository)
+            : base(repository, "Artifacts")
         {
         }
 
@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<ArtifactResource> FindRegarding(IResource resource)
         {
-            return Client.List<ArtifactResource>(Client.RootDocument.Link("Artifacts"), new { regarding = resource.Id });
+            return Client.List<ArtifactResource>(Repository.Link("Artifacts"), new { regarding = resource.Id });
         }
     }
 }

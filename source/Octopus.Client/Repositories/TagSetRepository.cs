@@ -13,13 +13,13 @@ namespace Octopus.Client.Repositories
     
     class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
     {
-        public TagSetRepository(IOctopusClient client) : base(client, "TagSets")
+        public TagSetRepository(IOctopusRepository repository) : base(repository, "TagSets")
         {
         }
 
         public void Sort(string[] tagSetIdsInOrder)
         {
-            Client.Put(Client.RootDocument.Link("TagSetSortOrder"), tagSetIdsInOrder);
+            Client.Put(Repository.Link("TagSetSortOrder"), tagSetIdsInOrder);
         }
 
         public TagSetEditor CreateOrModify(string name)

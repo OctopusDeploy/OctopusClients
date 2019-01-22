@@ -13,8 +13,8 @@ namespace Octopus.Client.Repositories.Async
 
     class DefectsRepository : BasicRepository<DefectResource>, IDefectsRepository
     {
-        public DefectsRepository(IOctopusAsyncClient client)
-            : base(client, "Defects")
+        public DefectsRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Defects")
         {
         }
 

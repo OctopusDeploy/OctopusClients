@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 using System.Text.RegularExpressions;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -12,24 +14,29 @@ namespace Octopus.Client.Repositories
     // ReSharper disable MemberCanBeProtected.Local
     abstract class BasicRepository<TResource> where TResource : class, IResource
     {
+        private readonly Func<IOctopusRepository, string> getCollectionLinkName;
+        public IOctopusRepository Repository { get; }
         readonly IOctopusClient client;
-        protected readonly string CollectionLinkName;
+        protected string CollectionLinkName;
+        protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusClient client, string collectionLinkName)
+        protected BasicRepository(IOctopusRepository repository, string collectionLinkName, Func<IOctopusRepository, string> getCollectionLinkName = null)
         {
-            this.client = client;
-            this.CollectionLinkName = collectionLinkName;
+            Repository = repository;
+            client = repository.Client;
+            CollectionLinkName = collectionLinkName;
+            AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.getCollectionLinkName = getCollectionLinkName;
         }
 
-        public IOctopusClient Client
-        {
-            get { return client; }
-        }
+        public IOctopusClient Client => client;
 
         public TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
+            var link = ResolveLink();
+            EnrichSpaceId(resource);
+            return client.Create(link, resource, pathParameters);
         }
 
         public TResource Modify(TResource resource)
@@ -46,7 +53,9 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+            var link = ResolveLink();
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
+            client.Paginate(path ?? link, parameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
@@ -78,13 +87,14 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+            var link = ResolveLink();
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
+            return client.Get<List<TResource>>(link, parameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
         {
             name = (name ?? string.Empty).Trim();
-
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
                 pathParameters = new {name = name};
@@ -112,13 +122,13 @@ namespace Octopus.Client.Repositories
         {
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
-
+            var link = ResolveLink();
             if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                return client.Get<TResource>(idOrHref);
+                return client.Get<TResource>(idOrHref, AdditionalQueryParameters);
             }
-
-            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
+            return client.Get<TResource>(link, parameters);
         }
 
         public virtual List<TResource> Get(params string[] ids)
@@ -128,12 +138,13 @@ namespace Octopus.Client.Repositories
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = client.RootDocument.Link(CollectionLinkName);
-            if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+            var link = ResolveLink();
+            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
             client.Paginate<TResource>(
                 link,
-                new { ids = actualIds },
+                parameters,
                 page =>
                 {
                     resources.AddRange(page.Items);
@@ -147,6 +158,23 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
+        }
+
+        protected virtual void EnrichSpaceId(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+            {
+                spaceResource.SpaceId = Repository.Scope.Apply(space => space.Id,
+                    () => null,
+                    () => spaceResource.SpaceId);
+            }
+        }
+
+        string ResolveLink()
+        {
+            if (CollectionLinkName == null && getCollectionLinkName != null)
+                CollectionLinkName = getCollectionLinkName(Repository);
+            return Repository.Link(CollectionLinkName);
         }
     }
 

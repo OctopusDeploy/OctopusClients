@@ -35,7 +35,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--outputFormat=json");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(true);
@@ -50,7 +50,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--helpOutputFormat=blah");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(false);
@@ -68,7 +68,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--help");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             var logoutput = LogOutput.ToString();

@@ -40,9 +40,8 @@ namespace Octo.Tests.Commands
                     },
                 }, new LinkCollection());
 
-
-            Repository.FeaturesConfiguration.GetFeaturesConfiguration()
-                .ReturnsForAnyArgs(new FeaturesConfigurationResource { });
+            Repository.Tenants.Status()
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource());
 
             Repository.Deployments
                 .When(

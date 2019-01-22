@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -25,20 +24,20 @@ namespace Octopus.Client
     public class OctopusAsyncClient : IOctopusAsyncClient
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
-
-        readonly OctopusServerEndpoint serverEndpoint;
-        readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+     
+        private readonly OctopusServerEndpoint serverEndpoint;
+        private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
         private readonly bool ignoreSslErrors = false;
-        bool ignoreSslErrorMessageLogged = false;
+        private bool ignoreSslErrorMessageLogged = false;
+        private string antiforgeryCookieName = null;
 
         // Use the Create method to instantiate
         protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
-            options = options ?? new OctopusClientOptions();
-
+            var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
@@ -47,10 +46,10 @@ namespace Octopus.Client
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
-            if (options.Proxy != null)
+            if (clientOptions.Proxy != null)
             {
                 handler.UseProxy = true;
-                handler.Proxy = new ClientProxy(options.Proxy, options.ProxyUsername, options.ProxyPassword);
+                handler.Proxy = new ClientProxy(clientOptions.Proxy, clientOptions.ProxyUsername, clientOptions.ProxyPassword);
             }
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -66,10 +65,11 @@ namespace Octopus.Client
                 handler.Proxy = serverEndpoint.Proxy;
 
             client = new HttpClient(handler, true);
-            client.Timeout = options.Timeout;
+            client.Timeout = clientOptions.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
+            Repository = new OctopusAsyncRepository(this);
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -107,21 +107,32 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return false;
         }
 
+        public IOctopusSpaceAsyncRepository ForSpace(SpaceResource space)
+        {
+            ValidateSpaceId(space);
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(space));
+        }
+
+        public IOctopusSystemAsyncRepository ForSystem()
+        {
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
+        }
+
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true);
+                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException)
             {
                 if (options?.IgnoreSslErrors ?? false)
                     throw new Exception("This platform does not support ignoring SSL certificate errors");
-                return await Create(serverEndpoint, options, false);
+                return await Create(serverEndpoint, options, false).ConfigureAwait(false);
             }
 #else
-            return await Create(serverEndpoint, options, false);
+            return await Create(serverEndpoint, options, false).ConfigureAwait(false);
 #endif
         }
 
@@ -146,41 +157,37 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
             var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool);
-            try
-            {
-                client.RootDocument = await client.EstablishSession().ConfigureAwait(false);
-                client.Repository = new OctopusAsyncRepository(client);
-                return client;
-            }
-            catch
-            {
-                client.Dispose();
-                throw;
-            }
+            // User used to see this exception 
+            // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
+            await client.Repository.LoadRootDocument().ConfigureAwait(false);
+            return client;
         }
-
-        /// <summary>
-        /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusAsyncClient" />.
-        /// </summary>
-        public RootResource RootDocument { get; protected set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public async Task<RootResource> RefreshRootDocument()
+        public async Task SignIn(LoginCommand loginCommand)
         {
-            RootDocument = await Get<RootResource>("~/api").ConfigureAwait(false);
-            return RootDocument;
+            if (loginCommand.State == null)
+            {
+                loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
+            }
+            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand).ConfigureAwait(false);
+
+            // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
+            Repository = new OctopusAsyncRepository(this);
+        }
+
+        public async Task SignOut()
+        {
+            await Post(await Repository.Link("SignOut").ConfigureAwait(false)).ConfigureAwait(false);
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -192,6 +199,15 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// Occurs when a response has been received.
         /// </summary>
         public event Action<HttpResponseMessage> AfterReceivedHttpResponse;
+
+        /// <summary>
+        /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
+        /// server. Instead of hardcoding paths,
+        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
+        /// that it is only requested once for
+        /// the current <see cref="IOctopusAsyncClient" />.
+        /// </summary>
+        public RootResource RootDocument => Repository.LoadRootDocument().GetAwaiter().GetResult();
 
         /// <summary>
         /// Occurs when a request is about to be sent.
@@ -255,7 +271,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 resources.AddRange(r.Items);
                 return true;
-            });
+            }).ConfigureAwait(false);
             return resources;
         }
 
@@ -396,6 +412,20 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         }
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="resource">The resource to create.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        public Task Put<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+        }
+
+        /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>
@@ -471,84 +501,24 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual async Task<RootResource> EstablishSession()
-        {
-            RootResource server;
-
-            var watch = Stopwatch.StartNew();
-            Exception lastError = null;
-
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
-            while (true)
-            {
-                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
-                {
-                    if (lastError == null)
-                    {
-                        throw new Exception("Unable to connect to the Octopus Deploy server.");
-                    }
-
-                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
-                }
-
-                try
-                {
-                    server = await Get<RootResource>("~/api").ConfigureAwait(false);
-                    break;
-                }
-                catch (HttpRequestException ex)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                    lastError = ex;
-                }
-                catch (OctopusServerException ex)
-                {
-                    if (ex.HttpStatusCode != 503)
-                    {
-                        // 503 means the service is starting, so give it some time to start
-                        throw;
-                    }
-
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
-                    lastError = ex;
-                }
-                retries--;
-            }
-
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
-                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
-
-            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
-            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
-
-            if (current < min || current > max)
-                throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({server.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
-
-            return server;
-        }
-
         protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             using (var message = new HttpRequestMessage())
             {
                 message.RequestUri = request.Uri;
                 message.Method = new HttpMethod(request.Method);
-                
+
                 if (request.Method == "PUT" || request.Method == "DELETE")
                 {
                     message.Method = HttpMethod.Post;
                     message.Headers.Add("X-HTTP-Method-Override", request.Method);
                 }
 
-                if (RootDocument != null)
+                if (!string.IsNullOrEmpty(antiforgeryCookieName))
                 {
-                    var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{RootDocument.InstallationId}";
                     var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                         .Cast<Cookie>()
-                        .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                        .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                     if (antiforgeryCookie != null)
                     {
                         message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
@@ -640,13 +610,20 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             try
             {
-                var s = str;
                 return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
             }
             catch (Exception ex)
             {
                 throw new OctopusDeserializationException((int)response.StatusCode,
                     $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
+            }
+        }
+
+        private void ValidateSpaceId(SpaceResource space)
+        {
+            if (space == null)
+            {
+                throw new ArgumentNullException(nameof(space));
             }
         }
 

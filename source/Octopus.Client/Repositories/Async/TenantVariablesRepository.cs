@@ -11,16 +11,16 @@ namespace Octopus.Client.Repositories.Async
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
     {
-        public Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
+        public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
         {
-            return Client.Get<List<TenantVariableResource>>(Client.RootDocument.Link("TenantVariables"), new
+            return await Client.Get<List<TenantVariableResource>>(await Repository.Link("TenantVariables").ConfigureAwait(false), new
             {
                 projectId = projectResource?.Id
-            });
+            }).ConfigureAwait(false);
         }
 
-        public TenantVariablesRepository(IOctopusAsyncClient client) 
-            : base(client, "TenantVariables")
+        public TenantVariablesRepository(IOctopusAsyncRepository repository) 
+            : base(repository, "TenantVariables")
         {
         }
     }

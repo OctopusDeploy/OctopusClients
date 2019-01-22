@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    /// <summary>
-    /// A group of users that can be assigned to roles in projects and environments.
-    /// </summary>
-    public class TeamResource : Resource, INamedResource
+    public class TeamResource : Resource, INamedResource, IHaveSpaceResource
     {
         public TeamResource()
         {
             ExternalSecurityGroups = new NamedReferenceItemCollection();
-            TenantTags = new ReferenceCollection();
         }
 
         /// <summary>
@@ -33,45 +30,6 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public NamedReferenceItemCollection ExternalSecurityGroups { get; set; }
-
-        /// <summary>
-        /// The roles that the team belongs to.
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection UserRoleIds { get; set; }
-
-        /// <summary>
-        /// The project groups that the team can exercise its roles for. Includes all projects in the groups.
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection ProjectGroupIds { get; set; }
-        
-        /// <summary>
-        /// The projects that the team can exercise its roles in. If empty,
-        /// the team can exercise its roles in all projects.
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection ProjectIds { get; set; }
-
-        /// <summary>
-        /// The environments that the team can exercise its roles in. If empty,
-        /// the team can exercise its roles in all environments.
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection EnvironmentIds { get; set; }
-
-        /// <summary>
-        /// The tenants that the team can exercise its roles for. If empty,
-        /// the team can exercise its roles for all tenants.
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection TenantIds { get; set; }
-
-        /// <summary>
-        /// Tags that are evaluated on demand to act as if the tenant was explicitly selected. 
-        /// </summary>
-        [Writeable]
-        public ReferenceCollection TenantTags { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether the team can be deleted. The built-in teams
@@ -96,5 +54,59 @@ namespace Octopus.Client.Model
         /// provided by Octopus cannot have its members changed, as it will always contain all users.
         /// </summary>
         public bool CanChangeMembers { get; set; }
+
+        public string SpaceId { get; set; }
+    }
+
+    /// <summary>
+    /// The set of roles and scopes that this team will have
+    /// </summary>
+    public class ScopedUserRoleResource : Resource, IHaveSpaceResource
+    {
+        public ScopedUserRoleResource()
+        {
+            ProjectIds = new ReferenceCollection();
+            EnvironmentIds = new ReferenceCollection();
+            TenantIds = new ReferenceCollection();
+            ProjectGroupIds = new ReferenceCollection();
+        }
+
+        /// <summary>
+        /// The role for which scoping will apply
+        /// </summary>
+        [Writeable]
+        public string UserRoleId { get; set; }
+
+        [Writeable]
+        public string TeamId { get; set; }
+
+        /// <summary>
+        /// The project groups that the team can exercise its roles for. Includes all projects in the groups.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection ProjectGroupIds { get; set; }
+
+        /// <summary>
+        /// The projects that the team can exercise its roles in. If empty,
+        /// the team can exercise its roles in all projects.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection ProjectIds { get; set; }
+
+        /// <summary>
+        /// The environments that the team can exercise its roles in. If empty,
+        /// the team can exercise its roles in all environments.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection EnvironmentIds { get; set; }
+
+        /// <summary>
+        /// The tenants that the team can exercise its roles for. If empty,
+        /// the team can exercise its roles for all tenants.
+        /// </summary>
+        [Writeable]
+        public ReferenceCollection TenantIds { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

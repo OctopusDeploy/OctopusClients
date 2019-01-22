@@ -12,8 +12,8 @@ namespace Octopus.Client.Repositories
     
     class DefectsRepository : BasicRepository<DefectResource>, IDefectsRepository
     {
-        public DefectsRepository(IOctopusClient client)
-            : base(client, "Defects")
+        public DefectsRepository(IOctopusRepository repository)
+            : base(repository, "Defects")
         {
         }
 

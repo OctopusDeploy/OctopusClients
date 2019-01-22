@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -13,7 +14,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public UnauthorisedTest()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
-            Get($"{TestRootPath}api/users/me", p =>
+            Get($"{TestRootPath}/api/users/users-1", p =>
             {
                 var response = Response.AsJson(
                     new { ErrorMessage },
@@ -27,7 +28,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
             var repo = new OctopusAsyncRepository(AsyncClient);
-            Func<Task> getUser = () => repo.Users.GetCurrent();
+            Func<Task> getUser = () => repo.Users.Get("users-1");
             getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
     }

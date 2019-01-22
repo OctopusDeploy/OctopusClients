@@ -5,7 +5,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public class WorkerResource : MachineBasedResource
+    public class WorkerResource : MachineBasedResource, IHaveSpaceResource
     {
         public WorkerResource()
         {
@@ -35,5 +35,7 @@ namespace Octopus.Client.Model
             WorkerPoolIds.Clear();
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     /// Represents an environment. Environments are user-defined and map to real world deployment environments
     /// such as development, staging, test and production. Projects are deployed to environments.
     /// </summary>
-    public class EnvironmentResource : Resource, INamedResource
+    public class EnvironmentResource : Resource, INamedResource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets the name of this environment. This should be short, preferably 5-20 characters.
@@ -45,5 +45,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public bool AllowDynamicInfrastructure { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

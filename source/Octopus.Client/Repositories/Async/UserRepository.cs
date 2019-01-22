@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -19,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         Task SignIn(string username, string password, bool rememberMe = false);
         Task SignOut();
         Task<UserResource> GetCurrent();
-        Task<UserPermissionSetResource> GetPermissions(UserResource user);
+        Task<SpaceResource[]> GetSpaces(UserResource user);
         Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResource apiKey);
@@ -31,10 +32,10 @@ namespace Octopus.Client.Repositories.Async
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusAsyncClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new InvitationRepository(Repository);
         }
 
         public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
@@ -63,16 +64,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(await Repository.Link("Register").ConfigureAwait(false), registerCommand).ConfigureAwait(false);
         }
 
-        public Task SignIn(LoginCommand loginCommand)
+        public async Task SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
-            }
-            return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+            await Client.SignIn(loginCommand).ConfigureAwait(false);
         }
 
         public Task SignIn(string username, string password, bool rememberMe = false)
@@ -82,18 +79,18 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignOut()
         {
-            return Client.Post(Client.RootDocument.Link("SignOut"));
+            return Client.SignOut();
         }
 
-        public Task<UserResource> GetCurrent()
+        public async Task<UserResource> GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return await Client.Get<UserResource>(await Repository.Link("CurrentUser").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        public Task<UserPermissionSetResource> GetPermissions(UserResource user)
+        public Task<SpaceResource[]> GetSpaces(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)

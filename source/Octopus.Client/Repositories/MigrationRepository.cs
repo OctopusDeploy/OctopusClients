@@ -10,21 +10,21 @@ namespace Octopus.Client.Repositories
 
     class MigrationRepository : IMigrationRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public MigrationRepository(IOctopusClient client)
+        public MigrationRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public MigrationPartialExportResource PartialExport(MigrationPartialExportResource resource)
         {
-            return client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource);
+            return repository.Client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(repository.Link("MigrationsPartialExport"), resource);
         }
 
         public MigrationImportResource Import(MigrationImportResource resource)
         {
-            return client.Post< MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource);
+            return repository.Client.Post< MigrationImportResource, MigrationImportResource>(repository.Link("MigrationsImport"), resource);
         }
     }
 }

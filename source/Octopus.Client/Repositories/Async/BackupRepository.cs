@@ -12,16 +12,18 @@ namespace Octopus.Client.Repositories.Async
 
     class BackupRepository : IBackupRepository
     {
+        private readonly IOctopusAsyncRepository repository;
         readonly IOctopusAsyncClient client;
 
-        public BackupRepository(IOctopusAsyncClient client)
+        public BackupRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
+            this.client = repository.Client;
         }
 
-        public Task<BackupConfigurationResource> GetConfiguration()
+        public async Task<BackupConfigurationResource> GetConfiguration()
         {
-            return client.Get<BackupConfigurationResource>(client.RootDocument.Link("BackupConfiguration"));
+            return await client.Get<BackupConfigurationResource>(await repository.Link("BackupConfiguration").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task<BackupConfigurationResource> ModifyConfiguration(BackupConfigurationResource backupConfiguration)

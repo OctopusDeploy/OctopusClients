@@ -40,18 +40,18 @@ namespace Octopus.Cli.Commands.Deployment
 
         public async Task Request()
         {
-            projectsById = await LoadProjects();
+            projectsById = await LoadProjects().ConfigureAwait(false);
             projectsFilter = projectsById.Keys.ToArray();
-            environmentsById = await LoadEnvironments();
+            environmentsById = await LoadEnvironments().ConfigureAwait(false);
             environmentsFilter = environmentsById.Keys.ToArray();
 
-            var features = await Repository.FeaturesConfiguration.GetFeaturesConfiguration();
+            var multiTenancyStatus = await Repository.Tenants.Status().ConfigureAwait(false);
             var tenantsFilter = new string[0];
 
             tenantsById = new Dictionary<string, string>();
-            if (features.IsMultiTenancyEnabled)
+            if (multiTenancyStatus.Enabled)
             {
-                tenantsById = await LoadTenants();
+                tenantsById = await LoadTenants().ConfigureAwait(false);
                 tenantsFilter = tenants.Any() ? tenantsById.Keys.ToArray() : new string[0];
             }
 

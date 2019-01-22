@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +11,9 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
@@ -20,13 +22,12 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClient : IHttpOctopusClient
     {
-        readonly object rootDocumentLock = new object();
-        RootResource rootDocument;
         readonly OctopusServerEndpoint serverEndpoint;
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         readonly OctopusCustomHeaders octopusCustomHeaders;
+        private string antiforgeryCookieName = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -41,51 +42,48 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
+            Repository = new OctopusRepository(this);
         }
 
 
-        /// <summary>
-        /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
-        /// server. Instead of hardcoding paths,
-        /// clients should use these link properties to traverse the resources on the server. This document is lazily loaded so
-        /// that it is only requested once for
-        /// the current <see cref="IOctopusClient" />.
-        /// </summary>
-        public RootResource RootDocument
-        {
-            get
-            {
-                if (rootDocument != null) return rootDocument;
-
-                lock (rootDocumentLock)
-                {
-                    if (rootDocument != null) return rootDocument;
-
-                    var root = EstablishSession();
-                    Thread.MemoryBarrier();
-                    rootDocument = root;
-                    return root;
-                }
-            }
-        }
+        public RootResource RootDocument => Repository.LoadRootDocument();
+        public IOctopusRepository Repository { get; private set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
-        /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        public RootResource RefreshRootDocument()
+        public IOctopusSpaceRepository ForSpace(SpaceResource space)
         {
-            var root = Get<RootResource>("~/api");
-            lock (rootDocumentLock)
+            ValidateSpaceId(space);
+            return new OctopusRepository(this, RepositoryScope.ForSpace(space));
+        }
+
+        public IOctopusSystemRepository ForSystem()
+        {
+            return new OctopusRepository(this, RepositoryScope.ForSystem());
+        }
+
+        public void SignIn(LoginCommand loginCommand)
+        {
+            if (loginCommand.State == null)
             {
-                rootDocument = root;
+                loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            return rootDocument;
+            Post(Repository.LoadRootDocument().Links["SignIn"], loginCommand);
+
+            antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
+                .Cast<Cookie>()
+                .Single(c => c.Name.StartsWith(ApiConstants.AntiforgeryTokenCookiePrefix)).Name;
+
+            Repository = new OctopusRepository(this);
+        }
+
+        public void SignOut()
+        {
+            Post(Repository.LoadRootDocument().Links["SignOut"]);
+            antiforgeryCookieName = null;
         }
 
         /// <summary>
@@ -113,8 +111,7 @@ namespace Octopus.Client
         /// </summary>
         public void Initialize()
         {
-            // Force the Lazy instance to be loaded
-            RootDocument.Link("Self");
+            Repository.Link("Self");
         }
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
@@ -317,6 +314,20 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="resource">The resource to create.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        public void Put<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+        }
+
+        /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>
@@ -390,65 +401,6 @@ namespace Octopus.Client
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual RootResource EstablishSession()
-        {
-            RootResource server;
-
-            var watch = Stopwatch.StartNew();
-            Exception lastError = null;
-
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
-            while (true)
-            {
-                if (retries <= 0 && TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds) > TimeSpan.FromSeconds(60))
-                {
-                    if (lastError == null)
-                    {
-                        throw new Exception("Unable to connect to the Octopus Deploy server.");
-                    }
-
-                    throw new Exception("Unable to connect to the Octopus Deploy server. See the inner exception for details.", lastError);
-                }
-
-                try
-                {
-                    server = Get<RootResource>("~/api");
-                    break;
-                }
-                catch (WebException ex)
-                {
-                    Thread.Sleep(1000);
-                    lastError = ex;
-                }
-                catch (OctopusServerException ex)
-                {
-                    if (ex.HttpStatusCode != 503)
-                    {
-                        // 503 means the service is starting, so give it some time to start
-                        throw;
-                    }
-
-                    Thread.Sleep(500);
-                    lastError = ex;
-                }
-                retries--;
-            }
-
-            if (string.IsNullOrWhiteSpace(server.ApiVersion))
-                throw new UnsupportedApiVersionException("This Octopus Deploy server uses an older API specification than this tool can handle. Please check for updates to the Octo tool.");
-
-            var min = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMin);
-            var max = SemanticVersion.Parse(ApiConstants.SupportedApiSchemaVersionMax);
-            var current = SemanticVersion.Parse(server.ApiVersion);
-
-            if (current < min || current > max)
-                throw new UnsupportedApiVersionException(string.Format("This Octopus Deploy server uses a newer API specification ({0}) than this tool can handle ({1} to {2}). Please check for updates to this tool.", server.ApiVersion, ApiConstants.SupportedApiSchemaVersionMin, ApiConstants.SupportedApiSchemaVersionMax));
-
-            return server;
-        }
-
         protected virtual OctopusResponse<TResponseResource> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
         {
             var webRequest = (HttpWebRequest)WebRequest.Create(request.Uri);
@@ -465,7 +417,7 @@ namespace Octopus.Client
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
             webRequest.UserAgent = octopusCustomHeaders.UserAgent;
-            
+
             if (webRequest.Method == "PUT")
             {
                 webRequest.Headers["X-HTTP-Method-Override"] = "PUT";
@@ -478,12 +430,11 @@ namespace Octopus.Client
                 webRequest.Method = "POST";
             }
 
-            if (rootDocument != null)
+            if (!string.IsNullOrEmpty(antiforgeryCookieName))
             {
-                var expectedCookieName = $"{ApiConstants.AntiforgeryTokenCookiePrefix}_{rootDocument.InstallationId}";
                 var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
                     .Cast<Cookie>()
-                    .SingleOrDefault(c => string.Equals(c.Name, expectedCookieName));
+                    .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
                 if (antiforgeryCookie != null)
                 {
                     webRequest.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName] = antiforgeryCookie.Value;
@@ -498,9 +449,12 @@ namespace Octopus.Client
 
             try
             {
-                if (request.RequestResource == null) {
+                if (request.RequestResource == null)
+                {
                     webRequest.ContentLength = 0;
-                } else {
+                }
+                else
+                {
                     var requestStreamContent = request.RequestResource as Stream;
                     if (requestStreamContent != null)
                     {
@@ -524,12 +478,12 @@ namespace Octopus.Client
 
                             var requestStream = webRequest.GetRequestStream();
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
-                            
+
                             var headerTemplate = "Content-Disposition: form-data; filename=\"{0}\"\r\nContent-Type: application/octet-stream\r\n\r\n";
                             var header = string.Format(headerTemplate, fileUploadContent.FileName);
                             var headerbytes = Encoding.UTF8.GetBytes(header);
                             requestStream.Write(headerbytes, 0, headerbytes.Length);
-                            fileUploadContent.Contents.CopyTo(requestStream);                            
+                            fileUploadContent.Contents.CopyTo(requestStream);
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
                             requestStream.Flush();
                             requestStream.Close();
@@ -554,20 +508,20 @@ namespace Octopus.Client
                     var responseStream = webResponse.GetResponseStream();
                     if (responseStream != null)
                     {
-                        if (typeof (TResponseResource) == typeof (Stream))
+                        if (typeof(TResponseResource) == typeof(Stream))
                         {
                             var stream = new MemoryStream();
                             responseStream.CopyTo(stream);
                             stream.Seek(0, SeekOrigin.Begin);
                             resource = (TResponseResource)(object)stream;
                         }
-                        else if (typeof (TResponseResource) == typeof (byte[]))
+                        else if (typeof(TResponseResource) == typeof(byte[]))
                         {
                             var stream = new MemoryStream();
                             responseStream.CopyTo(stream);
                             resource = (TResponseResource)(object)stream.ToArray();
                         }
-                        else if (typeof (TResponseResource) == typeof (string))
+                        else if (typeof(TResponseResource) == typeof(string))
                         {
                             using (var reader = new StreamReader(responseStream))
                             {
@@ -585,7 +539,7 @@ namespace Octopus.Client
                                 }
                                 catch (Exception ex)
                                 {
-                                    throw new OctopusDeserializationException((int)webResponse.StatusCode, "Unable to process response from server: " + ex.Message + ". Response content: " +  (content.Length > 100 ? content.Substring(0, 100) : content), ex);
+                                    throw new OctopusDeserializationException((int)webResponse.StatusCode, "Unable to process response from server: " + ex.Message + ". Response content: " + (content.Length > 100 ? content.Substring(0, 100) : content), ex);
                                 }
                             }
                         }
@@ -615,7 +569,7 @@ namespace Octopus.Client
                     {
                         webResponse.Close();
                     }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }
@@ -628,6 +582,14 @@ namespace Octopus.Client
         /// </summary>
         public void Dispose()
         {
+        }
+
+        private void ValidateSpaceId(SpaceResource space)
+        {
+            if (space == null)
+            {
+                throw new ArgumentNullException(nameof(space));
+            }
         }
     }
 }

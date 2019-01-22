@@ -1,11 +1,14 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Migrations
 {
-    public class MigrationImportResource : Resource
+    public class MigrationImportResource : Resource, IHaveSpaceResource
     {
         [Writeable]
         public string PackageId { get; set; }
+        [Writeable]
+        public string SpaceId { get; set; }
         [Writeable]
         public string PackageVersion { get; set; }
         [Writeable]

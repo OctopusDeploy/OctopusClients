@@ -1,9 +1,10 @@
 ﻿using System;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class DashboardConfigurationResource : Resource
+    public class DashboardConfigurationResource : Resource, IHaveSpaceResource
     {
         public DashboardConfigurationResource()
         {
@@ -31,5 +32,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ReferenceCollection IncludedTenantTags { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -48,6 +48,23 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void BuiltInFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "Blah",
+                FeedType = FeedType.BuiltIn,
+                DeleteUnreleasedPackagesAfterDays = 4
+            };
+
+            var result = Execute<BuiltInFeedResource>(input);
+
+            Assert.AreEqual(FeedType.BuiltIn, result.FeedType);
+            Assert.IsAssignableFrom(typeof(BuiltInFeedResource), result);
+            Assert.AreEqual(input.DeleteUnreleasedPackagesAfterDays, result.DeleteUnreleasedPackagesAfterDays);
+        }
+
+        [Test]
         public void GitHubFeedTypesDeserialize()
         {
             var input = new

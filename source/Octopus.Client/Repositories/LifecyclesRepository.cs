@@ -12,8 +12,8 @@ namespace Octopus.Client.Repositories
     
     class LifecyclesRepository : BasicRepository<LifecycleResource>, ILifecyclesRepository
     {
-        public LifecyclesRepository(IOctopusClient client)
-            : base(client, "Lifecycles")
+        public LifecyclesRepository(IOctopusRepository repository)
+            : base(repository, "Lifecycles")
         {
         }
 
