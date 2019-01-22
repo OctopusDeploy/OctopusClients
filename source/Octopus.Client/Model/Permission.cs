@@ -222,8 +222,6 @@ namespace Octopus.Client.Model
 
         [Description("Edit feeds")] FeedEdit,
 
-        [Description("View worker pools")] [SupportsRestriction(PermissionScope.Environments)] WorkerPoolView,
-
         [Description("Edit worker pools")] [SupportsRestriction(PermissionScope.Environments)]  WorkerPoolEdit,
 
         [Description("View the workers in worker pools")] [SupportsRestriction(PermissionScope.Environments)]  WorkerView,
