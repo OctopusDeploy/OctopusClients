@@ -80,6 +80,7 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
 
+        public string ReleaseNotes { get; set; }
         public List<WorkItem> WorkItems { get; set; }
     }
 }

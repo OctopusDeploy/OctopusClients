@@ -1647,6 +1647,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ReleaseId { get; set; }
+    String ReleaseNotes { get; set; }
     Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
     Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
     String TaskId { get; set; }
@@ -2723,6 +2724,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
+    Boolean AppendWorkItemDetailsToReleaseNotes { get; set; }
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }

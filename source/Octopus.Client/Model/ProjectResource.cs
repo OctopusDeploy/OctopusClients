@@ -99,6 +99,9 @@ namespace Octopus.Client.Model
         [Writeable]
         public DeploymentActionPackageResource WorkItemPackage { get; set; }
 
+        [Writeable]
+        public bool AppendWorkItemDetailsToReleaseNotes { get; set; } 
+
         public List<ActionTemplateParameterResource> Templates { get; set; }
 
         [Writeable]
