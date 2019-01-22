@@ -5111,7 +5111,6 @@ Octopus.Client.Model.Migrations
   class MigrationImportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -5120,17 +5119,16 @@ Octopus.Client.Model.Migrations
     Boolean IsDryRun { get; set; }
     Boolean IsEncryptedPackage { get; set; }
     Boolean OverwriteExisting { get; set; }
+    String PackageFeedSpaceId { get; set; }
     String PackageId { get; set; }
     String PackageVersion { get; set; }
     String Password { get; set; }
-    String SpaceId { get; set; }
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
   }
   class MigrationPartialExportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
