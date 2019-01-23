@@ -11,11 +11,6 @@ namespace Octopus.Client.Editors.Async
         {
         }
 
-        public Task<List<AzureCloudService>> CloudServices(AzureSubscriptionAccountResource account)
-        {
-            return Repository.Client.Get<List<AzureCloudService>>(account.Link("CloudServices"));
-        }
-
         public Task<List<AzureStorageAccount>> StorageAccounts(AzureSubscriptionAccountResource account)
         {
             return Repository.Client.Get<List<AzureStorageAccount>>(account.Link("StorageAccounts"));

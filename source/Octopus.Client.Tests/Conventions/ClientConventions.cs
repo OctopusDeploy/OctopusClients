@@ -26,9 +26,7 @@ namespace Octopus.Client.Tests.Conventions
         private static readonly TypeInfo[] RepositoryInterfaceTypes = ExportedTypes
             .Where(t => t.IsInterface && t.Name.EndsWith("Repository"))
             .Where(t => t.AsType() != typeof(IOctopusAsyncRepository) && t.AsType() != typeof(IResourceRepository))
-#if SYNC_CLIENT
             .Where(t => t.AsType() != typeof(IOctopusRepository) && t.AsType() != typeof(Sync.IResourceRepository))
-#endif
             .ToArray();
 
         static readonly TypeInfo[] AsyncRepositoryInterfaceTypes = RepositoryInterfaceTypes.Where(i => i.Namespace.EndsWith(".Async")).ToArray();
@@ -68,22 +66,6 @@ namespace Octopus.Client.Tests.Conventions
             AsyncRepositoryInterfaceTypes.Should().NotBeEmpty();
         }
 
-#if SYNC_CLIENT
-        [Test]
-        public void ThereShouldBeSyncRepositories()
-        {
-            SyncRepositoryInterfaceTypes.Should().NotBeEmpty();
-        }
-#else
-        [Test]
-        public void ThereShouldBeNoSyncRepositories()
-        {
-            SyncRepositoryInterfaceTypes.Should().BeEmpty();
-        }
-#endif
-
-#if SYNC_CLIENT
-
         [Test]
         public void AllSyncRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
@@ -97,8 +79,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"All sync *Repository types should be exposed by {nameof(IOctopusRepository)}. Missing: {string.Join(", ", missingTypes.Select(t => t.Name))}");
             }
         }
-#endif
-
 
         [Test]
         public void AllRepositoriesShouldImplementNonGenericSimpleInterface()

@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 using System;
 using Octopus.Client.Repositories;
 
@@ -65,4 +64,3 @@ namespace Octopus.Client
         IWorkerRepository Workers { get; }
     }
 }
-#endif

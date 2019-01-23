@@ -8,6 +8,13 @@ Octopus.Client
     Uri Resolve(String)
     String ToString()
   }
+  interface IHttpOctopusClient
+    Octopus.Client.IOctopusClient
+    IDisposable
+  {
+    event Action<WebResponse> AfterReceivingHttpResponse
+    event Action<WebRequest> BeforeSendingHttpRequest
+  }
   interface ILinkResolver
   {
     Boolean IsUsingSecureConnection { get; }
@@ -92,9 +99,86 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
+  interface IOctopusClient
+    IDisposable
+  {
+    event Action<OctopusResponse> ReceivedOctopusResponse
+    event Action<OctopusRequest> SendingOctopusRequest
+    Boolean IsUsingSecureConnection { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
+    void Delete(String, Object)
+    Octopus.Client.TResource Get(String, Object)
+    Stream GetContent(String, Object)
+    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
+    IReadOnlyList<TResource> ListAll(String, Object)
+    void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
+    void Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
+    void Post(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
+    void Post(String)
+    void Put(String, Octopus.Client.TResource)
+    void Put(String)
+    void PutContent(String, Stream)
+    Uri QualifyUri(String, Object)
+    Octopus.Client.Model.RootResource RefreshRootDocument()
+    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+  }
   interface IOctopusClientFactory
   {
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
+  }
+  interface IOctopusRepository
+  {
+    Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
+    Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+    Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
+    Octopus.Client.Repositories.ICertificateRepository Certificates { get; }
+    Octopus.Client.Repositories.IChannelRepository Channels { get; }
+    Octopus.Client.IOctopusClient Client { get; }
+    Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
+    Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
+    Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
+    Octopus.Client.Repositories.IDefectsRepository Defects { get; }
+    Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
+    Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
+    Octopus.Client.Repositories.IEventRepository Events { get; }
+    Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    Octopus.Client.Repositories.IFeedRepository Feeds { get; }
+    Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
+    Octopus.Client.Repositories.ILifecyclesRepository Lifecycles { get; }
+    Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
+    Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
+    Octopus.Client.Repositories.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
+    Octopus.Client.Repositories.IProjectRepository Projects { get; }
+    Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
+    Octopus.Client.Repositories.IProxyRepository Proxies { get; }
+    Octopus.Client.Repositories.IReleaseRepository Releases { get; }
+    Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
+    Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
+    Octopus.Client.Repositories.ITaskRepository Tasks { get; }
+    Octopus.Client.Repositories.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.ITenantRepository Tenants { get; }
+    Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
+    Octopus.Client.Repositories.IUserRepository Users { get; }
+    Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
+    Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.IWorkerRepository Workers { get; }
   }
   class OctopusAsyncClient
     Octopus.Client.IOctopusAsyncClient
@@ -180,11 +264,44 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
   }
+  class OctopusClient
+    Octopus.Client.IHttpOctopusClient
+    Octopus.Client.IOctopusClient
+    IDisposable
+  {
+    event Action<WebResponse> AfterReceivingHttpResponse
+    event Action<WebRequest> BeforeSendingHttpRequest
+    event Action<OctopusResponse> ReceivedOctopusResponse
+    event Action<OctopusRequest> SendingOctopusRequest
+    .ctor(Octopus.Client.OctopusServerEndpoint)
+    Boolean IsUsingSecureConnection { get; }
+    Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
+    void Delete(String, Object)
+    void Dispose()
+    Octopus.Client.TResource Get(String, Object)
+    Stream GetContent(String, Object)
+    void Initialize()
+    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
+    IReadOnlyList<TResource> ListAll(String, Object)
+    void Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
+    void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
+    void Post(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
+    void Post(String)
+    void Put(String, Octopus.Client.TResource)
+    void Put(String)
+    void PutContent(String, Stream)
+    Uri QualifyUri(String, Object)
+    Octopus.Client.Model.RootResource RefreshRootDocument()
+    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+  }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
   {
     .ctor()
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
   }
   class OctopusClientOptions
   {
@@ -195,6 +312,60 @@ Octopus.Client
     String ProxyUsername { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
+  }
+  class OctopusRepository
+    Octopus.Client.IOctopusRepository
+  {
+    .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Repositories.IAccountRepository Accounts { get; }
+    Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
+    Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+    Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
+    Octopus.Client.Repositories.ICertificateRepository Certificates { get; }
+    Octopus.Client.Repositories.IChannelRepository Channels { get; }
+    Octopus.Client.IOctopusClient Client { get; }
+    Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+    Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
+    Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
+    Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
+    Octopus.Client.Repositories.IDefectsRepository Defects { get; }
+    Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
+    Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
+    Octopus.Client.Repositories.IEventRepository Events { get; }
+    Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    Octopus.Client.Repositories.IFeedRepository Feeds { get; }
+    Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
+    Octopus.Client.Repositories.ILifecyclesRepository Lifecycles { get; }
+    Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
+    Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
+    Octopus.Client.Repositories.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
+    Octopus.Client.Repositories.IProjectRepository Projects { get; }
+    Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
+    Octopus.Client.Repositories.IProxyRepository Proxies { get; }
+    Octopus.Client.Repositories.IReleaseRepository Releases { get; }
+    Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
+    Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
+    Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
+    Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
+    Octopus.Client.Repositories.ITaskRepository Tasks { get; }
+    Octopus.Client.Repositories.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.ITenantRepository Tenants { get; }
+    Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
+    Octopus.Client.Repositories.IUserRepository Users { get; }
+    Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
+    Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
+    Octopus.Client.Repositories.IWorkerRepository Workers { get; }
   }
   abstract class OctopusRepositoryExtensions
   {
@@ -247,6 +418,324 @@ Octopus.Client
     void SetParameter(String, IDictionary<String, String>)
   }
 }
+Octopus.Client.Editors
+{
+  class AccountEditor`2
+    Octopus.Client.Editors.IResourceEditor<TAccountResource, TAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+    Octopus.Client.Editors.TAccountResource Instance { get; }
+    Octopus.Client.Editors.TAccountEditor CreateOrModify(String)
+    Octopus.Client.Editors.TAccountEditor Customize(Action<TAccountResource>)
+    Octopus.Client.Editors.TAccountEditor FindByName(String)
+    Octopus.Client.Editors.TAccountEditor Save()
+    Octopus.Client.Model.Accounts.Usages.AccountUsageResource Usages()
+  }
+  class AmazonWebServicesAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
+  class AzureServicePrincipalAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+    List<ResourceGroup> ResourceGroups()
+    List<AzureStorageAccount> StorageAccounts()
+    List<WebSite> WebSites()
+    List<WebSlot> WebSiteSlots(Octopus.Client.Model.Accounts.WebSite)
+  }
+  class AzureSubscriptionAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+    List<AzureStorageAccount> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    List<WebSite> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
+    List<WebSite> WebSites()
+    List<WebSlot> WebSiteSlots(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource, Octopus.Client.Model.Accounts.WebSite)
+    List<WebSlot> WebSiteSlots(Octopus.Client.Model.Accounts.WebSite)
+  }
+  class CertificateEditor
+    Octopus.Client.Editors.IResourceEditor<CertificateResource, CertificateEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ICertificateRepository)
+    Octopus.Client.Model.CertificateResource Instance { get; }
+    Octopus.Client.Editors.CertificateEditor Create(String, String)
+    Octopus.Client.Editors.CertificateEditor Customize(Action<CertificateResource>)
+    Octopus.Client.Editors.CertificateEditor FindByName(String)
+    Octopus.Client.Editors.CertificateEditor Save()
+    Octopus.Client.Model.CertificateUsageResource Usages()
+  }
+  class ChannelEditor
+    Octopus.Client.Editors.IResourceEditor<ChannelResource, ChannelEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IChannelRepository)
+    Octopus.Client.Model.ChannelResource Instance { get; }
+    Octopus.Client.Editors.ChannelEditor AddCommonRuleForAllActions(String, String, Octopus.Client.Model.DeploymentProcessResource)
+    Octopus.Client.Editors.ChannelEditor AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
+    Octopus.Client.Editors.ChannelEditor AddRule(Octopus.Client.Model.ChannelVersionRuleResource)
+    Octopus.Client.Editors.ChannelEditor AddRule(String, String, Octopus.Client.Model.DeploymentActionResource[])
+    Octopus.Client.Editors.ChannelEditor ClearRules()
+    Octopus.Client.Editors.ChannelEditor ClearTenantTags()
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Editors.ChannelEditor Customize(Action<ChannelResource>)
+    Octopus.Client.Editors.ChannelEditor Save()
+    Octopus.Client.Editors.ChannelEditor SetAsDefaultChannel()
+    Octopus.Client.Editors.ChannelEditor UsingLifecycle(Octopus.Client.Model.LifecycleResource)
+  }
+  class DeploymentProcessEditor
+    Octopus.Client.Editors.IResourceEditor<DeploymentProcessResource, DeploymentProcessEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IDeploymentProcessRepository)
+    Octopus.Client.Model.DeploymentProcessResource Instance { get; }
+    Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
+    Octopus.Client.Editors.DeploymentProcessEditor ClearSteps()
+    Octopus.Client.Editors.DeploymentProcessEditor Customize(Action<DeploymentProcessResource>)
+    Octopus.Client.Model.DeploymentStepResource FindStep(String)
+    Octopus.Client.Editors.DeploymentProcessEditor Load(String)
+    Octopus.Client.Editors.DeploymentProcessEditor RemoveStep(String)
+    Octopus.Client.Editors.DeploymentProcessEditor Save()
+  }
+  class EnvironmentEditor
+    Octopus.Client.Editors.IResourceEditor<EnvironmentResource, EnvironmentEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IEnvironmentRepository)
+    Octopus.Client.Model.EnvironmentResource Instance { get; }
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.EnvironmentEditor Customize(Action<EnvironmentResource>)
+    Octopus.Client.Editors.EnvironmentEditor Save()
+  }
+  interface IResourceBuilder
+  {
+  }
+  interface IResourceEditor`2
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    Octopus.Client.Editors.TResource Instance { get; }
+    Octopus.Client.Editors.TResourceBuilder Customize(Action<TResource>)
+    Octopus.Client.Editors.TResourceBuilder Save()
+  }
+  class LibraryVariableSetEditor
+    Octopus.Client.Editors.IResourceEditor<LibraryVariableSetResource, LibraryVariableSetEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ILibraryVariableSetRepository, Octopus.Client.Repositories.IVariableSetRepository)
+    Octopus.Client.Model.LibraryVariableSetResource Instance { get; }
+    Octopus.Client.Editors.VariableSetEditor Variables { get; }
+    Octopus.Client.Model.IVariableTemplateContainerEditor<LibraryVariableSetResource> VariableTemplates { get; }
+    Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String)
+    Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.LibraryVariableSetEditor Customize(Action<LibraryVariableSetResource>)
+    Octopus.Client.Editors.LibraryVariableSetEditor Save()
+  }
+  class LifecycleEditor
+    Octopus.Client.Editors.IResourceEditor<LifecycleResource, LifecycleEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ILifecyclesRepository)
+    Octopus.Client.Model.LifecycleResource Instance { get; }
+    Octopus.Client.Model.PhaseResource AddOrUpdatePhase(String)
+    Octopus.Client.Editors.LifecycleEditor AsSimplePromotionLifecycle(IEnumerable<EnvironmentResource>)
+    Octopus.Client.Editors.LifecycleEditor Clear()
+    Octopus.Client.Editors.LifecycleEditor CreateOrModify(String)
+    Octopus.Client.Editors.LifecycleEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.LifecycleEditor Customize(Action<LifecycleResource>)
+    Octopus.Client.Editors.LifecycleEditor Save()
+  }
+  class MachineEditor
+    Octopus.Client.Editors.IResourceEditor<MachineResource, MachineEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IMachineRepository)
+    Octopus.Client.Model.MachineResource Instance { get; }
+    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
+    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Octopus.Client.Editors.MachineEditor Customize(Action<MachineResource>)
+    Octopus.Client.Editors.MachineEditor Save()
+  }
+  class ProjectChannelsEditor
+  {
+    .ctor(Octopus.Client.Repositories.IChannelRepository, Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(String)
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.ProjectChannelsEditor Delete(String)
+    Octopus.Client.Editors.ProjectChannelsEditor SaveAll()
+  }
+  class ProjectEditor
+    Octopus.Client.Editors.IResourceEditor<ProjectResource, ProjectEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IProjectRepository, Octopus.Client.Repositories.IChannelRepository, Octopus.Client.Repositories.IDeploymentProcessRepository, Octopus.Client.Repositories.IProjectTriggerRepository, Octopus.Client.Repositories.IVariableSetRepository)
+    Octopus.Client.Editors.ProjectChannelsEditor Channels { get; }
+    Octopus.Client.Editors.DeploymentProcessEditor DeploymentProcess { get; }
+    Octopus.Client.Model.ProjectResource Instance { get; }
+    Octopus.Client.Editors.ProjectTriggersEditor Triggers { get; }
+    Octopus.Client.Editors.VariableSetEditor Variables { get; }
+    Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource> VariableTemplates { get; }
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Octopus.Client.Editors.ProjectEditor Customize(Action<ProjectResource>)
+    Octopus.Client.Editors.ProjectEditor IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
+    Octopus.Client.Editors.ProjectEditor Save()
+    Octopus.Client.Editors.ProjectEditor SetLogo(String)
+  }
+  class ProjectGroupEditor
+    Octopus.Client.Editors.IResourceEditor<ProjectGroupResource, ProjectGroupEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IProjectGroupRepository)
+    Octopus.Client.Model.ProjectGroupResource Instance { get; }
+    Octopus.Client.Editors.ProjectGroupEditor CreateOrModify(String)
+    Octopus.Client.Editors.ProjectGroupEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.ProjectGroupEditor Customize(Action<ProjectGroupResource>)
+    Octopus.Client.Editors.ProjectGroupEditor Save()
+  }
+  class ProjectTriggerEditor
+    Octopus.Client.Editors.IResourceEditor<ProjectTriggerResource, ProjectTriggerEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IProjectTriggerRepository)
+    Octopus.Client.Model.ProjectTriggerResource Instance { get; }
+    Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
+    Octopus.Client.Editors.ProjectTriggerEditor Customize(Action<ProjectTriggerResource>)
+    Octopus.Client.Editors.ProjectTriggerEditor Save()
+  }
+  class ProjectTriggersEditor
+  {
+    .ctor(Octopus.Client.Repositories.IProjectTriggerRepository, Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
+    Octopus.Client.Editors.ProjectTriggersEditor Delete(String)
+    Octopus.Client.Editors.ProjectTriggersEditor SaveAll()
+  }
+  class SshKeyPairAccountEditor
+    Octopus.Client.Editors.IResourceEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
+  class SubscriptionEditor
+    Octopus.Client.Editors.IResourceEditor<SubscriptionResource, SubscriptionEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ISubscriptionRepository)
+    Octopus.Client.Model.SubscriptionResource Instance { get; }
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+    Octopus.Client.Editors.SubscriptionEditor Customize(Action<SubscriptionResource>)
+    Octopus.Client.Editors.SubscriptionEditor Save()
+  }
+  class TagSetEditor
+    Octopus.Client.Editors.IResourceEditor<TagSetResource, TagSetEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ITagSetRepository)
+    Octopus.Client.Model.TagSetResource Instance { get; }
+    Octopus.Client.Editors.TagSetEditor AddOrUpdateTag(String, String, String)
+    Octopus.Client.Editors.TagSetEditor ClearTags()
+    Octopus.Client.Editors.TagSetEditor CreateOrModify(String)
+    Octopus.Client.Editors.TagSetEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.TagSetEditor Customize(Action<TagSetResource>)
+    Octopus.Client.Editors.TagSetEditor RemoveTag(String)
+    Octopus.Client.Editors.TagSetEditor Save()
+  }
+  class TenantEditor
+    Octopus.Client.Editors.IResourceEditor<TenantResource, TenantEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ITenantRepository)
+    Octopus.Client.Model.TenantResource Instance { get; }
+    Octopus.Client.Editors.TenantVariablesEditor Variables { get; }
+    Octopus.Client.Editors.TenantEditor ClearProjects()
+    Octopus.Client.Editors.TenantEditor ClearTags()
+    Octopus.Client.Editors.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    Octopus.Client.Editors.TenantEditor Customize(Action<TenantResource>)
+    Octopus.Client.Editors.TenantEditor Save()
+    Octopus.Client.Editors.TenantEditor SetLogo(String)
+    Octopus.Client.Editors.TenantEditor WithTag(Octopus.Client.Model.TagResource)
+  }
+  class TenantVariablesEditor
+    Octopus.Client.Editors.IResourceEditor<TenantVariableResource, TenantVariablesEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.ITenantRepository, Octopus.Client.Model.TenantResource)
+    Octopus.Client.Model.TenantVariableResource Instance { get; }
+    Octopus.Client.Editors.TenantVariablesEditor Customize(Action<TenantVariableResource>)
+    Octopus.Client.Editors.TenantVariablesEditor Load()
+    Octopus.Client.Editors.TenantVariablesEditor Save()
+  }
+  class UsernamePasswordAccountEditor
+    Octopus.Client.Editors.IResourceEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<UsernamePasswordAccountResource, UsernamePasswordAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
+  class VariableSetEditor
+    Octopus.Client.Editors.IResourceEditor<VariableSetResource, VariableSetEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IVariableSetRepository)
+    Octopus.Client.Model.VariableSetResource Instance { get; }
+    Octopus.Client.Editors.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean)
+    Octopus.Client.Editors.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification, Boolean, String)
+    Octopus.Client.Editors.VariableSetEditor AddOrUpdateVariableValue(String, String, Octopus.Client.Model.ScopeSpecification)
+    Octopus.Client.Editors.VariableSetEditor AddOrUpdateVariableValue(String, String)
+    Octopus.Client.Editors.VariableSetEditor AddOrUpdateVariableValue(String, String, String)
+    Octopus.Client.Editors.VariableSetEditor Customize(Action<VariableSetResource>)
+    Octopus.Client.Editors.VariableSetEditor Load(String)
+    Octopus.Client.Editors.VariableSetEditor Save()
+  }
+  class VariableTemplateContainerEditor`1
+  {
+    .ctor(Octopus.Client.Model.IVariableTemplateContainerEditor<TContainer>)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateMultiLineTextTemplate(String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateMultiLineTextTemplate(String, String, String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSelectTemplate(String, String, IDictionary<String, String>)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSelectTemplate(String, String, IDictionary<String, String>, String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSensitiveTemplate(String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSensitiveTemplate(String, String, String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSingleLineTextTemplate(String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateSingleLineTextTemplate(String, String, String, String)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
+    Octopus.Client.Editors.VariableTemplateContainerEditor<TContainer> AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
+  }
+  class WorkerEditor
+    Octopus.Client.Editors.IResourceEditor<WorkerResource, WorkerEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IWorkerRepository)
+    Octopus.Client.Model.WorkerResource Instance { get; }
+    Octopus.Client.Editors.WorkerEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Editors.WorkerEditor Customize(Action<WorkerResource>)
+    Octopus.Client.Editors.WorkerEditor Save()
+  }
+  class WorkerPoolEditor
+    Octopus.Client.Editors.IResourceEditor<WorkerPoolResource, WorkerPoolEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IWorkerPoolRepository)
+    Octopus.Client.Model.WorkerPoolResource Instance { get; }
+    Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String)
+    Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.WorkerPoolEditor Customize(Action<WorkerPoolResource>)
+    Octopus.Client.Editors.WorkerPoolEditor Save()
+  }
+}
 Octopus.Client.Editors.Async
 {
   class AccountEditor`2
@@ -285,7 +774,6 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
-    Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites()
@@ -593,6 +1081,7 @@ Octopus.Client.Exceptions
   }
   abstract class OctopusExceptionFactory
   {
+    static Octopus.Client.Exceptions.OctopusException CreateException(WebException, HttpWebResponse)
     static Task<OctopusException> CreateException(HttpResponseMessage)
     static Octopus.Client.Exceptions.OctopusException CreateException(Int32, String)
     class OctopusErrorsContract
@@ -3814,12 +4303,6 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
-  class AzureCloudService
-  {
-    .ctor()
-    String Location { get; set; }
-    String Name { get; set; }
-  }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4690,6 +5173,9 @@ Octopus.Client.Operations
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
+    void Execute(Octopus.Client.OctopusServerEndpoint)
+    void Execute(Octopus.Client.OctopusRepository)
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
@@ -4711,6 +5197,7 @@ Octopus.Client.Operations
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
     String[] TenantTags { get; set; }
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
   }
   abstract class RegisterMachineOperationBase
@@ -4726,6 +5213,9 @@ Octopus.Client.Operations
     String TentacleHostname { get; set; }
     Int32 TentaclePort { get; set; }
     String TentacleThumbprint { get; set; }
+    void Execute(Octopus.Client.OctopusServerEndpoint)
+    void Execute(Octopus.Client.OctopusRepository)
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.OctopusServerEndpoint)
     Task ExecuteAsync(Octopus.Client.OctopusAsyncRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
@@ -4738,7 +5228,544 @@ Octopus.Client.Operations
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
     String[] WorkerPoolNames { get; set; }
+    void Execute(Octopus.Client.IOctopusRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusAsyncRepository)
+  }
+}
+Octopus.Client.Repositories
+{
+  interface IAccountRepository
+    Octopus.Client.Repositories.IResourceRepository
+    Octopus.Client.Repositories.ICreate<AccountResource>
+    Octopus.Client.Repositories.IModify<AccountResource>
+    Octopus.Client.Repositories.IDelete<AccountResource>
+    Octopus.Client.Repositories.IGet<AccountResource>
+    Octopus.Client.Repositories.IFindByName<AccountResource>
+    Octopus.Client.Repositories.IPaginate<AccountResource>
+  {
+    Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
+    List<TAccount> FindAllOfType(Object)
+    Octopus.Client.Repositories.TAccount FindByNameOfType(String)
+    List<TAccount> FindByNamesOfType(IEnumerable<String>)
+    List<TAccount> FindManyOfType(Func<TAccount, Boolean>, Object)
+    Octopus.Client.Repositories.TAccount FindOneOfType(Func<TAccount, Boolean>, Object)
+    Octopus.Client.Model.Accounts.Usages.AccountUsageResource GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
+    Octopus.Client.Repositories.TAccount GetOfType(String)
+    List<TAccount> GetOfType(String[])
+    void PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Octopus.Client.Repositories.TAccount RefreshOfType(Octopus.Client.Repositories.TAccount)
+  }
+  interface IActionTemplateRepository
+    Octopus.Client.Repositories.ICreate<ActionTemplateResource>
+    Octopus.Client.Repositories.IModify<ActionTemplateResource>
+    Octopus.Client.Repositories.IDelete<ActionTemplateResource>
+    Octopus.Client.Repositories.IGet<ActionTemplateResource>
+    Octopus.Client.Repositories.IFindByName<ActionTemplateResource>
+    Octopus.Client.Repositories.IPaginate<ActionTemplateResource>
+    Octopus.Client.Repositories.IGetAll<ActionTemplateResource>
+  {
+    Octopus.Client.Model.ActionTemplateResource GetVersion(Octopus.Client.Model.ActionTemplateResource, Int32)
+    List<ActionTemplateSearchResource> Search()
+    void SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
+    Octopus.Client.Model.ActionUpdateResultResource[] UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
+  }
+  interface IArtifactRepository
+    Octopus.Client.Repositories.IPaginate<ArtifactResource>
+    Octopus.Client.Repositories.IGet<ArtifactResource>
+    Octopus.Client.Repositories.ICreate<ArtifactResource>
+    Octopus.Client.Repositories.IModify<ArtifactResource>
+    Octopus.Client.Repositories.IDelete<ArtifactResource>
+  {
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> FindRegarding(Octopus.Client.Extensibility.IResource)
+    Stream GetContent(Octopus.Client.Model.ArtifactResource)
+    void PutContent(Octopus.Client.Model.ArtifactResource, Stream)
+  }
+  interface IBackupRepository
+  {
+    Octopus.Client.Model.BackupConfigurationResource GetConfiguration()
+    Octopus.Client.Model.BackupConfigurationResource ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
+  }
+  interface IBuiltInPackageRepositoryRepository
+  {
+    void DeletePackage(Octopus.Client.Model.PackageResource)
+    void DeletePackages(IReadOnlyList<PackageResource>)
+    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
+  }
+  interface ICertificateConfigurationRepository
+    Octopus.Client.Repositories.IGet<CertificateConfigurationResource>
+    Octopus.Client.Repositories.IFindByName<CertificateConfigurationResource>
+    Octopus.Client.Repositories.IPaginate<CertificateConfigurationResource>
+  {
+    Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
+    Stream GetPublicCertificate(Octopus.Client.Model.CertificateConfigurationResource)
+  }
+  interface ICertificateRepository
+    Octopus.Client.Repositories.IResourceRepository
+    Octopus.Client.Repositories.IGet<CertificateResource>
+    Octopus.Client.Repositories.IFindByName<CertificateResource>
+    Octopus.Client.Repositories.IPaginate<CertificateResource>
+    Octopus.Client.Repositories.ICreate<CertificateResource>
+    Octopus.Client.Repositories.IModify<CertificateResource>
+    Octopus.Client.Repositories.IDelete<CertificateResource>
+  {
+    void Archive(Octopus.Client.Model.CertificateResource)
+    Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
+    Stream ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
+    Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
+    Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
+    void UnArchive(Octopus.Client.Model.CertificateResource)
+  }
+  interface IChannelRepository
+    Octopus.Client.Repositories.ICreate<ChannelResource>
+    Octopus.Client.Repositories.IModify<ChannelResource>
+    Octopus.Client.Repositories.IGet<ChannelResource>
+    Octopus.Client.Repositories.IDelete<ChannelResource>
+    Octopus.Client.Repositories.IPaginate<ChannelResource>
+  {
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Model.ChannelResource FindByName(Octopus.Client.Model.ProjectResource, String)
+  }
+  interface ICommunityActionTemplateRepository
+    Octopus.Client.Repositories.IGet<CommunityActionTemplateResource>
+  {
+    Octopus.Client.Model.ActionTemplateResource GetInstalledTemplate(Octopus.Client.Model.CommunityActionTemplateResource)
+    void Install(Octopus.Client.Model.CommunityActionTemplateResource)
+    void UpdateInstallation(Octopus.Client.Model.CommunityActionTemplateResource)
+  }
+  interface IConfigurationRepository
+  {
+    Octopus.Client.Repositories.T Get()
+    Octopus.Client.Repositories.T Modify(Octopus.Client.Repositories.T)
+  }
+  interface ICreate`1
+  {
+    Octopus.Client.Repositories.TResource Create(Octopus.Client.Repositories.TResource, Object)
+  }
+  interface IDashboardConfigurationRepository
+  {
+    Octopus.Client.Model.DashboardConfigurationResource GetDashboardConfiguration()
+    Octopus.Client.Model.DashboardConfigurationResource ModifyDashboardConfiguration(Octopus.Client.Model.DashboardConfigurationResource)
+  }
+  interface IDashboardRepository
+  {
+    Octopus.Client.Model.DashboardResource GetDashboard()
+    Octopus.Client.Model.DashboardResource GetDynamicDashboard(String[], String[])
+  }
+  interface IDefectsRepository
+  {
+    Octopus.Client.Model.ResourceCollection<DefectResource> GetDefects(Octopus.Client.Model.ReleaseResource)
+    void RaiseDefect(Octopus.Client.Model.ReleaseResource, String)
+    void ResolveDefect(Octopus.Client.Model.ReleaseResource)
+  }
+  interface IDelete`1
+  {
+    void Delete(Octopus.Client.Repositories.TResource)
+  }
+  interface IDeploymentProcessRepository
+    Octopus.Client.Repositories.IGet<DeploymentProcessResource>
+    Octopus.Client.Repositories.IModify<DeploymentProcessResource>
+  {
+    Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+  }
+  interface IDeploymentRepository
+    Octopus.Client.Repositories.IGet<DeploymentResource>
+    Octopus.Client.Repositories.ICreate<DeploymentResource>
+    Octopus.Client.Repositories.IPaginate<DeploymentResource>
+    Octopus.Client.Repositories.IDelete<DeploymentResource>
+  {
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindBy(String[], String[], Int32, Nullable<Int32>)
+    Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.DeploymentResource)
+    void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+    void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+  }
+  interface IEnvironmentRepository
+    Octopus.Client.Repositories.IFindByName<EnvironmentResource>
+    Octopus.Client.Repositories.IPaginate<EnvironmentResource>
+    Octopus.Client.Repositories.IGet<EnvironmentResource>
+    Octopus.Client.Repositories.ICreate<EnvironmentResource>
+    Octopus.Client.Repositories.IModify<EnvironmentResource>
+    Octopus.Client.Repositories.IDelete<EnvironmentResource>
+    Octopus.Client.Repositories.IGetAll<EnvironmentResource>
+  {
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
+    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
+    void Sort(String[])
+    Octopus.Client.Model.EnvironmentsSummaryResource Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
+  }
+  interface IEventRepository
+    Octopus.Client.Repositories.IGet<EventResource>
+  {
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
+  }
+  interface IFeaturesConfigurationRepository
+  {
+    Octopus.Client.Model.FeaturesConfigurationResource GetFeaturesConfiguration()
+    Octopus.Client.Model.FeaturesConfigurationResource ModifyFeaturesConfiguration(Octopus.Client.Model.FeaturesConfigurationResource)
+  }
+  interface IFeedRepository
+    Octopus.Client.Repositories.ICreate<FeedResource>
+    Octopus.Client.Repositories.IModify<FeedResource>
+    Octopus.Client.Repositories.IDelete<FeedResource>
+    Octopus.Client.Repositories.IGet<FeedResource>
+    Octopus.Client.Repositories.IFindByName<FeedResource>
+    Octopus.Client.Repositories.IPaginate<FeedResource>
+  {
+    List<PackageResource> GetVersions(Octopus.Client.Model.FeedResource, String[])
+  }
+  interface IFindByName`1
+    Octopus.Client.Repositories.IPaginate<TResource>
+  {
+    Octopus.Client.Repositories.TResource FindByName(String, String, Object)
+    List<TResource> FindByNames(IEnumerable<String>, String, Object)
+  }
+  interface IGet`1
+  {
+    Octopus.Client.Repositories.TResource Get(String)
+    List<TResource> Get(String[])
+    Octopus.Client.Repositories.TResource Refresh(Octopus.Client.Repositories.TResource)
+  }
+  interface IGetAll`1
+  {
+    List<TResource> GetAll()
+  }
+  interface IInterruptionRepository
+    Octopus.Client.Repositories.IGet<InterruptionResource>
+  {
+    Octopus.Client.Model.UserResource GetResponsibleUser(Octopus.Client.Model.InterruptionResource)
+    Octopus.Client.Model.ResourceCollection<InterruptionResource> List(Int32, Nullable<Int32>, Boolean, String)
+    void Submit(Octopus.Client.Model.InterruptionResource)
+    void TakeResponsibility(Octopus.Client.Model.InterruptionResource)
+  }
+  interface ILibraryVariableSetRepository
+    Octopus.Client.Repositories.ICreate<LibraryVariableSetResource>
+    Octopus.Client.Repositories.IGet<LibraryVariableSetResource>
+    Octopus.Client.Repositories.IModify<LibraryVariableSetResource>
+    Octopus.Client.Repositories.IDelete<LibraryVariableSetResource>
+    Octopus.Client.Repositories.IFindByName<LibraryVariableSetResource>
+    Octopus.Client.Repositories.IPaginate<LibraryVariableSetResource>
+  {
+    Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String)
+    Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
+  }
+  interface ILifecyclesRepository
+    Octopus.Client.Repositories.IGet<LifecycleResource>
+    Octopus.Client.Repositories.ICreate<LifecycleResource>
+    Octopus.Client.Repositories.IModify<LifecycleResource>
+    Octopus.Client.Repositories.IDelete<LifecycleResource>
+    Octopus.Client.Repositories.IFindByName<LifecycleResource>
+    Octopus.Client.Repositories.IPaginate<LifecycleResource>
+  {
+    Octopus.Client.Editors.LifecycleEditor CreateOrModify(String)
+    Octopus.Client.Editors.LifecycleEditor CreateOrModify(String, String)
+  }
+  interface IMachinePolicyRepository
+    Octopus.Client.Repositories.IFindByName<MachinePolicyResource>
+    Octopus.Client.Repositories.IPaginate<MachinePolicyResource>
+    Octopus.Client.Repositories.ICreate<MachinePolicyResource>
+    Octopus.Client.Repositories.IModify<MachinePolicyResource>
+    Octopus.Client.Repositories.IGet<MachinePolicyResource>
+    Octopus.Client.Repositories.IDelete<MachinePolicyResource>
+  {
+    List<MachineResource> GetMachines(Octopus.Client.Model.MachinePolicyResource)
+  }
+  interface IMachineRepository
+    Octopus.Client.Repositories.IFindByName<MachineResource>
+    Octopus.Client.Repositories.IPaginate<MachineResource>
+    Octopus.Client.Repositories.IGet<MachineResource>
+    Octopus.Client.Repositories.ICreate<MachineResource>
+    Octopus.Client.Repositories.IModify<MachineResource>
+    Octopus.Client.Repositories.IDelete<MachineResource>
+  {
+    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
+    Octopus.Client.Model.MachineResource Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Octopus.Client.Model.MachineResource Discover(Octopus.Client.Model.DiscoverMachineOptions)
+    List<MachineResource> FindByThumbprint(String)
+    Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.MachineResource)
+    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource)
+    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Object)
+    Octopus.Client.Model.ResourceCollection<MachineResource> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
+  }
+  interface IMachineRoleRepository
+  {
+    List<String> GetAllRoleNames()
+  }
+  interface IMigrationRepository
+  {
+    Octopus.Client.Model.Migrations.MigrationImportResource Import(Octopus.Client.Model.Migrations.MigrationImportResource)
+    Octopus.Client.Model.Migrations.MigrationPartialExportResource PartialExport(Octopus.Client.Model.Migrations.MigrationPartialExportResource)
+  }
+  interface IModify`1
+  {
+    Octopus.Client.Repositories.TResource Modify(Octopus.Client.Repositories.TResource)
+  }
+  interface IOctopusServerNodeRepository
+    Octopus.Client.Repositories.IModify<OctopusServerNodeResource>
+    Octopus.Client.Repositories.IDelete<OctopusServerNodeResource>
+    Octopus.Client.Repositories.IGet<OctopusServerNodeResource>
+    Octopus.Client.Repositories.IFindByName<OctopusServerNodeResource>
+    Octopus.Client.Repositories.IPaginate<OctopusServerNodeResource>
+  {
+  }
+  interface IPaginate`1
+  {
+    List<TResource> FindAll(String, Object)
+    List<TResource> FindMany(Func<TResource, Boolean>, String, Object)
+    Octopus.Client.Repositories.TResource FindOne(Func<TResource, Boolean>, String, Object)
+    void Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
+  }
+  interface IPerformanceConfigurationRepository
+  {
+    Octopus.Client.Model.PerformanceConfigurationResource Get()
+    Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
+  interface IProjectGroupRepository
+    Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
+    Octopus.Client.Repositories.IPaginate<ProjectGroupResource>
+    Octopus.Client.Repositories.IGet<ProjectGroupResource>
+    Octopus.Client.Repositories.ICreate<ProjectGroupResource>
+    Octopus.Client.Repositories.IModify<ProjectGroupResource>
+    Octopus.Client.Repositories.IDelete<ProjectGroupResource>
+    Octopus.Client.Repositories.IGetAll<ProjectGroupResource>
+  {
+    Octopus.Client.Editors.ProjectGroupEditor CreateOrModify(String)
+    Octopus.Client.Editors.ProjectGroupEditor CreateOrModify(String, String)
+    List<ProjectResource> GetProjects(Octopus.Client.Model.ProjectGroupResource)
+  }
+  interface IProjectRepository
+    Octopus.Client.Repositories.IFindByName<ProjectResource>
+    Octopus.Client.Repositories.IPaginate<ProjectResource>
+    Octopus.Client.Repositories.IGet<ProjectResource>
+    Octopus.Client.Repositories.ICreate<ProjectResource>
+    Octopus.Client.Repositories.IModify<ProjectResource>
+    Octopus.Client.Repositories.IDelete<ProjectResource>
+    Octopus.Client.Repositories.IGetAll<ProjectResource>
+  {
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
+    IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
+    IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
+    void SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
+  }
+  interface IProjectTriggerRepository
+    Octopus.Client.Repositories.ICreate<ProjectTriggerResource>
+    Octopus.Client.Repositories.IModify<ProjectTriggerResource>
+    Octopus.Client.Repositories.IGet<ProjectTriggerResource>
+    Octopus.Client.Repositories.IDelete<ProjectTriggerResource>
+  {
+    Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
+    Octopus.Client.Model.ProjectTriggerResource FindByName(Octopus.Client.Model.ProjectResource, String)
+  }
+  interface IProxyRepository
+    Octopus.Client.Repositories.IGet<ProxyResource>
+    Octopus.Client.Repositories.ICreate<ProxyResource>
+    Octopus.Client.Repositories.IModify<ProxyResource>
+    Octopus.Client.Repositories.IDelete<ProxyResource>
+    Octopus.Client.Repositories.IFindByName<ProxyResource>
+    Octopus.Client.Repositories.IPaginate<ProxyResource>
+  {
+  }
+  interface IReleaseRepository
+    Octopus.Client.Repositories.IGet<ReleaseResource>
+    Octopus.Client.Repositories.ICreate<ReleaseResource>
+    Octopus.Client.Repositories.IPaginate<ReleaseResource>
+    Octopus.Client.Repositories.IModify<ReleaseResource>
+    Octopus.Client.Repositories.IDelete<ReleaseResource>
+  {
+    Octopus.Client.Model.ReleaseResource Create(Octopus.Client.Model.ReleaseResource, Boolean)
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
+    Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
+    Octopus.Client.Model.ReleaseResource Modify(Octopus.Client.Model.ReleaseResource, Boolean)
+    Octopus.Client.Model.ReleaseResource SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+  }
+  interface IResourceRepository
+  {
+    Octopus.Client.IOctopusClient Client { get; }
+  }
+  interface IRetentionPolicyRepository
+  {
+    Octopus.Client.Model.TaskResource ApplyNow()
+  }
+  interface ISchedulerRepository
+  {
+    Octopus.Client.Model.ScheduledTaskDetailsResource GetLogs(String)
+    Stream GetRawLogs(String)
+    void Start()
+    void Start(String)
+    Octopus.Client.Model.SchedulerStatusResource Status()
+    void Stop()
+    void Stop(String)
+    void Trigger(String)
+  }
+  interface IServerStatusRepository
+  {
+    Octopus.Client.Model.ServerStatusResource GetServerStatus()
+    Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
+  }
+  interface ISubscriptionRepository
+    Octopus.Client.Repositories.IFindByName<SubscriptionResource>
+    Octopus.Client.Repositories.IPaginate<SubscriptionResource>
+    Octopus.Client.Repositories.ICreate<SubscriptionResource>
+    Octopus.Client.Repositories.IModify<SubscriptionResource>
+    Octopus.Client.Repositories.IGet<SubscriptionResource>
+    Octopus.Client.Repositories.IDelete<SubscriptionResource>
+  {
+    Octopus.Client.Editors.SubscriptionEditor CreateOrModify(String, Octopus.Client.Model.EventNotificationSubscription, Boolean)
+  }
+  interface ITagSetRepository
+    Octopus.Client.Repositories.ICreate<TagSetResource>
+    Octopus.Client.Repositories.IModify<TagSetResource>
+    Octopus.Client.Repositories.IGet<TagSetResource>
+    Octopus.Client.Repositories.IDelete<TagSetResource>
+    Octopus.Client.Repositories.IFindByName<TagSetResource>
+    Octopus.Client.Repositories.IPaginate<TagSetResource>
+    Octopus.Client.Repositories.IGetAll<TagSetResource>
+  {
+    Octopus.Client.Editors.TagSetEditor CreateOrModify(String)
+    Octopus.Client.Editors.TagSetEditor CreateOrModify(String, String)
+    void Sort(String[])
+  }
+  interface ITaskRepository
+    Octopus.Client.Repositories.IPaginate<TaskResource>
+    Octopus.Client.Repositories.IGet<TaskResource>
+    Octopus.Client.Repositories.ICreate<TaskResource>
+  {
+    void Cancel(Octopus.Client.Model.TaskResource)
+    Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String)
+    Octopus.Client.Model.TaskResource ExecuteBackup(String)
+    Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
+    Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
+    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    List<TaskResource> GetAllActive(Int32)
+    Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
+    IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
+    String GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    Octopus.Client.Model.TaskTypeResource[] GetTaskTypes()
+    void ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
+    void Rerun(Octopus.Client.Model.TaskResource)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Nullable<TimeSpan>, Action<TaskResource[]>)
+  }
+  interface ITeamsRepository
+    Octopus.Client.Repositories.ICreate<TeamResource>
+    Octopus.Client.Repositories.IModify<TeamResource>
+    Octopus.Client.Repositories.IDelete<TeamResource>
+    Octopus.Client.Repositories.IFindByName<TeamResource>
+    Octopus.Client.Repositories.IPaginate<TeamResource>
+    Octopus.Client.Repositories.IGet<TeamResource>
+  {
+  }
+  interface ITenantRepository
+    Octopus.Client.Repositories.ICreate<TenantResource>
+    Octopus.Client.Repositories.IModify<TenantResource>
+    Octopus.Client.Repositories.IGet<TenantResource>
+    Octopus.Client.Repositories.IDelete<TenantResource>
+    Octopus.Client.Repositories.IFindByName<TenantResource>
+    Octopus.Client.Repositories.IPaginate<TenantResource>
+    Octopus.Client.Repositories.IGetAll<TenantResource>
+  {
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    List<TenantResource> FindAll(String, String[], Int32)
+    List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
+    Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)
+    Octopus.Client.Model.TenantVariableResource ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
+    void SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
+  }
+  interface ITenantVariablesRepository
+    Octopus.Client.Repositories.IGetAll<TenantVariableResource>
+  {
+    List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
+  }
+  interface IUserRepository
+    Octopus.Client.Repositories.IPaginate<UserResource>
+    Octopus.Client.Repositories.IGet<UserResource>
+    Octopus.Client.Repositories.IModify<UserResource>
+    Octopus.Client.Repositories.IDelete<UserResource>
+    Octopus.Client.Repositories.ICreate<UserResource>
+  {
+    Octopus.Client.Model.UserResource Create(String, String, String, String)
+    Octopus.Client.Model.ApiKeyResource CreateApiKey(Octopus.Client.Model.UserResource, String)
+    Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
+    List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.UserResource GetCurrent()
+    Octopus.Client.Model.UserPermissionSetResource GetPermissions(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.InvitationResource Invite(String)
+    Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
+    Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
+    void RevokeApiKey(Octopus.Client.Model.ApiKeyResource)
+    void SignIn(Octopus.Client.Model.LoginCommand)
+    void SignIn(String, String, Boolean)
+    void SignOut()
+  }
+  interface IUserRolesRepository
+    Octopus.Client.Repositories.IFindByName<UserRoleResource>
+    Octopus.Client.Repositories.IPaginate<UserRoleResource>
+    Octopus.Client.Repositories.IGet<UserRoleResource>
+    Octopus.Client.Repositories.ICreate<UserRoleResource>
+    Octopus.Client.Repositories.IModify<UserRoleResource>
+    Octopus.Client.Repositories.IDelete<UserRoleResource>
+  {
+  }
+  interface IVariableSetRepository
+    Octopus.Client.Repositories.IGet<VariableSetResource>
+    Octopus.Client.Repositories.IModify<VariableSetResource>
+  {
+    String[] GetVariableNames(String, String[])
+  }
+  interface IWorkerPoolRepository
+    Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
+    Octopus.Client.Repositories.IPaginate<WorkerPoolResource>
+    Octopus.Client.Repositories.IGet<WorkerPoolResource>
+    Octopus.Client.Repositories.ICreate<WorkerPoolResource>
+    Octopus.Client.Repositories.IModify<WorkerPoolResource>
+    Octopus.Client.Repositories.IDelete<WorkerPoolResource>
+    Octopus.Client.Repositories.IGetAll<WorkerPoolResource>
+  {
+    Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String)
+    Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String, String)
+    List<WorkerResource> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
+    void Sort(String[])
+    Octopus.Client.Model.WorkerPoolsSummaryResource Summary(String, String, String, Nullable<Boolean>, String, String, Nullable<Boolean>)
+  }
+  interface IWorkerRepository
+    Octopus.Client.Repositories.IFindByName<WorkerResource>
+    Octopus.Client.Repositories.IPaginate<WorkerResource>
+    Octopus.Client.Repositories.IGet<WorkerResource>
+    Octopus.Client.Repositories.ICreate<WorkerResource>
+    Octopus.Client.Repositories.IModify<WorkerResource>
+    Octopus.Client.Repositories.IDelete<WorkerResource>
+  {
+    Octopus.Client.Editors.WorkerEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
+    Octopus.Client.Model.WorkerResource Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    List<WorkerResource> FindByThumbprint(String)
+    Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
+    Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
+  }
+  class PerformanceConfigurationRepository
+    Octopus.Client.Repositories.IPerformanceConfigurationRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Model.PerformanceConfigurationResource Get()
+    Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
 }
 Octopus.Client.Repositories.Async

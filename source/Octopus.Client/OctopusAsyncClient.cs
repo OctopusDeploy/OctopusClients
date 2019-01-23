@@ -18,7 +18,7 @@ using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
-{
+{   
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
@@ -35,7 +35,7 @@ namespace Octopus.Client
         bool ignoreSslErrorMessageLogged = false;
 
         // Use the Create method to instantiate
-        private OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             options = options ?? new OctopusClientOptions();
 
@@ -166,7 +166,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusAsyncClient" />.
         /// </summary>
-        public RootResource RootDocument { get; private set; }
+        public RootResource RootDocument { get; protected set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -220,7 +220,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return response.ResponseResource;
         }
 
-        public IOctopusAsyncRepository Repository { get; private set; }
+        public IOctopusAsyncRepository Repository { get; protected set; }
 
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be

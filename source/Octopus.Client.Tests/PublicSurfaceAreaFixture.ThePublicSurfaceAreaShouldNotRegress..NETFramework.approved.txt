@@ -454,7 +454,6 @@ Octopus.Client.Editors
     Octopus.Client.Editors.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
-    List<AzureCloudService> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     List<AzureStorageAccount> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     List<WebSite> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     List<WebSite> WebSites()
@@ -773,7 +772,6 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureSubscriptionAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
-    Task<List<AzureCloudService>> CloudServices(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<AzureStorageAccount>> StorageAccounts(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites(Octopus.Client.Model.Accounts.AzureSubscriptionAccountResource)
     Task<List<WebSite>> WebSites()
@@ -4322,12 +4320,6 @@ Octopus.Client.Model.Accounts
     String AccessKey { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
-  }
-  class AzureCloudService
-  {
-    .ctor()
-    String Location { get; set; }
-    String Name { get; set; }
   }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
