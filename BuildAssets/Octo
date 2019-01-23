@@ -8,4 +8,4 @@ done
 cd -P "$( dirname "$SOURCE" )"
 # LTTNG_UST_REGISTER_TIMEOUT=0 is there to work around a bug in docker that causes an assertion violation in dotnet on first launch
 # See https://github.com/dotnet/cli/issues/1582
-LTTNG_UST_REGISTER_TIMEOUT=0 dotnet Octo.dll $*
+LTTNG_UST_REGISTER_TIMEOUT=0 dotnet Octo.dll "$@"
