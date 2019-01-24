@@ -14,7 +14,7 @@ ENV LANG en_US.UTF-8
 # The dotnetcore bootstrapper doesnt work in alpine shell (built for bash)
 # This allows invoking octo if running interactive container
 RUN mkdir /octo &&\
-        echo "dotnet /octo/Octo.dll \$*" > /octo/alpine &&\
+        echo "dotnet /octo/Octo.dll \"\$@\"" > /octo/alpine &&\
         ln /octo/alpine /usr/bin/octo &&\
         chmod +x /usr/bin/octo
         

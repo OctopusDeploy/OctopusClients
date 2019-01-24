@@ -7,6 +7,8 @@ namespace Octopus.Client.Repositories.Async
     public interface IMachinePolicyRepository : IFindByName<MachinePolicyResource>, ICreate<MachinePolicyResource>, IModify<MachinePolicyResource>, IGet<MachinePolicyResource>, IDelete<MachinePolicyResource>
     {
         Task<List<MachineResource>> GetMachines(MachinePolicyResource machinePolicy);
+        Task<MachinePolicyResource> GetTemplate();
+
     }
 
     class MachinePolicyRepository : BasicRepository<MachinePolicyResource>, IMachinePolicyRepository
@@ -27,5 +29,8 @@ namespace Octopus.Client.Repositories.Async
 
             return resources;
         }
+
+        public Task<MachinePolicyResource> GetTemplate() 
+            => Client.Get<MachinePolicyResource>(Client.RootDocument.Link("MachinePolicyTemplate"));
     }
 }
