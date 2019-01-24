@@ -2080,8 +2080,10 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.Forms.Form Form { get; set; }
+    String ReleaseNotes { get; set; }
     List<DeploymentTemplateStep> StepsToExecute { get; set; }
     Boolean UseGuidedFailureModeByDefault { get; set; }
+    List<WorkItem> WorkItems { get; set; }
   }
   class DeploymentProcessResource
     Octopus.Client.Extensibility.IResource
