@@ -49,7 +49,10 @@ namespace Octo.Tests.Commands
             rootDocument.Links.Add("Tenants", "http://tenants.org");
 
             Repository = Substitute.For<IOctopusAsyncRepository>();
-            Repository.Client.RootDocument.Returns(rootDocument);
+            Repository.LoadRootDocument().Returns(rootDocument);
+            Repository.HasLink("Spaces").Returns(true);
+            Repository.HasLink(Arg.Is<string>(arg => arg != "Spaces")).Returns(async call => (await Repository.LoadRootDocument()).HasLink(call.Arg<string>()));
+            Repository.Link(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).Link(call.Arg<string>()));
 
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 

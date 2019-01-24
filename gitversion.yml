@@ -1,4 +1,5 @@
 mode: ContinuousDeployment
+next-version: 5.0.0
 legacy-semver-padding: 0
 build-metadata-padding: 0
 ignore:

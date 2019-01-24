@@ -21,12 +21,12 @@ namespace Octopus.Client.Repositories
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
         private static readonly ILog Logger = LogProvider.For<BuiltInPackageRepositoryRepository>();
 
-        public BuiltInPackageRepositoryRepository(IOctopusClient client)
+        public BuiltInPackageRepositoryRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
@@ -47,8 +47,8 @@ namespace Octopus.Client.Repositories
                 
             contents.Seek(0, SeekOrigin.Begin);
             
-            var result = client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                client.RootDocument.Link("PackageUpload"),
+            var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
+                repository.Link("PackageUpload"),
                 new FileUpload() { Contents = contents, FileName = fileName },
                 new { replace = replaceExisting });
             
@@ -59,7 +59,7 @@ namespace Octopus.Client.Repositories
         
         private PackageFromBuiltInFeedResource AttemptDeltaPush(string fileName, Stream contents, bool replaceExisting)
         {
-            if (!client.RootDocument.HasLink("PackageDeltaSignature"))
+            if (!repository.HasLink("PackageDeltaSignature"))
             {
                 Logger.Info("Server does not support delta compression for package push");
                 return null;
@@ -75,7 +75,7 @@ namespace Octopus.Client.Repositories
             try
             {
                 Logger.Info($"Requesting signature for delta compression from the server for upload of a package with id '{packageId}' and version '{version}'");
-                signatureResult = client.Get<PackageSignatureResource>(client.RootDocument.Link("PackageDeltaSignature"), new {packageId, version});
+                signatureResult = repository.Client.Get<PackageSignatureResource>(repository.Link("PackageDeltaSignature"), new {packageId, version});
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -91,8 +91,8 @@ namespace Octopus.Client.Repositories
                 
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
-                    var result = client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                        client.RootDocument.Link("PackageDeltaUpload"),
+                    var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
+                        repository.Link("PackageDeltaUpload"),
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
                         new {replace = replaceExisting, packageId, signatureResult.BaseVersion});
 
@@ -104,20 +104,20 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip = 0, int take = 30)
         {
-            return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
+            return repository.Client.List<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { nuGetPackageId = packageId, take, skip });
         }
 
         public ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30)
         {
-            return client.List<PackageFromBuiltInFeedResource>(client.RootDocument.Link("Packages"), new { latest = true, take, skip });
+            return repository.Client.List<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { latest = true, take, skip });
         }
 
         public void DeletePackage(PackageResource package)
         {
-            client.Delete(client.RootDocument.Link("Packages"), new { id = package.Id });
+            repository.Client.Delete(repository.Link("Packages"), new { id = package.Id });
         }
 
         public void DeletePackages(IReadOnlyList<PackageResource> packages)
-            => client.Delete(client.RootDocument.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
+            => repository.Client.Delete(repository.Link("PackagesBulk"), new { ids = packages.Select(p => p.Id).ToArray() });
     }
 }

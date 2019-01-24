@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client;
 using Octopus.Client.Model;
 
@@ -5,24 +6,28 @@ namespace Octopus.Cli.Util
 {
     public static class FeatureDetectionExtensions
     {
-        public static bool SupportsChannels(this IOctopusAsyncRepository repository)
+        public static async Task<bool> SupportsChannels(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.RootDocument.SupportsChannels() == true;
-        }
+            var hasChannelLink = await repository.HasLink("Channels").ConfigureAwait(false) == true;
+            if (!hasChannelLink)
+            {
+                // When default space is off and SpaceId is not provided, we check if it is in post space world, as channels are always available in spaces
+                return await repository.HasLink("SpaceHome").ConfigureAwait(false) == true;
+            }
 
-        public static bool SupportsChannels(this RootResource source)
-        {
-            return source?.HasLink("Channels") == true;
+            return true;
         }
-
-        public static bool SupportsTenants(this IOctopusAsyncRepository repository)
+        
+        public static async Task<bool> SupportsTenants(this IOctopusAsyncRepository repository)
         {
-            return repository?.Client?.RootDocument.SupportsTenants() == true;
-        }
+            var hasTenantLink = await repository.HasLink("Tenants").ConfigureAwait(false) == true;
+            if (!hasTenantLink)
+            {
+                // When default space is off and SpaceId is not provided, we check if it is in post space world, as tenants are always available in spaces
+                return await repository.HasLink("SpaceHome").ConfigureAwait(false) == true;
+            }
 
-        public static bool SupportsTenants(this RootResource source)
-        {
-            return source?.HasLink("Tenants") == true;
+            return true;
         }
 
         public static bool UsePostForChannelVersionRuleTest(this RootResource source)

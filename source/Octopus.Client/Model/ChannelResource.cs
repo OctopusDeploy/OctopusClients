@@ -5,7 +5,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class ChannelResource : Resource, INamedResource
+    public class ChannelResource : Resource, INamedResource, IHaveSpaceResource
     {
         public ChannelResource()
         {
@@ -98,5 +98,7 @@ namespace Octopus.Client.Model
 
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

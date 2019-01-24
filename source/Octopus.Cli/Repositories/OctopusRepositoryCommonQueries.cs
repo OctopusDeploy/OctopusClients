@@ -97,7 +97,7 @@ namespace Octopus.Cli.Repositories
                 return new List<TenantResource>(0);
             }
 
-            if (!repository.SupportsTenants())
+            if (!await repository.SupportsTenants().ConfigureAwait(false))
             {
                 throw new CommandException(
                     "Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");

@@ -63,7 +63,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public override void Execute(IOctopusRepository repository)
+        public override void Execute(IOctopusSpaceRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository);
             var machinePolicy = GetMachinePolicy(repository);
@@ -81,7 +81,7 @@ namespace Octopus.Client.Operations
                 repository.Machines.Create(machine);
         }
 
-        List<TenantResource> GetTenants(IOctopusRepository repository)
+        List<TenantResource> GetTenants(IOctopusSpaceRepository repository)
         {
             if (Tenants == null || !Tenants.Any())
             {
@@ -100,7 +100,7 @@ namespace Octopus.Client.Operations
             return tenantsById.Concat(tenantsByName).ToList();
         }
 
-        void ValidateTenantTags(IOctopusRepository repository)
+        void ValidateTenantTags(IOctopusSpaceRepository repository)
         {
             if (TenantTags == null || !TenantTags.Any())
                 return;
@@ -112,7 +112,7 @@ namespace Octopus.Client.Operations
                 throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
-        List<EnvironmentResource> GetEnvironments(IOctopusRepository repository)
+        List<EnvironmentResource> GetEnvironments(IOctopusSpaceRepository repository)
         {
             var selectedEnvironments = repository.Environments.FindByNames(EnvironmentNames);
 
@@ -124,7 +124,7 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
-        MachineResource GetMachine(IOctopusRepository repository)
+        MachineResource GetMachine(IOctopusSpaceRepository repository)
         {
             var existing = default(MachineResource);
             try
@@ -145,7 +145,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public override async Task ExecuteAsync(IOctopusAsyncRepository repository)
+        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
         {
             var selectedEnvironments = GetEnvironments(repository).ConfigureAwait(false);
             var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
@@ -164,7 +164,7 @@ namespace Octopus.Client.Operations
                 await repository.Machines.Create(machine).ConfigureAwait(false);
         }
 
-        async Task<List<TenantResource>> GetTenants(IOctopusAsyncRepository repository)
+        async Task<List<TenantResource>> GetTenants(IOctopusSpaceAsyncRepository repository)
         {
             if (Tenants == null || !Tenants.Any())
             {
@@ -190,7 +190,7 @@ namespace Octopus.Client.Operations
             return tenantsById.Concat(tenantsByName).ToList();
         }
 
-        async Task ValidateTenantTags(IOctopusAsyncRepository repository)
+        async Task ValidateTenantTags(IOctopusSpaceAsyncRepository repository)
         {
             if (TenantTags == null || !TenantTags.Any())
                 return;
@@ -202,7 +202,7 @@ namespace Octopus.Client.Operations
                 throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
-        async Task<List<EnvironmentResource>> GetEnvironments(IOctopusAsyncRepository repository)
+        async Task<List<EnvironmentResource>> GetEnvironments(IOctopusSpaceAsyncRepository repository)
         {
             var selectedEnvironments = new List<EnvironmentResource>();
             foreach (var environmentName in EnvironmentNames)
@@ -220,7 +220,7 @@ namespace Octopus.Client.Operations
             return selectedEnvironments;
         }
 
-        async Task<MachineResource> GetMachine(IOctopusAsyncRepository repository)
+        async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository)
         {
             var existing = default(MachineResource);
             try

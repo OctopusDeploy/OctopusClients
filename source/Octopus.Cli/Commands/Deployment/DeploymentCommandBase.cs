@@ -76,13 +76,13 @@ namespace Octopus.Cli.Commands.Deployment
         string rawLogFile;
         TaskOutputProgressPrinter printer = new TaskOutputProgressPrinter();
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
 
-            if (IsTenantedDeployment && !Repository.SupportsTenants())
+            if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
 
             base.ValidateParameters();

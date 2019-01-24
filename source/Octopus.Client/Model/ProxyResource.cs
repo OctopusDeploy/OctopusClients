@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class ProxyResource : Resource, INamedResource
+    public class ProxyResource : Resource, INamedResource, IHaveSpaceResource
     {
         public ProxyResource()
         {
@@ -30,5 +30,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public SensitiveValue Password { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

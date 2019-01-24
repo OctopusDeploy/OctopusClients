@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -18,7 +20,7 @@ namespace Octopus.Client.Repositories
         void SignIn(string username, string password, bool rememberMe = false);
         void SignOut();
         UserResource GetCurrent();
-        UserPermissionSetResource GetPermissions(UserResource user);
+        SpaceResource[] GetSpaces(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
@@ -30,10 +32,10 @@ namespace Octopus.Client.Repositories
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new InvitationRepository(repository);
         }
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
@@ -61,16 +63,12 @@ namespace Octopus.Client.Repositories
         }
         public UserResource Register(RegisterCommand registerCommand)
         {
-            return Client.Post<UserResource, UserResource>(Client.RootDocument.Link("Register"), registerCommand);
+            return Client.Post<UserResource, UserResource>(Repository.Link("Register"), registerCommand);
         }
 
         public void SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection};
-            }
-            Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+           Client.SignIn(loginCommand);
         }
 
         public void SignIn(string username, string password, bool rememberMe = false)
@@ -80,18 +78,18 @@ namespace Octopus.Client.Repositories
 
         public void SignOut()
         {
-            Client.Post(Client.RootDocument.Link("SignOut"));
+            Client.SignOut();
         }
 
         public UserResource GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return Client.Get<UserResource>(Repository.Link("CurrentUser"));
         }
-
-        public UserPermissionSetResource GetPermissions(UserResource user)
+        
+        public SpaceResource[] GetSpaces(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)

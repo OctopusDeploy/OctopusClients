@@ -15,6 +15,27 @@ namespace Octopus.Cli.Tests.Integration
 
         public ListEnvironmentsTests()
         {
+            Get($"{TestRootPath}/api/users/me", p => Response.AsJson(
+                new UserResource()
+                {
+                    Links = new LinkCollection()
+                    {
+                        {"Spaces", TestRootPath + "/api/users/users-1/spaces" }
+                    }
+                }
+            ));
+
+            Get($"{TestRootPath}/api/users/users-1/spaces", p => Response.AsJson(
+                    new[] {
+                        new SpaceResource() { Id = "Spaces-1", IsDefault = true},
+                        new SpaceResource() { Id = "Spaces-2", IsDefault = false}
+                    }
+            ));
+
+            Get($"{TestRootPath}/api/spaces-1", p => Response.AsJson(
+                new SpaceRootResource()
+            ));
+
             Get($"{TestRootPath}/api/environments", p => Response.AsJson(
                 new ResourceCollection<EnvironmentResource>(
                     new[] {

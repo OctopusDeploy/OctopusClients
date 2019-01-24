@@ -10,21 +10,21 @@ namespace Octopus.Client.Repositories
 
     public class PerformanceConfigurationRepository : IPerformanceConfigurationRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public PerformanceConfigurationRepository(IOctopusClient client)
+        public PerformanceConfigurationRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public PerformanceConfigurationResource Get()
         {
-            return client.Get<PerformanceConfigurationResource>(client.RootDocument.Link("PerformanceConfiguration"));
+            return repository.Client.Get<PerformanceConfigurationResource>(repository.Link("PerformanceConfiguration"));
         }
 
         public PerformanceConfigurationResource Modify(PerformanceConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("PerformanceConfiguration"), resource);
+            return repository.Client.Update(repository.Link("PerformanceConfiguration"), resource);
         }
     }
 }

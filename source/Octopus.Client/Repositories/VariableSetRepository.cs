@@ -13,14 +13,14 @@ namespace Octopus.Client.Repositories
     
     class VariableSetRepository : BasicRepository<VariableSetResource>, IVariableSetRepository
     {
-        public VariableSetRepository(IOctopusClient client)
-            : base(client, "Variables")
+        public VariableSetRepository(IOctopusRepository repository)
+            : base(repository, "Variables")
         {
         }
 
         public string[] GetVariableNames(string project, string[] environments)
         {
-            return Client.Get<string[]>(Client.RootDocument.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
+            return Client.Get<string[]>(Repository.Link("VariableNames"), new { project, projectEnvironmentsFilter = environments ?? new string[0] });
         }
 
         public override List<VariableSetResource> Get(params string[] ids)

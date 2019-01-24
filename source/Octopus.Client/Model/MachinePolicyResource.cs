@@ -5,7 +5,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class MachinePolicyResource : Resource, INamedResource
+    public class MachinePolicyResource : Resource, INamedResource, IHaveSpaceResource
     {
         public MachinePolicyResource()
         {
@@ -66,5 +66,7 @@ namespace Octopus.Client.Model
         [Writeable]
         [JsonProperty(Order = 65)]
         public TimeSpan ConnectionConnectTimeout { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

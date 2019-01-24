@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentResource : Resource
+    public class DeploymentResource : Resource, IHaveSpaceResource
     {
         public DeploymentResource()
         {
@@ -78,5 +79,6 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
+        public string SpaceId { get; set; }
     }
 }

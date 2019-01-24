@@ -21,7 +21,14 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var antiforgeryHeaderValue = Request.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName]?.FirstOrDefault();
 
-                return Response.AsJson(new TestDto {AntiforgeryTokenValue = antiforgeryHeaderValue})
+                return Response.AsJson(new TestDto { AntiforgeryTokenValue = antiforgeryHeaderValue })
+                    .WithStatusCode(HttpStatusCode.OK);
+            });
+
+            Post($"{TestRootPath}/api/users/login", p =>
+            {
+                var antiforgeryHeaderValue = Request.Headers[ApiConstants.AntiforgeryTokenHttpHeaderName]?.FirstOrDefault();
+                return Response.AsJson(new TestDto { AntiforgeryTokenValue = antiforgeryHeaderValue })
                     .WithStatusCode(HttpStatusCode.OK)
                     .WithCookie(new NancyCookie(
                         $"{ApiConstants.AuthenticationCookiePrefix}_{InstallationId}",
@@ -42,12 +49,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public async Task AsyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             // Simulate getting the auth and antiforgery cookies
-            var firstResponse = await AsyncClient.Get<TestDto>(TestRootPath);
-            firstResponse.AntiforgeryTokenValue.Should()
-                .BeNullOrWhiteSpace("The antiforgery cookie hasn't been sent, so we shouln't copy anyhthing to the header yet.");
+            await AsyncClient.SignIn(new LoginCommand()).ConfigureAwait(false);
 
             // Prove we copy the antiforgery cookie value to the header if it exists
-            var secondResponse = await AsyncClient.Get<TestDto>(TestRootPath);
+            var secondResponse = await AsyncClient.Get<TestDto>(TestRootPath).ConfigureAwait(false);
             secondResponse.AntiforgeryTokenValue.Should()
                 .Be(AntiforgeryCookieValue, $"The antiforgery cookie should have been copied to the {ApiConstants.AntiforgeryTokenHttpHeaderName} header.");
         }
@@ -57,13 +62,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void SyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
-            // Force the root document to load
-            var rootDocument = client.RootDocument;
             
             // Simulate getting the auth and antiforgery cookies
-            var firstResponse = client.Get<TestDto>(TestRootPath);
-            firstResponse.AntiforgeryTokenValue.Should()
-                .BeNullOrWhiteSpace("The antiforgery cookie hasn't been sent, so we shouln't copy anyhthing to the header yet.");
+            client.SignIn(new LoginCommand());
 
             // Prove we copy the antiforgery cookie value to the header if it exists
             var secondResponse = client.Get<TestDto>(TestRootPath);

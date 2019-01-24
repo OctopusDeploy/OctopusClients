@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
 
     class FeedRepository : BasicRepository<FeedResource>, IFeedRepository
     {
-        public FeedRepository(IOctopusAsyncClient client) : base(client, "Feeds")
+        public FeedRepository(IOctopusAsyncRepository repository) : base(repository, "Feeds")
         {
         }
 

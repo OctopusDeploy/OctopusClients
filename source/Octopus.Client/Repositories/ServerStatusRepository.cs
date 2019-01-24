@@ -11,14 +11,14 @@ namespace Octopus.Client.Repositories
     
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
     {
-        public ServerStatusRepository(IOctopusClient client)
-            : base(client, null) // Not a collection
+        public ServerStatusRepository(IOctopusRepository repository)
+            : base(repository, null) // Not a collection
         {
         }
 
         public ServerStatusResource GetServerStatus()
         {
-            return Client.Get<ServerStatusResource>(Client.RootDocument.Link("ServerStatus"));
+            return Client.Get<ServerStatusResource>(Repository.Link("ServerStatus"));
         }
 
         public SystemInfoResource GetSystemInfo(ServerStatusResource status)

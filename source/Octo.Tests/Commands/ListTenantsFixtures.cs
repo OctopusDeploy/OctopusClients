@@ -26,15 +26,15 @@ namespace Octo.Tests.Commands
                 new TenantResource {Name = "Tenant2", Id = "Tenant-2"},
             }));
 
-            Repository.FeaturesConfiguration.GetFeaturesConfiguration()
-                .ReturnsForAnyArgs(new FeaturesConfigurationResource { IsMultiTenancyEnabled = true });
+            Repository.Tenants.Status()
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource { Enabled = true });
         }
 
         [Test]
         public async Task MultiTenacyFeatureDisabled_ShouldThrowException()
         {
-            Repository.FeaturesConfiguration.GetFeaturesConfiguration()
-                .ReturnsForAnyArgs(new FeaturesConfigurationResource {IsMultiTenancyEnabled = false});
+            Repository.Tenants.Status()
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource { Enabled = false });
 
             try
             {

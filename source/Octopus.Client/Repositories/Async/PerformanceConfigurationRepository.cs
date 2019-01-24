@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories.Async
 
     class PerformanceConfigurationRepository : IPerformanceConfigurationRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public PerformanceConfigurationRepository(IOctopusAsyncClient client)
+        public PerformanceConfigurationRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
-        public Task<PerformanceConfigurationResource> Get()
+        public async Task<PerformanceConfigurationResource> Get()
         {
-            return client.Get<PerformanceConfigurationResource>(client.RootDocument.Link("PerformanceConfiguration"));
+            return await repository.Client.Get<PerformanceConfigurationResource>(await repository.Link("PerformanceConfiguration").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        public Task<PerformanceConfigurationResource> Modify(PerformanceConfigurationResource resource)
+        public async Task<PerformanceConfigurationResource> Modify(PerformanceConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("PerformanceConfiguration"), resource);
+            return await repository.Client.Update(await repository.Link("PerformanceConfiguration").ConfigureAwait(false), resource).ConfigureAwait(false);
         }
     }
 }
