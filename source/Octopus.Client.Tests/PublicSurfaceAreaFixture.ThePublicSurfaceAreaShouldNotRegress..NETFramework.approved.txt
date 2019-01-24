@@ -2899,7 +2899,9 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineHealthCheckPolicy MachineHealthCheckPolicy { get; set; }
     Octopus.Client.Model.MachineUpdatePolicy MachineUpdatePolicy { get; set; }
     String Name { get; set; }
+    TimeSpan PollingRequestMaximumMessageProcessingTimeout { get; set; }
     TimeSpan PollingRequestQueueTimeout { get; set; }
+    String SpaceId { get; set; }
   }
   class MachinePollingConversation
   {

@@ -30,7 +30,10 @@ namespace Octopus.Client.Repositories.Async
             return resources;
         }
 
-        public Task<MachinePolicyResource> GetTemplate() 
-            => Client.Get<MachinePolicyResource>(Client.RootDocument.Link("MachinePolicyTemplate"));
+        public async Task<MachinePolicyResource> GetTemplate()
+        {
+            var link = await Repository.Link("MachinePolicyTemplate").ConfigureAwait(false);
+            return await Client.Get<MachinePolicyResource>(link).ConfigureAwait(false);
+        }
     }
 }
