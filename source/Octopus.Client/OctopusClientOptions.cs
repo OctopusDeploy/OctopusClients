@@ -13,11 +13,10 @@ namespace Octopus.Client
         public OctopusClientOptions()
         {
             Timeout = TimeSpan.FromMilliseconds(ApiConstants.DefaultClientRequestTimeout);
-
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             SslProtocols = SslProtocols.Tls
-               | SslProtocols.Tls11
-               | SslProtocols.Tls12;
+                           | SslProtocols.Tls11
+                           | SslProtocols.Tls12;
 #endif
         }
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS

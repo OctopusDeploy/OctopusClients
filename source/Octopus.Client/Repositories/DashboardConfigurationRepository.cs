@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories
     
     class DashboardConfigurationRepository : IDashboardConfigurationRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public DashboardConfigurationRepository(IOctopusClient client)
+        public DashboardConfigurationRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public DashboardConfigurationResource GetDashboardConfiguration()
         {
-            return client.Get<DashboardConfigurationResource>(client.RootDocument.Link("DashboardConfiguration"));
+            return repository.Client.Get<DashboardConfigurationResource>(repository.Link("DashboardConfiguration"));
         }
 
         public DashboardConfigurationResource ModifyDashboardConfiguration(DashboardConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("DashboardConfiguration"), resource);
+            return repository.Client.Update(repository.Link("DashboardConfiguration"), resource);
         }
     }
 }

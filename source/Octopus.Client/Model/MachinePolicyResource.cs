@@ -1,10 +1,11 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using System;
+using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class MachinePolicyResource : Resource, INamedResource
+    public class MachinePolicyResource : Resource, INamedResource, IHaveSpaceResource
     {
         public MachinePolicyResource()
         {
@@ -41,5 +42,31 @@ namespace Octopus.Client.Model
         [Writeable]
         [JsonProperty(Order=50, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachineUpdatePolicy MachineUpdatePolicy { get; set; }
+        
+        [Writeable]
+        [JsonProperty(Order = 60)]
+        public TimeSpan PollingRequestQueueTimeout { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order = 61)]
+        public TimeSpan PollingRequestMaximumMessageProcessingTimeout { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order = 62)]
+        public TimeSpan ConnectionRetrySleepInterval { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order = 63)]
+        public int ConnectionRetryCountLimit { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order = 64)]
+        public TimeSpan ConnectionRetryTimeLimit { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order = 65)]
+        public TimeSpan ConnectionConnectTimeout { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -28,8 +28,8 @@ namespace Octopus.Client.Repositories
 
     class WorkerPoolRepository : BasicRepository<WorkerPoolResource>, IWorkerPoolRepository
     {
-        public WorkerPoolRepository(IOctopusClient client)
-            : base(client, "WorkerPools")
+        public WorkerPoolRepository(IOctopusRepository repository)
+            : base(repository, "WorkerPools")
         {
         }
 
@@ -69,7 +69,7 @@ namespace Octopus.Client.Repositories
             string commStyles = null,
             bool? hideEmptyPools = false)
         {
-            return Client.Get<WorkerPoolsSummaryResource>(Client.RootDocument.Link("WorkerPoolsSummary"), new
+            return Client.Get<WorkerPoolsSummaryResource>(Repository.Link("WorkerPoolsSummary"), new
             {
                 ids,
                 partialName,
@@ -83,7 +83,7 @@ namespace Octopus.Client.Repositories
 
         public void Sort(string[] workerpoolIdsInOrder)
         {
-            Client.Put(Client.RootDocument.Link("WorkerPoolsSortOrder"), workerpoolIdsInOrder);
+            Client.Put(Repository.Link("WorkerPoolsSortOrder"), workerpoolIdsInOrder);
         }
 
         public WorkerPoolEditor CreateOrModify(string name)

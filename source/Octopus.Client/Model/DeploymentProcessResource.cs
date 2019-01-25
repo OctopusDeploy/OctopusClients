@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentProcessResource : Resource
+    public class DeploymentProcessResource : Resource, IHaveSpaceResource
     {
         public DeploymentProcessResource()
         {
@@ -62,5 +63,7 @@ namespace Octopus.Client.Model
             Steps.Clear();
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

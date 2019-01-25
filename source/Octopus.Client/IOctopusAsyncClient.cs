@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
@@ -30,8 +32,10 @@ namespace Octopus.Client
         /// </exception>
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("This call is a blocking call. For a non-blocking call, access the root document through the IOctopusSystemAsyncRepository instead: client.Repository.LoadRootDocument()", false)]
         RootResource RootDocument { get; }
-
+        
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
@@ -55,7 +59,7 @@ namespace Octopus.Client
         /// <summary>
         /// A simplified interface to commonly-used parts of the API.
         /// </summary>
-        IOctopusAsyncRepository Repository { get; }
+        IOctopusAsyncRepository Repository { get;}
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -267,6 +271,24 @@ namespace Octopus.Client
         Task Put(string path);
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the PUT verb.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="resource">The resource to create.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        Task Put<TResource>(string path, TResource resource, object pathParameters = null);
+
+        /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
         /// </summary>
@@ -335,9 +357,29 @@ namespace Octopus.Client
         Uri QualifyUri(string path, object parameters = null);
 
         /// <summary>
-        /// Requests a fresh root document from the Octopus Server which can be useful if the API surface has changed. This can occur when enabling/disabling features, or changing license.
+        /// Sign in
         /// </summary>
-        /// <returns>A fresh copy of the root document.</returns>
-        Task<RootResource> RefreshRootDocument();
+        /// <param name="loginCommand"></param>
+        /// <returns></returns>
+        Task SignIn(LoginCommand loginCommand);
+
+        /// <summary>
+        /// Sign out
+        /// </summary>
+        /// <returns></returns>
+        Task SignOut();
+
+        /// <summary>
+        /// Get a repository for the given space
+        /// </summary>
+        /// <param name="space"></param>
+        /// <returns></returns>
+        IOctopusSpaceAsyncRepository ForSpace(SpaceResource space);
+
+        /// <summary>
+        /// Get a repository for system only
+        /// </summary>
+        /// <returns></returns>
+        IOctopusSystemAsyncRepository ForSystem();
     }
 }

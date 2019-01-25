@@ -32,7 +32,7 @@ namespace Octo.Tests.Commands
         [Test]
         public void ShouldThrowForOlderOctopusServers()
         {
-            Repository.Client.RootDocument.Returns(new RootResource
+            Repository.LoadRootDocument().Returns(new RootResource
             {
                 Links = new LinkCollection()//.Add("Channels", "DOES_NOT_MATTER")
             });
@@ -93,7 +93,7 @@ namespace Octo.Tests.Commands
         
         private string SetupExistingChannel()
         {
-            Repository.Client.RootDocument.Returns(new RootResource
+            Repository.LoadRootDocument().Returns(new RootResource
             {
                 Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
             });
@@ -129,7 +129,7 @@ namespace Octo.Tests.Commands
 
         private string SetupNewChannel()
         {
-            Repository.Client.RootDocument.Returns(new RootResource
+            Repository.LoadRootDocument().Returns(new RootResource
             {
                 Links = new LinkCollection().Add("Channels", "DOES_NOT_MATTER")
             });

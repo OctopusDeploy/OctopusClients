@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories.Async
 
     class MigrationRepository : IMigrationRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public MigrationRepository(IOctopusAsyncClient client)
+        public MigrationRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public async Task<MigrationPartialExportResource> PartialExport(MigrationPartialExportResource resource)
         {
-            return await client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(client.RootDocument.Link("MigrationsPartialExport"), resource).ConfigureAwait(false);
+            return await repository.Client.Post<MigrationPartialExportResource, MigrationPartialExportResource>(await repository.Link("MigrationsPartialExport").ConfigureAwait(false), resource).ConfigureAwait(false);
         }
 
         public async Task<MigrationImportResource> Import(MigrationImportResource resource)
         {
-            return await client.Post<MigrationImportResource, MigrationImportResource>(client.RootDocument.Link("MigrationsImport"), resource).ConfigureAwait(false);
+            return await repository.Client.Post<MigrationImportResource, MigrationImportResource>(await repository.Link("MigrationsImport").ConfigureAwait(false), resource).ConfigureAwait(false);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// A standalone variable set that can be included in projects where required.
     /// </summary>
-    public class LibraryVariableSetResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<LibraryVariableSetResource>
+    public class LibraryVariableSetResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<LibraryVariableSetResource>, IHaveSpaceResource
     {
         private readonly IVariableTemplateContainerEditor<LibraryVariableSetResource> variableTemplateEditor;
 
@@ -104,5 +104,7 @@ namespace Octopus.Client.Model
         {
             return variableTemplateEditor.AddOrUpdateSelectTemplate(name, label, options, defaultValue, helpText);
         }
+
+        public string SpaceId { get; set; }
     }
 }

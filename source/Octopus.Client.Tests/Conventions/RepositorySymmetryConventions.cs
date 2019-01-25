@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Octopus.Client.Extensions;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -84,7 +85,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var asyncRepository = typeof(IOctopusAsyncRepository).Assembly
                 .GetExportedTypes()
-                .FirstOrDefault(t => t.Name == syncRepository.Name && t.Namespace.EndsWith("Async"));
+                .FirstOrDefault(t => t.Name == syncRepository.Name && (t.Namespace.EndsWith("Async") || t.Name == "RepositoryScope"));
 
             if (asyncRepository == null)
                 Assert.Fail("Async repository not found");
@@ -126,7 +127,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var asyncRepository = typeof(IOctopusAsyncRepository).Assembly
                 .GetExportedTypes()
-                .FirstOrDefault(t => t.Name == syncRepository.Name && t.Namespace.EndsWith("Async"));
+                .FirstOrDefault(t => t.Name == syncRepository.Name && (t.Namespace.EndsWith("Async") || t.Name == "RepositoryScope"));
 
             if (asyncRepository == null)
                 Assert.Fail("Async repository not found");

@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class SubscriptionResource : Resource, INamedResource
+    public class SubscriptionResource : Resource, INamedResource, IHaveSpaceResource
     {
         public SubscriptionResource()
         {
@@ -21,5 +21,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public EventNotificationSubscription EventNotificationSubscription { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

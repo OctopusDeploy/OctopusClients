@@ -160,8 +160,6 @@ namespace Octopus.Client.Model
 
         [Description("Delete accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountDelete,
 
-        [Description("View audit logs")] AuditView,
-
         [Description("Create tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantCreate,
 
         [Description("Edit tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantEdit,
@@ -226,6 +224,16 @@ namespace Octopus.Client.Model
 
         [Description("View the workers in worker pools")] WorkerView,
 
-        [Description("Edit workers and worker pools")] WorkerEdit
+        [Description("Edit workers and worker pools")] WorkerEdit,
+
+        [Description("Run background actions that don't require user principal")] RunSystem,
+        
+        [Description("Edit spaces")] SpaceEdit,
+        
+        [Description("View spaces")] SpaceView,
+        
+        [Description("Delete spaces")] SpaceDelete,
+        
+        [Description("Create spaces")] SpaceCreate
     }
 }

@@ -11,12 +11,12 @@ namespace Octopus.Client.Repositories
 
     class ConfigurationRepository : IConfigurationRepository
     {
-        private readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
         private readonly string collectionLinkName;
 
-        public ConfigurationRepository(IOctopusClient client)
+        public ConfigurationRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
             this.collectionLinkName = "Configuration";
         }
 
@@ -24,19 +24,19 @@ namespace Octopus.Client.Repositories
         {
             var instance = new T();
             var configurationItem = GetConfigurationItem(instance);
-            return client.Get<T>(configurationItem.Link("Values"));
+            return repository.Client.Get<T>(configurationItem.Link("Values"));
         }
 
         public T Modify<T>(T configurationResource) where T : class, IResource, new()
         {
             var configurationItem = GetConfigurationItem(configurationResource);
-            return client.Update(configurationItem.Link("Values"), configurationResource);
+            return repository.Client.Update(configurationItem.Link("Values"), configurationResource);
         }
 
         private ConfigurationItemResource GetConfigurationItem(IResource instance) 
         {
             var configurationItem =
-                client.Get<ConfigurationItemResource>(client.RootDocument.Link(collectionLinkName), new { instance.Id });
+                repository.Client.Get<ConfigurationItemResource>(repository.Link(collectionLinkName), new { instance.Id });
             return configurationItem;
         }
     }

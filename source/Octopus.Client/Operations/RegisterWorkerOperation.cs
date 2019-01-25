@@ -41,7 +41,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public override void Execute(IOctopusRepository repository)
+        public override void Execute(IOctopusSpaceRepository repository)
         {
             var selectedPools = GetWorkerPools(repository);
             var machinePolicy = GetMachinePolicy(repository);
@@ -58,7 +58,7 @@ namespace Octopus.Client.Operations
                 repository.Workers.Create(machine);
         }
 
-        List<WorkerPoolResource> GetWorkerPools(IOctopusRepository repository)
+        List<WorkerPoolResource> GetWorkerPools(IOctopusSpaceRepository repository)
         {
             var selectedPools = repository.WorkerPools.FindByNames(WorkerPoolNames);
 
@@ -70,7 +70,7 @@ namespace Octopus.Client.Operations
             return selectedPools;
         }
 
-        WorkerResource GetWorker(IOctopusRepository repository)
+        WorkerResource GetWorker(IOctopusSpaceRepository repository)
         {
             var existing = default(WorkerResource);
             try
@@ -91,7 +91,7 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public override async Task ExecuteAsync(IOctopusAsyncRepository repository)
+        public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
         {
             var selectedPools = GetWorkerPools(repository).ConfigureAwait(false);
             var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
@@ -109,7 +109,7 @@ namespace Octopus.Client.Operations
                 await repository.Workers.Create(machine).ConfigureAwait(false);
         }
 
-        async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusAsyncRepository repository)
+        async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusSpaceAsyncRepository repository)
         {
             var selectedPools = await repository.WorkerPools.FindByNames(WorkerPoolNames).ConfigureAwait(false);
 
@@ -121,7 +121,7 @@ namespace Octopus.Client.Operations
             return selectedPools;
         }
 
-        async Task<WorkerResource> GetWorker(IOctopusAsyncRepository repository)
+        async Task<WorkerResource> GetWorker(IOctopusSpaceAsyncRepository repository)
         {
             var existing = default(WorkerResource);
             try

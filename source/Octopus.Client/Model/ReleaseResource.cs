@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
-    public class ReleaseResource : ReleaseSummaryResource
+    public class ReleaseResource : ReleaseSummaryResource, IHaveSpaceResource
     {
         [JsonConstructor]
         public ReleaseResource()
@@ -47,6 +48,8 @@ namespace Octopus.Client.Model
 
         public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
+		
+        public string SpaceId { get; set; }
 
         public List<WorkItem> WorkItems { get; set; }
     }

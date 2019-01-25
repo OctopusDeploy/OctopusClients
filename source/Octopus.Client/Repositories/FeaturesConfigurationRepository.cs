@@ -11,21 +11,21 @@ namespace Octopus.Client.Repositories
     
     class FeaturesConfigurationRepository : IFeaturesConfigurationRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public FeaturesConfigurationRepository(IOctopusClient client)
+        public FeaturesConfigurationRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public FeaturesConfigurationResource GetFeaturesConfiguration()
         {
-            return client.Get<FeaturesConfigurationResource>(client.RootDocument.Link("FeaturesConfiguration"));
+            return repository.Client.Get<FeaturesConfigurationResource>(repository.Link("FeaturesConfiguration"));
         }
 
         public FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource)
         {
-            return client.Update(client.RootDocument.Link("FeaturesConfiguration"), resource);
+            return repository.Client.Update(repository.Link("FeaturesConfiguration"), resource);
         }
     }
 }

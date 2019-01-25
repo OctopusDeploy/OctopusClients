@@ -58,8 +58,8 @@ namespace Octopus.Client.Repositories.Async
 
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
     {
-        public CertificateRepository(IOctopusAsyncClient client)
-            : base(client, "Certificates")
+        public CertificateRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Certificates")
         {
         }
 
@@ -93,7 +93,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<CertificateConfigurationResource> GetOctopusCertificate()
         {
-            return Client.Repository.CertificateConfiguration.GetOctopusCertificate();
+            return Repository.CertificateConfiguration.GetOctopusCertificate();
         }
     }
 }

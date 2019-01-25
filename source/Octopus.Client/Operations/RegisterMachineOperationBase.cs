@@ -97,7 +97,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public void Execute(OctopusRepository repository)
         {
-            Execute((IOctopusRepository)repository);
+            Execute((IOctopusSpaceRepository) repository);
         }
 
         /// <summary>
@@ -106,9 +106,9 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public abstract void Execute(IOctopusRepository repository);
+        public abstract void Execute(IOctopusSpaceRepository repository);
 
-        protected MachinePolicyResource GetMachinePolicy(IOctopusRepository repository)
+        protected MachinePolicyResource GetMachinePolicy(IOctopusSpaceRepository repository)
         {
             var machinePolicy = default(MachinePolicyResource);
             if (!string.IsNullOrEmpty(MachinePolicy))
@@ -120,7 +120,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
-        protected ProxyResource GetProxy(IOctopusRepository repository)
+        protected ProxyResource GetProxy(IOctopusSpaceRepository repository)
         {
             var proxy = default(ProxyResource);
             if (!string.IsNullOrEmpty(ProxyName))
@@ -156,7 +156,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public async Task ExecuteAsync(OctopusAsyncRepository repository)
         {
-            await ExecuteAsync((IOctopusAsyncRepository) repository);
+            await ExecuteAsync((IOctopusSpaceAsyncRepository) repository).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -165,9 +165,9 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public abstract Task ExecuteAsync(IOctopusAsyncRepository repository);
+        public abstract Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
 
-        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusAsyncRepository repository)
+        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusSpaceAsyncRepository repository)
         {
 
             var machinePolicy = default(MachinePolicyResource);
@@ -180,7 +180,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
-        protected async Task<ProxyResource> GetProxy(IOctopusAsyncRepository repository)
+        protected async Task<ProxyResource> GetProxy(IOctopusSpaceAsyncRepository repository)
         {
             var proxy = default(ProxyResource);
             if (!string.IsNullOrEmpty(ProxyName))

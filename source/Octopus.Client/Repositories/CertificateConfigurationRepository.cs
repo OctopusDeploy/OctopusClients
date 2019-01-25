@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
 
     class CertificateConfigurationRepository : BasicRepository<CertificateConfigurationResource>, ICertificateConfigurationRepository
     {
-        public CertificateConfigurationRepository(IOctopusClient client) : base(client, DetermineCollectionLinkName(client))
+        public CertificateConfigurationRepository(IOctopusRepository repository) : base(repository, null, DetermineCollectionLinkName)
         {
         }
 
@@ -26,13 +26,13 @@ namespace Octopus.Client.Repositories
             return Client.GetContent(certificateConfiguration.Links["PublicCer"]);
         }
 
-        static string DetermineCollectionLinkName(IOctopusClient client)
+        static string DetermineCollectionLinkName(IOctopusRepository repository)
         {
             // For backwards compatibility. 
             // In Octopus 3.11, what was Certificates was moved to CertificatesConfiguration, to make room for the certificates feature.
             // This allows pre-3.11 clients to still work.
             // The null check is just for tests.
-            return client.RootDocument == null || client.RootDocument.Links.ContainsKey("CertificateConfiguration")
+            return repository?.HasLink("CertificateConfiguration") ?? true
                 ? "CertificateConfiguration"
                 : "Certificates";
         }

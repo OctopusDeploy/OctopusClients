@@ -35,8 +35,8 @@ namespace Octopus.Client.Repositories
 
     class EnvironmentRepository : BasicRepository<EnvironmentResource>, IEnvironmentRepository
     {
-        public EnvironmentRepository(IOctopusClient client)
-            : base(client, "Environments")
+        public EnvironmentRepository(IOctopusRepository repository)
+            : base(repository, "Environments")
         {
         }
 
@@ -85,7 +85,7 @@ namespace Octopus.Client.Repositories
             string tenantTags = null,
             bool? hideEmptyEnvironments = false)
         {
-            return Client.Get<EnvironmentsSummaryResource>(Client.RootDocument.Link("EnvironmentsSummary"), new
+            return Client.Get<EnvironmentsSummaryResource>(Repository.Link("EnvironmentsSummary"), new
             {
                 ids,
                 partialName,
@@ -102,7 +102,7 @@ namespace Octopus.Client.Repositories
 
         public void Sort(string[] environmentIdsInOrder)
         {
-            Client.Put(Client.RootDocument.Link("EnvironmentSortOrder"), environmentIdsInOrder);
+            Client.Put(Repository.Link("EnvironmentSortOrder"), environmentIdsInOrder);
         }
 
         public EnvironmentEditor CreateOrModify(string name)

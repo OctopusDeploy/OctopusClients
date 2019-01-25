@@ -30,13 +30,13 @@ namespace Octopus.Client.Repositories
 
     class WorkerRepository : BasicRepository<WorkerResource>, IWorkerRepository
     {
-        public WorkerRepository(IOctopusClient client) : base(client, "Workers")
+        public WorkerRepository(IOctopusRepository repository) : base(repository, "Workers")
         {
         }
 
         public WorkerResource Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<WorkerResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
+            return Client.Get<WorkerResource>(Repository.Link("DiscoverMachine"), new { host, port, type });
         }
 
         public MachineConnectionStatus GetConnectionStatus(WorkerResource machine)
@@ -48,7 +48,7 @@ namespace Octopus.Client.Repositories
         public List<WorkerResource> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerResource>>(Client.RootDocument.Link("Workers"), new { id = "all", thumbprint });
+            return Client.Get<List<WorkerResource>>(Repository.Link("Workers"), new { id = IdValueConstant.IdAll, thumbprint });
         }
 
 
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories
             string commStyles = null,
             string workerpoolIds = null)
         {
-            return Client.List<WorkerResource>(Client.RootDocument.Link("workers"), new
+            return Client.List<WorkerResource>(Repository.Link("workers"), new
             {
                 skip,
                 take,

@@ -12,12 +12,12 @@ namespace Octopus.Client.Repositories.Async
 
     class ConfigurationRepository : IConfigurationRepository
     {
-        private readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
         private readonly string collectionLinkName;
 
-        public ConfigurationRepository(IOctopusAsyncClient client)
+        public ConfigurationRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
             this.collectionLinkName = "Configuration";
         }
 
@@ -26,18 +26,18 @@ namespace Octopus.Client.Repositories.Async
             var instance = new T();
             var configurationItem = await GetConfigurationItem(instance).ConfigureAwait(false);
 
-            return await client.Get<T>(configurationItem.Link("Values")).ConfigureAwait(false);
+            return await repository.Client.Get<T>(configurationItem.Link("Values")).ConfigureAwait(false);
         }
 
         public async Task<T> Modify<T>(T configurationResource) where T : class, IResource, new()
         {
             var configurationItem = await GetConfigurationItem(configurationResource).ConfigureAwait(false);
-            return await client.Update(configurationItem.Link("Values"), configurationResource);
+            return await repository.Client.Update(configurationItem.Link("Values"), configurationResource).ConfigureAwait(false);
         }
 
         private async Task<ConfigurationItemResource> GetConfigurationItem(IResource instance)
         {
-            return await client.Get<ConfigurationItemResource>(client.RootDocument.Link(collectionLinkName), new { instance.Id });
+            return await repository.Client.Get<ConfigurationItemResource>(await repository.Link(collectionLinkName).ConfigureAwait(false), new { instance.Id }).ConfigureAwait(false);
         }
     }
 }

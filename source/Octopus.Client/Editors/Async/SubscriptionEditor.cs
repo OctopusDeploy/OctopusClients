@@ -28,7 +28,7 @@ namespace Octopus.Client.Editors.Async
                         Name = name,
                         Type = SubscriptionType.Event,
                         IsDisabled = isDisabled,
-                        EventNotificationSubscription = eventNotificationSubscription
+                        EventNotificationSubscription = eventNotificationSubscription,
                     })
                     .ConfigureAwait(false);
             }
