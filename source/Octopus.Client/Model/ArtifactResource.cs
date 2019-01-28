@@ -31,11 +31,11 @@ namespace Octopus.Client.Model
         public string Source { get; set; }
 
         /// <summary>
-        /// Gets or sets the documents with which this artifact is associated.
+        /// Gets or sets the server task with which this artifact is associated.
         /// </summary>
         [WriteableOnCreate]
         [JsonProperty(Order = 4)]
-        public ReferenceCollection RelatedDocumentIds { get; set; }
+        public string ServerTaskId { get; set; }
 
         /// <summary>
         /// Gets or sets the time at which the artifact was created.

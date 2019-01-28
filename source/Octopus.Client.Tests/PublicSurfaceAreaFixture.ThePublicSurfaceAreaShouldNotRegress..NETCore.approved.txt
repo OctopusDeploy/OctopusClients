@@ -1642,7 +1642,7 @@ Octopus.Client.Model
     DateTimeOffset Created { get; set; }
     String Filename { get; set; }
     String LogCorrelationId { get; set; }
-    Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
+    String ServerTaskId { get; set; }
     String Source { get; set; }
     String SpaceId { get; set; }
   }
@@ -2877,6 +2877,10 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    TimeSpan ConnectionConnectTimeout { get; set; }
+    Int32 ConnectionRetryCountLimit { get; set; }
+    TimeSpan ConnectionRetrySleepInterval { get; set; }
+    TimeSpan ConnectionRetryTimeLimit { get; set; }
     String Description { get; set; }
     Boolean IsDefault { get; set; }
     Octopus.Client.Model.MachineCleanupPolicy MachineCleanupPolicy { get; set; }
@@ -2884,6 +2888,8 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineHealthCheckPolicy MachineHealthCheckPolicy { get; set; }
     Octopus.Client.Model.MachineUpdatePolicy MachineUpdatePolicy { get; set; }
     String Name { get; set; }
+    TimeSpan PollingRequestMaximumMessageProcessingTimeout { get; set; }
+    TimeSpan PollingRequestQueueTimeout { get; set; }
     String SpaceId { get; set; }
   }
   class MachinePollingConversation
@@ -5124,7 +5130,6 @@ Octopus.Client.Model.Migrations
   class MigrationImportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -5133,17 +5138,16 @@ Octopus.Client.Model.Migrations
     Boolean IsDryRun { get; set; }
     Boolean IsEncryptedPackage { get; set; }
     Boolean OverwriteExisting { get; set; }
+    String PackageFeedSpaceId { get; set; }
     String PackageId { get; set; }
     String PackageVersion { get; set; }
     String Password { get; set; }
-    String SpaceId { get; set; }
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
   }
   class MigrationPartialExportResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -5734,6 +5738,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<MachinePolicyResource>
   {
     List<MachineResource> GetMachines(Octopus.Client.Model.MachinePolicyResource)
+    Octopus.Client.Model.MachinePolicyResource GetTemplate()
   }
   interface IMachineRepository
     Octopus.Client.Repositories.IFindByName<MachineResource>
@@ -6304,6 +6309,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<MachinePolicyResource>
   {
     Task<List<MachineResource>> GetMachines(Octopus.Client.Model.MachinePolicyResource)
+    Task<MachinePolicyResource> GetTemplate()
   }
   interface IMachineRepository
     Octopus.Client.Repositories.Async.IFindByName<MachineResource>
