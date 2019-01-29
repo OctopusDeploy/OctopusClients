@@ -3375,6 +3375,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean AllowDeploymentsToNoTargets { get; set; }
+    Boolean ExcludeUnhealthyTargets { get; set; }
     Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
