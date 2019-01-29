@@ -3445,7 +3445,7 @@ Octopus.Client.Model
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     String VariableSetId { get; set; }
     Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
-    Octopus.Client.Model.DeploymentActionPackageResource WorkItemPackage { get; set; }
+    List<DeploymentActionPackageResource> WorkItemPackages { get; set; }
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.ReleaseResource)
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.TenantResource, Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.ProjectResource AddOrUpdateMultiLineTextTemplate(String, String)

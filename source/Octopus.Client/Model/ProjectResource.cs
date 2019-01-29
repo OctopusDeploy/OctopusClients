@@ -97,7 +97,7 @@ namespace Octopus.Client.Model
         public ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
 
         [Writeable]
-        public DeploymentActionPackageResource WorkItemPackage { get; set; }
+        public List<DeploymentActionPackageResource> WorkItemPackages { get; set; }
 
         [Writeable]
         public bool AppendWorkItemDetailsToReleaseNotes { get; set; } 
