@@ -3094,6 +3094,12 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
   }
+  class OctopusServerClusterSummaryResource
+  {
+    .ctor()
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.OctopusServerNodeSummaryResource[] Nodes { get; set; }
+  }
   class OctopusServerNodeDetailsResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3110,11 +3116,23 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
+    Int32 MaxConcurrentTasks { get; set; }
+    String Name { get; set; }
+  }
+  class OctopusServerNodeSummaryResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsInMaintenanceMode { get; set; }
+    Boolean IsLeader { get; set; }
     Boolean IsOffline { get; set; }
-    String LastSeen { get; set; }
+    Nullable<DateTimeOffset> LastSeen { get; set; }
     Int32 MaxConcurrentTasks { get; set; }
     String Name { get; set; }
     String Rank { get; set; }
+    Int32 RunningTaskCount { get; set; }
   }
   PackageAcquisitionLocation
   {
@@ -5792,6 +5810,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<OctopusServerNodeResource>
   {
     Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
+    Octopus.Client.Model.OctopusServerClusterSummaryResource Summary()
   }
   interface IPaginate`1
   {
@@ -6363,6 +6382,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<OctopusServerNodeResource>
   {
     Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
+    Task<OctopusServerClusterSummaryResource> Summary()
   }
   interface IPaginate`1
   {
