@@ -13,6 +13,8 @@
 
         public bool AllowDeploymentsToNoTargets { get; set; }
 
+        public bool ExcludeUnhealthyTargets { get; set; }
+
         public ProjectConnectivityPolicy()
         {
             TargetRoles = new ReferenceCollection();
