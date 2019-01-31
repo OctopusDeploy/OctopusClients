@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// Represents a project.
     /// </summary>
-    public class ProjectResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
+    public class ProjectResource : ResourceWithExtensionSettings, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
     {
         private readonly IVariableTemplateContainerEditor<ProjectResource> variableTemplateEditor;
 
@@ -22,7 +22,6 @@ namespace Octopus.Client.Model
             ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
-            ExtensionSettings = new List<ExtensionSettingsValues>();
         }
 
         public ProjectResource(string id, string name, string slug) : this()
@@ -110,9 +109,6 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
-
-        [Writeable]
-        public List<ExtensionSettingsValues> ExtensionSettings { get; set; }
 
         public ProjectResource Clear()
         {
@@ -220,21 +216,5 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
-
-        public TSettings GetExtensionSettings<TSettings>(string extensionId)
-        {
-            var settings = ExtensionSettings.SingleOrDefault(x => x.ExtensionId == extensionId);
-            if (settings == null)
-                return default(TSettings);
-
-            var instance = JsonConvert.DeserializeObject<TSettings>(settings.Values.ToString());
-            return instance;
-        }
-
-        public class ExtensionSettingsValues
-        {
-            public string ExtensionId { get; set; }
-            public object Values { get; set; }
-        }
     }
 }

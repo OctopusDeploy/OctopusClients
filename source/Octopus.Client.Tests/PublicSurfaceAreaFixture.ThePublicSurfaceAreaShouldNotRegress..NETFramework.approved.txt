@@ -2453,7 +2453,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ResourceWithExtensionSettings
   {
     .ctor()
     Boolean AllowDynamicInfrastructure { get; set; }
@@ -3435,7 +3435,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IVariableTemplateContainer
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource>
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ResourceWithExtensionSettings
   {
     .ctor()
     .ctor(String, String, String)
@@ -3448,7 +3448,6 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
-    List<ExtensionSettingsValues> ExtensionSettings { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
     String LifecycleId { get; set; }
@@ -3476,14 +3475,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.ProjectResource Clear()
-    Octopus.Client.Model.TSettings GetExtensionSettings(String)
     Octopus.Client.Model.ProjectResource IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
-    class ExtensionSettingsValues
-    {
-      .ctor()
-      String ExtensionId { get; set; }
-      Object Values { get; set; }
-    }
   }
   class ProjectTriggerResource
     Octopus.Client.Extensibility.IResource
@@ -3677,6 +3669,14 @@ Octopus.Client.Model
     Int32 ItemsPerPage { get; set; }
     String ItemType { get; }
     Int32 TotalResults { get; set; }
+  }
+  abstract class ResourceWithExtensionSettings
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    List<ExtensionSettingsValues> ExtensionSettings { get; set; }
+    Octopus.Client.Model.TSettings GetExtensionSettings(String)
   }
   abstract class Retention
   {

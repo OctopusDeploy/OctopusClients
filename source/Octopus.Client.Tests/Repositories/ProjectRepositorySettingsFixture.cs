@@ -20,9 +20,9 @@ namespace Octopus.Client.Tests.Repositories
             var project = new ProjectResource
             {
                 Name = "test",
-                ExtensionSettings = new List<ProjectResource.ExtensionSettingsValues>()
+                ExtensionSettings = new List<ExtensionSettingsValues>()
             };
-            project.ExtensionSettings.Add(new ProjectResource.ExtensionSettingsValues
+            project.ExtensionSettings.Add(new ExtensionSettingsValues
             {
                 ExtensionId = "test-id",
                 Values = new TestSettings {  SomeSetting = "foo" }
