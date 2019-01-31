@@ -3386,6 +3386,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean AllowDeploymentsToNoTargets { get; set; }
+    Boolean ExcludeUnhealthyTargets { get; set; }
     Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
     Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
   }
@@ -3812,6 +3813,7 @@ Octopus.Client.Model
       Bash = 1
       CSharp = 2
       FSharp = 3
+      Python = 4
   }
   abstract class ScriptSyntaxExtension
   {
@@ -3823,8 +3825,10 @@ Octopus.Client.Model
     static Octopus.Client.Model.ScriptSyntaxMeta Bash
     static Octopus.Client.Model.ScriptSyntaxMeta CSharp
     System.String Extension
+    static Octopus.Client.Model.ScriptSyntaxMeta FSharp
     System.String Name
     static Octopus.Client.Model.ScriptSyntaxMeta PowerShell
+    static Octopus.Client.Model.ScriptSyntaxMeta Python
     Octopus.Client.Model.ScriptSyntax ScriptSyntax
     static Octopus.Client.Model.ScriptSyntaxMeta FromExtension(String)
     static Octopus.Client.Model.ScriptSyntaxMeta FromName(String)
