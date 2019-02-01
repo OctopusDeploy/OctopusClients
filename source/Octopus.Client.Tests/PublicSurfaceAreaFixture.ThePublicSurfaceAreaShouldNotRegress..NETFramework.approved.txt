@@ -2219,6 +2219,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ActionType { get; set; }
+    Boolean CanBeUsedForContributingWorkItems { get; set; }
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }

@@ -12,6 +12,7 @@ namespace Octopus.Client.Model
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
+        public bool CanBeUsedForContributingWorkItems { get; set; }
 
         /// <summary>
         /// If true, this action cannot be skipped when deploying
