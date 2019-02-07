@@ -15,6 +15,8 @@ namespace Octopus.Cli.Util
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public static bool PrintMessages { get; set; }
+
         public Logger GetLogger(string name) 
             => new SerilogLogger(Logger.ForContext("SourceContext", name, destructureObjects: false)).Log;
 
@@ -35,6 +37,9 @@ namespace Octopus.Cli.Util
 
             public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
             {
+                if (!PrintMessages)
+                    return false;
+
                 var translatedLevel = TranslateLevel(logLevel);
                 if (messageFunc == null)
                 {

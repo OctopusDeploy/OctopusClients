@@ -137,6 +137,7 @@ namespace Octopus.Cli.Commands
 #endif
             
             commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default || enableDebugging;
+            CliSerilogLogProvider.PrintMessages = commandOutputProvider.PrintMessages;
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
