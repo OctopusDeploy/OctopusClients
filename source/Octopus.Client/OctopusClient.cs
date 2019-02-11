@@ -547,6 +547,12 @@ namespace Octopus.Client
                 }
 
                 var locationHeader = webResponse.Headers.Get("Location");
+
+                if (locationHeader.EndsWith("{"))
+                {
+                    locationHeader = locationHeader.Substring(0, locationHeader.Length - 1);
+                }
+
                 var octopusResponse = new OctopusResponse<TResponseResource>(request, webResponse.StatusCode, locationHeader, resource);
                 ReceivedOctopusResponse?.Invoke(octopusResponse);
 
