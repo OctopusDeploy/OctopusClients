@@ -46,7 +46,7 @@ namespace Octopus.Cli.Commands.Releases
             options.Add("whatif", "[Optional, Flag] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
             options = Options.For("Deployment");
-            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production; specify this argument multiple times to deploy to multiple environments", v => DeployToEnvironmentNames.Add(v));
         }
 
         public string ChannelName { get; set; }
