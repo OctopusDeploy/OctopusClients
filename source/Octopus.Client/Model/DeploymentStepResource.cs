@@ -129,12 +129,14 @@ namespace Octopus.Client.Model
             action.ActionType = "Octopus.Script";
             action.Properties.Clear();
             action.Properties["Octopus.Action.RunOnServer"] = scriptTarget == ScriptTarget.Server ? "true" : "false";
-            action.Properties["Octopus.Action.Script.Syntax"] = scriptAction.Syntax.ToString();
             action.Properties["Octopus.Action.Script.ScriptSource"] = scriptAction.Source.ToString();
 
             switch (scriptAction.Source)
             {
                 case ScriptSource.Inline:
+
+                    action.Properties["Octopus.Action.Script.Syntax"] = scriptAction.Syntax.ToString();
+
                     string scriptBody = null;
                     var inlineScript = scriptAction as InlineScriptAction;
                     if (inlineScript != null)
@@ -150,6 +152,7 @@ namespace Octopus.Client.Model
                     if (scriptBody == null) throw new NotSupportedException($"{scriptAction.GetType().Name} is not a supported Script Action type yet...");
 
                     action.Properties.Add("Octopus.Action.Script.ScriptBody", scriptBody);
+
                     break;
 
                 case ScriptSource.Package:
