@@ -1,5 +1,5 @@
-using System;
 using System.Threading;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -41,13 +41,6 @@ namespace Octopus.Client.Repositories
             {
                 throw new PermissionNotSupportedException(taskViewLogPermission);
             }
-        }
-    }
-
-    class PermissionNotSupportedException : Exception
-    {
-        public PermissionNotSupportedException(Permission permission) : base($"The {permission:G} permission is not supported in this version of Octopus Server")
-        {
         }
     }
 }

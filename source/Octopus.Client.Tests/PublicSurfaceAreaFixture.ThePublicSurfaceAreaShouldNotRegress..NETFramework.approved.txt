@@ -1273,6 +1273,13 @@ Octopus.Client.Exceptions
     ReadOnlyCollection<String> Errors { get; }
     Octopus.Client.Exceptions.TDetails DetailsAs()
   }
+  class PermissionNotSupportedException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Model.Permission)
+  }
   class UnsupportedApiVersionException
     ISerializable
     _Exception

@@ -33,14 +33,14 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        public async Task<TResource> Create(TResource resource, object pathParameters = null)
+        public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink().ConfigureAwait(false);
             EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
 
-        public Task<TResource> Modify(TResource resource)
+        public virtual Task<TResource> Modify(TResource resource)
         {
             return Client.Update(resource.Links["Self"], resource);
         }
