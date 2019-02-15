@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -11,6 +12,41 @@ namespace Octopus.Client.Repositories
     {
         public UserRolesRepository(IOctopusRepository repository)
             : base(repository, "UserRoles")
+        {
+        }
+
+        public override UserRoleResource Create(UserRoleResource resource, object pathParameters = null)
+        {
+            AssertRoleContainsValidPermissions(resource);
+            return base.Create(resource, pathParameters);
+        }
+
+        public override UserRoleResource Modify(UserRoleResource resource)
+        {
+            AssertRoleContainsValidPermissions(resource);
+            return base.Modify(resource);
+        }
+
+        private void AssertRoleContainsValidPermissions(UserRoleResource resource)
+        {
+#pragma warning disable 618
+            const Permission taskViewLogPermission = Permission.TaskViewLog;
+#pragma warning restore 618
+            
+            var roleUsesTaskViewLog = resource.GrantedSpacePermissions.Contains(taskViewLogPermission) ||
+                                      resource.GrantedSystemPermissions.Contains(taskViewLogPermission);
+            var versionWhenTaskViewLogWasRemoved = SemanticVersion.Parse("2019.1.7");
+            var serverSupportsTaskViewLog = SemanticVersion.Parse(Repository.LoadRootDocument().Version) < versionWhenTaskViewLogWasRemoved;
+            if (roleUsesTaskViewLog && !serverSupportsTaskViewLog)
+            {
+                throw new PermissionNotSupportedException(taskViewLogPermission);
+            }
+        }
+    }
+
+    class PermissionNotSupportedException : Exception
+    {
+        public PermissionNotSupportedException(Permission permission) : base($"The {permission:G} permission is not supported in this version of Octopus Server")
         {
         }
     }

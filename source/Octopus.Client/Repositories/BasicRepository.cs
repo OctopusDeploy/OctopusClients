@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories
 
         public IOctopusClient Client => client;
 
-        public TResource Create(TResource resource, object pathParameters = null)
+        public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
             var link = ResolveLink();
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories
             return client.Create(link, resource, pathParameters);
         }
 
-        public TResource Modify(TResource resource)
+        public virtual TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
             return client.Update(resource.Links["Self"], resource);
