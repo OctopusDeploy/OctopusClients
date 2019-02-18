@@ -115,6 +115,7 @@ namespace Octopus.Client.Model
 
         [Description("View summary-level information associated with a task")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskView,
 
+        [Obsolete("TaskViewLog is no longer supported by Octopus Server. Instead use the TaskView permission, which also grants access to Task logs", false)]
         [Description("View detailed information about the execution of a task, including the task log output")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskViewLog,
 
         [Description("Explicitly create (run) server tasks")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskCreate,
