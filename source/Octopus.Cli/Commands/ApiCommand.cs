@@ -154,7 +154,7 @@ namespace Octopus.Cli.Commands
                 var space = await client.ForSystem().Spaces.FindByName(spaceName).ConfigureAwait(false);
                 if (space == null)
                 {
-                    throw new CommandException($"Cannot find the space with name {spaceName}");
+                    throw new CommandException($"Cannot find the space with name '{spaceName}'. Please check the spelling and that the account has sufficient access to that space. Please use Configuration > Test Permissions to confirm.");
                 }
 
                 Repository = repositoryFactory.CreateRepository(client, RepositoryScope.ForSpace(space));
