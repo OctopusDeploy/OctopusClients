@@ -19,7 +19,7 @@ namespace Octopus.Client.Model
             if (isSensitive)
             {
                 IsSensitive = true;
-                SensitiveValue = new SensitiveValue { NewValue = value };
+                SensitiveValue = value;
                 return;
             }
 

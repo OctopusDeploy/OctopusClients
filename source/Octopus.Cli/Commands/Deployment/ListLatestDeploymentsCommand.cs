@@ -81,7 +81,7 @@ namespace Octopus.Cli.Commands.Deployment
             commandOutputProvider.Information(" - Environment: {Environment:l}", nameOfDeploymentEnvironment);
             if (!string.IsNullOrEmpty(dashboardItem.TenantId))
             {
-                var nameOfDeploymentTenant = tenantsById[dashboardItem.TenantId];
+                var nameOfDeploymentTenant = GetNameOfDeploymentTenant(tenantsById, dashboardItem.TenantId);
                 commandOutputProvider.Information(" - Tenant: {Tenant:l}", nameOfDeploymentTenant);
             }
 
@@ -172,7 +172,7 @@ namespace Octopus.Cli.Commands.Deployment
                     Environment = new { Id = x.dashboardItem.EnvironmentId, Name = environmentsById[x.dashboardItem.EnvironmentId] },
                     Tenant = string.IsNullOrWhiteSpace(x.dashboardItem.TenantId)
                         ? null
-                        : new { Id = x.dashboardItem.TenantId, Name = tenantsById[x.dashboardItem.TenantId] },
+                        : new { Id = x.dashboardItem.TenantId, Name = GetNameOfDeploymentTenant(tenantsById, x.dashboardItem.TenantId) },
                     Channel = x.channel == null ? null : new { x.channel.Id, x.channel.Name },
                     Date = x.dashboardItem.QueueTime,
                     x.dashboardItem.Duration,
@@ -182,6 +182,14 @@ namespace Octopus.Cli.Commands.Deployment
                     PackageVersion = GetPackageVersionsAsString(x.release.SelectedPackages),
                     ReleaseNotes = GetReleaseNotes(x.release)
                 }));
+        }
+        
+        private static string GetNameOfDeploymentTenant(IDictionary<string,string> tenantsById, string tenantId)
+        {
+            if (string.IsNullOrWhiteSpace(tenantId))
+                return null;
+
+            return tenantsById.ContainsKey(tenantId) ? tenantsById[tenantId] : "<Removed>";
         }
     }
 }
