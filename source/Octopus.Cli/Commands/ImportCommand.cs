@@ -23,11 +23,13 @@ namespace Octopus.Cli.Commands
             options.Add("filePath=", "The full path and name of the exported file", v => FilePath = v);
             options.Add("project=", "[Optional] The name of the project", v => Project = v);
             options.Add("dryRun", "[Optional] Perform a dry run of the import", v => DryRun = true);
+            options.Add("destinationPackageFeedSpaceId=", "[Optional] If not using the Spaces feature. The SpaceId of the Space where the package containing the data to migrate will be uploaded. This is only for the package the data in the package specifies the destination Space.", v => DestinationPackageFeedSpaceId = v);
         }
 
         public bool DryRun { get; set; }
         public string Type { get; set; }
         public string FilePath { get; set; }
+        public string DestinationPackageFeedSpaceId { get; set; }
         public string Project { get; set; }
 
         protected override async Task Execute()
@@ -41,11 +43,11 @@ namespace Octopus.Cli.Commands
                 throw new CommandException("Error: Unrecognized importer '" + Type + "'");
 
             commandOutputProvider.Debug("Validating the import");
-            var validationResult = await importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
+            var validationResult = await importer.Validate(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("DestinationPackageFeedSpaceId={0}", DestinationPackageFeedSpaceId)).ConfigureAwait(false);
             if (validationResult && !DryRun)
             {
                 commandOutputProvider.Debug("Beginning the import");
-                await importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project)).ConfigureAwait(false);
+                await importer.Import(string.Format("FilePath={0}", FilePath), string.Format("Project={0}", Project), string.Format("DestinationPackageFeedSpaceId={0}", DestinationPackageFeedSpaceId)).ConfigureAwait(false);
             }
         }
     }
