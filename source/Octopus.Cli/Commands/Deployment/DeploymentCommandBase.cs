@@ -85,7 +85,7 @@ namespace Octopus.Cli.Commands.Deployment
             if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
 
-            base.ValidateParameters();
+            await base.ValidateParameters();
         }
 
         DateTimeOffset? ParseDeployAt(string v)
