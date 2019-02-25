@@ -87,5 +87,22 @@ namespace Octo.Tests.Commands
             });
         }
         
+                
+        [Test]
+        public void ShouldThrowForBadEnvironment()
+        {
+            createReleaseCommand = new CreateReleaseCommand(RepositoryFactory, new OctopusPhysicalFileSystem(Log), versionResolver, releasePlanBuilder, ClientFactory, CommandOutputProvider);
+            
+            CommandLineArgs.Add("--server=https://test-server-url/api/");
+            CommandLineArgs.Add("--apikey=API-test");
+            CommandLineArgs.Add("--project=Test Project");
+            CommandLineArgs.Add("--releaseNumber=1.0.0");
+            CommandLineArgs.Add("--deployto=bad");
+            Assert.ThrowsAsync<CommandException>(async delegate
+            {
+                await createReleaseCommand.Execute(CommandLineArgs.ToArray());
+            });
+        }
+        
     }
 }

@@ -56,6 +56,8 @@ namespace Octo.Tests.Commands
 
             Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
                 .Returns(new List<MachineResource>());
+            Repository.Environments.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
+                .Returns(new List<EnvironmentResource>());
             
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
