@@ -156,6 +156,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
@@ -194,6 +195,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
@@ -321,6 +323,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
@@ -441,6 +444,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
@@ -2689,6 +2693,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection AddToTeamIds { get; set; }
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
+    String SpaceId { get; set; }
   }
   interface IVariableTemplateContainer
   {
@@ -5974,6 +5979,11 @@ Octopus.Client.Repositories
   {
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
   }
+  interface IUserInvitesRepository
+  {
+    Octopus.Client.Model.InvitationResource Invite(String)
+    Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
+  }
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.ICanExtendSpaceContext<IUserPermissionsRepository>
   {
@@ -6545,6 +6555,11 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
+  }
+  interface IUserInvitesRepository
+  {
+    Task<InvitationResource> Invite(String)
+    Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
   }
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IUserPermissionsRepository>

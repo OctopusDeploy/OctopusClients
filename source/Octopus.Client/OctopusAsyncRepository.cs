@@ -94,6 +94,7 @@ namespace Octopus.Client
             Teams = new TeamsRepository(this);
             Tenants = new TenantRepository(this);
             TenantVariables = new TenantVariablesRepository(this);
+            UserInvites = new UserInvitesRepository(this);
             UserRoles = new UserRolesRepository(this);
             Users = new UserRepository(this);
             VariableSets = new VariableSetRepository(this);
@@ -151,6 +152,7 @@ namespace Octopus.Client
         public ITeamsRepository Teams { get; }
         public ITenantRepository Tenants { get; }
         public ITenantVariablesRepository TenantVariables { get; }
+        public IUserInvitesRepository UserInvites { get; }
         public IUserRepository Users { get; }
         public IUserRolesRepository UserRoles { get; }
         public IVariableSetRepository VariableSets { get; }

@@ -40,6 +40,7 @@ namespace Octopus.Client
         ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }
         ITenantVariablesRepository TenantVariables { get; }
+        IUserInvitesRepository UserInvites { get; }
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }
         IWorkerRepository Workers { get; }
