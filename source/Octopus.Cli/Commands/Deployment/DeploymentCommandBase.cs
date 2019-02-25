@@ -17,6 +17,7 @@ namespace Octopus.Cli.Commands.Deployment
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {
+        private const char Seperator = '/'; 
         readonly VariableDictionary variables = new VariableDictionary();
         protected IReadOnlyList<DeploymentResource> deployments;
         protected List<DeploymentPromotionTarget> promotionTargets;
@@ -81,11 +82,49 @@ namespace Octopus.Cli.Commands.Deployment
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
-
             if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+            /*
+             * A create release operation can also optionally deploy the release, however any invalid options that
+             * are specific only to the deployment will fail after the release has been created. This can leave
+             * a deployment in a half finished state, so this validation ensures that the input relating to the
+             * deployment is valid so missing or incorrect input doesn't stop half way through.
+             */
+            
+            // Make sure the tags are valid
+            foreach (var tenantTag in TenantTags)
+            {
+                // Verify the format of the tag
+                var parts = tenantTag.Split(Seperator);
+                if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
+                {
+                    throw new CommandException(
+                        $"Canonical Tag Name expected in the format of `TagSetName{Seperator}TagName`");
+                }
+                // Verify the presence of the tag
+                var tagSets = await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false);
+                if (tagSets?.Tags?.All(tag => parts[1] != tag.Name) ?? true)
+                {
+                    throw new CommandException(
+                        $"Unable to find matching tag from canonical tag name `{tenantTag}`");
+                }
+            }
 
-            base.ValidateParameters();
+            // Make sure the tenants are valid
+            foreach (var tenantName in Tenants)
+            {
+                var tenant = await Repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
+                if (tenant == null)
+                {
+                    throw new CommandException(
+                        $"Could not find the tenant {tenantName} on the Octopus Server");
+                }
+            }   
+            
+            // Make sure the machines are valid
+            await GetSpecificMachines();
+
+            await base.ValidateParameters();
         }
 
         DateTimeOffset? ParseDeployAt(string v)

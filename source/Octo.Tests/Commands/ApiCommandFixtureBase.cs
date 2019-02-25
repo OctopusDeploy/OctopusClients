@@ -54,6 +54,9 @@ namespace Octo.Tests.Commands
             Repository.HasLink(Arg.Is<string>(arg => arg != "Spaces")).Returns(async call => (await Repository.LoadRootDocument()).HasLink(call.Arg<string>()));
             Repository.Link(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).Link(call.Arg<string>()));
 
+            Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
+                .Returns(new List<MachineResource>());
+            
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
             RepositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();
