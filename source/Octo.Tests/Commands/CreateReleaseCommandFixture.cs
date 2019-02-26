@@ -46,7 +46,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--tenantTag=bad");
-            CommandLineArgs.Add("--deployto=Env 1");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             Assert.ThrowsAsync<CommandException>(async delegate
             {
                 await createReleaseCommand.Execute(CommandLineArgs.ToArray());
@@ -63,7 +63,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--tenant=bad");
-            CommandLineArgs.Add("--deployto=Env 1");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             Assert.ThrowsAsync<CommandException>(async delegate
             {
                 await createReleaseCommand.Execute(CommandLineArgs.ToArray());
@@ -80,7 +80,7 @@ namespace Octo.Tests.Commands
             CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--specificmachines=bad");
-            CommandLineArgs.Add("--deployto=Env 1");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             Assert.ThrowsAsync<CommandException>(async delegate
             {
                 await createReleaseCommand.Execute(CommandLineArgs.ToArray());
