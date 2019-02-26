@@ -88,7 +88,11 @@ namespace Octopus.Cli.Commands.Deployment
              * A create release operation can also optionally deploy the release, however any invalid options that
              * are specific only to the deployment will fail after the release has been created. This can leave
              * a deployment in a half finished state, so this validation ensures that the input relating to the
-             * deployment is valid so missing or incorrect input doesn't stop half way through.
+             * deployment is valid so missing or incorrect input doesn't stop stop the deployment after a release is
+             * created.
+             *
+             * Note that certain validations still need to be done on the server. Permissions and lifecycle progression
+             * still rely on server side validation.
              */
             
             // Make sure the tags are valid
