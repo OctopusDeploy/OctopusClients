@@ -11,7 +11,6 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
 using Octostache;
-using Serilog;
 
 namespace Octopus.Cli.Commands.Deployment
 {
@@ -95,6 +94,8 @@ namespace Octopus.Cli.Commands.Deployment
              * still rely on server side validation.
              */
             
+            // We might query the same tagset repeatedly, so store old queries here
+            var tagSetResources = new Dictionary<string, TagSetResource>();
             // Make sure the tags are valid
             foreach (var tenantTag in TenantTags)
             {
@@ -105,9 +106,15 @@ namespace Octopus.Cli.Commands.Deployment
                     throw new CommandException(
                         $"Canonical Tag Name expected in the format of `TagSetName{Separator}TagName`");
                 }
+                
+                // Query the api if the results were not previously found 
+                if (!tagSetResources.ContainsKey(parts[0]))
+                {
+                    tagSetResources.Add(parts[0], await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false));
+                } 
+
                 // Verify the presence of the tag
-                var tagSets = await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false);
-                if (tagSets?.Tags?.All(tag => parts[1] != tag.Name) ?? true)
+                if (tagSetResources[parts[0]]?.Tags?.All(tag => parts[1] != tag.Name) ?? true)
                 {
                     throw new CommandException(
                         $"Unable to find matching tag from canonical tag name `{tenantTag}`");
