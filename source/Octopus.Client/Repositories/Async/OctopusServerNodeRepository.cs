@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IOctopusServerNodeRepository : IModify<OctopusServerNodeResource>, IDelete<OctopusServerNodeResource>, IGet<OctopusServerNodeResource>, IFindByName<OctopusServerNodeResource>
     {
         Task<OctopusServerNodeDetailsResource> Details(OctopusServerNodeResource node);
+        Task<OctopusServerClusterSummaryResource> Summary();
     }
 
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
@@ -23,6 +24,11 @@ namespace Octopus.Client.Repositories.Async
         public async Task<OctopusServerNodeDetailsResource> Details(OctopusServerNodeResource node)
         {
             return await repository.Client.Get<OctopusServerNodeDetailsResource>(node.Link("Details"));
+        }
+
+        public async Task<OctopusServerClusterSummaryResource> Summary()
+        {
+            return await repository.Client.Get<OctopusServerClusterSummaryResource>(await repository.Link("OctopusServerClusterSummary").ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 }
