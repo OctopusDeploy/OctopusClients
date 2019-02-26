@@ -2708,6 +2708,11 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
   }
+  LeadershipRank
+  {
+      Follower = 0
+      Leader = 1
+  }
   class Library
   {
     .ctor(String)
@@ -3115,7 +3120,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> LastSeen { get; set; }
     Int32 MaxConcurrentTasks { get; set; }
     String Name { get; set; }
-    String Rank { get; set; }
+    Octopus.Client.Model.LeadershipRank Rank { get; set; }
     Int32 RunningTaskCount { get; set; }
   }
   PackageAcquisitionLocation
