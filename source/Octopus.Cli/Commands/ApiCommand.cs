@@ -137,6 +137,7 @@ namespace Octopus.Cli.Commands
 #endif
             
             commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default || enableDebugging;
+            CliSerilogLogProvider.PrintMessages = commandOutputProvider.PrintMessages;
             commandOutputProvider.PrintHeader();
 
             var client = await clientFactory.CreateAsyncClient(endpoint, clientOptions).ConfigureAwait(false);
@@ -202,7 +203,10 @@ namespace Octopus.Cli.Commands
             var user = await Repository.Users.GetCurrent().ConfigureAwait(false);
             if (user != null)
             {
-                commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
+                if (string.IsNullOrEmpty(user.EmailAddress))
+                    commandOutputProvider.Debug("Authenticated as: {Name:l} {IsService:l}", user.DisplayName, user.IsService ? "(a service account)" : "");
+                else
+                    commandOutputProvider.Debug("Authenticated as: {Name:l} <{EmailAddress:l}> {IsService:l}", user.DisplayName, user.EmailAddress, user.IsService ? "(a service account)" : "");
             }
 
             await ValidateParameters().ConfigureAwait(false);
