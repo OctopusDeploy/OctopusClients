@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
         public int MaxConcurrentTasks { get; set; }
         public bool IsInMaintenanceMode { get; set; }
         public DateTimeOffset? LastSeen { get; set; }
-        public string Rank { get; set; }
+        public LeadershipRank Rank { get; set; }
         public bool IsLeader { get; set; }
         public bool IsOffline { get; set; }
         public int RunningTaskCount { get;set; }
