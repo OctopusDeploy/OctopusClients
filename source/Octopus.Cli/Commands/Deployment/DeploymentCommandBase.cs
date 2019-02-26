@@ -17,7 +17,7 @@ namespace Octopus.Cli.Commands.Deployment
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {
-        private const char Seperator = '/'; 
+        private const char Separator = '/'; 
         readonly VariableDictionary variables = new VariableDictionary();
         protected IReadOnlyList<DeploymentResource> deployments;
         protected List<DeploymentPromotionTarget> promotionTargets;
@@ -99,11 +99,11 @@ namespace Octopus.Cli.Commands.Deployment
             foreach (var tenantTag in TenantTags)
             {
                 // Verify the format of the tag
-                var parts = tenantTag.Split(Seperator);
+                var parts = tenantTag.Split(Separator);
                 if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
                 {
                     throw new CommandException(
-                        $"Canonical Tag Name expected in the format of `TagSetName{Seperator}TagName`");
+                        $"Canonical Tag Name expected in the format of `TagSetName{Separator}TagName`");
                 }
                 // Verify the presence of the tag
                 var tagSets = await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false);
