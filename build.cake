@@ -4,13 +4,14 @@
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 #tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
-#addin "nuget:?package=Cake.Incubator&version=3.0.0"
+#addin "nuget:?package=Cake.Incubator&version=4.0.0"
 
 using SharpCompress;
 using SharpCompress.Common;
 using SharpCompress.Writer;
 using System.Xml;
 using Cake.Incubator;
+using Cake.Incubator.LoggingExtensions;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
