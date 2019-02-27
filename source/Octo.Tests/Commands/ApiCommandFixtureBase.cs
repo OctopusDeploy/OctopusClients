@@ -15,6 +15,7 @@ namespace Octo.Tests.Commands
     public abstract class ApiCommandFixtureBase
     {       
         protected const string ValidEnvironment = "Test Environment";
+        protected const string ValidProject = "Test Project";
         private static string _previousCurrentDirectory;
 
         [OneTimeSetUp]
@@ -57,6 +58,8 @@ namespace Octo.Tests.Commands
             
             Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
                 .Returns(new List<MachineResource>());
+            Repository.Projects.FindByName(Arg.Is(ValidProject))
+                .Returns(new ProjectResource(){Name = ValidProject});
             Repository.Environments.FindByNames(
                     Arg.Is<List<string>>(arg => arg.TrueForAll(arg2 => arg2 == ValidEnvironment)),
                     Arg.Any<string>(),
