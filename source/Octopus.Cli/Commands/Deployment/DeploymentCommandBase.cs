@@ -124,11 +124,14 @@ namespace Octopus.Cli.Commands.Deployment
             // Make sure the tenants are valid
             foreach (var tenantName in Tenants)
             {
-                var tenant = await Repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
-                if (tenant == null)
+                if (tenantName != "*")
                 {
-                    throw new CommandException(
-                        $"Could not find the tenant {tenantName} on the Octopus Server");
+                    var tenant = await Repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
+                    if (tenant == null)
+                    {
+                        throw new CommandException(
+                            $"Could not find the tenant {tenantName} on the Octopus Server");
+                    }
                 }
             } 
             
