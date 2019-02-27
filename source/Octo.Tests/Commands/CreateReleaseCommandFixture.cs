@@ -13,8 +13,6 @@ namespace Octo.Tests.Commands
 {
     public class CreateReleaseCommandFixture : ApiCommandFixtureBase
     {
-        const string ValidEnvironment = "Test Environment";
-        
         CreateReleaseCommand createReleaseCommand;
         IPackageVersionResolver versionResolver;
         IReleasePlanBuilder releasePlanBuilder;
@@ -23,20 +21,7 @@ namespace Octo.Tests.Commands
         public void SetUp()
         {
             versionResolver = Substitute.For<IPackageVersionResolver>();
-            releasePlanBuilder = Substitute.For<IReleasePlanBuilder>();
-            
-            Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
-                .Returns(new List<MachineResource>());
-            Repository.Environments.FindByNames(
-                    Arg.Is<List<string>>(arg => arg.TrueForAll(arg2 => arg2 == ValidEnvironment)),
-                    Arg.Any<string>(),
-                    Arg.Any<object>())
-                .Returns(new List<EnvironmentResource>() {new EnvironmentResource() {Name = ValidEnvironment}});
-            Repository.Environments.FindByNames(
-                    Arg.Is<List<string>>(arg => arg.TrueForAll(arg2 => arg2 != ValidEnvironment)), 
-                    Arg.Any<string>(), 
-                    Arg.Any<object>())
-                .Returns(new List<EnvironmentResource>());
+            releasePlanBuilder = Substitute.For<IReleasePlanBuilder>();           
         }
 
         [Test]
