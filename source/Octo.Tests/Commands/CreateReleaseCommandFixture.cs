@@ -41,7 +41,7 @@ namespace Octo.Tests.Commands
             
             CommandLineArgs.Add("--server=https://test-server-url/api/");
             CommandLineArgs.Add("--apikey=API-test");
-            CommandLineArgs.Add($"--project={ValidProject}");
+            CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--tenantTag=bad");
             CommandLineArgs.Add($"--deployto={ValidEnvironment}");
@@ -58,7 +58,7 @@ namespace Octo.Tests.Commands
             
             CommandLineArgs.Add("--server=https://test-server-url/api/");
             CommandLineArgs.Add("--apikey=API-test");
-            CommandLineArgs.Add($"--project={ValidProject}");
+            CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--tenant=bad");
             CommandLineArgs.Add($"--deployto={ValidEnvironment}");
@@ -75,7 +75,7 @@ namespace Octo.Tests.Commands
             
             CommandLineArgs.Add("--server=https://test-server-url/api/");
             CommandLineArgs.Add("--apikey=API-test");
-            CommandLineArgs.Add($"--project={ValidProject}");
+            CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--specificmachines=bad");
             CommandLineArgs.Add($"--deployto={ValidEnvironment}");
@@ -93,7 +93,7 @@ namespace Octo.Tests.Commands
             
             CommandLineArgs.Add("--server=https://test-server-url/api/");
             CommandLineArgs.Add("--apikey=API-test");
-            CommandLineArgs.Add($"--project={ValidProject}");
+            CommandLineArgs.Add("--project=Test Project");
             CommandLineArgs.Add("--releaseNumber=1.0.0");
             CommandLineArgs.Add("--deployto=bad");
             Assert.ThrowsAsync<CommandException>(async delegate
