@@ -124,10 +124,10 @@ namespace Octo.Tests.Commands
             client.ForSystem().Returns(Repository);
 
             apiCommand = new DummyApiCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
-            var argsWithSpaceName = CommandLineArgs.Concat(new[] { "--space=notExisted" });
+            var argsWithSpaceName = CommandLineArgs.Concat(new[] { "--space=nonExistent" });
 
             Func<Task> action = async () => await apiCommand.Execute(argsWithSpaceName.ToArray()).ConfigureAwait(false);
-            action.ShouldThrow<CommandException>().WithMessage("Cannot find the space with name notExisted");
+            action.ShouldThrow<CommandException>().WithMessage("Cannot find the space with name 'nonExistent'. Please check the spelling and that the account has sufficient access to that space. Please use Configuration > Test Permissions to confirm.");
         }
     }
 }
