@@ -62,7 +62,7 @@ namespace Octopus.Cli.Commands.Releases
             if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus Server, or remove the --channel argument.");
 
-            await base.ValidateParameters();
+            base.ValidateParameters();
         }
 
         public async Task Request()

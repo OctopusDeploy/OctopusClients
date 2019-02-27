@@ -14,7 +14,6 @@ namespace Octo.Tests.Commands
 {
     public abstract class ApiCommandFixtureBase
     {
-        protected static string ValidEnvironment = "Test Environment";
         private static string _previousCurrentDirectory;
 
         [OneTimeSetUp]
@@ -55,19 +54,6 @@ namespace Octo.Tests.Commands
             Repository.HasLink(Arg.Is<string>(arg => arg != "Spaces")).Returns(async call => (await Repository.LoadRootDocument()).HasLink(call.Arg<string>()));
             Repository.Link(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).Link(call.Arg<string>()));
 
-            Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
-                .Returns(new List<MachineResource>());
-            Repository.Environments.FindByNames(
-                    Arg.Is(new List<string>() {ValidEnvironment}),
-                    Arg.Any<string>(),
-                    Arg.Any<object>())
-                .Returns(new List<EnvironmentResource>() {new EnvironmentResource() {Name = ValidEnvironment}});
-            Repository.Environments.FindByNames(
-                    Arg.Any<IEnumerable<string>>(), 
-                    Arg.Any<string>(), 
-                    Arg.Any<object>())
-                .Returns(new List<EnvironmentResource>());
-            
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
             RepositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();
