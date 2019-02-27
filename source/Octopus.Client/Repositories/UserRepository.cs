@@ -24,7 +24,9 @@ namespace Octopus.Client.Repositories
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(string addToTeamId);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(ReferenceCollection addToTeamIds);
     }
     
@@ -35,7 +37,7 @@ namespace Octopus.Client.Repositories
         public UserRepository(IOctopusRepository repository)
             : base(repository, "Users")
         {
-            invitations = new InvitationRepository(repository);
+            invitations = new LegacyInvitationRepository(repository);
         }
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
@@ -120,12 +122,14 @@ namespace Octopus.Client.Repositories
             Client.Delete(apiKey.Link("Self"));
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public InvitationResource Invite(string addToTeamId)
         {
             if (addToTeamId == null) throw new ArgumentNullException("addToTeamId");
             return Invite(new ReferenceCollection { addToTeamId });
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public InvitationResource Invite(ReferenceCollection addToTeamIds)
         {
             return invitations.Create(new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() });

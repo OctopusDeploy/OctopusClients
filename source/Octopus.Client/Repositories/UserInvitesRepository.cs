@@ -11,11 +11,8 @@ namespace Octopus.Client.Repositories
     
     class UserInvitesRepository : MixedScopeBaseRepository<InvitationResource>, IUserInvitesRepository
     {
-        readonly BasicRepository<InvitationResource> invitations;
-
         public UserInvitesRepository(IOctopusRepository octopusRepository) : base(octopusRepository, "Invitations")
         {
-            invitations = new InvitationRepository(octopusRepository);
         }
         
         public InvitationResource Invite(string addToTeamId)
@@ -28,7 +25,7 @@ namespace Octopus.Client.Repositories
         {
             var invitationResource = new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() };
             EnrichSpaceId(invitationResource);
-            return invitations.Create(invitationResource);
+            return Create(invitationResource);
         }
     }
 }
