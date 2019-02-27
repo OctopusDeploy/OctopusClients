@@ -11,12 +11,12 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
 using Octostache;
-using Serilog;
 
 namespace Octopus.Cli.Commands.Deployment
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {
+        private const char Separator = '/'; 
         readonly VariableDictionary variables = new VariableDictionary();
         protected IReadOnlyList<DeploymentResource> deployments;
         protected List<DeploymentPromotionTarget> promotionTargets;
@@ -81,11 +81,77 @@ namespace Octopus.Cli.Commands.Deployment
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
-
             if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+            /*
+             * A create release operation can also optionally deploy the release, however any invalid options that
+             * are specific only to the deployment will fail after the release has been created. This can leave
+             * a deployment in a half finished state, so this validation ensures that the input relating to the
+             * deployment is valid so missing or incorrect input doesn't stop stop the deployment after a release is
+             * created.
+             *
+             * Note that certain validations still need to be done on the server. Permissions and lifecycle progression
+             * still rely on server side validation.
+             */
+            
+            // We might query the same tagset repeatedly, so store old queries here
+            var tagSetResources = new Dictionary<string, TagSetResource>();
+            // Make sure the tags are valid
+            foreach (var tenantTag in TenantTags)
+            {
+                // Verify the format of the tag
+                var parts = tenantTag.Split(Separator);
+                if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
+                {
+                    throw new CommandException(
+                        $"Canonical Tag Name expected in the format of `TagSetName{Separator}TagName`");
+                }
+                
+                // Query the api if the results were not previously found 
+                if (!tagSetResources.ContainsKey(parts[0]))
+                {
+                    tagSetResources.Add(parts[0], await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false));
+                } 
 
-            base.ValidateParameters();
+                // Verify the presence of the tag
+                if (tagSetResources[parts[0]]?.Tags?.All(tag => parts[1] != tag.Name) ?? true)
+                {
+                    throw new CommandException(
+                        $"Unable to find matching tag from canonical tag name `{tenantTag}`");
+                }
+            }
+
+            // Make sure the tenants are valid
+            foreach (var tenantName in Tenants)
+            {
+                if (tenantName != "*")
+                {
+                    var tenant = await Repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
+                    if (tenant == null)
+                    {
+                        throw new CommandException(
+                            $"Could not find the tenant {tenantName} on the Octopus Server");
+                    }
+                }
+            } 
+            
+            // Make sure environment is valid
+            var environments = await Repository.Environments.FindByNames(DeployToEnvironmentNames).ConfigureAwait(false);
+            var missingEnvironment = DeployToEnvironmentNames
+                .Where(env => environments.All(env2 => env2.Name != env))
+                .ToList();
+            if (missingEnvironment.Count != 0)
+            {
+                throw new CommandException(
+                    $"The environment{(missingEnvironment.Count == 1 ? "" : "s")} {string.Join(", ", missingEnvironment)} " +
+                    $"do{(missingEnvironment.Count == 1 ? "es" : "")} not exist or {(missingEnvironment.Count == 1 ? "is" : "are")} misspelled");
+            }
+            
+            
+            // Make sure the machines are valid
+            await GetSpecificMachines();
+
+            await base.ValidateParameters();
         }
 
         DateTimeOffset? ParseDeployAt(string v)
