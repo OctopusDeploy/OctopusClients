@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" />
     <PackageReference Include="Serilog.Sinks.TextWriter" Version="2.0.0" />
     <PackageReference Include="NSubstitute" Version="2.0.3" />
@@ -60,9 +64,7 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
-  <Target Name="WriteExpectedVersion"
-          BeforeTargets="BeforeBuild"
-          DependsOnTargets="PrepareForBuild">
+  <Target Name="WriteExpectedVersion" BeforeTargets="BeforeBuild" DependsOnTargets="PrepareForBuild">
     
     <PropertyGroup>
       <ExpectedVersionFileInIntermediateFolder>$(OurDir)ExpectedSdkVersion.txt</ExpectedVersionFileInIntermediateFolder>
@@ -73,14 +75,10 @@
       </ExistingVersionFileContent>
 
       <ShouldOverwriteVersionFile>false</ShouldOverwriteVersionFile>
-      <ShouldOverwriteVersionFile
-        Condition=" '$(ExistingVersionFileContent.Trim())' != '$(VersionFileContent.Trim())' ">true</ShouldOverwriteVersionFile>
+      <ShouldOverwriteVersionFile Condition=" '$(ExistingVersionFileContent.Trim())' != '$(VersionFileContent.Trim())' ">true</ShouldOverwriteVersionFile>
     </PropertyGroup>
     
-    <WriteLinesToFile File="$(ExpectedVersionFileInIntermediateFolder)"
-                      Lines="$(VersionFileContent)"
-                      Condition=" '$(ShouldOverwriteVersionFile)' == 'true' "
-                      Overwrite="true" />
+    <WriteLinesToFile File="$(ExpectedVersionFileInIntermediateFolder)" Lines="$(VersionFileContent)" Condition=" '$(ShouldOverwriteVersionFile)' == 'true' " Overwrite="true" />
 
     <ItemGroup>
       <Content Include="$(ExpectedVersionFileInIntermediateFolder)" CopyToOutputDirectory="PreserveNewest" />
