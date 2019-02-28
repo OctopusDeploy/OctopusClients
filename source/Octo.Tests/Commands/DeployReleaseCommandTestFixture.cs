@@ -110,6 +110,31 @@ namespace Octo.Tests.Commands
             Repository.Deployments.DidNotReceive().Create(Arg.Any<DeploymentResource>());
         }
 
+        [Test] public async Task ShouldValidateEnvironmentsUsingCaselessMatch()
+        {
+            const string targetEnvironment = "DevEnvironment";
+
+            CommandLineArgs.Add("--project=" + ProjectName);
+            CommandLineArgs.Add("--deploymenttimeout=00:00:01");
+            CommandLineArgs.Add($"--deployto={targetEnvironment.ToLower()}");
+            CommandLineArgs.Add("--version=latest");
+            CommandLineArgs.Add("--progress");
+            CommandLineArgs.Add("--cancelontimeout");
+
+            var environments = new List<EnvironmentResource> {new EnvironmentResource { Name = targetEnvironment}};
+            Repository.Environments.FindByNames(Arg.Any<IEnumerable<string>>()).Returns(environments);
+            Repository.Releases.GetTemplate(Arg.Any<ReleaseResource>()).Returns(new DeploymentTemplateResource
+                {PromoteTo = new List<DeploymentPromotionTarget>() {new DeploymentPromotionTarget{Name = targetEnvironment}}});
+            Repository.Releases.GetPreview(Arg.Any<DeploymentPromotionTarget>())
+                .Returns(new DeploymentPreviewResource {StepsToExecute = new List<DeploymentTemplateStep>()});
+            Repository.Tasks.Get(Arg.Any<string>())
+                .Returns(Task.FromResult(new TaskResource {State = TaskState.Success}));
+
+            await deployReleaseCommand.Execute(CommandLineArgs.ToArray());
+            
+            await Repository.Deployments.Received(1).Create(Arg.Any<DeploymentResource>());
+        }
+
 
         [Test]
         public void ShouldTryLoadTenant()

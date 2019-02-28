@@ -138,7 +138,7 @@ namespace Octopus.Cli.Commands.Deployment
             // Make sure environment is valid
             var environments = await Repository.Environments.FindByNames(DeployToEnvironmentNames).ConfigureAwait(false);
             var missingEnvironment = DeployToEnvironmentNames
-                .Where(env => environments.All(env2 => env2.Name != env))
+                .Where(env => environments.All(env2 => !env2.Name.Equals(env, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
             if (missingEnvironment.Count != 0)
             {
