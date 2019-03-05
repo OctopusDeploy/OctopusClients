@@ -30,6 +30,6 @@ namespace Octopus.Client.Model
         public string ReleaseNotes { get; set; }
         public string FileExtension { get; set; }
 
-        public OctopusPackageMetadata PackageMetadata { get; set; }
+        public OctopusPackageMetadataGetResource PackageMetadata { get; set; }
     }
 }
