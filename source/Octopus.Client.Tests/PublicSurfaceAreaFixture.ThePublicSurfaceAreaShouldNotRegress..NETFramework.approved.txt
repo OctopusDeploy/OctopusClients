@@ -1903,6 +1903,7 @@ Octopus.Client.Model
       Pkcs12 = 0
       Der = 1
       Pem = 2
+      Unknown = 3
   }
   class CertificateResource
     Octopus.Client.Extensibility.IResource
