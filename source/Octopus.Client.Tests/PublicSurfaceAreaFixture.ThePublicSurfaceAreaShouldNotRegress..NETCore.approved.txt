@@ -3177,12 +3177,12 @@ Octopus.Client.Model
     String NuGetFeedId { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata PackageMetadata { get; set; }
     String Published { get; set; }
     String ReleaseNotes { get; set; }
     String Summary { get; set; }
     String Title { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }
   }
   class PackageSignatureResource
   {
