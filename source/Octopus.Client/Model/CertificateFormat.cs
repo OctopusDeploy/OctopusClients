@@ -4,6 +4,7 @@
     {
         Pkcs12,
         Der,
-        Pem
+        Pem,
+        Unknown
     }
 }
