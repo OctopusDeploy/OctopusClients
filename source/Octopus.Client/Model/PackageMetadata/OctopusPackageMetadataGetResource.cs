@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.PackageMetadata
         public string PackageId { get; set; }
         public string Version { get; set; }
 
-        public string BuildServerType { get; set; }
+        public string BuildEnvironment { get; set; }
         public string BuildNumber { get; set; }
         public string BuildLink { get; set; }
         public string VcsRoot { get; set; }

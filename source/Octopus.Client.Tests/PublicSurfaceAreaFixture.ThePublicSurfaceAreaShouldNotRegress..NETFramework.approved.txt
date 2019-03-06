@@ -5245,9 +5245,9 @@ Octopus.Client.Model.PackageMetadata
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String BuildEnvironment { get; set; }
     String BuildLink { get; set; }
     String BuildNumber { get; set; }
-    String BuildServerType { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsRoot { get; set; }

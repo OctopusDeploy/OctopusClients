@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Model.PackageMetadata;
+﻿using System;
+using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Repositories
 {
@@ -19,6 +20,11 @@ namespace Octopus.Client.Repositories
 
         public OctopusPackageMetadataGetResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
         {
+            if (string.IsNullOrWhiteSpace(packageId))
+                throw new ArgumentException("A package Id must be supplied", nameof(packageId));
+            if (string.IsNullOrWhiteSpace(version))
+                throw new ArgumentException("A version must be supplied", nameof(version));
+                    
             var resource = new OctopusPackageMetadataPostResource
             {
                 PackageId = packageId,
