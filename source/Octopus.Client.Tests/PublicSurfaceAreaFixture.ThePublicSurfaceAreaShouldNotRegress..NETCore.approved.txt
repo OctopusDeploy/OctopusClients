@@ -5210,9 +5210,9 @@ Octopus.Client.Model.PackageMetadata
   class OctopusPackageMetadata
   {
     .ctor()
+    String BuildEnvironment { get; set; }
     String BuildLink { get; set; }
     String BuildNumber { get; set; }
-    String BuildServerType { get; set; }
     String IssueTrackerId { get; set; }
     String VcsRoot { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }

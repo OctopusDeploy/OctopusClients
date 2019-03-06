@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.PackageMetadata
     /// </summary>
     public class OctopusPackageMetadata
     {
-        public string BuildServerType { get; set; }
+        public string BuildEnvironment { get; set; }
         public string IssueTrackerId { get; set; }
         public string BuildNumber { get; set; }
         public string BuildLink { get; set; }
