@@ -9,6 +9,7 @@ namespace Octopus.Client
         ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
         IUserPermissionsRepository UserPermissions { get; }
+        IUserInvitesRepository UserInvites { get; }
 
         /// <summary>
         /// The client over which the repository is run.

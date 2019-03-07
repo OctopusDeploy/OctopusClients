@@ -11,6 +11,7 @@ namespace Octopus.Client
         IScopedUserRoleRepository ScopedUserRoles { get; }
         IUserPermissionsRepository UserPermissions { get; }
         ICommunityActionTemplateRepository CommunityActionTemplates { get; }
+        IUserInvitesRepository UserInvites { get; }
 
         /// <summary>
         /// The client over which the repository is run.

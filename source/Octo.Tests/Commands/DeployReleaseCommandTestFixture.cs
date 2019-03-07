@@ -27,7 +27,7 @@ namespace Octo.Tests.Commands
             var project = new ProjectResource();
             var release = new ReleaseResource { Version = "1.0.0" };
             var releases = new ResourceCollection<ReleaseResource>(new[] { release }, new LinkCollection());
-            var deploymentPromotionTarget = new DeploymentPromotionTarget { Name = "TestEnvironment", Id = "Env-1" };
+            var deploymentPromotionTarget = new DeploymentPromotionTarget { Name = ValidEnvironment, Id = "Env-1" };
             var promotionTargets = new List<DeploymentPromotionTarget> { deploymentPromotionTarget };
             var tenantPromotionTarget1 = new DeploymentPromomotionTenant() { Id = "Tenant-1", PromoteTo = promotionTargets };
             var tenantPromotionTarget2 = new DeploymentPromomotionTenant() { Id = "Tenant-2", PromoteTo = new List<DeploymentPromotionTarget>() };
@@ -42,6 +42,12 @@ namespace Octo.Tests.Commands
             Repository.Releases.GetTemplate(release).Returns(deploymentTemplate);
             Repository.Deployments.Create(Arg.Any<DeploymentResource>()).Returns(deployment);
             Repository.Tasks.Get(deployment.TaskId).Returns(taskResource);
+            Repository.Tenants.Get(Arg.Is<string[]>(arg => arg.All(arg2 => arg2 == "Tenant-1" || arg2 == "Tenant-2")))
+                .Returns(new List<TenantResource>()
+                {
+                    new TenantResource() {Id = "Tenant-1"},
+                    new TenantResource() {Id = "Tenant-2"},
+                });
         }
 
         [Test]
@@ -53,7 +59,7 @@ namespace Octo.Tests.Commands
 
             CommandLineArgs.Add("--project=" + ProjectName);
             CommandLineArgs.Add("--deploymenttimeout=00:00:01");
-            CommandLineArgs.Add("--deployto=TestEnvironment");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             CommandLineArgs.Add("--version=latest");
             CommandLineArgs.Add("--progress");
             CommandLineArgs.Add("--cancelontimeout");
@@ -73,7 +79,7 @@ namespace Octo.Tests.Commands
 
             CommandLineArgs.Add("--project=" + ProjectName);
             CommandLineArgs.Add("--deploymenttimeout=00:00:01");
-            CommandLineArgs.Add("--deployto=TestEnvironment");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             CommandLineArgs.Add("--version=latest");
             CommandLineArgs.Add("--progress");
 
@@ -104,6 +110,31 @@ namespace Octo.Tests.Commands
             Repository.Deployments.DidNotReceive().Create(Arg.Any<DeploymentResource>());
         }
 
+        [Test] public async Task ShouldValidateEnvironmentsUsingCaselessMatch()
+        {
+            const string targetEnvironment = "DevEnvironment";
+
+            CommandLineArgs.Add("--project=" + ProjectName);
+            CommandLineArgs.Add("--deploymenttimeout=00:00:01");
+            CommandLineArgs.Add($"--deployto={targetEnvironment.ToLower()}");
+            CommandLineArgs.Add("--version=latest");
+            CommandLineArgs.Add("--progress");
+            CommandLineArgs.Add("--cancelontimeout");
+
+            var environments = new List<EnvironmentResource> {new EnvironmentResource { Name = targetEnvironment}};
+            Repository.Environments.FindByNames(Arg.Any<IEnumerable<string>>()).Returns(environments);
+            Repository.Releases.GetTemplate(Arg.Any<ReleaseResource>()).Returns(new DeploymentTemplateResource
+                {PromoteTo = new List<DeploymentPromotionTarget>() {new DeploymentPromotionTarget{Name = targetEnvironment}}});
+            Repository.Releases.GetPreview(Arg.Any<DeploymentPromotionTarget>())
+                .Returns(new DeploymentPreviewResource {StepsToExecute = new List<DeploymentTemplateStep>()});
+            Repository.Tasks.Get(Arg.Any<string>())
+                .Returns(Task.FromResult(new TaskResource {State = TaskState.Success}));
+
+            await deployReleaseCommand.Execute(CommandLineArgs.ToArray());
+            
+            await Repository.Deployments.Received(1).Create(Arg.Any<DeploymentResource>());
+        }
+
 
         [Test]
         public void ShouldTryLoadTenant()
@@ -116,7 +147,7 @@ namespace Octo.Tests.Commands
 
             CommandLineArgs.Add("--project=" + ProjectName);
             CommandLineArgs.Add("--deploymenttimeout=00:00:01");
-            CommandLineArgs.Add("--deployto=TestEnvironment");
+            CommandLineArgs.Add($"--deployto={ValidEnvironment}");
             CommandLineArgs.Add("--tenant=*");
             CommandLineArgs.Add("--version=latest");
             CommandLineArgs.Add("--progress");

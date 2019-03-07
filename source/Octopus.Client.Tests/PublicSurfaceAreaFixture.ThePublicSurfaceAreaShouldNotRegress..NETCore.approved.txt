@@ -102,6 +102,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Task<Boolean> HasLink(String)
     Task<String> Link(String)
@@ -114,6 +115,7 @@ Octopus.Client
     Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Boolean HasLink(String)
     String Link(String)
@@ -324,6 +326,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
@@ -445,6 +448,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
@@ -1890,6 +1894,7 @@ Octopus.Client.Model
       Pkcs12 = 0
       Der = 1
       Pem = 2
+      Unknown = 3
   }
   class CertificateResource
     Octopus.Client.Extensibility.IResource
@@ -2698,12 +2703,14 @@ Octopus.Client.Model
   class InvitationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection AddToTeamIds { get; set; }
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
+    String SpaceId { get; set; }
   }
   interface IVariableTemplateContainer
   {
@@ -2722,6 +2729,11 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
+  }
+  LeadershipRank
+  {
+      Follower = 0
+      Leader = 1
   }
   class Library
   {
@@ -3093,6 +3105,12 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
   }
+  class OctopusServerClusterSummaryResource
+  {
+    .ctor()
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.OctopusServerNodeSummaryResource[] Nodes { get; set; }
+  }
   class OctopusServerNodeDetailsResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3109,11 +3127,23 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean IsInMaintenanceMode { get; set; }
-    Boolean IsOffline { get; set; }
-    String LastSeen { get; set; }
     Int32 MaxConcurrentTasks { get; set; }
     String Name { get; set; }
-    String Rank { get; set; }
+  }
+  class OctopusServerNodeSummaryResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean IsInMaintenanceMode { get; set; }
+    Boolean IsLeader { get; set; }
+    Boolean IsOffline { get; set; }
+    Nullable<DateTimeOffset> LastSeen { get; set; }
+    Int32 MaxConcurrentTasks { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.LeadershipRank Rank { get; set; }
+    Int32 RunningTaskCount { get; set; }
   }
   PackageAcquisitionLocation
   {
@@ -5854,6 +5884,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<OctopusServerNodeResource>
   {
     Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
+    Octopus.Client.Model.OctopusServerClusterSummaryResource Summary()
   }
   interface IPackageMetadataRepository
   {
@@ -6062,6 +6093,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<TenantVariableResource>
   {
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
+  }
+  interface IUserInvitesRepository
+  {
+    Octopus.Client.Model.InvitationResource Invite(String)
+    Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
   }
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.ICanExtendSpaceContext<IUserPermissionsRepository>
@@ -6437,6 +6473,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<OctopusServerNodeResource>
   {
     Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
+    Task<OctopusServerClusterSummaryResource> Summary()
   }
   interface IPackageMetadataRepository
   {
@@ -6646,6 +6683,11 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
+  }
+  interface IUserInvitesRepository
+  {
+    Task<InvitationResource> Invite(String)
+    Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
   }
   interface IUserPermissionsRepository
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IUserPermissionsRepository>
