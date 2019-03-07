@@ -235,6 +235,8 @@ namespace Octopus.Client.Model
         
         [Description("Delete spaces")] SpaceDelete,
         
-        [Description("Create spaces")] SpaceCreate
+        [Description("Create spaces")] SpaceCreate,
+
+        [Description("Create/update custom package metadata")] PackageMetadataPush
     }
 }
