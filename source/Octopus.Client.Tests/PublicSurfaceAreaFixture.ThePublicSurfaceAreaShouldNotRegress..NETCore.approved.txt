@@ -3342,6 +3342,7 @@ Octopus.Client.Model
       SpaceView = 109
       SpaceDelete = 110
       SpaceCreate = 111
+      PackageMetadataPush = 112
   }
   class PermissionDescription
   {
