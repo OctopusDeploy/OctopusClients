@@ -12,6 +12,8 @@ namespace Octopus.Client.Model.PackageMetadata
         public string BuildNumber { get; set; }
         public string BuildLink { get; set; }
         public string VcsRoot { get; set; }
+        public string VcsCommitNumber { get; set; }
+
         public WorkItem[] WorkItems { get; set; }
     }
 }
