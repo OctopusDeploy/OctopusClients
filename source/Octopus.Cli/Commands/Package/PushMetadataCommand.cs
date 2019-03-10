@@ -39,7 +39,7 @@ namespace Octopus.Cli.Commands.Package
             var fileContent = FileSystem.ReadAllText(MetadataFile);
             var octopusPackageMetadata = JsonConvert.DeserializeObject<OctopusPackageMetadata>(fileContent);
 
-            resultResource = await Repository.PackageMetadataRepository.Push(PackageId, Version, octopusPackageMetadata);
+            resultResource = await Repository.PackageMetadataRepository.Push(PackageId, Version, octopusPackageMetadata, ReplaceExisting);
         }
 
         public void PrintDefaultOutput()

@@ -6479,7 +6479,7 @@ Octopus.Client.Repositories.Async
   interface IPackageMetadataRepository
   {
     Task<OctopusPackageMetadataGetResource> Get(String)
-    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
+    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   interface IPaginate`1
   {
@@ -6766,7 +6766,7 @@ Octopus.Client.Repositories.Async
   {
     .ctor(Octopus.Client.IOctopusAsyncRepository)
     Task<OctopusPackageMetadataGetResource> Get(String)
-    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
+    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable

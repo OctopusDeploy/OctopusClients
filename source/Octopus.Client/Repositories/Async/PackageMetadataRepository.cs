@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
             return await repository.Client.Get<OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], new { id });
         }
 
-        public async Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
+        public async Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting)
         {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
@@ -34,13 +34,13 @@ namespace Octopus.Client.Repositories.Async
             };
 
             var rootDocument = await repository.Client.Repository.LoadRootDocument();
-            return await repository.Client.Post<OctopusPackageMetadataPostResource, OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], resource);
+            return await repository.Client.Post<OctopusPackageMetadataPostResource, OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], resource, new { replace = replaceExisting });
         }
     }
 
     public interface IPackageMetadataRepository
     {
         Task<OctopusPackageMetadataGetResource> Get(string id);
-        Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata);
+        Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting);
     }
 }
