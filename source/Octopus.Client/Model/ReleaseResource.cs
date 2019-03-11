@@ -4,6 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model.IssueTrackers;
+using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Model
 {
@@ -51,6 +52,6 @@ namespace Octopus.Client.Model
 		
         public string SpaceId { get; set; }
 
-        public List<WorkItem> WorkItems { get; set; }
+        public List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
     }
 }

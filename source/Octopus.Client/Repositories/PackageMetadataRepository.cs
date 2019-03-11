@@ -12,20 +12,20 @@ namespace Octopus.Client.Repositories
             this.repository = repository;
         }
 
-        public OctopusPackageMetadataGetResource Get(string id)
+        public OctopusPackageMetadataMappedResource Get(string id)
         {
             var rootDocument = repository.Client.Repository.LoadRootDocument();
-            return repository.Client.Get<OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], new { id });
+            return repository.Client.Get<OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], new { id });
         }
 
-        public OctopusPackageMetadataGetResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
+        public OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
         {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
                     
-            var resource = new OctopusPackageMetadataPostResource
+            var resource = new OctopusPackageMetadataVersionResource
             {
                 PackageId = packageId,
                 Version = version,
@@ -33,13 +33,13 @@ namespace Octopus.Client.Repositories
             };
 
             var rootDocument = repository.Client.Repository.LoadRootDocument();
-            return repository.Client.Post<OctopusPackageMetadataPostResource, OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], resource);
+            return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], resource);
         }
     }
 
     public interface IPackageMetadataRepository
     {
-        OctopusPackageMetadataGetResource Get(string id);
-        OctopusPackageMetadataGetResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata);
+        OctopusPackageMetadataMappedResource Get(string id);
+        OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata);
     }
 }

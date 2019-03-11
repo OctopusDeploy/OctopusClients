@@ -1,7 +1,7 @@
 ﻿
 namespace Octopus.Client.Model.PackageMetadata
 {
-    public class OctopusPackageMetadataPostResource : Resource
+    public class OctopusPackageMetadataVersionResource : Resource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }

@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
-using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
@@ -83,7 +82,6 @@ namespace Octopus.Client.Model
 		
         public string SpaceId { get; set; }
 
-        public string ReleaseNotes { get; set; }
-        public List<WorkItem> WorkItems { get; set; }
+        public List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
     }
 }

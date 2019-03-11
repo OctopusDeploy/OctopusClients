@@ -13,20 +13,20 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<OctopusPackageMetadataGetResource> Get(string id)
+        public async Task<OctopusPackageMetadataMappedResource> Get(string id)
         {
             var rootDocument = await repository.Client.Repository.LoadRootDocument();
-            return await repository.Client.Get<OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], new { id });
+            return await repository.Client.Get<OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], new { id });
         }
 
-        public async Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting)
+        public async Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting)
         {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
 
-            var resource = new OctopusPackageMetadataPostResource
+            var resource = new OctopusPackageMetadataVersionResource
             {
                 PackageId = packageId,
                 Version = version,
@@ -34,13 +34,13 @@ namespace Octopus.Client.Repositories.Async
             };
 
             var rootDocument = await repository.Client.Repository.LoadRootDocument();
-            return await repository.Client.Post<OctopusPackageMetadataPostResource, OctopusPackageMetadataGetResource>(rootDocument.Links["PackageMetadata"], resource, new { replace = replaceExisting });
+            return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], resource, new { replace = replaceExisting });
         }
     }
 
     public interface IPackageMetadataRepository
     {
-        Task<OctopusPackageMetadataGetResource> Get(string id);
-        Task<OctopusPackageMetadataGetResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting);
+        Task<OctopusPackageMetadataMappedResource> Get(string id);
+        Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting);
     }
 }

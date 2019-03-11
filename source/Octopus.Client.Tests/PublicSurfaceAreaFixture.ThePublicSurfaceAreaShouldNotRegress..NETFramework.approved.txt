@@ -2257,10 +2257,9 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.Forms.Form Form { get; set; }
-    String ReleaseNotes { get; set; }
+    List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
     List<DeploymentTemplateStep> StepsToExecute { get; set; }
     Boolean UseGuidedFailureModeByDefault { get; set; }
-    List<WorkItem> WorkItems { get; set; }
   }
   class DeploymentProcessResource
     Octopus.Client.Extensibility.IResource
@@ -2296,6 +2295,13 @@ Octopus.Client.Model
     .ctor()
     String Name { get; set; }
   }
+  class DeploymentReleaseNotes
+  {
+    .ctor()
+    String ReleaseNotes { get; set; }
+    String Version { get; set; }
+    List<WorkItemLink> WorkItems { get; set; }
+  }
   class DeploymentResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2318,14 +2324,13 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ReleaseId { get; set; }
-    String ReleaseNotes { get; set; }
+    List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
     Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
     String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
     String TaskId { get; set; }
     String TenantId { get; set; }
     Boolean UseGuidedFailure { get; set; }
-    List<WorkItem> WorkItems { get; set; }
   }
   DeploymentStepCondition
   {
@@ -3223,7 +3228,7 @@ Octopus.Client.Model
     String NuGetFeedId { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataGetResource PackageMetadata { get; set; }
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource PackageMetadata { get; set; }
     String Published { get; set; }
     String ReleaseNotes { get; set; }
     String Summary { get; set; }
@@ -3475,7 +3480,6 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
-    Boolean AppendWorkItemDetailsToReleaseNotes { get; set; }
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }
@@ -3630,13 +3634,13 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     String ChannelId { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
+    List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
-    List<WorkItem> WorkItems { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -5267,11 +5271,12 @@ Octopus.Client.Model.PackageMetadata
     String BuildLink { get; set; }
     String BuildNumber { get; set; }
     String IssueTrackerId { get; set; }
+    String ReleaseNotes { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsRoot { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }
   }
-  class OctopusPackageMetadataGetResource
+  class OctopusPackageMetadataMappedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -5282,12 +5287,13 @@ Octopus.Client.Model.PackageMetadata
     String BuildNumber { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
+    String ReleaseNotes { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsRoot { get; set; }
     String Version { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
-  class OctopusPackageMetadataPostResource
+  class OctopusPackageMetadataVersionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -5911,8 +5917,8 @@ Octopus.Client.Repositories
   }
   interface IPackageMetadataRepository
   {
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataGetResource Get(String)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataGetResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
   }
   interface IPaginate`1
   {
@@ -6197,8 +6203,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPackageMetadataRepository
   {
     .ctor(Octopus.Client.IOctopusRepository)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataGetResource Get(String)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataGetResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
   }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
@@ -6500,8 +6506,8 @@ Octopus.Client.Repositories.Async
   }
   interface IPackageMetadataRepository
   {
-    Task<OctopusPackageMetadataGetResource> Get(String)
-    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
+    Task<OctopusPackageMetadataMappedResource> Get(String)
+    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   interface IPaginate`1
   {
@@ -6787,8 +6793,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPackageMetadataRepository
   {
     .ctor(Octopus.Client.IOctopusAsyncRepository)
-    Task<OctopusPackageMetadataGetResource> Get(String)
-    Task<OctopusPackageMetadataGetResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
+    Task<OctopusPackageMetadataMappedResource> Get(String)
+    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable

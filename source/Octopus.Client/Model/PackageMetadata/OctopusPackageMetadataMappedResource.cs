@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model.PackageMetadata
 {
-    public class OctopusPackageMetadataGetResource : Resource
+    public class OctopusPackageMetadataMappedResource : Resource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }
@@ -12,6 +12,8 @@ namespace Octopus.Client.Model.PackageMetadata
         public string BuildLink { get; set; }
         public string VcsRoot { get; set; }
         public string VcsCommitNumber { get; set; }
+
+        public string ReleaseNotes { get; set; }
 
         public string IssueTrackerName { get; set; }
         public WorkItemLink[] WorkItems { get; set; }

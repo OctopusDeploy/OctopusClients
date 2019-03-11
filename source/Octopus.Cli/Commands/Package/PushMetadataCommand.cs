@@ -12,7 +12,7 @@ namespace Octopus.Cli.Commands.Package
     [Command("push-metadata", Description = "Pushes package metadata to Octopus Server.")]
     public class PushMetadataCommand : ApiCommand, ISupportFormattedOutput
     {
-        private OctopusPackageMetadataGetResource resultResource;
+        private OctopusPackageMetadataMappedResource resultResource;
 
         public PushMetadataCommand(IOctopusAsyncRepositoryFactory repositoryFactory, IOctopusFileSystem fileSystem, IOctopusClientFactory clientFactory, ICommandOutputProvider commandOutputProvider)
             : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
