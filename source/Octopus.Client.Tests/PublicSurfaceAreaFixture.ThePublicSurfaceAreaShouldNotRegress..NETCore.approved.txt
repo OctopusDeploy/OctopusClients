@@ -5249,7 +5249,6 @@ Octopus.Client.Model.PackageMetadata
     String BuildLink { get; set; }
     String BuildNumber { get; set; }
     String IssueTrackerId { get; set; }
-    String ReleaseNotes { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsRoot { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }
@@ -5265,7 +5264,6 @@ Octopus.Client.Model.PackageMetadata
     String BuildNumber { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
-    String ReleaseNotes { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsRoot { get; set; }
     String Version { get; set; }
