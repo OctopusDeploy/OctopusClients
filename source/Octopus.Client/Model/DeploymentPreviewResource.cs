@@ -10,6 +10,6 @@ namespace Octopus.Client.Model
         public Form Form { get; set; }
         public bool UseGuidedFailureModeByDefault { get; set; }
 
-        public List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
+        public List<ReleaseChanges> ReleaseNotes { get; set; }
     }
 }

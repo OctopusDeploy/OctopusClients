@@ -3,7 +3,7 @@ using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentReleaseNotes
+    public class ReleaseChanges
     {
         public string Version { get; set; }
         public string ReleaseNotes { get; set; }

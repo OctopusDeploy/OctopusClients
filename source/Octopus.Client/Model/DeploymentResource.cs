@@ -82,6 +82,6 @@ namespace Octopus.Client.Model
 		
         public string SpaceId { get; set; }
 
-        public List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
+        public List<ReleaseChanges> Changes { get; set; }
     }
 }

@@ -2257,7 +2257,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.Forms.Form Form { get; set; }
-    List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
+    List<ReleaseChanges> ReleaseNotes { get; set; }
     List<DeploymentTemplateStep> StepsToExecute { get; set; }
     Boolean UseGuidedFailureModeByDefault { get; set; }
   }
@@ -2295,13 +2295,6 @@ Octopus.Client.Model
     .ctor()
     String Name { get; set; }
   }
-  class DeploymentReleaseNotes
-  {
-    .ctor()
-    String ReleaseNotes { get; set; }
-    String Version { get; set; }
-    List<WorkItemLink> WorkItems { get; set; }
-  }
   class DeploymentResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2309,6 +2302,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    List<ReleaseChanges> Changes { get; set; }
     String ChannelId { get; set; }
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
@@ -2324,7 +2318,6 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ReleaseId { get; set; }
-    List<DeploymentReleaseNotes> ReleaseNotes { get; set; }
     Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
     String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
@@ -3604,6 +3597,13 @@ Octopus.Client.Model
   {
     .ctor()
     String InvitationCode { get; set; }
+  }
+  class ReleaseChanges
+  {
+    .ctor()
+    String ReleaseNotes { get; set; }
+    String Version { get; set; }
+    List<WorkItemLink> WorkItems { get; set; }
   }
   class ReleaseCreationStrategyResource
   {
