@@ -176,7 +176,7 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        async Task<string> ResolveLink()
+        protected async Task<string> ResolveLink()
         {
             if (CollectionLinkName == null && getCollectionLinkName != null)
                 CollectionLinkName = await getCollectionLinkName(Repository).ConfigureAwait(false);

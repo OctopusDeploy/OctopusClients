@@ -170,7 +170,7 @@ namespace Octopus.Client.Repositories
             }
         }
 
-        string ResolveLink()
+        protected string ResolveLink()
         {
             if (CollectionLinkName == null && getCollectionLinkName != null)
                 CollectionLinkName = getCollectionLinkName(Repository);
