@@ -20,7 +20,30 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
+        
+        /// <summary>
+        /// Gets all the active tasks (optionally limited to pageSize)
+        /// </summary>
+        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
+        /// <returns></returns>
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);
+        
+        /// <summary>
+        /// Returns all active tasks (optionally limited to pageSize) along with a count of all tasks in each status
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<TaskResourceCollection> GetActiveWithSummary(int pageSize = int.MaxValue, int skip = 0);
+
+        /// <summary>
+        /// Returns all tasks (optionally limited to pageSize) along with a count of all tasks in each status
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<TaskResourceCollection> GetAllWithSummary(int pageSize = int.MaxValue, int skip = 0);
+        
         Task<string> GetRawOutputLog(TaskResource resource);
         Task<TaskTypeResource[]> GetTaskTypes();
         Task Rerun(TaskResource resource);
@@ -261,12 +284,13 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
-        /// <returns></returns>
         public Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
+
+        public async Task<TaskResourceCollection> GetActiveWithSummary(int pageSize = int.MaxValue, int skip = 0)
+            => await Client.Get<TaskResourceCollection>(await ResolveLink(), new {active = true, take = pageSize, skip});
+
+        public async Task<TaskResourceCollection> GetAllWithSummary(int pageSize = int.MaxValue, int skip = 0)
+            => await Client.Get<TaskResourceCollection>(await ResolveLink(), new {take = pageSize, skip});
 
         public ITaskRepository UsingContext(SpaceContext spaceContext)
         {
