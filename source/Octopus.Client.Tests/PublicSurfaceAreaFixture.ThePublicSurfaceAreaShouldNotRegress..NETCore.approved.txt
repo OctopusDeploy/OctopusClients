@@ -5888,7 +5888,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
-    Octopus.Client.Model.ReleaseResource Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Octopus.Client.Model.ReleaseResource SnapshotVariables(Octopus.Client.Model.ReleaseResource)
   }
   interface IResourceRepository
@@ -6468,7 +6467,6 @@ Octopus.Client.Repositories.Async
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
-    Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
   }
   interface IResourceRepository

@@ -25,7 +25,6 @@ namespace Octopus.Client.Repositories
         DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         ReleaseResource SnapshotVariables(ReleaseResource release);    
         ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false);
-        ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
     }
     
@@ -65,11 +64,6 @@ namespace Octopus.Client.Repositories
         public ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false)
         {
             return Client.Create(Repository.Link(CollectionLinkName), resource, new { ignoreChannelRules });
-        }
-
-        public ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false)
-        {
-            return Client.Update(resource.Links["Self"], resource, new { ignoreChannelRules });
         }
 
         public LifecycleProgressionResource GetProgression(ReleaseResource release)
