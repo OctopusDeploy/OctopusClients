@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<OctopusPackageMetadataMappedResource> Get(string id)
         {
-            var link = await repository.Client.Repository.Link("PackageMetadata");
+            var link = await repository.Link("PackageMetadata");
             return await repository.Client.Get<OctopusPackageMetadataMappedResource>(link, new { id });
         }
 
@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
                 OctopusPackageMetadata = octopusMetadata
             };
 
-            var link = await repository.Client.Repository.Link("PackageMetadata");
+            var link = await repository.Link("PackageMetadata");
             return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = replaceExisting });
         }
     }

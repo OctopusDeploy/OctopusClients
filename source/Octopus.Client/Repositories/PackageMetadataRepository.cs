@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
 
         public OctopusPackageMetadataMappedResource Get(string id)
         {
-            var link = repository.Client.Repository.Link("PackageMetadata");
+            var link = repository.Link("PackageMetadata");
             return repository.Client.Get<OctopusPackageMetadataMappedResource>(link, new { id });
         }
 
@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories
                 OctopusPackageMetadata = octopusMetadata,
             };
 
-            var link = repository.Client.Repository.Link("PackageMetadata");
+            var link = repository.Link("PackageMetadata");
             return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource);
         }
     }
