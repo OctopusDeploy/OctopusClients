@@ -3594,6 +3594,7 @@ Octopus.Client.Model
     .ctor(String, String)
     DateTimeOffset Assembled { get; set; }
     String ChannelId { get; set; }
+    Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectId { get; set; }
