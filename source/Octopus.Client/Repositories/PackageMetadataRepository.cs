@@ -14,8 +14,8 @@ namespace Octopus.Client.Repositories
 
         public OctopusPackageMetadataMappedResource Get(string id)
         {
-            var rootDocument = repository.Client.Repository.LoadRootDocument();
-            return repository.Client.Get<OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], new { id });
+            var link = repository.Client.Repository.Link("PackageMetadata");
+            return repository.Client.Get<OctopusPackageMetadataMappedResource>(link, new { id });
         }
 
         public OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
@@ -29,11 +29,11 @@ namespace Octopus.Client.Repositories
             {
                 PackageId = packageId,
                 Version = version,
-                OctopusPackageMetadata = octopusMetadata
+                OctopusPackageMetadata = octopusMetadata,
             };
 
-            var rootDocument = repository.Client.Repository.LoadRootDocument();
-            return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(rootDocument.Links["PackageMetadata"], resource);
+            var link = repository.Client.Repository.Link("PackageMetadata");
+            return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource);
         }
     }
 
