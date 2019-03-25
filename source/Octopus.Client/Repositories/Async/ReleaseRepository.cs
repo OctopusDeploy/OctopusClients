@@ -26,7 +26,6 @@ namespace Octopus.Client.Repositories.Async
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release);    
         Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false);
-        Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false);
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release);
     }
 
@@ -67,12 +66,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), resource, new { ignoreChannelRules }).ConfigureAwait(false);
         }
-
-        public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)
-        {
-            return Client.Update(resource.Links["Self"], resource, new { ignoreChannelRules });
-        }
-
+        
         public Task<LifecycleProgressionResource> GetProgression(ReleaseResource release)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"]);

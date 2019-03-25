@@ -48,5 +48,10 @@ namespace Octopus.Client.Model
         public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
         public string SpaceId { get; set; }
+
+        [Writeable]
+        [NotReadable]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool IgnoreChannelRules { get; set; }
     }
 }
