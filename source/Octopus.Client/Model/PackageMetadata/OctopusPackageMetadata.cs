@@ -9,7 +9,7 @@ namespace Octopus.Client.Model.PackageMetadata
     {
         public OctopusPackageMetadata()
         {
-            WorkItems = new WorkItem[0];
+            Commits = new Commit[0];
         }
         
         public string BuildEnvironment { get; set; }
