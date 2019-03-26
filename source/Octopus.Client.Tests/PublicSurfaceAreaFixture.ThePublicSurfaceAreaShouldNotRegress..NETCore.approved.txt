@@ -3618,7 +3618,7 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
-    List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
+    List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }

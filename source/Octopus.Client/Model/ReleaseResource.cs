@@ -57,6 +57,6 @@ namespace Octopus.Client.Model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool IgnoreChannelRules { get; set; }
 		
-        public List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
+        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
     }
 }
