@@ -7,6 +7,11 @@ namespace Octopus.Client.Model.PackageMetadata
     /// </summary>
     public class OctopusPackageMetadata
     {
+        public OctopusPackageMetadata()
+        {
+            WorkItems = new WorkItem[0];
+        }
+        
         public string BuildEnvironment { get; set; }
         public string CommentParser { get; set; }
         public string BuildNumber { get; set; }
