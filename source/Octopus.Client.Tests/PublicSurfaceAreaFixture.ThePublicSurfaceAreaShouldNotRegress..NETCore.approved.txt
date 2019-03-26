@@ -3478,7 +3478,6 @@ Octopus.Client.Model
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     String VariableSetId { get; set; }
     Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
-    List<DeploymentActionPackageResource> WorkItemPackages { get; set; }
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.ReleaseResource)
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.TenantResource, Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.ProjectResource AddOrUpdateMultiLineTextTemplate(String, String)
@@ -5180,12 +5179,11 @@ Octopus.Client.Model.Forms
 }
 Octopus.Client.Model.IssueTrackers
 {
-  class WorkItem
+  class Commit
   {
     .ctor()
+    String Comment { get; set; }
     String Id { get; set; }
-    String LinkData { get; set; }
-    String LinkText { get; set; }
   }
   class WorkItemLink
   {
@@ -5248,10 +5246,10 @@ Octopus.Client.Model.PackageMetadata
     String BuildEnvironment { get; set; }
     String BuildLink { get; set; }
     String BuildNumber { get; set; }
-    String IssueTrackerId { get; set; }
+    String CommentParser { get; set; }
+    Octopus.Client.Model.IssueTrackers.Commit[] Commits { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsRoot { get; set; }
-    Octopus.Client.Model.IssueTrackers.WorkItem[] WorkItems { get; set; }
   }
   class OctopusPackageMetadataMappedResource
     Octopus.Client.Extensibility.IResource
@@ -5278,6 +5276,19 @@ Octopus.Client.Model.PackageMetadata
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata OctopusPackageMetadata { get; set; }
     String PackageId { get; set; }
     String Version { get; set; }
+  }
+  class ReleasePackageMetadataResource
+  {
+    .ctor()
+    String BuildEnvironment { get; set; }
+    String BuildLink { get; set; }
+    String BuildNumber { get; set; }
+    String IssueTrackerName { get; set; }
+    String PackageId { get; set; }
+    String VcsCommitNumber { get; set; }
+    String VcsRoot { get; set; }
+    String Version { get; set; }
+    Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
 }
 Octopus.Client.Model.Triggers
