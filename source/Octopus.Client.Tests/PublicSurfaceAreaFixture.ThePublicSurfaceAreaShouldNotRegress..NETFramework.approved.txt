@@ -3632,6 +3632,7 @@ Octopus.Client.Model
     .ctor(String, String)
     DateTimeOffset Assembled { get; set; }
     String ChannelId { get; set; }
+    Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
@@ -4208,6 +4209,14 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     Nullable<DateTimeOffset> StartTime { get; set; }
     Octopus.Client.Model.TaskState State { get; set; }
+  }
+  class TaskResourceCollection
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ResourceCollection<TaskResource>
+  {
+    .ctor(IEnumerable<TaskResource>, Octopus.Client.Extensibility.LinkCollection)
+    Dictionary<String, Int32> TotalCounts { get; set; }
   }
   abstract class TaskRestrictedTo
   {
@@ -6006,7 +6015,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
-    Octopus.Client.Model.ReleaseResource Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Octopus.Client.Model.ReleaseResource SnapshotVariables(Octopus.Client.Model.ReleaseResource)
   }
   interface IResourceRepository
@@ -6088,7 +6096,9 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
     Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
     Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    Octopus.Client.Model.TaskResourceCollection GetActiveWithSummary(Int32, Int32)
     List<TaskResource> GetAllActive(Int32)
+    Octopus.Client.Model.TaskResourceCollection GetAllWithSummary(Int32, Int32)
     Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     String GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -6153,6 +6163,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.UserResource Create(String, String, String, String)
     Octopus.Client.Model.ApiKeyResource CreateApiKey(Octopus.Client.Model.UserResource, String)
     Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
+    Octopus.Client.Model.UserResource FindByUsername(String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
     Octopus.Client.Model.SpaceResource[] GetSpaces(Octopus.Client.Model.UserResource)
@@ -6595,7 +6606,6 @@ Octopus.Client.Repositories.Async
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
-    Task<ReleaseResource> Modify(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
   }
   interface IResourceRepository
@@ -6677,7 +6687,9 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
     Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
     Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    Task<TaskResourceCollection> GetActiveWithSummary(Int32, Int32)
     Task<List<TaskResource>> GetAllActive(Int32)
+    Task<TaskResourceCollection> GetAllWithSummary(Int32, Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -6743,6 +6755,7 @@ Octopus.Client.Repositories.Async
     Task<UserResource> Create(String, String, String, String)
     Task<ApiKeyResource> CreateApiKey(Octopus.Client.Model.UserResource, String)
     Task<UserResource> CreateServiceAccount(String, String)
+    Task<UserResource> FindByUsername(String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
     Task<SpaceResource[]> GetSpaces(Octopus.Client.Model.UserResource)

@@ -13,6 +13,7 @@ namespace Octopus.Client.Repositories
         IDelete<UserResource>,
         ICreate<UserResource>
     {
+        UserResource FindByUsername(string username);
         UserResource Create(string username, string displayName, string password = null, string emailAddress = null);
         UserResource CreateServiceAccount(string username, string displayName);
         UserResource Register(RegisterCommand registerCommand);
@@ -39,6 +40,9 @@ namespace Octopus.Client.Repositories
         {
             invitations = new LegacyInvitationRepository(repository);
         }
+
+        public UserResource FindByUsername(string username) 
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
         {

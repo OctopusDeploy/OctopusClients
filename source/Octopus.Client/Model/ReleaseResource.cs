@@ -52,6 +52,11 @@ namespace Octopus.Client.Model
 		
         public string SpaceId { get; set; }
 
+        [Writeable]
+        [NotReadable]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool IgnoreChannelRules { get; set; }
+		
         public List<OctopusPackageMetadataMappedResource> PackageMetadata { get; set; }
     }
 }

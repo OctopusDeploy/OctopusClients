@@ -13,6 +13,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<UserResource>,
         ICreate<UserResource>
     {
+        Task<UserResource> FindByUsername(string username);
         Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null);
         Task<UserResource> CreateServiceAccount(string username, string displayName);
         Task<UserResource> Register(RegisterCommand registerCommand);
@@ -39,6 +40,9 @@ namespace Octopus.Client.Repositories.Async
         {
             invitations = new LegacyInvitationRepository(Repository);
         }
+
+        public Task<UserResource> FindByUsername(string username) 
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
 
         public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
         {
