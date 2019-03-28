@@ -103,6 +103,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+        
+        [Writeable]
+        public string ReleaseNotesTemplate { get; set; }
 
         public ProjectResource Clear()
         {
