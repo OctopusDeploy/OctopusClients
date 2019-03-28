@@ -4376,6 +4376,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean IsComplete { get; set; }
     Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
     List<Permission> SystemPermissions { get; set; }
     List<ProjectedTeamReferenceDataItem> Teams { get; set; }

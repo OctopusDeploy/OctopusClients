@@ -29,5 +29,10 @@ namespace Octopus.Client.Model
         /// Gets the teams that the user is a member of.
         /// </summary>
         public List<ProjectedTeamReferenceDataItem> Teams { get; set; }
+
+        /// <summary>
+        /// If the requesting user had sufficient access to see a complete view of the permissions
+        /// </summary>
+        public bool IsComplete { get; set; }
     }
 }
