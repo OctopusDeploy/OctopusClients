@@ -31,8 +31,13 @@ namespace Octopus.Client.Model
         public List<ProjectedTeamReferenceDataItem> Teams { get; set; }
 
         /// <summary>
+        /// If the requesting user had sufficient access to see a complete view of the teams that may drive permissions
+        /// </summary>
+        public bool IsTeamsComplete { get; set; }
+
+        /// <summary>
         /// If the requesting user had sufficient access to see a complete view of the permissions
         /// </summary>
-        public bool IsComplete { get; set; }
+        public bool IsPermissionsComplete { get; set; }
     }
 }
