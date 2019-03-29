@@ -10,6 +10,7 @@ namespace Octopus.Client.Repositories
         ICanExtendSpaceContext<IUserPermissionsRepository>
     {
         UserPermissionSetResource Get(UserResource user);
+        UserPermissionSetResource GetConfiguration(UserResource user);
         Stream Export(UserPermissionSetResource userPermissions);
     }
     
@@ -30,7 +31,13 @@ namespace Octopus.Client.Repositories
             if (user == null) throw new ArgumentNullException(nameof(user));
             return Client.Get<UserPermissionSetResource>(user.Link("Permissions"), AdditionalQueryParameters);
         }
-        
+
+        public UserPermissionSetResource GetConfiguration(UserResource user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return Client.Get<UserPermissionSetResource>(user.Link("PermissionsConfiguration"), AdditionalQueryParameters);
+        }
+
         public Stream Export(UserPermissionSetResource userPermissions)
         {
             if (userPermissions == null) throw new ArgumentNullException(nameof(userPermissions));
