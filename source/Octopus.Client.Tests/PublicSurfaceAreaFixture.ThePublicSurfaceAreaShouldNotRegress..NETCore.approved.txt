@@ -5254,8 +5254,8 @@ Octopus.Client.Model.PackageMetadata
   {
     .ctor()
     String BuildEnvironment { get; set; }
-    String BuildUrl { get; set; }
     String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
     String CommentParser { get; set; }
     Octopus.Client.Model.IssueTrackers.Commit[] Commits { get; set; }
     String VcsCommitNumber { get; set; }
@@ -5269,8 +5269,8 @@ Octopus.Client.Model.PackageMetadata
   {
     .ctor()
     String BuildEnvironment { get; set; }
-    String BuildUrl { get; set; }
     String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
@@ -5294,8 +5294,8 @@ Octopus.Client.Model.PackageMetadata
   {
     .ctor()
     String BuildEnvironment { get; set; }
-    String BuildUrl { get; set; }
     String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
