@@ -4356,7 +4356,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Boolean IsComplete { get; set; }
+    Boolean IsPermissionsComplete { get; set; }
+    Boolean IsTeamsComplete { get; set; }
     Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
     List<Permission> SystemPermissions { get; set; }
     List<ProjectedTeamReferenceDataItem> Teams { get; set; }
@@ -6027,6 +6028,7 @@ Octopus.Client.Repositories
   {
     Stream Export(Octopus.Client.Model.UserPermissionSetResource)
     Octopus.Client.Model.UserPermissionSetResource Get(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.UserPermissionSetResource GetConfiguration(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.IPaginate<UserResource>
@@ -6607,6 +6609,7 @@ Octopus.Client.Repositories.Async
   {
     Task<Stream> Export(Octopus.Client.Model.UserPermissionSetResource)
     Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
+    Task<UserPermissionSetResource> GetConfiguration(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.Async.IPaginate<UserResource>
