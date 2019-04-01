@@ -2506,6 +2506,7 @@ Octopus.Client.Model
     IList<String> EventAgents { get; set; }
     IList<String> EventCategories { get; set; }
     IList<String> EventGroups { get; set; }
+    IList<String> ProjectGroups { get; set; }
     IList<String> Projects { get; set; }
     IList<String> Tags { get; set; }
     IList<String> Tenants { get; set; }
@@ -5719,7 +5720,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICanExtendSpaceContext<IEventRepository>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
-    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -6298,7 +6299,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
+    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
