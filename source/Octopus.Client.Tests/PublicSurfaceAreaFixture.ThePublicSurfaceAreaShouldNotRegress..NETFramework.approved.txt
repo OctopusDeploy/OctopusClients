@@ -2506,6 +2506,7 @@ Octopus.Client.Model
     IList<String> EventAgents { get; set; }
     IList<String> EventCategories { get; set; }
     IList<String> EventGroups { get; set; }
+    IList<String> ProjectGroups { get; set; }
     IList<String> Projects { get; set; }
     IList<String> Tags { get; set; }
     IList<String> Tenants { get; set; }
