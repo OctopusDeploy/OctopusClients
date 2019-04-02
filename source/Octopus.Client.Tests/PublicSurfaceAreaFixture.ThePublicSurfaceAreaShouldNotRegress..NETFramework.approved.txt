@@ -3144,6 +3144,12 @@ Octopus.Client.Model
     Boolean IsInMaintenanceMode { get; set; }
     Int32 MaxConcurrentTasks { get; set; }
     String Name { get; set; }
+    Boolean RequestLoggingEnabled { get; set; }
+    Boolean RequestMetricLoggingEnabled { get; set; }
+    Int32 ServicesPort { get; set; }
+    Boolean WebPortalForceSsl { get; set; }
+    List<String> WebPortalListenPrefixes { get; set; }
+    String WebSocketPrefix { get; set; }
   }
   class OctopusServerNodeSummaryResource
     Octopus.Client.Extensibility.IResource
