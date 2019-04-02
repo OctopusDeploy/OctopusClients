@@ -78,6 +78,7 @@ namespace Octopus.Client
             Migrations = new MigrationRepository(this);
             OctopusServerNodes = new OctopusServerNodeRepository(this);
             PerformanceConfiguration = new PerformanceConfigurationRepository(this);
+            PackageMetadataRepository = new PackageMetadataRepository(this);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             ProjectTriggers = new ProjectTriggerRepository(this);
@@ -135,6 +136,7 @@ namespace Octopus.Client
         public IMigrationRepository Migrations { get; }
         public IOctopusServerNodeRepository OctopusServerNodes { get; }
         public IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+        public IPackageMetadataRepository PackageMetadataRepository { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }

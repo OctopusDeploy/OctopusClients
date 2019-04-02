@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     /// Represents an environment. Environments are user-defined and map to real world deployment environments
     /// such as development, staging, test and production. Projects are deployed to environments.
     /// </summary>
-    public class EnvironmentResource : Resource, INamedResource, IHaveSpaceResource
+    public class EnvironmentResource : ResourceWithExtensionSettings, INamedResource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets the name of this environment. This should be short, preferably 5-20 characters.

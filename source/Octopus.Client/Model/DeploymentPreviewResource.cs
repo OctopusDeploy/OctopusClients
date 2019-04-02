@@ -9,5 +9,7 @@ namespace Octopus.Client.Model
         public List<DeploymentTemplateStep> StepsToExecute { get; set; }
         public Form Form { get; set; }
         public bool UseGuidedFailureModeByDefault { get; set; }
+
+        public List<ReleaseChanges> ReleaseNotes { get; set; }
     }
 }

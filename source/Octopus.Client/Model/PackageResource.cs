@@ -1,4 +1,5 @@
 ﻿using System;
+using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Model
 {
@@ -28,5 +29,7 @@ namespace Octopus.Client.Model
         public string Published { get; set; }
         public string ReleaseNotes { get; set; }
         public string FileExtension { get; set; }
+
+        public OctopusPackageMetadataMappedResource PackageMetadata { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// Represents a project.
     /// </summary>
-    public class ProjectResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
+    public class ProjectResource : ResourceWithExtensionSettings, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
     {
         private readonly IVariableTemplateContainerEditor<ProjectResource> variableTemplateEditor;
 
@@ -103,6 +103,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+        
+        [Writeable]
+        public string ReleaseNotesTemplate { get; set; }
 
         public ProjectResource Clear()
         {

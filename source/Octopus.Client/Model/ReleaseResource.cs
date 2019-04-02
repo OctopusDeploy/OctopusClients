@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Model.IssueTrackers;
+using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Model
 {
@@ -47,11 +49,14 @@ namespace Octopus.Client.Model
 
         public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
+		
         public string SpaceId { get; set; }
 
         [Writeable]
         [NotReadable]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool IgnoreChannelRules { get; set; }
+		
+        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
     }
 }

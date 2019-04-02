@@ -79,6 +79,9 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
+		
         public string SpaceId { get; set; }
+
+        public List<ReleaseChanges> Changes { get; set; }
     }
 }
