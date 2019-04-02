@@ -11,6 +11,7 @@ namespace Octopus.Client.Repositories.Async
         ICanExtendSpaceContext<IUserPermissionsRepository>
     {
         Task<UserPermissionSetResource> Get(UserResource user);
+        Task<UserPermissionSetResource> GetConfiguration(UserResource user);
         Task<Stream> Export(UserPermissionSetResource userPermissions);
     }
     
@@ -31,7 +32,13 @@ namespace Octopus.Client.Repositories.Async
             if (user == null) throw new ArgumentNullException(nameof(user));
             return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
-        
+
+        public async Task<UserPermissionSetResource> GetConfiguration(UserResource user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return await Client.Get<UserPermissionSetResource>(user.Link("PermissionsConfiguration"), GetAdditionalQueryParameters()).ConfigureAwait(false);
+        }
+
         public async Task<Stream> Export(UserPermissionSetResource userPermissions)
         {
             if (userPermissions == null) throw new ArgumentNullException(nameof(userPermissions));

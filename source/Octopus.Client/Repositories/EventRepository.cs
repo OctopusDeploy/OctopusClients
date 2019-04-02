@@ -35,6 +35,7 @@ namespace Octopus.Client.Repositories
         /// <param name="toAutoId"></param>
         /// <param name="documentTypes"></param>
         /// <param name="eventAgents"></param>
+        /// <param name="projectGroups"></param>
         /// <returns></returns>
         ResourceCollection<EventResource> List(int skip = 0, 
             int? take = null,
@@ -54,7 +55,8 @@ namespace Octopus.Client.Repositories
             long? fromAutoId = null,
             long? toAutoId = null,
             string documentTypes = null,
-            string eventAgents = null);
+            string eventAgents = null,
+            string projectGroups = null);
     }
     
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
@@ -102,7 +104,8 @@ namespace Octopus.Client.Repositories
             long? fromAutoId = null,
             long? toAutoId = null,
             string documentTypes = null,
-            string eventAgents = null)
+            string eventAgents = null,
+            string projectGroups = null)
         {
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
@@ -124,7 +127,8 @@ namespace Octopus.Client.Repositories
                 fromAutoId,
                 toAutoId,
                 documentTypes,
-                eventAgents
+                eventAgents,
+                projectGroups,
             });
             return Client.List<EventResource>(Repository.Link("Events"), parameters);
         }

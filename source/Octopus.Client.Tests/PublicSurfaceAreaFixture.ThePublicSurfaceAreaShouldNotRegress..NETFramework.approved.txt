@@ -2513,6 +2513,7 @@ Octopus.Client.Model
     IList<String> EventAgents { get; set; }
     IList<String> EventCategories { get; set; }
     IList<String> EventGroups { get; set; }
+    IList<String> ProjectGroups { get; set; }
     IList<String> Projects { get; set; }
     IList<String> Tags { get; set; }
     IList<String> Tenants { get; set; }
@@ -4408,6 +4409,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean IsPermissionsComplete { get; set; }
+    Boolean IsTeamsComplete { get; set; }
     Dictionary<Permission, List<UserPermissionRestriction>> SpacePermissions { get; set; }
     List<Permission> SystemPermissions { get; set; }
     List<ProjectedTeamReferenceDataItem> Teams { get; set; }
@@ -5824,7 +5827,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICanExtendSpaceContext<IEventRepository>
   {
     Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
-    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -6158,6 +6161,7 @@ Octopus.Client.Repositories
   {
     Stream Export(Octopus.Client.Model.UserPermissionSetResource)
     Octopus.Client.Model.UserPermissionSetResource Get(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.UserPermissionSetResource GetConfiguration(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.IPaginate<UserResource>
@@ -6415,7 +6419,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IEventRepository>
   {
     Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String)
+    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -6750,6 +6754,7 @@ Octopus.Client.Repositories.Async
   {
     Task<Stream> Export(Octopus.Client.Model.UserPermissionSetResource)
     Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
+    Task<UserPermissionSetResource> GetConfiguration(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.Async.IPaginate<UserResource>
