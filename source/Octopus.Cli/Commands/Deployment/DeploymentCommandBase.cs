@@ -49,6 +49,7 @@ namespace Octopus.Cli.Commands.Deployment
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("v|variable=", "[Optional] Values for any prompted variables in the format Label:Value. For JSON values, embedded quotation marks should be escaped with a backslash.", ParseVariable);
             options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => DeployAt = ParseDateTimeOffset(v));
+            options.Add("nodeployafter=", "[Optional] Time at which scheduled deployment should expire, specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => NoDeployAfter = ParseDateTimeOffset(v));
             options.Add("tenant=", "Create a deployment for this tenant; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to all tenants who are ready for this release (according to lifecycle).", t => Tenants.Add(t));
             options.Add("tenanttag=", "Create a deployment for tenants matching this tag; specify this argument multiple times to build a query/filter with multiple tags, just like you can in the user interface.", tt => TenantTags.Add(tt));
         }
@@ -64,6 +65,7 @@ namespace Octopus.Cli.Commands.Deployment
         protected List<string> ExcludedMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
+        protected DateTimeOffset? NoDeployAfter { get; set; }
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public List<string> Tenants { get; set; }
@@ -83,6 +85,9 @@ namespace Octopus.Cli.Commands.Deployment
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
             if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
                 throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+            if ((DeployAt ?? DateTimeOffset.Now) > NoDeployAfter)
+                throw new CommandException("The deployment will expire before it has a chance to execute.  Please select an expiry time that occurs after the deployment is scheduled to begin");
+
             /*
              * A create release operation can also optionally deploy the release, however any invalid options that
              * are specific only to the deployment will fail after the release has been created. This can leave
@@ -454,7 +459,8 @@ namespace Octopus.Cli.Commands.Deployment
                 ExcludedMachineIds = excludedMachineIds,
                 ForcePackageRedeployment = ForcePackageRedeployment,
                 FormValues = (preview.Form ?? new Form()).Values,
-                QueueTime = DeployAt == null ? null : (DateTimeOffset?) DeployAt.Value
+                QueueTime = DeployAt,
+                QueueTimeExpiry = NoDeployAfter
             })
             .ConfigureAwait(false);
 
