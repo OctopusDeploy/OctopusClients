@@ -167,6 +167,12 @@ namespace Octopus.Cli.Commands.Releases
             {
                 // Actually create the release!
                 commandOutputProvider.Debug("Creating release...");
+
+                // if no release notes were provided on the command line, but the project has a template, then use the template
+                if (string.IsNullOrWhiteSpace(ReleaseNotes) && !string.IsNullOrWhiteSpace(project.ReleaseNotesTemplate))
+                {
+                    ReleaseNotes = project.ReleaseNotesTemplate;
+                }
                 
                 release = await Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, plan.Channel?.Id)
                     {
