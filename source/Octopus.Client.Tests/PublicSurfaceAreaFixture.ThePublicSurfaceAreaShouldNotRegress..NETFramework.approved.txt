@@ -1430,6 +1430,15 @@ Octopus.Client.Model
     IDictionary<String, PropertyValueResource> Overrides { get; set; }
     Int32 Version { get; set; }
   }
+  class ActionTemplateCategoryResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    Int32 DisplayOrder { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    String Name { get; set; }
+  }
   class ActionTemplateParameterResource
   {
     .ctor()
@@ -1467,13 +1476,14 @@ Octopus.Client.Model
   {
     .ctor()
     String Author { get; set; }
-    String Category { get; set; }
+    String[] Categories { get; set; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     Boolean HasUpdate { get; set; }
     String Id { get; set; }
     Boolean IsBuiltIn { get; set; }
     Boolean IsInstalled { get; set; }
+    String Keywords { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
     String Type { get; set; }

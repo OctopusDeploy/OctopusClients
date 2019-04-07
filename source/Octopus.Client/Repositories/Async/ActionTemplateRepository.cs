@@ -24,6 +24,11 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Get<List<ActionTemplateSearchResource>>(await Repository.Link("ActionTemplatesSearch").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
+        public async Task<List<ActionTemplateCategoryResource>> Categories()
+        {
+            return await Client.Get<List<ActionTemplateCategoryResource>>(await Repository.Link("ActionTemplatesCategories").ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
         public Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version)
         {
             return Client.Get<ActionTemplateResource>(resource.Links["Versions"], new { version });
