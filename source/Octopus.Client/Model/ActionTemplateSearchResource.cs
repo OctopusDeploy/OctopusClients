@@ -1,5 +1,4 @@
-﻿using System;
-using Octopus.Client.Extensibility;
+﻿using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
