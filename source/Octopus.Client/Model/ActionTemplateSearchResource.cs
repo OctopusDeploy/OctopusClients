@@ -1,9 +1,17 @@
-﻿using Octopus.Client.Extensibility;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
     public class ActionTemplateSearchResource : IResource
     {
+        public ActionTemplateSearchResource()
+        {
+            Categories = new List<string>();
+        }
+
         public string Id { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
@@ -13,7 +21,15 @@ namespace Octopus.Client.Model
         public string Website { get; set; }
         public bool IsInstalled { get; set; }
         public bool IsBuiltIn { get; set; }
-        public string[] Categories { get; set; }
+
+        // This property was deprecated to support multiple category selection (left for backwards compat). Please use the Categories property instead.
+        public string Category
+        {
+            get => this.Categories?.FirstOrDefault();
+            set => Categories?.Add(value);
+        }
+
+        public List<string> Categories { get; set; }
         public string CommunityActionTemplateId { get; set; }
         public bool HasUpdate { get; set; }
 
