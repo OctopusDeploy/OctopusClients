@@ -26,7 +26,13 @@ namespace Octopus.Client.Model
         public string Category
         {
             get => this.Categories?.FirstOrDefault();
-            set => Categories?.Add(value);
+            set
+            {
+                if (!Categories.Contains(value))
+                {
+                    Categories?.Add(value);
+                }
+            }
         }
 
         public List<string> Categories { get; set; }
