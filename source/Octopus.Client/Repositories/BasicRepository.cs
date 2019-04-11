@@ -31,10 +31,25 @@ namespace Octopus.Client.Repositories
 
         public IOctopusClient Client => client;
 
+        private void AssertSpaceIdMatchesResource(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+            {
+                Repository.Scope
+                    .Apply(space => spaceResource.SpaceId != space.Id
+                            ? throw new ArgumentException(
+                                $"The {nameof(IHaveSpaceResource.SpaceId)}: {spaceResource.SpaceId} on the resource should match the space that this repository has been constrained to: {space.Id}.")
+                            : (string) null,
+                    () => null,
+                    () => null);
+            }
+        }
+        
         public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
             var link = ResolveLink();
+            AssertSpaceIdMatchesResource(resource);
             EnrichSpaceId(resource);
             return client.Create(link, resource, pathParameters);
         }
@@ -42,12 +57,14 @@ namespace Octopus.Client.Repositories
         public virtual TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             client.Delete(resource.Links["Self"]);
         }
 
