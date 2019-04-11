@@ -36,10 +36,20 @@ namespace Octopus.Client.Repositories
             if (resource is IHaveSpaceResource spaceResource)
             {
                 Repository.Scope
-                    .Apply(space => spaceResource.SpaceId != space.Id
-                            ? throw new ArgumentException(
-                                $"The {nameof(IHaveSpaceResource.SpaceId)}: {spaceResource.SpaceId} on the resource should match the space that this repository has been constrained to: {space.Id}.")
-                            : (string) null,
+                    .Apply(space =>
+                        {
+                            var errorMessageTemplate = $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
+
+                            if (string.IsNullOrWhiteSpace(spaceResource.SpaceId) && !space.IsDefault)
+                                throw new ArgumentException(
+                                    $"{errorMessageTemplate} the default space.");
+
+                            if (!string.IsNullOrWhiteSpace(spaceResource.SpaceId) && spaceResource.SpaceId != space.Id)
+                                throw new ArgumentException(
+                                    $"{errorMessageTemplate} {spaceResource.SpaceId}.");
+                            
+                            return (string) null;
+                        },
                     () => null,
                     () => null);
             }
