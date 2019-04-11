@@ -1477,7 +1477,7 @@ Octopus.Client.Model
     .ctor()
     String Author { get; set; }
     List<String> Categories { get; set; }
-    String Category { get; set; }
+    String Category { get; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
     Boolean HasUpdate { get; set; }

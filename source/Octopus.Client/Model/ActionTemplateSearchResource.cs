@@ -22,20 +22,10 @@ namespace Octopus.Client.Model
         public bool IsInstalled { get; set; }
         public bool IsBuiltIn { get; set; }
 
-        // This property was deprecated to support multiple category selection (left for backwards compat). Please use the Categories property instead.
-        public string Category
-        {
-            get => this.Categories?.FirstOrDefault();
-            set
-            {
-                if (!Categories.Contains(value))
-                {
-                    Categories?.Add(value);
-                }
-            }
-        }
-
+        // @BackwardsCompat: This property was deprecated to support multiple category selection. Please use the Categories property instead.
+        public string Category => Categories?.FirstOrDefault();
         public List<string> Categories { get; set; }
+
         public string CommunityActionTemplateId { get; set; }
         public bool HasUpdate { get; set; }
 
