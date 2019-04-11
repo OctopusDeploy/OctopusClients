@@ -24,6 +24,11 @@ namespace Octopus.Client.Repositories
             return Client.Get<List<ActionTemplateSearchResource>>(Repository.Link("ActionTemplatesSearch"));
         }
 
+        public List<ActionTemplateCategoryResource> Categories()
+        {
+            return Client.Get<List<ActionTemplateCategoryResource>>(Repository.Link("ActionTemplatesCategories"));
+        }
+
         public ActionTemplateResource GetVersion(ActionTemplateResource resource, int version)
         {
             return Client.Get<ActionTemplateResource>(resource.Links["Versions"], new {version});
