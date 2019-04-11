@@ -59,7 +59,6 @@ namespace Octopus.Client.Repositories
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
             var link = ResolveLink();
-            AssertSpaceIdMatchesResource(resource);
             EnrichSpaceId(resource);
             return client.Create(link, resource, pathParameters);
         }
