@@ -12,6 +12,8 @@ namespace Octopus.Client.Model
             Categories = new List<string>();
         }
 
+        private string legacyCategory;
+
         public string Id { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
@@ -23,7 +25,11 @@ namespace Octopus.Client.Model
         public bool IsBuiltIn { get; set; }
 
         // @BackwardsCompat: This property was deprecated to support multiple category selection. Please use the Categories property instead.
-        public string Category => Categories?.FirstOrDefault();
+        public string Category
+        {
+            get => string.IsNullOrEmpty(legacyCategory) ? Categories?.FirstOrDefault() : legacyCategory;
+            set => legacyCategory = value;
+        }
         public List<string> Categories { get; set; }
 
         public string CommunityActionTemplateId { get; set; }
