@@ -33,16 +33,13 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        private void AssertSpaceIdMatchesResource(TResource resource, bool isEmptySpaceIdAllowed = false)
+        private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
                 Repository.Scope
                     .Apply(space =>
                         {
-                            if (isEmptySpaceIdAllowed && string.IsNullOrWhiteSpace(spaceResource.SpaceId))
-                                return (string) null;
-                            
                             var errorMessageTemplate = $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
             
                             if (string.IsNullOrWhiteSpace(spaceResource.SpaceId) && !space.IsDefault)
@@ -63,7 +60,6 @@ namespace Octopus.Client.Repositories.Async
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink().ConfigureAwait(false);
-            AssertSpaceIdMatchesResource(resource, true);
             EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }

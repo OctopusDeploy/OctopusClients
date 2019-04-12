@@ -31,16 +31,13 @@ namespace Octopus.Client.Repositories
 
         public IOctopusClient Client => client;
 
-        private void AssertSpaceIdMatchesResource(TResource resource, bool isEmptySpaceIdAllowed = false)
+        private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
                 Repository.Scope
                     .Apply(space =>
                         {
-                            if (isEmptySpaceIdAllowed && string.IsNullOrWhiteSpace(spaceResource.SpaceId))
-                                return (string) null;
-                            
                             var errorMessageTemplate = $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
             
                             if (string.IsNullOrWhiteSpace(spaceResource.SpaceId) && !space.IsDefault)
@@ -61,7 +58,6 @@ namespace Octopus.Client.Repositories
         public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            AssertSpaceIdMatchesResource(resource, true);
                 
             var link = ResolveLink();
             EnrichSpaceId(resource);

@@ -53,14 +53,12 @@ namespace Octopus.Client.Tests.Repositories
         }
 
         [Test]
-        public void Create_ResourceInExplicitSpace_NonMatchingSpaceRepoShouldThrow()
+        public void Create_ResourceInExplicitSpace_NonMatchingSpaceRepoShouldOverwrite()
         {
             var resource = CreateProjectResourceForSpace("Spaces-2");
-            Action activityUnderTest = () => subject.Create(resource);
-            
-            activityUnderTest
-                .ShouldThrow<ArgumentException>()
-                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
+            Assert.DoesNotThrow(() => subject.Create(resource));
+
+            resource.SpaceId.Should().Be(defaultSpace.Id, because: "https://github.com/OctopusDeploy/OctopusDeploy/blob/ff86277e425b2f2f7e5093a01cc7bc948bfbfca3/source/Octopus.IntegrationTests/Octopus.Server/Spaces/MixedScopeTest.cs#L127");
         }
 
 
