@@ -1,7 +1,6 @@
 using System;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
@@ -31,9 +30,9 @@ namespace Octopus.Client.Tests.Repositories
             };
             mockRepo.Scope.Returns(RepositoryScope.ForSpace(defaultSpace));
         }
-        
+
         [Test]
-        public void Create_ResourceWithImpliedSpace_DefaultRepoScopeSetsTheSpace()
+        public void Create_ResourceWithNoSpaceId_DefaultRepoScopeSetsTheSpace()
         {
             var resource = CreateProjectResourceForSpace(null);
             Assert.DoesNotThrow(() => subject.Create(resource));
@@ -43,7 +42,7 @@ namespace Octopus.Client.Tests.Repositories
         }
         
         [Test]
-        public void Create_ResourceWithImpliedSpace_RepoScopeSetsTheSpace()
+        public void Create_ResourceWithNoSpaceId_RepoScopeSetsTheSpace()
         {
             SetupRepositoryToUseADifferentSpace();
             var resource = CreateProjectResourceForSpace(null);
@@ -96,7 +95,7 @@ namespace Octopus.Client.Tests.Repositories
         }
 
         [Test]
-        public void Update_ResourceWithImpliedSpace_DefaultSpaceRepoIsOk()
+        public void Update_ResourceWithNoSpaceId_DefaultSpaceRepoIsOk()
         {
             var resource = CreateProjectResourceForSpace(null);
             Assert.DoesNotThrow(() => subject.Modify(resource));
@@ -104,7 +103,7 @@ namespace Octopus.Client.Tests.Repositories
         }
         
         [Test]
-        public void Update_ResourceWithImpliedSpace_AnyOtherSpaceShouldThrow()
+        public void Update_ResourceWithNoSpaceId_AnyOtherSpaceShouldThrow()
         {
             SetupRepositoryToUseADifferentSpace();
             var resource = CreateProjectResourceForSpace(null);
@@ -134,7 +133,7 @@ namespace Octopus.Client.Tests.Repositories
         }
         
         [Test]
-        public void Delete_ResourceWithImpliedSpace_DefaultSpaceRepoIsOk()
+        public void Delete_ResourceWithNoSpaceId_DefaultSpaceRepoIsOk()
         {
             var resource = CreateProjectResourceForSpace(null);
             Assert.DoesNotThrow(() => subject.Delete(resource));
@@ -142,7 +141,7 @@ namespace Octopus.Client.Tests.Repositories
         }
         
         [Test]
-        public void Delete_ResourceWithImpliedSpace_AnyOtherSpaceRepoShouldThrow()
+        public void Delete_ResourceWithNoSpaceId_AnyOtherSpaceRepoShouldThrow()
         {
             SetupRepositoryToUseADifferentSpace();
             var resource = CreateProjectResourceForSpace(null);
