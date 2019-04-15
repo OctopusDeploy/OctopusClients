@@ -17,5 +17,6 @@ namespace Octopus.Client.Model.PackageMetadata
 
         public string IssueTrackerName { get; set; }
         public WorkItemLink[] WorkItems { get; set; }
+        public CommitDetail[] Commits { get; set; }
     }
 }
