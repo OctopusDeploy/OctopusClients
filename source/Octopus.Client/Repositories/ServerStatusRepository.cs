@@ -7,8 +7,9 @@ namespace Octopus.Client.Repositories
     {
         ServerStatusResource GetServerStatus();
         SystemInfoResource GetSystemInfo(ServerStatusResource status);
+        ServerStatusHealthResource GetServerHealth(ServerStatusResource status);
     }
-    
+
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
     {
         public ServerStatusRepository(IOctopusRepository repository)
@@ -19,6 +20,12 @@ namespace Octopus.Client.Repositories
         public ServerStatusResource GetServerStatus()
         {
             return Client.Get<ServerStatusResource>(Repository.Link("ServerStatus"));
+        }
+
+        public ServerStatusHealthResource GetServerHealth(ServerStatusResource status)
+        {
+            if (status == null) throw new ArgumentNullException("status");
+            return Client.Get<ServerStatusHealthResource>(status.Link("Health"));
         }
 
         public SystemInfoResource GetSystemInfo(ServerStatusResource status)
