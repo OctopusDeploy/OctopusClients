@@ -3986,6 +3986,18 @@ Octopus.Client.Model
     String Location { get; set; }
     List<ServerActivityResource> SupervisedActivities { get; set; }
   }
+  class ServerStatusHealthResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Description { get; set; }
+    Boolean IsCompliantWithLicense { get; set; }
+    Boolean IsEntireClusterDrainingTasks { get; set; }
+    Boolean IsEntireClusterReadOnly { get; set; }
+    Boolean IsOperatingNormally { get; set; }
+  }
   class ServerStatusResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6065,6 +6077,7 @@ Octopus.Client.Repositories
   }
   interface IServerStatusRepository
   {
+    Octopus.Client.Model.ServerStatusHealthResource GetServerHealth(Octopus.Client.Model.ServerStatusResource)
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
@@ -6657,6 +6670,7 @@ Octopus.Client.Repositories.Async
   }
   interface IServerStatusRepository
   {
+    Task<ServerStatusHealthResource> GetServerHealth(Octopus.Client.Model.ServerStatusResource)
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
