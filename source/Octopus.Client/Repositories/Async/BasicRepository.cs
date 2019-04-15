@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        private void AssertSpaceIdMatchesResource(TResource resource)
+        private void AssertSpaceIdMatchesResource(TResource resource, bool isEmptySpaceAllowed = false)
         {
             if (resource is IHaveSpaceResource spaceResource)
             {
@@ -42,6 +42,9 @@ namespace Octopus.Client.Repositories.Async
                         {
                             var errorMessageTemplate = $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
             
+                            if (isEmptySpaceAllowed && string.IsNullOrWhiteSpace(spaceResource.SpaceId))
+                                return (string) null;
+                            
                             if (string.IsNullOrWhiteSpace(spaceResource.SpaceId) && !space.IsDefault)
                                 throw new ArgumentException(
                                     $"{errorMessageTemplate} the default space.");
@@ -49,7 +52,7 @@ namespace Octopus.Client.Repositories.Async
                             if (!string.IsNullOrWhiteSpace(spaceResource.SpaceId) && spaceResource.SpaceId != space.Id)
                                 throw new ArgumentException(
                                     $"{errorMessageTemplate} {spaceResource.SpaceId}.");
-                            
+                          
                             return (string) null;
                         },
                         () => null,
@@ -60,6 +63,7 @@ namespace Octopus.Client.Repositories.Async
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink().ConfigureAwait(false);
+            AssertSpaceIdMatchesResource(resource, isEmptySpaceAllowed: true);
             EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
