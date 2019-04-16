@@ -5242,6 +5242,13 @@ Octopus.Client.Model.IssueTrackers
     String Comment { get; set; }
     String Id { get; set; }
   }
+  class CommitDetail
+  {
+    .ctor()
+    String Comment { get; set; }
+    String Id { get; set; }
+    String LinkUrl { get; set; }
+  }
   class WorkItemLink
   {
     .ctor()
@@ -5318,6 +5325,7 @@ Octopus.Client.Model.PackageMetadata
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
@@ -5343,6 +5351,7 @@ Octopus.Client.Model.PackageMetadata
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
