@@ -2679,6 +2679,11 @@ Octopus.Client.Model
   }
   HealthCheckType
   {
+      RunScript = 0
+      OnlyConnectivity = 1
+  }
+  HealthCheckType
+  {
       FullHealthCheck = 0
       ConnectionTest = 1
   }
@@ -2933,9 +2938,12 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(Octopus.Client.Model.MachineScriptPolicy, Octopus.Client.Model.MachineScriptPolicy)
+    Octopus.Client.Model.MachineScriptPolicy BashHealthCheckPolicy { get; set; }
     TimeSpan HealthCheckInterval { get; set; }
-    Octopus.Client.Model.MachineScriptPolicy SshEndpointHealthCheckPolicy { get; set; }
-    Octopus.Client.Model.MachineScriptPolicy TentacleEndpointHealthCheckPolicy { get; set; }
+    Octopus.Client.Model.HealthCheckType HealthCheckType { get; set; }
+    Octopus.Client.Model.MachineScriptPolicy PowerShellHealthCheckPolicy { get; set; }
+    Octopus.Client.Model.MachineScriptPolicy SshEndpointHealthCheckPolicy { get; }
+    Octopus.Client.Model.MachineScriptPolicy TentacleEndpointHealthCheckPolicy { get; }
   }
   MachineModelHealthStatus
   {
