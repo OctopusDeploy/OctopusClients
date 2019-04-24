@@ -3672,6 +3672,7 @@ Octopus.Client.Model
     String LastReleaseVersion { get; set; }
     String NextVersionIncrement { get; set; }
     IList<ReleaseTemplatePackage> Packages { get; set; }
+    String VersioningPackageReferenceName { get; set; }
     String VersioningPackageStepName { get; set; }
   }
   class ReportDeploymentCountOverTimeResource

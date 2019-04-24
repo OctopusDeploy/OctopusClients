@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands.Releases
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.VersioningPackageStepName))
             {
-                versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName);
+                versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName, plan.ReleaseTemplate.VersioningPackageReferenceName);
                 commandOutputProvider.Debug("Using version number from package step: {Version:l}", versionNumber);
             }
             else
