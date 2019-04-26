@@ -80,5 +80,11 @@ namespace Octopus.Client.Editors
             }
             return this;
         }
+        
+        public LibraryVariableSetUsageResource Usages()
+        {
+            return repository.Client.Get<LibraryVariableSetUsageResource>(Instance.Link("Usages"));
+        }
+
     }
 }
