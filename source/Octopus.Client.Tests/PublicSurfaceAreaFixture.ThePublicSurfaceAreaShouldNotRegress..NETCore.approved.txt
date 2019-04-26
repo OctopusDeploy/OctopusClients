@@ -5904,6 +5904,7 @@ Octopus.Client.Repositories
     void TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
   interface ILibraryVariableSetRepository
+    Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<LibraryVariableSetResource>
     Octopus.Client.Repositories.IGet<LibraryVariableSetResource>
     Octopus.Client.Repositories.IModify<LibraryVariableSetResource>
@@ -5915,7 +5916,6 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
   }
   interface ILifecyclesRepository
-    Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.IGet<LifecycleResource>
     Octopus.Client.Repositories.ICreate<LifecycleResource>
     Octopus.Client.Repositories.IModify<LifecycleResource>
