@@ -683,6 +683,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String)
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
     Octopus.Client.Editors.LibraryVariableSetEditor Customize(Action<LibraryVariableSetResource>)
+    Octopus.Client.Editors.LibraryVariableSetEditor Load(String)
     Octopus.Client.Editors.LibraryVariableSetEditor Save()
     Octopus.Client.Model.LibraryVariableSetUsageResource Usages()
   }

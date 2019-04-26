@@ -64,6 +64,12 @@ namespace Octopus.Client.Editors
 
             return this;
         }
+        
+        public LibraryVariableSetEditor Load(string id)
+        {
+            Instance = repository.Get(id);
+            return this;
+        }
 
         public LibraryVariableSetEditor Customize(Action<LibraryVariableSetResource> customize)
         {
