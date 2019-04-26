@@ -2805,6 +2805,7 @@ Octopus.Client.Model
   {
     .ctor()
     Int32 CountOfProjectsUserCannotSee { get; set; }
+    Int32 CountOfReleasesUserCannotSee{ get; set; }
     ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
   }
   class LifecycleProgressionResource

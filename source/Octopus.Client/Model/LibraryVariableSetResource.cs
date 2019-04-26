@@ -116,6 +116,7 @@ namespace Octopus.Client.Model
 
         public ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
         public int CountOfProjectsUserCannotSee { get; set; }
+        public int CountOfReleasesUserCannotSee { get; set; }
     }
     
     public class LibraryVariableSetProjectUsage
