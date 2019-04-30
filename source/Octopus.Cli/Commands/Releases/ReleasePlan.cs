@@ -208,7 +208,7 @@ namespace Octopus.Cli.Commands.Releases
         public string GetActionVersionNumber(string packageStepName, string packageReferenceName)
         {
             var step = packageSteps.SingleOrDefault(s => s.ActionName.Equals(packageStepName, StringComparison.OrdinalIgnoreCase) &&
-                                                         s.PackageReferenceName.Equals(packageReferenceName ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+                                                         (string.IsNullOrWhiteSpace(s.PackageReferenceName) || s.PackageReferenceName.Equals(packageReferenceName ?? string.Empty, StringComparison.OrdinalIgnoreCase)));
             if (step == null)
                 throw new CommandException("The step '" + packageStepName + "' is configured to provide the package version number but doesn't exist in the release plan.");
             if (string.IsNullOrWhiteSpace(step.Version))

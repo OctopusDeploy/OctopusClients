@@ -8,5 +8,6 @@ namespace Octopus.Client.Model
         public string Version { get; set; }
         public string ReleaseNotes { get; set; }
         public List<WorkItemLink> WorkItems { get; set; }
+        public List<CommitDetails> Commits { get; set; }
     }
 }
