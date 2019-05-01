@@ -4276,6 +4276,15 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
   }
+  class TeamNameResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Name { get; set; }
+  }
   class TeamResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6218,7 +6227,7 @@ Octopus.Client.Repositories
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.UserResource GetCurrent()
     Octopus.Client.Model.SpaceResource[] GetSpaces(Octopus.Client.Model.UserResource)
-    String[] GetTeamNames(Octopus.Client.Model.UserResource)
+    Octopus.Client.Model.TeamNameResource[] GetTeams(Octopus.Client.Model.UserResource)
     Octopus.Client.Model.InvitationResource Invite(String)
     Octopus.Client.Model.InvitationResource Invite(Octopus.Client.Model.ReferenceCollection)
     Octopus.Client.Model.UserResource Register(Octopus.Client.Model.RegisterCommand)
@@ -6813,7 +6822,7 @@ Octopus.Client.Repositories.Async
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
     Task<SpaceResource[]> GetSpaces(Octopus.Client.Model.UserResource)
-    Task<String[]> GetTeamNames(Octopus.Client.Model.UserResource)
+    Task<TeamNameResource[]> GetTeams(Octopus.Client.Model.UserResource)
     Task<InvitationResource> Invite(String)
     Task<InvitationResource> Invite(Octopus.Client.Model.ReferenceCollection)
     Task<UserResource> Register(Octopus.Client.Model.RegisterCommand)

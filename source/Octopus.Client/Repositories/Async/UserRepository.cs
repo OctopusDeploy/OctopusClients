@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
-using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -22,7 +21,7 @@ namespace Octopus.Client.Repositories.Async
         Task SignOut();
         Task<UserResource> GetCurrent();
         Task<SpaceResource[]> GetSpaces(UserResource user);
-        Task<string[]> GetTeamNames(UserResource user);
+        Task<TeamNameResource[]> GetTeams(UserResource user);
         Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResource apiKey);
@@ -100,10 +99,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
-        public Task<string[]> GetTeamNames(UserResource user)
+        public Task<TeamNameResource[]> GetTeams(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<string[]>(user.Link("TeamNames"));
+            return Client.Get<TeamNameResource[]>(user.Link("Teams"));
         }
 
         public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)

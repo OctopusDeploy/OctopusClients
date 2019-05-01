@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         SpaceResource[] GetSpaces(UserResource user);
-        string[] GetTeamNames(UserResource user);
+        TeamNameResource[] GetTeams(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
@@ -99,10 +99,10 @@ namespace Octopus.Client.Repositories
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
-        public string[] GetTeamNames(UserResource user)
+        public TeamNameResource[] GetTeams(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<string[]>(user.Link("TeamNames"));
+            return Client.Get<TeamNameResource[]>(user.Link("Teams"));
         }
 
         public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)
