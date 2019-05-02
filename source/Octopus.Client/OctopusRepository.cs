@@ -101,6 +101,7 @@ namespace Octopus.Client
             WorkerPools = new WorkerPoolRepository(this);
             ScopedUserRoles = new ScopedUserRoleRepository(this);
             UserPermissions = new UserPermissionsRepository(this);
+            UserTeams = new UserTeamsRepository(this);
             UserInvites = new UserInvitesRepository(this);
             loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
             loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
@@ -161,6 +162,7 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
+        public IUserTeamsRepository UserTeams { get; }
 
         public bool HasLink(string name)
         {

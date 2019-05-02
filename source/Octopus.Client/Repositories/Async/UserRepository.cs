@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
-using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {

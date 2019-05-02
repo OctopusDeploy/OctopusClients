@@ -103,6 +103,7 @@ namespace Octopus.Client
             WorkerPools = new WorkerPoolRepository(this);
             ScopedUserRoles = new ScopedUserRoleRepository(this);
             UserPermissions = new UserPermissionsRepository(this);
+            UserTeams = new UserTeamsRepository(this);
 
             loadRootResource = new Lazy<Task<RootResource>>(LoadRootDocumentInner, true);
             loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
@@ -162,6 +163,7 @@ namespace Octopus.Client
         public IWorkerRepository Workers { get; }
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
+        public IUserTeamsRepository UserTeams { get; }
 
         public async Task<bool> HasLink(string name)
         {
