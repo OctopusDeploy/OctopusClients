@@ -10,6 +10,7 @@ namespace Octopus.Client
         ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
         IUserPermissionsRepository UserPermissions { get; }
+        IUserTeamsRepository UserTeams { get; }
         ICommunityActionTemplateRepository CommunityActionTemplates { get; }
         IUserInvitesRepository UserInvites { get; }
 

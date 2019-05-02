@@ -104,6 +104,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
+    Octopus.Client.Repositories.Async.IUserTeamsRepository UserTeams { get; }
     Task<Boolean> HasLink(String)
     Task<String> Link(String)
   }
@@ -117,6 +118,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
+    Octopus.Client.Repositories.IUserTeamsRepository UserTeams { get; }
     Boolean HasLink(String)
     String Link(String)
   }
@@ -330,6 +332,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
+    Octopus.Client.Repositories.Async.IUserTeamsRepository UserTeams { get; }
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
@@ -450,6 +453,7 @@ Octopus.Client
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
+    Octopus.Client.Repositories.IUserTeamsRepository UserTeams { get; }
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
@@ -4303,6 +4307,15 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
   }
+  class TeamNameResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Name { get; set; }
+  }
   class TeamResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6263,6 +6276,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<UserRoleResource>
   {
   }
+  interface IUserTeamsRepository
+    Octopus.Client.Repositories.ICanExtendSpaceContext<IUserTeamsRepository>
+  {
+    Octopus.Client.Model.TeamNameResource[] Get(Octopus.Client.Model.UserResource)
+  }
   interface IVariableSetRepository
     Octopus.Client.Repositories.IGet<VariableSetResource>
     Octopus.Client.Repositories.IModify<VariableSetResource>
@@ -6856,6 +6874,11 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<UserRoleResource>
     Octopus.Client.Repositories.Async.IDelete<UserRoleResource>
   {
+  }
+  interface IUserTeamsRepository
+    Octopus.Client.Repositories.Async.ICanExtendSpaceContext<IUserTeamsRepository>
+  {
+    Task<TeamNameResource[]> Get(Octopus.Client.Model.UserResource)
   }
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>
