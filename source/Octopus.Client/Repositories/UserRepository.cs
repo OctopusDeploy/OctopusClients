@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
-using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
@@ -22,7 +20,6 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         SpaceResource[] GetSpaces(UserResource user);
-        TeamNameResource[] GetTeams(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
@@ -97,12 +94,6 @@ namespace Octopus.Client.Repositories
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
-        }
-
-        public TeamNameResource[] GetTeams(UserResource user)
-        {
-            if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<TeamNameResource[]>(user.Link("Teams"));
         }
 
         public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)
