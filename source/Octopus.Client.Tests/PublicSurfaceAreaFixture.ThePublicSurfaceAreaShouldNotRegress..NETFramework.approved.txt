@@ -688,7 +688,9 @@ Octopus.Client.Editors
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String)
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
     Octopus.Client.Editors.LibraryVariableSetEditor Customize(Action<LibraryVariableSetResource>)
+    Octopus.Client.Editors.LibraryVariableSetEditor Load(String)
     Octopus.Client.Editors.LibraryVariableSetEditor Save()
+    Octopus.Client.Model.LibraryVariableSetUsageResource Usages()
   }
   class LifecycleEditor
     Octopus.Client.Editors.IResourceEditor<LifecycleResource, LifecycleEditor>
@@ -2777,6 +2779,21 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, PropertyValueResource> Variables { get; set; }
   }
+  class LibraryVariableSetProjectUsage
+  {
+    .ctor()
+    Boolean IsCurrentlyBeingUsedInProject { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String ProjectSlug { get; set; }
+    ICollection<LibraryVariableSetReleaseUsageEntry> Releases { get; set; }
+  }
+  class LibraryVariableSetReleaseUsageEntry
+  {
+    .ctor()
+    String ReleaseId { get; set; }
+    String ReleaseVersion { get; set; }
+  }
   class LibraryVariableSetResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2804,6 +2821,16 @@ Octopus.Client.Model
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.LibraryVariableSetResource Clear()
+  }
+  class LibraryVariableSetUsageResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Int32 CountOfProjectsUserCannotSee { get; set; }
+    Int32 CountOfReleasesUserCannotSee { get; set; }
+    ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
   }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
@@ -5922,6 +5949,7 @@ Octopus.Client.Repositories
     void TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
   interface ILibraryVariableSetRepository
+    Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<LibraryVariableSetResource>
     Octopus.Client.Repositories.IGet<LibraryVariableSetResource>
     Octopus.Client.Repositories.IModify<LibraryVariableSetResource>
