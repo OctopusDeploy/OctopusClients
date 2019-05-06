@@ -31,37 +31,81 @@ namespace Octopus.Client.Repositories
 
         public IOctopusClient Client => client;
 
-        private void AssertSpaceIdMatchesResource(TResource resource, bool isEmptySpaceAllowed = false)
+        private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
+                if (resource.IsMixedScope()) 
+                    CheckMixedScopeResource();
+                else
+                    CheckSpaceScopedResource();
+
+            CheckSystemOnlyResource();
+            
+            void CheckSystemOnlyResource()
             {
-                Repository.Scope
-                    .Apply(space =>
+                var errorMessage =
+                    Repository.Scope.Apply(
+                        whenSpaceScoped: space => "This resource cannot be created or modified by a space scoped repository. Please use a system scoped repository for this.",
+                        whenSystemScoped: () => string.Empty, 
+                        whenUnspecifiedScope: () => string.Empty);
+                
+                if(!string.IsNullOrWhiteSpace(errorMessage))
+                    throw new ArgumentException(errorMessage);
+            }
+        
+            void CheckMixedScopeResource()
+            {
+                var errorMessage =
+                    Repository.Scope.Apply(
+                        whenSpaceScoped: space =>
                         {
-                            var errorMessageTemplate = $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
-
-                            if (isEmptySpaceAllowed && string.IsNullOrWhiteSpace(spaceResource.SpaceId))
-                                return (string) null;
+                            if (string.IsNullOrWhiteSpace(spaceResource.SpaceId))
+                                return $"This resource cannot be created or modified by a repository scoped to {space.Id}. Please use a space scoped repository for the default space instead.";
                             
-                            if (string.IsNullOrWhiteSpace(spaceResource.SpaceId) && !space.IsDefault)
-                                throw new ArgumentException(
-                                    $"{errorMessageTemplate} the default space.");
-
-                            if (!string.IsNullOrWhiteSpace(spaceResource.SpaceId) && spaceResource.SpaceId != space.Id)
-                                throw new ArgumentException(
-                                    $"{errorMessageTemplate} {spaceResource.SpaceId}.");
-                            
-                            return (string) null;
+                            return spaceResource.SpaceId == space.Id
+                                ? string.Empty
+                                : $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to {spaceResource.SpaceId}";
                         },
-                    () => null,
-                    () => null);
+                        whenSystemScoped: () => spaceResource.SpaceId != null 
+                        ? "This resource cannot be created or modified by a system scoped repository. Please use a space scoped repository for the default space instead"
+                        : string.Empty, 
+                        whenUnspecifiedScope: () => string.Empty);
+                    
+                if(!string.IsNullOrWhiteSpace(errorMessage))
+                    throw new ArgumentException(errorMessage);
+            }
+        
+            void CheckSpaceScopedResource()
+            {
+                var errorMessage =
+                    Repository.Scope.Apply(
+                        whenSpaceScoped: space =>
+                        {
+                            var errorMessageTemplate =
+                                $"The resource has a different space specified than the one specified by the repository scope. Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {space.Id}, or use a repository that is scoped to";
+        
+                            if (!string.IsNullOrWhiteSpace(spaceResource.SpaceId) && spaceResource.SpaceId != space.Id)
+                                return $"{errorMessageTemplate} {spaceResource.SpaceId}.";
+        
+                            return string.Empty;
+                        },
+                        whenSystemScoped: () => 
+                            string.IsNullOrWhiteSpace(spaceResource.SpaceId) 
+                            ? $"This resource cannot be created or modified by a system scoped repository. Please use a space scoped repository for the default space instead."
+                            : $"This resource cannot be created or modified by a system scoped repository. Please use a space scoped repository for {spaceResource.SpaceId} instead.",
+                        whenUnspecifiedScope: () => string.Empty);
+        
+                if(!string.IsNullOrWhiteSpace(errorMessage))
+                    throw new ArgumentException(errorMessage);
             }
         }
+
         
+
         public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            AssertSpaceIdMatchesResource(resource, isEmptySpaceAllowed: true);
+            AssertSpaceIdMatchesResource(resource);
             
             var link = ResolveLink();
             EnrichSpaceId(resource);
@@ -208,7 +252,32 @@ namespace Octopus.Client.Repositories
             return Repository.Link(CollectionLinkName);
         }
     }
-
+    
+    public static class ResourceExtensions
+    {
+        public static bool IsMixedScope(this IResource resource)
+        {
+            //todo: discuss different approaches
+            // downsides:
+            // - potentially wrong
+            // - unshared understanding of mixed with server side code
+            // - prone to being forgotten about
+            // updsides:
+            // - really easy to do
+            // - centralized within the client
+            // other ways of doing this:
+            // - marker interfaces
+            // - ??
+            return 
+                resource is InvitationResource 
+                || resource is ScopedUserRoleResource 
+                || resource is UserPermissionSetResource 
+                || resource is EventResource 
+                || resource is TaskResource 
+                || resource is TeamResource;
+        }
+    }
+    
     // ReSharper restore MemberCanBePrivate.Local
     // ReSharper restore UnusedMember.Local
     // ReSharper restore MemberCanBeProtected.Local
