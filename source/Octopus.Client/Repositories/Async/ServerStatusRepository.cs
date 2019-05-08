@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<ServerStatusResource> GetServerStatus();
         Task<SystemInfoResource> GetSystemInfo(ServerStatusResource status);
-        Task<ServerStatusHealthResource> GetServerHealth(ServerStatusResource status);
+        Task<ServerStatusHealthResource> GetServerHealth();
     }
 
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
@@ -29,10 +29,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<SystemInfoResource>(status.Link("SystemInfo"));
         }
 
-        public Task<ServerStatusHealthResource> GetServerHealth(ServerStatusResource status)
+        public async Task<ServerStatusHealthResource> GetServerHealth()
         {
-            if (status == null) throw new ArgumentNullException("status");
-            return Client.Get<ServerStatusHealthResource>(status.Link("Health"));
+            return await Client.Get<ServerStatusHealthResource>(await Repository.Link("ServerHealthStatus").ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 }

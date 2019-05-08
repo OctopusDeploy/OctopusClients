@@ -6122,7 +6122,7 @@ Octopus.Client.Repositories
   }
   interface IServerStatusRepository
   {
-    Octopus.Client.Model.ServerStatusHealthResource GetServerHealth(Octopus.Client.Model.ServerStatusResource)
+    Octopus.Client.Model.ServerStatusHealthResource GetServerHealth()
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
@@ -6720,7 +6720,7 @@ Octopus.Client.Repositories.Async
   }
   interface IServerStatusRepository
   {
-    Task<ServerStatusHealthResource> GetServerHealth(Octopus.Client.Model.ServerStatusResource)
+    Task<ServerStatusHealthResource> GetServerHealth()
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
