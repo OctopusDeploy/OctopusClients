@@ -3999,6 +3999,14 @@ Octopus.Client.Model
     String Location { get; set; }
     List<ServerActivityResource> SupervisedActivities { get; set; }
   }
+  class ServerConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String ServerUri { get; set; }
+  }
   class ServerStatusHealthResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
