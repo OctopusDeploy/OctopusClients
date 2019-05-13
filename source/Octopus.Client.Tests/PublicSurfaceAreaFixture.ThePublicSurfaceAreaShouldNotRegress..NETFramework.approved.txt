@@ -212,6 +212,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    Octopus.Client.Repositories.Async.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
@@ -229,6 +230,7 @@ Octopus.Client
     Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
+    Octopus.Client.Repositories.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
@@ -303,6 +305,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
     Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
+    Octopus.Client.Repositories.Async.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
     Octopus.Client.Repositories.Async.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
@@ -424,6 +427,7 @@ Octopus.Client
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
     Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
+    Octopus.Client.Repositories.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.ILifecyclesRepository Lifecycles { get; }
     Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
@@ -2836,6 +2840,60 @@ Octopus.Client.Model
     Int32 CountOfProjectsUserCannotSee { get; set; }
     Int32 CountOfReleasesUserCannotSee { get; set; }
     ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
+  }
+  abstract class LicenseKinds
+  {
+    static System.String CommercialLicense
+    static System.String CommunityEdition
+    static System.String Trial
+    static System.String Unlicensed
+  }
+  class LicenseLimitStatusResource
+  {
+    .ctor()
+    Int32 CurrentUsage { get; set; }
+    String Disposition { get; set; }
+    Int32 EffectiveLimit { get; set; }
+    String EffectiveLimitDescription { get; set; }
+    Boolean IsUnlimited { get; set; }
+    String Message { get; set; }
+    String Name { get; set; }
+  }
+  abstract class LicenseMessageDispositions
+  {
+    static System.String Error
+    static System.String Information
+    static System.String Warning
+  }
+  class LicenseMessageResource
+  {
+    .ctor()
+    String Disposition { get; set; }
+    String Message { get; set; }
+  }
+  class LicenseResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String LicenseText { get; set; }
+    String SerialNumber { get; set; }
+  }
+  class LicenseStatusResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String ComplianceSummary { get; set; }
+    Int32 DaysToEffectiveExpiryDate { get; set; }
+    DateTime EffectiveExpiryDate { get; set; }
+    String HostingEnvironment { get; set; }
+    Boolean IsCompliant { get; set; }
+    String LicenseKind { get; set; }
+    Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
+    Octopus.Client.Model.LicenseMessageResource[] Messages { get; set; }
   }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
@@ -5968,6 +6026,12 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String)
     Octopus.Client.Editors.LibraryVariableSetEditor CreateOrModify(String, String)
   }
+  interface ILicensesRepository
+  {
+    Octopus.Client.Model.LicenseResource GetCurrent()
+    Octopus.Client.Model.LicenseStatusResource GetStatus()
+    Octopus.Client.Model.LicenseResource UpdateCurrent(Octopus.Client.Model.LicenseResource)
+  }
   interface ILifecyclesRepository
     Octopus.Client.Repositories.IGet<LifecycleResource>
     Octopus.Client.Repositories.ICreate<LifecycleResource>
@@ -6566,6 +6630,12 @@ Octopus.Client.Repositories.Async
     Task<LibraryVariableSetEditor> CreateOrModify(String)
     Task<LibraryVariableSetEditor> CreateOrModify(String, String)
   }
+  interface ILicensesRepository
+  {
+    Task<LicenseResource> GetCurrent()
+    Task<LicenseStatusResource> GetStatus()
+    Task<LicenseResource> UpdateCurrent(Octopus.Client.Model.LicenseResource)
+  }
   interface ILifecyclesRepository
     Octopus.Client.Repositories.Async.IGet<LifecycleResource>
     Octopus.Client.Repositories.Async.ICreate<LifecycleResource>
@@ -6942,6 +7012,11 @@ Octopus.Client.Serialization
 {
   class AccountConverter
     Octopus.Client.Serialization.InheritedClassConverter<AccountResource, AccountType>
+  {
+    .ctor()
+  }
+  class DateConverter
+    IsoDateTimeConverter
   {
     .ctor()
   }

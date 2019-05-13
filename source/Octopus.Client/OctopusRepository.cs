@@ -72,6 +72,7 @@ namespace Octopus.Client
             Interruptions = new InterruptionRepository(this);
             LibraryVariableSets = new LibraryVariableSetRepository(this);
             Lifecycles = new LifecyclesRepository(this);
+            Licenses = new LicensesRepository(this);
             MachinePolicies = new MachinePolicyRepository(this);
             MachineRoles = new MachineRoleRepository(this);
             Machines = new MachineRepository(this);
@@ -107,6 +108,7 @@ namespace Octopus.Client
             loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
         }
 
+
         public IOctopusClient Client { get; }
         public RepositoryScope Scope { get; }
         public IAccountRepository Accounts { get; }
@@ -131,6 +133,7 @@ namespace Octopus.Client
         public IInterruptionRepository Interruptions { get; }
         public ILibraryVariableSetRepository LibraryVariableSets { get; }
         public ILifecyclesRepository Lifecycles { get; }
+        public ILicensesRepository Licenses { get; }
         public IMachinePolicyRepository MachinePolicies { get; }
         public IMachineRepository Machines { get; }
         public IMachineRoleRepository MachineRoles { get; }
