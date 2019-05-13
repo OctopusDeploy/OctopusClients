@@ -3,163 +3,275 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
+using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Tests.Repositories.Async
 {
     [TestFixture]
     public class BasicRepositoryFixture
     {
-        private TestSpaceResourceAsyncRepository subject;
+        private TestSpaceResourceAsyncRepository repoForSpaceScopedResource;
+        private TestMixedResourceAsyncRepository repoForMixedScopedResource;
+        private TestSystemResourceAsyncRepository repoForSystemScopedResource;
         private IOctopusAsyncRepository mockRepo;
-        private SpaceResource defaultSpace;
+        private SpaceResource someSpace;
+        private SpaceResource otherSpace;
 
         [SetUp]
         public void Setup()
         {
             mockRepo = Substitute.For<IOctopusAsyncRepository>();
             
-            subject = new TestSpaceResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
+            repoForSpaceScopedResource = new TestSpaceResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
+            repoForMixedScopedResource = new TestMixedResourceAsyncRepository(mockRepo, "");
+            repoForSystemScopedResource = new TestSystemResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
             
-            defaultSpace = new SpaceResource
+            someSpace = new SpaceResource
             {
                 Id = "Spaces-1",
-                Name = "Default Space",
-                IsDefault = true
+                Name = "Some Space",
+                IsDefault = false
             };
-            mockRepo.Scope.Returns(RepositoryScope.ForSpace(defaultSpace));
+
+            otherSpace = new SpaceResource()
+            {
+                Id = "Spaces-2",
+                Name = "Another space",
+                IsDefault = false
+            };
+            
+            mockRepo.Scope.Returns(RepositoryScope.ForSpace(someSpace));
         }
         
         [Test]
-        public void Create_ResourceWithNoSpaceId_RepoSetsTheSpace()
+        public void SpaceRepo_ResourceWithSpaceIdSet_NonMatchingSpaceIdThrows()
         {
-            var resource = CreateProjectResourceForSpace(null);
-            Assert.DoesNotThrow(() => subject.Create(resource).Wait());
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateSpaceResourceForSpace(otherSpace.Id);
+            Action activityUnderTest= () => repoForSpaceScopedResource.Create(resource).Wait();
+
+            activityUnderTest
+                .ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>()
+                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
+        }
+        
+        [Test]
+        public void SpaceRepo_ResourceWithSpaceIdSet_MatchingSpaceIdOk()
+        {
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateSpaceResourceForSpace(someSpace.Id);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
+            resource.SpaceId.Should()
+                .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
+        }
+        
+        [Test]
+        public void SpaceRepo_ResourceWithNoSpaceId_Ok()
+        {
+            var resource = CreateSpaceResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
             resource.SpaceId
-                .Should().Be(defaultSpace.Id, $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
+                .Should().Be(someSpace.Id, $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
         }
         
         [Test]
-        public void Create_ResourceInExplicitSpace_NonMatchingSpaceRepoShouldThrow()
+        public void SpaceRepo_MixedResourceWithSpaceIdSet_MatchingSpaceIdOk()
         {
-            var resource = CreateProjectResourceForSpace("Spaces-2");
-            Action activityUnderTest= () => subject.Create(resource).Wait();
-
-            activityUnderTest
-                .ShouldThrow<ArgumentException>()
-                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
-        }
-
-        [Test]
-        public void Create_ResourceInExplicitSpace_MatchingSpaceRepoIsOk()
-        {
-            var resource = CreateProjectResourceForSpace(defaultSpace.Id);
-            Assert.DoesNotThrow(() => subject.Create(resource).Wait());
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateMixedResourceForSpace(someSpace.Id);
+            
+            Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
             resource.SpaceId.Should()
-                .Be(defaultSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
-        }
-        
-        [Test]
-        public void Update_ResourceInExplicitSpace_MatchingSpaceRepoIsOk()
-        {
-            var resource = CreateProjectResourceForSpace(defaultSpace.Id);
-            
-            Assert.DoesNotThrow(() => subject.Modify(resource).Wait());
-            resource.SpaceId.Should()
-                .Be(defaultSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
-        }
-        
-        [Test]
-        public void Update_ResourceInExplicitSpace_NonMatchingSpaceRepoShouldThrow()
-        {
-            var resource = CreateProjectResourceForSpace("Spaces-2");
-            Action activityUnderTest = () => subject.Modify(resource).Wait();
-            
-            activityUnderTest
-                .ShouldThrow<ArgumentException>()
-                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
+                .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
         }
 
         [Test]
-        public void Update_ResourceWithImpliedSpace_DefaultSpaceRepoIsOk()
+        public void SpaceRepo_MixedResourceWithSpaceIdSet_NonMatchingSpaceIdThrows()
         {
-            var resource = CreateProjectResourceForSpace(null);
-            Assert.DoesNotThrow(() => subject.Modify(resource).Wait());
-            
-        }
-        
-        [Test]
-        public void Update_ResourceWithImpliedSpace_AnyOtherSpaceShouldThrow()
-        {
-            SetupRepositoryToUseADifferentSpace();
-            var resource = CreateProjectResourceForSpace(null);
-            Action activityUnderTest = () => subject.Modify(resource).Wait();
-            
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateMixedResourceForSpace(otherSpace.Id);
+            Action activityUnderTest = () => repoForMixedScopedResource.Modify(resource).Wait();
             activityUnderTest
-                .ShouldThrow<ArgumentException>()
-                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-2, or use a repository that is scoped to the default space.");
-        }
-
-        [Test]
-        public void Delete_ResourceInExplicitSpace_NonMatchingSpaceRepoShouldThrow()
-        {
-            var resource = CreateProjectResourceForSpace("Spaces-2");
-            Action activityUnderTest = () => subject.Delete(resource).Wait();
-            
-            activityUnderTest
-                .ShouldThrow<ArgumentException>()
+                .ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
         }
         
         [Test]
-        public void Delete_ResourceInExplicitSpace_MatchingSpaceRepoIsOk()
+        public void SpaceRepo_MixedResourceWithNoSpaceId_Ok()
         {
-            var resource = CreateProjectResourceForSpace(defaultSpace.Id);
-            Assert.DoesNotThrow(() => subject.Delete(resource).Wait());
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateMixedResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
+            resource.SpaceId.Should().Be(someSpace.Id,
+                $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
+        }
+
+        [Test]
+        public void SpaceRepo_SystemResource_Throws()
+        {
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            var resource = CreateSystemResource();
+            Action activityUnderTest = () => repoForSystemScopedResource.Create(resource).Wait();
+            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>();
+        }
+
+        [Test]
+        public void SystemRepo_SpaceResourceWithSpaceId_Throws()
+        {
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateSpaceResourceForSpace(someSpace.Id);
+            Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
         }
         
         [Test]
-        public void Delete_ResourceWithImpliedSpace_DefaultSpaceRepoIsOk()
+        public void SystemRepo_SpaceResourceWithNoSpaceId_Throws()
         {
-            var resource = CreateProjectResourceForSpace(null);
-            Assert.DoesNotThrow(() => subject.Delete(resource).Wait());
-
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateSpaceResourceForSpace(null);
+            Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
         }
         
         [Test]
-        public void Delete_ResourceWithImpliedSpace_AnyOtherSpaceRepoShouldThrow()
+        public void SystemRepo_MixedResourceWithSpaceId_NonMatchingThrows()
         {
-            SetupRepositoryToUseADifferentSpace();
-            var resource = CreateProjectResourceForSpace(null);
-            Action activityUnderTest = () => subject.Delete(resource).Wait();
-
-            activityUnderTest
-                .ShouldThrow<ArgumentException>()
-                .WithMessage("The resource has a different space specified than the one specified by the repository scope. Either change the SpaceId on the resource to Spaces-2, or use a repository that is scoped to the default space.");
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateMixedResourceForSpace(someSpace.Id);
+            Action activityUnderTest = () => repoForMixedScopedResource.Create(resource).Wait();
+            activityUnderTest.ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>();
         }
 
-        private void SetupRepositoryToUseADifferentSpace()
+        [Test]
+        public void SystemRepo_MixedResourceNoSpaceId_Ok()
         {
-            mockRepo.Scope.Returns(RepositoryScope.ForSpace(new SpaceResource {Id = "Spaces-2", IsDefault = false}));
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateMixedResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
         }
 
-        private ProjectResource CreateProjectResourceForSpace(string spaceId)
+        [Test]
+        public void SystemRepo_SystemResourceNoSpaceId_Ok()
+        {
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateSystemResource();
+            Assert.DoesNotThrow(() => repoForSystemScopedResource.Create(resource).Wait());
+        }
+
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceSpaceId_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecified();
+            var resource = CreateSpaceResourceForSpace(someSpace.Id);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceId_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecified();
+            var resource = CreateSpaceResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_MixedResourceWithSpaceId_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecified();
+            var resource = CreateMixedResourceForSpace(someSpace.Id);
+            Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_MixedResourceNoSpaceId_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecified();
+            var resource = CreateMixedResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_SystemResource_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecified();
+            var resource = CreateSystemResource();
+            Assert.DoesNotThrow(() => repoForSystemScopedResource.Create(resource).Wait());
+        }
+
+        private ProjectResource CreateSpaceResourceForSpace(string spaceId)
         {
             return new ProjectResource
             {
-                Name = "Foo", 
+                Name = nameof(ProjectResource), 
                 SpaceId = spaceId, 
                 Links = new LinkCollection { {"Self", ""} }
             };
         }
+        
+        private TeamResource CreateMixedResourceForSpace(string spaceId)
+        {
+            return new TeamResource
+            {
+                Name = nameof(TeamResource), 
+                SpaceId = spaceId, 
+                Links = new LinkCollection { {"Self", ""} }
+            };
+        }
+        
+        private UserRoleResource CreateSystemResource()
+        {
+            return new UserRoleResource
+            {
+                Name = nameof(UserRoleResource), 
+                Links = new LinkCollection { {"Self", ""} }
+            };
+        }
 
-        private class TestSpaceResourceAsyncRepository : BasicRepository<ProjectResource>
+        private class TestSpaceResourceAsyncRepository : Client.Repositories.Async.BasicRepository<ProjectResource>
         {
             public TestSpaceResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null) : base(repository, collectionLinkName, getCollectionLinkName)
             {
             }
         }
+        
+        private class TestMixedResourceAsyncRepository : Client.Repositories.Async.MixedScopeBaseRepository<TeamResource>
+        {
+            public TestMixedResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
+            {
+            }
+
+            protected TestMixedResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) : base(repository, collectionLinkName, userDefinedSpaceContext)
+            {
+            }
+        }
+        
+        private class TestSystemResourceAsyncRepository : Client.Repositories.Async.BasicRepository<UserRoleResource>
+        {
+            public TestSystemResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null) : base(repository, collectionLinkName, getCollectionLinkName)
+            {
+            }
+        }
     }
+    
+    public static class TestExtensions
+    {
+        public static void SetupScopeForSpace(this IOctopusAsyncRepository repo, string space)
+        {
+            repo.Scope.Returns(RepositoryScope.ForSpace(new SpaceResource {Id = space, IsDefault = false}));
+        }
+
+        public static void SetupScopeForSystem(this IOctopusAsyncRepository repo)
+        {
+            repo.Scope.Returns(RepositoryScope.ForSystem());
+        }
+        
+        public static void SetupScopeAsUnspecified(this IOctopusAsyncRepository repo)
+        {
+            repo.Scope.Returns(RepositoryScope.Unspecified());
+        }
+    }
+
 }
