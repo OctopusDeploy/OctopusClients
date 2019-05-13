@@ -142,7 +142,7 @@ namespace Octopus.Client.Tests.Repositories
             mockRepo.SetupScopeForSystem();
             var resource = CreateMixedResourceForSpace(someSpace.Id);
             Action activityUnderTest = () => repoForMixedScopedResource.Create(resource);
-            activityUnderTest.ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
         }
 
         [Test]
@@ -175,6 +175,15 @@ namespace Octopus.Client.Tests.Repositories
             mockRepo.SetupScopeAsUnspecified();
             var resource = CreateSpaceResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource));
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceIdDefaultSpaceMissing_Throws()
+        {
+            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            var resource = CreateSpaceResourceForSpace(null);
+            Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
+            actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
         }
         
         [Test]
@@ -271,6 +280,13 @@ namespace Octopus.Client.Tests.Repositories
         public static void SetupScopeAsUnspecified(this IOctopusRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
+            repo.LoadSpaceRootDocument().Returns(new SpaceRootResource());
+        }
+        
+        public static void SetupScopeAsUnspecifiedWithDefaultSpaceDisabled(this IOctopusRepository repo)
+        {
+            repo.Scope.Returns(RepositoryScope.Unspecified());
+            repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
         }
     }
 }

@@ -142,7 +142,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             mockRepo.SetupScopeForSystem();
             var resource = CreateMixedResourceForSpace(someSpace.Id);
             Action activityUnderTest = () => repoForMixedScopedResource.Create(resource).Wait();
-            activityUnderTest.ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
         }
 
         [Test]
@@ -271,6 +271,13 @@ namespace Octopus.Client.Tests.Repositories.Async
         public static void SetupScopeAsUnspecified(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
+            repo.LoadSpaceRootDocument().Returns(new SpaceRootResource());
+        }
+        
+        public static void SetupScopeAsUnspecifiedWithDefaultSpaceDisabled(this IOctopusAsyncRepository repo)
+        {
+            repo.Scope.Returns(RepositoryScope.Unspecified());
+            repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
         }
     }
 

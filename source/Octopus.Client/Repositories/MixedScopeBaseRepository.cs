@@ -36,6 +36,22 @@ namespace Octopus.Client.Repositories
             }
         }
 
+        protected override void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        {
+                Repository.Scope.Apply(
+                    whenSpaceScoped: space =>
+                    {
+                        if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                            throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                    },
+                    whenSystemScoped: () =>
+                    {
+                        if (spaceResource.SpaceId != null)
+                            throw new SpaceResourceIsIncompatibleWithSystemRepositoryException(spaceResource);
+                    },
+                    whenUnspecifiedScope: () => { });
+        }
+
         protected SpaceContext GetCurrentSpaceContext()
         {
             return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
