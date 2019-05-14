@@ -116,7 +116,21 @@ namespace Octopus.Client.Tests.Repositories.Async
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateSystemResource();
             Action activityUnderTest = () => repoForSystemScopedResource.Create(resource).Wait();
-            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>();
+            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>("Create operations that attempt to modify system resources when the repository is scoped to a space should fail.");
+        }
+
+        [Test]
+        public void SpaceRepo_GetSystemResource_Throws()
+        {
+            mockRepo.SetupScopeForSpace(someSpace.Id);
+            Action activityUnderTest = () => repoForSystemScopedResource.GetAll().Wait();
+            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>("GetAll operations that attempt to access system resources when the repository is scoped to a space should fail.");
+            
+            activityUnderTest = () => repoForSystemScopedResource.Get().Wait();
+            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>("Get operations that attempt to access system resources when the repository is scoped to a space should fail.");
+            
+            activityUnderTest = () => repoForSystemScopedResource.Get("").Wait();
+            activityUnderTest.ShouldThrow<SystemResourceIsIncompatibleWithSpaceScopedRepositoryException>("Get(idOrHref) operations that attempt to access system resources when the repository is scoped to a space should fail.");
         }
 
         [Test]
@@ -127,14 +141,31 @@ namespace Octopus.Client.Tests.Repositories.Async
             Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
             activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
         }
-        
+
         [Test]
         public void SystemRepo_SpaceResourceWithNoSpaceId_Throws()
         {
             mockRepo.SetupScopeForSystem();
             var resource = CreateSpaceResourceForSpace(null);
             Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
-            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>(
+                because:
+                "Create operations that attempt to modify space resources when the repository is scoped to system should fail.");
+        }
+
+        [Test]
+        public void SystemRepo_GetSpaceResource_Throws()
+        {
+            mockRepo.SetupScopeForSystem();
+            var resource = CreateSpaceResourceForSpace(null);
+            Action activityUnderTest = () => repoForSpaceScopedResource.GetAll().Wait();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>(because: "GetAll operations that attempt to access space resources when the repository is scoped to system should fail.");
+            
+            activityUnderTest = () => repoForSpaceScopedResource.Get().Wait();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>(because: "Get operations that attempt to access space resources when the repository is scoped to system should fail.");
+            
+            activityUnderTest = () => repoForSpaceScopedResource.Get("").Wait();
+            activityUnderTest.ShouldThrow<SpaceResourceIsIncompatibleWithSystemRepositoryException>(because: "Get(idOrHref) operations that attempt to access space resources when the repository is scoped to system should fail.");
         }
         
         [Test]
