@@ -5778,6 +5778,12 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
+  class DefaultSpaceNotFoundException
+    ISerializable
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
