@@ -1300,12 +1300,14 @@ Octopus.Client.Exceptions
     Exception
   {
     .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+    .ctor()
   }
   class SystemResourceIsIncompatibleWithSpaceScopedRepositoryException
     ISerializable
     Exception
   {
     .ctor(Octopus.Client.Extensibility.IResource)
+    .ctor()
   }
   class UnsupportedApiVersionException
     ISerializable

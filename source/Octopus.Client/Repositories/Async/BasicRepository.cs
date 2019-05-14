@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -132,9 +133,27 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<TResource>> GetAll()
         {
+            AssertResourceTypeMatchesRepository();
+            
             var link = await ResolveLink().ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
             return await Client.Get<List<TResource>>(link, parameters).ConfigureAwait(false);
+        }
+
+        private void AssertResourceTypeMatchesRepository()
+        {
+            Repository.Scope.Apply(
+                whenSpaceScoped: (space) =>
+                {
+                    if (typeof(IHaveSpaceResource).IsAssignableFrom(typeof(TResource)) == false)
+                        throw new SystemResourceIsIncompatibleWithSpaceScopedRepositoryException();
+                },
+                whenSystemScoped: () =>
+                {
+                    if (typeof(IHaveSpaceResource).IsAssignableFrom(typeof(TResource)))
+                        throw new SpaceResourceIsIncompatibleWithSystemRepositoryException();
+                },
+                whenUnspecifiedScope: () => { });
         }
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
@@ -166,6 +185,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> Get(string idOrHref)
         {
+            AssertResourceTypeMatchesRepository();
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
 
@@ -180,6 +200,7 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<List<TResource>> Get(params string[] ids)
         {
+            AssertResourceTypeMatchesRepository();
             if (ids == null) return new List<TResource>();
             var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             if (actualIds.Length == 0) return new List<TResource>();
