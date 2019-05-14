@@ -1,9 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Client;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
@@ -293,10 +291,6 @@ namespace Octopus.Client.Tests.Repositories
         private class TestMixedResourceRepository : MixedScopeBaseRepository<TeamResource>
         {
             public TestMixedResourceRepository(IOctopusRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
-            {
-            }
-
-            protected TestMixedResourceRepository(IOctopusRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) : base(repository, collectionLinkName, userDefinedSpaceContext)
             {
             }
         }

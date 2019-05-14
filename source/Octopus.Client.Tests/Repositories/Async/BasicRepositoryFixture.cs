@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Tests.Repositories.Async
 {
@@ -137,7 +135,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void SpaceRepo_GetSpaceResource()
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
-            Assert.DoesNotThrow(() => repoForSpaceScopedResource.GetAll());
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.GetAll().Wait());
         }
 
         [Test]
@@ -179,7 +177,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void SystemRepo_GetSystemResource()
         {
             mockRepo.SetupScopeForSystem();
-            Assert.DoesNotThrow(() => repoForSystemScopedResource.GetAll());
+            Assert.DoesNotThrow(() => repoForSystemScopedResource.GetAll().Wait());
         }
         
         [Test]
@@ -286,10 +284,6 @@ namespace Octopus.Client.Tests.Repositories.Async
         private class TestMixedResourceAsyncRepository : Client.Repositories.Async.MixedScopeBaseRepository<TeamResource>
         {
             public TestMixedResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
-            {
-            }
-
-            protected TestMixedResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) : base(repository, collectionLinkName, userDefinedSpaceContext)
             {
             }
         }
