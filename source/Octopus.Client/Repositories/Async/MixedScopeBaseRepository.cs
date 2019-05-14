@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories.Async

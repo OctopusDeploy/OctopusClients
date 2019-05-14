@@ -1209,6 +1209,12 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
+  class DefaultSpaceNotFoundException
+    ISerializable
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+  }
   class OctopusDeserializationException
     ISerializable
     Octopus.Client.Exceptions.OctopusException
@@ -1282,6 +1288,24 @@ Octopus.Client.Exceptions
     String ErrorMessage { get; }
     ReadOnlyCollection<String> Errors { get; }
     Octopus.Client.Exceptions.TDetails DetailsAs()
+  }
+  class ResourceSpaceDoesNotMatchRepositorySpaceException
+    ISerializable
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource, Octopus.Client.Model.SpaceResource)
+  }
+  class SpaceResourceIsIncompatibleWithSystemRepositoryException
+    ISerializable
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+  }
+  class SystemResourceIsIncompatibleWithSpaceScopedRepositoryException
+    ISerializable
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IResource)
   }
   class UnsupportedApiVersionException
     ISerializable
@@ -5778,12 +5802,6 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
-  class DefaultSpaceNotFoundException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
-  }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
@@ -6385,24 +6403,6 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusRepository)
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
-  }
-  class ResourceSpaceDoesNotMatchRepositorySpaceException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource, Octopus.Client.Model.SpaceResource)
-  }
-  class SpaceResourceIsIncompatibleWithSystemRepositoryException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
-  }
-  class SystemResourceIsIncompatibleWithSpaceScopedRepositoryException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IResource)
   }
 }
 Octopus.Client.Repositories.Async

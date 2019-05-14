@@ -1,7 +1,7 @@
 using System;
 using Octopus.Client.Extensibility;
 
-namespace Octopus.Client.Repositories
+namespace Octopus.Client.Exceptions
 {
     public class DefaultSpaceNotFoundException : Exception
     {

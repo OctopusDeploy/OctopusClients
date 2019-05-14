@@ -2,7 +2,7 @@ using System;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
-namespace Octopus.Client.Repositories
+namespace Octopus.Client.Exceptions
 {
     public class ResourceSpaceDoesNotMatchRepositorySpaceException : Exception
     {
