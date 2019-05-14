@@ -6402,6 +6402,27 @@ Octopus.Client.Repositories
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
+  class ResourceSpaceDoesNotMatchRepositorySpaceException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource, Octopus.Client.Model.SpaceResource)
+  }
+  class SpaceResourceIsIncompatibleWithSystemRepositoryException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+  }
+  class SystemResourceIsIncompatibleWithSpaceScopedRepositoryException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IResource)
+  }
 }
 Octopus.Client.Repositories.Async
 {
