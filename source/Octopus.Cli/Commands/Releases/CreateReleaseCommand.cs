@@ -36,7 +36,7 @@ namespace Octopus.Cli.Commands.Releases
             options.Add("defaultpackageversion=|packageversion=", "Default version number of all packages to use for this release. Override per-package using --package.", versionResolver.Default);
             options.Add("version=|releaseNumber=", "[Optional] Release number to use for the new release.", v => VersionNumber = v);
             options.Add("channel=", "[Optional] Channel to use for the new release. Omit this argument to automatically select the best channel.", v => ChannelName = v);
-            options.Add("package=", "[Optional] Version number to use for a step or package in the release. Format: --package={StepNameOrPackageId}:{Version}", v => versionResolver.Add(v));
+            options.Add("package=", "[Optional] Version number to use for a package in the release. Format: StepName:Version or PackageID:Version or StepName:PackageName:Version. StepName, PackageID, and PackageName can be replaced with an asterisk.", v => versionResolver.Add(v));
             options.Add("packagesFolder=", "[Optional] A folder containing NuGet packages from which we should get versions.", v => {v.CheckForIllegalPathCharacters("packagesFolder"); versionResolver.AddFolder(v);});
             options.Add("releasenotes=", "[Optional] Release Notes for the new release. Styling with Markdown is supported.", v => ReleaseNotes = v);
             options.Add("releasenotesfile=", "[Optional] Path to a file that contains Release Notes for the new release. Supports Markdown files.", ReadReleaseNotesFromFile);
@@ -46,7 +46,7 @@ namespace Octopus.Cli.Commands.Releases
             options.Add("whatif", "[Optional, Flag] Perform a dry run but don't actually create/deploy release.", v => WhatIf = true);
 
             options = Options.For("Deployment");
-            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production", v => DeployToEnvironmentNames.Add(v));
+            options.Add("deployto=", "[Optional] Environment to automatically deploy to, e.g., Production; specify this argument multiple times to deploy to multiple environments", v => DeployToEnvironmentNames.Add(v));
         }
 
         public string ChannelName { get; set; }
@@ -57,17 +57,17 @@ namespace Octopus.Cli.Commands.Releases
         public string VersionPreReleaseTag { get; set; }
         public bool WhatIf { get; set; }
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
-            if (!string.IsNullOrWhiteSpace(ChannelName) && !Repository.SupportsChannels())
-                throw new CommandException("Your Octopus server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus server, or remove the --channel argument.");
+            if (!string.IsNullOrWhiteSpace(ChannelName) && !await Repository.SupportsChannels().ConfigureAwait(false))
+                throw new CommandException("Your Octopus Server does not support channels, which was introduced in Octopus 3.2. Please upgrade your Octopus Server, or remove the --channel argument.");
 
-            base.ValidateParameters();
+            await base.ValidateParameters();
         }
 
         public async Task Request()
         {
-            var serverSupportsChannels = ServerSupportsChannels();
+            var serverSupportsChannels = await ServerSupportsChannels();
             commandOutputProvider.Debug(serverSupportsChannels ? "This Octopus Server supports channels" : "This Octopus Server does not support channels");
 
             commandOutputProvider.Debug("Finding project: {Project:l}", ProjectName);
@@ -91,7 +91,7 @@ namespace Octopus.Cli.Commands.Releases
             }
             else if (!string.IsNullOrWhiteSpace(plan.ReleaseTemplate.VersioningPackageStepName))
             {
-                versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName);
+                versionNumber = plan.GetActionVersionNumber(plan.ReleaseTemplate.VersioningPackageStepName, plan.ReleaseTemplate.VersioningPackageReferenceName);
                 commandOutputProvider.Debug("Using version number from package step: {Version:l}", versionNumber);
             }
             else
@@ -167,6 +167,12 @@ namespace Octopus.Cli.Commands.Releases
             {
                 // Actually create the release!
                 commandOutputProvider.Debug("Creating release...");
+
+                // if no release notes were provided on the command line, but the project has a template, then use the template
+                if (string.IsNullOrWhiteSpace(ReleaseNotes) && !string.IsNullOrWhiteSpace(project.ReleaseNotesTemplate))
+                {
+                    ReleaseNotes = project.ReleaseNotesTemplate;
+                }
                 
                 release = await Repository.Releases.Create(new ReleaseResource(versionNumber, project.Id, plan.Channel?.Id)
                     {
@@ -201,7 +207,7 @@ namespace Octopus.Cli.Commands.Releases
 
             // All Octopus 3.2+ servers should have the Channels hypermedia link, we should use the channel information
             // to select the most appropriate channel, or provide enough information to proceed from here
-            if (ServerSupportsChannels())
+            if (await ServerSupportsChannels().ConfigureAwait(false))
             {
                 commandOutputProvider.Debug("Automatically selecting the best channel for this release...");
                 return await AutoSelectBestReleasePlanOrThrow(project).ConfigureAwait(false);
@@ -212,9 +218,9 @@ namespace Octopus.Cli.Commands.Releases
             return await releasePlanBuilder.Build(Repository, project, null, VersionPreReleaseTag).ConfigureAwait(false);
         }
 
-        private bool ServerSupportsChannels()
+        private Task<bool> ServerSupportsChannels()
         {
-            return Repository.Client.RootDocument.HasLink("Channels");
+            return Repository.HasLink("Channels");
         }
 
         async Task<ReleasePlan> AutoSelectBestReleasePlanOrThrow(ProjectResource project)

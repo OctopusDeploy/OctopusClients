@@ -13,8 +13,8 @@ namespace Octopus.Client.Repositories.Async
 
     class LifecyclesRepository : BasicRepository<LifecycleResource>, ILifecyclesRepository
     {
-        public LifecyclesRepository(IOctopusAsyncClient client)
-            : base(client, "Lifecycles")
+        public LifecyclesRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Lifecycles")
         {
         }
 

@@ -15,13 +15,18 @@ namespace Octopus.Client.Repositories
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
     {
-        public ActionTemplateRepository(IOctopusClient client) : base(client, "ActionTemplates")
+        public ActionTemplateRepository(IOctopusRepository repository) : base(repository, "ActionTemplates")
         {
         }
 
         public List<ActionTemplateSearchResource> Search()
         {
-            return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+            return Client.Get<List<ActionTemplateSearchResource>>(Repository.Link("ActionTemplatesSearch"));
+        }
+
+        public List<ActionTemplateCategoryResource> Categories()
+        {
+            return Client.Get<List<ActionTemplateCategoryResource>>(Repository.Link("ActionTemplatesCategories"));
         }
 
         public ActionTemplateResource GetVersion(ActionTemplateResource resource, int version)

@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Octopus.Cli.Commands.WorkerPool;
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListWorkerPoolsCommandFixture: ApiCommandFixtureBase

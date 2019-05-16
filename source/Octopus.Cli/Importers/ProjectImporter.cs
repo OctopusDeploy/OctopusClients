@@ -53,7 +53,8 @@ namespace Octopus.Cli.Importers
             var importedObject = FileSystemImporter.Import<ProjectExport>(FilePath, typeof(ProjectImporter).GetAttributeValue((ImporterAttribute ia) => ia.EntityType));
 
             var project = importedObject.Project;
-            if (new SemanticVersion(Repository.Client.RootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+            if (new SemanticVersion(rootDocument.Version) >= new SemanticVersion(2, 6, 0, 0))
             {
                 var existingLifecycle = await CheckProjectLifecycle(importedObject.Lifecycle).ConfigureAwait(false);
                 if (existingLifecycle == null)
@@ -156,9 +157,9 @@ namespace Octopus.Cli.Importers
                     (await ImportProjectChannels(validatedImportSettings.Channels.ToList(), importedProject, validatedImportSettings.ChannelLifecycles).ConfigureAwait(false))
                         .ToDictionary(k => k.Key, v => v.Value);
 
-                await MapReleaseCreationStrategyChannel(importedProject, importedChannels);
+                await MapReleaseCreationStrategyChannel(importedProject, importedChannels).ConfigureAwait(false);
 
-                await MapChannelsToAction(importeDeploymentProcess, importedChannels, oldActionChannels);
+                await MapChannelsToAction(importeDeploymentProcess, importedChannels, oldActionChannels).ConfigureAwait(false);
 
                 await ImportVariableSets(validatedImportSettings.VariableSet, importedProject, validatedImportSettings.Environments, validatedImportSettings.Machines, importedChannels, validatedImportSettings.ScopeValuesUsed).ConfigureAwait(false);
 
@@ -549,7 +550,7 @@ namespace Octopus.Cli.Importers
                 existingProject.IncludedLibraryVariableSetIds.Clear();
                 existingProject.IncludedLibraryVariableSetIds.AddRange(libraryVariableSets.Values.Select(v => v.Id));
                 existingProject.Slug = project.Slug;
-                existingProject.VersioningStrategy.DonorPackageStepId = project.VersioningStrategy.DonorPackageStepId;
+                existingProject.VersioningStrategy.DonorPackage = project.VersioningStrategy.DonorPackage;
                 existingProject.VersioningStrategy.Template = project.VersioningStrategy.Template;
 
                 return await Repository.Projects.Modify(existingProject).ConfigureAwait(false);

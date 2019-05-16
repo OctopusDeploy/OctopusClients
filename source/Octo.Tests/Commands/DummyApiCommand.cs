@@ -3,9 +3,8 @@ using Octopus.Cli.Commands;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
-using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     public class DummyApiCommand : ApiCommand
     {

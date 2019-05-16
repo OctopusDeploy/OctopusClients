@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
-using Octopus.Client;
-using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
-using Serilog;
-using FluentAssertions.Common;
 using Octopus.Cli.Commands.Releases;
 using Octopus.Cli.Model;
 using Octopus.Cli.Util;
+using Octopus.Client;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Model;
+using Octopus.Client.Repositories.Async;
+using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ReleasePlanBuilderTests
@@ -180,7 +176,7 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void SinglePackageStep_ShouldBeViblePlan()
+        public void SinglePackageStep_ShouldBeViablePlan()
         {
             // arrange
             var deploymentStepResource = ResourceBuilderHelpers.GetStep();
@@ -226,7 +222,6 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-
         public void MultipleSteps_OneNotResolvable_ShouldNotBeViablePlan()
         {
             // arrange
@@ -260,6 +255,39 @@ namespace Octopus.Cli.Tests.Commands
 
             // assert
             plan.IsViableReleasePlan().Should().BeTrue();
+        }
+
+        [Test]
+        public void ChannelVersionRuleForNamedPackageReference_ShouldBeUsedToFilterPackages()
+        {
+            // arrange
+            var deploymentStepResource = ResourceBuilderHelpers.GetStep();
+            var action = ResourceBuilderHelpers.GetAction();
+            action.Packages.Add(new PackageReference("Acme", "Acme", "feeds-builtin", PackageAcquisitionLocation.Server));
+            deploymentStepResource.Actions.Add(action);
+            deploymentProcessResource.Steps.Add(deploymentStepResource);
+            channelResource.AddRule(new ChannelVersionRuleResource
+            {
+                ActionPackages = new List<DeploymentActionPackageResource>
+                {
+                    new DeploymentActionPackageResource(action.Name, "Acme")
+                },
+                VersionRange = "(,1.0)"
+            });
+            
+            packages.Add(new PackageResource { Version = "1.0.1"});
+
+            releaseTemplateResource.Packages.Add(new ReleaseTemplatePackage{ActionName = action.Name, PackageReferenceName = "Acme", IsResolvable = true});
+            channelVersionRuleTestResult.IsSatified();
+            
+            repository.Client
+                .Get<List<PackageResource>>(Arg.Any<string>(), Arg.Is<IDictionary<string, object>>(d => d.ContainsKey("versionRange") && (string)d["versionRange"] == "(,1.0)")).Returns(new List<PackageResource>());
+            
+            // act
+            var plan = ExecuteBuild();
+
+            // assert
+            plan.IsViableReleasePlan().Should().BeFalse();
         }
 
         private static ReleaseTemplatePackage GetReleaseTemplatePackage()
@@ -325,6 +353,8 @@ namespace Octopus.Cli.Tests.Commands
             string version, IPackageVersionResolver versionResolver)
         {
             versionResolver.ResolveVersion(releaseTemplatePackage.ActionName, releaseTemplatePackage.PackageId)
+                .Returns(version);
+            versionResolver.ResolveVersion(releaseTemplatePackage.ActionName, releaseTemplatePackage.PackageId, null)
                 .Returns(version);
             return releaseTemplatePackage;
         }

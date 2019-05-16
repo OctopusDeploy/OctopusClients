@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Cli.Infrastructure;
+using Octopus.Cli.Model;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
@@ -56,7 +57,7 @@ namespace Octopus.Cli.Commands.Releases
                     if (feed == null)
                         throw new CommandException(string.Format("Could not find a feed with ID {0}, which is used by step: " + unresolved.ActionName, unresolved.PackageFeedId));
 
-                    var filters = BuildChannelVersionFilters(unresolved.ActionName, channel);
+                    var filters = BuildChannelVersionFilters(unresolved.ActionName, unresolved.PackageReferenceName, channel);
                     filters["packageId"] = unresolved.PackageId;
                     if (!string.IsNullOrWhiteSpace(versionPreReleaseTag))
                         filters["preReleaseTag"] = versionPreReleaseTag;
@@ -66,7 +67,7 @@ namespace Octopus.Cli.Commands.Releases
 
                     if (latestPackage == null)
                     {
-                        commandOutputProvider.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.FeedUri);
+                        commandOutputProvider.Error("Could not find any packages with ID '{PackageId:l}' in the feed '{FeedUri:l}'", unresolved.PackageId, feed.Name);
                     }
                     else
                     {
@@ -82,7 +83,7 @@ namespace Octopus.Cli.Commands.Releases
                 foreach (var step in plan.PackageSteps)
                 {
                     // Note the rule can be null, meaning: anything goes
-                    var rule = channel.Rules.SingleOrDefault(r => r.Actions.Any(s => s.Equals(step.ActionName, StringComparison.OrdinalIgnoreCase)));
+                    var rule = channel.Rules.SingleOrDefault(r => r.ActionPackages.Any(pkg => pkg.DeploymentActionNameMatches(step.ActionName) && pkg.PackageReferenceNameMatches(step.PackageReferenceName)));
                     var result = await versionRuleTester.Test(repository, rule, step.Version).ConfigureAwait(false);
                     step.SetChannelVersionRuleTestResult(result);
                 }
@@ -91,14 +92,15 @@ namespace Octopus.Cli.Commands.Releases
             return plan;
         }
 
-        IDictionary<string, object> BuildChannelVersionFilters(string stepName, ChannelResource channel)
+        IDictionary<string, object> BuildChannelVersionFilters(string stepName, string packageReferenceName, ChannelResource channel)
         {
             var filters = new Dictionary<string, object>();
 
             if (channel == null)
                 return filters;
 
-            var rule = channel.Rules.FirstOrDefault(r => r.Actions.Contains(stepName));
+            var rule = channel.Rules.FirstOrDefault(r => r.ActionPackages.Any(pkg => pkg.DeploymentActionNameMatches(stepName) && pkg.PackageReferenceNameMatches(packageReferenceName)));
+            
             if (rule == null)
                 return filters;
 

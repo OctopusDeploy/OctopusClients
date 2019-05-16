@@ -12,7 +12,7 @@ using Octopus.Client.Model.Endpoints;
 
 #pragma warning disable 618
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListMachinesCommandFixture : ApiCommandFixtureBase
@@ -175,7 +175,7 @@ namespace Octopus.Cli.Tests.Commands
         public async Task ShouldGetListOfMachinesWithMachineHealthStatusArgs()
         {
             CommandLineArgs.Add("--health-status=HasWarnings");
-            Repository.Client.RootDocument.Version = "3.5.0";
+            (await Repository.LoadRootDocument()).Version = "3.5.0";
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
@@ -215,7 +215,7 @@ namespace Octopus.Cli.Tests.Commands
         public async Task ShouldLogWarningIfUsingStatusOn34Repo()
         {
             CommandLineArgs.Add("--status=Online");
-            Repository.Client.RootDocument.Version = "3.4.0";
+            (await Repository.LoadRootDocument()).Version = "3.4.0";
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
@@ -258,7 +258,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--calamari-outdated=false");
             CommandLineArgs.Add("--tentacle-outdated=true");
             CommandLineArgs.Add("--disabled=true");
-            Repository.Client.RootDocument.Version = "3.4.0";
+            (await Repository.LoadRootDocument()).Version = "3.4.0";
             Repository.Environments.FindAll().Returns(new List<EnvironmentResource>
             {
                 new EnvironmentResource {Name = "Development", Id = "Environments-001"}
@@ -313,10 +313,10 @@ namespace Octopus.Cli.Tests.Commands
         }
 
         [Test]
-        public void ShouldThrowIfUsingHealthStatusPre34()
+        public async Task ShouldThrowIfUsingHealthStatusPre34()
         {
             CommandLineArgs.Add("--health-status=Online");
-            Repository.Client.RootDocument.Version = "3.1.0";
+            (await Repository.LoadRootDocument()).Version = "3.1.0";
 
             Func<Task> exec = () => listMachinesCommand.Execute(CommandLineArgs.ToArray());
             exec.ShouldThrow<CommandException>()

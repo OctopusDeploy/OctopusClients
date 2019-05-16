@@ -65,7 +65,7 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
+        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
 
@@ -77,7 +77,7 @@ namespace Octopus.Client.Editors.Async
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
                     Description = description
-                }).ConfigureAwait(false);
+                }, new { clone = cloneId }).ConfigureAwait(false);
             }
             else
             {

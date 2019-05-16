@@ -1,4 +1,3 @@
-#if SYNC_CLIENT
 using System;
 using System.Net;
 
@@ -15,9 +14,8 @@ namespace Octopus.Client
         event Action<WebRequest> BeforeSendingHttpRequest;
 
         /// <summary>
-        /// Occurs when a response has been recieved.
+        /// Occurs when a response has been received.
         /// </summary>
         event Action<WebResponse> AfterReceivingHttpResponse;
     }
 }
-#endif

@@ -15,8 +15,8 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectGroupRepository : BasicRepository<ProjectGroupResource>, IProjectGroupRepository
     {
-        public ProjectGroupRepository(IOctopusAsyncClient client)
-            : base(client, "ProjectGroups")
+        public ProjectGroupRepository(IOctopusAsyncRepository repository)
+            : base(repository, "ProjectGroups")
         {
         }
 

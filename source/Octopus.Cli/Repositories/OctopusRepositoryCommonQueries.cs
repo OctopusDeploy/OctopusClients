@@ -97,10 +97,10 @@ namespace Octopus.Cli.Repositories
                 return new List<TenantResource>(0);
             }
 
-            if (!repository.SupportsTenants())
+            if (!await repository.SupportsTenants().ConfigureAwait(false))
             {
                 throw new CommandException(
-                    "Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+                    "Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
             }
 
             var tenantsByName = FindTenantsByName(tenantNames).ConfigureAwait(false);
@@ -140,7 +140,7 @@ namespace Octopus.Cli.Repositories
 
             if (missing.Any())
             {
-                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                throw new ArgumentException($"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus Server.");
             }
 
             var allTenants = Enumerable.Empty<TenantResource>();

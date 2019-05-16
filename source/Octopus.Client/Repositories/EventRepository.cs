@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IEventRepository : IGet<EventResource>
+    public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
         ResourceCollection<EventResource> List(int skip = 0, 
@@ -32,6 +34,8 @@ namespace Octopus.Client.Repositories
         /// <param name="fromAutoId"></param>
         /// <param name="toAutoId"></param>
         /// <param name="documentTypes"></param>
+        /// <param name="eventAgents"></param>
+        /// <param name="projectGroups"></param>
         /// <returns></returns>
         ResourceCollection<EventResource> List(int skip = 0, 
             int? take = null,
@@ -50,13 +54,20 @@ namespace Octopus.Client.Repositories
             string tags = null,
             long? fromAutoId = null,
             long? toAutoId = null,
-            string documentTypes = null);
+            string documentTypes = null,
+            string eventAgents = null,
+            string projectGroups = null);
     }
     
-    class EventRepository : BasicRepository<EventResource>, IEventRepository
+    class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
-        public EventRepository(IOctopusClient client)
-            : base(client, "Events")
+        public EventRepository(IOctopusRepository repository)
+            : base(repository, "Events")
+        {
+        }
+
+        EventRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
+            : base(repository, "Events", userDefinedSpaceContext)
         {
         }
 
@@ -66,7 +77,7 @@ namespace Octopus.Client.Repositories
             string regardingDocumentId = null,
             bool includeInternalEvents = false)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            return Client.List<EventResource>(Repository.Link("Events"), new
             {
                 skip,
                 user = filterByUserId,
@@ -92,9 +103,11 @@ namespace Octopus.Client.Repositories
             string tags = null,
             long? fromAutoId = null,
             long? toAutoId = null,
-            string documentTypes = null)
+            string documentTypes = null,
+            string eventAgents = null,
+            string projectGroups = null)
         {
-            return Client.List<EventResource>(Client.RootDocument.Link("Events"), new
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new
             {
                 skip,
                 take,
@@ -113,8 +126,16 @@ namespace Octopus.Client.Repositories
                 tags,
                 fromAutoId,
                 toAutoId,
-                documentTypes
+                documentTypes,
+                eventAgents,
+                projectGroups,
             });
+            return Client.List<EventResource>(Repository.Link("Events"), parameters);
+        }
+
+        public IEventRepository UsingContext(SpaceContext userDefinedSpaceContext)
+        {
+            return new EventRepository(Repository, userDefinedSpaceContext);
         }
     }
 }

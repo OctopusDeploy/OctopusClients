@@ -1,14 +1,15 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Model.Forms;
 
 namespace Octopus.Client.Model
 {
     /// <summary>
-    /// An interruption is a request by a process running in the Octopus server for
+    /// An interruption is a request by a process running in the Octopus Server for
     /// user action or input.
     /// </summary>
-    public class InterruptionResource : Resource
+    public class InterruptionResource : Resource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets a title for this interruption.
@@ -85,5 +86,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 50)]
         public bool IsLinkedToOtherInterruption { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -6,11 +6,10 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands.Machine;
-using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListWorkersCommandFixture : ApiCommandFixtureBase
@@ -160,7 +159,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--calamari-outdated=false");
             CommandLineArgs.Add("--tentacle-outdated=true");
             CommandLineArgs.Add("--disabled=true");
-            Repository.Client.RootDocument.Version = "3.4.0";
+            (await Repository.LoadRootDocument()).Version = "3.4.0";
             Repository.WorkerPools.FindAll().Returns(new List<WorkerPoolResource>
             {
                 new WorkerPoolResource {Name = "SomePool", Id = "WorkerPools-001"}

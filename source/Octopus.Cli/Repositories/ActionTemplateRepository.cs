@@ -19,13 +19,13 @@ namespace Octopus.Cli.Repositories
         public async Task<ActionTemplateResource> Get(string idOrHref)
         {
             if (string.IsNullOrWhiteSpace(idOrHref)) return null;
-            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            var templatesPath = await client.Repository.Link("ActionTemplates").ConfigureAwait(false);
             return await client.Get<ActionTemplateResource>(templatesPath, new { id = idOrHref }).ConfigureAwait(false);
         }
 
         public async Task<ActionTemplateResource> Create(ActionTemplateResource resource)
         {
-            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            var templatesPath = await client.Repository.Link("ActionTemplates").ConfigureAwait(false);
             return await client.Create(templatesPath, resource).ConfigureAwait(false);
         }
 
@@ -39,7 +39,7 @@ namespace Octopus.Cli.Repositories
             ActionTemplateResource template = null;
 
             name = (name ?? string.Empty).Trim();
-            var templatesPath = client.RootDocument.Link("ActionTemplates");
+            var templatesPath = await client.Repository.Link("ActionTemplates").ConfigureAwait(false);
             await client.Paginate<ActionTemplateResource>(templatesPath, page =>
             {
                 template = page.Items.FirstOrDefault(t => string.Equals((t.Name ?? string.Empty), name, StringComparison.OrdinalIgnoreCase));

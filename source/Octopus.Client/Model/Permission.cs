@@ -115,6 +115,7 @@ namespace Octopus.Client.Model
 
         [Description("View summary-level information associated with a task")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskView,
 
+        [Obsolete("TaskViewLog is no longer supported by Octopus Server. Instead use the TaskView permission, which also grants access to Task logs", false)]
         [Description("View detailed information about the execution of a task, including the task log output")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskViewLog,
 
         [Description("Explicitly create (run) server tasks")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] TaskCreate,
@@ -159,8 +160,6 @@ namespace Octopus.Client.Model
         [Description("Create accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountCreate,
 
         [Description("Delete accounts")] [SupportsRestriction(PermissionScope.Environments)] AccountDelete,
-
-        [Description("View audit logs")] AuditView,
 
         [Description("Create tenants")] [SupportsRestriction(PermissionScope.Tenants)] TenantCreate,
 
@@ -226,6 +225,18 @@ namespace Octopus.Client.Model
 
         [Description("View the workers in worker pools")] WorkerView,
 
-        [Description("Edit workers and worker pools")] WorkerEdit
+        [Description("Edit workers and worker pools")] WorkerEdit,
+
+        [Description("Run background actions that don't require user principal")] RunSystem,
+        
+        [Description("Edit spaces")] SpaceEdit,
+        
+        [Description("View spaces")] SpaceView,
+        
+        [Description("Delete spaces")] SpaceDelete,
+        
+        [Description("Create spaces")] SpaceCreate,
+
+        [Description("Create/update custom package metadata")] PackageMetadataPush
     }
 }

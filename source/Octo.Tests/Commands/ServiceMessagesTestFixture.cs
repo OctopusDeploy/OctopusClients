@@ -1,28 +1,22 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Diagnostics;
-using Octopus.Cli.Tests.Commands;
+using Octopus.Client.AutomationEnvironments;
 
 namespace Octo.Tests.Commands
 {
     class ServiceMessagesTestFixture : ApiCommandFixtureBase
     {
-        IEnvironmentVariableReader envVariableGetter;
-
         [Test]
         public void EnvironmentIsKnownIfBuildVariablesHaveValues()
         {
-            foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
+            foreach (var knownEnvironmentVariable in AutomationEnvironmentProvider.KnownEnvironmentVariables)
             {
                 foreach (var variable in knownEnvironmentVariable.Value)
                 {
-                    envVariableGetter = Substitute.For<IEnvironmentVariableReader>();
+                    AutomationEnvironmentProvider.environmentVariableReader = new ServerEnvironmentVariablesForTest(variable, "whatever value");
 
-                    envVariableGetter.GetVariableValue(variable).Returns("whatever value");
-
-                    LogExtensions.environmentVariableReader = envVariableGetter;
-
-                    LogExtensions.EnableServiceMessages(Log);
+                    Log.EnableServiceMessages();
 
                     Assert.IsTrue(LogExtensions.IsKnownEnvironment());
                 }
@@ -32,22 +26,29 @@ namespace Octo.Tests.Commands
         [Test]
         public void EnvironmentIsUnknownIfBuildVariablesDontHaveValues()
         {
-            envVariableGetter = Substitute.For<IEnvironmentVariableReader>();
+            AutomationEnvironmentProvider.environmentVariableReader = new ServerEnvironmentVariablesForTest(string.Empty, string.Empty);
 
-            foreach (var knownEnvironmentVariable in LogExtensions.KnownEnvironmentVariables)
-            {
-                foreach (var variable in knownEnvironmentVariable.Value)
-                {
-                    envVariableGetter.GetVariableValue(variable).Returns("");
-                }
-            }
-
-            LogExtensions.environmentVariableReader = envVariableGetter;
-
-            LogExtensions.EnableServiceMessages(Log);
+            Log.EnableServiceMessages();
 
             Assert.IsFalse(LogExtensions.IsKnownEnvironment());
         }
 
+        private class ServerEnvironmentVariablesForTest : IEnvironmentVariableReader
+        {
+            public ServerEnvironmentVariablesForTest(string environmentVariableName, string environmentVariableValue)
+            {
+                EnvironmentVariableName = environmentVariableName;
+                EnvironmentVariableValue = environmentVariableValue;
+            }
+
+            private string EnvironmentVariableName { get; set; }
+            private string EnvironmentVariableValue { get; set; }
+            public string GetVariableValue(string name)
+            {
+                return name == EnvironmentVariableName ?
+                    EnvironmentVariableValue :
+                    null;
+            }
+        }
     }
 }

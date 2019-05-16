@@ -7,6 +7,9 @@
         Docker,
         Maven,
         OctopusProject,
-        GitHub
+        GitHub,
+        BuiltIn,
+        Helm,
+        AwsElasticContainerRegistry
     }
 }

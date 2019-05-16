@@ -10,16 +10,16 @@ using Octopus.Cli.Commands.WorkerPools;
 using Octopus.Cli.Infrastructure;
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class CleanWorkerPoolCommandFixture : ApiCommandFixtureBase
     {
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
             cleanPoolCommand = new CleanWorkerPoolCommand(RepositoryFactory, FileSystem, ClientFactory, CommandOutputProvider);
-            Repository.Client.RootDocument.Version = "2018.6.0";
+            (await Repository.LoadRootDocument()).Version = "2018.6.0";
         }
 
         CleanWorkerPoolCommand cleanPoolCommand;

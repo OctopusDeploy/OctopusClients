@@ -48,14 +48,13 @@ namespace Octopus.Client.Operations
 
         /// <summary>
         /// The communication style to use with the Tentacle. Allowed values are: TentacleActive, in which case the
-        /// Tentacle will connect to the Octopus server for instructions; or, TentaclePassive, in which case the
+        /// Tentacle will connect to the Octopus Server for instructions; or, TentaclePassive, in which case the
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         CommunicationStyle CommunicationStyle { get; set; }
 
         Uri SubscriptionId { get; set; }
 
-#if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -72,8 +71,8 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        void Execute(IOctopusRepository repository);
-#endif
+        void Execute(IOctopusSpaceRepository repository);
+
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -90,6 +89,6 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        Task ExecuteAsync(IOctopusAsyncRepository repository);
+        Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
     }
 }

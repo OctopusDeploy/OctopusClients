@@ -15,8 +15,8 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
-        public ProjectTriggerRepository(IOctopusAsyncClient client)
-            : base(client, "ProjectTriggers")
+        public ProjectTriggerRepository(IOctopusAsyncRepository repository)
+            : base(repository, "ProjectTriggers")
         {
         }
 

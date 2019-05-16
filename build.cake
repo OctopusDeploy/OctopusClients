@@ -1,16 +1,17 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 #tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=SharpCompress&version=0.12.4"
-#addin "nuget:?package=Cake.Incubator"
+#addin "nuget:?package=Cake.Incubator&version=4.0.0"
 
 using SharpCompress;
 using SharpCompress.Common;
 using SharpCompress.Writer;
 using System.Xml;
 using Cake.Incubator;
+using Cake.Incubator.LoggingExtensions;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -166,7 +167,9 @@ Task("MergeOctoExe")
         ILRepack(
             $"{outputFolder}/Octo.exe",
             $"{inputFolder}/Octo.exe",
-            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
+            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll")
+				.Union(System.IO.Directory.EnumerateFiles(inputFolder, "octodiff.exe"))
+				.Select(f => (FilePath) f),
             new ILRepackSettings {
                 Internalize = true,
                 Parallel = true,

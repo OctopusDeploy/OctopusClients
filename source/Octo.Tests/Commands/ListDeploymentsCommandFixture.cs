@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using FluentAssertions;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.Cli.Commands.Deployment;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class ListDeploymentsCommandFixture : ApiCommandFixtureBase
@@ -42,9 +40,8 @@ namespace Octopus.Cli.Tests.Commands
                     },
                 }, new LinkCollection());
 
-
-            Repository.FeaturesConfiguration.GetFeaturesConfiguration()
-                .ReturnsForAnyArgs(new FeaturesConfigurationResource { });
+            Repository.Tenants.Status()
+                .ReturnsForAnyArgs(new MultiTenancyStatusResource());
 
             Repository.Deployments
                 .When(

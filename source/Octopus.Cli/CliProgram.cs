@@ -66,6 +66,8 @@ namespace Octopus.Cli
                .WriteTo.Trace()
                .WriteTo.ColoredConsole(outputTemplate: "{Message}{NewLine}{Exception}")
                .CreateLogger();
+            
+            Client.Logging.LogProvider.SetCurrentLogProvider(new CliSerilogLogProvider(Log.Logger));
         }
 
         static IContainer BuildContainer()
@@ -89,6 +91,15 @@ namespace Octopus.Cli
             builder.RegisterType<PackageVersionResolver>().As<IPackageVersionResolver>().SingleInstance();
             builder.RegisterType<ChannelVersionRuleTester>().As<IChannelVersionRuleTester>().SingleInstance();
 
+            var requestingTool = "octo";
+
+            var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
+            if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
+            {
+                requestingTool += $" plugin/{octoExtensionVersion}";
+            }
+
+            OctopusClientFactory.SetRequestingTool(requestingTool);
             builder.RegisterType<OctopusClientFactory>().As<IOctopusClientFactory>();
             builder.RegisterType<OctopusRepositoryFactory>().As<IOctopusAsyncRepositoryFactory>();
 
@@ -152,7 +163,7 @@ namespace Octopus.Cli
                 Log.Error(ex.Message);
                 if (LogExtensions.IsKnownEnvironment())
                 {
-                    Log.Error("This error is most likely ocurring while executing Octo.exe as part of an automated build process. The following doc is recommended to get some tips on how to troubleshoot this: https://g.octopushq.com/OctoexeTroubleshooting");
+                    Log.Error("This error is most likely occurring while executing Octo.exe as part of an automated build process. The following doc is recommended to get some tips on how to troubleshoot this: https://g.octopushq.com/OctoexeTroubleshooting");
                 }
                 return -1;
             }
@@ -173,7 +184,7 @@ namespace Octopus.Cli
             if (octo != null)
             {
                 Log.Information("{HttpErrorMessage:l}", octo.Message);
-                Log.Error("Error from Octopus server (HTTP {StatusCode} {StatusDescription})", octo.HttpStatusCode, (HttpStatusCode) octo.HttpStatusCode);
+                Log.Error("Error from Octopus Server (HTTP {StatusCode} {StatusDescription})", octo.HttpStatusCode, (HttpStatusCode) octo.HttpStatusCode);
                 return -7;
             }
 

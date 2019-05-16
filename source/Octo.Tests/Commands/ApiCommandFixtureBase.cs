@@ -1,19 +1,20 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using Serilog;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Repositories;
 using Octopus.Cli.Util;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Serilog;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     public abstract class ApiCommandFixtureBase
-    {
+    {       
+        protected const string ValidEnvironment = "Test Environment";
         private static string _previousCurrentDirectory;
 
         [OneTimeSetUp]
@@ -49,8 +50,24 @@ namespace Octopus.Cli.Tests.Commands
             rootDocument.Links.Add("Tenants", "http://tenants.org");
 
             Repository = Substitute.For<IOctopusAsyncRepository>();
-            Repository.Client.RootDocument.Returns(rootDocument);
-
+            Repository.LoadRootDocument().Returns(rootDocument);
+            Repository.HasLink("Spaces").Returns(true);
+            Repository.HasLink(Arg.Is<string>(arg => arg != "Spaces")).Returns(async call => (await Repository.LoadRootDocument()).HasLink(call.Arg<string>()));
+            Repository.Link(Arg.Any<string>()).Returns(async call => (await Repository.LoadRootDocument()).Link(call.Arg<string>()));
+            
+            Repository.Machines.FindByNames(Arg.Any<IEnumerable<string>>(), Arg.Any<string>(), Arg.Any<object>())
+                .Returns(new List<MachineResource>());
+            Repository.Environments.FindByNames(
+                    Arg.Is<List<string>>(arg => arg.TrueForAll(arg2 => arg2 == ValidEnvironment)),
+                    Arg.Any<string>(),
+                    Arg.Any<object>())
+                .Returns(new List<EnvironmentResource>() {new EnvironmentResource() {Name = ValidEnvironment}});
+            Repository.Environments.FindByNames(
+                    Arg.Is<List<string>>(arg => arg.TrueForAll(arg2 => arg2 != ValidEnvironment)), 
+                    Arg.Any<string>(), 
+                    Arg.Any<object>())
+                .Returns(new List<EnvironmentResource>());
+            
             ClientFactory = Substitute.For<IOctopusClientFactory>();
 
             RepositoryFactory = Substitute.For<IOctopusAsyncRepositoryFactory>();

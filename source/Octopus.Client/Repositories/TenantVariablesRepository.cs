@@ -12,14 +12,14 @@ namespace Octopus.Client.Repositories
     {
         public List<TenantVariableResource> GetAll(ProjectResource projectResource)
         {
-            return Client.Get<List<TenantVariableResource>>(Client.RootDocument.Link("TenantVariables"), new
+            return Client.Get<List<TenantVariableResource>>(Repository.Link("TenantVariables"), new
             {
                 projectId = projectResource?.Id
             });
         }
 
-        public TenantVariablesRepository(IOctopusClient client) 
-            : base(client, "TenantVariables")
+        public TenantVariablesRepository(IOctopusRepository repository) 
+            : base(repository, "TenantVariables")
         {
         }
     }

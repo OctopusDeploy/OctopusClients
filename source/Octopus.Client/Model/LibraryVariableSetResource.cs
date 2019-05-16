@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
@@ -8,7 +7,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// A standalone variable set that can be included in projects where required.
     /// </summary>
-    public class LibraryVariableSetResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<LibraryVariableSetResource>
+    public class LibraryVariableSetResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<LibraryVariableSetResource>, IHaveSpaceResource
     {
         private readonly IVariableTemplateContainerEditor<LibraryVariableSetResource> variableTemplateEditor;
 
@@ -104,5 +103,39 @@ namespace Octopus.Client.Model
         {
             return variableTemplateEditor.AddOrUpdateSelectTemplate(name, label, options, defaultValue, helpText);
         }
+
+        public string SpaceId { get; set; }
+    }
+    
+    public class LibraryVariableSetUsageResource : Resource
+    {
+        public LibraryVariableSetUsageResource()
+        {
+            Projects = new List<LibraryVariableSetProjectUsage>();
+        }
+
+        public ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
+        public int CountOfProjectsUserCannotSee { get; set; }
+        public int CountOfReleasesUserCannotSee { get; set; }
+    }
+    
+    public class LibraryVariableSetProjectUsage
+    {
+        public LibraryVariableSetProjectUsage()
+        {
+            Releases = new List<LibraryVariableSetReleaseUsageEntry>();
+        }
+
+        public string ProjectSlug { get; set; }
+        public string ProjectName { get; set; }
+        public string ProjectId { get; set; }
+        public ICollection<LibraryVariableSetReleaseUsageEntry> Releases { get; set; }
+        public bool IsCurrentlyBeingUsedInProject { get; set; }
+    }
+    
+    public class LibraryVariableSetReleaseUsageEntry
+    {
+        public string ReleaseId { get; set; }
+        public string ReleaseVersion { get; set; }
     }
 }

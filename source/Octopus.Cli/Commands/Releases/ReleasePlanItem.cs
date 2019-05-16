@@ -5,9 +5,10 @@ namespace Octopus.Cli.Commands.Releases
 {
     public class ReleasePlanItem
     {
-        public ReleasePlanItem(string actionName, string packageId, string packageFeedId, bool isResolveable, string userSpecifiedVersion)
+        public ReleasePlanItem(string actionName, string packageReferenceName, string packageId, string packageFeedId, bool isResolveable, string userSpecifiedVersion)
         {
             ActionName = actionName;
+            PackageReferenceName = packageReferenceName;
             PackageId = packageId;
             PackageFeedId = packageFeedId;
             IsResolveable = isResolveable;
@@ -16,6 +17,8 @@ namespace Octopus.Cli.Commands.Releases
         }
 
         public string ActionName { get; }
+
+        public string PackageReferenceName { get; set; }
 
         public string PackageId { get; }
 

@@ -13,13 +13,73 @@ using SemanticVersion = Octopus.Client.Model.SemanticVersion;
 
 namespace Octopus.Cli.Commands.Releases
 {
+    /// <summary>
+    /// Represents the package that a version applies to
+    /// </summary>
+    class PackageKey : IEqualityComparer<PackageKey>
+    {
+        public string StepNameOrPackageId { get; }
+        public string PackageReferenceName { get; }
+
+        public PackageKey()
+        {
+
+        }
+
+        public PackageKey(string stepNameOrPackageId)
+        {
+            StepNameOrPackageId = stepNameOrPackageId;
+        }
+
+        public PackageKey(string stepNameOrPackageId, string packageReferenceName)
+        {
+            StepNameOrPackageId = stepNameOrPackageId;
+            PackageReferenceName = packageReferenceName;
+        }
+
+        public bool Equals(PackageKey x, PackageKey y)
+        {
+            return Object.Equals(x, y);
+        }
+
+        public int GetHashCode(PackageKey obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var key = obj as PackageKey;
+            return key != null &&
+                   string.Equals(StepNameOrPackageId, key.StepNameOrPackageId, StringComparison.CurrentCultureIgnoreCase) &&
+                   string.Equals(PackageReferenceName, key.PackageReferenceName, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 475932885;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(StepNameOrPackageId?.ToLower());
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PackageReferenceName?.ToLower());
+            return hashCode;
+        }
+    }
+
     public class PackageVersionResolver : IPackageVersionResolver
     {
+        /// <summary>
+        /// Used to indicate a match with any matching step name or package reference name
+        /// </summary>
+        private const string WildCard = "*";
+        /// <summary>
+        /// The characters we support for breaking up step, package name and version in the supplied strings
+        /// </summary>
+        private static readonly char[] Delimiters = new [] {':', '=', '/'};
+
         static readonly string[] SupportedZipFilePatterns = { "*.zip", "*.tgz", "*.tar.gz", "*.tar.Z", "*.tar.bz2", "*.tar.bz", "*.tbz", "*.tar" };
 
         readonly ILogger log;
         private readonly IOctopusFileSystem fileSystem;
-        readonly IDictionary<string, string> stepNameToVersion = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        readonly IDictionary<PackageKey, string> stepNameToVersion = new Dictionary<PackageKey, string>(new PackageKey());
         string defaultVersion;
 
         public PackageVersionResolver(Serilog.ILogger log, IOctopusFileSystem fileSystem)
@@ -35,51 +95,61 @@ namespace Octopus.Cli.Commands.Releases
             {
                 log.Debug("Package file: {File:l}", file);
 
-                PackageIdentity packageIdentity;
-                if (TryReadPackageIdentity(file, out packageIdentity))
+                if (TryReadPackageIdentity(file, out var packageIdentity))
                 {
-                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                    Add(packageIdentity.Id, null, packageIdentity.Version.ToString());
                 }
             }
             foreach (var file in fileSystem.EnumerateFilesRecursively(folderPath, SupportedZipFilePatterns))
             {
                 log.Debug("Package file: {File:l}", file);
 
-                PackageIdentity packageIdentity;
-                if (TryParseZipIdAndVersion(file, out packageIdentity))
+                if (TryParseZipIdAndVersion(file, out var packageIdentity))
                 {
-                    Add(packageIdentity.Id, packageIdentity.Version.ToString());
+                    Add(packageIdentity.Id, null, packageIdentity.Version.ToString());
                 }
             }
         }
 
         public void Add(string stepNameAndVersion)
         {
-            var index = new[] {':', '='}.Select(s => stepNameAndVersion.IndexOf(s)).Where(i => i >= 0).OrderBy(i => i).FirstOrDefault();
-            if (index <= 0)
+            var split = stepNameAndVersion.Split(Delimiters);
+            if (split.Length < 2)
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
 
-            var key = stepNameAndVersion.Substring(0, index);
-            var value = (index >= stepNameAndVersion.Length - 1) ? string.Empty : stepNameAndVersion.Substring(index + 1);
+            var stepOrPackageId = split[0];
+            var packageReferenceName = split.Length > 2 ? split[1] : null;
+            var version = split.Length > 2 ? split[2] : split[1];
 
-            if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(stepOrPackageId) || string.IsNullOrWhiteSpace(version))
             {
                 throw new CommandException("The package argument '" + stepNameAndVersion + "' does not use expected format of : {Step Name}:{Version}");
             }
 
-            SemanticVersion version;
-            if (!SemanticVersion.TryParse(value, out version))
+            if (!SemanticVersion.TryParse(version, out var parsedVersion))
             {
                 throw new CommandException("The version portion of the package constraint '" + stepNameAndVersion + "' is not a valid semantic version number.");
             }
 
-            Add(key, value);
+            Add(stepOrPackageId, packageReferenceName, version);
         }
 
         public void Add(string stepName, string packageVersion)
         {
-            string current;
-            if (stepNameToVersion.TryGetValue(stepName, out current))
+            Add(stepName, string.Empty, packageVersion);
+        }
+
+        public void Add(string stepName, string packageReferenceName, string packageVersion)
+        {
+            // Double wild card == default value
+            if (stepName == WildCard && packageReferenceName == WildCard)
+            {
+                Default(packageVersion);
+                return;
+            }
+
+            var key = new PackageKey(stepName, packageReferenceName ?? string.Empty);
+            if (stepNameToVersion.TryGetValue(key, out var current))
             {
                 var newVersion = SemanticVersion.Parse(packageVersion);
                 var currentVersion = SemanticVersion.Parse(current);
@@ -89,7 +159,7 @@ namespace Octopus.Cli.Commands.Releases
                 }
             }
 
-            stepNameToVersion[stepName] = packageVersion;
+            stepNameToVersion[key] = packageVersion;
         }
 
         public void Default(string packageVersion)
@@ -111,14 +181,29 @@ namespace Octopus.Cli.Commands.Releases
 
         public string ResolveVersion(string stepName, string packageId)
         {
-             string version;
-             if (stepNameToVersion.TryGetValue(stepName, out version))
-                 return version;
-           
-             if (stepNameToVersion.TryGetValue(packageId, out version))
-                 return version;
-           
-            return defaultVersion;
+            return ResolveVersion(stepName, packageId, string.Empty);
+        }
+
+        public string ResolveVersion(string stepName, string packageId, string packageReferenceName)
+        {
+            var identifiers = new[] {stepName, packageId};
+
+            // First attempt to get an exact match between step or package id and the package reference name
+            return identifiers
+                    .Select(id => new PackageKey(id, packageReferenceName ?? string.Empty))
+                    .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
+                    .FirstOrDefault(version => version != null)
+                ??
+                // If that fails, try to match on a wildcard step/package id and exact package reference name,
+                // and then on an exact step/package id and wildcard package reference name
+                identifiers
+                    .SelectMany(id => new[]
+                        {new PackageKey(WildCard, packageReferenceName ?? string.Empty), new PackageKey(id, WildCard)})
+                    .Select(key => stepNameToVersion.TryGetValue(key, out var version) ? version : null)
+                    .FirstOrDefault(version => version != null)
+                ??
+                // Finally, use the default version
+                defaultVersion;
         }
 
         bool TryReadPackageIdentity(string packageFile, out PackageIdentity packageIdentity)

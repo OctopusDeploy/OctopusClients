@@ -18,19 +18,19 @@ namespace Octopus.Client.Repositories.Async
 
     class LibraryVariableSetRepository : BasicRepository<LibraryVariableSetResource>, ILibraryVariableSetRepository
     {
-        public LibraryVariableSetRepository(IOctopusAsyncClient client)
-            : base(client, "LibraryVariables")
+        public LibraryVariableSetRepository(IOctopusAsyncRepository repository)
+            : base(repository, "LibraryVariables")
         {
         }
 
         public Task<LibraryVariableSetEditor> CreateOrModify(string name)
         {
-            return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name);
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name);
         }
 
         public Task<LibraryVariableSetEditor> CreateOrModify(string name, string description)
         {
-            return new LibraryVariableSetEditor(this, new VariableSetRepository(Client)).CreateOrModify(name, description);
+            return new LibraryVariableSetEditor(this, new VariableSetRepository(Repository)).CreateOrModify(name, description);
         }
     }
 }

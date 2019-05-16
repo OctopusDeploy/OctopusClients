@@ -4,7 +4,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IDeploymentRepository : IGet<DeploymentResource>, ICreate<DeploymentResource>, IPaginate<DeploymentResource>
+    public interface IDeploymentRepository : IGet<DeploymentResource>, ICreate<DeploymentResource>, IPaginate<DeploymentResource>, IDelete<DeploymentResource>
     {
         Task<TaskResource> GetTask(DeploymentResource resource);
 
@@ -26,8 +26,8 @@ namespace Octopus.Client.Repositories.Async
 
     class DeploymentRepository : BasicRepository<DeploymentResource>, IDeploymentRepository
     {
-        public DeploymentRepository(IOctopusAsyncClient client)
-            : base(client, "Deployments")
+        public DeploymentRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Deployments")
         {
         }
 
@@ -36,9 +36,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<TaskResource>(resource.Link("Task"));
         }
 
-        public Task<ResourceCollection<DeploymentResource>> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
+        public async Task<ResourceCollection<DeploymentResource>> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
         {
-            return Client.List<DeploymentResource>(Client.RootDocument.Link("Deployments"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
+            return await Client.List<DeploymentResource>(await Repository.Link("Deployments").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] }).ConfigureAwait(false);
         }
 
         [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
@@ -52,9 +52,9 @@ namespace Octopus.Client.Repositories.Async
             return Paginate(projects, environments, new string[0], getNextPage);
         }
 
-        public Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
+        public async Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
         {
-            return Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
+            await Client.Paginate(await Repository.Link("Deployments").ConfigureAwait(false), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage).ConfigureAwait(false);
         }
     }
 }

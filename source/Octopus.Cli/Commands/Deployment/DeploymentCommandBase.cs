@@ -11,12 +11,12 @@ using Octopus.Client;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Forms;
 using Octostache;
-using Serilog;
 
 namespace Octopus.Cli.Commands.Deployment
 {
     public abstract class DeploymentCommandBase : ApiCommand
     {
+        private const char Separator = '/'; 
         readonly VariableDictionary variables = new VariableDictionary();
         protected IReadOnlyList<DeploymentResource> deployments;
         protected List<DeploymentPromotionTarget> promotionTargets;
@@ -26,6 +26,7 @@ namespace Octopus.Cli.Commands.Deployment
             : base(clientFactory, repositoryFactory, fileSystem, commandOutputProvider)
         {
             SpecificMachineNames = new List<string>();
+            ExcludedMachineNames = new List<string>();
             SkipStepNames = new List<string>();
             DeployToEnvironmentNames = new List<string>();
             TenantTags = new List<string>();
@@ -40,13 +41,15 @@ namespace Octopus.Cli.Commands.Deployment
             options.Add("cancelontimeout", "[Optional] Whether to cancel the deployment if the deployment timeout is reached (flag, default false).", v => CancelOnTimeout = true);
             options.Add("deploymentchecksleepcycle=", "[Optional] Specifies how much time (timespan format) should elapse between deployment status checks (default 00:00:10)", v => DeploymentStatusCheckSleepCycle = TimeSpan.Parse(v));
             options.Add("guidedfailure=", "[Optional] Whether to use Guided Failure mode. (True or False. If not specified, will use default setting from environment)", v => UseGuidedFailure = bool.Parse(v));
-            options.Add("specificmachines=", "[Optional] A comma-separated list of machines names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("specificmachines=", "[Optional] A comma-separated list of machine names to target in the deployed environment. If not specified all machines in the environment will be considered.", v => SpecificMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
+            options.Add("excludemachines=", "[Optional] A comma-separated list of machine names to exclude in the deployed environment. If not specified all machines in the environment will be considered.", v => ExcludedMachineNames.AddRange(v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(m => m.Trim())));
             options.Add("force", "[Optional] If a project is configured to skip packages with already-installed versions, override this setting to force re-deployment (flag, default false).", v => ForcePackageRedeployment = true);
             options.Add("skip=", "[Optional] Skip a step by name", v => SkipStepNames.Add(v));
             options.Add("norawlog", "[Optional] Don't print the raw log of failed tasks", v => noRawLog = true);
             options.Add("rawlogfile=", "[Optional] Redirect the raw log of failed tasks to a file", v => rawLogFile = v);
             options.Add("v|variable=", "[Optional] Values for any prompted variables in the format Label:Value. For JSON values, embedded quotation marks should be escaped with a backslash.", ParseVariable);
-            options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => ParseDeployAt(v));
+            options.Add("deployat=", "[Optional] Time at which deployment should start (scheduled deployment), specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => DeployAt = ParseDateTimeOffset(v));
+            options.Add("nodeployafter=", "[Optional] Time at which scheduled deployment should expire, specified as any valid DateTimeOffset format, and assuming the time zone is the current local time zone.", v => NoDeployAfter = ParseDateTimeOffset(v));
             options.Add("tenant=", "Create a deployment for this tenant; specify this argument multiple times to add multiple tenants or use `*` wildcard to deploy to all tenants who are ready for this release (according to lifecycle).", t => Tenants.Add(t));
             options.Add("tenanttag=", "Create a deployment for tenants matching this tag; specify this argument multiple times to build a query/filter with multiple tags, just like you can in the user interface.", tt => TenantTags.Add(tt));
         }
@@ -59,8 +62,10 @@ namespace Octopus.Cli.Commands.Deployment
         protected bool CancelOnTimeout { get; set; }
         protected TimeSpan DeploymentStatusCheckSleepCycle { get; set; } = TimeSpan.FromSeconds(10);
         protected List<string> SpecificMachineNames { get; set; }
+        protected List<string> ExcludedMachineNames { get; set; }
         protected List<string> SkipStepNames { get; set; }
         protected DateTimeOffset? DeployAt { get; set; }
+        protected DateTimeOffset? NoDeployAfter { get; set; }
         public string ProjectName { get; set; }
         public List<string> DeployToEnvironmentNames { get; set; }
         public List<string> Tenants { get; set; }
@@ -73,23 +78,92 @@ namespace Octopus.Cli.Commands.Deployment
         string rawLogFile;
         TaskOutputProgressPrinter printer = new TaskOutputProgressPrinter();
 
-        protected override void ValidateParameters()
+        protected override async Task ValidateParameters()
         {
             if (string.IsNullOrWhiteSpace(ProjectName)) throw new CommandException("Please specify a project name using the parameter: --project=XYZ");
             if (IsTenantedDeployment && DeployToEnvironmentNames.Count > 1) throw new CommandException("Please specify only one environment at a time when deploying to tenants.");
             if (Tenants.Contains("*") && (Tenants.Count > 1 || TenantTags.Count > 0)) throw new CommandException("When deploying to all tenants using --tenant=* wildcard no other tenant filters can be provided");
+            if (IsTenantedDeployment && !await Repository.SupportsTenants().ConfigureAwait(false))
+                throw new CommandException("Your Octopus Server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus Server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+            if ((DeployAt ?? DateTimeOffset.Now) > NoDeployAfter)
+                throw new CommandException("The deployment will expire before it has a chance to execute.  Please select an expiry time that occurs after the deployment is scheduled to begin");
 
-            if (IsTenantedDeployment && !Repository.SupportsTenants())
-                throw new CommandException("Your Octopus server does not support tenants, which was introduced in Octopus 3.4. Please upgrade your Octopus server, enable the multi-tenancy feature or remove the --tenant and --tenanttag arguments.");
+            /*
+             * A create release operation can also optionally deploy the release, however any invalid options that
+             * are specific only to the deployment will fail after the release has been created. This can leave
+             * a deployment in a half finished state, so this validation ensures that the input relating to the
+             * deployment is valid so missing or incorrect input doesn't stop stop the deployment after a release is
+             * created.
+             *
+             * Note that certain validations still need to be done on the server. Permissions and lifecycle progression
+             * still rely on server side validation.
+             */
+            
+            // We might query the same tagset repeatedly, so store old queries here
+            var tagSetResources = new Dictionary<string, TagSetResource>();
+            // Make sure the tags are valid
+            foreach (var tenantTag in TenantTags)
+            {
+                // Verify the format of the tag
+                var parts = tenantTag.Split(Separator);
+                if (parts.Length != 2 || string.IsNullOrEmpty(parts[0]) || string.IsNullOrEmpty(parts[1]))
+                {
+                    throw new CommandException(
+                        $"Canonical Tag Name expected in the format of `TagSetName{Separator}TagName`");
+                }
+                
+                // Query the api if the results were not previously found 
+                if (!tagSetResources.ContainsKey(parts[0]))
+                {
+                    tagSetResources.Add(parts[0], await Repository.TagSets.FindByName(parts[0]).ConfigureAwait(false));
+                } 
 
-            base.ValidateParameters();
+                // Verify the presence of the tag
+                if (tagSetResources[parts[0]]?.Tags?.All(tag => parts[1] != tag.Name) ?? true)
+                {
+                    throw new CommandException(
+                        $"Unable to find matching tag from canonical tag name `{tenantTag}`");
+                }
+            }
+
+            // Make sure the tenants are valid
+            foreach (var tenantName in Tenants)
+            {
+                if (tenantName != "*")
+                {
+                    var tenant = await Repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
+                    if (tenant == null)
+                    {
+                        throw new CommandException(
+                            $"Could not find the tenant {tenantName} on the Octopus Server");
+                    }
+                }
+            } 
+            
+            // Make sure environment is valid
+            var environments = await Repository.Environments.FindByNames(DeployToEnvironmentNames).ConfigureAwait(false);
+            var missingEnvironment = DeployToEnvironmentNames
+                .Where(env => environments.All(env2 => !env2.Name.Equals(env, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            if (missingEnvironment.Count != 0)
+            {
+                throw new CommandException(
+                    $"The environment{(missingEnvironment.Count == 1 ? "" : "s")} {string.Join(", ", missingEnvironment)} " +
+                    $"do{(missingEnvironment.Count == 1 ? "es" : "")} not exist or {(missingEnvironment.Count == 1 ? "is" : "are")} misspelled");
+            }
+            
+            
+            // Make sure the machines are valid
+            await GetSpecificMachines();
+
+            await base.ValidateParameters();
         }
 
-        DateTimeOffset? ParseDeployAt(string v)
+        private DateTimeOffset ParseDateTimeOffset(string v)
         {
             try
             {
-                return DeployAt = DateTimeOffset.Parse(v, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal);
+                return DateTimeOffset.Parse(v, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal);
             }
             catch (FormatException fex)
             {
@@ -103,11 +177,11 @@ namespace Octopus.Cli.Commands.Deployment
                 return new List<DeploymentResource>();
 
             var environment = DeployToEnvironmentNames[0];
-            var specificMachineIdsTask = GetSpecificMachines();
             var releaseTemplate = await Repository.Releases.GetTemplate(release).ConfigureAwait(false);
             
             deploymentTenants = await GetTenants(project, environment, release, releaseTemplate).ConfigureAwait(false);
-            var specificMachineIds = await specificMachineIdsTask.ConfigureAwait(false);
+            var specificMachineIds = await GetSpecificMachines().ConfigureAwait(false);
+            var excludedMachineIds = await GetExcludedMachines().ConfigureAwait(false);
 
             LogScheduledDeployment();
             
@@ -118,7 +192,7 @@ namespace Octopus.Cli.Commands.Deployment
                         .First(t => t.Id == tenant.Id).PromoteTo
                         .First(tt => tt.Name.Equals(environment, StringComparison.CurrentCultureIgnoreCase));
                 promotionTargets.Add(promotion);
-                return CreateDeploymentTask(project, release, promotion, specificMachineIds, tenant);
+                return CreateDeploymentTask(project, release, promotion, specificMachineIds, excludedMachineIds, tenant);
             });
 
             return await Task.WhenAll(createTasks).ConfigureAwait(false);
@@ -149,6 +223,24 @@ namespace Octopus.Cli.Commands.Deployment
                 specificMachineIds.AddRange(machines.Select(m => m.Id));
             }
             return specificMachineIds;
+        }
+
+        private async Task<ReferenceCollection> GetExcludedMachines()
+        {
+            var excludedMachineIds = new ReferenceCollection();
+            if (ExcludedMachineNames.Any())
+            {
+                var machines = await Repository.Machines.FindByNames(ExcludedMachineNames).ConfigureAwait(false);
+                var missing = ExcludedMachineNames
+                    .Except(machines.Select(m => m.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                if (missing.Any())
+                {
+                    commandOutputProvider.Debug($"The following excluded machines could not be found: {missing.ReadableJoin()}");
+                }
+
+                excludedMachineIds.AddRange(machines.Select(m => m.Id));
+            }
+            return excludedMachineIds;
         }
 
         protected async Task DeployRelease(ProjectResource project, ReleaseResource release)
@@ -193,8 +285,9 @@ namespace Octopus.Cli.Commands.Deployment
 
             LogScheduledDeployment();
             var specificMachineIds = await GetSpecificMachines().ConfigureAwait(false);
+            var excludedMachineIds = await GetExcludedMachines().ConfigureAwait(false);
 
-            var createTasks = promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds));
+            var createTasks = promotingEnvironments.Select(promotion => CreateDeploymentTask(project, release, promotion.Promotion, specificMachineIds, excludedMachineIds));
             return await Task.WhenAll(createTasks).ConfigureAwait(false);
         }
 
@@ -236,7 +329,7 @@ namespace Octopus.Cli.Commands.Deployment
 
                     if (missing.Any())
                         throw new ArgumentException(
-                            $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus server.");
+                            $"Could not find the {"tenant" + (missing.Length == 1 ? "" : "s")} {string.Join(", ", missing)} on the Octopus Server.");
 
                     deployableTenants.AddRange(tenantsByName);
                     deployableTenants.AddRange(tenantsById);
@@ -301,7 +394,7 @@ namespace Octopus.Cli.Commands.Deployment
             return deployableTenants;
         }
 
-        private async Task<DeploymentResource> CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, TenantResource tenant = null)
+        private async Task<DeploymentResource> CreateDeploymentTask(ProjectResource project, ReleaseResource release, DeploymentPromotionTarget promotionTarget, ReferenceCollection specificMachineIds, ReferenceCollection excludedMachineIds, TenantResource tenant = null)
         {
             var preview = await Repository.Releases.GetPreview(promotionTarget).ConfigureAwait(false);
 
@@ -363,9 +456,11 @@ namespace Octopus.Cli.Commands.Deployment
                 ForcePackageDownload = ForcePackageDownload,
                 UseGuidedFailure = UseGuidedFailure.GetValueOrDefault(preview.UseGuidedFailureModeByDefault),
                 SpecificMachineIds = specificMachineIds,
+                ExcludedMachineIds = excludedMachineIds,
                 ForcePackageRedeployment = ForcePackageRedeployment,
                 FormValues = (preview.Form ?? new Form()).Values,
-                QueueTime = DeployAt == null ? null : (DateTimeOffset?) DeployAt.Value
+                QueueTime = DeployAt,
+                QueueTimeExpiry = NoDeployAfter
             })
             .ConfigureAwait(false);
 

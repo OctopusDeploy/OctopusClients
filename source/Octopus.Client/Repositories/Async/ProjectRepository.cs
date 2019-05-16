@@ -13,17 +13,19 @@ namespace Octopus.Client.Repositories.Async
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project);
+        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project);
         Task<ProgressionResource> GetProgression(ProjectResource project);
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
+        Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project);
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
-        Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description);
+        Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        public ProjectRepository(IOctopusAsyncClient client)
-            : base(client, "Projects")
+        public ProjectRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Projects")
         {
         }
 
@@ -47,6 +49,11 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ChannelResource>(project.Link("Channels"));
         }
 
+        public Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project)
+        {
+            return Client.ListAll<ChannelResource>(project.Link("Channels"));
+        }
+
         public Task<ProgressionResource> GetProgression(ProjectResource project)
         {
             return Client.Get<ProgressionResource>(project.Link("Progression"));
@@ -56,6 +63,11 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
         }
+        
+        public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
+        {
+            return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
+        }
 
         public Task SetLogo(ProjectResource project, string fileName, Stream contents)
         {
@@ -64,12 +76,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
         {
-            return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
         }
 
-        public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description)
+        public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
-            return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle, description);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
         }
     }
 }

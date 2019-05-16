@@ -1,13 +1,11 @@
 using System;
 using System.IO;
-using FluentAssertions;
-using NUnit.Framework;
-using Octopus.Cli.Tests.Helpers;
-using Serilog;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
-namespace Octopus.Cli.Tests.Commands
+namespace Octo.Tests.Commands
 {
     [TestFixture]
     public class SupportFormattedOutputFixture : ApiCommandFixtureBase
@@ -37,7 +35,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--outputFormat=json");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(true);
@@ -52,7 +50,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--helpOutputFormat=blah");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             command.PrintJsonOutputCalled.ShouldBeEquivalentTo(false);
@@ -70,7 +68,7 @@ namespace Octopus.Cli.Tests.Commands
             CommandLineArgs.Add("--help");
 
             // act
-            await command.Execute(CommandLineArgs.ToArray());
+            await command.Execute(CommandLineArgs.ToArray()).ConfigureAwait(false);
 
             // assert
             var logoutput = LogOutput.ToString();

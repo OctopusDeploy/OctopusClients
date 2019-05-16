@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Cli.Commands.WorkerPool;
-using Octopus.Cli.Tests.Commands;
 using Octopus.Client.Model;
 
 namespace Octo.Tests.Commands

@@ -14,50 +14,56 @@ namespace Octopus.Client.Repositories.Async
         Task Trigger(string taskName);
         Task<ScheduledTaskDetailsResource> GetLogs(string taskName);
         Task<Stream> GetRawLogs(string taskName);
+        Task<SchedulerStatusResource> Status();
     }
 
     class SchedulerRepository : ISchedulerRepository
     {
-        readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
-        public SchedulerRepository(IOctopusAsyncClient client)
+        public SchedulerRepository(IOctopusAsyncRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public Task Start()
         {
-            return client.GetContent("~/api/scheduler/start");
+            return repository.Client.GetContent("~/api/scheduler/start");
         }
 
         public Task Start(string taskName)
         {
-            return client.GetContent($"~/api/scheduler/start?task={taskName}");
+            return repository.Client.GetContent($"~/api/scheduler/start?task={taskName}");
         }
 
         public Task Trigger(string taskName)
         {
-            return client.GetContent($"~/api/scheduler/trigger?task={taskName}");
+            return repository.Client.GetContent($"~/api/scheduler/trigger?task={taskName}");
         }
 
         public Task Stop()
         {
-            return client.GetContent("~/api/scheduler/stop");
+            return repository.Client.GetContent("~/api/scheduler/stop");
         }
 
         public Task Stop(string taskName)
         {
-            return client.GetContent($"~/api/scheduler/stop?task={taskName}");
+            return repository.Client.GetContent($"~/api/scheduler/stop?task={taskName}");
         }
 
         public Task<ScheduledTaskDetailsResource> GetLogs(string taskName)
         {
-            return client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
+            return repository.Client.Get<ScheduledTaskDetailsResource>($"~/api/scheduler/{taskName}/logs");
         }
 
         public Task<Stream> GetRawLogs(string taskName)
         {
-            return client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
+            return repository.Client.GetContent($"~/api/scheduler/{taskName}/logs/raw");
+        }
+
+        public Task<SchedulerStatusResource> Status()
+        {
+            return repository.Client.Get<SchedulerStatusResource>("~/api/scheduler");
         }
     }
 }
