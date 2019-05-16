@@ -237,6 +237,10 @@ namespace Octopus.Client.Model
         
         [Description("Create spaces")] SpaceCreate,
 
-        [Description("Create/update custom package metadata")] PackageMetadataPush
+        [Description("Create/update custom package metadata")] PackageMetadataPush,
+
+        [Description("View project variables (is a gatekeeper permission to be used in conjunction with VariableView)")] ProjectVariableView,
+
+        [Description("Edit project variables (is a gatekeeper permission to be used in conjunction with VariableEdit)")] ProjectVariableEdit
     }
 }

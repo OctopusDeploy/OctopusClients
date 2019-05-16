@@ -3468,6 +3468,8 @@ Octopus.Client.Model
       SpaceDelete = 110
       SpaceCreate = 111
       PackageMetadataPush = 112
+      ProjectVariableView = 113
+      ProjectVariableEdit = 114
   }
   class PermissionDescription
   {
