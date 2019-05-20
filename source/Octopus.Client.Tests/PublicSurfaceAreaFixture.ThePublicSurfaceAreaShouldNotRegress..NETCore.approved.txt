@@ -1295,20 +1295,6 @@ Octopus.Client.Exceptions
   {
     .ctor(Octopus.Client.Extensibility.IHaveSpaceResource, Octopus.Client.Model.SpaceResource)
   }
-  class SpaceResourceIsIncompatibleWithSystemRepositoryException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
-    .ctor()
-  }
-  class SystemResourceIsIncompatibleWithSpaceScopedRepositoryException
-    ISerializable
-    Exception
-  {
-    .ctor(Octopus.Client.Extensibility.IResource)
-    .ctor()
-  }
   class UnsupportedApiVersionException
     ISerializable
     Octopus.Client.Exceptions.OctopusException
