@@ -45,11 +45,7 @@ namespace Octopus.Client.Repositories
                         if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                             throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
                     },
-                    whenSystemScoped: () =>
-                    {
-                        if (spaceResource.SpaceId != null)
-                            throw new SpaceResourceIsIncompatibleWithSystemRepositoryException(spaceResource);
-                    },
+                    whenSystemScoped: () => { },
                     whenUnspecifiedScope: () => { });
         }
 

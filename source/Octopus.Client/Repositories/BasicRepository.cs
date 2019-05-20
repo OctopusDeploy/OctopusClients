@@ -39,10 +39,7 @@ namespace Octopus.Client.Repositories
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
                 },
-                whenSystemScoped: () =>
-                {
-                    throw new SpaceResourceIsIncompatibleWithSystemRepositoryException(spaceResource); 
-                },
+                whenSystemScoped: () => { },
                 whenUnspecifiedScope: () =>
                 {
                     var spaceRoot = Repository.LoadSpaceRootDocument();
@@ -59,34 +56,8 @@ namespace Octopus.Client.Repositories
         {
             if (resource is IHaveSpaceResource spaceResource)
                 CheckSpaceResource(spaceResource);
-            else
-                CheckSystemOnlyResource();
-
-            void CheckSystemOnlyResource()
-            {
-                Repository.Scope.Apply(
-                    whenSpaceScoped: space => { throw new SystemResourceIsIncompatibleWithSpaceScopedRepositoryException(resource); },
-                    whenSystemScoped: () => { }, 
-                    whenUnspecifiedScope:() => { });
-            }
         }
         
-        private void AssertResourceTypeMatchesRepository()
-        {
-            Repository.Scope.Apply(
-                whenSpaceScoped: (space) =>
-                {
-                    if (typeof(IHaveSpaceResource).IsAssignableFrom(typeof(TResource)) == false)
-                        throw new SystemResourceIsIncompatibleWithSpaceScopedRepositoryException();
-                },
-                whenSystemScoped: () =>
-                {
-                    if (typeof(IHaveSpaceResource).IsAssignableFrom(typeof(TResource)))
-                        throw new SpaceResourceIsIncompatibleWithSystemRepositoryException();
-                },
-                whenUnspecifiedScope: () => { });
-        }
-
         public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
@@ -147,7 +118,6 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> GetAll()
         {
-            AssertResourceTypeMatchesRepository();
             var link = ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
             return client.Get<List<TResource>>(link, parameters);
@@ -181,7 +151,6 @@ namespace Octopus.Client.Repositories
 
         public TResource Get(string idOrHref)
         {
-            AssertResourceTypeMatchesRepository();
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
             var link = ResolveLink();
@@ -195,7 +164,6 @@ namespace Octopus.Client.Repositories
 
         public virtual List<TResource> Get(params string[] ids)
         {
-            AssertResourceTypeMatchesRepository();
             if (ids == null) return new List<TResource>();
             var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             if (actualIds.Length == 0) return new List<TResource>();
