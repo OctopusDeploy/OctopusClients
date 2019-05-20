@@ -9,7 +9,7 @@ namespace Octopus.Client.Exceptions
         public ResourceSpaceDoesNotMatchRepositorySpaceException(
             IHaveSpaceResource spaceResource, 
             SpaceResource repositorySpace) 
-            : base($"The resource has a different space specified than the one specified by the repository scope. " +
+            : base($"The resource has a different space specified than the one specified by the repository. " +
                    $"Either change the {nameof(IHaveSpaceResource.SpaceId)} on the resource to {repositorySpace.Id}, " +
                    $"or use a repository that is scoped to {spaceResource.SpaceId}.")
         {
