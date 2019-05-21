@@ -31,9 +31,38 @@ namespace Octopus.Client.Repositories
 
         public IOctopusClient Client => client;
 
+        protected virtual void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        {
+            Repository.Scope.Apply(
+                whenSpaceScoped: space =>
+                {
+                    if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                        throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                },
+                whenSystemScoped: () => { },
+                whenUnspecifiedScope: () =>
+                {
+                    var spaceRoot = Repository.LoadSpaceRootDocument();
+                    var isDefaultSpaceFound = spaceRoot != null;
+                    
+                    if (!isDefaultSpaceFound)
+                    {
+                        throw new DefaultSpaceNotFoundException(spaceResource);
+                    }
+                });
+        } 
+
+        private void AssertSpaceIdMatchesResource(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+                CheckSpaceResource(spaceResource);
+        }
+        
         public virtual TResource Create(TResource resource, object pathParameters = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
+            
             var link = ResolveLink();
             EnrichSpaceId(resource);
             return client.Create(link, resource, pathParameters);
@@ -42,12 +71,14 @@ namespace Octopus.Client.Repositories
         public virtual TResource Modify(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             client.Delete(resource.Links["Self"]);
         }
 

@@ -1210,6 +1210,13 @@ Octopus.Client.Editors.Async
 }
 Octopus.Client.Exceptions
 {
+  class DefaultSpaceNotFoundException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource)
+  }
   class OctopusDeserializationException
     ISerializable
     _Exception
@@ -1290,6 +1297,13 @@ Octopus.Client.Exceptions
     String ErrorMessage { get; }
     ReadOnlyCollection<String> Errors { get; }
     Octopus.Client.Exceptions.TDetails DetailsAs()
+  }
+  class ResourceSpaceDoesNotMatchRepositorySpaceException
+    ISerializable
+    _Exception
+    Exception
+  {
+    .ctor(Octopus.Client.Extensibility.IHaveSpaceResource, Octopus.Client.Model.SpaceResource)
   }
   class UnsupportedApiVersionException
     ISerializable
