@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -33,20 +34,50 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
+        protected virtual void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        {
+            Repository.Scope.Apply(
+                whenSpaceScoped: space =>
+                {
+                    if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                        throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                },
+                whenSystemScoped: () => { },
+                whenUnspecifiedScope: () =>
+                {
+                    var spaceRoot = Repository.LoadSpaceRootDocument();
+                    var isDefaultSpaceFound = spaceRoot != null;
+                   
+                    if (!isDefaultSpaceFound)
+                    {
+                        throw new DefaultSpaceNotFoundException(spaceResource);
+                    }
+                });
+        } 
+
+        private void AssertSpaceIdMatchesResource(TResource resource)
+        {
+            if (resource is IHaveSpaceResource spaceResource)
+                CheckSpaceResource(spaceResource);
+        }
+        
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             var link = await ResolveLink().ConfigureAwait(false);
+            AssertSpaceIdMatchesResource(resource);
             EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
 
         public virtual Task<TResource> Modify(TResource resource)
         {
+            AssertSpaceIdMatchesResource(resource);
             return Client.Update(resource.Links["Self"], resource);
         }
 
         public Task Delete(TResource resource)
         {
+            AssertSpaceIdMatchesResource(resource);
             return Client.Delete(resource.Links["Self"]);
         }
 

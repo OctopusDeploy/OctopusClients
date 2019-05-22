@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Repositories
@@ -34,6 +35,18 @@ namespace Octopus.Client.Repositories
                 };
 
             }
+        }
+
+        protected override void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        {
+                Repository.Scope.Apply(
+                    whenSpaceScoped: space =>
+                    {
+                        if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                            throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                    },
+                    whenSystemScoped: () => { },
+                    whenUnspecifiedScope: () => { });
         }
 
         protected SpaceContext GetCurrentSpaceContext()

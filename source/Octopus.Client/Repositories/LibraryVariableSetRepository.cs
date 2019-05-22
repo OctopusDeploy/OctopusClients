@@ -5,6 +5,7 @@ using Octopus.Client.Model;
 namespace Octopus.Client.Repositories
 {
     public interface ILibraryVariableSetRepository :
+        IResourceRepository,
         ICreate<LibraryVariableSetResource>,
         IGet<LibraryVariableSetResource>,
         IModify<LibraryVariableSetResource>,

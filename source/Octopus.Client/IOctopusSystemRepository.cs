@@ -17,6 +17,7 @@ namespace Octopus.Client
         IConfigurationRepository Configuration { get; }
         IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         IMigrationRepository Migrations { get; }
+        ILicensesRepository Licenses { get; }
         IOctopusServerNodeRepository OctopusServerNodes { get; }
         IPerformanceConfigurationRepository PerformanceConfiguration { get; }
         IServerStatusRepository ServerStatus { get; }
