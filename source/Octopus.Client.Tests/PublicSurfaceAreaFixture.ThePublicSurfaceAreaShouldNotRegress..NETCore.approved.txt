@@ -3276,6 +3276,17 @@ Octopus.Client.Model
       ExecutionTarget = 1
       NotAcquired = 2
   }
+  class PackageBuildMetadata
+  {
+    .ctor()
+    String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
+    String PackageId { get; set; }
+    String VcsCommitNumber { get; set; }
+    String VcsRoot { get; set; }
+    String VcsType { get; set; }
+    String Version { get; set; }
+  }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3713,6 +3724,7 @@ Octopus.Client.Model
   {
     .ctor()
     List<CommitDetails> Commits { get; set; }
+    List<PackageBuildMetadata> PackageBuildMetadata { get; set; }
     String ReleaseNotes { get; set; }
     String Version { get; set; }
     List<WorkItemLink> WorkItems { get; set; }
