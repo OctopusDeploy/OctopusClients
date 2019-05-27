@@ -7,7 +7,16 @@ namespace Octopus.Client.Model
     {
         public string Version { get; set; }
         public string ReleaseNotes { get; set; }
+        public List<PackageBuildMetadata> PackageBuildMetadata { get; set; }
+
+        /// <summary>
+        /// Aggregate of distinct work items from all VersionMetadata 
+        /// </summary>
         public List<WorkItemLink> WorkItems { get; set; }
+
+        /// <summary>
+        /// Aggregate of distinct commits from all VersionMetadata 
+        /// </summary>
         public List<CommitDetails> Commits { get; set; }
     }
 }
