@@ -20,7 +20,6 @@ var signingCertificatePassword = Argument("signing_certificate_password", "");
 ///////////////////////////////////////////////////////////////////////////////
 var publishDir = "./publish";
 var artifactsDir = "./artifacts";
-var assetDir = "./BuildAssets";
 var localPackagesDir = "../LocalPackages";
 var octopusClientFolder = "./source/Octopus.Client";
 
