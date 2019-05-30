@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverMachine").ConfigureAwait(false), new { host, port, type }).ConfigureAwait(false);
+            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverWorker").ConfigureAwait(false), new { host, port, type }).ConfigureAwait(false);
         }
 
         public Task<MachineConnectionStatus> GetConnectionStatus(WorkerResource worker)

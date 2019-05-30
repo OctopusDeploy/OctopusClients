@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
 
         public WorkerResource Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<WorkerResource>(Repository.Link("DiscoverMachine"), new { host, port, type });
+            return Client.Get<WorkerResource>(Repository.Link("DiscoverWorker"), new { host, port, type });
         }
 
         public MachineConnectionStatus GetConnectionStatus(WorkerResource machine)
