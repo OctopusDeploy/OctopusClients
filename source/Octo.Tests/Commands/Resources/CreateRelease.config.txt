@@ -1,5 +1,0 @@
-﻿server=https://test-server-url/api/
-apikey=API-test
-project=Test Project
-releaseNumber=1.0.0
-releasenotes=Test config file.
