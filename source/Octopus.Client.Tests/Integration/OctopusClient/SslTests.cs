@@ -19,6 +19,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task InvalidSslCertificateIsRejected()
         {
+            OctopusAsyncRepository.SecondsToWaitForServerToStart = 2;
             try
             {
                 await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).ConfigureAwait(false);
@@ -38,6 +39,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     e.Message.Should().Be("Peer certificate cannot be authenticated with given CA certificates");
                 }
             }
+            OctopusAsyncRepository.SecondsToWaitForServerToStart = 60;
         }
 
         [Test]

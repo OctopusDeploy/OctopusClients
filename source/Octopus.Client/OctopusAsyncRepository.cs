@@ -43,6 +43,7 @@ namespace Octopus.Client
     /// </remarks>
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
+        internal static int SecondsToWaitForServerToStart = 60;
         private readonly Lazy<Task<RootResource>> loadRootResource;
         private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
         private static readonly string rootDocumentUri = "~/api";
@@ -192,13 +193,10 @@ namespace Octopus.Client
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
 
-            // 60 second limit using Stopwatch alone makes debugging impossible.
-            var retries = 3;
-
             RootResource rootDocument;
             while (true)
             {
-                if (retries <= 0 && watch.Elapsed > TimeSpan.FromSeconds(60))
+                if (watch.Elapsed > TimeSpan.FromSeconds(SecondsToWaitForServerToStart))
                 {
                     if (lastError == null)
                     {
@@ -229,7 +227,6 @@ namespace Octopus.Client
                     await Task.Delay(TimeSpan.FromSeconds(0.5)).ConfigureAwait(false);
                     lastError = ex;
                 }
-                retries--;
             }
 
             if (string.IsNullOrWhiteSpace(rootDocument.ApiVersion))
