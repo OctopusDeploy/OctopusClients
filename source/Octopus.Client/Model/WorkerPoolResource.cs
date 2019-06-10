@@ -9,6 +9,11 @@ namespace Octopus.Client.Model
     /// </summary>
     public class WorkerPoolResource : Resource, INamedResource, IHaveSpaceResource
     {
+        public WorkerPoolResource()
+        {
+            WorkerPoolType = default(WorkerPoolType);
+        }
+
         /// <summary>
         /// Gets or sets the name of this pool. This should be short, preferably 5-20 characters.
         /// </summary>
@@ -39,5 +44,22 @@ namespace Octopus.Client.Model
         public int SortOrder { get; set; }
 
         public string SpaceId { get; set; }
+
+        public virtual WorkerPoolType WorkerPoolType { get; set; }
+    }
+
+    public class StaticWorkerPoolResource : WorkerPoolResource {
+        public StaticWorkerPoolResource()
+        {
+            WorkerPoolType = WorkerPoolType.StaticWorkerPool;
+        }
+        
+        public override WorkerPoolType WorkerPoolType { get; set; }
+    }
+
+    public enum WorkerPoolType
+    {
+        StaticWorkerPool = 0,
+        DynamicWorkerPool
     }
 }
