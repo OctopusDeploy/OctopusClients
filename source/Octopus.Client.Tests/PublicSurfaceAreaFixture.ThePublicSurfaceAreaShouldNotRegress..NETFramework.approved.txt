@@ -4224,7 +4224,6 @@ Octopus.Client.Model
     Octopus.Client.Model.WorkerPoolResource
   {
     .ctor()
-    Octopus.Client.Model.WorkerPoolType WorkerPoolType { get; set; }
   }
   class SubscriptionResource
     Octopus.Client.Extensibility.IResource
