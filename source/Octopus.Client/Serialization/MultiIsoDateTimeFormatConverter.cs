@@ -6,6 +6,12 @@ using Newtonsoft.Json.Converters;
 
 namespace Octopus.Client.Serialization
 {
+    /// <summary>
+    /// Multiple dates are required to be parseable to allow the new client
+    /// (which now models the package publish date property as a DateTimeOffset instead of a string)
+    /// to be both forwards and backwards compatible with the new format being returned
+    /// https://github.com/OctopusDeploy/Issues/issues/5535 
+    /// </summary>
     public class MultiIsoDateTimeFormatConverter : JsonConverter
     {
         public MultiIsoDateTimeFormatConverter(string defaultFormat, params string[] additionalReadFormats)
