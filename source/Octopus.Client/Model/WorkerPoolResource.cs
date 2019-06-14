@@ -45,7 +45,7 @@ namespace Octopus.Client.Model
 
         public string SpaceId { get; set; }
 
-        public virtual WorkerPoolType WorkerPoolType { get; set; }
+        public WorkerPoolType WorkerPoolType { get; set; }
     }
 
     public class StaticWorkerPoolResource : WorkerPoolResource {
@@ -53,8 +53,6 @@ namespace Octopus.Client.Model
         {
             WorkerPoolType = WorkerPoolType.StaticWorkerPool;
         }
-        
-        public override WorkerPoolType WorkerPoolType { get; set; }
     }
 
     public enum WorkerPoolType
