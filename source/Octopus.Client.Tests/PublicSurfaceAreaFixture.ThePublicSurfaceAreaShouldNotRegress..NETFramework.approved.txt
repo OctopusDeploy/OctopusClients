@@ -7090,6 +7090,14 @@ Octopus.Client.Serialization
     static JsonSerializerSettings GetDefaultSerializerSettings()
     static String SerializeObject(Object)
   }
+  class MultiIsoDateTimeFormatConverter
+    JsonConverter
+  {
+    .ctor(String, String[])
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
   class TriggerActionConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerActionResource, TriggerActionType>
   {
