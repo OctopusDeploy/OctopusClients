@@ -4216,6 +4216,15 @@ Octopus.Client.Model
     static System.String LightYellow
     .ctor()
   }
+  class StaticWorkerPoolResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.WorkerPoolResource
+  {
+    .ctor()
+  }
   class SubscriptionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4735,6 +4744,7 @@ Octopus.Client.Model
     String Name { get; set; }
     Int32 SortOrder { get; set; }
     String SpaceId { get; set; }
+    Octopus.Client.Model.WorkerPoolType WorkerPoolType { get; set; }
   }
   class WorkerPoolsSummaryResource
     Octopus.Client.Model.SummaryResourcesCombined
@@ -4747,6 +4757,11 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.WorkerPoolResource WorkerPool { get; set; }
+  }
+  WorkerPoolType
+  {
+      StaticWorkerPool = 0
+      DynamicWorkerPool = 1
   }
   class WorkerResource
     Octopus.Client.Extensibility.IResource
