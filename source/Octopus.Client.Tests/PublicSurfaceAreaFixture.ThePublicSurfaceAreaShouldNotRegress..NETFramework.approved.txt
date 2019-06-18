@@ -5907,6 +5907,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(Int32, Int32)
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean, Boolean)
   }
   interface ICanExtendSpaceContext`1
   {
