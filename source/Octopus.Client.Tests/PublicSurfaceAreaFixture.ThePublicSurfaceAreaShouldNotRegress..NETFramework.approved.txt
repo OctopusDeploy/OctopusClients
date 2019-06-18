@@ -6513,6 +6513,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(Int32, Int32)
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
+    Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean, Boolean)
   }
   interface ICanExtendSpaceContext`1
   {
