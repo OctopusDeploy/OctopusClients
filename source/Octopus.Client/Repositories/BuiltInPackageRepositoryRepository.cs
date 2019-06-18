@@ -13,6 +13,7 @@ namespace Octopus.Client.Repositories
     public interface IBuiltInPackageRepositoryRepository
     {
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false);
+        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
         ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip = 0, int take = 30);
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
@@ -31,19 +32,29 @@ namespace Octopus.Client.Repositories
 
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
         {
-            try
-            {
-                var deltaResult = AttemptDeltaPush(fileName, contents, replaceExisting);
-                if (deltaResult != null)
-                    return deltaResult;
-            }
-            catch(Exception ex) when (!(ex is OctopusValidationException))
-            {
-                Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
-            }
+            return PushPackage(fileName, contents, replaceExisting, useDeltaCompression: true);
+        }
 
-            
-            Logger.Info("Falling back to pushing the complete package to the server");
+        public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+        {
+            if (useDeltaCompression)
+            {
+                try
+                {
+                    var deltaResult = AttemptDeltaPush(fileName, contents, replaceExisting);
+                    if (deltaResult != null)
+                        return deltaResult;
+                }
+                catch(Exception ex) when (!(ex is OctopusValidationException))
+                {
+                    Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
+                }
+                Logger.Info("Falling back to pushing the complete package to the server");
+            }
+            else
+            {
+                Logger.Info("Pushing the complete package to the server, as delta compression was explicitly disabled");
+            }
                 
             contents.Seek(0, SeekOrigin.Begin);
             

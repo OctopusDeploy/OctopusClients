@@ -16,6 +16,8 @@ namespace Octopus.Client.Repositories.Async
     public interface IBuiltInPackageRepositoryRepository
     {
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
+
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30);
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
         Task DeletePackage(PackageResource package);
@@ -32,23 +34,34 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents,
+            bool replaceExisting = false)
         {
+            return await PushPackage(fileName, contents, replaceExisting, useDeltaCompression: true);
+        }
 
-            try
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+        {
+            if (useDeltaCompression)
             {
-                var deltaResult = await AttemptDeltaPush(fileName, contents, replaceExisting).ConfigureAwait(false);
-                if (deltaResult != null)
-                    return deltaResult;
+                try
+                {
+                    var deltaResult = await AttemptDeltaPush(fileName, contents, replaceExisting).ConfigureAwait(false);
+                    if (deltaResult != null)
+                        return deltaResult;
+                }
+                catch (Exception ex) when (!(ex is OctopusValidationException))
+                {
+                    Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
+                }
+
+                Logger.Info("Falling back to pushing the complete package to the server");
             }
-            catch(Exception ex) when (!(ex is OctopusValidationException))
+            else
             {
-                Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
+                Logger.Info("Pushing the complete package to the server, as delta compression was explicitly disabled");
             }
 
-            
-            Logger.Info("Falling back to pushing the complete package to the server");
-                
             contents.Seek(0, SeekOrigin.Begin);
             var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                 await repository.Link("PackageUpload").ConfigureAwait(false),
