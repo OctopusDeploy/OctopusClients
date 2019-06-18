@@ -15,7 +15,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             Get(TestRootPath, p =>
             {
-                Thread.Sleep(TimeSpan.FromSeconds(5));
+                Thread.Sleep(TimeSpan.FromSeconds(10));
                 return "Foo";
             });
         }
@@ -23,7 +23,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         protected override OctopusClientOptions GetClientOptions()
         {
             var options = base.GetClientOptions();
-            options.Timeout = TimeSpan.FromSeconds(1);
+            options.Timeout = TimeSpan.FromSeconds(5);
             return options;
         }
 
@@ -33,7 +33,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var sw = Stopwatch.StartNew();
             Func<Task> get = () => AsyncClient.Get<string>("~/");
             get.ShouldThrow<TimeoutException>();
-            sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(4));
+            sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
         }
 
     }
