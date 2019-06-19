@@ -12,8 +12,7 @@ namespace Octopus.Client.Tests.Serialization
         {
             Converters = { 
                 new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
-                    "dddd, dd MMMM yyyy h:mm tt zzz",
-                    "f"),
+                    "dddd, dd MMMM yyyy h:mm tt zzz"),
             },
         };
 
@@ -33,10 +32,8 @@ namespace Octopus.Client.Tests.Serialization
         {
             var deserialized1 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"2018-11-09T21:09:00.000+01:00\"}", serializerSettings);
             var deserialized2 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"Friday, 09 November 2018 9:09 PM +01:00\"}", serializerSettings);
-            var deserialized3 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"Saturday, November 10, 2018 6:09 AM\"}", serializerSettings);
             
             Assert.AreEqual(deserialized1.Event.Value.ToLocalTime(), deserialized2.Event.Value.ToLocalTime());
-            Assert.AreEqual(deserialized3.Event.Value.ToLocalTime(), deserialized2.Event.Value.ToLocalTime());
         }
 
         [Test]
