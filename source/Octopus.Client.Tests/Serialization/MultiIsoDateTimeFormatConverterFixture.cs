@@ -8,11 +8,12 @@ namespace Octopus.Client.Tests.Serialization
     [TestFixture]
     public class MultiIsoDateTimeFormatConverterFixture
     {
+        private const string PrimaryFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK";
+        private const string SecondaryFormat = "dddd, dd MMMM yyyy h:mm tt zzz";
         readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
         {
             Converters = { 
-                new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
-                    "dddd, dd MMMM yyyy h:mm tt zzz"),
+                new MultiIsoDateTimeFormatConverter(PrimaryFormat, SecondaryFormat),
             },
         };
 
@@ -30,8 +31,8 @@ namespace Octopus.Client.Tests.Serialization
         [Test]
         public void DeserializesBothFormats()
         {
-            var deserialized1 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"2018-11-09T21:09:00.000+01:00\"}", serializerSettings);
-            var deserialized2 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"Friday, 09 November 2018 9:09 PM +01:00\"}", serializerSettings);
+            var deserialized1 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\""+ selectedDate.ToString(PrimaryFormat) +"\"}", serializerSettings);
+            var deserialized2 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\""+ selectedDate.ToString(SecondaryFormat) +"\"}", serializerSettings);
             
             Assert.AreEqual(deserialized1.Event.Value.ToLocalTime(), deserialized2.Event.Value.ToLocalTime());
         }
