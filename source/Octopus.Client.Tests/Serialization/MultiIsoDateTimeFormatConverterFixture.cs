@@ -11,7 +11,9 @@ namespace Octopus.Client.Tests.Serialization
         readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
         {
             Converters = { 
-                new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", "dddd, dd MMMM yyyy h:mm tt zzz" ),
+                new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
+                    "dddd, dd MMMM yyyy h:mm tt zzz",
+                    "f"),
             },
         };
 
@@ -31,14 +33,23 @@ namespace Octopus.Client.Tests.Serialization
         {
             var deserialized1 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"2018-11-09T21:09:00.000+01:00\"}", serializerSettings);
             var deserialized2 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"Friday, 09 November 2018 9:09 PM +01:00\"}", serializerSettings);
-
+            var deserialized3 = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"Saturday, November 10, 2018 6:09 AM\"}", serializerSettings);
+            
             Assert.AreEqual(deserialized1.Event.Value.ToLocalTime(), deserialized2.Event.Value.ToLocalTime());
+            Assert.AreEqual(deserialized3.Event.Value.ToLocalTime(), deserialized2.Event.Value.ToLocalTime());
         }
 
         [Test]
         public void DeserializesNull()
         {
             var deserialized = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":null}", serializerSettings);
+            Assert.IsFalse(deserialized.Event.HasValue);
+        }
+        
+        [Test]
+        public void FailureToParseReturnsNull()
+        {
+            var deserialized = JsonConvert.DeserializeObject<DummyDateClass>("{\"Event\":\"FooDay, 09 Marching 2018 9:09 PM +01:00\"}", serializerSettings);
             Assert.IsFalse(deserialized.Event.HasValue);
         }
         
