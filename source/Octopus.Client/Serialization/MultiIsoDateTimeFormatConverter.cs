@@ -32,7 +32,7 @@ namespace Octopus.Client.Serialization
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             // Try all converters catching any errors, then let any errors from the last converter bubble up
-            for (var i = 0; i < converters.Count - 1; i++)
+            for (var i = 0; i < converters.Count; i++)
             {
                 try
                 {
@@ -44,7 +44,7 @@ namespace Octopus.Client.Serialization
                 }
             }
 
-            return  converters[ converters.Count-1].ReadJson(reader, objectType, existingValue, serializer);
+            return null;
         }
 
         public override bool CanConvert(Type objectType)
