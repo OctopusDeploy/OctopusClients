@@ -22,7 +22,7 @@ namespace Octopus.Client.Serialization
                 {
                     new StringEnumConverter(),
                     new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
-                        "dddd, dd MMMM yyyy h:mm tt zzz" ),
+                        "dddd, dd MMMM yyyy h:mm tt zzz", "f" ),
                     new ControlConverter(),
                     new EndpointConverter(),
                     new AccountConverter(),
