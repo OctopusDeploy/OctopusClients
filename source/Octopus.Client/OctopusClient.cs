@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensions;
+using Octopus.Client.Logging;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client
@@ -22,6 +23,8 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClient : IHttpOctopusClient
     {
+        private static readonly ILog Logger = LogProvider.For<OctopusClient>();
+
         readonly OctopusServerEndpoint serverEndpoint;
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
@@ -498,6 +501,8 @@ namespace Octopus.Client
                         }
                     }
                 }
+
+                Logger.Trace($"DispatchRequest: {webRequest.Method} {webRequest.RequestUri}");
 
                 webResponse = (HttpWebResponse)webRequest.GetResponse();
                 AfterReceivingHttpResponse?.Invoke(webResponse);

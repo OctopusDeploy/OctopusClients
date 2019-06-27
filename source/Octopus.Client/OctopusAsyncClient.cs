@@ -532,6 +532,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 if (request.RequestResource != null)
                     message.Content = GetContent(request);
 
+                Logger.Trace($"DispatchRequest: {message.Method} {message.RequestUri}");
+
                 var completionOption = readResponse
                     ? HttpCompletionOption.ResponseContentRead
                     : HttpCompletionOption.ResponseHeadersRead;
