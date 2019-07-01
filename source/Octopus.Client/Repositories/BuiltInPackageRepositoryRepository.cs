@@ -14,6 +14,8 @@ namespace Octopus.Client.Repositories
     {
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false);
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
+        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists);
+        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression);
         ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip = 0, int take = 30);
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
@@ -30,18 +32,28 @@ namespace Octopus.Client.Repositories
             this.repository = repository;
         }
 
+        public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists)
+        {
+            return PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
+        }
+        
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
         {
-            return PushPackage(fileName, contents, replaceExisting, useDeltaCompression: true);
+            return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true);
         }
 
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+        {
+            return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
+        }
+        
+        public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
         {
             if (useDeltaCompression)
             {
                 try
                 {
-                    var deltaResult = AttemptDeltaPush(fileName, contents, replaceExisting);
+                    var deltaResult = AttemptDeltaPush(fileName, contents, overwriteMode);
                     if (deltaResult != null)
                         return deltaResult;
                 }
@@ -57,18 +69,32 @@ namespace Octopus.Client.Repositories
             }
                 
             contents.Seek(0, SeekOrigin.Begin);
+
+            var link = repository.Link("PackageUpload");
+            object pathParameters;
+
+            // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+            if (link.Contains("overwritemode"))
+            {
+                pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting};
+            }
+            else
+            {
+                pathParameters = new {overwritemode = overwriteMode};
+            }
+            
             
             var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                repository.Link("PackageUpload"),
+                link,
                 new FileUpload() { Contents = contents, FileName = fileName },
-                new { replace = replaceExisting });
+                pathParameters);
             
             Logger.Info("Package transfer completed");
 
             return result;
         }
         
-        private PackageFromBuiltInFeedResource AttemptDeltaPush(string fileName, Stream contents, bool replaceExisting)
+        private PackageFromBuiltInFeedResource AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
             if (!repository.HasLink("PackageDeltaSignature"))
             {
@@ -102,10 +128,23 @@ namespace Octopus.Client.Repositories
                 
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
+                    var link = repository.Link("PackageDeltaUpload");
+                    object pathParameters;
+                    
+                    // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+                    if (link.Contains("overwritemode"))
+                    {
+                        pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting, packageId, signatureResult.BaseVersion};
+                    }
+                    else
+                    {
+                        pathParameters = new {overwritemode = overwriteMode, packageId, signatureResult.BaseVersion};
+                    }
+
                     var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                        repository.Link("PackageDeltaUpload"),
+                        link,
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
-                        new {replace = replaceExisting, packageId, signatureResult.BaseVersion});
+                        pathParameters);
 
                     Logger.Info($"Delta transfer completed");
                     return result;

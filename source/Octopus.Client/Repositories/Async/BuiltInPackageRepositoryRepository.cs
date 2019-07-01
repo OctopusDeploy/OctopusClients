@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Octodiff.Core;
-using Octodiff.Diagnostics;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Features;
 using Octopus.Client.Logging;
@@ -17,6 +15,8 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false);
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression);
 
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30);
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
@@ -34,19 +34,28 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents,
-            bool replaceExisting = false)
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists)
         {
-            return await PushPackage(fileName, contents, replaceExisting, useDeltaCompression: true);
+            return await PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
+        }
+        
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+        {
+            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true);
         }
 
         public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+        {
+            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
+        }
+        
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
         {
             if (useDeltaCompression)
             {
                 try
                 {
-                    var deltaResult = await AttemptDeltaPush(fileName, contents, replaceExisting).ConfigureAwait(false);
+                    var deltaResult = await AttemptDeltaPush(fileName, contents, overwriteMode).ConfigureAwait(false);
                     if (deltaResult != null)
                         return deltaResult;
                 }
@@ -62,18 +71,31 @@ namespace Octopus.Client.Repositories.Async
                 Logger.Info("Pushing the complete package to the server, as delta compression was explicitly disabled");
             }
 
+            var link = await repository.Link("PackageUpload").ConfigureAwait(false);
+            object pathParameters;
+
+            // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+            if (link.Contains("overwritemode"))
+            {
+                pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting};
+            }
+            else
+            {
+                pathParameters = new {overwritemode = overwriteMode};
+            }
+
             contents.Seek(0, SeekOrigin.Begin);
             var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                await repository.Link("PackageUpload").ConfigureAwait(false),
+                link,
                 new FileUpload() {Contents = contents, FileName = fileName},
-                new {replace = replaceExisting}).ConfigureAwait(false);
+                pathParameters).ConfigureAwait(false);
                 
             Logger.Info("Package transfer completed");
 
             return result;
         }
 
-        private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, bool replaceExisting)
+        private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
             if (! await repository.HasLink("PackageDeltaSignature").ConfigureAwait(false))
             {
@@ -107,10 +129,23 @@ namespace Octopus.Client.Repositories.Async
                 
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
+                    var link = await repository.Link("PackageDeltaUpload").ConfigureAwait(false);
+                    object pathParameters;
+                    
+                    // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+                    if (link.Contains("overwritemode"))
+                    {
+                        pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting, packageId, signatureResult.BaseVersion};
+                    }
+                    else
+                    {
+                        pathParameters = new {overwritemode = overwriteMode, packageId, signatureResult.BaseVersion};
+                    }
+
                     var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                        await repository.Link("PackageDeltaUpload").ConfigureAwait(false),
+                        link,
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
-                        new {replace = replaceExisting, packageId, signatureResult.BaseVersion}).ConfigureAwait(false);
+                        pathParameters).ConfigureAwait(false);
 
                     Logger.Info($"Delta transfer completed");
                     return result;

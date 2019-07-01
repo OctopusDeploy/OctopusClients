@@ -1,4 +1,5 @@
 ﻿using System;
+using Octopus.Client.Model;
 using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Repositories
@@ -20,6 +21,11 @@ namespace Octopus.Client.Repositories
 
         public OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata)
         {
+            return Push(packageId, version, octopusMetadata, OverwriteMode.FailIfExists);
+        }
+
+        public OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, OverwriteMode overwriteMode)
+        {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
             if (string.IsNullOrWhiteSpace(version))
@@ -33,13 +39,23 @@ namespace Octopus.Client.Repositories
             };
 
             var link = repository.Link("PackageMetadata");
-            return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource);
+            
+            // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+            if (link.Contains("overwritemode"))
+            {
+                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { overwrite = overwriteMode });
+            }
+            else
+            {
+                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode == OverwriteMode.OverwriteExisting });
+            }
         }
     }
 
     public interface IPackageMetadataRepository
     {
         OctopusPackageMetadataMappedResource Get(string id);
+        OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, OverwriteMode overwriteMode);
         OctopusPackageMetadataMappedResource Push(string packageId, string version, OctopusPackageMetadata octopusMetadata);
     }
 }
