@@ -133,7 +133,7 @@ namespace Octopus.Client.Repositories.Async
                     object pathParameters;
                     
                     // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
-                    if (link.Contains("overwritemode"))
+                    if (link.Contains(OverwriteModeLink.Link))
                     {
                         pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting, packageId, signatureResult.BaseVersion};
                     }

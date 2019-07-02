@@ -6,4 +6,9 @@ namespace Octopus.Client.Model
         OverwriteExisting,
         IgnoreIfExists
     }
+
+    internal static class OverwriteModeLink
+    {
+        public static string Link = "overwriteMode";
+    }
 }
