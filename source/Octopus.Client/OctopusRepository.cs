@@ -167,7 +167,6 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
         public IUserTeamsRepository UserTeams { get; }
-
         public IUpgradeConfigurationRepository UpgradeConfiguration { get; }
 
         public bool HasLink(string name)

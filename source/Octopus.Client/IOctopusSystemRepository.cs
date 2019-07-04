@@ -24,6 +24,7 @@ namespace Octopus.Client
         ISpaceRepository Spaces { get; }
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
+        IUpgradeConfigurationRepository UpgradeConfiguration { get; }
 
         /// <summary>
         /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the

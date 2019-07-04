@@ -106,7 +106,7 @@ namespace Octopus.Client
             ScopedUserRoles = new ScopedUserRoleRepository(this);
             UserPermissions = new UserPermissionsRepository(this);
             UserTeams = new UserTeamsRepository(this);
-
+            UpgradeConfiguration = new UpgradeConfigurationRepository(this);
             loadRootResource = new Lazy<Task<RootResource>>(LoadRootDocumentInner, true);
             loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
         }
@@ -168,6 +168,7 @@ namespace Octopus.Client
         public IScopedUserRoleRepository ScopedUserRoles { get; }
         public IUserPermissionsRepository UserPermissions { get; }
         public IUserTeamsRepository UserTeams { get; }
+        public IUpgradeConfigurationRepository UpgradeConfiguration { get; }
 
         public async Task<bool> HasLink(string name)
         {

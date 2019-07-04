@@ -219,6 +219,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Task<RootResource> LoadRootDocument()
@@ -237,6 +238,7 @@ Octopus.Client
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
     Octopus.Client.Model.RootResource LoadRootDocument()
@@ -331,6 +333,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.Async.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
@@ -453,6 +456,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
+    Octopus.Client.Repositories.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.IUserInvitesRepository UserInvites { get; }
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
@@ -4565,6 +4569,22 @@ Octopus.Client.Model
       static System.String WorkerpoolId
     }
   }
+  class UpgradeConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean AllowChecking { get; set; }
+    Boolean IncludeStatistics { get; set; }
+    Octopus.Client.Model.UpgradeNotificationMode NotificationMode { get; set; }
+  }
+  UpgradeNotificationMode
+  {
+      AlwaysShow = 0
+      ShowOnlyMajorMinor = 1
+      NeverShow = 2
+  }
   class UserPermissionRestriction
   {
     .ctor()
@@ -6355,6 +6375,12 @@ Octopus.Client.Repositories
   {
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
   }
+  interface IUpgradeConfigurationRepository
+    Octopus.Client.Repositories.IGet<UpgradeConfigurationResource>
+    Octopus.Client.Repositories.IModify<UpgradeConfigurationResource>
+  {
+    Octopus.Client.Model.UpgradeConfigurationResource Get()
+  }
   interface IUserInvitesRepository
   {
     Octopus.Client.Model.InvitationResource Invite(String)
@@ -6960,6 +6986,12 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
+  }
+  interface IUpgradeConfigurationRepository
+    Octopus.Client.Repositories.Async.IGet<UpgradeConfigurationResource>
+    Octopus.Client.Repositories.Async.IModify<UpgradeConfigurationResource>
+  {
+    Task<UpgradeConfigurationResource> Get()
   }
   interface IUserInvitesRepository
   {
