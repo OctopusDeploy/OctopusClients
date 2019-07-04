@@ -57,7 +57,7 @@ namespace Octopus.Client.Model
 
         public string SpaceId { get; set; }
     }
-
+    
     /// <summary>
     /// The set of roles and scopes that this team will have
     /// </summary>
@@ -85,6 +85,8 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public ReferenceCollection ProjectGroupIds { get; set; }
+        [Writeable]
+        public ScopingChoice ProjectGroupScopingChoice { get; set; }
 
         /// <summary>
         /// The projects that the team can exercise its roles in. If empty,
@@ -92,21 +94,37 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public ReferenceCollection ProjectIds { get; set; }
-
+        
+        [Writeable]
+        public ScopingChoice ProjectScopingChoice { get; set; }
         /// <summary>
         /// The environments that the team can exercise its roles in. If empty,
         /// the team can exercise its roles in all environments.
         /// </summary>
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; }
-
+        
+        [Writeable]
+        public ScopingChoice EnvironmentScopingChoice { get; set; }
+        
         /// <summary>
         /// The tenants that the team can exercise its roles for. If empty,
         /// the team can exercise its roles for all tenants.
         /// </summary>
         [Writeable]
         public ReferenceCollection TenantIds { get; set; }
-
+        
+        [Writeable]
+        public ScopingChoice TenantScopingChoice { get; set; }
+        
         public string SpaceId { get; set; }
+    }
+
+    public enum ScopingChoice
+    {
+        None,
+        AllUnrestricted,
+        These,
+        AllExcept
     }
 }
