@@ -3931,11 +3931,15 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Octopus.Client.Model.ScopingChoice EnvironmentScopingChoice { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
+    Octopus.Client.Model.ScopingChoice ProjectGroupScopingChoice { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
+    Octopus.Client.Model.ScopingChoice ProjectScopingChoice { get; set; }
     String SpaceId { get; set; }
     String TeamId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ScopingChoice TenantScopingChoice { get; set; }
     String UserRoleId { get; set; }
   }
   ScopeField
@@ -3987,6 +3991,13 @@ Octopus.Client.Model
     .ctor(String)
     .ctor(String, String[])
     .ctor(IEnumerable<String>)
+  }
+  ScopingChoice
+  {
+      None = 0
+      AllUnrestricted = 1
+      These = 2
+      AllExcept = 3
   }
   class ScriptConsoleSupportedAttribute
     Attribute
