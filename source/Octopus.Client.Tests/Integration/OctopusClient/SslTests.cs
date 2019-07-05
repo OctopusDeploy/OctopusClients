@@ -30,8 +30,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 var e = ex.InnerException?.InnerException;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    e.GetType().Name.Should().Be("WinHttpException");
-                    e.Message.Should().Be("A security error occurred");
+                    e.GetType().Name.Should().BeOneOf("WinHttpException", "AuthenticationException");
+                    e.Message.Should().BeOneOf("A security error occurred",
+                        "The remote certificate is invalid according to the validation procedure.");
                 }
                 else
                 {
