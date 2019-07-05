@@ -86,7 +86,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection ProjectGroupIds { get; set; }
         [Writeable]
-        public ScopingChoice ProjectGroupScopingChoice { get; set; }
+        public ScopeResource<ProjectResource> ProjectGroupScope { get; set; }
 
         /// <summary>
         /// The projects that the team can exercise its roles in. If empty,
@@ -96,7 +96,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection ProjectIds { get; set; }
         
         [Writeable]
-        public ScopingChoice ProjectScopingChoice { get; set; }
+        public ScopeResource<ProjectResource> ProjectScope { get; set; }
         /// <summary>
         /// The environments that the team can exercise its roles in. If empty,
         /// the team can exercise its roles in all environments.
@@ -105,7 +105,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection EnvironmentIds { get; set; }
         
         [Writeable]
-        public ScopingChoice EnvironmentScopingChoice { get; set; }
+        public ScopeResource<EnvironmentResource> EnvironmentScope { get; set; }
         
         /// <summary>
         /// The tenants that the team can exercise its roles for. If empty,
@@ -115,16 +115,21 @@ namespace Octopus.Client.Model
         public ReferenceCollection TenantIds { get; set; }
         
         [Writeable]
-        public ScopingChoice TenantScopingChoice { get; set; }
+        public ScopeResource<TenantResource> TenantScope { get; set; }
         
         public string SpaceId { get; set; }
     }
 
-    public enum ScopingChoice
+    public enum ChoiceType
     {
-        None,
-        AllUnrestricted,
-        These,
-        AllExcept
+        Unrestricted,
+        OnlyThese,
+        AllExceptThese
+    }
+    
+    public class ScopeResource<TResource> where TResource : IResource {
+        ChoiceType ChoiceType { get; }
+        ResourceCollection<TResource> Ids { get; }
+        bool IncludeUnscoped { get; }
     }
 }
