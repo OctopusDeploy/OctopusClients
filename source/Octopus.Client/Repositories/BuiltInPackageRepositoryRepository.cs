@@ -138,7 +138,7 @@ namespace Octopus.Client.Repositories
                     }
                     else
                     {
-                        pathParameters = new {overwritemode = overwriteMode, packageId, signatureResult.BaseVersion};
+                        pathParameters = new {overwriteMode = overwriteMode, packageId, signatureResult.BaseVersion};
                     }
 
                     var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
