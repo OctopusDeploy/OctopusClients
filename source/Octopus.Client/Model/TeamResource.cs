@@ -128,8 +128,8 @@ namespace Octopus.Client.Model
     }
     
     public class ScopeResource<TResource> where TResource : IResource {
-        ChoiceType ChoiceType { get; }
-        ResourceCollection<TResource> Ids { get; }
-        bool IncludeUnscoped { get; }
+        public ChoiceType ChoiceType { get; set; }
+        public ResourceCollection<TResource> Ids { get; set;  }
+        public bool IncludeUnscoped { get; set; }
     }
 }

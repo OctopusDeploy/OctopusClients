@@ -3965,6 +3965,9 @@ Octopus.Client.Model
   class ScopeResource`1
   {
     .ctor()
+    Octopus.Client.Model.ChoiceType ChoiceType { get; set; }
+    Octopus.Client.Model.ResourceCollection<TResource> Ids { get; set; }
+    Boolean IncludeUnscoped { get; set; }
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
