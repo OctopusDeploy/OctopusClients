@@ -2030,6 +2030,12 @@ Octopus.Client.Model
     String Tag { get; set; }
     String VersionRange { get; set; }
   }
+  ChoiceType
+  {
+      Unrestricted = 0
+      OnlyThese = 1
+      AllExceptThese = 2
+  }
   class CommitDetails
   {
     .ctor()
@@ -3931,15 +3937,15 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ScopingChoice EnvironmentScopingChoice { get; set; }
+    Octopus.Client.Model.ScopeResource<EnvironmentResource> EnvironmentScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
-    Octopus.Client.Model.ScopingChoice ProjectGroupScopingChoice { get; set; }
+    Octopus.Client.Model.ScopeResource<ProjectResource> ProjectGroupScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
-    Octopus.Client.Model.ScopingChoice ProjectScopingChoice { get; set; }
+    Octopus.Client.Model.ScopeResource<ProjectResource> ProjectScope { get; set; }
     String SpaceId { get; set; }
     String TeamId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    Octopus.Client.Model.ScopingChoice TenantScopingChoice { get; set; }
+    Octopus.Client.Model.ScopeResource<TenantResource> TenantScope { get; set; }
     String UserRoleId { get; set; }
   }
   ScopeField
@@ -3955,6 +3961,10 @@ Octopus.Client.Model
       Channel = 8
       TenantTag = 9
       Tenant = 10
+  }
+  class ScopeResource`1
+  {
+    .ctor()
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
@@ -3991,13 +4001,6 @@ Octopus.Client.Model
     .ctor(String)
     .ctor(String, String[])
     .ctor(IEnumerable<String>)
-  }
-  ScopingChoice
-  {
-      None = 0
-      AllUnrestricted = 1
-      These = 2
-      AllExcept = 3
   }
   class ScriptConsoleSupportedAttribute
     Attribute
