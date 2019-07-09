@@ -3939,7 +3939,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Octopus.Client.Model.ScopeResource<EnvironmentResource> EnvironmentScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
-    Octopus.Client.Model.ScopeResource<ProjectResource> ProjectGroupScope { get; set; }
+    Octopus.Client.Model.ScopeResource<ProjectGroupResource> ProjectGroupScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
     Octopus.Client.Model.ScopeResource<ProjectResource> ProjectScope { get; set; }
     String SpaceId { get; set; }

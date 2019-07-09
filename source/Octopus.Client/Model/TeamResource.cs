@@ -86,7 +86,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection ProjectGroupIds { get; set; }
         [Writeable]
-        public ScopeResource<ProjectResource> ProjectGroupScope { get; set; }
+        public ScopeResource<ProjectGroupResource> ProjectGroupScope { get; set; }
 
         /// <summary>
         /// The projects that the team can exercise its roles in. If empty,
