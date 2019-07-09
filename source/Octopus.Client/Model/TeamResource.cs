@@ -120,16 +120,37 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
     }
 
+    /// <summary>
+    /// Determines the type of scoping is chosen for a given resource collection.
+    /// </summary>
     public enum ChoiceType
     {
+        /// <summary>
+        /// All resources are available
+        /// </summary>
         Unrestricted,
+        /// <summary>
+        /// Only provide scoped access to a list of resources 
+        /// </summary>
         OnlyThese,
+        /// <summary>
+        /// Provide an exclusion list of resources, provide scoped access to all others
+        /// </summary>
         AllExceptThese
     }
     
     public class ScopeResource<TResource> where TResource : IResource {
+        /// <summary>
+        /// The type of scope query logic to use. <see cref="ChoiceType"/>
+        /// </summary>
         public ChoiceType ChoiceType { get; set; }
+        /// <summary>
+        /// The list of resources to include
+        /// </summary>
         public ResourceCollection<TResource> Ids { get; set;  }
+        /// <summary>
+        /// Include resources that aren't scoped
+        /// </summary>
         public bool IncludeUnscoped { get; set; }
     }
 }
