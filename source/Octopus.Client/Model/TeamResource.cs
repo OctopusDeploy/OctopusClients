@@ -86,7 +86,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public ReferenceCollection ProjectGroupIds { get; set; }
         [Writeable]
-        public ScopeResource<ProjectGroupResource> ProjectGroupScope { get; set; }
+        public ScopeResource ProjectGroupScope { get; set; }
 
         /// <summary>
         /// The projects that the team can exercise its roles in. If empty,
@@ -96,7 +96,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection ProjectIds { get; set; }
         
         [Writeable]
-        public ScopeResource<ProjectResource> ProjectScope { get; set; }
+        public ScopeResource ProjectScope { get; set; }
         /// <summary>
         /// The environments that the team can exercise its roles in. If empty,
         /// the team can exercise its roles in all environments.
@@ -105,7 +105,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection EnvironmentIds { get; set; }
         
         [Writeable]
-        public ScopeResource<EnvironmentResource> EnvironmentScope { get; set; }
+        public ScopeResource EnvironmentScope { get; set; }
         
         /// <summary>
         /// The tenants that the team can exercise its roles for. If empty,
@@ -115,7 +115,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection TenantIds { get; set; }
         
         [Writeable]
-        public ScopeResource<TenantResource> TenantScope { get; set; }
+        public ScopeResource TenantScope { get; set; }
         
         public string SpaceId { get; set; }
     }
@@ -139,7 +139,7 @@ namespace Octopus.Client.Model
         AllExceptThese
     }
     
-    public class ScopeResource<TResource> where TResource : IResource {
+    public class ScopeResource {
         /// <summary>
         /// The type of scope query logic to use. <see cref="ChoiceType"/>
         /// </summary>
@@ -147,7 +147,7 @@ namespace Octopus.Client.Model
         /// <summary>
         /// The list of resources to include
         /// </summary>
-        public ResourceCollection<TResource> Ids { get; set;  }
+        public ReferenceCollection Ids { get; set;  }
         /// <summary>
         /// Include resources that aren't scoped
         /// </summary>
