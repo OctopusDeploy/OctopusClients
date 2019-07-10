@@ -3937,15 +3937,15 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
-    Octopus.Client.Model.ScopeResource<EnvironmentResource> EnvironmentScope { get; set; }
+    Octopus.Client.Model.ScopeResource EnvironmentScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectGroupIds { get; set; }
-    Octopus.Client.Model.ScopeResource<ProjectGroupResource> ProjectGroupScope { get; set; }
+    Octopus.Client.Model.ScopeResource ProjectGroupScope { get; set; }
     Octopus.Client.Model.ReferenceCollection ProjectIds { get; set; }
-    Octopus.Client.Model.ScopeResource<ProjectResource> ProjectScope { get; set; }
+    Octopus.Client.Model.ScopeResource ProjectScope { get; set; }
     String SpaceId { get; set; }
     String TeamId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
-    Octopus.Client.Model.ScopeResource<TenantResource> TenantScope { get; set; }
+    Octopus.Client.Model.ScopeResource TenantScope { get; set; }
     String UserRoleId { get; set; }
   }
   ScopeField
@@ -3962,11 +3962,11 @@ Octopus.Client.Model
       TenantTag = 9
       Tenant = 10
   }
-  class ScopeResource`1
+  class ScopeResource
   {
     .ctor()
     Octopus.Client.Model.ChoiceType ChoiceType { get; set; }
-    Octopus.Client.Model.ResourceCollection<TResource> Ids { get; set; }
+    Octopus.Client.Model.ReferenceCollection Ids { get; set; }
     Boolean IncludeUnscoped { get; set; }
   }
   class ScopeSpecification
