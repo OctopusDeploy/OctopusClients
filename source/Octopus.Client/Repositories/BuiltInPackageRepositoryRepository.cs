@@ -73,10 +73,10 @@ namespace Octopus.Client.Repositories
             var link = repository.Link("PackageUpload");
             object pathParameters;
 
-            // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
             if (link.Contains(OverwriteModeLink.Link))
             {
-                pathParameters = new { overwritemode = overwriteMode };
+                pathParameters = new { overwriteMode = overwriteMode };
             }
             else
             {
@@ -131,14 +131,14 @@ namespace Octopus.Client.Repositories
                     var link = repository.Link("PackageDeltaUpload");
                     object pathParameters;
                     
-                    // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+                    // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
                     if (link.Contains(OverwriteModeLink.Link))
                     {
-                        pathParameters = new {overwriteMode = overwriteMode, packageId, signatureResult.BaseVersion};
+                        pathParameters = new { overwriteMode = overwriteMode, packageId, signatureResult.BaseVersion };
                     }
                     else
                     {
-                        pathParameters = new {replace = overwriteMode == OverwriteMode.OverwriteExisting, packageId, signatureResult.BaseVersion};
+                        pathParameters = new { replace = overwriteMode == OverwriteMode.OverwriteExisting, packageId, signatureResult.BaseVersion };
                     }
 
                     var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(

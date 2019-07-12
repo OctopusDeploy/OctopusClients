@@ -40,7 +40,7 @@ namespace Octopus.Client.Repositories
 
             var link = repository.Link("PackageMetadata");
             
-            // if the link doesn't contain overwritemode then we're connected to an older server, which uses the `replace` parameter  
+            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
             if (link.Contains(OverwriteModeLink.Link))
             {
                 return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { overwriteMode = overwriteMode });
