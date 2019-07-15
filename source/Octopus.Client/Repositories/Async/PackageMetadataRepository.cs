@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Octopus.Client.Model;
 using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Repositories.Async
@@ -19,7 +20,12 @@ namespace Octopus.Client.Repositories.Async
             return await repository.Client.Get<OctopusPackageMetadataMappedResource>(link, new { id });
         }
 
-        public async Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting)
+        public Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting)
+        {
+            return Push(packageId, version, octopusMetadata, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists);
+        }
+        
+        public async Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, OverwriteMode overwriteMode)
         {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
@@ -34,13 +40,24 @@ namespace Octopus.Client.Repositories.Async
             };
 
             var link = await repository.Link("PackageMetadata");
-            return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = replaceExisting });
+
+            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
+            if (link.Contains(OverwriteModeLink.Link))
+            {
+                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { overwriteMode = overwriteMode });
+            }
+            else
+            {
+                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode == OverwriteMode.OverwriteExisting });
+            }
         }
     }
 
     public interface IPackageMetadataRepository
     {
         Task<OctopusPackageMetadataMappedResource> Get(string id);
+        Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, OverwriteMode overwriteMode);
+        [Obsolete]
         Task<OctopusPackageMetadataMappedResource> Push(string packageId, string version, OctopusPackageMetadata octopusMetadata, bool replaceExisting);
     }
 }

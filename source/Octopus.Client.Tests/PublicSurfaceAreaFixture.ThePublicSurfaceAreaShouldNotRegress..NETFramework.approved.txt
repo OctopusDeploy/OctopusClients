@@ -3292,6 +3292,12 @@ Octopus.Client.Model
     Octopus.Client.Model.LeadershipRank Rank { get; set; }
     Int32 RunningTaskCount { get; set; }
   }
+  OverwriteMode
+  {
+      FailIfExists = 0
+      OverwriteExisting = 1
+      IgnoreIfExists = 2
+  }
   PackageAcquisitionLocation
   {
       Server = 0
@@ -5928,6 +5934,8 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean, Boolean)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode, Boolean)
   }
   interface ICanExtendSpaceContext`1
   {
@@ -6168,6 +6176,7 @@ Octopus.Client.Repositories
   interface IPackageMetadataRepository
   {
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
   }
   interface IPaginate`1
@@ -6470,6 +6479,7 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusRepository)
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
+    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
   }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
@@ -6540,6 +6550,8 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean, Boolean)
+    Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode)
+    Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode, Boolean)
   }
   interface ICanExtendSpaceContext`1
   {
@@ -6779,6 +6791,7 @@ Octopus.Client.Repositories.Async
   interface IPackageMetadataRepository
   {
     Task<OctopusPackageMetadataMappedResource> Get(String)
+    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
     Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   interface IPaginate`1
@@ -7082,6 +7095,7 @@ Octopus.Client.Repositories.Async
     .ctor(Octopus.Client.IOctopusAsyncRepository)
     Task<OctopusPackageMetadataMappedResource> Get(String)
     Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
+    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
   }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
