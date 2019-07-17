@@ -10,8 +10,6 @@ namespace Octopus.Client.Model
     /// </summary>
     public enum Permission
     {
-        None,
-
         [Description("Perform system-level functions like configuring HTTP web hosting, the public URL, server nodes, maintenance mode, and server diagnostics")] AdministerSystem,
 
         [Description("Edit project details")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Tenants)] ProjectEdit,
@@ -227,8 +225,6 @@ namespace Octopus.Client.Model
 
         [Description("Edit workers and worker pools")] WorkerEdit,
 
-        [Description("Run background actions that don't require user principal")] RunSystem,
-        
         [Description("Edit spaces")] SpaceEdit,
         
         [Description("View spaces")] SpaceView,
