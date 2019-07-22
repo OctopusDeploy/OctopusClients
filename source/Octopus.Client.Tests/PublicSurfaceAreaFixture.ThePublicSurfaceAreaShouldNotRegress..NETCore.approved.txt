@@ -3000,7 +3000,9 @@ Octopus.Client.Model
     .ctor()
     .ctor(Octopus.Client.Model.MachineScriptPolicy, Octopus.Client.Model.MachineScriptPolicy)
     Octopus.Client.Model.MachineScriptPolicy BashHealthCheckPolicy { get; set; }
-    TimeSpan HealthCheckInterval { get; set; }
+    String HealthCheckCron { get; set; }
+    String HealthCheckCronTimezone { get; set; }
+    Nullable<TimeSpan> HealthCheckInterval { get; set; }
     Octopus.Client.Model.HealthCheckType HealthCheckType { get; set; }
     Octopus.Client.Model.MachineScriptPolicy PowerShellHealthCheckPolicy { get; set; }
     Octopus.Client.Model.MachineScriptPolicy SshEndpointHealthCheckPolicy { get; }
