@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories
             this.repository = repository;
         }
 
-        public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists)
+        public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
             return PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
         }
