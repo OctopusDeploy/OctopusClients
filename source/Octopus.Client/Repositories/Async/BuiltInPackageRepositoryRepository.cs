@@ -34,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists)
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
             return await PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
         }
