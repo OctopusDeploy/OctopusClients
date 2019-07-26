@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
     {
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false);
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
-        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode = OverwriteMode.FailIfExists);
+        PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode);
         PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression);
         ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(string packageId, int skip = 0, int take = 30);
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
