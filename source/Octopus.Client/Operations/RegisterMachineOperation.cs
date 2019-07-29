@@ -131,7 +131,7 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Machines.FindByName(MachineName);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new ArgumentException($"A machine named '{MachineName}' already exists on the Octopus Server in the target space. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
