@@ -10,7 +10,7 @@ namespace Octopus.Client
     {
         private static string requestingTool;
 
-        internal static void SetRequestingTool(string toolName)
+        public static void SetRequestingTool(string toolName)
         {
             requestingTool = toolName;
         }
