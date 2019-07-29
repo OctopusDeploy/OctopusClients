@@ -1,11 +1,12 @@
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
 using Newtonsoft.Json;
-using Octopus.Cli.Extensions;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Serialization
 {
+    /// <summary>
+    /// A wrapper over the required Json serialization that sets up the serializer settings to
+    /// speak to Octopus correctly. 
+    /// </summary>
     public static class Serializer
     {
         public static string Serialize<T>(object metadata, T exportObject)

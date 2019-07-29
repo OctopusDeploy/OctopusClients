@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 
-namespace Octopus.Cli.Extensions
+namespace Octopus.Client.Util
 {
     static class DynamicExtensions
     {
