@@ -7179,7 +7179,7 @@ Octopus.Client.Serialization
   }
   abstract class Serializer
   {
-    static IDictionary<String, Object> DeserializeObject(String)
+    static Object Deserialize(String)
     static String Serialize(Object, Octopus.Client.Serialization.T)
     static String Serialize(Object)
   }
