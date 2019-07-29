@@ -36,9 +36,6 @@ namespace Octopus.Client
         private string DetermineRequestingTool()
         {
             var launchAssembly = Assembly.GetEntryAssembly();
-            Console.WriteLine(launchAssembly.FullName);
-            foreach(var t in launchAssembly.GetTypes())
-                Console.WriteLine(t.FullName);
                 
             if (launchAssembly.GetTypes().Any(x => x.FullName == "Octo.Program"))
             {
