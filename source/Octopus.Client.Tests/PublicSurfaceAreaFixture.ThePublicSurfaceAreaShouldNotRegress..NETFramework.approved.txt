@@ -390,7 +390,6 @@ Octopus.Client
     .ctor()
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
-    static void SetRequestingTool(String)
   }
   class OctopusClientOptions
   {

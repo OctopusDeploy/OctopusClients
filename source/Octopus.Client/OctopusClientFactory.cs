@@ -36,7 +36,7 @@ namespace Octopus.Client
         private string DetermineRequestingTool()
         {
             var launchAssembly = Assembly.GetEntryAssembly();
-            if (launchAssembly.GetTypes().Any(x => x.FullName == "Octopus.Cli.CliProgram"))
+            if (launchAssembly.GetTypes().Any(x => x.FullName == "Octo.Program"))
             {
                 var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
                 if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
