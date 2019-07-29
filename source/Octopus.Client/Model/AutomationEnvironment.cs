@@ -1,6 +1,6 @@
 ﻿namespace Octopus.Client.Model
 {
-    internal enum AutomationEnvironment
+    public enum AutomationEnvironment
     {
         NoneOrUnknown,
         Octopus,

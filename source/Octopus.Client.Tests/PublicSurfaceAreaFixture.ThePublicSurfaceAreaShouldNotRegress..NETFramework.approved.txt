@@ -574,6 +574,16 @@ Octopus.Client
     void SetParameter(String, IDictionary<String, String>)
   }
 }
+Octopus.Client.AutomationEnvironments
+{
+  class AutomationEnvironmentProvider
+    Octopus.Client.AutomationEnvironments.IAutomationEnvironmentProvider
+  {
+    .ctor()
+    Octopus.Client.Model.AutomationEnvironment DetermineAutomationEnvironment()
+    String DetermineAutomationEnvironmentWithVersion()
+  }
+}
 Octopus.Client.Editors
 {
   class AccountEditor`2
@@ -1732,6 +1742,36 @@ Octopus.Client.Model
     static IEqualityComparer<AutoDeployReleaseOverrideResource> EnvironmentIdTenantIdComparer { get; }
     String ReleaseId { get; }
     String TenantId { get; }
+  }
+  AutomationEnvironment
+  {
+      NoneOrUnknown = 0
+      Octopus = 1
+      Bamboo = 2
+      TeamCity = 3
+      AzureDevOps = 4
+      AppVeyor = 5
+      BitBucket = 6
+      Jenkins = 7
+      CircleCI = 8
+      GitLabCI = 9
+      Travis = 10
+      GoCD = 11
+      BitRise = 12
+      Buddy = 13
+      BuildKite = 14
+      CirrusCI = 15
+      AWSCodeBuild = 16
+      Codeship = 17
+      Drone = 18
+      Dsari = 19
+      Hudson = 20
+      MagnumCI = 21
+      SailCI = 22
+      Semaphore = 23
+      Shippable = 24
+      SolanoCI = 25
+      StriderCD = 26
   }
   class AwsElasticContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource
