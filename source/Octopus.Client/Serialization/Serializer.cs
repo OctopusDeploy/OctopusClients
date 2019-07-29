@@ -26,7 +26,7 @@ namespace Octopus.Client.Serialization
             return serializedObject;
         }
         
-        public static IDictionary<string, object> DeserializeObject<T>(string input)
+        public static object Deserialize<T>(string input)
         {
             var expando = JsonConvert.DeserializeObject<ExpandoObject>(input, JsonSerialization.GetDefaultSerializerSettings());
             var importedObject = expando as IDictionary<string, object>;

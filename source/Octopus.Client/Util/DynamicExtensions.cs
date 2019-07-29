@@ -5,7 +5,7 @@ using System.Dynamic;
 
 namespace Octopus.Cli.Extensions
 {
-    public static class DynamicExtensions
+    static class DynamicExtensions
     {
         public static dynamic ToDynamic(this object value, object metadata)
         {
