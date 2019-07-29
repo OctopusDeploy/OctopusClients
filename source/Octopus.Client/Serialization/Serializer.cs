@@ -18,7 +18,7 @@ namespace Octopus.Client.Serialization
             return serializedObject;
         }
         
-        public static string Serialize<T>(object obj)
+        public static string Serialize(object obj)
         {
             var serializerSettings = JsonSerialization.GetDefaultSerializerSettings();
             var serializedObject = JsonConvert.SerializeObject(obj, serializerSettings);
