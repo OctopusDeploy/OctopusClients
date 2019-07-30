@@ -37,7 +37,7 @@ namespace Octopus.Client
         {
             var launchAssembly = Assembly.GetEntryAssembly();
                 
-            if (launchAssembly.GetTypes().Any(x => x.FullName == "Octo.Program" || x.FullName == "Octopus.DotNet.Cli.Program"))
+            if (launchAssembly != null && launchAssembly.GetTypes().Any(x => x.FullName == "Octo.Program" || x.FullName == "Octopus.DotNet.Cli.Program"))
             {
                 var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
                 if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
