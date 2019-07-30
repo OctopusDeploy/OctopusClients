@@ -2,6 +2,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
+#tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=Cake.Incubator&version=4.0.0"
 
 using Cake.Incubator;
@@ -99,8 +100,31 @@ Task("Test")
             });
     });
 
-Task("PackClientNuget")
+Task("Merge")
     .IsDependentOn("Test")
+    .Does(() => {
+        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
+        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
+        CreateDirectory(outputFolder);
+
+        ILRepack(
+            $"{outputFolder}/Octopus.Client.dll",
+            $"{inputFolder}/Octopus.Client.dll",
+            System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f),
+            new ILRepackSettings {
+                Internalize = true,
+                Parallel = false,
+                XmlDocs = true,
+                Libs = new List<DirectoryPath>() { inputFolder }
+            }
+        );
+
+        DeleteDirectory(inputFolder, true);
+        MoveDirectory(outputFolder, inputFolder);
+    });
+
+Task("PackClientNuget")
+    .IsDependentOn("Merge")
     .Does(() => {
         SignBinaries($"{octopusClientFolder}/bin/{configuration}");
 

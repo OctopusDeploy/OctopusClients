@@ -7,7 +7,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.AutomationEnvironments
 {
-    internal class AutomationEnvironmentProvider : IAutomationEnvironmentProvider
+    public class AutomationEnvironmentProvider : IAutomationEnvironmentProvider
     {
         private static readonly ILog Logger = LogProvider.For<AutomationEnvironmentProvider>();
 
