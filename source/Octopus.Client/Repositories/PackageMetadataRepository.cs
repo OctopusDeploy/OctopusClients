@@ -1,4 +1,5 @@
 ﻿using System;
+using Octopus.Client.Logging;
 using Octopus.Client.Model;
 using Octopus.Client.Model.PackageMetadata;
 
@@ -7,6 +8,7 @@ namespace Octopus.Client.Repositories
     public class PackageMetadataRepository : IPackageMetadataRepository
     {
         private readonly IOctopusRepository repository;
+        private static readonly ILog Logger = LogProvider.For<PackageMetadataRepository>();
 
         public PackageMetadataRepository(IOctopusRepository repository)
         {
@@ -47,7 +49,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode == OverwriteMode.OverwriteExisting });
+                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.AsLegacyReplaceFlag(Logger) });
             }
         }
     }

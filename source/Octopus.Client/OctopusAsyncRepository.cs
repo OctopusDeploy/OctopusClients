@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
+using Octopus.Client.Logging;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
