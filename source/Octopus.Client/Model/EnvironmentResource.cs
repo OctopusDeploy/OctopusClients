@@ -34,8 +34,7 @@ namespace Octopus.Client.Model
 
         /// <summary>
         /// If set to true, deployments will prompt for manual intervention (Fail/Retry/Ignore) when
-        /// failures are encountered in activities that support it. May be overridden with the
-        /// Octopus.UseGuidedFailure special variable.
+        /// failures are encountered in activities that support it.
         /// </summary>
         [Writeable]
         public bool UseGuidedFailure { get; set; }
