@@ -40,6 +40,12 @@ namespace Octopus.Client.Repositories
                 OctopusPackageMetadata = octopusMetadata,
             };
 
+            if (!repository.HasLink("PackageMetadata"))
+            {
+                Logger.Error(OctopusPackageMetadata.PackageMetadataRequiresOctopusVersion);
+                throw new InvalidOperationException(OctopusPackageMetadata.PackageMetadataRequiresOctopusVersion);
+            }
+
             var link = repository.Link("PackageMetadata");
             
             // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
