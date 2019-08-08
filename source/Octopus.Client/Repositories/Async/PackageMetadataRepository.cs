@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Octopus.Client.Logging;
 using Octopus.Client.Model;
 using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public class PackageMetadataRepository : IPackageMetadataRepository
+    class PackageMetadataRepository : IPackageMetadataRepository
     {
         private readonly IOctopusAsyncRepository repository;
+        private static readonly ILog Logger = LogProvider.For<PackageMetadataRepository>();
 
         public PackageMetadataRepository(IOctopusAsyncRepository repository)
         {
@@ -48,7 +50,7 @@ namespace Octopus.Client.Repositories.Async
             }
             else
             {
-                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode == OverwriteMode.OverwriteExisting });
+                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) });
             }
         }
     }
