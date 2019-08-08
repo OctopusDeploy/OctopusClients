@@ -7106,14 +7106,6 @@ Octopus.Client.Repositories.Async
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
-  class PackageMetadataRepository
-    Octopus.Client.Repositories.Async.IPackageMetadataRepository
-  {
-    .ctor(Octopus.Client.IOctopusAsyncRepository)
-    Task<OctopusPackageMetadataMappedResource> Get(String)
-    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
-    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
-  }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
     Exception
