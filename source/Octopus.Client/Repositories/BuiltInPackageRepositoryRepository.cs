@@ -80,7 +80,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                pathParameters = new { replace = overwriteMode.AsLegacyReplaceFlag(Logger) };
+                pathParameters = new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) };
             }
             
             
@@ -138,7 +138,7 @@ namespace Octopus.Client.Repositories
                     }
                     else
                     {
-                        pathParameters = new { replace = overwriteMode.AsLegacyReplaceFlag(Logger), packageId, signatureResult.BaseVersion };
+                        pathParameters = new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger), packageId, signatureResult.BaseVersion };
                     }
 
                     var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(

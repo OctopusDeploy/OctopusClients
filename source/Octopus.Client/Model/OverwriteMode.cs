@@ -13,11 +13,11 @@ namespace Octopus.Client.Model
     {
         public static string Link = "overwriteMode";
 
-        public static bool AsLegacyReplaceFlag(this OverwriteMode @this, ILog logger)
+        public static bool ConvertToLegacyReplaceFlag(this OverwriteMode @this, ILog logger)
         {
             if (@this == OverwriteMode.IgnoreIfExists)
             {
-                logger.Warn("You have selected to ignore existing versions but the Octopus server you are connected to doesn't not support this. Falling back to default value of `replace=false`");
+                logger.Warn("The option to ignore existing versions is only supported by Octopus Server 2019.7.8 or newer. If you want to use this option please upgrade your Octopus Server. In the meantime we are automatically falling back to the default option `replace=false` for this request.");
                 return false;
             }
 

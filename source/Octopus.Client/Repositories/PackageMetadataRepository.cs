@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.AsLegacyReplaceFlag(Logger) });
+                return repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) });
             }
         }
     }

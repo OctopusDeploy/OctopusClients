@@ -81,7 +81,7 @@ namespace Octopus.Client.Repositories.Async
             }
             else
             {
-                pathParameters = new { replace = overwriteMode.AsLegacyReplaceFlag(Logger) };
+                pathParameters = new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) };
             }
 
             contents.Seek(0, SeekOrigin.Begin);
@@ -139,7 +139,7 @@ namespace Octopus.Client.Repositories.Async
                     }
                     else
                     {
-                        pathParameters = new { replace = overwriteMode.AsLegacyReplaceFlag(Logger), packageId, signatureResult.BaseVersion };
+                        pathParameters = new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger), packageId, signatureResult.BaseVersion };
                     }
 
                     var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(

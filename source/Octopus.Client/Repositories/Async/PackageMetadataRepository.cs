@@ -50,7 +50,7 @@ namespace Octopus.Client.Repositories.Async
             }
             else
             {
-                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.AsLegacyReplaceFlag(Logger) });
+                return await repository.Client.Post<OctopusPackageMetadataVersionResource, OctopusPackageMetadataMappedResource>(link, resource, new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) });
             }
         }
     }
