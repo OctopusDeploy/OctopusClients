@@ -58,13 +58,16 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             }
             catch (Exception ex) when (ex.Message == "This platform does not support ignoring SSL certificate errors")
             {
+                Console.WriteLine($"This test is running on '{RuntimeInformation.OSDescription}'");
                 var os = RuntimeInformation.OSDescription;
                 if (
                     os.StartsWith("Darwin") || // Mac
                     os.Contains(".el7") || // Cent OS
                     os.Contains("fc23") // Fedora 23
                 )
-                    return;
+                {
+                    Assert.Inconclusive($"This test is known not to work on platform '{RuntimeInformation.OSDescription}'");
+                }
 
                 throw;
             }
