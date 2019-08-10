@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Logging;
 using Octopus.Client.Model;
 using Octopus.Client.Model.PackageMetadata;
@@ -43,8 +44,9 @@ namespace Octopus.Client.Repositories.Async
 
             if (!(await repository.HasLink("PackageMetadata")))
             {
-                Logger.Error(OctopusPackageMetadata.PackageMetadataRequiresOctopusVersion);
-                throw new InvalidOperationException(OctopusPackageMetadata.PackageMetadataRequiresOctopusVersion);
+                throw new OperationNotSupportedByOctopusServerException(
+                    OctopusPackageMetadata.PackageMetadataRequiresOctopusVersionMessage,
+                    OctopusPackageMetadata.PackageMetadataRequiresOctopusVersion);
             }
 
             var link = await repository.Link("PackageMetadata");
