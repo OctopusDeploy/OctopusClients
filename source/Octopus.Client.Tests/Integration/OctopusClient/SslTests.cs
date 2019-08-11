@@ -1,5 +1,6 @@
 ﻿#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -59,6 +60,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             catch (Exception ex) when (ex.Message == "This platform does not support ignoring SSL certificate errors")
             {
                 Console.WriteLine($"This test is running on '{RuntimeInformation.OSDescription}'");
+                if (File.Exists("/etc/os-release"))
+                {
+                    var file = File.ReadAllText("/etc/os-release");
+                    if (file.Contains("openSUSE Leap 15.1"))
+                        Assert.Inconclusive($"This test is known not to work on platform 'openSuse Leap 15.1'");
+                }
+
                 var os = RuntimeInformation.OSDescription;
                 if (
                     os.StartsWith("Darwin") || // Mac
