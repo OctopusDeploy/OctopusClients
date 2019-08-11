@@ -7,6 +7,9 @@ namespace Octopus.Client.Model.PackageMetadata
     /// </summary>
     public class OctopusPackageMetadata
     {
+        internal static string PackageMetadataRequiresOctopusVersion = "2019.4.1";
+        internal static string PackageMetadataRequiresOctopusVersionMessage = $"Pushing build information/package metadata requires Octopus version {PackageMetadataRequiresOctopusVersion} or newer";
+
         public OctopusPackageMetadata()
         {
             Commits = new Commit[0];

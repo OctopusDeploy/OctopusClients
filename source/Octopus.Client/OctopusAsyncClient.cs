@@ -125,10 +125,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 return await Create(serverEndpoint, options, true).ConfigureAwait(false);
             }
-            catch (PlatformNotSupportedException)
+            catch (PlatformNotSupportedException ex)
             {
                 if (options?.IgnoreSslErrors ?? false)
-                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                    throw new Exception("This platform does not support ignoring SSL certificate errors", ex);
                 return await Create(serverEndpoint, options, false).ConfigureAwait(false);
             }
 #else
@@ -143,10 +143,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 return await Create(serverEndpoint, options, true, requestingTool);
             }
-            catch (PlatformNotSupportedException)
+            catch (PlatformNotSupportedException ex)
             {
                 if (options?.IgnoreSslErrors ?? false)
-                    throw new Exception("This platform does not support ignoring SSL certificate errors");
+                    throw new Exception("This platform does not support ignoring SSL certificate errors", ex);
                 return await Create(serverEndpoint, options, false, requestingTool);
             }
 #else

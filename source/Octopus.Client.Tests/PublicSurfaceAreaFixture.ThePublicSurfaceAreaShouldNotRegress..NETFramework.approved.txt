@@ -1312,6 +1312,14 @@ Octopus.Client.Exceptions
     ReadOnlyCollection<String> Errors { get; }
     Octopus.Client.Exceptions.TDetails DetailsAs()
   }
+  class OperationNotSupportedByOctopusServerException
+    ISerializable
+    _Exception
+    Octopus.Client.Exceptions.OctopusException
+  {
+    .ctor(String, String)
+    String RequiredOctopusVersion { get; }
+  }
   class ResourceSpaceDoesNotMatchRepositorySpaceException
     ISerializable
     _Exception
