@@ -6425,6 +6425,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
     List<TenantResource> FindAll(String, String[], Int32)
     List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
     Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)
@@ -7041,6 +7043,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
+    Task<TenantEditor> CreateOrModify(String, String)
+    Task<TenantEditor> CreateOrModify(String, String, String)
     Task<List<TenantResource>> FindAll(String, String[], Int32)
     Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String, String, String)
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
