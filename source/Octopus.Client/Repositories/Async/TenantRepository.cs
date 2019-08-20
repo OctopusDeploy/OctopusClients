@@ -71,5 +71,15 @@ namespace Octopus.Client.Repositories.Async
         {
             return new TenantEditor(this).CreateOrModify(name);
         }
+
+        public Task<TenantEditor> CreateOrModify(string name, string description)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description);
+        }
+        
+        public Task<TenantEditor> CreateOrModify(string name, string description, string cloneId)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
+        }
     }
 }

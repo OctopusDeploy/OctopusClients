@@ -70,5 +70,15 @@ namespace Octopus.Client.Repositories
         {
             return new TenantEditor(this).CreateOrModify(name);
         }
+        
+        public TenantEditor CreateOrModify(string name, string description)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description, string cloneId)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
+        }
     }
 }

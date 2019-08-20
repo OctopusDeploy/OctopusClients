@@ -39,6 +39,28 @@ namespace Octopus.Client.Editors.Async
 
             return this;
         }
+        
+        public async Task<TenantEditor> CreateOrModify(string name, string description, string cloneId = null)
+        {
+            var existing = await repository.FindByName(name).ConfigureAwait(false);
+            if (existing == null)
+            {
+                Instance = await repository.Create(new TenantResource
+                    {
+                        Name = name,
+                        Description = description,
+                    }, new { clone = cloneId }
+                ).ConfigureAwait(false);
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
+            }
+
+            return this;
+        }
 
         public async Task<TenantEditor> SetLogo(string logoFilePath)
         {

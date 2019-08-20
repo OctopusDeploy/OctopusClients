@@ -38,6 +38,27 @@ namespace Octopus.Client.Editors
 
             return this;
         }
+        
+        public TenantEditor CreateOrModify(string name, string description, string cloneId = null)
+        {
+            var existing = repository.FindByName(name);
+            if (existing == null)
+            {
+                Instance = repository.Create(new TenantResource
+                {
+                    Name = name,
+                    Description = description,
+                }, new { clone = cloneId });
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
+                Instance = repository.Modify(existing);
+            }
+
+            return this;
+        }
 
         public TenantEditor SetLogo(string logoFilePath)
         {
