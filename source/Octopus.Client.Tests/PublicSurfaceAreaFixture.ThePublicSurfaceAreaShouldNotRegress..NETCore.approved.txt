@@ -830,6 +830,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.TenantEditor ClearTags()
     Octopus.Client.Editors.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
     Octopus.Client.Editors.TenantEditor Customize(Action<TenantResource>)
     Octopus.Client.Editors.TenantEditor Save()
     Octopus.Client.Editors.TenantEditor SetLogo(String)
@@ -1148,6 +1149,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantEditor ClearTags()
     Octopus.Client.Editors.Async.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Task<TenantEditor> CreateOrModify(String)
+    Task<TenantEditor> CreateOrModify(String, String, String)
     Octopus.Client.Editors.Async.TenantEditor Customize(Action<TenantResource>)
     Task<TenantEditor> Save()
     Task<TenantEditor> SetLogo(String)
@@ -4501,6 +4503,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String ClonedFromTenantId { get; set; }
+    String Description { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     String SpaceId { get; set; }
