@@ -99,6 +99,11 @@ namespace Octopus.Client.Model
             return this;
         }
 
+        public string GetReleasesLink()
+        {
+            return Link("Releases");
+        }
+
         public string SpaceId { get; set; }
     }
 }
