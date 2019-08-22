@@ -41,17 +41,17 @@ namespace Octopus.Client.Repositories.Async
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ChannelResource channel,
             int skip = 0, int? take = null, string searchByVersion = null)
         {
-            return Client.List<ReleaseResource>(channel.GetReleasesLink(), new { skip, take, searchByVersion });
+            return Client.List<ReleaseResource>(channel.Link("Releases"), new { skip, take, searchByVersion });
         }
 
         public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ChannelResource channel)
         {
-            return Client.ListAll<ReleaseResource>(channel.GetReleasesLink());
+            return Client.ListAll<ReleaseResource>(channel.Link("Releases"));
         }
 
         public Task<ReleaseResource> GetReleaseByVersion(ChannelResource channel, string version)
         {
-            return Client.Get<ReleaseResource>(channel.GetReleasesLink(), new { version });
+            return Client.Get<ReleaseResource>(channel.Link("Releases"), new { version });
         }
     }
 }
