@@ -39,6 +39,14 @@ namespace Octopus.Client.Editors
             return this;
         }
         
+        /// <summary>
+        /// Checks to see if a Tenant exists with the specified name, and if not, creates it.
+        /// Otherwise, modifies the name and the description.
+        /// </summary>
+        /// <param name="name">The Tenant's name</param>
+        /// <param name="description">The Tenant's description</param>
+        /// <param name="cloneId">If provided, the Id of the Tenant that you want to clone</param>
+        /// <returns></returns>
         public TenantEditor CreateOrModify(string name, string description, string cloneId = null)
         {
             var existing = repository.FindByName(name);
