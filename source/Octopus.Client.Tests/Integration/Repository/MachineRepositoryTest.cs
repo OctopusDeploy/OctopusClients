@@ -41,4 +41,4 @@ namespace Octopus.Client.Tests.Integration.Repository
             Assert.That(tasks.Count, Is.EqualTo(139));
         }
     }
-}    
+}
