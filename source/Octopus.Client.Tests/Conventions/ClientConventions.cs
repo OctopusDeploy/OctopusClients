@@ -10,11 +10,8 @@ using Nancy.Extensions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
-
-#if HAS_BEST_CONVENTIONAL
 using Conventional;
 using Conventional.Conventions;
-#endif
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -437,8 +434,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if HAS_BEST_CONVENTIONAL
-
         [Test]
         public void AllSyncRepositoryInterfacesShouldFollowTheseConventions()
         {
@@ -501,6 +496,5 @@ namespace Octopus.Client.Tests.Conventions
                 return ConventionResult.NotSatisfied(type.FullName, string.Format(FailureMessage, parentNamespace, type.Namespace));
             }
         }
-#endif
     }
 }
