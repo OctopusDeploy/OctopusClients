@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <DefineConstants>$(DefineConstants);HAS_BEST_CONVENTIONAL;SYNC_CLIENT</DefineConstants>
+    <DefineConstants>$(DefineConstants);HAS_BEST_CONVENTIONAL</DefineConstants>
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier> <!-- So that libuv is copied correctly -->
     <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-- So that libuv is copied correctly -->
   </PropertyGroup>

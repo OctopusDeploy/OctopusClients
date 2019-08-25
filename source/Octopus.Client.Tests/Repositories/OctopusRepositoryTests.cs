@@ -1,5 +1,4 @@
-﻿#if SYNC_CLIENT
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -62,4 +61,3 @@ namespace Octopus.Client.Tests.Repositories
         }
     }
 }
-#endif
