@@ -48,9 +48,7 @@ namespace Octopus.Client.Tests.Integration
         static IWebHost currentHost;
 
         protected IOctopusAsyncClient AsyncClient { get; private set; }
-#if SYNC_CLIENT
         protected IOctopusClient SyncClient { get; private set; }
-#endif
         [OneTimeSetUp]
         public static void OneTimeSetup()
         {
@@ -152,9 +150,7 @@ namespace Octopus.Client.Tests.Integration
         {
             SetupEnvironmentVariables();
             AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
-#if SYNC_CLIENT
             SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
-#endif
         }
 
         protected virtual void SetupEnvironmentVariables()
@@ -170,9 +166,7 @@ namespace Octopus.Client.Tests.Integration
         public virtual void TearDown()
         {
             AsyncClient?.Dispose();
-#if SYNC_CLIENT
             SyncClient?.Dispose();
-#endif
             CleanupEnvironmentVariables();
         }
 
@@ -208,11 +202,7 @@ namespace Octopus.Client.Tests.Integration
 
         protected string GetCannedResponse(dynamic parameters)
         {
-#if SYNC_CLIENT
             var assembly = typeof(HttpIntegrationTestBase).Assembly;
-#else
-            var assembly = typeof(HttpIntegrationTestBase).GetTypeInfo().Assembly;
-#endif
             var resourceName = GetResourceNameFromtRequestUri(parameters);
 
             using (var responseStream = assembly.GetManifestResourceStream(resourceName))

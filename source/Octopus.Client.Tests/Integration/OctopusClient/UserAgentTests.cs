@@ -61,7 +61,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} (TestOS; x64) NoneOrUnknown", "We should set the standard User-Agent header");
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncClient_ShouldProvideUserAgent_WithNameAndVersion()
         {
@@ -69,7 +68,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var response = client.Get<TestDto>(TestRootPath);
             response.UserAgentValue.Should().Be($"{ApiConstants.OctopusUserAgentProductName}/{GetType().GetSemanticVersion().ToNormalizedString()} (TestOS; x64) NoneOrUnknown", "We should set the standard User-Agent header");
         }
-#endif
 
         public class TestDto
         {

@@ -71,7 +71,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             response.AutomationContext.Should().Be(ExpectedAutomationEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedAutomationEnvironment} when {EnvironmentVariableName} is set");
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncClient_ShouldProvideBuildServer_WithCorrectValue()
         {
@@ -79,7 +78,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var response = client.Get<TestDto>(TestRootPath);
             response.AutomationContext.Should().Be(ExpectedAutomationEnvironment.ToString(), $"We should set the User-Agent header to have {ExpectedAutomationEnvironment} when {EnvironmentVariableName} is set");
         }
-#endif
 
         public class TestDto
         {
