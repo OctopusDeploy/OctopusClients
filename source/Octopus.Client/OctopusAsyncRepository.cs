@@ -176,6 +176,23 @@ namespace Octopus.Client
             var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
         }
+        
+        public async Task<bool> HasLinkParameter(string linkName, string parameterName)
+        {
+            string link;
+            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+            var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
+
+            if (spaceRootDocument != null && spaceRootDocument.HasLink(linkName))
+                link = spaceRootDocument.Link(linkName);
+            else if (rootDocument.HasLink(linkName))
+                link = rootDocument.Link(linkName);
+            else
+                return false;
+            
+            var template = new UrlTemplate(link);
+            return template.GetParameterNames().Contains(parameterName);
+        }
 
         public async Task<string> Link(string name)
         {

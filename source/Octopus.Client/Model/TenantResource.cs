@@ -66,7 +66,7 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
         
         public string Description { get; set; }
-        
+
         public string ClonedFromTenantId { get; set; }
     }
 }

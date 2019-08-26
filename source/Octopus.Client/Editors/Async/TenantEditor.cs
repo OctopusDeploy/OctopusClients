@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 
@@ -42,6 +43,12 @@ namespace Octopus.Client.Editors.Async
         
         public async Task<TenantEditor> CreateOrModify(string name, string description, string cloneId = null)
         {
+            var baseRepository = ((TenantRepository) repository).Repository;
+            if (!await baseRepository.HasLinkParameter("Tenants", "clone"))
+                throw new OperationNotSupportedByOctopusServerException(cloneId == null
+                    ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
+                    : "Cloning Tenants requires Octopus version 2019.8.0 or newer.", "2019.8.0");
+
             var existing = await repository.FindByName(name).ConfigureAwait(false);
             if (existing == null)
             {

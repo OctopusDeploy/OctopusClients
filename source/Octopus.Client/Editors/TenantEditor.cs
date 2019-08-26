@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -49,6 +50,11 @@ namespace Octopus.Client.Editors
         /// <returns></returns>
         public TenantEditor CreateOrModify(string name, string description, string cloneId = null)
         {
+            if (!(repository as TenantRepository).Repository.HasLinkParameter("Tenants", "clone"))
+                throw new OperationNotSupportedByOctopusServerException(cloneId == null
+                    ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
+                    : "Cloning Tenants requires Octopus version 2019.8.0 or newer.", "2019.8.0");
+            
             var existing = repository.FindByName(name);
             if (existing == null)
             {

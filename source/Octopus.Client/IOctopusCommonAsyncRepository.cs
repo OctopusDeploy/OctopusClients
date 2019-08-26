@@ -31,6 +31,15 @@ namespace Octopus.Client
         Task<bool> HasLink(string name);
 
         /// <summary>
+        /// Determines whether the link with the specified name contains a specified parameter.
+        /// </summary>
+        /// <param name="linkName">The name/key of the link.</param>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">If the link is not defined.</exception>
+        Task<bool> HasLinkParameter(string linkName, string parameterName);
+
+        /// <summary>
         /// Gets the link with the specified name.
         /// </summary>
         /// <param name="name">The name/key of the link.</param>

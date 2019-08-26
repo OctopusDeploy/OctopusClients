@@ -200,10 +200,10 @@ namespace Octopus.Client.Tests.Integration
         }
 
 
-        protected string GetCannedResponse(dynamic parameters)
+        protected string GetCannedResponse(dynamic parameters, string resourceName = null)
         {
             var assembly = typeof(HttpIntegrationTestBase).Assembly;
-            var resourceName = GetResourceNameFromtRequestUri(parameters);
+            resourceName = resourceName ?? GetResourceNameFromtRequestUri(parameters);
 
             using (var responseStream = assembly.GetManifestResourceStream(resourceName))
             {

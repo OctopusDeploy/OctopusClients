@@ -106,6 +106,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserTeamsRepository UserTeams { get; }
     Task<Boolean> HasLink(String)
+    Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
   }
   interface IOctopusCommonRepository
@@ -120,6 +121,7 @@ Octopus.Client
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserTeamsRepository UserTeams { get; }
     Boolean HasLink(String)
+    Boolean HasLinkParameter(String, String)
     String Link(String)
   }
   interface IOctopusRepository
@@ -343,6 +345,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
     Task<Boolean> HasLink(String)
+    Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
     Task<RootResource> LoadRootDocument()
     Task<SpaceRootResource> LoadSpaceRootDocument()
@@ -466,6 +469,7 @@ Octopus.Client
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
     Boolean HasLink(String)
+    Boolean HasLinkParameter(String, String)
     String Link(String)
     Octopus.Client.Model.RootResource LoadRootDocument()
     Octopus.Client.Model.SpaceRootResource LoadSpaceRootDocument()
