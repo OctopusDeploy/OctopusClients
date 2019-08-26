@@ -6646,6 +6646,9 @@ Octopus.Client.Repositories.Async
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String)
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<ChannelResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ChannelResource)
+    Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ChannelResource, String)
+    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ChannelResource, Int32, Nullable<Int32>, String)
   }
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>

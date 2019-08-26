@@ -10,11 +10,8 @@ using Nancy.Extensions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
-
-#if HAS_BEST_CONVENTIONAL
 using Conventional;
 using Conventional.Conventions;
-#endif
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -197,11 +194,9 @@ namespace Octopus.Client.Tests.Conventions
         {
             var denied = new[]
             {
-#if SYNC_CLIENT
                 typeof (Sync.IChannelRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
-#endif
                 typeof (IChannelRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
@@ -247,7 +242,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatGetNamedResourcesShouldUsuallyImplementIFindByName()
         {
@@ -279,7 +273,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void MostAsyncRepositoriesThatGetResourcesShouldImplementIPaginate()
@@ -309,7 +302,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void MostSyncRepositoriesThatGetResourcesShouldImplementIPaginate()
         {
@@ -337,7 +329,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
@@ -365,7 +356,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
         {
@@ -391,7 +381,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
@@ -419,7 +408,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
         {
@@ -445,9 +433,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
-
-#if HAS_BEST_CONVENTIONAL
 
         [Test]
         public void AllSyncRepositoryInterfacesShouldFollowTheseConventions()
@@ -511,6 +496,5 @@ namespace Octopus.Client.Tests.Conventions
                 return ConventionResult.NotSatisfied(type.FullName, string.Format(FailureMessage, parentNamespace, type.Namespace));
             }
         }
-#endif
     }
 }

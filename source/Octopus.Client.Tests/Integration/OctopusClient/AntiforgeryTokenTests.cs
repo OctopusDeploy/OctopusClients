@@ -57,7 +57,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 .Be(AntiforgeryCookieValue, $"The antiforgery cookie should have been copied to the {ApiConstants.AntiforgeryTokenHttpHeaderName} header.");
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
@@ -71,7 +70,6 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             secondResponse.AntiforgeryTokenValue.Should()
                 .Be(AntiforgeryCookieValue, $"The antiforgery cookie should have been copied to the {ApiConstants.AntiforgeryTokenHttpHeaderName} header.");
         }
-#endif
 
         public class TestDto
         {
