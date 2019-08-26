@@ -14,11 +14,18 @@
         <copyright>Octopus Deploy Pty Ltd</copyright>
         <repository type="git" url="https://github.com/OctopusDeploy/OctopusClients" />
         <dependencies>
+            <group targetFramework=".NETFramework4.5">
+            </group>
             <group targetFramework=".NETStandard2.0">
                 <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
                 <dependency id="System.ComponentModel.Annotations" version="4.5.0" exclude="Build,Analyzers" />
             </group>
         </dependencies>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework=".NETFramework4.5" />
+            <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.5" />
+            <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.5" />
+        </frameworkAssemblies>
     </metadata>
     <files>
         <file src="bin\release\net45\Octopus.Client.dll" target="lib\net45" />
