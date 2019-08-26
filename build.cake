@@ -4,6 +4,7 @@
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 #tool "nuget:?package=ILRepack&version=2.0.13"
 #addin "nuget:?package=Cake.Incubator&version=4.0.0"
+#addin "nuget:?package=Cake.FileHelpers&version=3.2.0"
 
 using Cake.Incubator;
 using Cake.Incubator.LoggingExtensions;
@@ -107,10 +108,13 @@ Task("Merge")
         var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
         CreateDirectory(outputFolder);
 
+        var assemblyPaths = System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f);
+        assemblyPaths = assemblyPaths.Concat(System.IO.Directory.EnumerateFiles(inputFolder, "Octodiff.exe").Select(f => (FilePath) f));
+
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
-            System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f),
+            assemblyPaths,
             new ILRepackSettings {
                 Internalize = true,
                 Parallel = false,
@@ -128,13 +132,31 @@ Task("PackClientNuget")
     .Does(() => {
         SignBinaries($"{octopusClientFolder}/bin/{configuration}");
 
-        DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
-            ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
-            Configuration = configuration,
-            OutputDirectory = artifactsDir,
-            NoBuild = true,
-            IncludeSymbols = false,
-        });
+        try
+        {
+            ReplaceTextInFiles($"{octopusClientFolder}/Octopus.Client.nuspec",
+                "<version>$version$</version>",
+                $"<version>{nugetVersion}</version>");
+
+            DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
+                ArgumentCustomization = args => {
+                    args.Append($"/p:Version={nugetVersion}");
+                    args.Append($"/p:NuspecFile=Octopus.Client.nuspec");
+                    return args;
+                },
+                Configuration = configuration,
+                OutputDirectory = artifactsDir,
+                NoBuild = true,
+                IncludeSymbols = false,
+                Verbosity = DotNetCoreVerbosity.Normal,
+            });
+        }
+        finally
+        {
+            ReplaceTextInFiles($"{octopusClientFolder}/Octopus.Client.nuspec",
+                            $"<version>{nugetVersion}</version>",
+                            $"<version>$version$</version>");        
+        }
     });
 
 Task("CopyToLocalPackages")
