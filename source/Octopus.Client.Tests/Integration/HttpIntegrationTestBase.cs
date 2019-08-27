@@ -200,10 +200,10 @@ namespace Octopus.Client.Tests.Integration
         }
 
 
-        protected string GetCannedResponse(dynamic parameters)
+        protected string GetCannedResponse(dynamic parameters, string resourceName = null)
         {
             var assembly = typeof(HttpIntegrationTestBase).Assembly;
-            var resourceName = GetResourceNameFromRequestUri(parameters);
+            resourceName = resourceName ?? GetResourceNameFromRequestUri(parameters);
 
             using (var responseStream = assembly.GetManifestResourceStream(resourceName))
             {
@@ -219,7 +219,7 @@ namespace Octopus.Client.Tests.Integration
                 }
             }
         }
-        
+ 
         private dynamic GetResourceNameFromRequestUri(dynamic parameters)
         {
             var escapedUri = "/" + parameters.uri;
