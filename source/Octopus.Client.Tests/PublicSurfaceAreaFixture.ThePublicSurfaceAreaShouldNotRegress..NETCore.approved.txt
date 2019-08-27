@@ -1719,6 +1719,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean AutoLoginEnabled { get; set; }
+    String CookieDomain { get; set; }
     String Id { get; set; }
     Boolean IsSelfServiceIdentityEditingEnabled { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
