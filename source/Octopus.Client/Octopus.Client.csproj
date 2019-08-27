@@ -11,7 +11,7 @@
     <Copyright>Octopus Deploy Pty Ltd</Copyright>
     <PackageIconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</PackageIconUrl>
     <PackageProjectUrl>https://octopus.com/</PackageProjectUrl>
-    <PackageLicenseUrl>https://octopus.com/company/customer-agreement</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/OctopusDeploy/OctopusClients/blob/master/LICENSE.txt</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/OctopusDeploy/OctopusClients</RepositoryUrl>
     <Description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
