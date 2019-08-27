@@ -180,15 +180,18 @@ namespace Octopus.Client
         public async Task<bool> HasLinkParameter(string linkName, string parameterName)
         {
             string link;
-            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
             var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
 
             if (spaceRootDocument != null && spaceRootDocument.HasLink(linkName))
                 link = spaceRootDocument.Link(linkName);
-            else if (rootDocument.HasLink(linkName))
-                link = rootDocument.Link(linkName);
-            else
-                return false;
+            else 
+            {
+                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                if (rootDocument.HasLink(linkName))
+                    link = rootDocument.Link(linkName);
+                else
+                    return false;
+            }
             
             var template = new UrlTemplate(link);
             return template.GetParameterNames().Contains(parameterName);
