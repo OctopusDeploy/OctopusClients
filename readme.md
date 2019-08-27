@@ -22,9 +22,9 @@ _Note:_ releases can only be performed by Octopus staff.
 To release to Nuget, tag `master` with the next major, minor or patch number, TeamCity will do the rest. 
 Kick off the `Create OctopusClients Release` build again if any of the dependencies fail.
 
-This will push the release to our Octopus server, and trigger the "Octopus.Client" project in the integration space. 
-A deployment will automatically happen to the "Extensions - Internal" environment, and publish the package to [Feedz.io](https://f.feedz.io/octopus-deploy/dependencies/nuget).
-Once ready to be fully released, promote the release to the "Extensions - External" environment.
+This will push the release to our Octopus server, and trigger the `Octopus.Client` project in the integration space. 
+A deployment will automatically happen to the `Extensions - Internal` environment, and publish the package to [Feedz.io](https://f.feedz.io/octopus-deploy/dependencies/nuget).
+Once ready to be fully released, promote the release to the `Extensions - External` environment.
 
 ## Compatibility
 See the [Compatibility](https://octopus.com/docs/api-and-integration/compatibility) page in our docs
@@ -32,8 +32,8 @@ See the [Compatibility](https://octopus.com/docs/api-and-integration/compatibili
 ## Versioning
 We use [Semantic Versioning](http://semver.org/) for our open source libraries and tools. This breaks with our older practice of keeping version numbers in sync with Octopus Server. 
 
-Within a major version of Octopus.Client we will maintain backwards compatibility to a set version of Octopus Server, allowing worry free minor and patch upgrades.
+Within a major version of `Octopus.Client` we will maintain backwards compatibility to a set version of Octopus Server, allowing worry free minor and patch upgrades.
 
-Conversely we also maintain backwards compatibility in our Server API as much as possible while still being able to add new features. This means that an older version of Octopus.Client will work with newer versions of Octopus Server.
+Conversely we also maintain backwards compatibility in our Server API as much as possible while still being able to add new features. This means that an older version of `Octopus.Client` will work with newer versions of Octopus Server.
 
 Refer to our [Compatibility](https://octopus.com/docs/api-and-integration/compatibility) page to get an overview of which versions work with a particular version of Octopus Server.
