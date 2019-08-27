@@ -16,6 +16,8 @@ namespace Octopus.Client.Repositories.Async
         Task<List<TenantsMissingVariablesResource>> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null);
         Task<List<TenantResource>> FindAll(string name, string[] tags = null, int pageSize = Int32.MaxValue);
         Task<TenantEditor> CreateOrModify(string name);
+        Task<TenantEditor> CreateOrModify(string name, string description);
+        Task<TenantEditor> CreateOrModify(string name, string description, string cloneId);
     }
 
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
@@ -70,6 +72,16 @@ namespace Octopus.Client.Repositories.Async
         public Task<TenantEditor> CreateOrModify(string name)
         {
             return new TenantEditor(this).CreateOrModify(name);
+        }
+
+        public Task<TenantEditor> CreateOrModify(string name, string description)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description);
+        }
+        
+        public Task<TenantEditor> CreateOrModify(string name, string description, string cloneId)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
         }
     }
 }

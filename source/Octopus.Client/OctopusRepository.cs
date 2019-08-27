@@ -174,6 +174,20 @@ namespace Octopus.Client
             return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.HasLink(name) || loadRootResource.Value.HasLink(name);
         }
 
+        public bool HasLinkParameter(string linkName, string parameterName)
+        {
+            string link;
+            if (loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.HasLink(linkName))
+                link = loadSpaceRootResource.Value.Link(linkName);
+            else if (loadRootResource.Value.HasLink(linkName))
+                link = loadRootResource.Value.Link(linkName);
+            else
+                return false;
+            
+            var template = new UrlTemplate(link);
+            return template.GetParameterNames().Contains(parameterName);
+        }
+
         public string Link(string name)
         {
             return loadSpaceRootResource.Value != null && loadSpaceRootResource.Value.Links.TryGetValue(name, out var value)

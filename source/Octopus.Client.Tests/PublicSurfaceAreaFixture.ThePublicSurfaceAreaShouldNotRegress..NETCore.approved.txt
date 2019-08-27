@@ -106,6 +106,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.Async.IUserTeamsRepository UserTeams { get; }
     Task<Boolean> HasLink(String)
+    Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
   }
   interface IOctopusCommonRepository
@@ -120,6 +121,7 @@ Octopus.Client
     Octopus.Client.Repositories.IUserPermissionsRepository UserPermissions { get; }
     Octopus.Client.Repositories.IUserTeamsRepository UserTeams { get; }
     Boolean HasLink(String)
+    Boolean HasLinkParameter(String, String)
     String Link(String)
   }
   interface IOctopusRepository
@@ -343,6 +345,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
     Task<Boolean> HasLink(String)
+    Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
     Task<RootResource> LoadRootDocument()
     Task<SpaceRootResource> LoadSpaceRootDocument()
@@ -468,6 +471,7 @@ Octopus.Client
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
     Boolean HasLink(String)
+    Boolean HasLinkParameter(String, String)
     String Link(String)
     Octopus.Client.Model.RootResource LoadRootDocument()
     Octopus.Client.Model.SpaceRootResource LoadSpaceRootDocument()
@@ -830,6 +834,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.TenantEditor ClearTags()
     Octopus.Client.Editors.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
     Octopus.Client.Editors.TenantEditor Customize(Action<TenantResource>)
     Octopus.Client.Editors.TenantEditor Save()
     Octopus.Client.Editors.TenantEditor SetLogo(String)
@@ -1148,6 +1153,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantEditor ClearTags()
     Octopus.Client.Editors.Async.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Task<TenantEditor> CreateOrModify(String)
+    Task<TenantEditor> CreateOrModify(String, String, String)
     Octopus.Client.Editors.Async.TenantEditor Customize(Action<TenantResource>)
     Task<TenantEditor> Save()
     Task<TenantEditor> SetLogo(String)
@@ -4502,6 +4508,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String ClonedFromTenantId { get; set; }
+    String Description { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     String SpaceId { get; set; }
@@ -6397,6 +6405,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
     List<TenantResource> FindAll(String, String[], Int32)
     List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
     Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)
@@ -7016,6 +7026,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
+    Task<TenantEditor> CreateOrModify(String, String)
+    Task<TenantEditor> CreateOrModify(String, String, String)
     Task<List<TenantResource>> FindAll(String, String[], Int32)
     Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String, String, String)
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)

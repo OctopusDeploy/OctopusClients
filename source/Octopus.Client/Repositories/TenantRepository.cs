@@ -15,6 +15,8 @@ namespace Octopus.Client.Repositories
         List<TenantsMissingVariablesResource> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null);
         List<TenantResource> FindAll(string name, string[] tags = null, int pageSize = Int32.MaxValue);
         TenantEditor CreateOrModify(string name);
+        TenantEditor CreateOrModify(string name, string description);
+        TenantEditor CreateOrModify(string name, string description, string cloneId);
     }
     
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
@@ -69,6 +71,16 @@ namespace Octopus.Client.Repositories
         public TenantEditor CreateOrModify(string name)
         {
             return new TenantEditor(this).CreateOrModify(name);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description, string cloneId)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
         }
     }
 }
