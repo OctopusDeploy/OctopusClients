@@ -1,33 +1,39 @@
-This repository contains the .NET Client Library (`Octopus.Client`) for [Octopus Deploy][1], an automated deployment server for professional .NET developers. You can use it to create and deploy releases, create and push packages, and manage environments.
+This repository contains the .NET Client Library (`Octopus.Client`) for [Octopus Deploy](https://octopus.com), an automated deployment server for professional .NET developers. You can use it to create and deploy releases, create and push packages, and manage environments.
 
-`Octopus.Client` is [available on nuget.org][2]
+`Octopus.Client` is [available on nuget.org](https://www.nuget.org/packages/Octopus.Client)
 
 ## Documentation
-- [Octopus.Client][3]
+- [Octopus.Client](https://octopus.com/docs/api-and-integration/octopus.client)
 
 ## Issues
 Please see [Contributing](CONTRIBUTING.md)
 
 ## Development
 You need:
-- VSCode or Visual Studio 15.3 to compile the solution
-- dotnet core 2.1.302 SDK
+- VSCode, Visual Studio 2017 or JetBrains Rider to compile the solution
+- dotnet core 2.2 SDK
 
-Run `Build.cmd` to build, test and package the project. Do this before pushing as it will run the surface area tests as well,
-which require approval on almost every change.
+Run `Build.cmd` to build, test and package the project. Do this before pushing as it will run the public surface area tests as well,
+which require approval on every change that modifies the public API.
 
-To release to Nuget, tag `master` with the next major, minor or patch number, [TeamCity](https://build.octopushq.com/project.html?projectId=OctopusDeploy_OctopusClients&tab=projectOverview) will do the rest. Kick off the `Release: OctopusClients to Octopus3` build again if any of the dependencies fail.
+## Releasing
 
-Every successful TeamCity build for all branches will be pushed to Feedz.io.
+_Note:_ releases can only be performed by Octopus staff.
+To release to Nuget, tag `master` with the next major, minor or patch number, TeamCity will do the rest. 
+Kick off the `Create OctopusClients Release` build again if any of the dependencies fail.
+
+This will push the release to our Octopus server, and trigger the `Octopus.Client` project in the integration space. 
+A deployment will automatically happen to the `Extensions - Internal` environment, and publish the package to [Feedz.io](https://f.feedz.io/octopus-deploy/dependencies/nuget).
+Once ready to be fully released, promote the release to the `Extensions - External` environment.
 
 ## Compatibility
-See the [Compatibility][4] page in our docs
+See the [Compatibility](https://octopus.com/docs/api-and-integration/compatibility) page in our docs
 
-## Async, Versioning and Compatibility
-See the [Octopus.Client goes Open Source][5] blog post
+## Versioning
+We use [Semantic Versioning](http://semver.org/) for our open source libraries and tools. This breaks with our older practice of keeping version numbers in sync with Octopus Server. 
 
-[1]: https://octopus.com
-[2]: https://www.nuget.org/packages/Octopus.Client
-[3]: https://octopus.com/docs/api-and-integration/octopus.client
-[4]: https://octopus.com/blog/octopus-client-goes-open-source
-[5]: https://octopus.com/docs/api-and-integration/compatibility
+Within a major version of `Octopus.Client` we will maintain backwards compatibility to a set version of Octopus Server, allowing worry free minor and patch upgrades.
+
+Conversely we also maintain backwards compatibility in our Server API as much as possible while still being able to add new features. This means that an older version of `Octopus.Client` will work with newer versions of Octopus Server.
+
+Refer to our [Compatibility](https://octopus.com/docs/api-and-integration/compatibility) page to get an overview of which versions work with a particular version of Octopus Server.
