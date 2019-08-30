@@ -7,6 +7,14 @@ using NUnit.Framework;
 
 namespace Octopus.Client.E2ETests
 {
+    /// <summary>
+    /// These tests are designed to ensure that we keep our published artifact working in the way we expect it to
+    ///  * is a single dll that can be referenced from powershell
+    ///  * inlines dependencies properly
+    ///  * doesn't pull down unnecessary dependencies
+    /// If you find yourself changing these tests, it's very likely you'll need to change
+    /// https://github.com/OctopusDeploy/docs/blob/master/docs/octopus-rest-api/octopus.client.md 
+    /// </summary>
     [TestFixture]
     public class PowerShellExecutionFixture
     {
