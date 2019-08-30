@@ -8,6 +8,10 @@ using NUnit.Framework;
 
 namespace Octopus.Client.E2ETests
 {
+    /// <summary>
+    /// If you find yourself changing these tests, it's very likely you'll need to change
+    /// https://github.com/OctopusDeploy/docs/blob/master/docs/octopus-rest-api/octopus.client.md 
+    /// </summary>
     [TestFixture]
     public class NuSpecDependenciesFixture
     {
