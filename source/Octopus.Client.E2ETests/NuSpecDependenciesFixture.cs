@@ -11,7 +11,8 @@ namespace Octopus.Client.E2ETests
     [TestFixture]
     public class NuSpecDependenciesFixture
     {
-        private XmlDocument xmlDoc;
+        private XmlDocument nuSpecFile;
+        private XmlDocument csProjFile;
         private XmlNamespaceManager nameSpaceManager;
 
         [OneTimeSetUp]
@@ -24,19 +25,26 @@ namespace Octopus.Client.E2ETests
                 Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder }'");
             using (var zipFile = ZipFile.OpenRead(package))
             {
-                xmlDoc = new XmlDocument();
+                nuSpecFile = new XmlDocument();
                 var zipArchiveEntry = zipFile.Entries.FirstOrDefault(x => x.Name == "Octopus.Client.nuspec");
                 if (zipArchiveEntry == null)
                     Assert.Fail($"Unable to find 'Octopus.Client.nuspec' in the nupkg file.");
                
                 using (var stream = zipArchiveEntry.Open())
                 {
-                    nameSpaceManager = new XmlNamespaceManager(xmlDoc.NameTable);
+                    nameSpaceManager = new XmlNamespaceManager(nuSpecFile.NameTable);
                     nameSpaceManager.AddNamespace("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd");
 
-                    xmlDoc.Load(stream);
+                    nuSpecFile.Load(stream);
                 }
             }
+            
+            var sourceFolder = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\..\source\Octopus.Client"));
+            var projectFile = Directory.EnumerateFiles(sourceFolder , "Octopus.Client.csproj").FirstOrDefault();
+            if (projectFile == null)
+                Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Client.csproj' at '{artifactsFolder }'");
+            csProjFile = new XmlDocument();
+            csProjFile.Load(projectFile);
         }
         
         [OneTimeTearDown]
@@ -48,21 +56,21 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveADependencyNode()
         {
-            var dependencyNode = xmlDoc.SelectSingleNode("//ns:package/ns:metadata/ns:dependencies", nameSpaceManager);
+            var dependencyNode = nuSpecFile.SelectSingleNode("//ns:package/ns:metadata/ns:dependencies", nameSpaceManager);
             dependencyNode.Should().NotBeNull("We should have a dependencies node");
         }
 
         [Test]
         public void NuSpecFileShouldHaveADependencyGroupForEachTargetFramework()
         {
-            var dependencyGroups = xmlDoc.SelectNodes("//ns:package/ns:metadata/ns:dependencies/ns:group", nameSpaceManager);
+            var dependencyGroups = nuSpecFile.SelectNodes("//ns:package/ns:metadata/ns:dependencies/ns:group", nameSpaceManager);
             dependencyGroups.Count.Should().Be(2, "Should have 2 dependency groups");
         }
 
         [Test]
         public void NuSpecFileShouldHaveANetFramework45DependencyGroup()
         {
-            var net45DependencyGroup = xmlDoc.SelectSingleNode(
+            var net45DependencyGroup = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5']",
                 nameSpaceManager);
             net45DependencyGroup.Should().NotBeNull("Should have a .NETFramework4.5 dependency group");
@@ -71,7 +79,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveNoNetFramework45Dependencies()
         {
-            var net45Dependencies = xmlDoc.SelectNodes(
+            var net45Dependencies = nuSpecFile.SelectNodes(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5']/ns:dependency",
                 nameSpaceManager);
             net45Dependencies.Count.Should().Be(0, "There should be no dependencies listed for .NETFramework4.5");
@@ -80,7 +88,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveANetStandard20DependencyGroup()
         {
-            var netStandard20DependencyGroup = xmlDoc.SelectSingleNode(
+            var netStandard20DependencyGroup = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']",
                 nameSpaceManager);
             netStandard20DependencyGroup.Should().NotBeNull("Should have a .NETStandard2.0 dependency group");
@@ -89,7 +97,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHave4NetStandard20Dependencies()
         {
-            var net45Dependencies = xmlDoc.SelectNodes(
+            var net45Dependencies = nuSpecFile.SelectNodes(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency",
                 nameSpaceManager);
             net45Dependencies.Count.Should().Be(4, "There should be 4 dependencies listed for .NETStandard2.0");
@@ -98,7 +106,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveNetStandard20DependencyOnMicrosoftCSharp()
         {
-            var dependency = xmlDoc.SelectSingleNode(
+            var dependency = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Microsoft.CSharp']",
                 nameSpaceManager);
             dependency.Should()
@@ -108,7 +116,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveNetStandard20DependencyOnSystemComponentModelAnnotations()
         {
-            var dependency = xmlDoc.SelectSingleNode(
+            var dependency = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='System.ComponentModel.Annotations']",
                 nameSpaceManager);
             dependency.Should()
@@ -118,7 +126,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveNetStandard20DependencyOnNewtonsoftJson()
         {
-            var dependency = xmlDoc.SelectSingleNode(
+            var dependency = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Newtonsoft.Json']",
                 nameSpaceManager);
             dependency.Should()
@@ -128,7 +136,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveNetStandard20DependencyOnOctodiff()
         {
-            var dependency = xmlDoc.SelectSingleNode(
+            var dependency = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Octodiff']",
                 nameSpaceManager);
             dependency.Should()
@@ -136,16 +144,39 @@ namespace Octopus.Client.E2ETests
         }
 
         [Test]
+        public void NetStandard20DependencyOnNewtonsoftJsonShouldBeSameVersionAsCsProj()
+        {
+            var actualVersion = nuSpecFile.SelectSingleNode(
+                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Newtonsoft.Json']/@version",
+                nameSpaceManager);
+            var expectedVersion = csProjFile.SelectSingleNode("//Project/ItemGroup/PackageReference[@Include='Newtonsoft.Json']/@Version");
+            actualVersion.Value.Should()
+                .Be(expectedVersion.Value, "The Newtonsoft.Json dependency version in the nuspec should match the one in the csproj");
+        }
+        
+        [Test]
+        public void NetStandard20DependencyOnOctodiffShouldBeSameVersionAsCsProj()
+        {
+            var actualVersion = nuSpecFile.SelectSingleNode(
+                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Octodiff']/@version",
+                nameSpaceManager);
+            var expectedVersion = csProjFile.SelectSingleNode("//Project/ItemGroup/PackageReference[@Include='Octodiff']/@Version");
+            actualVersion.Value.Should()
+                .Be(expectedVersion.Value, "The Octodiff dependency version in the nuspec should match the one in the csproj");
+        }
+        
+
+        [Test]
         public void NuSpecFileShouldHaveAFrameworkAssembliesNode()
         {
-            var node = xmlDoc.SelectSingleNode("//ns:package/ns:metadata/ns:frameworkAssemblies", nameSpaceManager);
+            var node = nuSpecFile.SelectSingleNode("//ns:package/ns:metadata/ns:frameworkAssemblies", nameSpaceManager);
             node.Should().NotBeNull("We should have a frameworkAssemblies node");
         }
         
         [Test]
         public void NuSpecFileShouldOnlyHaveFrameworkAssembliesForNetFramework45()
         {
-            var nonNet45Dependencies = xmlDoc.SelectNodes(
+            var nonNet45Dependencies = nuSpecFile.SelectNodes(
                 "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework != '.NETFramework4.5']",
                 nameSpaceManager);
             nonNet45Dependencies.Count.Should().Be(0, "There should be only be frameworkAssemblies listed for .NETFramework4.5");
@@ -154,7 +185,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHave3FrameworkAssembliesForNetFramework45()
         {
-            var net45Dependencies = xmlDoc.SelectNodes(
+            var net45Dependencies = nuSpecFile.SelectNodes(
                 "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5']",
                 nameSpaceManager);
             net45Dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.5");
@@ -163,7 +194,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveSystemComponentModelDataAnnotationsFrameworkAssemblyForNetFramework45()
         {
-            var frameworkAssembly = xmlDoc.SelectSingleNode(
+            var frameworkAssembly = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.ComponentModel.DataAnnotations']",
                 nameSpaceManager);
             frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.ComponentModel.DataAnnotations' for .NETFramework4.5");
@@ -172,7 +203,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveSystemNetHttpFrameworkAssemblyForNetFramework45()
         {
-            var frameworkAssembly = xmlDoc.SelectSingleNode(
+            var frameworkAssembly = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.Net.Http']",
                 nameSpaceManager);
             frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Net.Http' for .NETFramework4.5");
@@ -181,7 +212,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveSystemNumericsFrameworkAssemblyForNetFramework45()
         {
-            var frameworkAssembly = xmlDoc.SelectSingleNode(
+            var frameworkAssembly = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.Numerics']",
                 nameSpaceManager);
             frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Numerics' for .NETFramework4.5");
