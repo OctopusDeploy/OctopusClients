@@ -89,7 +89,7 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        GetFiles("**/**/*Tests.csproj")
+        GetFiles("**/**/*.Tests.csproj")
             .ToList()
             .ForEach(testProjectFile =>
             {
@@ -158,10 +158,22 @@ Task("PackClientNuget")
                             $"<version>$version$</version>");        
         }
     });
+    
+Task("TestClientNugetPackage")
+    .IsDependentOn("PackClientNuget")
+    .Does(() => {
+        // tests that make sure the packed, ilmerged dll we're going to ship actually works the way we expect it to
+        DotNetCoreTest("./source/Octopus.Client.E2ETests/Octopus.Client.E2ETests.csproj", new DotNetCoreTestSettings
+        {
+            Configuration = configuration,
+            NoBuild = true
+        });
+    });
+
 
 Task("CopyToLocalPackages")
     .WithCriteria(BuildSystem.IsLocalBuild)
-    .IsDependentOn("PackClientNuget")
+    .IsDependentOn("TestClientNugetPackage")
     .Does(() =>
 {
     CreateDirectory(localPackagesDir);
