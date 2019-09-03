@@ -3009,6 +3009,9 @@ Octopus.Client.Model
     Boolean IsInProcess { get; set; }
     String MachinePolicyId { get; set; }
     String Name { get; set; }
+    String OperatingSystem { get; set; }
+    String ShellName { get; set; }
+    String ShellVersion { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
     String Thumbprint { get; set; }
