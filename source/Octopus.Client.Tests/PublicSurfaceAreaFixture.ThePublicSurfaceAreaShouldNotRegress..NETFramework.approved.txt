@@ -3743,7 +3743,6 @@ Octopus.Client.Model
     String ClonedFromProjectId { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
-    String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
