@@ -9,21 +9,24 @@ namespace Octopus.Client.Editors.Async
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
-        private readonly Lazy<Task<DeploymentProcessEditor>> deploymentProcess;
+        private readonly Lazy<ProjectChannelsEditor> channels;
+        private readonly Lazy<Task<ProcessEditor>> process;
+        private readonly Lazy<Task<ProcessSnapshotEditor>> processSnapshot;
         private readonly Lazy<ProjectTriggersEditor> triggers; 
         private readonly Lazy<Task<VariableSetEditor>> variables;
 
         public ProjectEditor(
             IProjectRepository repository,
             IChannelRepository channelRepository,
-            IDeploymentProcessRepository deploymentProcessRepository,
+            IProcessRepository processRepository,
+            IProcessSnapshotRepository processSnapshotRepository,
             IProjectTriggerRepository projectTriggerRepository,
             IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            deploymentProcess = new Lazy<Task<DeploymentProcessEditor>>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
+            process = new Lazy<Task<ProcessEditor>>(() => new ProcessEditor(processRepository).Load(Instance.ProcessId));
+            processSnapshot = new Lazy<Task<ProcessSnapshotEditor>>(() => new ProcessSnapshotEditor(processSnapshotRepository).Load(process.Value.Result.Instance.ProcessSnapshotId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
             variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
@@ -32,7 +35,7 @@ namespace Octopus.Client.Editors.Async
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public Task<DeploymentProcessEditor> DeploymentProcess => deploymentProcess.Value;
+        public Task<ProcessSnapshotEditor> DeploymentProcess => processSnapshot.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 
@@ -121,9 +124,9 @@ namespace Octopus.Client.Editors.Async
             {
                 await channels.Value.SaveAll().ConfigureAwait(false);
             }
-            if (deploymentProcess.IsValueCreated)
+            if (processSnapshot.IsValueCreated)
             {
-                var depProcess = await deploymentProcess.Value.ConfigureAwait(false);
+                var depProcess = await processSnapshot.Value.ConfigureAwait(false);
                 await depProcess.Save().ConfigureAwait(false);
             }
             if (triggers.IsValueCreated)

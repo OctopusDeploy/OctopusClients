@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -9,21 +8,24 @@ namespace Octopus.Client.Editors
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
-        private readonly Lazy<DeploymentProcessEditor> deploymentProcess;
+        private readonly Lazy<ProjectChannelsEditor> channels;
+        private readonly Lazy<ProcessEditor> process;
+        private readonly Lazy<ProcessSnapshotEditor> processSnapshot;
         private readonly Lazy<ProjectTriggersEditor> triggers; 
         private readonly Lazy<VariableSetEditor> variables;
 
         public ProjectEditor(
             IProjectRepository repository,
             IChannelRepository channelRepository,
-            IDeploymentProcessRepository deploymentProcessRepository,
+            IProcessRepository processRepository,
+            IProcessSnapshotRepository processSnapshotRepository,
             IProjectTriggerRepository projectTriggerRepository,
             IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            deploymentProcess = new Lazy<DeploymentProcessEditor>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
+            process = new Lazy<ProcessEditor>(() => new ProcessEditor(processRepository).Load(Instance.ProcessId));
+            processSnapshot = new Lazy<ProcessSnapshotEditor>(() => new ProcessSnapshotEditor(processSnapshotRepository).Load(process.Value.Instance.ProcessSnapshotId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
             variables = new Lazy<VariableSetEditor>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
@@ -32,7 +34,7 @@ namespace Octopus.Client.Editors
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public DeploymentProcessEditor DeploymentProcess => deploymentProcess.Value;
+        public ProcessSnapshotEditor DeploymentProcess => processSnapshot.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 
@@ -121,9 +123,9 @@ namespace Octopus.Client.Editors
             {
                 channels.Value.SaveAll();
             }
-            if (deploymentProcess.IsValueCreated)
+            if (processSnapshot.IsValueCreated)
             {
-                deploymentProcess.Value.Save();
+                processSnapshot.Value.Save();
             }
             if (triggers.IsValueCreated)
             {

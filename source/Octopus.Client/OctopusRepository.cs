@@ -82,6 +82,8 @@ namespace Octopus.Client
             PackageMetadataRepository = new PackageMetadataRepository(this);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
+            Processes = new ProcessRepository(this);
+            ProcessSnapshots = new ProcessSnapshotRepository(this);
             ProjectTriggers = new ProjectTriggerRepository(this);
             Proxies = new ProxyRepository(this);
             Releases = new ReleaseRepository(this);
@@ -108,7 +110,6 @@ namespace Octopus.Client
             loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
             loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
         }
-
 
         public IOctopusClient Client { get; }
         public RepositoryScope Scope { get; }
@@ -144,6 +145,8 @@ namespace Octopus.Client
         public IPackageMetadataRepository PackageMetadataRepository { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
+        public IProcessRepository Processes { get; }
+        public IProcessSnapshotRepository ProcessSnapshots { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }
         public IProxyRepository Proxies { get; }
         public IReleaseRepository Releases { get; }
@@ -157,7 +160,6 @@ namespace Octopus.Client
         public ITeamsRepository Teams { get; }
         public ITenantRepository Tenants { get; }
         public ITenantVariablesRepository TenantVariables { get; }
-        
         public IUserInvitesRepository UserInvites { get; }
         public IUserRepository Users { get; }
         public IUserRolesRepository UserRoles { get; }

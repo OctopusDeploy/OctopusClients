@@ -153,6 +153,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.Async.IPackageMetadataRepository PackageMetadataRepository { get; }
+    Octopus.Client.Repositories.Async.IProcessRepository Processes { get; }
+    Octopus.Client.Repositories.Async.IProcessSnapshotRepository ProcessSnapshots { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -192,6 +194,8 @@ Octopus.Client
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.IPackageMetadataRepository PackageMetadataRepository { get; }
+    Octopus.Client.Repositories.IProcessRepository Processes { get; }
+    Octopus.Client.Repositories.IProcessSnapshotRepository ProcessSnapshots { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -318,6 +322,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.Async.IProcessRepository Processes { get; }
+    Octopus.Client.Repositories.Async.IProcessSnapshotRepository ProcessSnapshots { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -442,6 +448,8 @@ Octopus.Client
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.IProcessRepository Processes { get; }
+    Octopus.Client.Repositories.IProcessSnapshotRepository ProcessSnapshots { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -739,6 +747,30 @@ Octopus.Client.Editors
     Octopus.Client.Editors.MachineEditor Customize(Action<MachineResource>)
     Octopus.Client.Editors.MachineEditor Save()
   }
+  class ProcessEditor
+    Octopus.Client.Editors.IResourceEditor<ProcessResource, ProcessEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IProcessRepository)
+    Octopus.Client.Model.Processes.ProcessResource Instance { get; }
+    Octopus.Client.Editors.ProcessEditor Customize(Action<ProcessResource>)
+    Octopus.Client.Editors.ProcessEditor Load(String)
+    Octopus.Client.Editors.ProcessEditor Save()
+  }
+  class ProcessSnapshotEditor
+    Octopus.Client.Editors.IResourceEditor<DeploymentProcessResource, ProcessSnapshotEditor>
+    Octopus.Client.Editors.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.IProcessSnapshotRepository)
+    Octopus.Client.Model.DeploymentProcessResource Instance { get; }
+    Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
+    Octopus.Client.Editors.ProcessSnapshotEditor ClearSteps()
+    Octopus.Client.Editors.ProcessSnapshotEditor Customize(Action<DeploymentProcessResource>)
+    Octopus.Client.Model.DeploymentStepResource FindStep(String)
+    Octopus.Client.Editors.ProcessSnapshotEditor Load(String)
+    Octopus.Client.Editors.ProcessSnapshotEditor RemoveStep(String)
+    Octopus.Client.Editors.ProcessSnapshotEditor Save()
+  }
   class ProjectChannelsEditor
   {
     .ctor(Octopus.Client.Repositories.IChannelRepository, Octopus.Client.Model.ProjectResource)
@@ -751,9 +783,9 @@ Octopus.Client.Editors
     Octopus.Client.Editors.IResourceEditor<ProjectResource, ProjectEditor>
     Octopus.Client.Editors.IResourceBuilder
   {
-    .ctor(Octopus.Client.Repositories.IProjectRepository, Octopus.Client.Repositories.IChannelRepository, Octopus.Client.Repositories.IDeploymentProcessRepository, Octopus.Client.Repositories.IProjectTriggerRepository, Octopus.Client.Repositories.IVariableSetRepository)
+    .ctor(Octopus.Client.Repositories.IProjectRepository, Octopus.Client.Repositories.IChannelRepository, Octopus.Client.Repositories.IProcessRepository, Octopus.Client.Repositories.IProcessSnapshotRepository, Octopus.Client.Repositories.IProjectTriggerRepository, Octopus.Client.Repositories.IVariableSetRepository)
     Octopus.Client.Editors.ProjectChannelsEditor Channels { get; }
-    Octopus.Client.Editors.DeploymentProcessEditor DeploymentProcess { get; }
+    Octopus.Client.Editors.ProcessSnapshotEditor DeploymentProcess { get; }
     Octopus.Client.Model.ProjectResource Instance { get; }
     Octopus.Client.Editors.ProjectTriggersEditor Triggers { get; }
     Octopus.Client.Editors.VariableSetEditor Variables { get; }
@@ -1058,6 +1090,30 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.MachineEditor Customize(Action<MachineResource>)
     Task<MachineEditor> Save()
   }
+  class ProcessEditor
+    Octopus.Client.Editors.Async.IResourceEditor<ProcessResource, ProcessEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IProcessRepository)
+    Octopus.Client.Model.Processes.ProcessResource Instance { get; }
+    Octopus.Client.Editors.Async.ProcessEditor Customize(Action<ProcessResource>)
+    Task<ProcessEditor> Load(String)
+    Task<ProcessEditor> Save()
+  }
+  class ProcessSnapshotEditor
+    Octopus.Client.Editors.Async.IResourceEditor<DeploymentProcessResource, ProcessSnapshotEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+  {
+    .ctor(Octopus.Client.Repositories.Async.IProcessSnapshotRepository)
+    Octopus.Client.Model.DeploymentProcessResource Instance { get; }
+    Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
+    Octopus.Client.Editors.Async.ProcessSnapshotEditor ClearSteps()
+    Octopus.Client.Editors.Async.ProcessSnapshotEditor Customize(Action<DeploymentProcessResource>)
+    Octopus.Client.Model.DeploymentStepResource FindStep(String)
+    Task<ProcessSnapshotEditor> Load(String)
+    Octopus.Client.Editors.Async.ProcessSnapshotEditor RemoveStep(String)
+    Task<ProcessSnapshotEditor> Save()
+  }
   class ProjectChannelsEditor
   {
     .ctor(Octopus.Client.Repositories.Async.IChannelRepository, Octopus.Client.Model.ProjectResource)
@@ -1070,9 +1126,9 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<ProjectResource, ProjectEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
   {
-    .ctor(Octopus.Client.Repositories.Async.IProjectRepository, Octopus.Client.Repositories.Async.IChannelRepository, Octopus.Client.Repositories.Async.IDeploymentProcessRepository, Octopus.Client.Repositories.Async.IProjectTriggerRepository, Octopus.Client.Repositories.Async.IVariableSetRepository)
+    .ctor(Octopus.Client.Repositories.Async.IProjectRepository, Octopus.Client.Repositories.Async.IChannelRepository, Octopus.Client.Repositories.Async.IProcessRepository, Octopus.Client.Repositories.Async.IProcessSnapshotRepository, Octopus.Client.Repositories.Async.IProjectTriggerRepository, Octopus.Client.Repositories.Async.IVariableSetRepository)
     Octopus.Client.Editors.Async.ProjectChannelsEditor Channels { get; }
-    Task<DeploymentProcessEditor> DeploymentProcess { get; }
+    Task<ProcessSnapshotEditor> DeploymentProcess { get; }
     Octopus.Client.Model.ProjectResource Instance { get; }
     Octopus.Client.Editors.Async.ProjectTriggersEditor Triggers { get; }
     Task<VariableSetEditor> Variables { get; }
@@ -2369,6 +2425,7 @@ Octopus.Client.Model
   {
     .ctor()
     String LastSnapshotId { get; set; }
+    String ProcessId { get; set; }
     String ProjectId { get; set; }
     String SpaceId { get; set; }
     IList<DeploymentStepResource> Steps { get; }
@@ -3693,6 +3750,7 @@ Octopus.Client.Model
     Boolean IsDisabled { get; set; }
     String LifecycleId { get; set; }
     String Name { get; set; }
+    String ProcessId { get; set; }
     Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
@@ -5613,6 +5671,37 @@ Octopus.Client.Model.PackageMetadata
     Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
 }
+Octopus.Client.Model.Processes
+{
+  abstract class ProcessResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Name { get; set; }
+    String ProcessSnapshotId { get; set; }
+    String ProjectId { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.Processes.ProcessType Type { get; }
+  }
+  ProcessType
+  {
+      Product = 0
+  }
+  class ProductProcessResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Processes.ProcessResource
+  {
+    .ctor()
+    Octopus.Client.Model.Processes.ProcessType Type { get; }
+  }
+}
 Octopus.Client.Model.Triggers
 {
   class AutoDeployActionResource
@@ -6252,6 +6341,19 @@ Octopus.Client.Repositories
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
+  interface IProcessRepository
+    Octopus.Client.Repositories.IFindByName<ProcessResource>
+    Octopus.Client.Repositories.IPaginate<ProcessResource>
+    Octopus.Client.Repositories.IGet<ProcessResource>
+    Octopus.Client.Repositories.IModify<ProcessResource>
+  {
+  }
+  interface IProcessSnapshotRepository
+    Octopus.Client.Repositories.IGet<DeploymentProcessResource>
+    Octopus.Client.Repositories.IModify<DeploymentProcessResource>
+  {
+    Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+  }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
     Octopus.Client.Repositories.IPaginate<ProjectGroupResource>
@@ -6871,6 +6973,19 @@ Octopus.Client.Repositories.Async
   {
     Task<PerformanceConfigurationResource> Get()
     Task<PerformanceConfigurationResource> Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
+  interface IProcessRepository
+    Octopus.Client.Repositories.Async.IFindByName<ProcessResource>
+    Octopus.Client.Repositories.Async.IPaginate<ProcessResource>
+    Octopus.Client.Repositories.Async.IGet<ProcessResource>
+    Octopus.Client.Repositories.Async.IModify<ProcessResource>
+  {
+  }
+  interface IProcessSnapshotRepository
+    Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
+    Octopus.Client.Repositories.Async.IModify<DeploymentProcessResource>
+  {
+    Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>
