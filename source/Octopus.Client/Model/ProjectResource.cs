@@ -52,9 +52,9 @@ namespace Octopus.Client.Model
         public string ProjectGroupId { get; set; }
 
         public string VariableSetId { get; set; }
-        [Obsolete("Please assign an actual ProcessId (and that process now points to the snapshot)")]
-        public string DeploymentProcessId { get; set; }
+        public string DeploymentProcessId { get; set; } // For backwards compatibility (this will match the new StepsId property).
         public string ProcessId { get; set; }
+        public string StepsId { get; set; }
         public string ClonedFromProjectId { get; set; }
 
         [Writeable]

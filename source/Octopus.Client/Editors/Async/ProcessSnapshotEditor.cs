@@ -5,18 +5,18 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class ProcessSnapshotEditor : IResourceEditor<DeploymentProcessResource, ProcessSnapshotEditor>
+    public class StepsEditor : IResourceEditor<DeploymentProcessResource, StepsEditor>
     {
-        private readonly IProcessSnapshotRepository repository;
+        private readonly IStepsRepository repository;
 
-        public ProcessSnapshotEditor(IProcessSnapshotRepository repository)
+        public StepsEditor(IStepsRepository repository)
         {
             this.repository = repository;
         }
 
         public DeploymentProcessResource Instance { get; private set; }
 
-        public async Task<ProcessSnapshotEditor> Load(string id)
+        public async Task<StepsEditor> Load(string id)
         {
             Instance = await repository.Get(id).ConfigureAwait(false);
             return this;
@@ -32,25 +32,25 @@ namespace Octopus.Client.Editors.Async
             return Instance.AddOrUpdateStep(name);
         }
 
-        public ProcessSnapshotEditor RemoveStep(string name)
+        public StepsEditor RemoveStep(string name)
         {
             Instance.RemoveStep(name);
             return this;
         }
 
-        public ProcessSnapshotEditor ClearSteps()
+        public StepsEditor ClearSteps()
         {
             Instance.ClearSteps();
             return this;
         }
 
-        public ProcessSnapshotEditor Customize(Action<DeploymentProcessResource> customize)
+        public StepsEditor Customize(Action<DeploymentProcessResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<ProcessSnapshotEditor> Save()
+        public async Task<StepsEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;

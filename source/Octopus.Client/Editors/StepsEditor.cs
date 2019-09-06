@@ -4,18 +4,18 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class ProcessSnapshotEditor : IResourceEditor<DeploymentProcessResource, ProcessSnapshotEditor>
+    public class StepsEditor : IResourceEditor<DeploymentProcessResource, StepsEditor>
     {
-        private readonly IProcessSnapshotRepository repository;
+        private readonly IStepsRepository repository;
 
-        public ProcessSnapshotEditor(IProcessSnapshotRepository repository)
+        public StepsEditor(IStepsRepository repository)
         {
             this.repository = repository;
         }
 
         public DeploymentProcessResource Instance { get; private set; }
 
-        public ProcessSnapshotEditor Load(string id)
+        public StepsEditor Load(string id)
         {
             Instance = repository.Get(id);
             return this;
@@ -31,25 +31,25 @@ namespace Octopus.Client.Editors
             return Instance.AddOrUpdateStep(name);
         }
 
-        public ProcessSnapshotEditor RemoveStep(string name)
+        public StepsEditor RemoveStep(string name)
         {
             Instance.RemoveStep(name);
             return this;
         }
 
-        public ProcessSnapshotEditor ClearSteps()
+        public StepsEditor ClearSteps()
         {
             Instance.ClearSteps();
             return this;
         }
 
-        public ProcessSnapshotEditor Customize(Action<DeploymentProcessResource> customize)
+        public StepsEditor Customize(Action<DeploymentProcessResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public ProcessSnapshotEditor Save()
+        public StepsEditor Save()
         {
             Instance = repository.Modify(Instance);
             return this;

@@ -34,7 +34,7 @@ namespace Octopus.Client
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IProcessRepository Processes { get; }
-        IProcessSnapshotRepository ProcessSnapshots { get; }
+        IStepsRepository Steps { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }

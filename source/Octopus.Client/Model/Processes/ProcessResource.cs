@@ -13,7 +13,7 @@ namespace Octopus.Client.Model.Processes
 
         public abstract ProcessType Type { get; }
 
-        public string ProcessSnapshotId { get; set; }
+        public string StepsId { get; set; }
 
         public string ProjectId { get; set; }
 

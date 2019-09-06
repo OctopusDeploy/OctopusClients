@@ -83,7 +83,7 @@ namespace Octopus.Client
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             Processes = new ProcessRepository(this);
-            ProcessSnapshots = new ProcessSnapshotRepository(this);
+            Steps = new StepsRepository(this);
             ProjectTriggers = new ProjectTriggerRepository(this);
             Proxies = new ProxyRepository(this);
             Releases = new ReleaseRepository(this);
@@ -146,7 +146,7 @@ namespace Octopus.Client
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IProcessRepository Processes { get; }
-        public IProcessSnapshotRepository ProcessSnapshots { get; }
+        public IStepsRepository Steps { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }
         public IProxyRepository Proxies { get; }
         public IReleaseRepository Releases { get; }

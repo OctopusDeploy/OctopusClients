@@ -195,11 +195,11 @@ namespace Octopus.Client.Tests.Conventions
             var denied = new[]
             {
                 typeof (Sync.IChannelRepository),
-                typeof (Sync.IProcessSnapshotRepository),
+                typeof (Sync.IStepsRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
                 typeof (IChannelRepository),
-                typeof (IProcessSnapshotRepository),
+                typeof (IStepsRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
             };
@@ -281,7 +281,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (IProcessSnapshotRepository).GetTypeInfo(),
+                typeof (IStepsRepository).GetTypeInfo(),
                 typeof (IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (IInterruptionRepository).GetTypeInfo(),
                 typeof (IEventRepository).GetTypeInfo(),
@@ -310,7 +310,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (Sync.IProcessSnapshotRepository).GetTypeInfo(),
+                typeof (Sync.IStepsRepository).GetTypeInfo(),
                 typeof (Sync.IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (Sync.IInterruptionRepository).GetTypeInfo(),
                 typeof (Sync.IEventRepository).GetTypeInfo(),

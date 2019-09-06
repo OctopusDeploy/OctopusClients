@@ -10,7 +10,7 @@ namespace Octopus.Client.Editors
         private readonly IProjectRepository repository;
         private readonly Lazy<ProjectChannelsEditor> channels;
         private readonly Lazy<ProcessEditor> process;
-        private readonly Lazy<ProcessSnapshotEditor> processSnapshot;
+        private readonly Lazy<StepsEditor> steps;
         private readonly Lazy<ProjectTriggersEditor> triggers; 
         private readonly Lazy<VariableSetEditor> variables;
 
@@ -18,14 +18,14 @@ namespace Octopus.Client.Editors
             IProjectRepository repository,
             IChannelRepository channelRepository,
             IProcessRepository processRepository,
-            IProcessSnapshotRepository processSnapshotRepository,
+            IStepsRepository stepsRepository,
             IProjectTriggerRepository projectTriggerRepository,
             IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
             process = new Lazy<ProcessEditor>(() => new ProcessEditor(processRepository).Load(Instance.ProcessId));
-            processSnapshot = new Lazy<ProcessSnapshotEditor>(() => new ProcessSnapshotEditor(processSnapshotRepository).Load(process.Value.Instance.ProcessSnapshotId));
+            steps = new Lazy<StepsEditor>(() => new StepsEditor(stepsRepository).Load(process.Value.Instance.StepsId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
             variables = new Lazy<VariableSetEditor>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
@@ -34,7 +34,7 @@ namespace Octopus.Client.Editors
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public ProcessSnapshotEditor DeploymentProcess => processSnapshot.Value;
+        public StepsEditor DeploymentProcess => steps.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 
@@ -123,9 +123,9 @@ namespace Octopus.Client.Editors
             {
                 channels.Value.SaveAll();
             }
-            if (processSnapshot.IsValueCreated)
+            if (steps.IsValueCreated)
             {
-                processSnapshot.Value.Save();
+                steps.Value.Save();
             }
             if (triggers.IsValueCreated)
             {
