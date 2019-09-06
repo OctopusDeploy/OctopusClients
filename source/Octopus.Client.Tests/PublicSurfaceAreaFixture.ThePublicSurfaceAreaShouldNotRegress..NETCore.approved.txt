@@ -4218,6 +4218,7 @@ Octopus.Client.Model
     String SmtpLogin { get; set; }
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }    
+    Nullable<Int32> Timeout { get; set; }
   }
   class SpaceResource
     Octopus.Client.Extensibility.IResource
