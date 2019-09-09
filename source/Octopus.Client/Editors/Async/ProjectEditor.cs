@@ -25,8 +25,8 @@ namespace Octopus.Client.Editors.Async
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            process = new Lazy<Task<ProcessEditor>>(() => new ProcessEditor(processRepository).Load(Instance.ProcessId));
-            steps = new Lazy<Task<StepsEditor>>(() => new StepsEditor(stepsRepository).Load(process.Value.Result.Instance.StepsId));
+            process = new Lazy<Task<ProcessEditor>>(() => new ProcessEditor(processRepository).Load(Instance.DefaultDeploymentProcessId));
+            steps = new Lazy<Task<StepsEditor>>(() => new StepsEditor(stepsRepository).Load(Instance.DefaultDeploymentProcessStepsId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
             variables = new Lazy<Task<VariableSetEditor>>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
@@ -35,7 +35,11 @@ namespace Octopus.Client.Editors.Async
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public Task<StepsEditor> DeploymentProcess => steps.Value;
+        public Task<StepsEditor> DeploymentProcess => Steps; // For backwards compatibility
+
+        public Task<StepsEditor> Steps => steps.Value;
+
+        public Task<ProcessEditor> Process => process.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 

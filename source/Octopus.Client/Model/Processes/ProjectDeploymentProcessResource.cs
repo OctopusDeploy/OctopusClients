@@ -2,6 +2,6 @@
 {
     public class ProjectDeploymentProcessResource : ProcessResource
     {
-        public override ProcessType Type => ProcessType.ProjectDeploymentProcess;
+        public override ProcessType Type => ProcessType.Deployment;
     }
 }

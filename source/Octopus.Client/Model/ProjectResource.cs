@@ -22,6 +22,7 @@ namespace Octopus.Client.Model
             ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
+            ReleaseCreationStrategy = new ReleaseCreationStrategyResource();
         }
 
         public ProjectResource(string id, string name, string slug) : this()
@@ -52,9 +53,9 @@ namespace Octopus.Client.Model
         public string ProjectGroupId { get; set; }
 
         public string VariableSetId { get; set; }
-        public string DeploymentProcessId { get; set; } // For backwards compatibility (this will match the new StepsId property).
-        public string ProcessId { get; set; }
-        public string StepsId { get; set; }
+        public string DefaultDeploymentProcessId { get; set; }
+        public string DefaultDeploymentProcessStepsId { get; set; }
+        public string DeploymentProcessId => DefaultDeploymentProcessStepsId; // For backwards compatibility.
         public string ClonedFromProjectId { get; set; }
 
         [Writeable]

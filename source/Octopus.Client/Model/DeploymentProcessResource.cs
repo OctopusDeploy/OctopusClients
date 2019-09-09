@@ -13,9 +13,9 @@ namespace Octopus.Client.Model
             Steps = new List<DeploymentStepResource>();
         }
 
-        public string ProcessId { get; set; }
-
         public string ProjectId { get; set; }
+
+        public string ProcessId { get; set; } // To allow forwards compatibility with our new StepsResource.
 
         public IList<DeploymentStepResource> Steps { get; private set; }
 

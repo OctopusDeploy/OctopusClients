@@ -5,7 +5,7 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class StepsEditor : IResourceEditor<DeploymentProcessResource, StepsEditor>
+    public class StepsEditor : IResourceEditor<StepsResource, StepsEditor>
     {
         private readonly IStepsRepository repository;
 
@@ -14,7 +14,7 @@ namespace Octopus.Client.Editors.Async
             this.repository = repository;
         }
 
-        public DeploymentProcessResource Instance { get; private set; }
+        public StepsResource Instance { get; private set; }
 
         public async Task<StepsEditor> Load(string id)
         {
@@ -44,7 +44,7 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public StepsEditor Customize(Action<DeploymentProcessResource> customize)
+        public StepsEditor Customize(Action<StepsResource> customize)
         {
             customize?.Invoke(Instance);
             return this;

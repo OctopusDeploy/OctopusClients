@@ -2,6 +2,6 @@
 {
     public enum ProcessType
     {
-        ProjectDeploymentProcess,
+        Deployment,
     }
 }
