@@ -3890,7 +3890,7 @@ Octopus.Client.Model
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
-    String ProjectDeploymentStepsId { get; set; }
+    String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }

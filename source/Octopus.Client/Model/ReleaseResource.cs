@@ -47,7 +47,7 @@ namespace Octopus.Client.Model
         /// </summary>
         public List<string> LibraryVariableSetSnapshotIds { get; set; }
 
-        public string ProjectDeploymentStepsId { get; set; }
+        public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
 		
         public string SpaceId { get; set; }
