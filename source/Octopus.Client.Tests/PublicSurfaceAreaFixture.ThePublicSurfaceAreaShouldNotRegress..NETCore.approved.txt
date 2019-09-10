@@ -5680,10 +5680,10 @@ Octopus.Client.Model.Processes
   {
     .ctor()
     String Name { get; set; }
+    Octopus.Client.Model.Processes.ProcessType ProcessType { get; }
     String ProjectId { get; set; }
     String SpaceId { get; set; }
     String StepsId { get; set; }
-    Octopus.Client.Model.Processes.ProcessType Type { get; }
   }
   ProcessType
   {
@@ -5697,7 +5697,7 @@ Octopus.Client.Model.Processes
     Octopus.Client.Model.Processes.ProcessResource
   {
     .ctor()
-    Octopus.Client.Model.Processes.ProcessType Type { get; }
+    Octopus.Client.Model.Processes.ProcessType ProcessType { get; }
   }
 }
 Octopus.Client.Model.Triggers

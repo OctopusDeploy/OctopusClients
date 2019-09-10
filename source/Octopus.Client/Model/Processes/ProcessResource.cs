@@ -11,7 +11,7 @@ namespace Octopus.Client.Model.Processes
         [Trim]
         public string Name { get; set; }
 
-        public abstract ProcessType Type { get; }
+        public abstract ProcessType ProcessType { get; }
 
         public string StepsId { get; set; }
 
