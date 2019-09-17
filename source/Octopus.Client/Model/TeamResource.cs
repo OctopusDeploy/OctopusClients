@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -18,6 +19,13 @@ namespace Octopus.Client.Model
         [Writeable]
         [Trim]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description for this team.
+        /// </summary>
+        [Writeable]
+        [JsonProperty(Order = 20)]
+        public string Description { get; set; }
 
         /// <summary>
         /// The users who belong to the team.
