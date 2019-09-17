@@ -20,6 +20,13 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the description for this team.
+        /// </summary>
+        [Writeable]
+        [JsonProperty(Order = 20)]
+        public string Description { get; set; }
+
+        /// <summary>
         /// The users who belong to the team.
         /// </summary>
         [Writeable]
