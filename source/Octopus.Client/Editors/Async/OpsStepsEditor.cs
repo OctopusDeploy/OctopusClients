@@ -1,23 +1,24 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories;
+using Octopus.Client.Repositories.Async;
 
-namespace Octopus.Client.Editors
+namespace Octopus.Client.Editors.Async
 {
-    public class StepsEditor : IResourceEditor<StepsResource, StepsEditor>
+    public class OpsStepsEditor : IResourceEditor<StepsResource, OpsStepsEditor>
     {
-        private readonly IStepsRepository repository;
+        private readonly IOpsStepsRepository repository;
 
-        public StepsEditor(IStepsRepository repository)
+        public OpsStepsEditor(IOpsStepsRepository repository)
         {
             this.repository = repository;
         }
 
         public StepsResource Instance { get; private set; }
 
-        public StepsEditor Load(string id)
+        public async Task<OpsStepsEditor> Load(string id)
         {
-            Instance = repository.Get(id);
+            Instance = await repository.Get(id).ConfigureAwait(false);
             return this;
         }
 
@@ -31,27 +32,27 @@ namespace Octopus.Client.Editors
             return Instance.AddOrUpdateStep(name);
         }
 
-        public StepsEditor RemoveStep(string name)
+        public OpsStepsEditor RemoveStep(string name)
         {
             Instance.RemoveStep(name);
             return this;
         }
 
-        public StepsEditor ClearSteps()
+        public OpsStepsEditor ClearSteps()
         {
             Instance.ClearSteps();
             return this;
         }
 
-        public StepsEditor Customize(Action<StepsResource> customize)
+        public OpsStepsEditor Customize(Action<StepsResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public StepsEditor Save()
+        public async Task<OpsStepsEditor> Save()
         {
-            Instance = repository.Modify(Instance);
+            Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
         }
     }

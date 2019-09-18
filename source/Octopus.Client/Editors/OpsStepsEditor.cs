@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
+using Octopus.Client.Repositories;
 
-namespace Octopus.Client.Editors.Async
+namespace Octopus.Client.Editors
 {
-    public class StepsEditor : IResourceEditor<StepsResource, StepsEditor>
+    public class OpsStepsEditor : IResourceEditor<StepsResource, OpsStepsEditor>
     {
-        private readonly IStepsRepository repository;
+        private readonly IOpsStepsRepository repository;
 
-        public StepsEditor(IStepsRepository repository)
+        public OpsStepsEditor(IOpsStepsRepository repository)
         {
             this.repository = repository;
         }
 
         public StepsResource Instance { get; private set; }
 
-        public async Task<StepsEditor> Load(string id)
+        public OpsStepsEditor Load(string id)
         {
-            Instance = await repository.Get(id).ConfigureAwait(false);
+            Instance = repository.Get(id);
             return this;
         }
 
@@ -32,27 +31,27 @@ namespace Octopus.Client.Editors.Async
             return Instance.AddOrUpdateStep(name);
         }
 
-        public StepsEditor RemoveStep(string name)
+        public OpsStepsEditor RemoveStep(string name)
         {
             Instance.RemoveStep(name);
             return this;
         }
 
-        public StepsEditor ClearSteps()
+        public OpsStepsEditor ClearSteps()
         {
             Instance.ClearSteps();
             return this;
         }
 
-        public StepsEditor Customize(Action<StepsResource> customize)
+        public OpsStepsEditor Customize(Action<StepsResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<StepsEditor> Save()
+        public OpsStepsEditor Save()
         {
-            Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            Instance = repository.Modify(Instance);
             return this;
         }
     }

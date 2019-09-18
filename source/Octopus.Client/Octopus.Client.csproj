@@ -44,4 +44,7 @@ This package contains the client library for the HTTP API in Octopus.</Descripti
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Octodiff" Version="1.2.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\OpsProcesses\" />
+  </ItemGroup>
 </Project>

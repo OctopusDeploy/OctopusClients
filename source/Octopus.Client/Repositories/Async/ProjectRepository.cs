@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories.Async
 {
-
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
@@ -20,6 +20,11 @@ namespace Octopus.Client.Repositories.Async
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
+        Task<ResourceCollection<OpsSnapshotResource>> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        Task<IReadOnlyList<OpsSnapshotResource>> GetAllOpsSnapshots(ProjectResource project);
+        Task<OpsSnapshotResource> GetOpsSnapshotByName(ProjectResource project, string name);
+        Task<ResourceCollection<OpsProcessResource>> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        Task<IReadOnlyList<OpsProcessResource>> GetAllOpsProcesses(ProjectResource project);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
@@ -34,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });
         }
 
-        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project) 
+        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project)
         {
             return Client.ListAll<ReleaseResource>(project.Link("Releases"));
         }
@@ -63,7 +68,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
         }
-        
+
         public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
         {
             return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
@@ -76,12 +81,37 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
         {
-            return new ProjectEditor(this, new ChannelRepository(Repository), new ProcessRepository(Repository), new StepsRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
         }
 
         public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
-            return new ProjectEditor(this, new ChannelRepository(Repository), new ProcessRepository(Repository), new StepsRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+        }
+
+        public Task<ResourceCollection<OpsSnapshotResource>> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { skip, take, searchByName });
+        }
+
+        public Task<IReadOnlyList<OpsSnapshotResource>> GetAllOpsSnapshots(ProjectResource project)
+        {
+            return Client.ListAll<OpsSnapshotResource>(project.Link("OpsSnapshots"));
+        }
+
+        public Task<OpsSnapshotResource> GetOpsSnapshotByName(ProjectResource project, string name)
+        {
+            return Client.Get<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { name });
+        }
+
+        public Task<ResourceCollection<OpsProcessResource>> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<OpsProcessResource>(project.Link("OpsProcesses"), new { skip, take, searchByName });
+        }
+
+        public Task<IReadOnlyList<OpsProcessResource>> GetAllOpsProcesses(ProjectResource project)
+        {
+            return Client.ListAll<OpsProcessResource>(project.Link("OpsProcesses"));
         }
     }
 }

@@ -195,11 +195,11 @@ namespace Octopus.Client.Tests.Conventions
             var denied = new[]
             {
                 typeof (Sync.IChannelRepository),
-                typeof (Sync.IStepsRepository),
+                typeof (Sync.IOpsStepsRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
                 typeof (IChannelRepository),
-                typeof (IStepsRepository),
+                typeof (IOpsStepsRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
             };
@@ -281,7 +281,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (IStepsRepository).GetTypeInfo(),
+                typeof (IOpsStepsRepository).GetTypeInfo(),
                 typeof (IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (IInterruptionRepository).GetTypeInfo(),
                 typeof (IEventRepository).GetTypeInfo(),
@@ -310,7 +310,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (Sync.IStepsRepository).GetTypeInfo(),
+                typeof (Sync.IOpsStepsRepository).GetTypeInfo(),
                 typeof (Sync.IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (Sync.IInterruptionRepository).GetTypeInfo(),
                 typeof (Sync.IEventRepository).GetTypeInfo(),
@@ -340,6 +340,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new []
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(IOpsRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -366,6 +367,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.IOpsRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 
@@ -392,6 +394,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(IOpsRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -418,6 +421,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.IOpsRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 

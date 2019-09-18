@@ -82,8 +82,10 @@ namespace Octopus.Client
             PackageMetadataRepository = new PackageMetadataRepository(this);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
-            Processes = new ProcessRepository(this);
-            Steps = new StepsRepository(this);
+            OpsProcesses = new OpsProcessRepository(this);
+            OpsSteps = new OpsStepsRepository(this);
+            OpsSnapshots = new OpsSnapshotRepository(this);
+            OpsRuns = new OpsRunRepository(this);
             ProjectTriggers = new ProjectTriggerRepository(this);
             Proxies = new ProxyRepository(this);
             Releases = new ReleaseRepository(this);
@@ -145,8 +147,10 @@ namespace Octopus.Client
         public IPackageMetadataRepository PackageMetadataRepository { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
-        public IProcessRepository Processes { get; }
-        public IStepsRepository Steps { get; }
+        public IOpsProcessRepository OpsProcesses { get; }
+        public IOpsStepsRepository OpsSteps { get; }
+        public IOpsSnapshotRepository OpsSnapshots { get; }
+        public IOpsRunRepository OpsRuns { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }
         public IProxyRepository Proxies { get; }
         public IReleaseRepository Releases { get; }

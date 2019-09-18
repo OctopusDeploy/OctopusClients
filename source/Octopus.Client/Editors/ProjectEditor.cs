@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -9,23 +10,20 @@ namespace Octopus.Client.Editors
     {
         private readonly IProjectRepository repository;
         private readonly Lazy<ProjectChannelsEditor> channels;
-        private readonly Lazy<ProcessEditor> process;
-        private readonly Lazy<StepsEditor> steps;
-        private readonly Lazy<ProjectTriggersEditor> triggers; 
+        private readonly Lazy<DeploymentProcessEditor> deploymentProcess;
+        private readonly Lazy<ProjectTriggersEditor> triggers;
         private readonly Lazy<VariableSetEditor> variables;
 
         public ProjectEditor(
             IProjectRepository repository,
             IChannelRepository channelRepository,
-            IProcessRepository processRepository,
-            IStepsRepository stepsRepository,
+            IDeploymentProcessRepository deploymentProcessRepository,
             IProjectTriggerRepository projectTriggerRepository,
             IVariableSetRepository variableSetRepository)
         {
             this.repository = repository;
             channels = new Lazy<ProjectChannelsEditor>(() => new ProjectChannelsEditor(channelRepository, Instance));
-            process = new Lazy<ProcessEditor>(() => new ProcessEditor(processRepository).Load(Instance.DefaultDeploymentProcessId));
-            steps = new Lazy<StepsEditor>(() => new StepsEditor(stepsRepository).Load(Instance.DefaultDeploymentProcessStepsId));
+            deploymentProcess = new Lazy<DeploymentProcessEditor>(() => new DeploymentProcessEditor(deploymentProcessRepository).Load(Instance.DeploymentProcessId));
             triggers = new Lazy<ProjectTriggersEditor>(() => new ProjectTriggersEditor(projectTriggerRepository, Instance));
             variables = new Lazy<VariableSetEditor>(() => new VariableSetEditor(variableSetRepository).Load(Instance.VariableSetId));
         }
@@ -34,11 +32,7 @@ namespace Octopus.Client.Editors
 
         public ProjectChannelsEditor Channels => channels.Value;
 
-        public StepsEditor DeploymentProcess => Steps; // For backwards compatibility
-
-        public StepsEditor Steps => steps.Value;
-
-        public ProcessEditor Process => process.Value;
+        public DeploymentProcessEditor DeploymentProcess => deploymentProcess.Value;
 
         public ProjectTriggersEditor Triggers => triggers.Value;
 
@@ -127,9 +121,9 @@ namespace Octopus.Client.Editors
             {
                 channels.Value.SaveAll();
             }
-            if (steps.IsValueCreated)
+            if (deploymentProcess.IsValueCreated)
             {
-                steps.Value.Save();
+                deploymentProcess.Value.Save();
             }
             if (triggers.IsValueCreated)
             {

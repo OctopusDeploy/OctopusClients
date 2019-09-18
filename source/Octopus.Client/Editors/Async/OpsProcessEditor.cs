@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Octopus.Client.Model.Processes;
+using Octopus.Client.Model.OpsProcesses;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class ProcessEditor : IResourceEditor<ProcessResource, ProcessEditor>
+    public class OpsProcessEditor : IResourceEditor<OpsProcessResource, OpsProcessEditor>
     {
-        private readonly IProcessRepository repository;
+        private readonly IOpsProcessRepository repository;
 
-        public ProcessEditor(IProcessRepository repository)
+        public OpsProcessEditor(IOpsProcessRepository repository)
         {
             this.repository = repository;
         }
 
-        public ProcessResource Instance { get; private set; }
+        public OpsProcessResource Instance { get; private set; }
 
-        public async Task<ProcessEditor> Load(string id)
+        public async Task<OpsProcessEditor> Load(string id)
         {
             Instance = await repository.Get(id).ConfigureAwait(false);
             return this;
         }
 
-        public ProcessEditor Customize(Action<ProcessResource> customize)
+        public OpsProcessEditor Customize(Action<OpsProcessResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<ProcessEditor> Save()
+        public async Task<OpsProcessEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;

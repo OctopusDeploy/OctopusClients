@@ -7,16 +7,21 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentResource : Resource, IHaveSpaceResource
+    public class DeploymentResource : DeploymentBaseResource
     {
-        public DeploymentResource()
-        {
-            FormValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        }
-
         [Required(ErrorMessage = "Please specify the release to deploy.")]
         [WriteableOnCreate]
         public string ReleaseId { get; set; }
+        public string ChannelId { get; set; }
+        public string DeploymentProcessId { get; set; }
+    }
+
+    public class DeploymentBaseResource : Resource, IHaveSpaceResource
+    {
+        public DeploymentBaseResource()
+        {
+            FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        }
 
         [Required(ErrorMessage = "Please provide a target environment to deploy to.")]
         [WriteableOnCreate]
@@ -48,15 +53,14 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public ReferenceCollection ExcludedMachineIds { get; set; }
 
-        public string DeploymentProcessId { get; set; }
         public string ManifestVariableSetId { get; set; }
         public string TaskId { get; set; }
         public string ProjectId { get; set; }
-        public string ChannelId { get; set; }
 
         /// <summary>
         /// If set to true, the deployment will prompt for manual intervention (Fail/Retry/Ignore) when
-        /// failures are encountered in activities that support it.
+        /// failures are encountered in activities that support it. May be overridden with the
+        /// Octopus.UseGuidedFailure special variable.
         /// </summary>
         [WriteableOnCreate]
         public bool UseGuidedFailure { get; set; }
@@ -78,9 +82,9 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
-		
-        public string SpaceId { get; set; }
 
         public List<ReleaseChanges> Changes { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

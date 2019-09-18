@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
+using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories
 {
@@ -18,8 +19,13 @@ namespace Octopus.Client.Repositories
         void SetLogo(ProjectResource project, string fileName, Stream contents);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
+        ResourceCollection<OpsSnapshotResource> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<OpsSnapshotResource> GetAllOpsSnapshots(ProjectResource project);
+        OpsSnapshotResource GetOpsSnapshotByName(ProjectResource project, string name);
+        ResourceCollection<OpsProcessResource> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<OpsProcessResource> GetAllOpsProcesses(ProjectResource project);
     }
-    
+
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
         public ProjectRepository(IOctopusRepository repository)
@@ -74,12 +80,37 @@ namespace Octopus.Client.Repositories
 
         public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
         {
-            return new ProjectEditor(this, new ChannelRepository(Repository), new ProcessRepository(Repository), new StepsRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
         }
 
         public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
-            return new ProjectEditor(this, new ChannelRepository(Repository), new ProcessRepository(Repository), new StepsRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+        }
+
+        public ResourceCollection<OpsSnapshotResource> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { skip, take, searchByName });
+        }
+
+        public IReadOnlyList<OpsSnapshotResource> GetAllOpsSnapshots(ProjectResource project)
+        {
+            return Client.ListAll<OpsSnapshotResource>(project.Link("OpsSnapshots"));
+        }
+
+        public OpsSnapshotResource GetOpsSnapshotByName(ProjectResource project, string name)
+        {
+            return Client.Get<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { name });
+        }
+
+        public ResourceCollection<OpsProcessResource> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<OpsProcessResource>(project.Link("OpsProcesses"), new { skip, take, searchByName });
+        }
+
+        public IReadOnlyList<OpsProcessResource> GetAllOpsProcesses(ProjectResource project)
+        {
+            return Client.ListAll<OpsProcessResource>(project.Link("OpsProcesses"));
         }
     }
 }
