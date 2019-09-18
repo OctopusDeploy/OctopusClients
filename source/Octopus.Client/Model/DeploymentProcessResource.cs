@@ -8,11 +8,6 @@ namespace Octopus.Client.Model
 {
     public class DeploymentProcessResource : DeploymentProcessBaseResource
     {
-        public string ProjectId
-        {
-            get => base.OwnerId;
-            set => base.OwnerId = value;
-        }
     }
 
     public class DeploymentProcessBaseResource : Resource, IHaveSpaceResource
@@ -22,7 +17,7 @@ namespace Octopus.Client.Model
             Steps = new List<DeploymentStepResource>();
         }
 
-        public string OwnerId { get; set; }
+        public string ProjectId { get; set; }
 
         public IList<DeploymentStepResource> Steps { get; }
 

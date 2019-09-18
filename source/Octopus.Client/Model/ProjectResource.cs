@@ -22,7 +22,6 @@ namespace Octopus.Client.Model
             ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
-            ReleaseCreationStrategy = new ReleaseCreationStrategyResource();
         }
 
         public ProjectResource(string id, string name, string slug) : this()
@@ -53,9 +52,7 @@ namespace Octopus.Client.Model
         public string ProjectGroupId { get; set; }
 
         public string VariableSetId { get; set; }
-        public string DefaultDeploymentProcessId { get; set; }
-        public string DefaultDeploymentProcessStepsId { get; set; }
-        public string DeploymentProcessId => DefaultDeploymentProcessStepsId; // For backwards compatibility.
+        public string DeploymentProcessId { get; set; }
         public string ClonedFromProjectId { get; set; }
 
         [Writeable]
@@ -88,7 +85,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
-        
+
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
@@ -106,7 +103,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
-        
+
         [Writeable]
         public string ReleaseNotesTemplate { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Octopus.Client.Model.OpsProcesses
 {
-    public class OpsRunPreviewResource : DeploymentPreviewResource
+    public class OpsRunPreviewResource : DeploymentPreviewBaseResource
     {
     }
 }

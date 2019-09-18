@@ -10,6 +10,20 @@ namespace Octopus.Client.Model
 {
     public class ReleaseResource : ReleaseBaseResource
     {
+        public ReleaseResource(string version, string projectId, string channelId) : base()
+        {
+            Version = version;
+            ProjectId = projectId;
+            ChannelId = channelId;
+        }
+
+        [JsonConstructor]
+        public ReleaseResource()
+        {
+            SelectedPackages = new List<SelectedPackage>();
+            PackageMetadata = new List<ReleasePackageMetadataResource>();
+        }
+
         [Required(ErrorMessage = "Please provide a version number for this release.")]
         [StringLength(349, ErrorMessage = "The version number is too long. Please enter a shorter version number.")]
         [Trim]
@@ -27,19 +41,8 @@ namespace Octopus.Client.Model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool IgnoreChannelRules { get; set; }
 
-        public ReleaseResource(string version, string projectId, string channelId) : base()
-        {
-            Version = version;
-            ProjectId = projectId;
-            ChannelId = channelId;
-        }
-
-        //TODO: markse - without this parameter-less constructor, our ResourceMapper goes :boom:. We may need to register these classes like we do other abstract base classes. See Accounts etc.
-        [JsonConstructor]
-        public ReleaseResource()
-        {
-            SelectedPackages = new List<SelectedPackage>();
-        }
+        [WriteableOnCreate]
+        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
     }
 
     public class ReleaseBaseResource : Resource, IHaveSpaceResource
@@ -70,9 +73,6 @@ namespace Octopus.Client.Model
 
         public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
-
-        [WriteableOnCreate]
-        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
 
         public string SpaceId { get; set; }
     }

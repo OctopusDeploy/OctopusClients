@@ -9,11 +9,18 @@ namespace Octopus.Client.Model
 {
     public class DeploymentResource : DeploymentBaseResource
     {
+        public DeploymentResource()
+        {
+            Changes = new List<ReleaseChanges>();
+        }
+
         [Required(ErrorMessage = "Please specify the release to deploy.")]
         [WriteableOnCreate]
         public string ReleaseId { get; set; }
         public string ChannelId { get; set; }
         public string DeploymentProcessId { get; set; }
+
+        public List<ReleaseChanges> Changes { get; set; }
     }
 
     public class DeploymentBaseResource : Resource, IHaveSpaceResource
@@ -82,8 +89,6 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public DateTimeOffset Created { get; set; }
-
-        public List<ReleaseChanges> Changes { get; set; }
 
         public string SpaceId { get; set; }
     }
