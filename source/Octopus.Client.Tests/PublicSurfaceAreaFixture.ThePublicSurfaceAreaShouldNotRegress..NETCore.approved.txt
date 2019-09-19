@@ -3484,6 +3484,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReleaseTemplateBaseResource
   {
     .ctor()
+    String NextNameIncrement { get; set; }
     String OpsStepsId { get; set; }
   }
   class OpsStepsResource
