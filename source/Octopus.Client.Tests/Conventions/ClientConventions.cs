@@ -12,6 +12,7 @@ using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
 using Conventional;
 using Conventional.Conventions;
+using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -481,7 +482,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllResourcePropertiesShouldHavePublicSetters()
         {
             ResourceTypes
-                .Except(new[] { typeof(LifecycleResource), typeof(StepsResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
+                .Except(new[] { typeof(LifecycleResource), typeof(OpsStepsResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
                 .MustConformTo(Convention.PropertiesMustHavePublicSetters)
                 .WithFailureAssertion(Assert.Fail);
         }

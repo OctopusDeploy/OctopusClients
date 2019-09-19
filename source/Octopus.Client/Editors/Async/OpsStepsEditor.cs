@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Model.OpsProcesses;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class OpsStepsEditor : IResourceEditor<StepsResource, OpsStepsEditor>
+    public class OpsStepsEditor : IResourceEditor<OpsStepsResource, OpsStepsEditor>
     {
         private readonly IOpsStepsRepository repository;
 
@@ -14,7 +15,7 @@ namespace Octopus.Client.Editors.Async
             this.repository = repository;
         }
 
-        public StepsResource Instance { get; private set; }
+        public OpsStepsResource Instance { get; private set; }
 
         public async Task<OpsStepsEditor> Load(string id)
         {
@@ -44,7 +45,7 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public OpsStepsEditor Customize(Action<StepsResource> customize)
+        public OpsStepsEditor Customize(Action<OpsStepsResource> customize)
         {
             customize?.Invoke(Instance);
             return this;

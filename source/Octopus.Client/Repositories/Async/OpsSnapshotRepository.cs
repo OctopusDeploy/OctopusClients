@@ -26,7 +26,7 @@ namespace Octopus.Client.Repositories.Async
         Task<OpsRunTemplateResource> GetTemplate(OpsSnapshotResource opsSnapshot);
         Task<OpsRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<OpsSnapshotResource> SnapshotVariables(OpsSnapshotResource opsSnapshot);    
-        Task<OpsSnapshotResource> Create(OpsSnapshotResource resource);
+        Task<OpsSnapshotResource> Create(OpsSnapshotResource opsSnapshot);
     }
 
     class OpsSnapshotRepository : BasicRepository<OpsSnapshotResource>, IOpsSnapshotRepository
@@ -62,9 +62,9 @@ namespace Octopus.Client.Repositories.Async
             return await Get(opsSnapshot.Id).ConfigureAwait(false);
         }
 
-        public async Task<OpsSnapshotResource> Create(OpsSnapshotResource resource)
+        public async Task<OpsSnapshotResource> Create(OpsSnapshotResource opsSnapshot)
         {
-            return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), resource).ConfigureAwait(false);
+            return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), opsSnapshot).ConfigureAwait(false);
         }
     }
 }

@@ -4,21 +4,21 @@ using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IOpsStepsRepository : IGet<StepsResource>, IModify<StepsResource>
+    public interface IOpsStepsRepository : IGet<OpsStepsResource>, IModify<OpsStepsResource>
     {
-        Task<OpsSnapshotTemplateResource> GetTemplate(StepsResource steps);
+        Task<OpsSnapshotTemplateResource> GetTemplate(OpsStepsResource opsSteps);
     }
 
-    class OpsStepsRepository : BasicRepository<StepsResource>, IOpsStepsRepository
+    class OpsStepsRepository : BasicRepository<OpsStepsResource>, IOpsStepsRepository
     {
         public OpsStepsRepository(IOctopusAsyncRepository repository)
             : base(repository, "OpsSteps")
         {
         }
 
-        public Task<OpsSnapshotTemplateResource> GetTemplate(StepsResource steps)
+        public Task<OpsSnapshotTemplateResource> GetTemplate(OpsStepsResource opsSteps)
         {
-            return Client.Get<OpsSnapshotTemplateResource>(steps.Link("OpsSnapshotTemplate"));
+            return Client.Get<OpsSnapshotTemplateResource>(opsSteps.Link("OpsSnapshotTemplate"));
         }
     }
 }

@@ -3,21 +3,21 @@ using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsStepsRepository : IGet<StepsResource>, IModify<StepsResource>
+    public interface IOpsStepsRepository : IGet<OpsStepsResource>, IModify<OpsStepsResource>
     {
-        OpsSnapshotTemplateResource GetTemplate(StepsResource deploymentSteps);
+        OpsSnapshotTemplateResource GetTemplate(OpsStepsResource opsSteps);
     }
     
-    class OpsStepsRepository : BasicRepository<StepsResource>, IOpsStepsRepository
+    class OpsStepsRepository : BasicRepository<OpsStepsResource>, IOpsStepsRepository
     {
         public OpsStepsRepository(IOctopusRepository repository)
             : base(repository, "OpsSteps")
         {
         }
 
-        public OpsSnapshotTemplateResource GetTemplate(StepsResource deploymentProcess)
+        public OpsSnapshotTemplateResource GetTemplate(OpsStepsResource opsSteps)
         {
-            return Client.Get<OpsSnapshotTemplateResource>(deploymentProcess.Link("OpsSnapshotTemplate"));
+            return Client.Get<OpsSnapshotTemplateResource>(opsSteps.Link("OpsSnapshotTemplate"));
         }
     }
 }

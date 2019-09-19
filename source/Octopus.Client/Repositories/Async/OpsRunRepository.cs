@@ -18,9 +18,6 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
         /// <returns></returns>
         Task<ResourceCollection<OpsRunResource>> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null);
-
-        [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
-        Task<ResourceCollection<OpsRunResource>> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null);
         Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<OpsRunResource>, bool> getNextPage);
         Task Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<OpsRunResource>, bool> getNextPage);
     }
@@ -40,12 +37,6 @@ namespace Octopus.Client.Repositories.Async
         public async Task<ResourceCollection<OpsRunResource>> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
         {
             return await Client.List<OpsRunResource>(await Repository.Link("OpsRuns").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] }).ConfigureAwait(false);
-        }
-
-        [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
-        public Task<ResourceCollection<OpsRunResource>> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null)
-        {
-            return FindBy(projects, environments, skip, take);
         }
 
         public Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<OpsRunResource>, bool> getNextPage)

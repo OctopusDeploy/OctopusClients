@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories
         OpsRunTemplateResource GetTemplate(OpsSnapshotResource opsSnapshot);
         OpsRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         OpsSnapshotResource SnapshotVariables(OpsSnapshotResource opsSnapshot);    
-        OpsSnapshotResource Create(OpsSnapshotResource resource);
+        OpsSnapshotResource Create(OpsSnapshotResource opsSnapshot);
     }
     
     class OpsSnapshotRepository : BasicRepository<OpsSnapshotResource>, IOpsSnapshotRepository
@@ -61,9 +61,9 @@ namespace Octopus.Client.Repositories
             return Get(opsSnapshot.Id);
         }
 
-        public OpsSnapshotResource Create(OpsSnapshotResource resource)
+        public OpsSnapshotResource Create(OpsSnapshotResource opsSnapshot)
         {
-            return Client.Create(Repository.Link(CollectionLinkName), resource);
+            return Client.Create(Repository.Link(CollectionLinkName), opsSnapshot);
         }
     }
 }
