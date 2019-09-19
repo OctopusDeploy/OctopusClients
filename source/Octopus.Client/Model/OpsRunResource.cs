@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.OpsProcesses
+namespace Octopus.Client.Model
 {
     public class OpsRunResource : DeploymentBaseResource
     {

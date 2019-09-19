@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
-using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories.Async
 {

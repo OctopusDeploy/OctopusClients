@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
-using Octopus.Client.Model.OpsProcesses;
 using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async

@@ -1,4 +1,4 @@
-﻿namespace Octopus.Client.Model.OpsProcesses
+﻿namespace Octopus.Client.Model
 {
     public class OpsRunPreviewResource : DeploymentPreviewBaseResource
     {

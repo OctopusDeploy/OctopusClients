@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Octopus.Client.Model.OpsProcesses
+namespace Octopus.Client.Model
 {
     public class OpsSnapshotResource : ReleaseBaseResource
     {

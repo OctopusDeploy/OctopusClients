@@ -759,7 +759,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.IResourceBuilder
   {
     .ctor(Octopus.Client.Repositories.IOpsProcessRepository)
-    Octopus.Client.Model.OpsProcesses.OpsProcessResource Instance { get; }
+    Octopus.Client.Model.OpsProcessResource Instance { get; }
     Octopus.Client.Editors.OpsProcessEditor Customize(Action<OpsProcessResource>)
     Octopus.Client.Editors.OpsProcessEditor Load(String)
     Octopus.Client.Editors.OpsProcessEditor Save()
@@ -769,7 +769,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.IResourceBuilder
   {
     .ctor(Octopus.Client.Repositories.IOpsStepsRepository)
-    Octopus.Client.Model.OpsProcesses.OpsStepsResource Instance { get; }
+    Octopus.Client.Model.OpsStepsResource Instance { get; }
     Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
     Octopus.Client.Editors.OpsStepsEditor ClearSteps()
     Octopus.Client.Editors.OpsStepsEditor Customize(Action<OpsStepsResource>)
@@ -1102,7 +1102,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceBuilder
   {
     .ctor(Octopus.Client.Repositories.Async.IOpsProcessRepository)
-    Octopus.Client.Model.OpsProcesses.OpsProcessResource Instance { get; }
+    Octopus.Client.Model.OpsProcessResource Instance { get; }
     Octopus.Client.Editors.Async.OpsProcessEditor Customize(Action<OpsProcessResource>)
     Task<OpsProcessEditor> Load(String)
     Task<OpsProcessEditor> Save()
@@ -1112,7 +1112,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceBuilder
   {
     .ctor(Octopus.Client.Repositories.Async.IOpsStepsRepository)
-    Octopus.Client.Model.OpsProcesses.OpsStepsResource Instance { get; }
+    Octopus.Client.Model.OpsStepsResource Instance { get; }
     Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
     Octopus.Client.Editors.Async.OpsStepsEditor ClearSteps()
     Octopus.Client.Editors.Async.OpsStepsEditor Customize(Action<OpsStepsResource>)
@@ -3427,6 +3427,79 @@ Octopus.Client.Model
     Octopus.Client.Model.LeadershipRank Rank { get; set; }
     Int32 RunningTaskCount { get; set; }
   }
+  class OpsProcessResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Description { get; set; }
+    String Name { get; set; }
+    String OpsStepsId { get; set; }
+    String ProjectId { get; set; }
+    String SpaceId { get; set; }
+  }
+  class OpsRunPreviewResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.DeploymentPreviewBaseResource
+  {
+    .ctor()
+  }
+  class OpsRunResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.DeploymentBaseResource
+  {
+    .ctor()
+    String FrozenOpsStepsId { get; set; }
+    String OpsSnapshotId { get; set; }
+  }
+  class OpsRunTemplateResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.DeploymentTemplateBaseResource
+  {
+    .ctor()
+    Boolean IsOpsStepsModified { get; set; }
+  }
+  class OpsSnapshotResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ReleaseBaseResource
+  {
+    .ctor()
+    .ctor(String)
+    String FrozenOpsStepsId { get; set; }
+    String FrozenProjectVariableSetId { get; set; }
+    String Name { get; set; }
+  }
+  class OpsSnapshotTemplateResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String LastReleaseVersion { get; set; }
+    String NextVersionIncrement { get; set; }
+    String OpsStepsId { get; set; }
+    IList<ReleaseTemplatePackage> Packages { get; set; }
+    String VersioningPackageReferenceName { get; set; }
+    String VersioningPackageStepName { get; set; }
+  }
+  class OpsStepsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.DeploymentProcessBaseResource
+  {
+    .ctor()
+    String OpsProcessId { get; set; }
+  }
   OverwriteMode
   {
       FailIfExists = 0
@@ -3891,9 +3964,7 @@ Octopus.Client.Model
     .ctor(String)
     DateTimeOffset Assembled { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
-    String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectId { get; set; }
-    String ProjectVariableSetSnapshotId { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
   }
@@ -3934,6 +4005,8 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
+    String ProjectDeploymentProcessSnapshotId { get; set; }
+    String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
     String Version { get; set; }
   }
@@ -5632,82 +5705,6 @@ Octopus.Client.Model.Migrations
     String TaskId { get; set; }
   }
 }
-Octopus.Client.Model.OpsProcesses
-{
-  class OpsProcessResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String Description { get; set; }
-    String Name { get; set; }
-    String OpsStepsId { get; set; }
-    String ProjectId { get; set; }
-    String SpaceId { get; set; }
-  }
-  class OpsRunPreviewResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.DeploymentPreviewBaseResource
-  {
-    .ctor()
-  }
-  class OpsRunResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentBaseResource
-  {
-    .ctor()
-    String FrozenOpsStepsId { get; set; }
-    String OpsSnapshotId { get; set; }
-  }
-  class OpsRunTemplateResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.DeploymentTemplateBaseResource
-  {
-    .ctor()
-    Boolean IsOpsStepsModified { get; set; }
-  }
-  class OpsSnapshotResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.ReleaseBaseResource
-  {
-    .ctor()
-    .ctor(String)
-    String FrozenOpsStepsId { get; set; }
-    String FrozenProjectVariableSetId { get; set; }
-    String Name { get; set; }
-  }
-  class OpsSnapshotTemplateResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String LastReleaseVersion { get; set; }
-    String NextVersionIncrement { get; set; }
-    String OpsStepsId { get; set; }
-    IList<ReleaseTemplatePackage> Packages { get; set; }
-    String VersioningPackageReferenceName { get; set; }
-    String VersioningPackageStepName { get; set; }
-  }
-  class OpsStepsResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentProcessBaseResource
-  {
-    .ctor()
-    String OpsProcessId { get; set; }
-  }
-}
 Octopus.Client.Model.PackageMetadata
 {
   class OctopusPackageMetadata
@@ -6404,7 +6401,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<OpsRunResource>
   {
     Octopus.Client.Model.ResourceCollection<OpsRunResource> FindBy(String[], String[], Int32, Nullable<Int32>)
-    Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.OpsProcesses.OpsRunResource)
+    Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.OpsRunResource)
     void Paginate(String[], String[], Func<ResourceCollection<OpsRunResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<OpsRunResource>, Boolean>)
   }
@@ -6415,18 +6412,18 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<OpsSnapshotResource>
     Octopus.Client.Repositories.IDelete<OpsSnapshotResource>
   {
-    Octopus.Client.Model.OpsProcesses.OpsSnapshotResource Create(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
-    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource, Int32, Nullable<Int32>)
-    Octopus.Client.Model.ResourceCollection<OpsRunResource> GetOpsRuns(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource, Int32, Nullable<Int32>)
-    Octopus.Client.Model.OpsProcesses.OpsRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
-    Octopus.Client.Model.OpsProcesses.OpsRunTemplateResource GetTemplate(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
-    Octopus.Client.Model.OpsProcesses.OpsSnapshotResource SnapshotVariables(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
+    Octopus.Client.Model.OpsSnapshotResource Create(Octopus.Client.Model.OpsSnapshotResource)
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.OpsSnapshotResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<OpsRunResource> GetOpsRuns(Octopus.Client.Model.OpsSnapshotResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.OpsRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.OpsRunTemplateResource GetTemplate(Octopus.Client.Model.OpsSnapshotResource)
+    Octopus.Client.Model.OpsSnapshotResource SnapshotVariables(Octopus.Client.Model.OpsSnapshotResource)
   }
   interface IOpsStepsRepository
     Octopus.Client.Repositories.IGet<OpsStepsResource>
     Octopus.Client.Repositories.IModify<OpsStepsResource>
   {
-    Octopus.Client.Model.OpsProcesses.OpsSnapshotTemplateResource GetTemplate(Octopus.Client.Model.OpsProcesses.OpsStepsResource)
+    Octopus.Client.Model.OpsSnapshotTemplateResource GetTemplate(Octopus.Client.Model.OpsStepsResource)
   }
   interface IPackageMetadataRepository
   {
@@ -6477,7 +6474,7 @@ Octopus.Client.Repositories
     IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<OpsProcessResource> GetOpsProcesses(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
-    Octopus.Client.Model.OpsProcesses.OpsSnapshotResource GetOpsSnapshotByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.OpsSnapshotResource GetOpsSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<OpsSnapshotResource> GetOpsSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
@@ -7067,7 +7064,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<OpsRunResource>
   {
     Task<ResourceCollection<OpsRunResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
-    Task<TaskResource> GetTask(Octopus.Client.Model.OpsProcesses.OpsRunResource)
+    Task<TaskResource> GetTask(Octopus.Client.Model.OpsRunResource)
     Task Paginate(String[], String[], Func<ResourceCollection<OpsRunResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<OpsRunResource>, Boolean>)
   }
@@ -7078,18 +7075,18 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<OpsSnapshotResource>
     Octopus.Client.Repositories.Async.IDelete<OpsSnapshotResource>
   {
-    Task<OpsSnapshotResource> Create(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
-    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource, Int32, Nullable<Int32>)
-    Task<ResourceCollection<OpsRunResource>> GetOpsRuns(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource, Int32, Nullable<Int32>)
+    Task<OpsSnapshotResource> Create(Octopus.Client.Model.OpsSnapshotResource)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.OpsSnapshotResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<OpsRunResource>> GetOpsRuns(Octopus.Client.Model.OpsSnapshotResource, Int32, Nullable<Int32>)
     Task<OpsRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
-    Task<OpsRunTemplateResource> GetTemplate(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
-    Task<OpsSnapshotResource> SnapshotVariables(Octopus.Client.Model.OpsProcesses.OpsSnapshotResource)
+    Task<OpsRunTemplateResource> GetTemplate(Octopus.Client.Model.OpsSnapshotResource)
+    Task<OpsSnapshotResource> SnapshotVariables(Octopus.Client.Model.OpsSnapshotResource)
   }
   interface IOpsStepsRepository
     Octopus.Client.Repositories.Async.IGet<OpsStepsResource>
     Octopus.Client.Repositories.Async.IModify<OpsStepsResource>
   {
-    Task<OpsSnapshotTemplateResource> GetTemplate(Octopus.Client.Model.OpsProcesses.OpsStepsResource)
+    Task<OpsSnapshotTemplateResource> GetTemplate(Octopus.Client.Model.OpsStepsResource)
   }
   interface IPackageMetadataRepository
   {

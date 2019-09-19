@@ -35,6 +35,10 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string ReleaseNotes { get; set; }
+        
+        public string ProjectDeploymentProcessSnapshotId { get; set; }
+
+        public string ProjectVariableSetSnapshotId { get; set; }
 
         [Writeable]
         [NotReadable]
@@ -63,15 +67,12 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string ProjectId { get; set; }
 
-        public string ProjectVariableSetSnapshotId { get; set; }
-
         /// <summary>
         /// Snapshots of the project's included library variable sets. The
         /// snapshots are <see cref="VariableSetResource" />s, not <see cref="LibraryVariableSetResource" />s.
         /// </summary>
         public List<string> LibraryVariableSetSnapshotIds { get; set; }
 
-        public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
 
         public string SpaceId { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Octopus.Client.Model.OpsProcesses
+namespace Octopus.Client.Model
 {
     public class OpsSnapshotTemplateResource : Resource
     {

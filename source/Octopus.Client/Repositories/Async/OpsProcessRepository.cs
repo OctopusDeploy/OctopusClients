@@ -1,4 +1,4 @@
-﻿using Octopus.Client.Model.OpsProcesses;
+﻿using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {

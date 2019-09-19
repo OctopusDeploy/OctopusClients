@@ -1,5 +1,5 @@
 ﻿using System;
-using Octopus.Client.Model.OpsProcesses;
+using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors

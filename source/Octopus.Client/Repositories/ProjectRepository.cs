@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
-using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories
 {

@@ -1,5 +1,4 @@
 using Octopus.Client.Model;
-using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Repositories
 {

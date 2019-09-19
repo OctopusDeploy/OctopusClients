@@ -12,7 +12,6 @@ using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
 using Conventional;
 using Conventional.Conventions;
-using Octopus.Client.Model.OpsProcesses;
 
 namespace Octopus.Client.Tests.Conventions
 {
