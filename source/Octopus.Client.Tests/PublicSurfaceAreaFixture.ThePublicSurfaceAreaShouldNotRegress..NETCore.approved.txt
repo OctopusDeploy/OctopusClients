@@ -3481,15 +3481,10 @@ Octopus.Client.Model
   class OpsSnapshotTemplateResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ReleaseTemplateBaseResource
   {
     .ctor()
-    String LastReleaseVersion { get; set; }
-    String NextVersionIncrement { get; set; }
     String OpsStepsId { get; set; }
-    IList<ReleaseTemplatePackage> Packages { get; set; }
-    String VersioningPackageReferenceName { get; set; }
-    String VersioningPackageStepName { get; set; }
   }
   class OpsStepsResource
     Octopus.Client.Extensibility.IResource
@@ -4019,6 +4014,14 @@ Octopus.Client.Model
     .ctor(String, String)
     String Version { get; set; }
   }
+  class ReleaseTemplateBaseResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    IList<ReleaseTemplatePackage> Packages { get; set; }
+  }
   class ReleaseTemplatePackage
   {
     .ctor()
@@ -4037,13 +4040,12 @@ Octopus.Client.Model
   class ReleaseTemplateResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ReleaseTemplateBaseResource
   {
     .ctor()
     String DeploymentProcessId { get; set; }
     String LastReleaseVersion { get; set; }
     String NextVersionIncrement { get; set; }
-    IList<ReleaseTemplatePackage> Packages { get; set; }
     String VersioningPackageReferenceName { get; set; }
     String VersioningPackageStepName { get; set; }
   }
