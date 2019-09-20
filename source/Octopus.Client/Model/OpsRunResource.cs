@@ -14,8 +14,11 @@ namespace Octopus.Client.Model
 
         public string OpsSnapshotId { get; set; }
 
-        [Required(ErrorMessage = "Please specify the ops steps collection to run.")]
         [WriteableOnCreate]
         public string FrozenOpsStepsId { get; set; }
+
+        [Required(ErrorMessage = "Please specify the ops steps collection to run.")]
+        [WriteableOnCreate]
+        public string OpsStepsId { get; set; }
     }
 }

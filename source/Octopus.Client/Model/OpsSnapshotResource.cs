@@ -18,6 +18,8 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
 
+        public string OpsStepsId { get; set; }
+
         public string FrozenOpsStepsId { get; set; }
 
         public string FrozenProjectVariableSetId { get; set; }

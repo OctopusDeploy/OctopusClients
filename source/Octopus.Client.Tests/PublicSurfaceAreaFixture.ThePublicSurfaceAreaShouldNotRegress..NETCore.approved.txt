@@ -3457,6 +3457,7 @@ Octopus.Client.Model
     .ctor()
     String FrozenOpsStepsId { get; set; }
     String OpsSnapshotId { get; set; }
+    String OpsStepsId { get; set; }
   }
   class OpsRunTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -3477,6 +3478,7 @@ Octopus.Client.Model
     String FrozenOpsStepsId { get; set; }
     String FrozenProjectVariableSetId { get; set; }
     String Name { get; set; }
+    String OpsStepsId { get; set; }
   }
   class OpsSnapshotTemplateResource
     Octopus.Client.Extensibility.IResource
