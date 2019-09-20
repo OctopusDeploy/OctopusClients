@@ -10,6 +10,13 @@ namespace Octopus.Client.Model
 {
     public class ReleaseResource : ReleaseBaseResource
     {
+        [JsonConstructor]
+        public ReleaseResource()
+        {
+            SelectedPackages = new List<SelectedPackage>();
+            PackageMetadata = new List<ReleasePackageMetadataResource>();
+        }
+
         public ReleaseResource(string version, string projectId, string channelId) : base()
         {
             Version = version;
@@ -17,11 +24,9 @@ namespace Octopus.Client.Model
             ChannelId = channelId;
         }
 
-        [JsonConstructor]
-        public ReleaseResource()
+        public ReleaseResource(string version, string projectId)
+            : this(version, projectId, null)
         {
-            SelectedPackages = new List<SelectedPackage>();
-            PackageMetadata = new List<ReleasePackageMetadataResource>();
         }
 
         [Required(ErrorMessage = "Please provide a version number for this release.")]

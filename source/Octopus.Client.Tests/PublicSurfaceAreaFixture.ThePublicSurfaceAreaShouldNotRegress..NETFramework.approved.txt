@@ -4017,8 +4017,9 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.ReleaseBaseResource
   {
-    .ctor(String, String, String)
     .ctor()
+    .ctor(String, String, String)
+    .ctor(String, String)
     String ChannelId { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
