@@ -2,7 +2,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsProcessRepository : IFindByName<OpsProcessResource>, IGet<OpsProcessResource>, IModify<OpsProcessResource>
+    public interface IOpsProcessRepository : IFindByName<OpsProcessResource>, IGet<OpsProcessResource>, ICreate<OpsProcessResource>, IModify<OpsProcessResource>, IDelete<OpsProcessResource>
     {
     }
     

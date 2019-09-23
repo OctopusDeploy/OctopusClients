@@ -6422,7 +6422,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<OpsProcessResource>
     Octopus.Client.Repositories.IPaginate<OpsProcessResource>
     Octopus.Client.Repositories.IGet<OpsProcessResource>
+    Octopus.Client.Repositories.ICreate<OpsProcessResource>
     Octopus.Client.Repositories.IModify<OpsProcessResource>
+    Octopus.Client.Repositories.IDelete<OpsProcessResource>
   {
   }
   interface IOpsRunRepository
@@ -7085,7 +7087,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<OpsProcessResource>
     Octopus.Client.Repositories.Async.IPaginate<OpsProcessResource>
     Octopus.Client.Repositories.Async.IGet<OpsProcessResource>
+    Octopus.Client.Repositories.Async.ICreate<OpsProcessResource>
     Octopus.Client.Repositories.Async.IModify<OpsProcessResource>
+    Octopus.Client.Repositories.Async.IDelete<OpsProcessResource>
   {
   }
   interface IOpsRunRepository
