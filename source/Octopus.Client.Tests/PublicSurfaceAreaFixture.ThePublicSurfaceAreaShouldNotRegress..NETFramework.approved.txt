@@ -2371,6 +2371,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String DeploymentNotesTemplate { get; set; }
     String LastSnapshotId { get; set; }
     String ProjectId { get; set; }
     String SpaceId { get; set; }
@@ -2409,6 +2410,7 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
+    String DeploymentNotes { get; set; }
     String DeploymentProcessId { get; set; }
     String EnvironmentId { get; set; }
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }

@@ -63,6 +63,8 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public string Comments { get; set; }
+        
+        public string DeploymentNotes { get; set; }
 
         [WriteableOnCreate]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
@@ -21,6 +22,9 @@ namespace Octopus.Client.Model
         public int Version { get; set; }
 
         public string LastSnapshotId { get; set; }
+        
+        [Writeable]
+        public string DeploymentNotesTemplate { get; set; }
 
         public DeploymentStepResource FindStep(string name)
         {
