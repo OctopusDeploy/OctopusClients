@@ -12,13 +12,13 @@ namespace Octopus.Client.Model
             FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         }
 
+        [WriteableOnCreate]
         public string OpsSnapshotId { get; set; }
 
-        [WriteableOnCreate]
         public string FrozenOpsStepsId { get; set; }
-
-        [Required(ErrorMessage = "Please specify the ops steps collection to run.")]
+        
+        [Required(ErrorMessage = "Please specify the ops process to run.")]
         [WriteableOnCreate]
-        public string OpsStepsId { get; set; }
+        public string OpsProcessId { get; set; }
     }
 }
