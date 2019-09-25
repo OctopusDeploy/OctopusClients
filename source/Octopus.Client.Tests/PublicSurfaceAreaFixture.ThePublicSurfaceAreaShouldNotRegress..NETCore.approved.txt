@@ -2402,7 +2402,6 @@ Octopus.Client.Model
     Dictionary<String, String> FormValues { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
-    String Notes { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
