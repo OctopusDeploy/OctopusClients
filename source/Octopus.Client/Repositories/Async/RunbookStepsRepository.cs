@@ -3,21 +3,21 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IOpsStepsRepository : IGet<OpsStepsResource>, IModify<OpsStepsResource>
+    public interface IRunbookStepsRepository : IGet<RunbookStepsResource>, IModify<RunbookStepsResource>
     {
-        Task<OpsSnapshotTemplateResource> GetTemplate(OpsStepsResource opsSteps);
+        Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookStepsResource runbookSteps);
     }
 
-    class OpsStepsRepository : BasicRepository<OpsStepsResource>, IOpsStepsRepository
+    class RunbookStepsRepository : BasicRepository<RunbookStepsResource>, IRunbookStepsRepository
     {
-        public OpsStepsRepository(IOctopusAsyncRepository repository)
-            : base(repository, "OpsSteps")
+        public RunbookStepsRepository(IOctopusAsyncRepository repository)
+            : base(repository, "RunbookSteps")
         {
         }
 
-        public Task<OpsSnapshotTemplateResource> GetTemplate(OpsStepsResource opsSteps)
+        public Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookStepsResource runbookSteps)
         {
-            return Client.Get<OpsSnapshotTemplateResource>(opsSteps.Link("OpsSnapshotTemplate"));
+            return Client.Get<RunbookSnapshotTemplateResource>(runbookSteps.Link("RunbookSnapshotTemplate"));
         }
     }
 }

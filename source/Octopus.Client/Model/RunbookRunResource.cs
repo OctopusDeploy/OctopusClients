@@ -5,20 +5,20 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class OpsRunResource : DeploymentBaseResource
+    public class RunbookRunResource : DeploymentBaseResource
     {
-        public OpsRunResource()
+        public RunbookRunResource()
         {
             FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         }
 
         [WriteableOnCreate]
-        public string OpsSnapshotId { get; set; }
+        public string RunbookSnapshotId { get; set; }
 
-        public string FrozenOpsStepsId { get; set; }
+        public string FrozenRunbookStepsId { get; set; }
         
-        [Required(ErrorMessage = "Please specify the ops process to run.")]
+        [Required(ErrorMessage = "Please specify the Runbook to run.")]
         [WriteableOnCreate]
-        public string OpsProcessId { get; set; }
+        public string RunbookId { get; set; }
     }
 }

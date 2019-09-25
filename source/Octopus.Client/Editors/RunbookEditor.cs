@@ -4,30 +4,30 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class OpsProcessEditor : IResourceEditor<OpsProcessResource, OpsProcessEditor>
+    public class RunbookEditor : IResourceEditor<RunbookResource, RunbookEditor>
     {
-        private readonly IOpsProcessRepository repository;
+        private readonly IRunbookRepository repository;
 
-        public OpsProcessEditor(IOpsProcessRepository repository)
+        public RunbookEditor(IRunbookRepository repository)
         {
             this.repository = repository;
         }
 
-        public OpsProcessResource Instance { get; private set; }
+        public RunbookResource Instance { get; private set; }
 
-        public OpsProcessEditor Load(string id)
+        public RunbookEditor Load(string id)
         {
             Instance = repository.Get(id);
             return this;
         }
 
-        public OpsProcessEditor Customize(Action<OpsProcessResource> customize)
+        public RunbookEditor Customize(Action<RunbookResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public OpsProcessEditor Save()
+        public RunbookEditor Save()
         {
             Instance = repository.Modify(Instance);
             return this;

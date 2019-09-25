@@ -2,21 +2,21 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsStepsRepository : IGet<OpsStepsResource>, IModify<OpsStepsResource>
+    public interface IRunbookStepsRepository : IGet<RunbookStepsResource>, IModify<RunbookStepsResource>
     {
-        OpsSnapshotTemplateResource GetTemplate(OpsStepsResource opsSteps);
+        RunbookSnapshotTemplateResource GetTemplate(RunbookStepsResource runbookSteps);
     }
     
-    class OpsStepsRepository : BasicRepository<OpsStepsResource>, IOpsStepsRepository
+    class RunbookStepsRepository : BasicRepository<RunbookStepsResource>, IRunbookStepsRepository
     {
-        public OpsStepsRepository(IOctopusRepository repository)
-            : base(repository, "OpsSteps")
+        public RunbookStepsRepository(IOctopusRepository repository)
+            : base(repository, "RunbookSteps")
         {
         }
 
-        public OpsSnapshotTemplateResource GetTemplate(OpsStepsResource opsSteps)
+        public RunbookSnapshotTemplateResource GetTemplate(RunbookStepsResource runbookSteps)
         {
-            return Client.Get<OpsSnapshotTemplateResource>(opsSteps.Link("OpsSnapshotTemplate"));
+            return Client.Get<RunbookSnapshotTemplateResource>(runbookSteps.Link("RunbookSnapshotTemplate"));
         }
     }
 }

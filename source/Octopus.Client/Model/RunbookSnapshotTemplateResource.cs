@@ -2,9 +2,9 @@
 
 namespace Octopus.Client.Model
 {
-    public class OpsSnapshotTemplateResource : ReleaseTemplateBaseResource
+    public class RunbookSnapshotTemplateResource : ReleaseTemplateBaseResource
     {
-        public string OpsStepsId { get; set; }
+        public string RunbookStepsId { get; set; }
         public string NextNameIncrement { get; set; }
     }
 }

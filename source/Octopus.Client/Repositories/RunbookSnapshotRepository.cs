@@ -3,66 +3,66 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsSnapshotRepository : IGet<OpsSnapshotResource>, ICreate<OpsSnapshotResource>, IPaginate<OpsSnapshotResource>, IModify<OpsSnapshotResource>, IDelete<OpsSnapshotResource>
+    public interface IRunbookSnapshotRepository : IGet<RunbookSnapshotResource>, ICreate<RunbookSnapshotResource>, IPaginate<RunbookSnapshotResource>, IModify<RunbookSnapshotResource>, IDelete<RunbookSnapshotResource>
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="opsSnapshot"></param>
+        /// <param name="runbookSnapshot"></param>
         /// <param name="skip">Number of records to skip</param>
         /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
         /// <returns></returns>
-        ResourceCollection<OpsRunResource> GetOpsRuns(OpsSnapshotResource opsSnapshot, int skip = 0, int? take = null);
+        ResourceCollection<RunbookRunResource> GetRunbookRuns(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null);
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="opsSnapshot"></param>
+        /// <param name="runbookSnapshot"></param>
         /// <param name="skip">Number of records to skip</param>
         /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
         /// <returns></returns>
-        ResourceCollection<ArtifactResource> GetArtifacts(OpsSnapshotResource opsSnapshot, int skip = 0, int? take = null);
-        OpsRunTemplateResource GetTemplate(OpsSnapshotResource opsSnapshot);
-        OpsRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        OpsSnapshotResource SnapshotVariables(OpsSnapshotResource opsSnapshot);    
-        OpsSnapshotResource Create(OpsSnapshotResource opsSnapshot);
+        ResourceCollection<ArtifactResource> GetArtifacts(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null);
+        RunbookRunTemplateResource GetTemplate(RunbookSnapshotResource runbookSnapshot);
+        RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
+        RunbookSnapshotResource SnapshotVariables(RunbookSnapshotResource runbookSnapshot);    
+        RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot);
     }
     
-    class OpsSnapshotRepository : BasicRepository<OpsSnapshotResource>, IOpsSnapshotRepository
+    class RunbookSnapshotRepository : BasicRepository<RunbookSnapshotResource>, IRunbookSnapshotRepository
     {
-        public OpsSnapshotRepository(IOctopusRepository repository)
-            : base(repository, "OpsSnapshots")
+        public RunbookSnapshotRepository(IOctopusRepository repository)
+            : base(repository, "RunbookSnapshots")
         {
         }
 
-        public ResourceCollection<OpsRunResource> GetOpsRuns(OpsSnapshotResource opsSnapshot, int skip = 0, int? take = null)
+        public ResourceCollection<RunbookRunResource> GetRunbookRuns(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null)
         {
-            return Client.List<OpsRunResource>(opsSnapshot.Link("OpsRuns"), new { skip, take });
+            return Client.List<RunbookRunResource>(runbookSnapshot.Link("RunbookRuns"), new { skip, take });
         }
 
-        public ResourceCollection<ArtifactResource> GetArtifacts(OpsSnapshotResource opsSnapshot, int skip = 0, int? take = null)
+        public ResourceCollection<ArtifactResource> GetArtifacts(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null)
         {
-            return Client.List<ArtifactResource>(opsSnapshot.Link("Artifacts"), new { skip, take });
+            return Client.List<ArtifactResource>(runbookSnapshot.Link("Artifacts"), new { skip, take });
         }
 
-        public OpsRunTemplateResource GetTemplate(OpsSnapshotResource opsSnapshot)
+        public RunbookRunTemplateResource GetTemplate(RunbookSnapshotResource runbookSnapshot)
         {
-            return Client.Get<OpsRunTemplateResource>(opsSnapshot.Link("OpsRunTemplate"));
+            return Client.Get<RunbookRunTemplateResource>(runbookSnapshot.Link("RunbookRunTemplate"));
         }
 
-        public OpsRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget)
+        public RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget)
         {
-            return Client.Get<OpsRunPreviewResource>(promotionTarget.Link("OpsRunPreview"));
+            return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
-        public OpsSnapshotResource SnapshotVariables(OpsSnapshotResource opsSnapshot)
+        public RunbookSnapshotResource SnapshotVariables(RunbookSnapshotResource runbookSnapshot)
         {
-            Client.Post(opsSnapshot.Link("SnapshotVariables"));
-            return Get(opsSnapshot.Id);
+            Client.Post(runbookSnapshot.Link("SnapshotVariables"));
+            return Get(runbookSnapshot.Id);
         }
 
-        public OpsSnapshotResource Create(OpsSnapshotResource opsSnapshot)
+        public RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot)
         {
-            return Client.Create(Repository.Link(CollectionLinkName), opsSnapshot);
+            return Client.Create(Repository.Link(CollectionLinkName), runbookSnapshot);
         }
     }
 }

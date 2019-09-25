@@ -1,7 +1,7 @@
 ﻿namespace Octopus.Client.Model
 {
-    public class OpsRunTemplateResource : DeploymentTemplateBaseResource
+    public class RunbookRunTemplateResource : DeploymentTemplateBaseResource
     {
-        public bool IsOpsStepsModified { get; set; }
+        public bool IsRunbookStepsModified { get; set; }
     }
 }

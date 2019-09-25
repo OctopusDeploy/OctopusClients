@@ -3,9 +3,9 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsRunRepository : IGet<OpsRunResource>, ICreate<OpsRunResource>, IPaginate<OpsRunResource>, IDelete<OpsRunResource>
+    public interface IRunbookRunRepository : IGet<RunbookRunResource>, ICreate<RunbookRunResource>, IPaginate<RunbookRunResource>, IDelete<RunbookRunResource>
     {
-        TaskResource GetTask(OpsRunResource resource);
+        TaskResource GetTask(RunbookRunResource resource);
 
         /// <summary>
         /// 
@@ -15,37 +15,37 @@ namespace Octopus.Client.Repositories
         /// <param name="skip">Number of records to skip</param>
         /// <param name="take">Number of records to take (First supported in Server 3.14.159)</param>
         /// <returns></returns>
-        ResourceCollection<OpsRunResource> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null);
-        void Paginate(string[] projects, string[] environments, Func<ResourceCollection<OpsRunResource>, bool> getNextPage);
-        void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<OpsRunResource>, bool> getNextPage);
+        ResourceCollection<RunbookRunResource> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null);
+        void Paginate(string[] projects, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
+        void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
 
     }
 
-    class OpsRunRepository : BasicRepository<OpsRunResource>, IOpsRunRepository
+    class RunbookRunRepository : BasicRepository<RunbookRunResource>, IRunbookRunRepository
     {
-        public OpsRunRepository(IOctopusRepository repository)
-            : base(repository, "OpsRuns")
+        public RunbookRunRepository(IOctopusRepository repository)
+            : base(repository, "RunbookRuns")
         {
         }
 
-        public TaskResource GetTask(OpsRunResource resource)
+        public TaskResource GetTask(RunbookRunResource resource)
         {
             return Client.Get<TaskResource>(resource.Link("Task"));
         }
 
-        public ResourceCollection<OpsRunResource> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
+        public ResourceCollection<RunbookRunResource> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
         {
-            return Client.List<OpsRunResource>(Repository.Link("OpsRuns"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
+            return Client.List<RunbookRunResource>(Repository.Link("RunbookRuns"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
         }
 
-        public void Paginate(string[] projects, string[] environments, Func<ResourceCollection<OpsRunResource>, bool> getNextPage)
+        public void Paginate(string[] projects, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
         {
             Paginate(projects, environments, new string[0], getNextPage);
         }
 
-        public void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<OpsRunResource>, bool> getNextPage)
+        public void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
         {
-            Client.Paginate(Repository.Link("OpsRuns"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
+            Client.Paginate(Repository.Link("RunbookRuns"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
         }
     }
 }

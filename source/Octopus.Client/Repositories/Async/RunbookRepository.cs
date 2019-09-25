@@ -2,14 +2,14 @@
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IOpsProcessRepository : IFindByName<OpsProcessResource>, IGet<OpsProcessResource>, ICreate<OpsProcessResource>, IModify<OpsProcessResource>, IDelete<OpsProcessResource>
+    public interface IRunbookRepository : IFindByName<RunbookResource>, IGet<RunbookResource>, ICreate<RunbookResource>, IModify<RunbookResource>, IDelete<RunbookResource>
     {
     }
 
-    class OpsProcessRepository : BasicRepository<OpsProcessResource>, IOpsProcessRepository
+    class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
-        public OpsProcessRepository(IOctopusAsyncRepository repository)
-            : base(repository, "OpsProcesses")
+        public RunbookRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Runbooks")
         {
         }
     }

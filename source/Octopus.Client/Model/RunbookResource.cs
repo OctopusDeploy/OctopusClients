@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class OpsProcessResource: Resource, INamedResource, IHaveSpaceResource
+    public class RunbookResource: Resource, INamedResource, IHaveSpaceResource
     {
         [Writeable]
         [Trim]
@@ -14,7 +14,7 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
 
         [Writeable]
-        public string OpsStepsId { get; set; }
+        public string RunbookStepsId { get; set; }
 
         [Writeable]
         public string ProjectId { get; set; }

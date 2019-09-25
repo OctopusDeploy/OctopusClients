@@ -18,11 +18,11 @@ namespace Octopus.Client.Repositories
         void SetLogo(ProjectResource project, string fileName, Stream contents);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
-        ResourceCollection<OpsSnapshotResource> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
-        IReadOnlyList<OpsSnapshotResource> GetAllOpsSnapshots(ProjectResource project);
-        OpsSnapshotResource GetOpsSnapshotByName(ProjectResource project, string name);
-        ResourceCollection<OpsProcessResource> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
-        IReadOnlyList<OpsProcessResource> GetAllOpsProcesses(ProjectResource project);
+        ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(ProjectResource project);
+        RunbookSnapshotResource GetRunbookSnapshotByName(ProjectResource project, string name);
+        ResourceCollection<RunbookResource> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
@@ -87,29 +87,29 @@ namespace Octopus.Client.Repositories
             return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
         }
 
-        public ResourceCollection<OpsSnapshotResource> GetOpsSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        public ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
         {
-            return Client.List<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { skip, take, searchByName });
+            return Client.List<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { skip, take, searchByName });
         }
 
-        public IReadOnlyList<OpsSnapshotResource> GetAllOpsSnapshots(ProjectResource project)
+        public IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(ProjectResource project)
         {
-            return Client.ListAll<OpsSnapshotResource>(project.Link("OpsSnapshots"));
+            return Client.ListAll<RunbookSnapshotResource>(project.Link("RunbookSnapshots"));
         }
 
-        public OpsSnapshotResource GetOpsSnapshotByName(ProjectResource project, string name)
+        public RunbookSnapshotResource GetRunbookSnapshotByName(ProjectResource project, string name)
         {
-            return Client.Get<OpsSnapshotResource>(project.Link("OpsSnapshots"), new { name });
+            return Client.Get<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { name });
         }
 
-        public ResourceCollection<OpsProcessResource> GetOpsProcesses(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        public ResourceCollection<RunbookResource> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
         {
-            return Client.List<OpsProcessResource>(project.Link("OpsProcesses"), new { skip, take, searchByName });
+            return Client.List<RunbookResource>(project.Link("Runbooks"), new { skip, take, searchByName });
         }
 
-        public IReadOnlyList<OpsProcessResource> GetAllOpsProcesses(ProjectResource project)
+        public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
         {
-            return Client.ListAll<OpsProcessResource>(project.Link("OpsProcesses"));
+            return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
     }
 }

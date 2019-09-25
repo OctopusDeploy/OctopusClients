@@ -2,14 +2,14 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IOpsProcessRepository : IFindByName<OpsProcessResource>, IGet<OpsProcessResource>, ICreate<OpsProcessResource>, IModify<OpsProcessResource>, IDelete<OpsProcessResource>
+    public interface IRunbookRepository : IFindByName<RunbookResource>, IGet<RunbookResource>, ICreate<RunbookResource>, IModify<RunbookResource>, IDelete<RunbookResource>
     {
     }
     
-    class OpsProcessRepository : BasicRepository<OpsProcessResource>, IOpsProcessRepository
+    class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
-        public OpsProcessRepository(IOctopusRepository repository)
-            : base(repository, "OpsProcesses")
+        public RunbookRepository(IOctopusRepository repository)
+            : base(repository, "Runbooks")
         {
         }
     }

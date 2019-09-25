@@ -4,15 +4,15 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class OpsSnapshotResource : ReleaseBaseResource
+    public class RunbookSnapshotResource : ReleaseBaseResource
     {
         [JsonConstructor]
-        public OpsSnapshotResource()
+        public RunbookSnapshotResource()
         {
             SelectedPackages = new List<SelectedPackage>();
         }
 
-        public OpsSnapshotResource(string projectId) : this()
+        public RunbookSnapshotResource(string projectId) : this()
         {
             ProjectId = projectId;
         }
@@ -21,9 +21,9 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
 
         [WriteableOnCreate]
-        public string OpsProcessId { get; set; }
+        public string RunbookId { get; set; }
 
-        public string FrozenOpsStepsId { get; set; }
+        public string FrozenRunbookStepsId { get; set; }
 
         public string FrozenProjectVariableSetId { get; set; }
     }
