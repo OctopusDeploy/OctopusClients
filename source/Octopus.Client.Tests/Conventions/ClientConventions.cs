@@ -195,11 +195,11 @@ namespace Octopus.Client.Tests.Conventions
             var denied = new[]
             {
                 typeof (Sync.IChannelRepository),
-                typeof (Sync.IOpsStepsRepository),
+                typeof (Sync.IRunbookStepsRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
                 typeof (IChannelRepository),
-                typeof (IOpsStepsRepository),
+                typeof (IRunbookStepsRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
             };
@@ -281,7 +281,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (IOpsStepsRepository).GetTypeInfo(),
+                typeof (IRunbookStepsRepository).GetTypeInfo(),
                 typeof (IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (IInterruptionRepository).GetTypeInfo(),
                 typeof (IEventRepository).GetTypeInfo(),
@@ -310,7 +310,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (Sync.IOpsStepsRepository).GetTypeInfo(),
+                typeof (Sync.IRunbookStepsRepository).GetTypeInfo(),
                 typeof (Sync.IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (Sync.IInterruptionRepository).GetTypeInfo(),
                 typeof (Sync.IEventRepository).GetTypeInfo(),
@@ -340,7 +340,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new []
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
-                typeof(IOpsRunRepository).GetTypeInfo(),
+                typeof(IRunbookRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -367,7 +367,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
-                typeof(Sync.IOpsRunRepository).GetTypeInfo(),
+                typeof(Sync.IRunbookRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 
@@ -394,7 +394,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
-                typeof(IOpsRunRepository).GetTypeInfo(),
+                typeof(IRunbookRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -421,7 +421,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
-                typeof(Sync.IOpsRunRepository).GetTypeInfo(),
+                typeof(Sync.IRunbookRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 
@@ -481,7 +481,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllResourcePropertiesShouldHavePublicSetters()
         {
             ResourceTypes
-                .Except(new[] { typeof(LifecycleResource), typeof(OpsStepsResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
+                .Except(new[] { typeof(LifecycleResource), typeof(RunbookStepsResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
                 .MustConformTo(Convention.PropertiesMustHavePublicSetters)
                 .WithFailureAssertion(Assert.Fail);
         }

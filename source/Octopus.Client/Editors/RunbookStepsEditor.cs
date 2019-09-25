@@ -4,18 +4,18 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client.Editors
 {
-    public class OpsStepsEditor : IResourceEditor<OpsStepsResource, OpsStepsEditor>
+    public class RunbookStepsEditor : IResourceEditor<RunbookStepsResource, RunbookStepsEditor>
     {
-        private readonly IOpsStepsRepository repository;
+        private readonly IRunbookStepsRepository repository;
 
-        public OpsStepsEditor(IOpsStepsRepository repository)
+        public RunbookStepsEditor(IRunbookStepsRepository repository)
         {
             this.repository = repository;
         }
 
-        public OpsStepsResource Instance { get; private set; }
+        public RunbookStepsResource Instance { get; private set; }
 
-        public OpsStepsEditor Load(string id)
+        public RunbookStepsEditor Load(string id)
         {
             Instance = repository.Get(id);
             return this;
@@ -31,25 +31,25 @@ namespace Octopus.Client.Editors
             return Instance.AddOrUpdateStep(name);
         }
 
-        public OpsStepsEditor RemoveStep(string name)
+        public RunbookStepsEditor RemoveStep(string name)
         {
             Instance.RemoveStep(name);
             return this;
         }
 
-        public OpsStepsEditor ClearSteps()
+        public RunbookStepsEditor ClearSteps()
         {
             Instance.ClearSteps();
             return this;
         }
 
-        public OpsStepsEditor Customize(Action<OpsStepsResource> customize)
+        public RunbookStepsEditor Customize(Action<RunbookStepsResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public OpsStepsEditor Save()
+        public RunbookStepsEditor Save()
         {
             Instance = repository.Modify(Instance);
             return this;

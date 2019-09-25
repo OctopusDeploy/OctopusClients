@@ -5,30 +5,30 @@ using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client.Editors.Async
 {
-    public class OpsProcessEditor : IResourceEditor<OpsProcessResource, OpsProcessEditor>
+    public class RunbookEditor : IResourceEditor<RunbookResource, RunbookEditor>
     {
-        private readonly IOpsProcessRepository repository;
+        private readonly IRunbookRepository repository;
 
-        public OpsProcessEditor(IOpsProcessRepository repository)
+        public RunbookEditor(IRunbookRepository repository)
         {
             this.repository = repository;
         }
 
-        public OpsProcessResource Instance { get; private set; }
+        public RunbookResource Instance { get; private set; }
 
-        public async Task<OpsProcessEditor> Load(string id)
+        public async Task<RunbookEditor> Load(string id)
         {
             Instance = await repository.Get(id).ConfigureAwait(false);
             return this;
         }
 
-        public OpsProcessEditor Customize(Action<OpsProcessResource> customize)
+        public RunbookEditor Customize(Action<RunbookResource> customize)
         {
             customize?.Invoke(Instance);
             return this;
         }
 
-        public async Task<OpsProcessEditor> Save()
+        public async Task<RunbookEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
             return this;
