@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
@@ -16,9 +17,11 @@ namespace Octopus.Client.Model
             ProjectId = projectId;
         }
 
+        [Writeable]
         public string Name { get; set; }
 
-        public string OpsStepsId { get; set; }
+        [WriteableOnCreate]
+        public string OpsProcessId { get; set; }
 
         public string FrozenOpsStepsId { get; set; }
 
