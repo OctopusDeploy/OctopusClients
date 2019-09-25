@@ -106,6 +106,9 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public string ReleaseNotesTemplate { get; set; }
+        
+        [Writeable]
+        public string DeploymentChangesTemplate { get; set; }
 
         public ProjectResource Clear()
         {

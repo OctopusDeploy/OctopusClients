@@ -22,9 +22,6 @@ namespace Octopus.Client.Model
         public int Version { get; set; }
 
         public string LastSnapshotId { get; set; }
-        
-        [Writeable]
-        public string DeploymentNotesTemplate { get; set; }
 
         public DeploymentStepResource FindStep(string name)
         {

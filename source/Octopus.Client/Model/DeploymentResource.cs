@@ -64,8 +64,6 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string Comments { get; set; }
         
-        public string Notes { get; set; }
-
         [WriteableOnCreate]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public Dictionary<string, string> FormValues { get; set; }
@@ -84,5 +82,7 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
 
         public List<ReleaseChanges> Changes { get; set; }
+
+        public string ChangesMarkdown { get; set; }
     }
 }
