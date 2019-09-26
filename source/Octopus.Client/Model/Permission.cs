@@ -235,8 +235,8 @@ namespace Octopus.Client.Model
 
         [Description("Create/update custom package metadata")] PackageMetadataPush,
 
-        [Description("Edit runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookEdit,
+        [Description("View runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookView,
 
-        [Description("Delete runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookDelete,
+        [Description("Edit runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookEdit,
     }
 }

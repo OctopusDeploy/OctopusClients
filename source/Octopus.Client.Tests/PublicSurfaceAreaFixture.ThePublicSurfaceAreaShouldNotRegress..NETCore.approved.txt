@@ -3640,8 +3640,8 @@ Octopus.Client.Model
       SpaceDelete = 108
       SpaceCreate = 109
       PackageMetadataPush = 110
-      RunbookEdit = 111
-      RunbookDelete = 112
+      RunbookView = 111
+      RunbookEdit = 112
   }
   class PermissionDescription
   {
