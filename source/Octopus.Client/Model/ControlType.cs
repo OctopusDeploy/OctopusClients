@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
         public const string Sensitive = "Sensitive";
         public const string StepName = "StepName";
         public const string AzureAccount = "AzureAccount";
+        public const string AmazonWebServicesAccount = "AmazonWebServicesAccount";
         public const string Certificate = "Certificate";
 
         public static Dictionary<string, string> AsDisplaySettings(string controlType)

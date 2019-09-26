@@ -1565,6 +1565,8 @@ Octopus.Client.Model
     String Label { get; set; }
     String Name { get; set; }
     String GetControlType()
+    Boolean IsAmazonWebServicesAccount()
+    Boolean IsAzureAccount()
     Boolean IsCertificate()
     Boolean IsControlType(String)
     Boolean IsSensitive()
@@ -2218,6 +2220,7 @@ Octopus.Client.Model
   }
   abstract class ControlType
   {
+    static System.String AmazonWebServicesAccount
     static System.String AzureAccount
     static System.String Certificate
     static System.String Checkbox

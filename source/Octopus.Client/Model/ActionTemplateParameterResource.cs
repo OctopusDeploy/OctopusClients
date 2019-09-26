@@ -39,6 +39,16 @@ namespace Octopus.Client.Model
         {
             return IsControlType(ControlType.Sensitive);
         }
+        
+        public bool IsAmazonWebServicesAccount()
+        {
+            return IsControlType(ControlType.AmazonWebServicesAccount);
+        }
+        
+        public bool IsAzureAccount()
+        {
+            return IsControlType(ControlType.AzureAccount);
+        }
 
         public string GetControlType()
         {
