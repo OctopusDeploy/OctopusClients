@@ -2343,8 +2343,9 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    List<ReleaseChanges> Changes { get; set; }
+    String ChangesMarkdown { get; set; }
     Octopus.Client.Model.Forms.Form Form { get; set; }
-    List<ReleaseChanges> ReleaseNotes { get; set; }
     List<DeploymentTemplateStep> StepsToExecute { get; set; }
     Boolean UseGuidedFailureModeByDefault { get; set; }
   }
