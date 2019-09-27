@@ -2756,8 +2756,12 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String HelpSidebarSupportLink { get; set; }
     Boolean IsBuiltInWorkerEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
+    Boolean IsHelpSidebarEnabled { get; set; }
+    Boolean IsKubernetesEnabled { get; set; }
+    Boolean IsRunbooksEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
