@@ -813,8 +813,10 @@ Octopus.Client.Editors
     Octopus.Client.Editors.IResourceEditor<RunbookResource, RunbookEditor>
     Octopus.Client.Editors.IResourceBuilder
   {
-    .ctor(Octopus.Client.Repositories.IRunbookRepository)
+    .ctor(Octopus.Client.Repositories.IRunbookRepository, Octopus.Client.Repositories.IRunbookStepsRepository)
     Octopus.Client.Model.RunbookResource Instance { get; }
+    Octopus.Client.Editors.RunbookStepsEditor RunbookSteps { get; }
+    Octopus.Client.Editors.RunbookEditor CreateOrModify(String, String)
     Octopus.Client.Editors.RunbookEditor Customize(Action<RunbookResource>)
     Octopus.Client.Editors.RunbookEditor Load(String)
     Octopus.Client.Editors.RunbookEditor Save()
