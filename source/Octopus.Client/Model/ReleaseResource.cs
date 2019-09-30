@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Model.BuildInformation;
 using Octopus.Client.Model.IssueTrackers;
 using Octopus.Client.Model.PackageMetadata;
 
@@ -57,6 +58,6 @@ namespace Octopus.Client.Model
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool IgnoreChannelRules { get; set; }
 		
-        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
+        public List<ReleaseBuildInformationResource> BuildInformation { get; set; }
     }
 }

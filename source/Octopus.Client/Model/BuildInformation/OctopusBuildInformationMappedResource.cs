@@ -1,8 +1,8 @@
-using Octopus.Client.Model.IssueTrackers;
+﻿using Octopus.Client.Model.IssueTrackers;
 
-namespace Octopus.Client.Model.PackageMetadata
+namespace Octopus.Client.Model.BuildInformation
 {
-    public class ReleasePackageMetadataResource
+    public class OctopusBuildInformationMappedResource : Resource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }
@@ -10,6 +10,7 @@ namespace Octopus.Client.Model.PackageMetadata
         public string BuildEnvironment { get; set; }
         public string BuildNumber { get; set; }
         public string BuildUrl { get; set; }
+        public string Branch { get; set; }
         public string VcsType { get; set; }
         public string VcsRoot { get; set; }
         public string VcsCommitNumber { get; set; }
@@ -18,5 +19,7 @@ namespace Octopus.Client.Model.PackageMetadata
         public string IssueTrackerName { get; set; }
         public WorkItemLink[] WorkItems { get; set; }
         public CommitDetail[] Commits { get; set; }
+
+        public string IncompleteDataWarning { get; set; }
     }
 }

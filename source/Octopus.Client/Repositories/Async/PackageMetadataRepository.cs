@@ -42,6 +42,11 @@ namespace Octopus.Client.Repositories.Async
                 OctopusPackageMetadata = octopusMetadata
             };
 
+            if (await repository.HasLink("BuildInformation"))
+            {
+                Logger.Warn("Connected to an Octopus server that supports the BuildInformation API. It is recommended you move to using the BuildInformationRepository as the PackageMetadataRepository is deprecated.");
+            }
+
             if (!(await repository.HasLink("PackageMetadata")))
             {
                 throw new OperationNotSupportedByOctopusServerException(
