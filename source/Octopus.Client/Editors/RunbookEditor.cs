@@ -20,21 +20,24 @@ namespace Octopus.Client.Editors
 
         public RunbookStepsEditor RunbookSteps => runbookSteps.Value;
 
-        public RunbookEditor CreateOrModify(string projectId, string name)
+        public RunbookEditor CreateOrModify(ProjectResource project, string name, string description)
         {
-            var existing = repository.FindByName(name);
+            var existing = repository.FindByName(project, name);
 
             if (existing == null)
             {
                 Instance = repository.Create(new RunbookResource
                 {
+                    ProjectId = project.Id,
                     Name = name,
-                    ProjectId = projectId,
+                    Description = description
                 });
             }
             else
             {
                 existing.Name = name;
+                existing.Description = description;
+
                 Instance = repository.Modify(existing);
             }
 

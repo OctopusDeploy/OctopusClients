@@ -21,22 +21,25 @@ namespace Octopus.Client.Editors.Async
 
         public Task<RunbookStepsEditor> RunbookSteps => runbookSteps.Value;
 
-        public async Task<RunbookEditor> CreateOrModify(string projectId, string name)
+        public async Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
         {
-            var existing = await repository.FindByName(name);
+            var existing = await repository.FindByName(project, name).ConfigureAwait(false);
 
             if (existing == null)
             {
                 Instance = await repository.Create(new RunbookResource
                 {
+                    ProjectId = project.Id,
                     Name = name,
-                    ProjectId = projectId,
-                });
+                    Description = description
+                }).ConfigureAwait(false);
             }
             else
             {
                 existing.Name = name;
-                Instance = await repository.Modify(existing);
+                existing.Description = description;
+
+                Instance = await repository.Modify(existing).ConfigureAwait(false);
             }
 
             return this;
@@ -57,6 +60,11 @@ namespace Octopus.Client.Editors.Async
         public async Task<RunbookEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
+            if (runbookSteps.IsValueCreated)
+            {
+                var steps = await runbookSteps.Value.ConfigureAwait(false);
+                await steps.Save().ConfigureAwait(false);
+            }
             return this;
         }
     }

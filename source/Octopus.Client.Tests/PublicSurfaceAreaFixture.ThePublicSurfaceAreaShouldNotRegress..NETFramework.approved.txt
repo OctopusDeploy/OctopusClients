@@ -816,7 +816,7 @@ Octopus.Client.Editors
     .ctor(Octopus.Client.Repositories.IRunbookRepository, Octopus.Client.Repositories.IRunbookStepsRepository)
     Octopus.Client.Model.RunbookResource Instance { get; }
     Octopus.Client.Editors.RunbookStepsEditor RunbookSteps { get; }
-    Octopus.Client.Editors.RunbookEditor CreateOrModify(String, String)
+    Octopus.Client.Editors.RunbookEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Editors.RunbookEditor Customize(Action<RunbookResource>)
     Octopus.Client.Editors.RunbookEditor Load(String)
     Octopus.Client.Editors.RunbookEditor Save()
@@ -1161,7 +1161,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IRunbookRepository, Octopus.Client.Repositories.Async.IRunbookStepsRepository)
     Octopus.Client.Model.RunbookResource Instance { get; }
     Task<RunbookStepsEditor> RunbookSteps { get; }
-    Task<RunbookEditor> CreateOrModify(String, String)
+    Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Editors.Async.RunbookEditor Customize(Action<RunbookResource>)
     Task<RunbookEditor> Load(String)
     Task<RunbookEditor> Save()
@@ -6537,6 +6537,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<RunbookResource>
     Octopus.Client.Repositories.IDelete<RunbookResource>
   {
+    Octopus.Client.Editors.RunbookEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Model.RunbookResource FindByName(Octopus.Client.Model.ProjectResource, String)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7202,6 +7204,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<RunbookResource>
     Octopus.Client.Repositories.Async.IDelete<RunbookResource>
   {
+    Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Task<RunbookResource> FindByName(Octopus.Client.Model.ProjectResource, String)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>
