@@ -1158,8 +1158,10 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<RunbookResource, RunbookEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
   {
-    .ctor(Octopus.Client.Repositories.Async.IRunbookRepository)
+    .ctor(Octopus.Client.Repositories.Async.IRunbookRepository, Octopus.Client.Repositories.Async.IRunbookStepsRepository)
     Octopus.Client.Model.RunbookResource Instance { get; }
+    Task<RunbookStepsEditor> RunbookSteps { get; }
+    Task<RunbookEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.RunbookEditor Customize(Action<RunbookResource>)
     Task<RunbookEditor> Load(String)
     Task<RunbookEditor> Save()
