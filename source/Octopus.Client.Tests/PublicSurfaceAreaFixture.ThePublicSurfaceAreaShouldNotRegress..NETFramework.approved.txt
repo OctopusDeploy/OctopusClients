@@ -6546,10 +6546,10 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<RunbookRunResource>
     Octopus.Client.Repositories.IDelete<RunbookRunResource>
   {
-    Octopus.Client.Model.ResourceCollection<RunbookRunResource> FindBy(String[], String[], Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<RunbookRunResource> FindBy(String[], String[], String[], Int32, Nullable<Int32>)
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.RunbookRunResource)
-    void Paginate(String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
+    void Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
   }
   interface IRunbookSnapshotRepository
     Octopus.Client.Repositories.IGet<RunbookSnapshotResource>
@@ -7213,10 +7213,10 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<RunbookRunResource>
     Octopus.Client.Repositories.Async.IDelete<RunbookRunResource>
   {
-    Task<ResourceCollection<RunbookRunResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
+    Task<ResourceCollection<RunbookRunResource>> FindBy(String[], String[], String[], Int32, Nullable<Int32>)
     Task<TaskResource> GetTask(Octopus.Client.Model.RunbookRunResource)
-    Task Paginate(String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
+    Task Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
   }
   interface IRunbookSnapshotRepository
     Octopus.Client.Repositories.Async.IGet<RunbookSnapshotResource>
