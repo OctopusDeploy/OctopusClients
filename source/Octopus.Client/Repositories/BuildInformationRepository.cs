@@ -18,25 +18,25 @@ namespace Octopus.Client.Repositories
             this.repository = repository;
         }
 
-        public OctopusBuildInformationMappedResource Get(string id)
+        public OctopusPackageVersionBuildInformationMappedResource Get(string id)
         {
             var link = repository.Link("BuildInformation");
-            return repository.Client.Get<OctopusBuildInformationMappedResource>(link, new { id });
+            return repository.Client.Get<OctopusPackageVersionBuildInformationMappedResource>(link, new { id });
         }
 
-        public OctopusBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata)
+        public OctopusPackageVersionBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata)
         {
             return Push(packageId, version, octopusMetadata, OverwriteMode.FailIfExists);
         }
 
-        public OctopusBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata, OverwriteMode overwriteMode)
+        public OctopusPackageVersionBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata, OverwriteMode overwriteMode)
         {
             if (string.IsNullOrWhiteSpace(packageId))
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
                     
-            var resource = new OctopusBuildInformationVersionResource
+            var resource = new OctopusPackageVersionBuildInformationVersionResource
             {
                 PackageId = packageId,
                 Version = version,
@@ -52,36 +52,36 @@ namespace Octopus.Client.Repositories
 
             var link = repository.Link("BuildInformation");
             
-            return repository.Client.Post<OctopusBuildInformationVersionResource, OctopusBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
+            return repository.Client.Post<OctopusPackageVersionBuildInformationVersionResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
         }
 
-        public ResourceCollection<OctopusBuildInformationMappedResource> ListBuilds(string packageId, int skip = 0, int take = 30)
+        public ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(string packageId, int skip = 0, int take = 30)
         {
-            return repository.Client.List<OctopusBuildInformationMappedResource>(repository.Link("BuildInformation"), new { packageId = packageId, take, skip });
+            return repository.Client.List<OctopusPackageVersionBuildInformationMappedResource>(repository.Link("BuildInformation"), new { packageId = packageId, take, skip });
         }
 
-        public ResourceCollection<OctopusBuildInformationMappedResource> LatestBuilds(int skip = 0, int take = 30)
+        public ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(int skip = 0, int take = 30)
         {
-            return repository.Client.List<OctopusBuildInformationMappedResource>(repository.Link("BuildInformation"), new { latest = true, take, skip });
+            return repository.Client.List<OctopusPackageVersionBuildInformationMappedResource>(repository.Link("BuildInformation"), new { latest = true, take, skip });
         }
 
-        public void Delete(OctopusBuildInformationMappedResource buildInformation)
+        public void Delete(OctopusPackageVersionBuildInformationMappedResource buildInformation)
         {
             repository.Client.Delete(repository.Link("BuildInformation"), new { id = buildInformation.Id });
         }
 
-        public void DeleteBuilds(IReadOnlyList<OctopusBuildInformationMappedResource> builds)
+        public void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource> builds)
             => repository.Client.Delete(repository.Link("BuildInformationBulk"), new { ids = builds.Select(p => p.Id).ToArray() });
     }
 
     public interface IBuildInformationRepository
     {
-        OctopusBuildInformationMappedResource Get(string id);
-        OctopusBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata, OverwriteMode overwriteMode);
-        OctopusBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata);
-        ResourceCollection<OctopusBuildInformationMappedResource> ListBuilds(string packageId, int skip = 0, int take = 30);
-        ResourceCollection<OctopusBuildInformationMappedResource> LatestBuilds(int skip = 0, int take = 30);
-        void Delete(OctopusBuildInformationMappedResource buildInformation);
-        void DeleteBuilds(IReadOnlyList<OctopusBuildInformationMappedResource> builds);
+        OctopusPackageVersionBuildInformationMappedResource Get(string id);
+        OctopusPackageVersionBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata, OverwriteMode overwriteMode);
+        OctopusPackageVersionBuildInformationMappedResource Push(string packageId, string version, OctopusBuildInformation octopusMetadata);
+        ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(string packageId, int skip = 0, int take = 30);
+        ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(int skip = 0, int take = 30);
+        void Delete(OctopusPackageVersionBuildInformationMappedResource buildInformation);
+        void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource> builds);
     }
 }

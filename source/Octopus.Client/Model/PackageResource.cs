@@ -1,5 +1,5 @@
 ﻿using System;
-using Octopus.Client.Model.PackageMetadata;
+using Octopus.Client.Model.BuildInformation;
 
 namespace Octopus.Client.Model
 {
@@ -30,6 +30,6 @@ namespace Octopus.Client.Model
         public string ReleaseNotes { get; set; }
         public string FileExtension { get; set; }
 
-        public OctopusPackageMetadataMappedResource PackageMetadata { get; set; }
+        public OctopusPackageVersionBuildInformationMappedResource PackageVersionBuildInformation { get; set; }
     }
 }

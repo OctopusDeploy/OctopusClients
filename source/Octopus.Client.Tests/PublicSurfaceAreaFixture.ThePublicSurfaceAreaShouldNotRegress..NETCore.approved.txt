@@ -3419,7 +3419,7 @@ Octopus.Client.Model
     String NuGetFeedId { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource PackageMetadata { get; set; }
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource PackageVersionBuildInformation { get; set; }
     Nullable<DateTimeOffset> Published { get; set; }
     String ReleaseNotes { get; set; }
     String Summary { get; set; }
@@ -5139,7 +5139,7 @@ Octopus.Client.Model.BuildInformation
     String VcsRoot { get; set; }
     String VcsType { get; set; }
   }
-  class OctopusBuildInformationMappedResource
+  class OctopusPackageVersionBuildInformationMappedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -5160,7 +5160,7 @@ Octopus.Client.Model.BuildInformation
     String Version { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
-  class OctopusBuildInformationVersionResource
+  class OctopusPackageVersionBuildInformationVersionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -5971,13 +5971,13 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IBuildInformationRepository
   {
     .ctor(Octopus.Client.IOctopusRepository)
-    void Delete(Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource)
-    void DeleteBuilds(IReadOnlyList<OctopusBuildInformationMappedResource>)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Get(String)
-    Octopus.Client.Model.ResourceCollection<OctopusBuildInformationMappedResource> LatestBuilds(Int32, Int32)
-    Octopus.Client.Model.ResourceCollection<OctopusBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+    void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
   }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
@@ -6032,13 +6032,13 @@ Octopus.Client.Repositories
   }
   interface IBuildInformationRepository
   {
-    void Delete(Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource)
-    void DeleteBuilds(IReadOnlyList<OctopusBuildInformationMappedResource>)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Get(String)
-    Octopus.Client.Model.ResourceCollection<OctopusBuildInformationMappedResource> LatestBuilds(Int32, Int32)
-    Octopus.Client.Model.ResourceCollection<OctopusBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
-    Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
+    void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
   }
   interface IBuiltInPackageRepositoryRepository
   {
@@ -6660,13 +6660,13 @@ Octopus.Client.Repositories.Async
   }
   interface IBuildInformationRepository
   {
-    Task Delete(Octopus.Client.Model.BuildInformation.OctopusBuildInformationMappedResource)
-    Task DeleteBuilds(IReadOnlyList<OctopusBuildInformationMappedResource>)
-    Task<OctopusBuildInformationMappedResource> Get(String)
-    Task<ResourceCollection<OctopusBuildInformationMappedResource>> LatestBuilds(Int32, Int32)
-    Task<ResourceCollection<OctopusBuildInformationMappedResource>> ListBuilds(String, Int32, Int32)
-    Task<OctopusBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
-    Task<OctopusBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Boolean)
+    Task Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    Task DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Get(String)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> LatestBuilds(Int32, Int32)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(String, Int32, Int32)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Boolean)
   }
   interface IBuiltInPackageRepositoryRepository
   {

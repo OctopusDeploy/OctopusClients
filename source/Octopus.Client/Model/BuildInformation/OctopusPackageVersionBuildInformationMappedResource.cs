@@ -2,7 +2,7 @@
 
 namespace Octopus.Client.Model.BuildInformation
 {
-    public class OctopusBuildInformationMappedResource : Resource
+    public class OctopusPackageVersionBuildInformationMappedResource : Resource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }

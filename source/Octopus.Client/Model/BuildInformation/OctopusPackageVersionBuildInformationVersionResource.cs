@@ -1,7 +1,7 @@
 ﻿
 namespace Octopus.Client.Model.BuildInformation
 {
-    public class OctopusBuildInformationVersionResource : Resource
+    public class OctopusPackageVersionBuildInformationVersionResource : Resource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }
