@@ -1622,11 +1622,14 @@ Octopus.Client.Model
     String ActionName { get; set; }
     String ActionTemplateId { get; set; }
     String DeploymentProcessId { get; set; }
+    Octopus.Client.Model.ProcessType ProcessType { get; set; }
     String ProjectId { get; set; }
     String ProjectName { get; set; }
     String ProjectSlug { get; set; }
+    String RunbookId { get; set; }
     String StepId { get; set; }
     String StepName { get; set; }
+    String StepsId { get; set; }
     String Version { get; set; }
   }
   ActionUpdateOutcome
@@ -3727,6 +3730,11 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
+  }
+  ProcessType
+  {
+      Deployment = 0
+      Runbook = 1
   }
   class ProgressionResource
     Octopus.Client.Extensibility.IResource
