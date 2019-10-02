@@ -5,6 +5,9 @@ namespace Octopus.Client.Model
     public class ActionTemplateUsageResource : Resource
     {
         public string ActionTemplateId { get; set; }
+        public string StepsId { get; set; }
+        public string RunbookId { get; set; }
+        public ProcessType ProcessType { get; set; }
         public string DeploymentProcessId { get; set; }
         public string ActionId { get; set; }
         public string ActionName { get; set; }
