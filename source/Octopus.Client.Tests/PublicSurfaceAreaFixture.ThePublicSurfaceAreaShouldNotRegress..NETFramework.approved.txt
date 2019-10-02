@@ -5185,7 +5185,7 @@ Octopus.Client.Model.BuildInformation
     String Version { get; set; }
     Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
-  class OctopusPackageVersionBuildInformationVersionResource
+  class OctopusPackageVersionBuildInformationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource

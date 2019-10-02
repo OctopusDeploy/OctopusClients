@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
                     
-            var resource = new OctopusPackageVersionBuildInformationVersionResource
+            var resource = new OctopusPackageVersionBuildInformationResource
             {
                 PackageId = packageId,
                 Version = version,
@@ -52,7 +52,7 @@ namespace Octopus.Client.Repositories
 
             var link = repository.Link("BuildInformation");
             
-            return repository.Client.Post<OctopusPackageVersionBuildInformationVersionResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
+            return repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
         }
 
         public ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(string packageId, int skip = 0, int take = 30)

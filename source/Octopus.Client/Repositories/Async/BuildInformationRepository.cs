@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
 
-            var resource = new OctopusPackageVersionBuildInformationVersionResource
+            var resource = new OctopusPackageVersionBuildInformationResource
             {
                 PackageId = packageId,
                 Version = version,
@@ -53,7 +53,7 @@ namespace Octopus.Client.Repositories.Async
 
             var link = await repository.Link("BuildInformation");
 
-            return await repository.Client.Post<OctopusPackageVersionBuildInformationVersionResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
+            return await repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
         }
         
         public async Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(string packageId, int skip = 0, int take = 30)
