@@ -4205,6 +4205,7 @@ Octopus.Client.Model
     .ctor()
     String Description { get; set; }
     Boolean IsCompliantWithLicense { get; set; }
+    Nullable<Boolean> IsDynamicWorkerPoolOperatingNormally { get; set; }
     Boolean IsEntireClusterDrainingTasks { get; set; }
     Boolean IsEntireClusterReadOnly { get; set; }
     Boolean IsOperatingNormally { get; set; }

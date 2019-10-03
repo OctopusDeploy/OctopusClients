@@ -7,5 +7,10 @@ namespace Octopus.Client.Model
         public bool IsEntireClusterReadOnly { get; set; }
         public bool IsEntireClusterDrainingTasks { get; set; }
         public bool IsCompliantWithLicense { get; set; }
+
+        /// <summary>
+        /// Null value means this instance does not support dynamic workers
+        /// </summary>
+        public bool? IsDynamicWorkerPoolOperatingNormally { get; set; }
     }
 }
