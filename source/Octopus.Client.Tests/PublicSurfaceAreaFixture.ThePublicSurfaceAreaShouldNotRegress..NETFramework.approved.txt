@@ -1632,12 +1632,14 @@ Octopus.Client.Model
     String ActionId { get; set; }
     String ActionName { get; set; }
     String ActionTemplateId { get; set; }
+    String DeploymentProcessId { get; set; }
     String ProcessId { get; set; }
     Octopus.Client.Model.ProcessType ProcessType { get; set; }
     String ProjectId { get; set; }
     String ProjectName { get; set; }
     String ProjectSlug { get; set; }
     String RunbookId { get; set; }
+    String RunbookName { get; set; }
     String StepId { get; set; }
     String StepName { get; set; }
     String Version { get; set; }
