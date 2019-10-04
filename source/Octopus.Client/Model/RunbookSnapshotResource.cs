@@ -23,7 +23,7 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string RunbookId { get; set; }
 
-        public string FrozenRunbookStepsId { get; set; }
+        public string FrozenRunbookProcessId { get; set; }
 
         public string FrozenProjectVariableSetId { get; set; }
     }

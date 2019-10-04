@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
         {
-            return new RunbookEditor(this, new RunbookStepsRepository(Repository)).CreateOrModify(project, name, description);
+            return new RunbookEditor(this, new RunbookProcessRepository(Repository)).CreateOrModify(project, name, description);
         }
     }
 }

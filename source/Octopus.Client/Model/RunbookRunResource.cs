@@ -15,7 +15,7 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string RunbookSnapshotId { get; set; }
 
-        public string FrozenRunbookStepsId { get; set; }
+        public string FrozenRunbookProcessId { get; set; }
         
         [Required(ErrorMessage = "Please specify the Runbook to run.")]
         [WriteableOnCreate]

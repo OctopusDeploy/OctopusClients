@@ -14,7 +14,7 @@ namespace Octopus.Client.Model
         public string Description { get; set; }
 
         [Writeable]
-        public string RunbookStepsId { get; set; }
+        public string RunbookProcessId { get; set; }
 
         [Writeable]
         public string ProjectId { get; set; }

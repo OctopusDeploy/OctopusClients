@@ -1,6 +1,6 @@
 ﻿namespace Octopus.Client.Model
 {
-    public class RunbookStepsResource : DeploymentProcessBaseResource
+    public class RunbookProcessResource : DeploymentProcessBaseResource
     {
         public string RunbookId { get; set; }
     }

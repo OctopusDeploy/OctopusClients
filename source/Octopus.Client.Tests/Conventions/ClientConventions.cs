@@ -195,11 +195,11 @@ namespace Octopus.Client.Tests.Conventions
             var denied = new[]
             {
                 typeof (Sync.IChannelRepository),
-                typeof (Sync.IRunbookStepsRepository),
+                typeof (Sync.IRunbookProcessRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
                 typeof (IChannelRepository),
-                typeof (IRunbookStepsRepository),
+                typeof (IRunbookProcessRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
             };
@@ -281,7 +281,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (IRunbookStepsRepository).GetTypeInfo(),
+                typeof (IRunbookProcessRepository).GetTypeInfo(),
                 typeof (IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (IInterruptionRepository).GetTypeInfo(),
                 typeof (IEventRepository).GetTypeInfo(),
@@ -310,7 +310,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             var ignored = new[]
             {
-                typeof (Sync.IRunbookStepsRepository).GetTypeInfo(),
+                typeof (Sync.IRunbookProcessRepository).GetTypeInfo(),
                 typeof (Sync.IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (Sync.IInterruptionRepository).GetTypeInfo(),
                 typeof (Sync.IEventRepository).GetTypeInfo(),
@@ -481,7 +481,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllResourcePropertiesShouldHavePublicSetters()
         {
             ResourceTypes
-                .Except(new[] { typeof(LifecycleResource), typeof(RunbookStepsResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
+                .Except(new[] { typeof(LifecycleResource), typeof(RunbookProcessResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
                 .MustConformTo(Convention.PropertiesMustHavePublicSetters)
                 .WithFailureAssertion(Assert.Fail);
         }

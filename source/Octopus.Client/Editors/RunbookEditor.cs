@@ -7,18 +7,18 @@ namespace Octopus.Client.Editors
     public class RunbookEditor : IResourceEditor<RunbookResource, RunbookEditor>
     {
         private readonly IRunbookRepository repository;
-        private readonly Lazy<RunbookStepsEditor> runbookSteps;
+        private readonly Lazy<RunbookProcessEditor> runbookProcess;
 
         public RunbookEditor(IRunbookRepository repository,
-            IRunbookStepsRepository runbookStepsRepository)
+            IRunbookProcessRepository runbookProcessRepository)
         {
             this.repository = repository;
-            runbookSteps = new Lazy<RunbookStepsEditor>(() => new RunbookStepsEditor(runbookStepsRepository).Load(Instance.RunbookStepsId));
+            runbookProcess = new Lazy<RunbookProcessEditor>(() => new RunbookProcessEditor(runbookProcessRepository).Load(Instance.RunbookProcessId));
         }
 
         public RunbookResource Instance { get; private set; }
 
-        public RunbookStepsEditor RunbookSteps => runbookSteps.Value;
+        public RunbookProcessEditor RunbookProcess => runbookProcess.Value;
 
         public RunbookEditor CreateOrModify(ProjectResource project, string name, string description)
         {
@@ -59,9 +59,9 @@ namespace Octopus.Client.Editors
         public RunbookEditor Save()
         {
             Instance = repository.Modify(Instance);
-            if (runbookSteps.IsValueCreated)
+            if (runbookProcess.IsValueCreated)
             {
-                runbookSteps.Value.Save();
+                runbookProcess.Value.Save();
             }
             return this;
         }

@@ -8,18 +8,18 @@ namespace Octopus.Client.Editors.Async
     public class RunbookEditor : IResourceEditor<RunbookResource, RunbookEditor>
     {
         private readonly IRunbookRepository repository;
-        private readonly Lazy<Task<RunbookStepsEditor>> runbookSteps;
+        private readonly Lazy<Task<RunbookProcessEditor>> runbookProcess;
 
         public RunbookEditor(IRunbookRepository repository,
-            IRunbookStepsRepository runbookStepsRepository)
+            IRunbookProcessRepository runbookProcessRepository)
         {
             this.repository = repository;
-            runbookSteps = new Lazy<Task<RunbookStepsEditor>>(() => new RunbookStepsEditor(runbookStepsRepository).Load(Instance.RunbookStepsId));
+            runbookProcess = new Lazy<Task<RunbookProcessEditor>>(() => new RunbookProcessEditor(runbookProcessRepository).Load(Instance.RunbookProcessId));
         }
 
         public RunbookResource Instance { get; private set; }
 
-        public Task<RunbookStepsEditor> RunbookSteps => runbookSteps.Value;
+        public Task<RunbookProcessEditor> RunbookProcess => runbookProcess.Value;
 
         public async Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
         {
@@ -60,9 +60,9 @@ namespace Octopus.Client.Editors.Async
         public async Task<RunbookEditor> Save()
         {
             Instance = await repository.Modify(Instance).ConfigureAwait(false);
-            if (runbookSteps.IsValueCreated)
+            if (runbookProcess.IsValueCreated)
             {
-                var steps = await runbookSteps.Value.ConfigureAwait(false);
+                var steps = await runbookProcess.Value.ConfigureAwait(false);
                 await steps.Save().ConfigureAwait(false);
             }
             return this;

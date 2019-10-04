@@ -2,6 +2,6 @@
 {
     public class RunbookRunTemplateResource : DeploymentTemplateBaseResource
     {
-        public bool IsRunbookStepsModified { get; set; }
+        public bool IsRunbookProcessModified { get; set; }
     }
 }
