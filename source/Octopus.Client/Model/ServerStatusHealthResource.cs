@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
         public bool IsCompliantWithLicense { get; set; }
 
         /// <summary>
-        /// Null value means this instance does not support dynamic workers
+        /// Null value means this instance does not support dynamic workers or does not have any pools
         /// </summary>
         public bool? IsDynamicWorkerPoolOperatingNormally { get; set; }
     }
