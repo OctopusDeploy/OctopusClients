@@ -7,21 +7,27 @@ namespace Octopus.Client.Model
 {
     public class ActionsUpdateResource : IResource
     {
-        public ActionsUpdateResource()
-        {
-            ActionIdsByProcessId = new Dictionary<string, string[]>();
-            DefaultPropertyValues = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-            Overrides = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-            Links = new LinkCollection();
-        }
+        public string Id { get; set; }
+        [Required] 
+        public int Version { get; set; }
+        public IDictionary<string, PropertyValueResource> DefaultPropertyValues { get; set; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+        public IDictionary<string, PropertyValueResource> Overrides { get; set; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+        public LinkCollection Links { get; set; } = new LinkCollection();
+
+        [Obsolete] 
+        public IDictionary<string, string[]> ActionIdsByProcessId { get; set; } = new Dictionary<string, string[]>();
+
+        [Required]
+        public ActionsUpdateProcessResource[] ActionsToUpdate { get; set; } = { };
+    }
+
+    public class ActionsUpdateProcessResource : IResource
+    {
+        public ProcessType ProcessType { get; set; }
+        public string ProcessId { get; set; }
+        public string[] ActionIds { get; set; }
 
         public string Id { get; set; }
-        [Required]
-        public int Version { get; set; }
-        [Required]
-        public IDictionary<string, string[]> ActionIdsByProcessId { get; set; }
-        public IDictionary<string, PropertyValueResource> DefaultPropertyValues { get; set; }
-        public IDictionary<string, PropertyValueResource> Overrides { get; set; }
         public LinkCollection Links { get; set; }
     }
 }

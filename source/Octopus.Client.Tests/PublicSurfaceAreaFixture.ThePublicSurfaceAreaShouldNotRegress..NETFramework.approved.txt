@@ -1539,11 +1539,22 @@ Octopus.Client.Logging
 }
 Octopus.Client.Model
 {
+  class ActionsUpdateProcessResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    String[] ActionIds { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    String ProcessId { get; set; }
+    Octopus.Client.Model.ProcessType ProcessType { get; set; }
+  }
   class ActionsUpdateResource
     Octopus.Client.Extensibility.IResource
   {
     .ctor()
     IDictionary<String, String[]> ActionIdsByProcessId { get; set; }
+    Octopus.Client.Model.ActionsUpdateProcessResource[] ActionsToUpdate { get; set; }
     IDictionary<String, PropertyValueResource> DefaultPropertyValues { get; set; }
     String Id { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
