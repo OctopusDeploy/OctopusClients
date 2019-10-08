@@ -21,8 +21,8 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<OctopusPackageVersionBuildInformationMappedResource> Get(string id)
         {
-            var link = await repository.Link("BuildInformation");
-            return await repository.Client.Get<OctopusPackageVersionBuildInformationMappedResource>(link, new { id });
+            var link = await repository.Link("BuildInformation").ConfigureAwait(false);
+            return await repository.Client.Get<OctopusPackageVersionBuildInformationMappedResource>(link, new { id }).ConfigureAwait(false);
         }
 
         public Task<OctopusPackageVersionBuildInformationMappedResource> Push(string packageId, string version, OctopusBuildInformation octopusMetadata, bool replaceExisting)
@@ -44,16 +44,16 @@ namespace Octopus.Client.Repositories.Async
                 OctopusBuildInformation = octopusMetadata
             };
 
-            if (!(await repository.HasLink("BuildInformation")))
+            if (!(await repository.HasLink("BuildInformation").ConfigureAwait(false)))
             {
                 throw new OperationNotSupportedByOctopusServerException(
                     OctopusBuildInformation.BuildInformationRequiresOctopusVersionMessage,
                     OctopusBuildInformation.BuildInformationRequiresOctopusVersion);
             }
 
-            var link = await repository.Link("BuildInformation");
+            var link = await repository.Link("BuildInformation").ConfigureAwait(false);
 
-            return await repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
+            return await repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode }).ConfigureAwait(false);
         }
         
         public async Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(string packageId, int skip = 0, int take = 30)
@@ -72,7 +72,9 @@ namespace Octopus.Client.Repositories.Async
         }
 
         public async Task DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource> builds)
-            => await repository.Client.Delete(await repository.Link("BuildInformationBulk").ConfigureAwait(false), new { ids = builds.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
+        {
+            await repository.Client.Delete(await repository.Link("BuildInformationBulk").ConfigureAwait(false), new { ids = builds.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
+        }
     }
 
     public interface IBuildInformationRepository

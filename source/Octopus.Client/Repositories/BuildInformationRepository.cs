@@ -71,7 +71,9 @@ namespace Octopus.Client.Repositories
         }
 
         public void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource> builds)
-            => repository.Client.Delete(repository.Link("BuildInformationBulk"), new { ids = builds.Select(p => p.Id).ToArray() });
+        {
+            repository.Client.Delete(repository.Link("BuildInformationBulk"), new {ids = builds.Select(p => p.Id).ToArray()});
+        }
     }
 
     public interface IBuildInformationRepository
