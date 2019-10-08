@@ -9,9 +9,9 @@ namespace Octopus.Client.Editors
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
+        private readonly Lazy<ProjectChannelsEditor> channels;
         private readonly Lazy<DeploymentProcessEditor> deploymentProcess;
-        private readonly Lazy<ProjectTriggersEditor> triggers; 
+        private readonly Lazy<ProjectTriggersEditor> triggers;
         private readonly Lazy<VariableSetEditor> variables;
 
         public ProjectEditor(

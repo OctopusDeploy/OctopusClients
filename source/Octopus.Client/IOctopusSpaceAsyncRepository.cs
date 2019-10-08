@@ -33,6 +33,10 @@ namespace Octopus.Client
         IPackageMetadataRepository PackageMetadataRepository { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
+        IRunbookRepository Runbooks { get; }
+        IRunbookProcessRepository RunbookProcess { get; }
+        IRunbookSnapshotRepository RunbookSnapshots { get; }
+        IRunbookRunRepository RunbookRuns { get; }
         IProjectTriggerRepository ProjectTriggers { get; }
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }
