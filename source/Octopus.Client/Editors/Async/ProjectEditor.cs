@@ -9,9 +9,9 @@ namespace Octopus.Client.Editors.Async
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
+        private readonly Lazy<ProjectChannelsEditor> channels;
         private readonly Lazy<Task<DeploymentProcessEditor>> deploymentProcess;
-        private readonly Lazy<ProjectTriggersEditor> triggers; 
+        private readonly Lazy<ProjectTriggersEditor> triggers;
         private readonly Lazy<Task<VariableSetEditor>> variables;
 
         public ProjectEditor(

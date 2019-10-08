@@ -85,7 +85,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
-        
+
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
@@ -103,7 +103,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
-        
+
         [Writeable]
         public string ReleaseNotesTemplate { get; set; }
         

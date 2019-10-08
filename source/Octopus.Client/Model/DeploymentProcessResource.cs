@@ -7,16 +7,20 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentProcessResource : Resource, IHaveSpaceResource
+    public class DeploymentProcessResource : DeploymentProcessBaseResource
     {
-        public DeploymentProcessResource()
+    }
+
+    public class DeploymentProcessBaseResource : Resource, IHaveSpaceResource
+    {
+        public DeploymentProcessBaseResource()
         {
             Steps = new List<DeploymentStepResource>();
         }
 
         public string ProjectId { get; set; }
 
-        public IList<DeploymentStepResource> Steps { get; private set; }
+        public IList<DeploymentStepResource> Steps { get; }
 
         [Required]
         public int Version { get; set; }
@@ -53,13 +57,13 @@ namespace Octopus.Client.Model
             return step;
         }
 
-        public DeploymentProcessResource RemoveStep(string name)
+        public DeploymentProcessBaseResource RemoveStep(string name)
         {
             Steps.Remove(FindStep(name));
             return this;
         }
 
-        public DeploymentProcessResource ClearSteps()
+        public DeploymentProcessBaseResource ClearSteps()
         {
             Steps.Clear();
             return this;
