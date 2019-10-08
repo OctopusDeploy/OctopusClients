@@ -136,6 +136,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
     Octopus.Client.Repositories.Async.IChannelRepository Channels { get; }
@@ -178,6 +179,7 @@ Octopus.Client
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.ICertificateRepository Certificates { get; }
@@ -299,6 +301,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
@@ -429,6 +432,7 @@ Octopus.Client
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.ICertificateRepository Certificates { get; }
@@ -3532,7 +3536,7 @@ Octopus.Client.Model
     String NuGetFeedId { get; set; }
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource PackageMetadata { get; set; }
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource PackageVersionBuildInformation { get; set; }
     Nullable<DateTimeOffset> Published { get; set; }
     String ReleaseNotes { get; set; }
     String Summary { get; set; }
@@ -3963,9 +3967,9 @@ Octopus.Client.Model
     .ctor()
     .ctor(String, String, String)
     .ctor(String, String)
+    List<ReleaseBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
     Boolean IgnoreChannelRules { get; set; }
-    List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
@@ -5333,6 +5337,70 @@ Octopus.Client.Model.Accounts.Usages
     String TargetName { get; set; }
   }
 }
+Octopus.Client.Model.BuildInformation
+{
+  class OctopusBuildInformation
+  {
+    .ctor()
+    String Branch { get; set; }
+    String BuildEnvironment { get; set; }
+    String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.Commit[] Commits { get; set; }
+    String VcsCommitNumber { get; set; }
+    String VcsRoot { get; set; }
+    String VcsType { get; set; }
+  }
+  class OctopusPackageVersionBuildInformationMappedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Branch { get; set; }
+    String BuildEnvironment { get; set; }
+    String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Nullable<DateTimeOffset> Created { get; set; }
+    String IncompleteDataWarning { get; set; }
+    String IssueTrackerName { get; set; }
+    String PackageId { get; set; }
+    String VcsCommitNumber { get; set; }
+    String VcsCommitUrl { get; set; }
+    String VcsRoot { get; set; }
+    String VcsType { get; set; }
+    String Version { get; set; }
+    Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
+  }
+  class OctopusPackageVersionBuildInformationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.BuildInformation.OctopusBuildInformation OctopusBuildInformation { get; set; }
+    String PackageId { get; set; }
+    String Version { get; set; }
+  }
+  class ReleaseBuildInformationResource
+  {
+    .ctor()
+    String Branch { get; set; }
+    String BuildEnvironment { get; set; }
+    String BuildNumber { get; set; }
+    String BuildUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    String IssueTrackerName { get; set; }
+    String PackageId { get; set; }
+    String VcsCommitNumber { get; set; }
+    String VcsCommitUrl { get; set; }
+    String VcsRoot { get; set; }
+    String VcsType { get; set; }
+    String Version { get; set; }
+    Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
+  }
+}
 Octopus.Client.Model.DeploymentProcess
 {
   class InlineScriptAction
@@ -5768,6 +5836,7 @@ Octopus.Client.Model.PackageMetadata
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
     Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Nullable<DateTimeOffset> Created { get; set; }
     String IncompleteDataWarning { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
@@ -5787,22 +5856,6 @@ Octopus.Client.Model.PackageMetadata
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata OctopusPackageMetadata { get; set; }
     String PackageId { get; set; }
     String Version { get; set; }
-  }
-  class ReleasePackageMetadataResource
-  {
-    .ctor()
-    String BuildEnvironment { get; set; }
-    String BuildNumber { get; set; }
-    String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
-    String IssueTrackerName { get; set; }
-    String PackageId { get; set; }
-    String VcsCommitNumber { get; set; }
-    String VcsCommitUrl { get; set; }
-    String VcsRoot { get; set; }
-    String VcsType { get; set; }
-    String Version { get; set; }
-    Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
 }
 Octopus.Client.Model.Triggers
@@ -6128,6 +6181,18 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
+  class BuildInformationRepository
+    Octopus.Client.Repositories.IBuildInformationRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository)
+    void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
@@ -6178,6 +6243,16 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.BackupConfigurationResource GetConfiguration()
     Octopus.Client.Model.BackupConfigurationResource ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
+  }
+  interface IBuildInformationRepository
+  {
+    void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+    Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
   }
   interface IBuiltInPackageRepositoryRepository
   {
@@ -6843,6 +6918,16 @@ Octopus.Client.Repositories.Async
   {
     Task<BackupConfigurationResource> GetConfiguration()
     Task<BackupConfigurationResource> ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
+  }
+  interface IBuildInformationRepository
+  {
+    Task Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
+    Task DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Get(String)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> LatestBuilds(Int32, Int32)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(String, Int32, Int32)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
+    Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Boolean)
   }
   interface IBuiltInPackageRepositoryRepository
   {

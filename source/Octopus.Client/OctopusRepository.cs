@@ -55,6 +55,7 @@ namespace Octopus.Client
             Artifacts = new ArtifactRepository(this);
             Backups = new BackupRepository(this);
             BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(this);
+            BuildInformationRepository = new BuildInformationRepository(this);
             CertificateConfiguration = new CertificateConfigurationRepository(this);
             Certificates = new CertificateRepository(this);
             Channels = new ChannelRepository(this);
@@ -120,6 +121,7 @@ namespace Octopus.Client
         public IArtifactRepository Artifacts { get; }
         public IBackupRepository Backups { get; }
         public IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
+        public IBuildInformationRepository BuildInformationRepository { get; }
         public ICertificateConfigurationRepository CertificateConfiguration { get; }
         public ICertificateRepository Certificates { get; }
         public IChannelRepository Channels { get; }

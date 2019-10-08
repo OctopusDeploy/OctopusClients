@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
-using Octopus.Client.Model.PackageMetadata;
+using Octopus.Client.Model.BuildInformation;
 
 namespace Octopus.Client.Model
 {
@@ -14,7 +14,7 @@ namespace Octopus.Client.Model
         public ReleaseResource()
         {
             SelectedPackages = new List<SelectedPackage>();
-            PackageMetadata = new List<ReleasePackageMetadataResource>();
+            BuildInformation = new List<ReleaseBuildInformationResource>();
         }
 
         public ReleaseResource(string version, string projectId, string channelId) : base()
@@ -51,7 +51,7 @@ namespace Octopus.Client.Model
         public bool IgnoreChannelRules { get; set; }
 
         [WriteableOnCreate]
-        public List<ReleasePackageMetadataResource> PackageMetadata { get; set; }
+        public List<ReleaseBuildInformationResource> BuildInformation { get; set; }
     }
 
     public class ReleaseBaseResource : Resource, IHaveSpaceResource
