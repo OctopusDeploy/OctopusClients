@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Model.IssueTrackers;
+﻿using System;
+using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model.BuildInformation
 {
@@ -21,5 +22,7 @@ namespace Octopus.Client.Model.BuildInformation
         public CommitDetail[] Commits { get; set; }
 
         public string IncompleteDataWarning { get; set; }
+        
+        public DateTimeOffset? Created { get; set; }
     }
 }
