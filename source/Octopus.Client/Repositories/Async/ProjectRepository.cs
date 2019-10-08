@@ -6,7 +6,6 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
@@ -20,6 +19,11 @@ namespace Octopus.Client.Repositories.Async
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
+        Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        Task<IReadOnlyList<RunbookSnapshotResource>> GetAllRunbookSnapshots(ProjectResource project);
+        Task<RunbookSnapshotResource> GetRunbookSnapshotByName(ProjectResource project, string name);
+        Task<ResourceCollection<RunbookResource>> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
@@ -34,7 +38,7 @@ namespace Octopus.Client.Repositories.Async
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });
         }
 
-        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project) 
+        public Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project)
         {
             return Client.ListAll<ReleaseResource>(project.Link("Releases"));
         }
@@ -63,7 +67,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.List<ProjectTriggerResource>(project.Link("Triggers"));
         }
-        
+
         public Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project)
         {
             return Client.ListAll<ProjectTriggerResource>(project.Link("Triggers"));
@@ -82,6 +86,31 @@ namespace Octopus.Client.Repositories.Async
         public Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
             return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+        }
+
+        public Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { skip, take, searchByName });
+        }
+
+        public Task<IReadOnlyList<RunbookSnapshotResource>> GetAllRunbookSnapshots(ProjectResource project)
+        {
+            return Client.ListAll<RunbookSnapshotResource>(project.Link("RunbookSnapshots"));
+        }
+
+        public Task<RunbookSnapshotResource> GetRunbookSnapshotByName(ProjectResource project, string name)
+        {
+            return Client.Get<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { name });
+        }
+
+        public Task<ResourceCollection<RunbookResource>> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<RunbookResource>(project.Link("Runbooks"), new { skip, take, searchByName });
+        }
+
+        public Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project)
+        {
+            return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
     }
 }

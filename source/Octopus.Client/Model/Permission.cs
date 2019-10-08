@@ -233,6 +233,10 @@ namespace Octopus.Client.Model
         
         [Description("Create spaces")] SpaceCreate,
 
-        [Description("Create/update custom package metadata")] PackageMetadataPush
+        [Description("Create/update custom package metadata")] PackageMetadataPush,
+
+        [Description("View runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookView,
+
+        [Description("Edit runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookEdit,
     }
 }

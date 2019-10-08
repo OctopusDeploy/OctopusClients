@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model.BuildInformation;
-using Octopus.Client.Model.IssueTrackers;
-using Octopus.Client.Model.PackageMetadata;
 
 namespace Octopus.Client.Model
 {
-    public class ReleaseResource : ReleaseSummaryResource, IHaveSpaceResource
+    public class ReleaseResource : ReleaseBaseResource
     {
         [JsonConstructor]
         public ReleaseResource()
         {
             SelectedPackages = new List<SelectedPackage>();
+            BuildInformation = new List<ReleaseBuildInformationResource>();
         }
 
-        public ReleaseResource(string version, string projectId, string channelId) : this()
+        public ReleaseResource(string version, string projectId, string channelId) : base()
         {
             Version = version;
             ProjectId = projectId;
@@ -29,18 +29,48 @@ namespace Octopus.Client.Model
         {
         }
 
-        public DateTimeOffset Assembled { get; set; }
-
+        [Required(ErrorMessage = "Please provide a version number for this release.")]
+        [StringLength(349, ErrorMessage = "The version number is too long. Please enter a shorter version number.")]
+        [Trim]
         [Writeable]
-        public string ReleaseNotes { get; set; }
-
-        [WriteableOnCreate]
-        public string ProjectId { get; set; }
+        public string Version { get; set; }
 
         [Writeable]
         public string ChannelId { get; set; }
 
+        [Writeable]
+        public string ReleaseNotes { get; set; }
+        
+        public string ProjectDeploymentProcessSnapshotId { get; set; }
+
         public string ProjectVariableSetSnapshotId { get; set; }
+
+        [Writeable]
+        [NotReadable]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool IgnoreChannelRules { get; set; }
+
+        [WriteableOnCreate]
+        public List<ReleaseBuildInformationResource> BuildInformation { get; set; }
+    }
+
+    public class ReleaseBaseResource : Resource, IHaveSpaceResource
+    {
+        [JsonConstructor]
+        public ReleaseBaseResource()
+        {
+            SelectedPackages = new List<SelectedPackage>();
+        }
+
+        public ReleaseBaseResource(string projectId) : this()
+        {
+            ProjectId = projectId;
+        }
+
+        public DateTimeOffset Assembled { get; set; }
+
+        [WriteableOnCreate]
+        public string ProjectId { get; set; }
 
         /// <summary>
         /// Snapshots of the project's included library variable sets. The
@@ -48,16 +78,8 @@ namespace Octopus.Client.Model
         /// </summary>
         public List<string> LibraryVariableSetSnapshotIds { get; set; }
 
-        public string ProjectDeploymentProcessSnapshotId { get; set; }
         public List<SelectedPackage> SelectedPackages { get; set; }
-		
-        public string SpaceId { get; set; }
 
-        [Writeable]
-        [NotReadable]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool IgnoreChannelRules { get; set; }
-		
-        public List<ReleaseBuildInformationResource> BuildInformation { get; set; }
+        public string SpaceId { get; set; }
     }
 }
