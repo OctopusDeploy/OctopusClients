@@ -37,21 +37,20 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
 
-            var resource = new OctopusPackageVersionBuildInformationResource
-            {
-                PackageId = packageId,
-                Version = version,
-                OctopusBuildInformation = octopusMetadata
-            };
-
             if (!(await repository.HasLink("BuildInformation").ConfigureAwait(false)))
             {
                 throw new OperationNotSupportedByOctopusServerException(
                     OctopusBuildInformation.BuildInformationRequiresOctopusVersionMessage,
                     OctopusBuildInformation.BuildInformationRequiresOctopusVersion);
             }
-
             var link = await repository.Link("BuildInformation").ConfigureAwait(false);
+
+            var resource = new OctopusPackageVersionBuildInformationResource
+            {
+                PackageId = packageId,
+                Version = version,
+                OctopusBuildInformation = octopusMetadata
+            };
 
             return await repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode }).ConfigureAwait(false);
         }

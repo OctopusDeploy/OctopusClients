@@ -35,6 +35,14 @@ namespace Octopus.Client.Repositories
                 throw new ArgumentException("A package Id must be supplied", nameof(packageId));
             if (string.IsNullOrWhiteSpace(version))
                 throw new ArgumentException("A version must be supplied", nameof(version));
+
+            if (!repository.HasLink("BuildInformation"))
+            {
+                throw new OperationNotSupportedByOctopusServerException(
+                    OctopusBuildInformation.BuildInformationRequiresOctopusVersionMessage,
+                    OctopusBuildInformation.BuildInformationRequiresOctopusVersion);
+            }
+            var link = repository.Link("BuildInformation");
                     
             var resource = new OctopusPackageVersionBuildInformationResource
             {
@@ -43,15 +51,6 @@ namespace Octopus.Client.Repositories
                 OctopusBuildInformation = octopusMetadata,
             };
 
-            if (!repository.HasLink("BuildInformation"))
-            {
-                throw new OperationNotSupportedByOctopusServerException(
-                    OctopusBuildInformation.BuildInformationRequiresOctopusVersionMessage,
-                    OctopusBuildInformation.BuildInformationRequiresOctopusVersion);
-            }
-
-            var link = repository.Link("BuildInformation");
-            
             return repository.Client.Post<OctopusPackageVersionBuildInformationResource, OctopusPackageVersionBuildInformationMappedResource>(link, resource, new { overwriteMode = overwriteMode });
         }
 
