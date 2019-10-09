@@ -233,7 +233,9 @@ namespace Octopus.Client.Model
         
         [Description("Create spaces")] SpaceCreate,
 
-        [Description("Create/update custom package metadata")] PackageMetadataPush,
+        [Description("Create/update build information")] BuildInformationPush,
+        
+        [Description("Replace or delete build information")] BuildInformationAdminister,
 
         [Description("View runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookView,
 
