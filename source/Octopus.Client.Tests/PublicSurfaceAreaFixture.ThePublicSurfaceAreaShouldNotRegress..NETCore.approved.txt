@@ -3669,9 +3669,10 @@ Octopus.Client.Model
       SpaceView = 107
       SpaceDelete = 108
       SpaceCreate = 109
-      PackageMetadataPush = 110
-      RunbookView = 111
-      RunbookEdit = 112
+      BuildInformationPush = 110
+      BuildInformationAdminister = 111
+      RunbookView = 112
+      RunbookEdit = 113
   }
   class PermissionDescription
   {
