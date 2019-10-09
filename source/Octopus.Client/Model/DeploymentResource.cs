@@ -76,7 +76,7 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public string Comments { get; set; }
-        
+
         [WriteableOnCreate]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public Dictionary<string, string> FormValues { get; set; }
