@@ -6,7 +6,8 @@ namespace Octopus.Client.Model
 {
     public class DeploymentPreviewResource : DeploymentPreviewBaseResource
     {
-        public List<ReleaseChanges> ReleaseNotes { get; set; }
+        public List<ReleaseChanges> Changes { get; set; }
+        public string ChangesMarkdown { get; set; }
     }
 
     public class DeploymentPreviewBaseResource : Resource

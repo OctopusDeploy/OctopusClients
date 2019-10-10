@@ -2466,7 +2466,8 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentPreviewBaseResource
   {
     .ctor()
-    List<ReleaseChanges> ReleaseNotes { get; set; }
+    List<ReleaseChanges> Changes { get; set; }
+    String ChangesMarkdown { get; set; }
   }
   class DeploymentProcessBaseResource
     Octopus.Client.Extensibility.IResource
@@ -2518,6 +2519,7 @@ Octopus.Client.Model
   {
     .ctor()
     List<ReleaseChanges> Changes { get; set; }
+    String ChangesMarkdown { get; set; }
     String ChannelId { get; set; }
     String DeploymentProcessId { get; set; }
     String ReleaseId { get; set; }
@@ -3799,6 +3801,7 @@ Octopus.Client.Model
     String ClonedFromProjectId { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
+    String DeploymentChangesTemplate { get; set; }
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }

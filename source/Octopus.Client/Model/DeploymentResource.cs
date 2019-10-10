@@ -21,6 +21,8 @@ namespace Octopus.Client.Model
         public string DeploymentProcessId { get; set; }
 
         public List<ReleaseChanges> Changes { get; set; }
+
+        public string ChangesMarkdown { get; set; }
     }
 
     public class DeploymentBaseResource : Resource, IHaveSpaceResource
