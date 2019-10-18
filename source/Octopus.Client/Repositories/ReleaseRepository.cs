@@ -26,6 +26,7 @@ namespace Octopus.Client.Repositories
         ReleaseResource SnapshotVariables(ReleaseResource release);    
         ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
+        ResourceCollection<ReleaseLogResource> GetLog(ReleaseResource release, int skip = 0, int? take = null);
     }
     
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
@@ -69,6 +70,11 @@ namespace Octopus.Client.Repositories
         public LifecycleProgressionResource GetProgression(ReleaseResource release)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"]);
+        }
+
+        public ResourceCollection<ReleaseLogResource> GetLog(ReleaseResource release, int skip = 0, int? take = null)
+        {
+            return Client.List<ReleaseLogResource>(release.Link("Log"), new {skip, take});
         }
     }
 }

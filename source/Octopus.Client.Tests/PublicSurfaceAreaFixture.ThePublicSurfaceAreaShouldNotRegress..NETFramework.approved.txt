@@ -3126,6 +3126,21 @@ Octopus.Client.Model
     Octopus.Client.Model.LifecycleResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.LifecycleResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
+  LogCategory
+  {
+      Trace = 1
+      Verbose = 100
+      Info = 200
+      Planned = 201
+      Highlight = 210
+      Abandoned = 220
+      Wait = 225
+      Progress = 230
+      Finished = 240
+      Warning = 300
+      Error = 400
+      Fatal = 500
+  }
   class LoginCommand
   {
     .ctor()
@@ -3970,6 +3985,27 @@ Octopus.Client.Model
     .ctor()
     String ChannelId { get; set; }
     Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
+  }
+  class ReleaseLogEntry
+  {
+    .ctor()
+    Octopus.Client.Model.LogCategory Category { get; set; }
+    String MessageText { get; set; }
+    DateTimeOffset Occurred { get; set; }
+    String Source { get; set; }
+  }
+  class ReleaseLogResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    List<ReleaseLogEntry> Entries { get; set; }
+    DateTimeOffset Occurred { get; set; }
+    String ReleaseId { get; set; }
+    Guid RequestId { get; set; }
+    String SpaceId { get; set; }
   }
   class ReleaseProgressionResource
   {
@@ -6617,6 +6653,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ReleaseResource Create(Octopus.Client.Model.ReleaseResource, Boolean)
     Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<ReleaseLogResource> GetLog(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
@@ -7294,6 +7331,7 @@ Octopus.Client.Repositories.Async
     Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean)
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<ReleaseLogResource>> GetLog(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)

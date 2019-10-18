@@ -24,9 +24,10 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<ArtifactResource>> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null);
         Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release);
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
-        Task<ReleaseResource> SnapshotVariables(ReleaseResource release);    
+        Task<ReleaseResource> SnapshotVariables(ReleaseResource release);
         Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules = false);
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release);
+        Task<ResourceCollection<ReleaseLogResource>> GetLog(ReleaseResource release, int skip = 0, int? take = null);
     }
 
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
@@ -66,10 +67,15 @@ namespace Octopus.Client.Repositories.Async
         {
             return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), release, new { ignoreChannelRules }).ConfigureAwait(false);
         }
-        
+
         public Task<LifecycleProgressionResource> GetProgression(ReleaseResource release)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"]);
+        }
+
+        public Task<ResourceCollection<ReleaseLogResource>> GetLog(ReleaseResource release, int skip = 0, int? take = null)
+        {
+            return Client.List<ReleaseLogResource>(release.Link("Log"), new {skip, take});
         }
     }
 }
