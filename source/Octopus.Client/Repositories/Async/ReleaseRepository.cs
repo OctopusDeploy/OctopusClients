@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -75,6 +76,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ResourceCollection<ReleaseLogResource>> GetLog(ReleaseResource release, int skip = 0, int? take = null)
         {
+            if (!release.HasLink("Log"))
+            {
+                throw new OperationNotSupportedByOctopusServerException(
+                    ReleaseLogResource.RequiresOctopusVersionMessage, ReleaseLogResource.RequiresOctopusVersion);
+            }
+
             return Client.List<ReleaseLogResource>(release.Link("Log"), new {skip, take});
         }
     }
