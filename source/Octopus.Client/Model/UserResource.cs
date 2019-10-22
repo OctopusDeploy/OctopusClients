@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
@@ -54,9 +53,9 @@ namespace Octopus.Client.Model
         public IdentityResource[] Identities { get; set; }
         
         /// <summary>
-        /// Gets or sets an array of project references when the user navigates to a project's page
+        /// Gets a list of project references when the user navigates to a project's page
         /// </summary>
         [JsonProperty(Order = 2)]
-        public List<ProjectReference> RecentlyViewedProjects { get; set; }
+        public IReadOnlyList<ProjectReference> RecentlyViewedProjects { get; }
     }
 }
