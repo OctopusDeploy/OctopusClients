@@ -3787,12 +3787,8 @@ Octopus.Client.Model
   }
   class ProjectReference
   {
-    .ctor(String, String, String, String, String, List<DateTime>)
-    String ProjectGroupId { get; }
-    String ProjectGroupName { get; }
+    .ctor(String, List<DateTime>)
     String ProjectId { get; }
-    String ProjectName { get; }
-    String ProjectSlug { get; }
     Int32 Score { get; set; }
     List<DateTime> TimeStamps { get; }
   }
