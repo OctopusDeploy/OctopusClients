@@ -3785,6 +3785,17 @@ Octopus.Client.Model
     String RetentionPolicyId { get; set; }
     String SpaceId { get; set; }
   }
+  class ProjectReference
+  {
+    .ctor(String, String, String, String, String, List<DateTime>)
+    String ProjectGroupId { get; }
+    String ProjectGroupName { get; }
+    String ProjectId { get; }
+    String ProjectName { get; }
+    String ProjectSlug { get; }
+    Int32 Score { get; set; }
+    List<DateTime> TimeStamps { get; }
+  }
   class ProjectResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4896,6 +4907,7 @@ Octopus.Client.Model
     Boolean IsRequestor { get; set; }
     Boolean IsService { get; set; }
     String Password { get; set; }
+    List<ProjectReference> RecentlyViewedProjects { get; set; }
     String Username { get; set; }
   }
   class UserRoleResource

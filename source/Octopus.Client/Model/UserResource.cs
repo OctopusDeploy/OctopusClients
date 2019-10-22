@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
@@ -51,5 +52,11 @@ namespace Octopus.Client.Model
     
         [Writeable]
         public IdentityResource[] Identities { get; set; }
+        
+        /// <summary>
+        /// Gets or sets an array of project references when the user navigates to a project's page
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        public List<ProjectReference> RecentlyViewedProjects { get; set; }
     }
 }
