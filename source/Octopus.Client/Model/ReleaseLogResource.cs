@@ -6,7 +6,7 @@ namespace Octopus.Client.Model
 {
     public class ReleaseLogResource : Resource, IHaveSpaceResource
     {
-        internal static string RequiresOctopusVersion = "2019.10.1";
+        internal static string RequiresOctopusVersion = "2019.11.0";
         internal static string RequiresOctopusVersionMessage = $"Fetching release logs requires Octopus version {RequiresOctopusVersion} or newer";
 
         public string SpaceId { get; set; }
