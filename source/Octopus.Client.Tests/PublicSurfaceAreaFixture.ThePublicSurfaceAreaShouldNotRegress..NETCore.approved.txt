@@ -3787,6 +3787,7 @@ Octopus.Client.Model
   }
   abstract class ProjectReference
   {
+    Int32 AccessCount { get; }
     String ProjectId { get; }
     Int32 Score { get; }
     IReadOnlyList<DateTime> TimeStamps { get; }
