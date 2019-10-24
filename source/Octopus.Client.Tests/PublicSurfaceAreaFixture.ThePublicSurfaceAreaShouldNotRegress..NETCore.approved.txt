@@ -3785,13 +3785,6 @@ Octopus.Client.Model
     String RetentionPolicyId { get; set; }
     String SpaceId { get; set; }
   }
-  abstract class ProjectReference
-  {
-    Int32 AccessCount { get; }
-    String ProjectId { get; }
-    Int32 Score { get; }
-    IReadOnlyList<DateTime> TimeStamps { get; }
-  }
   class ProjectResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4903,7 +4896,7 @@ Octopus.Client.Model
     Boolean IsRequestor { get; set; }
     Boolean IsService { get; set; }
     String Password { get; set; }
-    IReadOnlyList<ProjectReference> RecentlyViewedProjects { get; }
+    IReadOnlyDictionary<String, ReferenceCollection> RecentlyViewedProjectIds { get; }
     String Username { get; set; }
   }
   class UserRoleResource
