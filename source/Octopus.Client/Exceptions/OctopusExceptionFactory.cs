@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -95,6 +96,11 @@ namespace Octopus.Client.Exceptions
                     if (!string.IsNullOrWhiteSpace(errors.FullException))
                     {
                         fullDetails += Environment.NewLine + "Server exception: " + Environment.NewLine + errors.FullException + Environment.NewLine + "-----------------------" + Environment.NewLine;
+                    }
+
+                    foreach (var cause in (errors.Errors ?? new string[0]).Where(c => !string.IsNullOrWhiteSpace(c)))
+                    {
+                        fullDetails += Environment.NewLine + "- " + cause;
                     }
                 }
             }
