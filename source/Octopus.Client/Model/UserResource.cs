@@ -56,6 +56,6 @@ namespace Octopus.Client.Model
         /// Gets a list of project references when the user navigates to a project's page
         /// </summary>
         [JsonProperty(Order = 2)]
-        public IReadOnlyDictionary<string, ReferenceCollection> RecentlyViewedProjectIds { get; }
+        public Dictionary<string, ReferenceCollection> RecentlyViewedProjectIds { get; set; }
     }
 }
