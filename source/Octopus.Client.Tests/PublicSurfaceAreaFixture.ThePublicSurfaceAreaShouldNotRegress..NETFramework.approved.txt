@@ -4920,7 +4920,7 @@ Octopus.Client.Model
     Boolean IsRequestor { get; set; }
     Boolean IsService { get; set; }
     String Password { get; set; }
-    IReadOnlyDictionary<String, ReferenceCollection> RecentlyViewedProjectIds { get; }
+    Dictionary<String, ReferenceCollection> RecentlyViewedProjectIds { get; set; }
     String Username { get; set; }
   }
   class UserRoleResource
