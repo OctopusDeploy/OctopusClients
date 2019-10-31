@@ -12,6 +12,8 @@ namespace Octopus.Client.Model
             Roles = new List<ReferenceDataItem>();
             Channels = new List<ReferenceDataItem>();
             TenantTags = new List<ReferenceDataItem>();
+            RunbookProcesses = new List<ReferenceDataItem>();
+            DeploymentProcesses = new List<ReferenceDataItem>();
         }
 
         public List<ReferenceDataItem> Environments { get; set; }
@@ -19,7 +21,8 @@ namespace Octopus.Client.Model
         public List<ReferenceDataItem> Actions { get; set; }
         public List<ReferenceDataItem> Roles { get; set; }
         public List<ReferenceDataItem> Channels { get; set; }
-
         public List<ReferenceDataItem> TenantTags { get; set; }
+        public List<ReferenceDataItem> DeploymentProcesses { get; set; }
+        public List<ReferenceDataItem> RunbookProcesses { get; set; }
     }
 }
