@@ -18,12 +18,6 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
         
         [Writeable]
         public DateTime? EndTime { get; set; }
-
-        [Writeable]
-        public DateTime? RunAfter { get; set; }
-        
-        [Writeable]
-        public DateTime? RunUntil { get; set; }
         
         [Writeable]
         public ScheduledTriggerFilterRunType RunType { get; set; }
