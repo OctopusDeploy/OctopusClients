@@ -1,4 +1,7 @@
-﻿namespace Octopus.Client.Model.Triggers
+﻿using System;
+using Octopus.Client.Extensibility.Attributes;
+
+namespace Octopus.Client.Model.Triggers
 {
     public enum TriggerFilterType
     {
@@ -12,5 +15,11 @@
     public abstract class TriggerFilterResource : Resource
     {
         public abstract TriggerFilterType FilterType { get; }
+        
+        [Writeable]
+        public DateTime? RunAfter { get; set; }
+        
+        [Writeable]
+        public DateTime? RunUntil { get; set; }
     }
 }
