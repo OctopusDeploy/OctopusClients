@@ -4237,6 +4237,8 @@ Octopus.Client.Model
       Channel = 8
       TenantTag = 9
       Tenant = 10
+      DeploymentProcessOwner = 11
+      RunbookProcessOwner = 12
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
@@ -4943,9 +4945,11 @@ Octopus.Client.Model
     .ctor()
     List<ReferenceDataItem> Actions { get; set; }
     List<ReferenceDataItem> Channels { get; set; }
+    List<ReferenceDataItem> DeploymentProcesses { get; set; }
     List<ReferenceDataItem> Environments { get; set; }
     List<ReferenceDataItem> Machines { get; set; }
     List<ReferenceDataItem> Roles { get; set; }
+    List<ReferenceDataItem> RunbookProcesses { get; set; }
     List<ReferenceDataItem> TenantTags { get; set; }
   }
   VariableSetContentType
