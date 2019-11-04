@@ -15,7 +15,6 @@ namespace Octopus.Client.Model
         Channel,
         TenantTag,
         Tenant, 
-        DeploymentProcessOwner,
-        RunbookProcessOwner
+        ProcessOwner,
     }
 }
