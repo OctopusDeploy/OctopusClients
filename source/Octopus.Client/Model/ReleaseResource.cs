@@ -17,7 +17,8 @@ namespace Octopus.Client.Model
             BuildInformation = new List<ReleasePackageVersionBuildInformationResource>();
         }
 
-        public ReleaseResource(string version, string projectId, string channelId) : base()
+        public ReleaseResource(string version, string projectId, string channelId)
+            : this()
         {
             Version = version;
             ProjectId = projectId;
