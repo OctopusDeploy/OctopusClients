@@ -24,6 +24,11 @@ namespace Octopus.Client.Model
             ChannelId = channelId;
         }
 
+        public ReleaseResource(string version, string projectId)
+            : this(version, projectId, null)
+        {
+        }
+
         [Required(ErrorMessage = "Please provide a version number for this release.")]
         [StringLength(349, ErrorMessage = "The version number is too long. Please enter a shorter version number.")]
         [Trim]
