@@ -3995,6 +3995,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
+    .ctor(String, String)
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
