@@ -6,13 +6,9 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentProcessResource : DeploymentProcessBaseResource
+    public class DeploymentProcessResource : Resource, IProcessResource, IHaveSpaceResource
     {
-    }
-
-    public class DeploymentProcessBaseResource : Resource, IHaveSpaceResource
-    {
-        public DeploymentProcessBaseResource()
+        public DeploymentProcessResource()
         {
             Steps = new List<DeploymentStepResource>();
         }
@@ -56,13 +52,13 @@ namespace Octopus.Client.Model
             return step;
         }
 
-        public DeploymentProcessBaseResource RemoveStep(string name)
+        public IProcessResource RemoveStep(string name)
         {
             Steps.Remove(FindStep(name));
             return this;
         }
 
-        public DeploymentProcessBaseResource ClearSteps()
+        public IProcessResource ClearSteps()
         {
             Steps.Clear();
             return this;
