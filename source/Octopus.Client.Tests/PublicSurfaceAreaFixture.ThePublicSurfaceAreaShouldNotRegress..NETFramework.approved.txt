@@ -160,7 +160,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.Async.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.Async.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.Async.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -204,7 +204,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -335,7 +335,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.Async.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.Async.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.Async.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -464,7 +464,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.IRunbookSnapshotRepository RunbookSnapshots { get; }
