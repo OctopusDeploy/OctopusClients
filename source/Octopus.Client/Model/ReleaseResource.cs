@@ -30,6 +30,11 @@ namespace Octopus.Client.Model
         {
         }
 
+        public ReleaseResource(string projectId)
+            : this(null, projectId, null)
+        {
+        }
+
         [Required(ErrorMessage = "Please provide a version number for this release.")]
         [StringLength(349, ErrorMessage = "The version number is too long. Please enter a shorter version number.")]
         [Trim]
