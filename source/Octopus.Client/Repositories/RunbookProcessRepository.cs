@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
     class RunbookProcessRepository : BasicRepository<RunbookProcessResource>, IRunbookProcessRepository
     {
         public RunbookProcessRepository(IOctopusRepository repository)
-            : base(repository, "RunbookProcess")
+            : base(repository, "RunbookProcesses")
         {
         }
 

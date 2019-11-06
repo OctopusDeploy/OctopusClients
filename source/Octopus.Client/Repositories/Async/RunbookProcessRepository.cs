@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
     class RunbookProcessRepository : BasicRepository<RunbookProcessResource>, IRunbookProcessRepository
     {
         public RunbookProcessRepository(IOctopusAsyncRepository repository)
-            : base(repository, "RunbookProcess")
+            : base(repository, "RunbookProcesses")
         {
         }
 

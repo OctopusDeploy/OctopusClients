@@ -7,11 +7,12 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentResource : DeploymentBaseResource
+    public class DeploymentResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public DeploymentResource()
         {
             Changes = new List<ReleaseChanges>();
+            FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         }
 
         [Required(ErrorMessage = "Please specify the release to deploy.")]
@@ -19,18 +20,8 @@ namespace Octopus.Client.Model
         public string ReleaseId { get; set; }
         public string ChannelId { get; set; }
         public string DeploymentProcessId { get; set; }
-
         public List<ReleaseChanges> Changes { get; set; }
-
         public string ChangesMarkdown { get; set; }
-    }
-
-    public class DeploymentBaseResource : Resource, IHaveSpaceResource
-    {
-        public DeploymentBaseResource()
-        {
-            FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        }
 
         [Required(ErrorMessage = "Please provide a target environment to deploy to.")]
         [WriteableOnCreate]
@@ -93,7 +84,15 @@ namespace Octopus.Client.Model
         public DateTimeOffset Created { get; set; }
 
         public string SpaceId { get; set; }
-        
+
+        public RetentionPeriod TentacleRetentionPeriod { get; set; }
+
         public string DeployedBy { get; set; }
+
+        public string DeployedById { get; set; }
+
+        public bool FailureEncountered { get; set; }
+
+        public ReferenceCollection DeployedToMachineIds { get; set; }
     }
 }

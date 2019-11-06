@@ -2,7 +2,7 @@ using Octopus.Client.Model.IssueTrackers;
 
 namespace Octopus.Client.Model.BuildInformation
 {
-    public class ReleaseBuildInformationResource
+    public class ReleasePackageVersionBuildInformationResource
     {
         public string PackageId { get; set; }
         public string Version { get; set; }
