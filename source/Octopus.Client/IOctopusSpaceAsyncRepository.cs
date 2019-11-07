@@ -35,7 +35,7 @@ namespace Octopus.Client
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IRunbookRepository Runbooks { get; }
-        IRunbookProcessRepository RunbookProcess { get; }
+        IRunbookProcessRepository RunbookProcesses { get; }
         IRunbookSnapshotRepository RunbookSnapshots { get; }
         IRunbookRunRepository RunbookRuns { get; }
         IProjectTriggerRepository ProjectTriggers { get; }

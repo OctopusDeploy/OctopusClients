@@ -8,16 +8,17 @@ using Octopus.Client.Model.BuildInformation;
 
 namespace Octopus.Client.Model
 {
-    public class ReleaseResource : ReleaseBaseResource
+    public class ReleaseResource : Resource, ISnapshotResource, IHaveSpaceResource
     {
         [JsonConstructor]
         public ReleaseResource()
         {
             SelectedPackages = new List<SelectedPackage>();
-            BuildInformation = new List<ReleaseBuildInformationResource>();
+            BuildInformation = new List<ReleasePackageVersionBuildInformationResource>();
         }
 
-        public ReleaseResource(string version, string projectId, string channelId) : base()
+        public ReleaseResource(string version, string projectId, string channelId)
+            : this()
         {
             Version = version;
             ProjectId = projectId;
@@ -26,6 +27,11 @@ namespace Octopus.Client.Model
 
         public ReleaseResource(string version, string projectId)
             : this(version, projectId, null)
+        {
+        }
+
+        public ReleaseResource(string projectId)
+            : this(null, projectId, null)
         {
         }
 
@@ -40,7 +46,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string ReleaseNotes { get; set; }
-        
+
         public string ProjectDeploymentProcessSnapshotId { get; set; }
 
         public string ProjectVariableSetSnapshotId { get; set; }
@@ -51,21 +57,7 @@ namespace Octopus.Client.Model
         public bool IgnoreChannelRules { get; set; }
 
         [WriteableOnCreate]
-        public List<ReleaseBuildInformationResource> BuildInformation { get; set; }
-    }
-
-    public class ReleaseBaseResource : Resource, IHaveSpaceResource
-    {
-        [JsonConstructor]
-        public ReleaseBaseResource()
-        {
-            SelectedPackages = new List<SelectedPackage>();
-        }
-
-        public ReleaseBaseResource(string projectId) : this()
-        {
-            ProjectId = projectId;
-        }
+        public List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
 
         public DateTimeOffset Assembled { get; set; }
 

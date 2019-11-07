@@ -160,7 +160,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.Async.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.Async.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.Async.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -204,7 +204,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -335,7 +335,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.Async.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.Async.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.Async.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -464,7 +464,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
-    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcess { get; }
+    Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcesses { get; }
     Octopus.Client.Repositories.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.IRunbookSnapshotRepository RunbookSnapshots { get; }
@@ -2440,33 +2440,6 @@ Octopus.Client.Model
       Approved = 0
       Rejected = 1
   }
-  class DeploymentBaseResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String Comments { get; set; }
-    DateTimeOffset Created { get; set; }
-    String DeployedBy { get; set; }
-    String EnvironmentId { get; set; }
-    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
-    Boolean ForcePackageDownload { get; set; }
-    Boolean ForcePackageRedeployment { get; set; }
-    Dictionary<String, String> FormValues { get; set; }
-    String ManifestVariableSetId { get; set; }
-    String Name { get; set; }
-    String ProjectId { get; set; }
-    Nullable<DateTimeOffset> QueueTime { get; set; }
-    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
-    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
-    String SpaceId { get; set; }
-    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
-    String TaskId { get; set; }
-    String TenantId { get; set; }
-    Boolean UseGuidedFailure { get; set; }
-  }
   class DeploymentPreviewBaseResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2486,9 +2459,10 @@ Octopus.Client.Model
     List<ReleaseChanges> Changes { get; set; }
     String ChangesMarkdown { get; set; }
   }
-  class DeploymentProcessBaseResource
+  class DeploymentProcessResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IProcessResource
     Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
@@ -2499,17 +2473,9 @@ Octopus.Client.Model
     IList<DeploymentStepResource> Steps { get; }
     Int32 Version { get; set; }
     Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
-    Octopus.Client.Model.DeploymentProcessBaseResource ClearSteps()
+    Octopus.Client.Model.IProcessResource ClearSteps()
     Octopus.Client.Model.DeploymentStepResource FindStep(String)
-    Octopus.Client.Model.DeploymentProcessBaseResource RemoveStep(String)
-  }
-  class DeploymentProcessResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentProcessBaseResource
-  {
-    .ctor()
+    Octopus.Client.Model.IProcessResource RemoveStep(String)
   }
   class DeploymentPromomotionTenant
     Octopus.Client.Extensibility.IResource
@@ -2531,15 +2497,39 @@ Octopus.Client.Model
   class DeploymentResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IExecutionResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentBaseResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     List<ReleaseChanges> Changes { get; set; }
     String ChangesMarkdown { get; set; }
     String ChannelId { get; set; }
+    String Comments { get; set; }
+    DateTimeOffset Created { get; set; }
+    String DeployedBy { get; set; }
+    String DeployedById { get; set; }
+    Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
     String DeploymentProcessId { get; set; }
+    String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailureEncountered { get; set; }
+    Boolean ForcePackageDownload { get; set; }
+    Boolean ForcePackageRedeployment { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String ManifestVariableSetId { get; set; }
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ReleaseId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    String TaskId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
+    Boolean UseGuidedFailure { get; set; }
   }
   DeploymentStepCondition
   {
@@ -2923,6 +2913,32 @@ Octopus.Client.Model
     Dictionary<String, IdentityClaimResource> Claims { get; }
     String IdentityProviderName { get; set; }
   }
+  interface IExecutionResource
+    Octopus.Client.Extensibility.IResource
+  {
+    String Comments { get; set; }
+    DateTimeOffset Created { get; set; }
+    String DeployedBy { get; set; }
+    String DeployedById { get; set; }
+    Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
+    String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailureEncountered { get; }
+    Boolean ForcePackageDownload { get; set; }
+    Boolean ForcePackageRedeployment { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String ManifestVariableSetId { get; set; }
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
+    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    String TaskId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
+    Boolean UseGuidedFailure { get; set; }
+  }
   class InterruptionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2955,6 +2971,27 @@ Octopus.Client.Model
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
     String SpaceId { get; set; }
+  }
+  interface IProcessResource
+    Octopus.Client.Extensibility.IResource
+  {
+    String LastSnapshotId { get; set; }
+    String ProjectId { get; set; }
+    IList<DeploymentStepResource> Steps { get; }
+    Int32 Version { get; set; }
+    Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
+    Octopus.Client.Model.IProcessResource ClearSteps()
+    Octopus.Client.Model.DeploymentStepResource FindStep(String)
+    Octopus.Client.Model.IProcessResource RemoveStep(String)
+  }
+  interface ISnapshotResource
+    Octopus.Client.Extensibility.IResource
+  {
+    DateTimeOffset Assembled { get; set; }
+    List<String> LibraryVariableSetSnapshotIds { get; set; }
+    String ProjectId { get; set; }
+    String ProjectVariableSetSnapshotId { get; set; }
+    List<SelectedPackage> SelectedPackages { get; }
   }
   interface IVariableTemplateContainer
   {
@@ -3948,20 +3985,6 @@ Octopus.Client.Model
     .ctor()
     String InvitationCode { get; set; }
   }
-  class ReleaseBaseResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    .ctor(String)
-    DateTimeOffset Assembled { get; set; }
-    List<String> LibraryVariableSetSnapshotIds { get; set; }
-    String ProjectId { get; set; }
-    List<SelectedPackage> SelectedPackages { get; set; }
-    String SpaceId { get; set; }
-  }
   class ReleaseChanges
   {
     .ctor()
@@ -3991,18 +4014,25 @@ Octopus.Client.Model
   class ReleaseResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ISnapshotResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.ReleaseBaseResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     .ctor(String, String, String)
     .ctor(String, String)
-    List<ReleaseBuildInformationResource> BuildInformation { get; set; }
+    .ctor(String)
+    DateTimeOffset Assembled { get; set; }
+    List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
     Boolean IgnoreChannelRules { get; set; }
+    List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
+    String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
+    List<SelectedPackage> SelectedPackages { get; set; }
+    String SpaceId { get; set; }
     String Version { get; set; }
   }
   class ReleaseSummaryResource
@@ -4140,11 +4170,21 @@ Octopus.Client.Model
   class RunbookProcessResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IProcessResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentProcessBaseResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
+    String LastSnapshotId { get; set; }
+    String ProjectId { get; set; }
     String RunbookId { get; set; }
+    String SpaceId { get; set; }
+    IList<DeploymentStepResource> Steps { get; }
+    Int32 Version { get; set; }
+    Octopus.Client.Model.DeploymentStepResource AddOrUpdateStep(String)
+    Octopus.Client.Model.IProcessResource ClearSteps()
+    Octopus.Client.Model.DeploymentStepResource FindStep(String)
+    Octopus.Client.Model.IProcessResource RemoveStep(String)
   }
   class RunbookResource
     Octopus.Client.Extensibility.IResource
@@ -4170,13 +4210,37 @@ Octopus.Client.Model
   class RunbookRunResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IExecutionResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.DeploymentBaseResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
+    String Comments { get; set; }
+    DateTimeOffset Created { get; set; }
+    String DeployedBy { get; set; }
+    String DeployedById { get; set; }
+    Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
+    String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailureEncountered { get; set; }
+    Boolean ForcePackageDownload { get; set; }
+    Boolean ForcePackageRedeployment { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
     String FrozenRunbookProcessId { get; set; }
+    String ManifestVariableSetId { get; set; }
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String RunbookId { get; set; }
     String RunbookSnapshotId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    String TaskId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
+    Boolean UseGuidedFailure { get; set; }
   }
   class RunbookRunTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -4189,15 +4253,23 @@ Octopus.Client.Model
   class RunbookSnapshotResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ISnapshotResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.ReleaseBaseResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     .ctor(String)
+    DateTimeOffset Assembled { get; set; }
     String FrozenProjectVariableSetId { get; set; }
     String FrozenRunbookProcessId { get; set; }
+    List<String> LibraryVariableSetSnapshotIds { get; set; }
     String Name { get; set; }
+    String Notes { get; set; }
+    String ProjectId { get; set; }
+    String ProjectVariableSetSnapshotId { get; set; }
     String RunbookId { get; set; }
+    List<SelectedPackage> SelectedPackages { get; set; }
+    String SpaceId { get; set; }
   }
   class RunbookSnapshotTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -5422,7 +5494,7 @@ Octopus.Client.Model.BuildInformation
     String PackageId { get; set; }
     String Version { get; set; }
   }
-  class ReleaseBuildInformationResource
+  class ReleasePackageVersionBuildInformationResource
   {
     .ctor()
     String Branch { get; set; }

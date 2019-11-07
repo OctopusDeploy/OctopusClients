@@ -86,7 +86,7 @@ namespace Octopus.Client
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             Runbooks = new RunbookRepository(this);
-            RunbookProcess = new RunbookProcessRepository(this);
+            RunbookProcesses = new RunbookProcessRepository(this);
             RunbookSnapshots = new RunbookSnapshotRepository(this);
             RunbookRuns = new RunbookRunRepository(this);
             ProjectTriggers = new ProjectTriggerRepository(this);
@@ -153,7 +153,7 @@ namespace Octopus.Client
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IRunbookRepository Runbooks { get; }
-        public IRunbookProcessRepository RunbookProcess { get; }
+        public IRunbookProcessRepository RunbookProcesses { get; }
         public IRunbookSnapshotRepository RunbookSnapshots { get; }
         public IRunbookRunRepository RunbookRuns { get; }
         public IProjectTriggerRepository ProjectTriggers { get; }
