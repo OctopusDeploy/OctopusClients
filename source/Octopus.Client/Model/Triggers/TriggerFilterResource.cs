@@ -15,11 +15,5 @@ namespace Octopus.Client.Model.Triggers
     public abstract class TriggerFilterResource : Resource
     {
         public abstract TriggerFilterType FilterType { get; }
-        
-        [Writeable]
-        public DateTime? RunAfter { get; set; }
-        
-        [Writeable]
-        public DateTime? RunUntil { get; set; }
     }
 }
