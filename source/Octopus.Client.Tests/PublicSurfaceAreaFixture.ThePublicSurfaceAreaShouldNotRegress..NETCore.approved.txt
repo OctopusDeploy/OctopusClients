@@ -5959,6 +5959,16 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
+  class RunRunbookActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    String RunbookId { get; set; }
+  }
   abstract class ScopedDeploymentActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5980,6 +5990,7 @@ Octopus.Client.Model.Triggers
       AutoDeploy = 0
       DeployLatestRelease = 1
       DeployNewRelease = 2
+      RunRunbook = 3
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
