@@ -6035,8 +6035,6 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Nullable<DateTime> RunAfter { get; set; }
-    Nullable<DateTime> RunUntil { get; set; }
   }
   TriggerFilterType
   {
