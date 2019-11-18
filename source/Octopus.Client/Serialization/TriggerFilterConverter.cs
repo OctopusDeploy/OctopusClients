@@ -11,8 +11,10 @@ namespace Octopus.Client.Serialization
           new Dictionary<TriggerFilterType, Type>
           {
               { TriggerFilterType.MachineFilter, typeof (MachineFilterResource)},
-              { TriggerFilterType.DailySchedule, typeof (DailyScheduledTriggerFilterResource)},
-              { TriggerFilterType.DaysPerWeekSchedule, typeof (DaysPerWeekScheduledTriggerFilterResource)},
+              { TriggerFilterType.OnceDailySchedule, typeof (OnceDailyScheduledTriggerFilterResource)},
+              { TriggerFilterType.ContinuousDailySchedule, typeof (ContinuousDailyScheduledTriggerFilterResource)},
+              { TriggerFilterType.OnceDailyForDaysPerWeekSchedule, typeof (OnceDailyForDaysPerWeekScheduledTriggerFilterResource)},
+              { TriggerFilterType.ContinuousDailyForDaysPerWeekSchedule, typeof (ContinuousDailyForDaysPerWeekScheduledTriggerFilterResource)},
               { TriggerFilterType.DaysPerMonthSchedule, typeof (DaysPerMonthScheduledTriggerFilterResource)},
               { TriggerFilterType.CronExpressionSchedule, typeof (CronScheduledTriggerFilterResource)}
           };

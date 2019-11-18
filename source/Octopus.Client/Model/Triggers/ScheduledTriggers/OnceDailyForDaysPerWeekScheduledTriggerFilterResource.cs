@@ -2,9 +2,9 @@
 
 namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-    public class DaysPerWeekScheduledTriggerFilterResource : DailyScheduledTriggerFilterResource
+    public class OnceDailyForDaysPerWeekScheduledTriggerFilterResource : OnceDailyScheduledTriggerFilterResource
     {
-        public override TriggerFilterType FilterType => TriggerFilterType.DaysPerWeekSchedule;
+        public override TriggerFilterType FilterType => TriggerFilterType.OnceDailyForDaysPerWeekSchedule;
 
         [Writeable]
         public bool Monday { get; set; }
