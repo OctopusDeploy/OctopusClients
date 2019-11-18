@@ -13,8 +13,6 @@ namespace Octopus.Client.Serialization
               { TriggerFilterType.MachineFilter, typeof (MachineFilterResource)},
               { TriggerFilterType.OnceDailySchedule, typeof (OnceDailyScheduledTriggerFilterResource)},
               { TriggerFilterType.ContinuousDailySchedule, typeof (ContinuousDailyScheduledTriggerFilterResource)},
-              { TriggerFilterType.OnceDailyForDaysPerWeekSchedule, typeof (OnceDailyForDaysPerWeekScheduledTriggerFilterResource)},
-              { TriggerFilterType.ContinuousDailyForDaysPerWeekSchedule, typeof (ContinuousDailyForDaysPerWeekScheduledTriggerFilterResource)},
               { TriggerFilterType.DaysPerMonthSchedule, typeof (DaysPerMonthScheduledTriggerFilterResource)},
               { TriggerFilterType.CronExpressionSchedule, typeof (CronScheduledTriggerFilterResource)}
           };

@@ -6016,30 +6016,12 @@ Octopus.Client.Model.Triggers
       MachineFilter = 0
       OnceDailySchedule = 1
       ContinuousDailySchedule = 2
-      ContinuousDailyForDaysPerWeekSchedule = 3
-      OnceDailyForDaysPerWeekSchedule = 4
-      DaysPerMonthSchedule = 5
-      CronExpressionSchedule = 6
+      DaysPerMonthSchedule = 3
+      CronExpressionSchedule = 4
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-  class ContinuousDailyForDaysPerWeekScheduledTriggerFilterResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.ContinuousDailyScheduledTriggerFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Boolean Friday { get; set; }
-    Boolean Monday { get; set; }
-    Boolean Saturday { get; set; }
-    Boolean Sunday { get; set; }
-    Boolean Thursday { get; set; }
-    Boolean Tuesday { get; set; }
-    Boolean Wednesday { get; set; }
-    void SetDayFromString(String)
-  }
   class ContinuousDailyScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6047,11 +6029,19 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Boolean Friday { get; set; }
     Nullable<Int16> HourInterval { get; set; }
     Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
     Nullable<Int16> MinuteInterval { get; set; }
+    Boolean Monday { get; set; }
     Nullable<DateTime> RunAfter { get; set; }
     Nullable<DateTime> RunUntil { get; set; }
+    Boolean Saturday { get; set; }
+    Boolean Sunday { get; set; }
+    Boolean Thursday { get; set; }
+    Boolean Tuesday { get; set; }
+    Boolean Wednesday { get; set; }
+    void SetDayFromString(String)
   }
   class CronScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -6117,22 +6107,6 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
       DateOfMonth = 0
       DayOfMonth = 1
   }
-  class OnceDailyForDaysPerWeekScheduledTriggerFilterResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.OnceDailyScheduledTriggerFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Boolean Friday { get; set; }
-    Boolean Monday { get; set; }
-    Boolean Saturday { get; set; }
-    Boolean Sunday { get; set; }
-    Boolean Thursday { get; set; }
-    Boolean Tuesday { get; set; }
-    Boolean Wednesday { get; set; }
-    void SetDayFromString(String)
-  }
   class OnceDailyScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6140,7 +6114,15 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Boolean Friday { get; set; }
+    Boolean Monday { get; set; }
+    Boolean Saturday { get; set; }
     DateTime StartTime { get; set; }
+    Boolean Sunday { get; set; }
+    Boolean Thursday { get; set; }
+    Boolean Tuesday { get; set; }
+    Boolean Wednesday { get; set; }
+    void SetDayFromString(String)
   }
   abstract class ScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
