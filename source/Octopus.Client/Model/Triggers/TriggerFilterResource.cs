@@ -8,8 +8,6 @@ namespace Octopus.Client.Model.Triggers
         MachineFilter,
         OnceDailySchedule,
         ContinuousDailySchedule,
-        ContinuousDailyForDaysPerWeekSchedule,
-        OnceDailyForDaysPerWeekSchedule,
         DaysPerMonthSchedule,
         CronExpressionSchedule
     }
