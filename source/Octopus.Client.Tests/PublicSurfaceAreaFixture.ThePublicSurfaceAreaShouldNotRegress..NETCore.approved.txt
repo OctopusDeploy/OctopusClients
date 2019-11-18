@@ -2923,6 +2923,22 @@ Octopus.Client.Model
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
   }
+  interface IIncludeRunbookRunRequestProperties
+  {
+    String Comments { get; set; }
+    String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean ForcePackageDownload { get; set; }
+    Boolean ForcePackageRedeployment { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
+    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
+    Boolean UseGuidedFailure { get; set; }
+  }
   class InterruptionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2976,12 +2992,6 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     List<SelectedPackage> SelectedPackages { get; }
-  }
-  interface ISupportSimpleRunbookRun
-  {
-    String EnvironmentId { get; set; }
-    Dictionary<String, String> FormValues { get; set; }
-    String TenantId { get; set; }
   }
   interface IVariableTemplateContainer
   {
@@ -4182,6 +4192,39 @@ Octopus.Client.Model
     String RunbookProcessId { get; set; }
     String SpaceId { get; set; }
   }
+  class RunbookRunForPublishedRunbookResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IExecutionResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IIncludeRunbookRunRequestProperties
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Comments { get; set; }
+    DateTimeOffset Created { get; set; }
+    String DeployedBy { get; set; }
+    String DeployedById { get; set; }
+    Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
+    String EnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailureEncountered { get; set; }
+    Boolean ForcePackageDownload { get; set; }
+    Boolean ForcePackageRedeployment { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String ManifestVariableSetId { get; set; }
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
+    Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    String TaskId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
+    Boolean UseGuidedFailure { get; set; }
+  }
   class RunbookRunPreviewResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4194,7 +4237,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.IExecutionResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.ISupportSimpleRunbookRun
+    Octopus.Client.Model.IIncludeRunbookRunRequestProperties
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -4224,19 +4267,6 @@ Octopus.Client.Model
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
-  }
-  class RunbookRunSimpleResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.ISupportSimpleRunbookRun
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String EnvironmentId { get; set; }
-    Dictionary<String, String> FormValues { get; set; }
-    String SpaceId { get; set; }
-    String TenantId { get; set; }
   }
   class RunbookRunTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -6717,7 +6747,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
-    Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookRunSimpleResource)
+    Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookRunForPublishedRunbookResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7398,7 +7428,7 @@ Octopus.Client.Repositories.Async
     Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
-    Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookRunSimpleResource)
+    Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookRunForPublishedRunbookResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>
