@@ -2977,6 +2977,12 @@ Octopus.Client.Model
     String ProjectVariableSetSnapshotId { get; set; }
     List<SelectedPackage> SelectedPackages { get; }
   }
+  interface ISupportSimpleRunbookRun
+  {
+    String EnvironmentId { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String TenantId { get; set; }
+  }
   interface IVariableTemplateContainer
   {
     List<ActionTemplateParameterResource> Templates { get; }
@@ -4172,6 +4178,7 @@ Octopus.Client.Model
     String Description { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
+    String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
     String SpaceId { get; set; }
   }
@@ -4187,6 +4194,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.IExecutionResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ISupportSimpleRunbookRun
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -4216,6 +4224,19 @@ Octopus.Client.Model
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
+  }
+  class RunbookRunSimpleResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ISupportSimpleRunbookRun
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String EnvironmentId { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String SpaceId { get; set; }
+    String TenantId { get; set; }
   }
   class RunbookRunTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -6693,6 +6714,10 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.RunbookEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.RunbookResource FindByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookRunSimpleResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7370,6 +7395,10 @@ Octopus.Client.Repositories.Async
   {
     Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<RunbookResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
+    Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookRunSimpleResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>
