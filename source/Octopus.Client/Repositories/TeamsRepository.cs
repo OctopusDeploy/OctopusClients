@@ -21,15 +21,19 @@ namespace Octopus.Client.Repositories
         public TeamsRepository(IOctopusRepository repository)
             : base(repository, "Teams")
         {
+            MinimumCompatibleVersion("2019.1.0");
         }
 
         TeamsRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
             : base(repository, "Teams", userDefinedSpaceContext)
         {
+            MinimumCompatibleVersion("2019.1.0");
         }
 
         public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)
         {
+            ThrowIfServerVersionIsNotCompatible();
+            
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
@@ -44,6 +48,8 @@ namespace Octopus.Client.Repositories
 
         public ITeamsRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
+            ThrowIfServerVersionIsNotCompatible();
+            
             return new TeamsRepository(Repository, userDefinedSpaceContext);
         }
     }

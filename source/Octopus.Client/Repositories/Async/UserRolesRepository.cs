@@ -14,16 +14,21 @@ namespace Octopus.Client.Repositories.Async
         public UserRolesRepository(IOctopusAsyncRepository repository)
             : base(repository, "UserRoles")
         {
+            MinimumCompatibleVersion("2019.1.0");
         }
 
         public override async Task<UserRoleResource> Create(UserRoleResource resource, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+            
             await RemoveInvalidPermissions(resource).ConfigureAwait(false);
             return await base.Create(resource, pathParameters).ConfigureAwait(false);
         }
 
         public override async Task<UserRoleResource> Modify(UserRoleResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+            
             await RemoveInvalidPermissions(resource).ConfigureAwait(false);
             return await base.Modify(resource).ConfigureAwait(false);
         }
