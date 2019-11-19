@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
         RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(RunbookResource runbook);
         RunbookRunTemplateResource GetRunbookRunTemplate(RunbookResource runbook);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        RunbookRunResource Run(RunbookRunForPublishedRunbookResource resource);
+        RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun);
     }
     
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -45,9 +45,9 @@ namespace Octopus.Client.Repositories
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
-        public RunbookRunResource Run(RunbookRunForPublishedRunbookResource resource)
+        public RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun)
         {
-            return Client.Post<object, RunbookRunResource>(resource.Link("CreateRunbookRunForPublishedRunbook"), resource);
+            return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
     }
 }

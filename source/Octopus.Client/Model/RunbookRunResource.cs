@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class RunbookRunResource : Resource, IExecutionResource, IHaveSpaceResource, IIncludeRunbookRunRequestProperties
+    public class RunbookRunResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public RunbookRunResource()
         {
