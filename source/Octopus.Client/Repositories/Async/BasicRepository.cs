@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
@@ -17,6 +19,8 @@ namespace Octopus.Client.Repositories.Async
     {
         private readonly Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName;
         protected string CollectionLinkName;
+        private SemanticVersion minimumRequiredVersion;
+        private bool hasMinimumRequiredVersion;
 
         protected BasicRepository(IOctopusAsyncRepository repository, string collectionLinkName, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null)
         {
@@ -55,14 +59,35 @@ namespace Octopus.Client.Repositories.Async
                 });
         } 
 
+        protected void MinimumCompatibleVersion(string version)
+        {
+            minimumRequiredVersion = SemanticVersion.Parse(version);
+            hasMinimumRequiredVersion = true;
+        }
+        
         private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
                 CheckSpaceResource(spaceResource);
         }
         
+        protected async void ThrowIfServerVersionIsNotCompatible()
+        {
+            if (!hasMinimumRequiredVersion) return;
+
+            var currentServerVersion = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version);
+
+            if (currentServerVersion < minimumRequiredVersion)
+            {
+                throw new NotSupportedException(
+                    $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
+            }
+        }
+        
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var link = await ResolveLink().ConfigureAwait(false);
             AssertSpaceIdMatchesResource(resource);
             EnrichSpaceId(resource);
@@ -71,18 +96,24 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual Task<TResource> Modify(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             AssertSpaceIdMatchesResource(resource);
             return Client.Update(resource.Links["Self"], resource);
         }
 
         public Task Delete(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             AssertSpaceIdMatchesResource(resource);
             return Client.Delete(resource.Links["Self"]);
         }
 
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var link = await ResolveLink().ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), pathParameters);
             await Client.Paginate(path ?? link, parameters, getNextPage).ConfigureAwait(false);
@@ -90,6 +121,8 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             TResource resource = null;
             await Paginate(page =>
             {
@@ -102,6 +135,8 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<TResource>> FindMany(Func<TResource, bool> search, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var resources = new List<TResource>();
             await Paginate(page =>
             {
@@ -114,11 +149,15 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<TResource>> FindAll(string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             return FindMany(r => true, path, pathParameters);
         }
 
         public async Task<List<TResource>> GetAll()
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var link = await ResolveLink().ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
             return await Client.Get<List<TResource>>(link, parameters).ConfigureAwait(false);
@@ -126,6 +165,8 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             name = (name ?? string.Empty).Trim();
 
             // Some endpoints allow a Name query param which greatly increases efficiency
@@ -142,6 +183,8 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
             return FindMany(r =>
             {
@@ -153,6 +196,8 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TResource> Get(string idOrHref)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
 
@@ -167,6 +212,8 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<List<TResource>> Get(params string[] ids)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (ids == null) return new List<TResource>();
             var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             if (actualIds.Length == 0) return new List<TResource>();
@@ -193,12 +240,16 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TResource> Refresh(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
         }
 
         protected virtual void EnrichSpaceId(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource is IHaveSpaceResource spaceResource)
             {
                 spaceResource.SpaceId = Repository.Scope.Apply(space => space.Id,
@@ -209,6 +260,8 @@ namespace Octopus.Client.Repositories.Async
 
         protected async Task<string> ResolveLink()
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (CollectionLinkName == null && getCollectionLinkName != null)
                 CollectionLinkName = await getCollectionLinkName(Repository).ConfigureAwait(false);
             return await Repository.Link(CollectionLinkName).ConfigureAwait(false);
