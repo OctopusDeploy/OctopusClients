@@ -5962,12 +5962,14 @@ Octopus.Client.Model.Triggers
   class RunRunbookActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     String RunbookId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
   }
   abstract class ScopedDeploymentActionResource
     Octopus.Client.Extensibility.IResource
