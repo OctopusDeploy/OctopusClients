@@ -18,11 +18,13 @@ namespace Octopus.Client.Repositories
         public ScopedUserRoleRepository(IOctopusRepository repository)
             : base(repository, "ScopedUserRoles")
         {
+            MinimumCompatibleVersion("2019.1.0");
         }
 
         ScopedUserRoleRepository(IOctopusRepository repository, SpaceContext userDefinedSpaceContext)
             : base(repository, "ScopedUserRoles", userDefinedSpaceContext)
         {
+            MinimumCompatibleVersion("2019.1.0");
         }
 
         public IScopedUserRoleRepository UsingContext(SpaceContext userDefinedSpaceContext)
