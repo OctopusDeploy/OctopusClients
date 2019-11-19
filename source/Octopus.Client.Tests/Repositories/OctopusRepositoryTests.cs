@@ -24,6 +24,7 @@ namespace Octopus.Client.Tests.Repositories
             client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
+                Version = "2099.0.0",
                 Links =
                 {
                     {"CurrentUser",  ""},
@@ -40,6 +41,7 @@ namespace Octopus.Client.Tests.Repositories
             client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
+                Version = "2099.0.0",
                 Links = LinkCollection.Self("/api")
                     .Add("CurrentUser", "/api/users/me")
             });
