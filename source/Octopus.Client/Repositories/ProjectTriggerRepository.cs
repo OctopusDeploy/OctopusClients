@@ -18,24 +18,13 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        void CheckServerVersionSupportsNewTriggerModel()
-        {
-            var versionWhenScheduledTriggersWereChanged = SemanticVersion.Parse("2019.11.1");
-            if (SemanticVersion.Parse(Repository.LoadRootDocument().Version) < versionWhenScheduledTriggersWereChanged)
-            {
-                throw new NotSupportedException("The version of the Octopus Server you are connecting to is not compatible with this version of Octopus.Client. Pleas upgrade your Octopus Server to a version >= 2019.11.1");
-            }
-        }
-
         public ProjectTriggerResource FindByName(ProjectResource project, string name)
         {
-            CheckServerVersionSupportsNewTriggerModel();
             return FindByName(name, path: project.Link("Triggers"));
         }
 
         public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            CheckServerVersionSupportsNewTriggerModel();
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
     }
