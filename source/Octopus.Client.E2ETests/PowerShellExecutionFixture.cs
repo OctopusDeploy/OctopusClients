@@ -33,7 +33,6 @@ namespace Octopus.Client.E2ETests
 
         private static string CreatePowerShellFile(string extractedDll, string tempFolder)
         {
-            //TODO: Review which public server this is referencing. If that server is down, these tests will fail :(
             var powerShellFileContent = @"
 Add-Type -Path '" + extractedDll + @"'
 $server = ""https://deploy.octopushq.com/""
