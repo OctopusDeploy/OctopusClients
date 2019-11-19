@@ -3788,6 +3788,12 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
+  class ProcessReferenceDataItem
+    Octopus.Client.Model.ReferenceDataItem
+  {
+    .ctor(String, String, Octopus.Client.Model.ProcessType)
+    Octopus.Client.Model.ProcessType ProcessType { get; set; }
+  }
   ProcessType
   {
       Deployment = 0
@@ -4329,6 +4335,7 @@ Octopus.Client.Model
       Channel = 8
       TenantTag = 9
       Tenant = 10
+      ProcessOwner = 11
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
@@ -5042,6 +5049,7 @@ Octopus.Client.Model
     List<ReferenceDataItem> Channels { get; set; }
     List<ReferenceDataItem> Environments { get; set; }
     List<ReferenceDataItem> Machines { get; set; }
+    List<ProcessReferenceDataItem> Processes { get; set; }
     List<ReferenceDataItem> Roles { get; set; }
     List<ReferenceDataItem> TenantTags { get; set; }
   }
