@@ -35,7 +35,7 @@ namespace Octopus.Client.E2ETests
         {
             var powerShellFileContent = @"
 Add-Type -Path '" + extractedDll + @"'
-$server = ""https://demo.octopus.com""
+$server = ""https://deploy.octopushq.com/""
 $apiKey = $null
 $endpoint = New-Object Octopus.Client.OctopusServerEndpoint($server, $apiKey)
 $repository = New-Object Octopus.Client.OctopusRepository($endpoint)
