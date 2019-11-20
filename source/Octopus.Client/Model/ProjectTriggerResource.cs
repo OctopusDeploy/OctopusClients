@@ -16,7 +16,6 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool IsDisabled { get; set; }
 
-
         [Writeable]
         public TriggerFilterResource Filter { get; set; }
 

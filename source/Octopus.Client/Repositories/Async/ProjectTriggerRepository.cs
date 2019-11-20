@@ -11,6 +11,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ProjectTriggerResource> FindByName(ProjectResource project, string name);
 
         Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action);
+        Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds);
     }
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
@@ -29,5 +30,11 @@ namespace Octopus.Client.Repositories.Async
         {
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
+
+        public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
+        {
+            return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds });
+        }
+
     }
 }
