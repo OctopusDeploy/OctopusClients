@@ -14,5 +14,8 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 
         [Writeable]
         public string DestinationEnvironmentId { get; set; }
+
+        [Writeable]
+        public bool ShouldRedeployWhenReleaseIsCurrent { get; set; } = true;
     }
 }
