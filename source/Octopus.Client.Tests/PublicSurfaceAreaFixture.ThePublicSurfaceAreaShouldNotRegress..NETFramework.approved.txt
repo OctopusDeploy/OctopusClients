@@ -5993,6 +5993,18 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
+  class RunRunbookActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    String RunbookId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
   abstract class ScopedDeploymentActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6014,6 +6026,7 @@ Octopus.Client.Model.Triggers
       AutoDeploy = 0
       DeployLatestRelease = 1
       DeployNewRelease = 2
+      RunRunbook = 3
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -6678,6 +6691,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Octopus.Client.Model.ProjectTriggerResource FindByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> FindByRunbook(String[])
   }
   interface IProxyRepository
     Octopus.Client.Repositories.IGet<ProxyResource>
@@ -7359,6 +7373,7 @@ Octopus.Client.Repositories.Async
   {
     Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Task<ProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(String[])
   }
   interface IProxyRepository
     Octopus.Client.Repositories.Async.IGet<ProxyResource>
