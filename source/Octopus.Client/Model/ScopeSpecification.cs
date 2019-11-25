@@ -18,6 +18,7 @@ namespace Octopus.Client.Model
             return copy;
         }
 
+        [Obsolete("Rank usage is deprecated. Please see https://octopus.com/docs/deployment-process/variables for variable specificity rules.")]
         public int Rank()
         {
             var score = 0;
