@@ -106,7 +106,7 @@ namespace Octopus.Client.Model
 
         public string SpaceId { get; set; }
     }
-    
+
     public class LibraryVariableSetUsageResource : Resource
     {
         public LibraryVariableSetUsageResource()
@@ -117,20 +117,30 @@ namespace Octopus.Client.Model
         public ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
         public int CountOfProjectsUserCannotSee { get; set; }
         public int CountOfReleasesUserCannotSee { get; set; }
+        public int CountOfRunbookSnapshotsUserCannotSee { get; set; }
     }
-    
+
+
     public class LibraryVariableSetProjectUsage
     {
         public LibraryVariableSetProjectUsage()
         {
             Releases = new List<LibraryVariableSetReleaseUsageEntry>();
+            RunbookSnapshots = new List<LibraryVariableSetRunbookSnapshotUsageEntry>();
         }
-
+        
         public string ProjectSlug { get; set; }
         public string ProjectName { get; set; }
         public string ProjectId { get; set; }
+        public List<LibraryVariableSetRunbookSnapshotUsageEntry> RunbookSnapshots { get; set; }
         public ICollection<LibraryVariableSetReleaseUsageEntry> Releases { get; set; }
         public bool IsCurrentlyBeingUsedInProject { get; set; }
+    }
+    
+    public class LibraryVariableSetRunbookSnapshotUsageEntry
+    {
+        public string SnapshotId { get; set; }
+        public string SnapshotName { get; set; }
     }
     
     public class LibraryVariableSetReleaseUsageEntry
