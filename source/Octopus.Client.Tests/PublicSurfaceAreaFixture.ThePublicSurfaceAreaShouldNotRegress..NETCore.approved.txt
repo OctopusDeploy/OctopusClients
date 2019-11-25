@@ -5390,6 +5390,7 @@ Octopus.Client.Model.Accounts.Usages
     String ProjectName { get; set; }
     String ProjectSlug { get; set; }
     ICollection<ReleaseUsageEntry> Releases { get; set; }
+    List<RunbookSnapshotUsageEntry> RunbookSnapshots { get; set; }
   }
   class ReleaseUsage
   {

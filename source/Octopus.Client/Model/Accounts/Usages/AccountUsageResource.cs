@@ -58,12 +58,14 @@ namespace Octopus.Client.Model.Accounts.Usages
         public ProjectVariableSetUsage()
         {
             Releases = new List<ReleaseUsageEntry>();
+            RunbookSnapshots = new List<RunbookSnapshotUsageEntry>();
         }
 
         public string ProjectSlug { get; set; }
         public string ProjectName { get; set; }
         public string ProjectId { get; set; }
         public ICollection<ReleaseUsageEntry> Releases { get; set; }
+        public List<RunbookSnapshotUsageEntry> RunbookSnapshots { get; set; }
         public bool IsCurrentlyBeingUsedInProject { get; set; }
     }
 
