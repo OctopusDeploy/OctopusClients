@@ -113,6 +113,7 @@ namespace Octopus.Client.Tests.Integration
                  new RootResource()
                  {
                      ApiVersion = "3.0.0",
+                     Version = "2099.0.0",
                      InstallationId = InstallationId,
                      Links = new LinkCollection()
                      {

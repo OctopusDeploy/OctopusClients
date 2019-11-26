@@ -20,11 +20,13 @@ namespace Octopus.Client.Repositories
 
         public ProjectTriggerResource FindByName(ProjectResource project, string name)
         {
+            
             return FindByName(name, path: project.Link("Triggers"));
         }
 
         public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
+            
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
     }

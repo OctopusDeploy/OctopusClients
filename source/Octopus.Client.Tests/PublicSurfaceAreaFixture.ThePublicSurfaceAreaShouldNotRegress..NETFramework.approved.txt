@@ -6108,6 +6108,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String DestinationEnvironmentId { get; set; }
+    Boolean ShouldRedeployWhenReleaseIsCurrent { get; set; }
     String SourceEnvironmentId { get; set; }
     String Variables { get; set; }
   }
