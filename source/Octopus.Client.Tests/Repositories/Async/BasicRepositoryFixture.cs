@@ -28,6 +28,8 @@ namespace Octopus.Client.Tests.Repositories.Async
             repoForMixedScopedResource = new TestMixedResourceAsyncRepository(mockRepo, "");
             repoForSystemScopedResource = new TestSystemResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
             
+            mockRepo.LoadRootDocument().Returns(GetRootResource());
+            
             someSpace = new SpaceResource
             {
                 Id = "Spaces-1",
@@ -43,6 +45,15 @@ namespace Octopus.Client.Tests.Repositories.Async
             };
             
             mockRepo.Scope.Returns(RepositoryScope.ForSpace(someSpace));
+            
+            RootResource GetRootResource()
+            {
+                return new RootResource
+                {
+                    ApiVersion = "3.0.0",
+                    Version = "2099.0.0"
+                };
+            }
         }
         
         [Test]

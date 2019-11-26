@@ -22,6 +22,7 @@ namespace Octopus.Client.Tests.Spaces
             client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
+                Version = "2099.0.0",
                 Links =
                 {
                     { "Teams", "" },

@@ -41,6 +41,7 @@ namespace Octopus.Client.Tests.Operations
             var rootDocument = new RootResource
             {
                 ApiVersion = "3.0.0",
+                Version = "2099.0.0",
                 Links = LinkCollection.Self("/api")
                     .Add("Environments", "/api/environments")
                     .Add("Machines", "/api/machines")
