@@ -25,8 +25,6 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
         {
-            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
-            
             return FindByName(name, path: project.Link("Triggers"));
         }
 
@@ -39,6 +37,8 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
         {
+            await ThrowIfServerVersionIsNotCompatible();
+            
             return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds });
         }
     }

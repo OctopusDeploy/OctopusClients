@@ -28,7 +28,6 @@ namespace Octopus.Client.Repositories
 
         public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            ThrowIfServerVersionIsNotCompatible();
             
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
