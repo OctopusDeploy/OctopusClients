@@ -31,36 +31,6 @@ namespace Octopus.Client.Tests.Repositories.Async
             Assert.Throws<NotSupportedException>(() => repository.FindByName("fake trigger"));
         }
 
-        [Test]
-        public void ProjectTriggerRepositoryAsyncShouldOverrideAllBaseMethods()
-        {
-            var projectTriggerAsyncRepositoryMethods = GetPublicMethods(typeof(Client.Repositories.Async.ProjectTriggerRepository));
-            var basicRepositoryAsyncMethods = GetPublicMethods(typeof(Client.Repositories.Async.BasicRepository<>));
-
-            foreach (var basicRepositoryMethod in basicRepositoryAsyncMethods)
-            {
-                Assert.IsTrue(projectTriggerAsyncRepositoryMethods.Any(m => m.Name == basicRepositoryMethod.Name));
-            }
-        }
-
-        [Test]
-        public void ProjectTriggerRepositoryShouldOverrideAllBaseMethods()
-        {
-            var projectTriggerAsyncRepositoryMethods = GetPublicMethods(typeof(Client.Repositories.ProjectTriggerRepository));
-            var basicRepositoryAsyncMethods = GetPublicMethods(typeof(Client.Repositories.BasicRepository<>));
-
-            foreach (var basicRepositoryMethod in basicRepositoryAsyncMethods)
-            {
-                Assert.IsTrue(projectTriggerAsyncRepositoryMethods.Any(m => m.Name == basicRepositoryMethod.Name));
-            }
-        }
-
-        IEnumerable<MethodInfo> GetPublicMethods(Type type)
-        {
-            return type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => m.DeclaringType == type && !m.IsSpecialName);
-        }
-
         void SetupAsyncClient(IOctopusAsyncClient client)
         {
             client.Repository.LoadRootDocument().Returns(new RootResource()
