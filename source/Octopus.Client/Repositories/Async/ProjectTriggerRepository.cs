@@ -25,14 +25,14 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
         {
-            ThrowIfServerVersionIsNotCompatible();
+            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
             
             return FindByName(name, path: project.Link("Triggers"));
         }
 
         public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            ThrowIfServerVersionIsNotCompatible();
+            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
             
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }

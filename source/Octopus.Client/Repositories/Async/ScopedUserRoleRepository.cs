@@ -29,7 +29,6 @@ namespace Octopus.Client.Repositories.Async
 
         public IScopedUserRoleRepository UsingContext(SpaceContext spaceContext)
         {
-            ThrowIfServerVersionIsNotCompatible();
             return new ScopedUserRoleRepository(Repository, spaceContext);
         }
     }
