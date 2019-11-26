@@ -23,8 +23,6 @@ namespace Octopus.Client.Repositories
 
         public ProjectTriggerResource FindByName(ProjectResource project, string name)
         {
-            ThrowIfServerVersionIsNotCompatible();
-            
             return FindByName(name, path: project.Link("Triggers"));
         }
 

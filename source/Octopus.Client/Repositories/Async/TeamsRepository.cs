@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
         {
-            ThrowIfServerVersionIsNotCompatible();
+            await ThrowIfServerVersionIsNotCompatible();
             
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
@@ -49,8 +49,6 @@ namespace Octopus.Client.Repositories.Async
 
         public ITeamsRepository UsingContext(SpaceContext spaceContext)
         {
-            ThrowIfServerVersionIsNotCompatible();
-            
             return new TeamsRepository(Repository, spaceContext);
         }
     }
