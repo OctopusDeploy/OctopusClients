@@ -17,6 +17,7 @@ namespace Octopus.Client.Tests.Repositories.Async
         private const string NotSupportedOctopusVersion = "2019.9.3";
 
         [Test]
+        [Ignore("restore when we bring back the ")]
         public void ShouldThrowExceptionForOlderServerVersions()
         {
             var asyncClient = Substitute.For<IOctopusAsyncClient>();
