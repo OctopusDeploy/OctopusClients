@@ -9,7 +9,6 @@ namespace Octopus.Client.Model
         string Name { get; set; }
         DateTimeOffset Created { get; set; }
         bool ForcePackageDownload { get; set; }
-        bool ForcePackageRedeployment { get; set; }
         string Comments { get; set; }
         ReferenceCollection SkipActions { get; set; }
         ReferenceCollection SpecificMachineIds { get; set; }
