@@ -1,13 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
         <AssemblyName>Octopus.Client.E2ETests</AssemblyName>
         <PackageId>Octopus.Client.E2ETests</PackageId>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    </PropertyGroup>
+    <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
+        <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    </PropertyGroup>
+    <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
+        <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
         <DefineConstants>$(DefineConstants);SUPPORTS_ILMERGE</DefineConstants>
