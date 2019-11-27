@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
         public UserRolesRepository(IOctopusAsyncRepository repository)
             : base(repository, "UserRoles")
         {
-            MinimumCompatibleVersion("2019.1.0");
+            //MinimumCompatibleVersion("2019.1.0");
         }
 
         public override async Task<UserRoleResource> Create(UserRoleResource resource, object pathParameters = null)
