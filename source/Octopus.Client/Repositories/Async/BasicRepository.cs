@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -77,25 +76,13 @@ namespace Octopus.Client.Repositories.Async
 
             var currentServerVersion = (await Repository.LoadRootDocument()).Version;
 
-            if (ServerIsOlderThanClient())
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
             {
                 throw new NotSupportedException(
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
             }
 
             return false;
-            
-            bool ServerIsOlderThanClient()
-            {
-                var whitelist = new[]
-                {
-                    "0.0.0-local"
-                };
-                
-                if (whitelist.Contains(currentServerVersion)) return false;
-                
-                return SemanticVersion.Parse(currentServerVersion) < minimumRequiredVersion;
-            }
         }
         
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
