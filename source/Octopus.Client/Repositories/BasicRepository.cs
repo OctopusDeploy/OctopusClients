@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories
 {
@@ -65,22 +66,10 @@ namespace Octopus.Client.Repositories
             if (!hasMinimumRequiredVersion) return;
 
             var currentServerVersion = Repository.LoadRootDocument().Version;
-            if (ServerIsOlderThanClient())
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
             {
                 throw new NotSupportedException(
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
-            }
-
-            bool ServerIsOlderThanClient()
-            {
-                var whitelist = new[]
-                {
-                    "0.0.0-local"
-                };
-                
-                if (whitelist.Contains(currentServerVersion)) return false;
-                
-                return SemanticVersion.Parse(currentServerVersion) < minimumRequiredVersion;
             }
         }
 
