@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories
         public UserRolesRepository(IOctopusRepository repository)
             : base(repository, "UserRoles")
         {
-            MinimumCompatibleVersion("2019.1.0");
+            //MinimumCompatibleVersion("2019.1.0");
         }
 
         public override UserRoleResource Create(UserRoleResource resource, object pathParameters = null)

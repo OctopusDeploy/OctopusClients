@@ -26,7 +26,7 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 
         [Writeable]
         public DateTime StartTime { get; set; }
-
+        
         [Writeable]
         public MonthlyScheduleType MonthlyScheduleType { get; set; }
 
