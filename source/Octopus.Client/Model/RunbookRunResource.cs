@@ -35,9 +35,6 @@ namespace Octopus.Client.Model
         public bool ForcePackageDownload { get; set; }
 
         [WriteableOnCreate]
-        public bool ForcePackageRedeployment { get; set; }
-
-        [WriteableOnCreate]
         public ReferenceCollection SkipActions { get; set; }
 
         /// <summary>

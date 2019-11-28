@@ -2925,7 +2925,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
     Boolean FailureEncountered { get; }
     Boolean ForcePackageDownload { get; set; }
-    Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
@@ -4226,7 +4225,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
     Boolean FailureEncountered { get; set; }
     Boolean ForcePackageDownload { get; set; }
-    Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String FrozenRunbookProcessId { get; set; }
     String ManifestVariableSetId { get; set; }
