@@ -89,7 +89,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 var whitelist = new[]
                 {
-                    "0.0.0-fake-local"
+                    "0.0.0-local"
                 };
                 
                 if (whitelist.Contains(currentServerVersion)) return false;
