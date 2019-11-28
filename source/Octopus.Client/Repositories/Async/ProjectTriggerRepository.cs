@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         public ProjectTriggerRepository(IOctopusAsyncRepository repository)
             : base(repository, "ProjectTriggers")
         {
-            //MinimumCompatibleVersion("2019.10.7");  // TODO: this needs to be bumped to 2019.11.0 just as we are ready to go live
+            MinimumCompatibleVersion("2019.10.7");  // TODO: this needs to be bumped to 2019.11.0 just as we are ready to go live
         }
 
         public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
