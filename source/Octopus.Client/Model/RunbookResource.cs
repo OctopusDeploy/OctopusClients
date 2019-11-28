@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility;
+﻿using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
@@ -23,5 +24,9 @@ namespace Octopus.Client.Model
         public string ProjectId { get; set; }
 
         public string SpaceId { get; set; }
+
+        [Writeable]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy();
     }
 }
