@@ -63,12 +63,24 @@ namespace Octopus.Client.Repositories
         protected void ThrowIfServerVersionIsNotCompatible()
         {
             if (!hasMinimumRequiredVersion) return;
-            
-            var currentServerVersion = SemanticVersion.Parse(Repository.LoadRootDocument().Version);
-            if (currentServerVersion < minimumRequiredVersion)
+
+            var currentServerVersion = Repository.LoadRootDocument().Version;
+            if (ServerIsOlderThanClient())
             {
                 throw new NotSupportedException(
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
+            }
+
+            bool ServerIsOlderThanClient()
+            {
+                var whitelist = new[]
+                {
+                    "0.0.0-fake-local"
+                };
+                
+                if (whitelist.Contains(currentServerVersion)) return false;
+                
+                return SemanticVersion.Parse(currentServerVersion) < minimumRequiredVersion;
             }
         }
 

@@ -75,15 +75,27 @@ namespace Octopus.Client.Repositories.Async
         {
             if (!hasMinimumRequiredVersion) return false;
 
-            var currentServerVersion = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version);
+            var currentServerVersion = (await Repository.LoadRootDocument()).Version;
 
-            if (currentServerVersion < minimumRequiredVersion)
+            if (ServerIsOlderThanClient())
             {
                 throw new NotSupportedException(
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
             }
 
             return false;
+            
+            bool ServerIsOlderThanClient()
+            {
+                var whitelist = new[]
+                {
+                    "0.0.0-fake-local"
+                };
+                
+                if (whitelist.Contains(currentServerVersion)) return false;
+                
+                return SemanticVersion.Parse(currentServerVersion) < minimumRequiredVersion;
+            }
         }
         
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
