@@ -4175,6 +4175,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
     String Description { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
