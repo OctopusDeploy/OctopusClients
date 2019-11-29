@@ -75,11 +75,6 @@ namespace Octopus.Client.Repositories.Async
         {
             if (!hasMinimumRequiredVersion) return;
             var currentServerVersion = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version);
-
-            if (currentServerVersion.ToString().Contains("0.0.0-local"))
-            {
-                return;
-            }
             
             if (currentServerVersion < minimumRequiredVersion)
             {
