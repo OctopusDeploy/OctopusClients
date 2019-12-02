@@ -3033,6 +3033,7 @@ Octopus.Client.Model
     String ProjectName { get; set; }
     String ProjectSlug { get; set; }
     ICollection<LibraryVariableSetReleaseUsageEntry> Releases { get; set; }
+    List<LibraryVariableSetRunbookSnapshotUsageEntry> RunbookSnapshots { get; set; }
   }
   class LibraryVariableSetReleaseUsageEntry
   {
@@ -3068,6 +3069,12 @@ Octopus.Client.Model
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.LibraryVariableSetResource Clear()
   }
+  class LibraryVariableSetRunbookSnapshotUsageEntry
+  {
+    .ctor()
+    String SnapshotId { get; set; }
+    String SnapshotName { get; set; }
+  }
   class LibraryVariableSetUsageResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3076,6 +3083,7 @@ Octopus.Client.Model
     .ctor()
     Int32 CountOfProjectsUserCannotSee { get; set; }
     Int32 CountOfReleasesUserCannotSee { get; set; }
+    Int32 CountOfRunbookSnapshotsUserCannotSee { get; set; }
     ICollection<LibraryVariableSetProjectUsage> Projects { get; set; }
   }
   abstract class LicenseKinds
@@ -5389,6 +5397,8 @@ Octopus.Client.Model.Accounts.Usages
     ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
     ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
     ICollection<ReleaseUsage> Releases { get; set; }
+    ICollection<RunbookStepUsage> RunbookProcesses { get; set; }
+    ICollection<RunbookSnapshotUsage> RunbookSnapshots { get; set; }
     ICollection<TargetUsageEntry> Targets { get; set; }
   }
   class LibraryVariableSetUsageEntry
@@ -5405,6 +5415,7 @@ Octopus.Client.Model.Accounts.Usages
     String ProjectName { get; set; }
     String ProjectSlug { get; set; }
     ICollection<ReleaseUsageEntry> Releases { get; set; }
+    List<RunbookSnapshotUsageEntry> RunbookSnapshots { get; set; }
   }
   class ReleaseUsage
   {
@@ -5419,7 +5430,35 @@ Octopus.Client.Model.Accounts.Usages
     String ReleaseId { get; set; }
     String ReleaseVersion { get; set; }
   }
+  class RunbookSnapshotUsage
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    String RunbookId { get; set; }
+    String RunbookName { get; set; }
+    ICollection<RunbookSnapshotUsageEntry> Snapshots { get; set; }
+  }
+  class RunbookSnapshotUsageEntry
+  {
+    .ctor()
+    String SnapshotId { get; set; }
+    String SnapshotName { get; set; }
+  }
+  class RunbookStepUsage
+    Octopus.Client.Model.Accounts.Usages.StepUsageBase
+  {
+    .ctor()
+    String ProcessId { get; set; }
+    String RunbookId { get; set; }
+    String RunbookName { get; set; }
+  }
   class StepUsage
+    Octopus.Client.Model.Accounts.Usages.StepUsageBase
+  {
+    .ctor()
+  }
+  class StepUsageBase
   {
     .ctor()
     String ProjectId { get; set; }
