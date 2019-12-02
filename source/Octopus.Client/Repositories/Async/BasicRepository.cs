@@ -50,26 +50,26 @@ namespace Octopus.Client.Repositories.Async
                 {
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
-                   
+
                     if (!isDefaultSpaceFound)
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
-        } 
+        }
 
         protected void MinimumCompatibleVersion(string version)
         {
             minimumRequiredVersion = SemanticVersion.Parse(version);
             hasMinimumRequiredVersion = true;
         }
-        
+
         private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
                 CheckSpaceResource(spaceResource);
         }
-        
+
         protected async Task<bool> ThrowIfServerVersionIsNotCompatible()
         {
             if (!hasMinimumRequiredVersion) return false;
@@ -84,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
 
             return false;
         }
-        
+
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();
