@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -51,33 +50,33 @@ namespace Octopus.Client.Repositories.Async
                 {
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
-                   
+
                     if (!isDefaultSpaceFound)
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
-        } 
+        }
 
         protected void MinimumCompatibleVersion(string version)
         {
             minimumRequiredVersion = SemanticVersion.Parse(version);
             hasMinimumRequiredVersion = true;
         }
-        
+
         private void AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
                 CheckSpaceResource(spaceResource);
         }
-        
+
         protected async Task<bool> ThrowIfServerVersionIsNotCompatible()
         {
             if (!hasMinimumRequiredVersion) return false;
 
-            var currentServerVersion = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version);
+            var currentServerVersion = (await Repository.LoadRootDocument()).Version;
 
-            if (currentServerVersion < minimumRequiredVersion)
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
             {
                 throw new NotSupportedException(
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
@@ -85,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
 
             return false;
         }
-        
+
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();

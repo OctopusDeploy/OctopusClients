@@ -10,7 +10,7 @@ namespace Octopus.Client.E2ETests
         internal static string GetNuGetPackage()
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().FullLocalPath());
-            var artifactsFolder = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\..\artifacts"));
+            var artifactsFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "artifacts"));
             var package = Directory.EnumerateFiles(artifactsFolder, "Octopus.Client.*.nupkg").FirstOrDefault();
             if (package == null)
                 Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder}'");
