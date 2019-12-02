@@ -4204,6 +4204,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
     String Description { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
     String PublishedRunbookSnapshotId { get; set; }
