@@ -26,6 +26,9 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
 
         [Writeable]
+        public TenantedDeploymentMode MultiTenancyMode { get; set; }
+
+        [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
     }

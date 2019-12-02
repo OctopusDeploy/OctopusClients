@@ -27,7 +27,7 @@ namespace Octopus.Client.E2ETests
         public void OneTimeSetUp()
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().FullLocalPath());
-            var artifactsFolder = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\..\artifacts"));
+            var artifactsFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "artifacts"));
             var package = Directory.EnumerateFiles(artifactsFolder , "Octopus.Client.*.nupkg").FirstOrDefault();
             if (package == null)
                 Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder }'");
@@ -47,7 +47,7 @@ namespace Octopus.Client.E2ETests
                 }
             }
             
-            var sourceFolder = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\..\source\Octopus.Client"));
+            var sourceFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "source", "Octopus.Client"));
             var projectFile = Directory.EnumerateFiles(sourceFolder , "Octopus.Client.csproj").FirstOrDefault();
             if (projectFile == null)
                 Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Client.csproj' at '{artifactsFolder }'");
