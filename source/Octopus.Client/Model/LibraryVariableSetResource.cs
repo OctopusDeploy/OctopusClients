@@ -120,7 +120,6 @@ namespace Octopus.Client.Model
         public int CountOfRunbookSnapshotsUserCannotSee { get; set; }
     }
 
-
     public class LibraryVariableSetProjectUsage
     {
         public LibraryVariableSetProjectUsage()
@@ -128,7 +127,6 @@ namespace Octopus.Client.Model
             Releases = new List<LibraryVariableSetReleaseUsageEntry>();
             RunbookSnapshots = new List<LibraryVariableSetRunbookSnapshotUsageEntry>();
         }
-        
         public string ProjectSlug { get; set; }
         public string ProjectName { get; set; }
         public string ProjectId { get; set; }

@@ -14,7 +14,6 @@ namespace Octopus.Client.Model.Accounts.Usages
             LibraryVariableSets = new List<LibraryVariableSetUsageEntry>();
             RunbookProcesses = new List<RunbookStepUsage>();
             RunbookSnapshots = new List<RunbookSnapshotUsage>();
-       
         }
 
         public ICollection<TargetUsageEntry> Targets { get; set; }

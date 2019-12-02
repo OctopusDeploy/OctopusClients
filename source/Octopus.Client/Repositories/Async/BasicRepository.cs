@@ -75,7 +75,6 @@ namespace Octopus.Client.Repositories.Async
         {
             if (!hasMinimumRequiredVersion) return;
             var currentServerVersion = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version);
-            
             if (currentServerVersion < minimumRequiredVersion)
             {
                 throw new NotSupportedException(
