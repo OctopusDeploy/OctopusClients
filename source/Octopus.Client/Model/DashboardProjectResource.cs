@@ -12,7 +12,10 @@ namespace Octopus.Client.Model
         public ReferenceCollection EnvironmentIds { get; set; }
 
         [JsonIgnore]
-        public TenantedDeploymentMode TenantDeploymentMode { get; set; }
+        [Obsolete("Use " + nameof(TenantedDeploymentMode) + " instead. This property wasn't populated correctly anyway.")]
+        public TenantedDeploymentMode TenantDeploymentMode{get;set;}
+        
+        public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
         public bool CanPerformUntenantedDeployment { get; set; }
 
         public DashboardProjectResource Copy()
