@@ -2360,6 +2360,24 @@ Octopus.Client.Model
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
   }
+  DaysOfWeek
+  {
+      Sunday = 1
+      Monday = 2
+      Tuesday = 4
+      Wednesday = 8
+      Thursday = 16
+      Friday = 32
+      Saturday = 64
+  }
+  class DaysOfWeekFlagConverter
+    JsonConverter
+  {
+    .ctor()
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
   class Defect
   {
     .ctor()
@@ -6093,20 +6111,13 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
   {
     .ctor()
+    Octopus.Client.Model.DaysOfWeek DaysOfWeek { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Boolean Friday { get; set; }
     Nullable<Int16> HourInterval { get; set; }
     Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
     Nullable<Int16> MinuteInterval { get; set; }
-    Boolean Monday { get; set; }
     Nullable<DateTime> RunAfter { get; set; }
     Nullable<DateTime> RunUntil { get; set; }
-    Boolean Saturday { get; set; }
-    Boolean Sunday { get; set; }
-    Boolean Thursday { get; set; }
-    Boolean Tuesday { get; set; }
-    Boolean Wednesday { get; set; }
-    void SetDayFromString(String)
   }
   class CronScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -6178,16 +6189,9 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
   {
     .ctor()
+    Octopus.Client.Model.DaysOfWeek DaysOfWeek { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Boolean Friday { get; set; }
-    Boolean Monday { get; set; }
-    Boolean Saturday { get; set; }
     DateTime StartTime { get; set; }
-    Boolean Sunday { get; set; }
-    Boolean Thursday { get; set; }
-    Boolean Tuesday { get; set; }
-    Boolean Wednesday { get; set; }
-    void SetDayFromString(String)
   }
   abstract class ScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
