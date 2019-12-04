@@ -2328,6 +2328,7 @@ Octopus.Client.Model
     String ProjectGroupId { get; set; }
     String Slug { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantDeploymentMode { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     Octopus.Client.Model.DashboardProjectResource Copy()
   }
   DashboardRenderMode
