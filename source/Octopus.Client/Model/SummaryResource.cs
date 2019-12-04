@@ -10,5 +10,6 @@ namespace Octopus.Client.Model
         public Dictionary<string, int> MachineEndpointSummaries { get; set; }
         public bool TentacleUpgradesRequired { get; set; }
         public string[] MachineIdsForCalamariUpgrade { get; set; }
+        public string[] MachineIdsForTentacleUpgrade { get; set; }
     }
 }
