@@ -241,6 +241,10 @@ namespace Octopus.Client.Model
 
         [Description("Edit runbooks")] [SupportsRestriction(PermissionScope.Projects)] RunbookEdit,
 
-        [Description("Execute runbooks to target environments")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookExecute,
+        [Description("View runbook runs")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookRunView,
+
+        [Description("Delete runbook runs")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookRunDelete,
+
+        [Description("Create runbook runs")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookRunCreate,
     }
 }
