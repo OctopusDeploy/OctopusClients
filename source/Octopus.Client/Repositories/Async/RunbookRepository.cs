@@ -62,11 +62,4 @@ namespace Octopus.Client.Repositories.Async
         }
     }
 
-    internal static class RunbookLinkExtensions
-    {
-        public static string LinkToRunbooksRunPublished(this RootResource root)
-        {
-            return root.Link("RunbooksRunPublished");
-        }
-    }
 }

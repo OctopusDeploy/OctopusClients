@@ -57,7 +57,15 @@ namespace Octopus.Client.Repositories
                 EnvironmentName = environmentName,
                 TenantName = tenantName
             };
-            return Client.Post<object, RunbookRunResource>(root.Link("RunbooksRunPublished"), runPublished);
+            return Client.Post<object, RunbookRunResource>(root.LinkToRunbooksRunPublished(), runPublished);
+        }
+    }
+    
+    internal static class RunbookLinkExtensions
+    {
+        public static string LinkToRunbooksRunPublished(this RootResource root)
+        {
+            return root.Link("RunbooksRunPublished");
         }
     }
 }
