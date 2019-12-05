@@ -51,11 +51,5 @@ namespace Octopus.Client.Model
     
         [Writeable]
         public IdentityResource[] Identities { get; set; }
-        
-        /// <summary>
-        /// Gets a list of project references when the user navigates to a project's page
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        public Dictionary<string, ReferenceCollection> RecentlyViewedProjectIds { get; set; }
     }
 }
