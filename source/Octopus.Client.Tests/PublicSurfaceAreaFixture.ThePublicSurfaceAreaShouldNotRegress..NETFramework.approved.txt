@@ -4311,6 +4311,19 @@ Octopus.Client.Model
     String NextNameIncrement { get; set; }
     String RunbookProcessId { get; set; }
   }
+  class RunPublishedRunbookResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String EnvironmentName { get; set; }
+    String ProjectName { get; set; }
+    String RunbookName { get; set; }
+    String SpaceId { get; set; }
+    String TenantName { get; set; }
+  }
   class ScheduledTaskDetailsResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6795,7 +6808,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
-    Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
+    Octopus.Client.Model.RunbookRunResource RunPublished(String, String, String, String)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>

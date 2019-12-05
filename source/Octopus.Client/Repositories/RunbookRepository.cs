@@ -1,4 +1,5 @@
 using Octopus.Client.Editors;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -10,9 +11,9 @@ namespace Octopus.Client.Repositories
         RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(RunbookResource runbook);
         RunbookRunTemplateResource GetRunbookRunTemplate(RunbookResource runbook);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun);
+        RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName);
     }
-    
+
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
         public RunbookRepository(IOctopusRepository repository)
@@ -45,9 +46,18 @@ namespace Octopus.Client.Repositories
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
-        public RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        public RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName)
         {
-            return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
+            var root = Repository.LoadRootDocument();
+            
+            RunPublishedRunbookResource runPublished = new RunPublishedRunbookResource()
+            {
+                ProjectName = projectName,
+                RunbookName = runbookName,
+                EnvironmentName = environmentName,
+                TenantName = tenantName
+            };
+            return Client.Post<object, RunbookRunResource>(root.Link("RunbooksRunPublished"), runPublished);
         }
     }
 }
