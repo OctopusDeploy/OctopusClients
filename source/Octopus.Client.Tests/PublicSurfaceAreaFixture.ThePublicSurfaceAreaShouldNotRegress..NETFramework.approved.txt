@@ -4319,6 +4319,7 @@ Octopus.Client.Model
   {
     .ctor()
     String EnvironmentName { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
     String ProjectName { get; set; }
     String RunbookName { get; set; }
     String SpaceId { get; set; }
@@ -6808,7 +6809,8 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
-    Octopus.Client.Model.RunbookRunResource RunPublished(String, String, String, String)
+    Octopus.Client.Model.RunbookRunResource RunPublished(String, String, String, String, Dictionary<String, String>)
+    Octopus.Client.Model.RunbookRunResource RunPublished(String, String, String, Dictionary<String, String>)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7490,7 +7492,8 @@ Octopus.Client.Repositories.Async
     Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
-    Task<RunbookRunResource> RunPublished(String, String, String, String)
+    Task<RunbookRunResource> RunPublished(String, String, String, String, Dictionary<String, String>)
+    Task<RunbookRunResource> RunPublished(String, String, String, Dictionary<String, String>)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>
