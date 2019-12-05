@@ -18,8 +18,5 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string HelpSidebarSupportLink { get; set; }
-
-        [Writeable]
-        public bool IsRunbooksEnabled { get; set; }
     }
 }
