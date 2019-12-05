@@ -65,14 +65,16 @@ namespace Octopus.Client.Repositories
                     if (deltaResult != null)
                         return deltaResult;
                 }
+                catch (TimeoutException ex)
+                {
+                    Logger.Info("Delta push timed out: " + ex.Message);
+
+                    var verificationResult = VerifyTransfer(fileName, contents);
+                    if (verificationResult != null) return verificationResult;
+                }
                 catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
                     Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
-                }
-                catch (TimeoutException)
-                {
-                    var verificationResult = VerifyTransfer(fileName, contents);
-                    if (verificationResult != null) return verificationResult;
                 }
 
                 Logger.Info("Falling back to pushing the complete package to the server");

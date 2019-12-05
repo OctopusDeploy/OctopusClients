@@ -61,14 +61,16 @@ namespace Octopus.Client.Repositories.Async
                     if (deltaResult != null)
                         return deltaResult;
                 }
+                catch (TimeoutException ex)
+                {
+                    Logger.Info("Delta push timed out: " + ex.Message);
+
+                    var verificationResult = await VerifyTransfer(fileName, contents);
+                    if (verificationResult != null) return verificationResult;
+                }
                 catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
                     Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
-                }
-                catch (TimeoutException)
-                {
-                    var verificationResult = await VerifyTransfer(fileName, contents);
-                    if (verificationResult != null) return verificationResult;
                 }
 
                 Logger.Info("Falling back to pushing the complete package to the server");
@@ -92,7 +94,6 @@ namespace Octopus.Client.Repositories.Async
             }
 
             contents.Seek(0, SeekOrigin.Begin);
-
 
             try
             {
@@ -209,7 +210,8 @@ namespace Octopus.Client.Repositories.Async
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
                         pathParameters).ConfigureAwait(false);
 
-                    Logger.Info($"Delta transfer completed");
+                    Logger.Info("Delta transfer completed");
+
                     return result;
                 }
             }
