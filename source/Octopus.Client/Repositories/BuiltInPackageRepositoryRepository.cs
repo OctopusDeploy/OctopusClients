@@ -65,15 +65,16 @@ namespace Octopus.Client.Repositories
                     if (deltaResult != null)
                         return deltaResult;
                 }
-                catch(Exception ex) when (!(ex is OctopusValidationException))
+                catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
                     Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
-
+                }
+                catch (TimeoutException)
+                {
                     var verificationResult = VerifyTransfer(fileName, contents);
                     if (verificationResult != null) return verificationResult;
-
-                    Logger.Info("Transfer verification failed");
                 }
+
                 Logger.Info("Falling back to pushing the complete package to the server");
             }
             else
@@ -97,22 +98,30 @@ namespace Octopus.Client.Repositories
             }
 
 
-            var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                link,
-                new FileUpload() { Contents = contents, FileName = fileName },
-                pathParameters);
+            try
+            {
+                return repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
+                    link,
+                    new FileUpload() { Contents = contents, FileName = fileName },
+                    pathParameters);
+            }
+            catch (TimeoutException)
+            {
+                var verificationResult = VerifyTransfer(fileName, contents);
+                if (verificationResult != null) return verificationResult;
 
-            Logger.Info("Package transfer completed");
-
-            return result;
+                throw;
+            }
         }
 
         private PackageFromBuiltInFeedResource VerifyTransfer(string fileName, Stream contents)
         {
+            Logger.Info("Trying to find out whether the transfer worked");
+
             if (!PackageIdentityParser.TryParsePackageIdAndVersion(Path.GetFileNameWithoutExtension(fileName),
                 out var packageId, out var version))
             {
-                Logger.Info("Can't check whether the delta transfer actually worked");
+                Logger.Info("Can't check whether the transfer actually worked");
                 return null;
             }
 
@@ -128,7 +137,16 @@ namespace Octopus.Client.Repositories
 
             var localFileHash = HashCalculator.Hash(contents);
 
-            return localFileHash == package.Hash ? package : null;
+            if (localFileHash != package.Hash)
+            {
+                Logger.Info("The hash of the local package and the hash of the uploaded package don't match");
+                return null;
+
+            }
+
+            Logger.Info("Package has been successfully uploaded");
+
+            return package;
         }
 
         private PackageFromBuiltInFeedResource TryFindPackage(string packageId, SemanticVersion version)
