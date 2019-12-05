@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook);
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
-        Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
+        Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -45,10 +45,28 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
-
-        public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        
+        public async Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName)
         {
-            return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
+            var root = await Repository.LoadRootDocument().ConfigureAwait(false);
+            
+            RunPublishedRunbookResource runPublished = new RunPublishedRunbookResource()
+            {
+                ProjectName = projectName,
+                RunbookName = runbookName,
+                EnvironmentName = environmentName,
+                TenantName = tenantName
+            };
+            
+            return await Client.Post<object, RunbookRunResource>(root.LinkToRunbooksRunPublished(), runPublished).ConfigureAwait(false);
+        }
+    }
+
+    public static class RunbookLinkExtensions
+    {
+        public static string LinkToRunbooksRunPublished(this RootResource root)
+        {
+            return root.Link("RunbooksRunPublished");
         }
     }
 }
