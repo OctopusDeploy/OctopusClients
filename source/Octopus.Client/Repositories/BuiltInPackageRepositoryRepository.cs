@@ -21,6 +21,7 @@ namespace Octopus.Client.Repositories
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
         void DeletePackages(IReadOnlyList<PackageResource> packages);
+        PackageFromBuiltInFeedResource GetPackage(string packageId);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -47,6 +48,12 @@ namespace Octopus.Client.Repositories
         {
             return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
         }
+
+        public PackageFromBuiltInFeedResource GetPackage(string packageId)
+        {
+            return repository.Client.Get<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { id = packageId });
+        }
+
 
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
         {
@@ -109,12 +116,11 @@ namespace Octopus.Client.Repositories
                 return null;
             }
 
-            var package = repository.BuiltInPackageRepository.ListPackages($"{packageId}.{version}").Items
-                .SingleOrDefault();
+            var package = TryFindPackage(packageId, version);
 
             if (package == null)
             {
-                Logger.Info("Packaged hasn't been uploaded");
+                Logger.Info("Package hasn't been uploaded");
                 return null;
             }
 
@@ -123,6 +129,18 @@ namespace Octopus.Client.Repositories
             var localFileHash = HashCalculator.Hash(contents);
 
             return localFileHash == package.Hash ? package : null;
+        }
+
+        private PackageFromBuiltInFeedResource TryFindPackage(string packageId, SemanticVersion version)
+        {
+            try
+            {
+                return repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                return null;
+            }
         }
 
         private PackageFromBuiltInFeedResource AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)

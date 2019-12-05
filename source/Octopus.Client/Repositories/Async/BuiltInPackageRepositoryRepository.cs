@@ -22,6 +22,8 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
         Task DeletePackage(PackageResource package);
         Task DeletePackages(IReadOnlyList<PackageResource> packages);
+
+        Task<PackageFromBuiltInFeedResource> GetPackage(string packageId);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -109,12 +111,11 @@ namespace Octopus.Client.Repositories.Async
                 return null;
             }
 
-            var package = (await repository.BuiltInPackageRepository.ListPackages($"{packageId}.{version}")).Items
-                .SingleOrDefault();
+            var package = await TryFindPackage(packageId, version);
 
             if (package == null)
             {
-                Logger.Info("Packaged hasn't been uploaded");
+                Logger.Info("Package hasn't been uploaded");
                 return null;
             }
 
@@ -123,6 +124,18 @@ namespace Octopus.Client.Repositories.Async
             var localFileHash = HashCalculator.Hash(contents);
 
             return localFileHash == package.Hash ? package : null;
+        }
+
+        private Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version)
+        {
+            try
+            {
+                return repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                return null;
+            }
         }
 
         private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
@@ -186,6 +199,11 @@ namespace Octopus.Client.Repositories.Async
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
         {
             return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }).ConfigureAwait(false);
+        }
+
+        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId)
+        {
+            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = packageId }).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
