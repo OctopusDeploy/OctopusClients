@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
 
@@ -11,7 +12,8 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook);
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
-        Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName);
+        Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues = null);
+        Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, Dictionary<string, string> formValues = null);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -46,10 +48,20 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
         
-        public async Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName)
+        public Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues = null)
+        {
+            return RunPublishedInner(projectName, runbookName, environmentName, tenantName, formValues);
+        }
+
+        public Task<RunbookRunResource> RunPublished(string projectName, string runbookName, string environmentName, Dictionary<string, string> formValues = null)
+        {
+            return RunPublishedInner(projectName, runbookName, environmentName, null, formValues);
+        }
+
+        private async Task<RunbookRunResource> RunPublishedInner(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues)
         {
             var root = await Repository.LoadRootDocument().ConfigureAwait(false);
-            
+
             RunPublishedRunbookResource runPublished = new RunPublishedRunbookResource()
             {
                 ProjectName = projectName,
@@ -57,9 +69,11 @@ namespace Octopus.Client.Repositories.Async
                 EnvironmentName = environmentName,
                 TenantName = tenantName
             };
+
+            if (formValues != null)
+                runPublished.FormValues = formValues;
             
             return await Client.Post<object, RunbookRunResource>(root.LinkToRunbooksRunPublished(), runPublished).ConfigureAwait(false);
         }
     }
-
 }

@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -20,6 +23,10 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public string TenantName { get; set; }
+
+        [WriteableOnCreate]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public Dictionary<string, string> FormValues { get; set; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         public string SpaceId { get; set; }
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -11,7 +12,8 @@ namespace Octopus.Client.Repositories
         RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(RunbookResource runbook);
         RunbookRunTemplateResource GetRunbookRunTemplate(RunbookResource runbook);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName);
+        RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues = null);
+        RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, Dictionary<string, string> formValues = null);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -46,10 +48,20 @@ namespace Octopus.Client.Repositories
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
-        public RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName)
+        public RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues = null)
+        {
+            return RunPublishedInner(projectName, runbookName, environmentName, tenantName, formValues);
+        }
+
+        public RunbookRunResource RunPublished(string projectName, string runbookName, string environmentName, Dictionary<string, string> formValues = null)
+        {
+            return RunPublishedInner(projectName, runbookName, environmentName, null, formValues);
+        }
+
+        private RunbookRunResource RunPublishedInner(string projectName, string runbookName, string environmentName, string tenantName, Dictionary<string, string> formValues)
         {
             var root = Repository.LoadRootDocument();
-            
+
             RunPublishedRunbookResource runPublished = new RunPublishedRunbookResource()
             {
                 ProjectName = projectName,
@@ -57,6 +69,10 @@ namespace Octopus.Client.Repositories
                 EnvironmentName = environmentName,
                 TenantName = tenantName
             };
+
+            if (formValues != null)
+                runPublished.FormValues = formValues;
+            
             return Client.Post<object, RunbookRunResource>(root.LinkToRunbooksRunPublished(), runPublished);
         }
     }
