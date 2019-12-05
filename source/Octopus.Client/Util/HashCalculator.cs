@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Octopus.Client.Util
 {
-    public static class HashCalculator
+    static class HashCalculator
     {
         public static string Hash(Stream stream)
         {
