@@ -127,28 +127,9 @@ namespace Octopus.Client.Repositories
                 return null;
             }
 
-            var package = TryFindPackage(packageId, version);
+            var uploadedPackage = TryFindPackage(packageId, version);
 
-            if (package == null)
-            {
-                Logger.Info("Package hasn't been uploaded");
-                return null;
-            }
-
-            contents.Seek(0, SeekOrigin.Begin);
-
-            var localFileHash = HashCalculator.Hash(contents);
-
-            if (localFileHash != package.Hash)
-            {
-                Logger.Info("The hash of the local package and the hash of the uploaded package don't match");
-                return null;
-
-            }
-
-            Logger.Info("Package has been successfully uploaded");
-
-            return package;
+            return PackageContentComparer.AreSame(uploadedPackage, contents, Logger) ? uploadedPackage : null;
         }
 
         private PackageFromBuiltInFeedResource TryFindPackage(string packageId, SemanticVersion version)
