@@ -4622,6 +4622,7 @@ Octopus.Client.Model
     Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
     Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
     String[] MachineIdsForCalamariUpgrade { get; set; }
+    String[] MachineIdsForTentacleUpgrade { get; set; }
     Boolean TentacleUpgradesRequired { get; set; }
     Int32 TotalDisabledMachines { get; set; }
     Int32 TotalMachines { get; set; }
@@ -4632,6 +4633,7 @@ Octopus.Client.Model
     Dictionary<String, Int32> MachineEndpointSummaries { get; set; }
     Dictionary<String, Int32> MachineHealthStatusSummaries { get; set; }
     String[] MachineIdsForCalamariUpgrade { get; set; }
+    String[] MachineIdsForTentacleUpgrade { get; set; }
     Boolean TentacleUpgradesRequired { get; set; }
     Int32 TotalDisabledMachines { get; set; }
     Int32 TotalMachines { get; set; }
