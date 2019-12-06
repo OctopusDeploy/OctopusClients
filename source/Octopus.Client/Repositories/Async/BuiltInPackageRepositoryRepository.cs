@@ -127,11 +127,11 @@ namespace Octopus.Client.Repositories.Async
             return PackageContentComparer.AreSame(uploadedPackage, contents, Logger) ? uploadedPackage : null;
         }
 
-        private Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version)
+        private async Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version)
         {
             try
             {
-                return repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
+                return await repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
             }
             catch (OctopusResourceNotFoundException)
             {
