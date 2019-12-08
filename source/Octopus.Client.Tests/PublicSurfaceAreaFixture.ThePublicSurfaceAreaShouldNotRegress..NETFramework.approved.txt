@@ -6117,8 +6117,8 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Nullable<Int16> HourInterval { get; set; }
     Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
     Nullable<Int16> MinuteInterval { get; set; }
-    Nullable<DateTime> RunAfter { get; set; }
-    Nullable<DateTime> RunUntil { get; set; }
+    DateTime RunAfter { get; set; }
+    DateTime RunUntil { get; set; }
   }
   class CronScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource

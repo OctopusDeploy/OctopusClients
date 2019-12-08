@@ -8,10 +8,10 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
         public override TriggerFilterType FilterType => TriggerFilterType.ContinuousDailySchedule;
 
         [Writeable]
-        public DateTime? RunAfter { get; set; }
+        public DateTime RunAfter { get; set; }
 
         [Writeable]
-        public DateTime? RunUntil { get; set; }
+        public DateTime RunUntil { get; set; }
 
         [Writeable]
         public DailyScheduledTriggerInterval Interval { get; set; }
