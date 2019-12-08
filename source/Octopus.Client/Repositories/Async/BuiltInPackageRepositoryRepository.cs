@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
                 {
                     Logger.Info("Delta push timed out: " + ex.Message);
 
-                    var verificationResult = await VerifyTransfer(fileName, contents);
+                    var verificationResult = await VerifyTransfer(fileName, contents).ConfigureAwait(false);
                     if (verificationResult != null) return verificationResult;
                 }
                 catch (Exception ex) when (!(ex is OctopusValidationException))
@@ -131,7 +131,7 @@ namespace Octopus.Client.Repositories.Async
         {
             try
             {
-                return await repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
+                return await repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}").ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
