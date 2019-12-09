@@ -2312,6 +2312,7 @@ Octopus.Client.Model
     String ProjectGroupId { get; set; }
     String Slug { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantDeploymentMode { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     Octopus.Client.Model.DashboardProjectResource Copy()
   }
   DashboardRenderMode
@@ -2343,6 +2344,24 @@ Octopus.Client.Model
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
+  DaysOfWeek
+  {
+      Sunday = 1
+      Monday = 2
+      Tuesday = 4
+      Wednesday = 8
+      Thursday = 16
+      Friday = 32
+      Saturday = 64
+  }
+  class DaysOfWeekFlagConverter
+    JsonConverter
+  {
+    .ctor()
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
   }
   class Defect
   {
@@ -2777,7 +2796,6 @@ Octopus.Client.Model
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
-    Boolean IsRunbooksEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
@@ -2909,7 +2927,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
     Boolean FailureEncountered { get; }
     Boolean ForcePackageDownload { get; set; }
-    Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
@@ -3721,6 +3738,9 @@ Octopus.Client.Model
       BuildInformationAdminister = 111
       RunbookView = 112
       RunbookEdit = 113
+      RunbookRunView = 114
+      RunbookRunDelete = 115
+      RunbookRunCreate = 116
   }
   class PermissionDescription
   {
@@ -3776,6 +3796,12 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
+  }
+  class ProcessReferenceDataItem
+    Octopus.Client.Model.ReferenceDataItem
+  {
+    .ctor(String, String, Octopus.Client.Model.ProcessType)
+    Octopus.Client.Model.ProcessType ProcessType { get; set; }
   }
   ProcessType
   {
@@ -3889,6 +3915,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionResource Action { get; set; }
+    String Description { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterResource Filter { get; set; }
     Boolean IsDisabled { get; set; }
     String Name { get; set; }
@@ -4177,9 +4204,12 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
     String Description { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
+    String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
     String SpaceId { get; set; }
   }
@@ -4207,7 +4237,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
     Boolean FailureEncountered { get; set; }
     Boolean ForcePackageDownload { get; set; }
-    Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String FrozenRunbookProcessId { get; set; }
     String ManifestVariableSetId { get; set; }
@@ -4318,6 +4347,7 @@ Octopus.Client.Model
       Channel = 8
       TenantTag = 9
       Tenant = 10
+      ProcessOwner = 11
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
@@ -5027,6 +5057,7 @@ Octopus.Client.Model
     List<ReferenceDataItem> Channels { get; set; }
     List<ReferenceDataItem> Environments { get; set; }
     List<ReferenceDataItem> Machines { get; set; }
+    List<ProcessReferenceDataItem> Processes { get; set; }
     List<ReferenceDataItem> Roles { get; set; }
     List<ReferenceDataItem> TenantTags { get; set; }
   }
@@ -5999,6 +6030,18 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
   }
+  class RunRunbookActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    String RunbookId { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
   abstract class ScopedDeploymentActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6020,6 +6063,7 @@ Octopus.Client.Model.Triggers
       AutoDeploy = 0
       DeployLatestRelease = 1
       DeployNewRelease = 2
+      RunRunbook = 3
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -6031,14 +6075,28 @@ Octopus.Client.Model.Triggers
   TriggerFilterType
   {
       MachineFilter = 0
-      DailySchedule = 1
-      DaysPerWeekSchedule = 2
+      OnceDailySchedule = 1
+      ContinuousDailySchedule = 2
       DaysPerMonthSchedule = 3
       CronExpressionSchedule = 4
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
 {
+  class ContinuousDailyScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.DaysOfWeek DaysOfWeek { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Nullable<Int16> HourInterval { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
+    Nullable<Int16> MinuteInterval { get; set; }
+    DateTime RunAfter { get; set; }
+    DateTime RunUntil { get; set; }
+  }
   class CronScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6048,24 +6106,10 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     String CronExpression { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
   }
-  class DailyScheduledTriggerFilterResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Nullable<Int16> HourInterval { get; set; }
-    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
-    Nullable<Int16> MinuteInterval { get; set; }
-    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterRunType RunType { get; set; }
-    Nullable<DateTime> StartTime { get; set; }
-  }
   DailyScheduledTriggerInterval
   {
-      OnceDaily = 0
-      OnceHourly = 1
-      OnceEveryMinute = 2
+      OnceHourly = 0
+      OnceEveryMinute = 1
   }
   DayOfWeek
   {
@@ -6090,22 +6134,6 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
     DateTime StartTime { get; set; }
   }
-  class DaysPerWeekScheduledTriggerFilterResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerFilterResource
-  {
-    .ctor()
-    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    Boolean Friday { get; set; }
-    Boolean Monday { get; set; }
-    Boolean Saturday { get; set; }
-    Boolean Sunday { get; set; }
-    Boolean Thursday { get; set; }
-    Boolean Tuesday { get; set; }
-    Boolean Wednesday { get; set; }
-    void SetDayFromString(String)
-  }
   class DeployLatestReleaseActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6115,7 +6143,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String DestinationEnvironmentId { get; set; }
     Boolean ShouldRedeployWhenReleaseIsCurrent { get; set; }
-    String SourceEnvironmentId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SourceEnvironmentIds { get; set; }
     String Variables { get; set; }
   }
   class DeployNewReleaseActionResource
@@ -6133,17 +6161,22 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
       DateOfMonth = 0
       DayOfMonth = 1
   }
+  class OnceDailyScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.DaysOfWeek DaysOfWeek { get; set; }
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    DateTime StartTime { get; set; }
+  }
   abstract class ScheduledTriggerFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     String Timezone { get; set; }
-  }
-  ScheduledTriggerFilterRunType
-  {
-      ScheduledTime = 0
-      Continuously = 1
   }
 }
 Octopus.Client.Model.Versioning
@@ -6686,6 +6719,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.ProjectTriggerEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Octopus.Client.Model.ProjectTriggerResource FindByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> FindByRunbook(String[])
   }
   interface IProxyRepository
     Octopus.Client.Repositories.IGet<ProxyResource>
@@ -6735,6 +6769,10 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.RunbookEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.RunbookResource FindByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7364,6 +7402,7 @@ Octopus.Client.Repositories.Async
   {
     Task<ProjectTriggerEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.Triggers.TriggerFilterResource, Octopus.Client.Model.Triggers.TriggerActionResource)
     Task<ProjectTriggerResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(String[])
   }
   interface IProxyRepository
     Octopus.Client.Repositories.Async.IGet<ProxyResource>
@@ -7413,6 +7452,10 @@ Octopus.Client.Repositories.Async
   {
     Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<RunbookResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
+    Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>

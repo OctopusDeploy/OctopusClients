@@ -10,7 +10,7 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
         public string Variables { get; set; }
 
         [Writeable]
-        public string SourceEnvironmentId { get; set; }
+        public ReferenceCollection SourceEnvironmentIds { get; set; }
 
         [Writeable]
         public string DestinationEnvironmentId { get; set; }

@@ -1,9 +1,10 @@
-﻿using Octopus.Client.Extensibility;
+﻿using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class RunbookResource: Resource, INamedResource, IHaveSpaceResource
+    public class RunbookResource : Resource, INamedResource, IHaveSpaceResource
     {
         [Writeable]
         [Trim]
@@ -17,8 +18,18 @@ namespace Octopus.Client.Model
         public string RunbookProcessId { get; set; }
 
         [Writeable]
+        public string PublishedRunbookSnapshotId { get; set; }
+
+        [Writeable]
         public string ProjectId { get; set; }
 
         public string SpaceId { get; set; }
+
+        [Writeable]
+        public TenantedDeploymentMode MultiTenancyMode { get; set; }
+
+        [Writeable]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
     }
 }

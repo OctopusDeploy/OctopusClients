@@ -14,6 +14,7 @@ namespace Octopus.Client.Model
             FormValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         }
 
+        [Required(ErrorMessage = "Please specify the Runbook Snapshot to run.")]
         [WriteableOnCreate]
         public string RunbookSnapshotId { get; set; }
 
@@ -32,9 +33,6 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public bool ForcePackageDownload { get; set; }
-
-        [WriteableOnCreate]
-        public bool ForcePackageRedeployment { get; set; }
 
         [WriteableOnCreate]
         public ReferenceCollection SkipActions { get; set; }

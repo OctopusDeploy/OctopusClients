@@ -3,21 +3,15 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
-    public enum ScheduledTriggerFilterRunType
+    public class ContinuousDailyScheduledTriggerFilterResource : ScheduledTriggerFilterResource
     {
-        ScheduledTime,
-        Continuously
-    }
-
-    public class DailyScheduledTriggerFilterResource : ScheduledTriggerFilterResource
-    {
-        public override TriggerFilterType FilterType => TriggerFilterType.DailySchedule;
+        public override TriggerFilterType FilterType => TriggerFilterType.ContinuousDailySchedule;
 
         [Writeable]
-        public DateTime? StartTime { get; set; }
+        public DateTime RunAfter { get; set; }
 
         [Writeable]
-        public ScheduledTriggerFilterRunType RunType { get; set; }
+        public DateTime RunUntil { get; set; }
 
         [Writeable]
         public DailyScheduledTriggerInterval Interval { get; set; }
@@ -27,5 +21,8 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 
         [Writeable]
         public short? MinuteInterval { get; set; }
+
+        [Writeable]
+        public DaysOfWeek DaysOfWeek { get; set; }
     }
 }
