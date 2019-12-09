@@ -9,9 +9,16 @@ namespace Octopus.Client.Validation
 
         public static bool IsOlderThanClient(string currentServerVersion, SemanticVersion minimumRequiredVersion)
         {
-            if (WhitelistOfServerVersionsSafeToIgnore.Contains(currentServerVersion)) return false;
-                
-            return SemanticVersion.Parse(currentServerVersion) < minimumRequiredVersion;
+            if (WhitelistOfServerVersionsSafeToIgnore.Contains(currentServerVersion)) 
+                return false;
+
+            var currentVersion = Normalize(SemanticVersion.Parse(currentServerVersion));
+            return currentVersion < Normalize(minimumRequiredVersion);
+        }
+
+        private static SemanticVersion Normalize(SemanticVersion version)
+        {
+            return new SemanticVersion(version.Major, version.Minor, version.Patch);
         }
     }
 }
