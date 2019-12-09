@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
         void DeletePackages(IReadOnlyList<PackageResource> packages);
-        PackageFromBuiltInFeedResource GetPackage(string packageId);
+        PackageFromBuiltInFeedResource GetPackage(string packageId, string version);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -49,9 +49,9 @@ namespace Octopus.Client.Repositories
             return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
         }
 
-        public PackageFromBuiltInFeedResource GetPackage(string packageId)
+        public PackageFromBuiltInFeedResource GetPackage(string packageId, string version)
         {
-            return repository.Client.Get<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { id = packageId });
+            return repository.Client.Get<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { id = $"{packageId}.{version}" });
         }
 
 
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories
         {
             try
             {
-                return repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}");
+                return repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString());
             }
             catch (OctopusResourceNotFoundException)
             {

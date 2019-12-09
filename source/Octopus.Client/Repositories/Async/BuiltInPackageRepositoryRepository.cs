@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories.Async
         Task DeletePackage(PackageResource package);
         Task DeletePackages(IReadOnlyList<PackageResource> packages);
 
-        Task<PackageFromBuiltInFeedResource> GetPackage(string packageId);
+        Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -131,7 +131,7 @@ namespace Octopus.Client.Repositories.Async
         {
             try
             {
-                return await repository.BuiltInPackageRepository.GetPackage($"{packageId}.{version}").ConfigureAwait(false);
+                return await repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString()).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -203,9 +203,9 @@ namespace Octopus.Client.Repositories.Async
             return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }).ConfigureAwait(false);
         }
 
-        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId)
+        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version)
         {
-            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = packageId }).ConfigureAwait(false);
+            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = $"{packageId}.{version}" }).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
