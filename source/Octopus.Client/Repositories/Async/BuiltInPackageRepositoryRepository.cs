@@ -22,6 +22,8 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
         Task DeletePackage(PackageResource package);
         Task DeletePackages(IReadOnlyList<PackageResource> packages);
+
+        Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -38,7 +40,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return await PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
         }
-        
+
         public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
         {
             return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true);
@@ -48,7 +50,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
         }
-        
+
         public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
         {
             if (useDeltaCompression)
@@ -58,6 +60,13 @@ namespace Octopus.Client.Repositories.Async
                     var deltaResult = await AttemptDeltaPush(fileName, contents, overwriteMode).ConfigureAwait(false);
                     if (deltaResult != null)
                         return deltaResult;
+                }
+                catch (TimeoutException ex)
+                {
+                    Logger.Info("Delta push timed out: " + ex.Message);
+
+                    var verificationResult = await VerifyTransfer(fileName, contents).ConfigureAwait(false);
+                    if (verificationResult != null) return verificationResult;
                 }
                 catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
@@ -74,7 +83,7 @@ namespace Octopus.Client.Repositories.Async
             var link = await repository.Link("PackageUpload").ConfigureAwait(false);
             object pathParameters;
 
-            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
+            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter
             if (link.Contains(OverwriteModeLink.Link))
             {
                 pathParameters = new { overwriteMode = overwriteMode };
@@ -85,14 +94,49 @@ namespace Octopus.Client.Repositories.Async
             }
 
             contents.Seek(0, SeekOrigin.Begin);
-            var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                link,
-                new FileUpload() {Contents = contents, FileName = fileName},
-                pathParameters).ConfigureAwait(false);
-                
-            Logger.Info("Package transfer completed");
 
-            return result;
+            try
+            {
+                return await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
+                    link,
+                    new FileUpload() {Contents = contents, FileName = fileName},
+                    pathParameters).ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                var verificationResult = await VerifyTransfer(fileName, contents);
+                if (verificationResult != null) return verificationResult;
+
+                throw;
+            }
+        }
+
+        private async Task<PackageFromBuiltInFeedResource> VerifyTransfer(string fileName, Stream contents)
+        {
+            Logger.Info("Trying to find out whether the transfer worked");
+
+            if (!PackageIdentityParser.TryParsePackageIdAndVersion(Path.GetFileNameWithoutExtension(fileName),
+                out var packageId, out var version))
+            {
+                Logger.Info("Can't check whether the transfer actually worked");
+                return null;
+            }
+
+            var uploadedPackage = await TryFindPackage(packageId, version);
+
+            return PackageContentComparer.AreSame(uploadedPackage, contents, Logger) ? uploadedPackage : null;
+        }
+
+        private async Task<PackageFromBuiltInFeedResource> TryFindPackage(string packageId, SemanticVersion version)
+        {
+            try
+            {
+                return await repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString()).ConfigureAwait(false);
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                return null;
+            }
         }
 
         private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
@@ -108,7 +152,7 @@ namespace Octopus.Client.Repositories.Async
                 Logger.Info("Could not determine the package ID and/or version based on the supplied filename");
                 return null;
             }
-            
+
             PackageSignatureResource signatureResult;
             try
             {
@@ -120,19 +164,19 @@ namespace Octopus.Client.Repositories.Async
                 Logger.Info("No package with the same ID exists on the server");
                 return null;
             }
-                
+
             using(var deltaTempFile = new TemporaryFile())
             {
                 var shouldUpload = DeltaCompression.CreateDelta(contents, signatureResult, deltaTempFile.FileName);
                 if (!shouldUpload)
                     return null;
-                
+
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
                     var link = await repository.Link("PackageDeltaUpload").ConfigureAwait(false);
                     object pathParameters;
-                    
-                    // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
+
+                    // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter
                     if (link.Contains(OverwriteModeLink.Link))
                     {
                         pathParameters = new { overwriteMode = overwriteMode, packageId, signatureResult.BaseVersion };
@@ -147,7 +191,8 @@ namespace Octopus.Client.Repositories.Async
                         new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
                         pathParameters).ConfigureAwait(false);
 
-                    Logger.Info($"Delta transfer completed");
+                    Logger.Info("Delta transfer completed");
+
                     return result;
                 }
             }
@@ -156,6 +201,11 @@ namespace Octopus.Client.Repositories.Async
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
         {
             return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }).ConfigureAwait(false);
+        }
+
+        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version)
+        {
+            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = $"{packageId}.{version}" }).ConfigureAwait(false);
         }
 
         public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
@@ -170,6 +220,6 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task DeletePackages(IReadOnlyList<PackageResource> packages)
             => await repository.Client.Delete(await repository.Link("PackagesBulk").ConfigureAwait(false), new { ids = packages.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
-        
+
     }
 }

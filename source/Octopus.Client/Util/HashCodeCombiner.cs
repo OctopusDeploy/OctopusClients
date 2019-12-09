@@ -1,8 +1,6 @@
 ﻿// Based on HashCodeCombiner from https://github.com/NuGet/NuGet.Client
 // NuGet is licensed under the Apache license: https://github.com/NuGet/NuGet.Client/blob/dev/LICENSE.txt
 
-using System;
-
 namespace Octopus.Client.Util
 {
 

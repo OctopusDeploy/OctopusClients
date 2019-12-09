@@ -6377,6 +6377,7 @@ Octopus.Client.Repositories
   {
     void DeletePackage(Octopus.Client.Model.PackageResource)
     void DeletePackages(IReadOnlyList<PackageResource>)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource GetPackage(String, String)
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(Int32, Int32)
     Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
@@ -7052,6 +7053,7 @@ Octopus.Client.Repositories.Async
   {
     Task DeletePackage(Octopus.Client.Model.PackageResource)
     Task DeletePackages(IReadOnlyList<PackageResource>)
+    Task<PackageFromBuiltInFeedResource> GetPackage(String, String)
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(Int32, Int32)
     Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)

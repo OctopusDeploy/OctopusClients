@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Features;
 using Octopus.Client.Logging;
@@ -20,6 +21,7 @@ namespace Octopus.Client.Repositories
         ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(int skip = 0, int take = 30);
         void DeletePackage(PackageResource package);
         void DeletePackages(IReadOnlyList<PackageResource> packages);
+        PackageFromBuiltInFeedResource GetPackage(string packageId, string version);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -36,7 +38,7 @@ namespace Octopus.Client.Repositories
         {
             return PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
         }
-        
+
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, bool replaceExisting = false)
         {
             return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true);
@@ -46,7 +48,13 @@ namespace Octopus.Client.Repositories
         {
             return PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
         }
-        
+
+        public PackageFromBuiltInFeedResource GetPackage(string packageId, string version)
+        {
+            return repository.Client.Get<PackageFromBuiltInFeedResource>(repository.Link("Packages"), new { id = $"{packageId}.{version}" });
+        }
+
+
         public PackageFromBuiltInFeedResource PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
         {
             if (useDeltaCompression)
@@ -57,23 +65,31 @@ namespace Octopus.Client.Repositories
                     if (deltaResult != null)
                         return deltaResult;
                 }
-                catch(Exception ex) when (!(ex is OctopusValidationException))
+                catch (TimeoutException ex)
+                {
+                    Logger.Info("Delta push timed out: " + ex.Message);
+
+                    var verificationResult = VerifyTransfer(fileName, contents);
+                    if (verificationResult != null) return verificationResult;
+                }
+                catch (Exception ex) when (!(ex is OctopusValidationException))
                 {
                     Logger.Info("Something went wrong while performing a delta transfer: " + ex.Message);
                 }
+
                 Logger.Info("Falling back to pushing the complete package to the server");
             }
             else
             {
                 Logger.Info("Pushing the complete package to the server, as delta compression was explicitly disabled");
             }
-                
+
             contents.Seek(0, SeekOrigin.Begin);
 
             var link = repository.Link("PackageUpload");
             object pathParameters;
 
-            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
+            // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter
             if (link.Contains(OverwriteModeLink.Link))
             {
                 pathParameters = new { overwriteMode = overwriteMode };
@@ -82,18 +98,52 @@ namespace Octopus.Client.Repositories
             {
                 pathParameters = new { replace = overwriteMode.ConvertToLegacyReplaceFlag(Logger) };
             }
-            
-            
-            var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
-                link,
-                new FileUpload() { Contents = contents, FileName = fileName },
-                pathParameters);
-            
-            Logger.Info("Package transfer completed");
 
-            return result;
+
+            try
+            {
+                return repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
+                    link,
+                    new FileUpload() { Contents = contents, FileName = fileName },
+                    pathParameters);
+            }
+            catch (TimeoutException)
+            {
+                var verificationResult = VerifyTransfer(fileName, contents);
+                if (verificationResult != null) return verificationResult;
+
+                throw;
+            }
         }
-        
+
+        private PackageFromBuiltInFeedResource VerifyTransfer(string fileName, Stream contents)
+        {
+            Logger.Info("Trying to find out whether the transfer worked");
+
+            if (!PackageIdentityParser.TryParsePackageIdAndVersion(Path.GetFileNameWithoutExtension(fileName),
+                out var packageId, out var version))
+            {
+                Logger.Info("Can't check whether the transfer actually worked");
+                return null;
+            }
+
+            var uploadedPackage = TryFindPackage(packageId, version);
+
+            return PackageContentComparer.AreSame(uploadedPackage, contents, Logger) ? uploadedPackage : null;
+        }
+
+        private PackageFromBuiltInFeedResource TryFindPackage(string packageId, SemanticVersion version)
+        {
+            try
+            {
+                return repository.BuiltInPackageRepository.GetPackage(packageId, version.ToString());
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                return null;
+            }
+        }
+
         private PackageFromBuiltInFeedResource AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
             if (!repository.HasLink("PackageDeltaSignature"))
@@ -107,7 +157,7 @@ namespace Octopus.Client.Repositories
                 Logger.Info("Could not determine the package ID and/or version based on the supplied filename");
                 return null;
             }
-            
+
             PackageSignatureResource signatureResult;
             try
             {
@@ -119,19 +169,19 @@ namespace Octopus.Client.Repositories
                 Logger.Info("No package with the same ID exists on the server");
                 return null;
             }
-                
+
             using(var deltaTempFile = new TemporaryFile())
             {
                 var shouldUpload = DeltaCompression.CreateDelta(contents, signatureResult, deltaTempFile.FileName);
                 if (!shouldUpload)
                     return null;
-                
+
                 using (var delta = File.OpenRead(deltaTempFile.FileName))
                 {
                     var link = repository.Link("PackageDeltaUpload");
                     object pathParameters;
-                    
-                    // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter  
+
+                    // if the link contains overwriteMode then we're connected to a new server, if not use the old `replace` parameter
                     if (link.Contains(OverwriteModeLink.Link))
                     {
                         pathParameters = new { overwriteMode = overwriteMode, packageId, signatureResult.BaseVersion };
