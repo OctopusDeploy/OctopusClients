@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests
                 .ExportedTypes
                 .Select(t => t.GetTypeInfo())
                 .GroupBy(t => t.Namespace)
-                .OrderBy(g => g.Key)
+                .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
                 .SelectMany(g => FormatNamespace(g.Key, g))
                 .ToArray();
 
@@ -49,7 +49,7 @@ namespace Octopus.Client.Tests
         {
             return name.InArray()
                 .Concat("{".InArray())
-                .Concat(types.OrderBy(t => t.Name).SelectMany(FormatType).Select(l => "  " + l))
+                .Concat(types.OrderBy(t => t.Name, StringComparer.OrdinalIgnoreCase).SelectMany(FormatType).Select(l => "  " + l))
                 .Concat("}".InArray());
         }
 
@@ -73,7 +73,7 @@ namespace Octopus.Client.Tests
             if (type.BaseType != null && type.BaseType.Name != typeof(object).Name) 
                 interfaces = interfaces.Concat(new []{ type.BaseType }).ToArray();
             var members = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                .OrderBy(t => t.Name)
+                .OrderBy(t => t.Name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
             var fields = members.OfType<FieldInfo>().ToArray();

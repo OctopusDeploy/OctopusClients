@@ -6555,15 +6555,15 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.TResource FindByName(String, String, Object)
     List<TResource> FindByNames(IEnumerable<String>, String, Object)
   }
+  interface IGetAll`1
+  {
+    List<TResource> GetAll()
+  }
   interface IGet`1
   {
     Octopus.Client.Repositories.TResource Get(String)
     List<TResource> Get(String[])
     Octopus.Client.Repositories.TResource Refresh(Octopus.Client.Repositories.TResource)
-  }
-  interface IGetAll`1
-  {
-    List<TResource> GetAll()
   }
   interface IInterruptionRepository
     Octopus.Client.Repositories.IGet<InterruptionResource>
@@ -7239,15 +7239,15 @@ Octopus.Client.Repositories.Async
     Task<TResource> FindByName(String, String, Object)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object)
   }
+  interface IGetAll`1
+  {
+    Task<List<TResource>> GetAll()
+  }
   interface IGet`1
   {
     Task<TResource> Get(String)
     Task<List<TResource>> Get(String[])
     Task<TResource> Refresh(Octopus.Client.Repositories.Async.TResource)
-  }
-  interface IGetAll`1
-  {
-    Task<List<TResource>> GetAll()
   }
   interface IInterruptionRepository
     Octopus.Client.Repositories.Async.IGet<InterruptionResource>
