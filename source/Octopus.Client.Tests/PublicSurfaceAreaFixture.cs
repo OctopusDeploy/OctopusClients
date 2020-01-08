@@ -73,7 +73,7 @@ namespace Octopus.Client.Tests
             if (type.BaseType != null && type.BaseType.Name != typeof(object).Name) 
                 interfaces = interfaces.Concat(new []{ type.BaseType }).ToArray();
             var members = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                .OrderBy(t => t.Name)
+                .OrderBy(t => t.Name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
             var fields = members.OfType<FieldInfo>().ToArray();
