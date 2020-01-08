@@ -30,8 +30,8 @@ namespace Octopus.Client.Repositories
     
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
     {
-        public AccountRepository(IOctopusClient client)
-            : base(client, "Accounts")
+        public AccountRepository(IOctopusRepository repository)
+            : base(repository, "Accounts")
         {
         }
         public TAccount GetOfType<TAccount>(string idOrHref) where TAccount : AccountResource
@@ -86,7 +86,7 @@ namespace Octopus.Client.Repositories
 
         public void PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
         {
-            Client.Paginate(Client.RootDocument.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
+            Client.Paginate(Repository.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
         }
 
         public TAccount FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource

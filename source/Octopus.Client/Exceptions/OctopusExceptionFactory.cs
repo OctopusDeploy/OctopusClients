@@ -12,7 +12,7 @@ namespace Octopus.Client.Exceptions
     /// </summary>
     public static class OctopusExceptionFactory
     {
-#if SYNC_CLIENT
+
         /// <summary>
         /// Creates the appropriate <see cref="OctopusException" /> from a HTTP response.
         /// </summary>
@@ -34,7 +34,6 @@ namespace Octopus.Client.Exceptions
             }
             return CreateException(statusCode, body);
         }
-#endif
 
         /// <summary>
         /// Creates the appropriate <see cref="OctopusException" /> from a HTTP response.

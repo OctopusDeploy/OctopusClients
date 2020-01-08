@@ -8,18 +8,21 @@ namespace Octopus.Client.Repositories
 {
     public interface ITenantRepository : ICreate<TenantResource>, IModify<TenantResource>, IGet<TenantResource>, IDelete<TenantResource>, IFindByName<TenantResource>, IGetAll<TenantResource>
     {
+        MultiTenancyStatusResource Status();
         void SetLogo(TenantResource tenant, string fileName, Stream contents);
         TenantVariableResource GetVariables(TenantResource tenant);
         TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables);
         List<TenantsMissingVariablesResource> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null);
         List<TenantResource> FindAll(string name, string[] tags = null, int pageSize = Int32.MaxValue);
         TenantEditor CreateOrModify(string name);
+        TenantEditor CreateOrModify(string name, string description);
+        TenantEditor CreateOrModify(string name, string description, string cloneId);
     }
     
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
     {
-        public TenantRepository(IOctopusClient client)
-            : base(client, "Tenants")
+        public TenantRepository(IOctopusRepository repository)
+            : base(repository, "Tenants")
         {
         }
 
@@ -37,7 +40,7 @@ namespace Octopus.Client.Repositories
         /// <returns></returns>
         public List<TenantResource> FindAll(string name, string[] tags, int pageSize = Int32.MaxValue)
         {
-            return Client.Get<List<TenantResource>>(Client.RootDocument.Link("Tenants"), new { id = "all", name, tags, take = pageSize });
+            return Client.Get<List<TenantResource>>(Repository.Link("Tenants"), new { id = IdValueConstant.IdAll, name, tags, take = pageSize });
         }
 
         public TenantVariableResource ModifyVariables(TenantResource tenant, TenantVariableResource variables)
@@ -47,12 +50,17 @@ namespace Octopus.Client.Repositories
 
         public List<TenantsMissingVariablesResource> GetMissingVariables(string tenantId = null, string projectId = null, string environmentId = null)
         {
-            return Client.Get<List<TenantsMissingVariablesResource>>(Client.RootDocument.Link("TenantsMissingVariables"), new
+            return Client.Get<List<TenantsMissingVariablesResource>>(Repository.Link("TenantsMissingVariables"), new
             {
                 tenantId = tenantId,
                 projectId = projectId,
                 environmentId = environmentId
             });
+        }
+
+        public MultiTenancyStatusResource Status()
+        {
+            return Client.Get<MultiTenancyStatusResource>(Repository.Link("TenantsStatus"));
         }
 
         public void SetLogo(TenantResource tenant, string fileName, Stream contents)
@@ -63,6 +71,16 @@ namespace Octopus.Client.Repositories
         public TenantEditor CreateOrModify(string name)
         {
             return new TenantEditor(this).CreateOrModify(name);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description, string cloneId)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
         }
     }
 }

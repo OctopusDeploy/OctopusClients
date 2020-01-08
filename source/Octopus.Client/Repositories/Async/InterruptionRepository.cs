@@ -22,14 +22,14 @@ namespace Octopus.Client.Repositories.Async
 
     class InterruptionRepository : BasicRepository<InterruptionResource>, IInterruptionRepository
     {
-        public InterruptionRepository(IOctopusAsyncClient client)
-            : base(client, "Interruptions")
+        public InterruptionRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Interruptions")
         {
         }
 
-        public Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
+        public async Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return Client.List<InterruptionResource>(Client.RootDocument.Link("Interruptions"), new { skip, take, pendingOnly, regarding = regardingDocumentId });
+            return await Client.List<InterruptionResource>(await Repository.Link("Interruptions").ConfigureAwait(false), new { skip, take, pendingOnly, regarding = regardingDocumentId }).ConfigureAwait(false);
         }
 
         public Task Submit(InterruptionResource interruption)

@@ -65,14 +65,13 @@ namespace Octopus.Client.Operations
 
         /// <summary>
         /// The communication style to use with the Tentacle. Allowed values are: TentacleActive, in which case the
-        /// Tentacle will connect to the Octopus server for instructions; or, TentaclePassive, in which case the
+        /// Tentacle will connect to the Octopus Server for instructions; or, TentaclePassive, in which case the
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         public CommunicationStyle CommunicationStyle { get; set; }
 
         public Uri SubscriptionId { get; set; }
 
-#if SYNC_CLIENT
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -98,7 +97,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public void Execute(OctopusRepository repository)
         {
-            Execute((IOctopusRepository)repository);
+            Execute((IOctopusSpaceRepository) repository);
         }
 
         /// <summary>
@@ -107,9 +106,9 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public abstract void Execute(IOctopusRepository repository);
+        public abstract void Execute(IOctopusSpaceRepository repository);
 
-        protected MachinePolicyResource GetMachinePolicy(IOctopusRepository repository)
+        protected MachinePolicyResource GetMachinePolicy(IOctopusSpaceRepository repository)
         {
             var machinePolicy = default(MachinePolicyResource);
             if (!string.IsNullOrEmpty(MachinePolicy))
@@ -121,7 +120,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
-        protected ProxyResource GetProxy(IOctopusRepository repository)
+        protected ProxyResource GetProxy(IOctopusSpaceRepository repository)
         {
             var proxy = default(ProxyResource);
             if (!string.IsNullOrEmpty(ProxyName))
@@ -132,7 +131,6 @@ namespace Octopus.Client.Operations
             }
             return proxy;
         }
-#endif
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
@@ -158,7 +156,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public async Task ExecuteAsync(OctopusAsyncRepository repository)
         {
-            await ExecuteAsync((IOctopusAsyncRepository) repository);
+            await ExecuteAsync((IOctopusSpaceAsyncRepository) repository).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -167,9 +165,9 @@ namespace Octopus.Client.Operations
         /// <param name="repository">The Octopus Deploy server repository.</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public abstract Task ExecuteAsync(IOctopusAsyncRepository repository);
+        public abstract Task ExecuteAsync(IOctopusSpaceAsyncRepository repository);
 
-        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusAsyncRepository repository)
+        protected async Task<MachinePolicyResource> GetMachinePolicy(IOctopusSpaceAsyncRepository repository)
         {
 
             var machinePolicy = default(MachinePolicyResource);
@@ -182,7 +180,7 @@ namespace Octopus.Client.Operations
             return machinePolicy;
         }
 
-        protected async Task<ProxyResource> GetProxy(IOctopusAsyncRepository repository)
+        protected async Task<ProxyResource> GetProxy(IOctopusSpaceAsyncRepository repository)
         {
             var proxy = default(ProxyResource);
             if (!string.IsNullOrEmpty(ProxyName))
@@ -221,8 +219,8 @@ namespace Octopus.Client.Operations
         protected static string CouldNotFindMessage(string modelType, params string[] missing)
         {
             return missing.Length == 1
-                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus server. Ensure the {modelType} exists and you have permission to access it."
-                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus server. Ensure the {modelType}s exist and you have permission to access them.";
+                ? $"Could not find the {modelType} named {missing.Single()} on the Octopus Server. Ensure the {modelType} exists and you have permission to access it."
+                : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus Server. Ensure the {modelType}s exist and you have permission to access them.";
         }
     }
 }

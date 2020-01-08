@@ -1,5 +1,6 @@
 ﻿#if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,9 +20,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task InvalidSslCertificateIsRejected()
         {
+            OctopusAsyncRepository.SecondsToWaitForServerToStart = 2;
             try
             {
-                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath));
+                await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).ConfigureAwait(false);
                 Assert.Fail("Exception expected");
             }
             catch (Exception ex)
@@ -30,6 +32,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 e.GetType().Name.Should().Be("AuthenticationException");
                 e.Message.Should().Be("The remote certificate is invalid according to the validation procedure.");
             }
+            OctopusAsyncRepository.SecondsToWaitForServerToStart = 60;
         }
 
         [Test]
@@ -40,20 +43,30 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 var client = await OctopusAsyncClient.Create(
                     new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
                     new OctopusClientOptions() {IgnoreSslErrors = true}
-                );
-                var result = await client.Get<string>("~/");
+                ).ConfigureAwait(false);
+                var result = await client.Get<string>("~/").ConfigureAwait(false);
 
                 result.Should().Be("Data");
             }
             catch (Exception ex) when (ex.Message == "This platform does not support ignoring SSL certificate errors")
             {
+                Console.WriteLine($"This test is running on '{RuntimeInformation.OSDescription}'");
+                if (File.Exists("/etc/os-release"))
+                {
+                    var file = File.ReadAllText("/etc/os-release");
+                    if (file.Contains("openSUSE Leap 15.1"))
+                        Assert.Inconclusive($"This test is known not to work on platform 'openSuse Leap 15.1'");
+                }
+
                 var os = RuntimeInformation.OSDescription;
                 if (
                     os.StartsWith("Darwin") || // Mac
                     os.Contains(".el7") || // Cent OS
                     os.Contains("fc23") // Fedora 23
                 )
-                    return;
+                {
+                    Assert.Inconclusive($"This test is known not to work on platform '{RuntimeInformation.OSDescription}'");
+                }
 
                 throw;
             }

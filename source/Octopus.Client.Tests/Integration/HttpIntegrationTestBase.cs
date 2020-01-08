@@ -48,9 +48,7 @@ namespace Octopus.Client.Tests.Integration
         static IWebHost currentHost;
 
         protected IOctopusAsyncClient AsyncClient { get; private set; }
-#if SYNC_CLIENT
         protected IOctopusClient SyncClient { get; private set; }
-#endif
         [OneTimeSetUp]
         public static void OneTimeSetup()
         {
@@ -109,30 +107,55 @@ namespace Octopus.Client.Tests.Integration
         {
             TestRootPath = "/";
             if (pathPrefixBehaviour == UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
-                TestRootPath = $"/{GetType().Name}/";
+                TestRootPath = $"/{GetType().Name}";
             
-            Get($"{TestRootPath}api", p => Response.AsJson(
+            Get($"{TestRootPath}/api", p => Response.AsJson(
                  new RootResource()
                  {
                      ApiVersion = "3.0.0",
+                     Version = "2099.0.0",
                      InstallationId = InstallationId,
                      Links = new LinkCollection()
                      {
-                         { "CurrentUser",$"{TestRootPath}/api/users/me" }
+                         { "CurrentUser",$"{TestRootPath}/api/users/me" },
+                         { "SpaceHome", $"{TestRootPath}/api/{{spaceId}}" },
+                         { "Users", $"{TestRootPath}/api/users/{{id}}" },
+                         { "SignIn", $"{TestRootPath}/api/users/login" },
                      }
                  }
              ));
+            Get($"{TestRootPath}/api/users/me", p => Response.AsJson(
+                new UserResource()
+                {
+                    Links = new LinkCollection()
+                    {
+                        {"Spaces", TestRootPath + "/api/users/users-1/spaces" }
+                    }
+                }
+            ));
+            Get($"{TestRootPath}/api/users/users-1/spaces", p => Response.AsJson(
+                new[] {
+                    new SpaceResource() { Id = "Spaces-1", IsDefault = true},
+                    new SpaceResource() { Id = "Spaces-2", IsDefault = false}
+                }
+            ));
+            Get($"{TestRootPath}/api/spaces-1", p => Response.AsJson(
+                new SpaceRootResource()
+            ));
         }
 
         public string TestRootPath { get; }
 
         [SetUp]
-        public async Task Setup()
+        public virtual async Task Setup()
         {
+            SetupEnvironmentVariables();
             AsyncClient = await Octopus.Client.OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseUri + TestRootPath), GetClientOptions()).ConfigureAwait(false);
-#if SYNC_CLIENT
             SyncClient = new Octopus.Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
-#endif
+        }
+
+        protected virtual void SetupEnvironmentVariables()
+        {
         }
 
         protected virtual OctopusClientOptions GetClientOptions()
@@ -140,12 +163,16 @@ namespace Octopus.Client.Tests.Integration
             return new OctopusClientOptions();
         }
 
-        public void TearDown()
+        [TearDown]
+        public virtual void TearDown()
         {
             AsyncClient?.Dispose();
-#if SYNC_CLIENT
             SyncClient?.Dispose();
-#endif
+            CleanupEnvironmentVariables();
+        }
+
+        protected virtual void CleanupEnvironmentVariables()
+        {
         }
 
         protected Response CreateErrorResponse(string message)
@@ -174,14 +201,10 @@ namespace Octopus.Client.Tests.Integration
         }
 
 
-        protected string GetCannedResponse(dynamic parameters)
+        protected string GetCannedResponse(dynamic parameters, string resourceName = null)
         {
-#if SYNC_CLIENT
             var assembly = typeof(HttpIntegrationTestBase).Assembly;
-#else
-            var assembly = typeof(HttpIntegrationTestBase).GetTypeInfo().Assembly;
-#endif
-            var resourceName = GetResourceNameFromtRequestUri(parameters);
+            resourceName = resourceName ?? GetResourceNameFromRequestUri(parameters);
 
             using (var responseStream = assembly.GetManifestResourceStream(resourceName))
             {
@@ -197,8 +220,8 @@ namespace Octopus.Client.Tests.Integration
                 }
             }
         }
-
-        private dynamic GetResourceNameFromtRequestUri(dynamic parameters)
+ 
+        private dynamic GetResourceNameFromRequestUri(dynamic parameters)
         {
             var escapedUri = "/" + parameters.uri;
             foreach (var param in Request.Query.ToDictionary())

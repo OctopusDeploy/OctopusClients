@@ -31,13 +31,13 @@ namespace Octopus.Client.Repositories.Async
 
     class WorkerRepository : BasicRepository<WorkerResource>, IWorkerRepository
     {
-        public WorkerRepository(IOctopusAsyncClient client) : base(client, "Workers")
+        public WorkerRepository(IOctopusAsyncRepository repository) : base(repository, "Workers")
         {
         }
 
-        public Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
+        public async Task<WorkerResource> Discover(string host, int port = 10933, DiscoverableEndpointType? type = null)
         {
-            return Client.Get<WorkerResource>(Client.RootDocument.Link("DiscoverMachine"), new { host, port, type });
+            return await Client.Get<WorkerResource>(await Repository.Link("DiscoverWorker").ConfigureAwait(false), new { host, port, type }).ConfigureAwait(false);
         }
 
         public Task<MachineConnectionStatus> GetConnectionStatus(WorkerResource worker)
@@ -46,10 +46,10 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<MachineConnectionStatus>(worker.Link("Connection"));
         }
 
-        public Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
+        public async Task<List<WorkerResource>> FindByThumbprint(string thumbprint)
         {
             if (thumbprint == null) throw new ArgumentNullException("thumbprint");
-            return Client.Get<List<WorkerResource>>(Client.RootDocument.Link("Workers"), new { id = "all", thumbprint });
+            return await Client.Get<List<WorkerResource>>(await Repository.Link("Workers").ConfigureAwait(false), new { id = IdValueConstant.IdAll, thumbprint }).ConfigureAwait(false);
         }
 
         public Task<WorkerEditor> CreateOrModify(
@@ -60,7 +60,7 @@ namespace Octopus.Client.Repositories.Async
             return new WorkerEditor(this).CreateOrModify(name, endpoint, workerpools);
         }
 
-        public Task<ResourceCollection<WorkerResource>> List(int skip = 0,
+        public async Task<ResourceCollection<WorkerResource>> List(int skip = 0,
             int? take = null,
             string ids = null,
             string name = null,
@@ -70,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
             string commStyles = null,
             string workerpoolIds = null)
         {
-            return Client.List<WorkerResource>(Client.RootDocument.Link("Workers"), new
+            return await Client.List<WorkerResource>(await Repository.Link("Workers").ConfigureAwait(false), new
             {
                 skip,
                 take,
@@ -81,7 +81,7 @@ namespace Octopus.Client.Repositories.Async
                 healthStatuses,
                 commStyles,
                 workerpoolIds
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

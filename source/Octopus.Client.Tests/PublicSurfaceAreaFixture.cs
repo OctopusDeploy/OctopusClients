@@ -11,6 +11,7 @@ using Octopus.Client.Tests.Extensions;
 
 namespace Octopus.Client.Tests
 {
+    [TestFixture]
     public class PublicSurfaceAreaFixture
     {
         [Test]

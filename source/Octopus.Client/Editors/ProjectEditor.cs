@@ -9,9 +9,9 @@ namespace Octopus.Client.Editors
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
+        private readonly Lazy<ProjectChannelsEditor> channels;
         private readonly Lazy<DeploymentProcessEditor> deploymentProcess;
-        private readonly Lazy<ProjectTriggersEditor> triggers; 
+        private readonly Lazy<ProjectTriggersEditor> triggers;
         private readonly Lazy<VariableSetEditor> variables;
 
         public ProjectEditor(
@@ -65,7 +65,7 @@ namespace Octopus.Client.Editors
             return this;
         }
 
-        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId)
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
             var existing = repository.FindByName(name);
 

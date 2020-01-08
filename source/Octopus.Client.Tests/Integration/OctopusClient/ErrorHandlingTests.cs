@@ -23,7 +23,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public void ShouldHandleValidationError()
         {
-            Func<Task> post = async () => { await AsyncClient.Post("~/"); };
+            Func<Task> post = async () => { await AsyncClient.Post("~/").ConfigureAwait(false); };
             post.ShouldThrow<OctopusValidationException>()
                 .And
                 .DetailsAs<string[]>().Single().Should().Be("Details");

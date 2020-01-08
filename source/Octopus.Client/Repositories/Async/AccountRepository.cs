@@ -31,26 +31,26 @@ namespace Octopus.Client.Repositories.Async
 
     class AccountRepository : BasicRepository<AccountResource>, IAccountRepository
     {
-        public AccountRepository(IOctopusAsyncClient client)
-            : base(client, "Accounts")
+        public AccountRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Accounts")
         {
         }
 
         public async Task<TAccount> GetOfType<TAccount>(string idOrHref) where TAccount : AccountResource
         {
-            var account = await base.Get(idOrHref);
+            var account = await base.Get(idOrHref).ConfigureAwait(false);
             return account as TAccount;
         }
 
         public async Task<List<TAccount>> GetOfType<TAccount>(params string[] ids) where TAccount : AccountResource
         {
-            var accounts = await base.Get(ids);
+            var accounts = await base.Get(ids).ConfigureAwait(false);
             return accounts as List<TAccount>;
         }
 
         public async Task<TAccount> RefreshOfType<TAccount>(TAccount resource) where TAccount : AccountResource
         {
-            var account = await base.Refresh(resource);
+            var account = await base.Refresh(resource).ConfigureAwait(false);
             return account as TAccount;
         }
 
@@ -86,9 +86,9 @@ namespace Octopus.Client.Repositories.Async
             return new {accountType};
         }
 
-        public Task PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
+        public async Task PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource
         {
-            return Client.Paginate(Client.RootDocument.Link(CollectionLinkName), PathParametersOfType<TAccount>(pathParameters), getNextPage);
+            await Client.Paginate(await Repository.Link(CollectionLinkName).ConfigureAwait(false), PathParametersOfType<TAccount>(pathParameters), getNextPage).ConfigureAwait(false);
         }
 
         public async Task<TAccount> FindOneOfType<TAccount>(Func<TAccount, bool> search, object pathParameters = null) where TAccount : AccountResource
@@ -122,7 +122,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<AccountUsageResource> GetAccountUsage(AccountResource account)
         {
-            return await Client.Get<AccountUsageResource>(account.Link("Usages"));
+            return await Client.Get<AccountUsageResource>(account.Link("Usages")).ConfigureAwait(false);
         }
 
         public AccountType DetermineAccountType<TAccount>() where TAccount : AccountResource

@@ -38,14 +38,9 @@ namespace Octopus.Client.Model
         /// <param name="feedId">The feed ID or a variable-expression</param>
         /// <param name="acquisitionLocation">The location the package should be acquired.
         /// May be one <see cref="PackageAcquisitionLocation"/> or a variable-expression.</param>
-        [JsonConstructor]
         public PackageReference(string name, string packageId, string feedId, string acquisitionLocation)
-            :this()
+            :this(null, name, packageId, feedId, acquisitionLocation)
         {
-            PackageId = packageId;
-            FeedId = feedId;
-            AcquisitionLocation = acquisitionLocation;
-            this.name = name;
         }
         
         /// <summary>
@@ -77,8 +72,30 @@ namespace Octopus.Client.Model
         }
         
         /// <summary>
+        /// For JSON deserialization only
+        /// </summary>
+        [JsonConstructor]
+        protected PackageReference(string id, string name, string packageId, string feedId, string acquisitionLocation)
+            :this()
+        {
+            Id = id;
+            PackageId = packageId;
+            FeedId = feedId;
+            AcquisitionLocation = acquisitionLocation;
+            this.name = name;
+        }
+        
+        /// <summary>
+        /// The ID of the package reference.
+        /// It should be noted this is *not* the Package ID (e.g. Acme.Web)
+        /// This field is unique identifier which will be set by the Octopus Server when the package reference
+        /// is created.
+        /// </summary>
+        public string Id { get; set; }
+        
+        /// <summary>
         /// An name for the package-reference.
-        /// This may be empty.
+        /// This may be empty, and should be empty for deployment actions with a single package reference.
         /// This is used to discriminate the package-references. Package ID isn't suitable because an action may potentially
         /// have multiple references to the same package ID (e.g. if you wanted to use different versions of the same package).
         /// Also, the package ID may be a variable-expression. 

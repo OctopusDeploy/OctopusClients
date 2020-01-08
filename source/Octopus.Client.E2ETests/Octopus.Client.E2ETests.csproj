@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>Octopus.Client.E2ETests</AssemblyName>
+        <PackageId>Octopus.Client.E2ETests</PackageId>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    </PropertyGroup>
+    <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
+        <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    </PropertyGroup>
+    <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
+        <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+        <DefineConstants>$(DefineConstants);SUPPORTS_ILMERGE</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Octopus.Client\Octopus.Client.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+        <PackageReference Include="NUnit" Version="3.8.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+        <PackageReference Include="TeamCity.ServiceMessages" Version="3.0.9" />
+        <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.3" />
+        <PackageReference Include="FluentAssertions" Version="4.15.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.IO.Compression" />
+    </ItemGroup>
+
+</Project>

@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// Represents a project.
     /// </summary>
-    public class ProjectResource : Resource, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>
+    public class ProjectResource : ResourceWithExtensionSettings, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
     {
         private readonly IVariableTemplateContainerEditor<ProjectResource> variableTemplateEditor;
 
@@ -85,7 +85,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
-        
+
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
@@ -103,6 +103,12 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
+
+        [Writeable]
+        public string ReleaseNotesTemplate { get; set; }
+        
+        [Writeable]
+        public string DeploymentChangesTemplate { get; set; }
 
         public ProjectResource Clear()
         {
@@ -208,5 +214,7 @@ namespace Octopus.Client.Model
 
             AutoDeployReleaseOverrides.Add(autoDeployReleaseOverrideResource);
         }
+
+        public string SpaceId { get; set; }
     }
 }

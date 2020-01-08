@@ -12,6 +12,7 @@ namespace Octopus.Client.Repositories.Async
         IDelete<UserResource>,
         ICreate<UserResource>
     {
+        Task<UserResource> FindByUsername(string username);
         Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null);
         Task<UserResource> CreateServiceAccount(string username, string displayName);
         Task<UserResource> Register(RegisterCommand registerCommand);
@@ -19,11 +20,13 @@ namespace Octopus.Client.Repositories.Async
         Task SignIn(string username, string password, bool rememberMe = false);
         Task SignOut();
         Task<UserResource> GetCurrent();
-        Task<UserPermissionSetResource> GetPermissions(UserResource user);
+        Task<SpaceResource[]> GetSpaces(UserResource user);
         Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResource apiKey);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         Task<InvitationResource> Invite(string addToTeamId);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         Task<InvitationResource> Invite(ReferenceCollection addToTeamIds);
     }
 
@@ -31,11 +34,14 @@ namespace Octopus.Client.Repositories.Async
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusAsyncClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new LegacyInvitationRepository(Repository);
         }
+
+        public Task<UserResource> FindByUsername(string username) 
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
 
         public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
         {
@@ -63,16 +69,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(Client.RootDocument.Link("Register"), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource,UserResource>(await Repository.Link("Register").ConfigureAwait(false), registerCommand).ConfigureAwait(false);
         }
 
-        public Task SignIn(LoginCommand loginCommand)
+        public async Task SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection };
-            }
-            return Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+            await Client.SignIn(loginCommand).ConfigureAwait(false);
         }
 
         public Task SignIn(string username, string password, bool rememberMe = false)
@@ -82,18 +84,18 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignOut()
         {
-            return Client.Post(Client.RootDocument.Link("SignOut"));
+            return Client.SignOut();
         }
 
-        public Task<UserResource> GetCurrent()
+        public async Task<UserResource> GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return await Client.Get<UserResource>(await Repository.Link("CurrentUser").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        public Task<UserPermissionSetResource> GetPermissions(UserResource user)
+        public Task<SpaceResource[]> GetSpaces(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public Task<ApiKeyResource> CreateApiKey(UserResource user, string purpose = null)
@@ -124,12 +126,14 @@ namespace Octopus.Client.Repositories.Async
             return Client.Delete(apiKey.Link("Self"));
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public Task<InvitationResource> Invite(string addToTeamId)
         {
             if (addToTeamId == null) throw new ArgumentNullException("addToTeamId");
             return Invite(new ReferenceCollection { addToTeamId });
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public Task<InvitationResource> Invite(ReferenceCollection addToTeamIds)
         {
             return invitations.Create(new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() });

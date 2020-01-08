@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -8,15 +11,45 @@ namespace Octopus.Client.Repositories.Async
         IModify<TeamResource>,
         IDelete<TeamResource>,
         IFindByName<TeamResource>,
-        IGet<TeamResource>
+        IGet<TeamResource>,
+        ICanExtendSpaceContext<ITeamsRepository>
     {
+        Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
     }
 
-    class TeamsRepository : BasicRepository<TeamResource>, ITeamsRepository
+    class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
-        public TeamsRepository(IOctopusAsyncClient client)
-            : base(client, "Teams")
+        public TeamsRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Teams")
         {
+            MinimumCompatibleVersion("2019.1.0");
+        }
+
+        TeamsRepository(IOctopusAsyncRepository repository, SpaceContext spaceContext)
+            : base(repository, "Teams", spaceContext)
+        {
+            MinimumCompatibleVersion("2019.1.0");
+        }
+
+        public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
+        {
+            await ThrowIfServerVersionIsNotCompatible();
+            
+            if (team == null) throw new ArgumentNullException(nameof(team));
+            var resources = new List<ScopedUserRoleResource>();
+
+            await Client.Paginate<ScopedUserRoleResource>(team.Link("ScopedUserRoles"), GetAdditionalQueryParameters(), page =>
+            {
+                resources.AddRange(page.Items);
+                return true;
+            }).ConfigureAwait(false);
+
+            return resources;
+        }
+
+        public ITeamsRepository UsingContext(SpaceContext spaceContext)
+        {
+            return new TeamsRepository(Repository, spaceContext);
         }
     }
 }

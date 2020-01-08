@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentProcessResource : Resource
+    public class DeploymentProcessResource : Resource, IProcessResource, IHaveSpaceResource
     {
         public DeploymentProcessResource()
         {
@@ -14,7 +15,7 @@ namespace Octopus.Client.Model
 
         public string ProjectId { get; set; }
 
-        public IList<DeploymentStepResource> Steps { get; private set; }
+        public IList<DeploymentStepResource> Steps { get; }
 
         [Required]
         public int Version { get; set; }
@@ -51,16 +52,18 @@ namespace Octopus.Client.Model
             return step;
         }
 
-        public DeploymentProcessResource RemoveStep(string name)
+        public IProcessResource RemoveStep(string name)
         {
             Steps.Remove(FindStep(name));
             return this;
         }
 
-        public DeploymentProcessResource ClearSteps()
+        public IProcessResource ClearSteps()
         {
             Steps.Clear();
             return this;
         }
+
+        public string SpaceId { get; set; }
     }
 }

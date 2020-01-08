@@ -15,13 +15,18 @@ namespace Octopus.Client.Repositories.Async
 
     class ActionTemplateRepository : BasicRepository<ActionTemplateResource>, IActionTemplateRepository
     {
-        public ActionTemplateRepository(IOctopusAsyncClient client) : base(client, "ActionTemplates")
+        public ActionTemplateRepository(IOctopusAsyncRepository repository) : base(repository, "ActionTemplates")
         {
         }
 
-        public Task<List<ActionTemplateSearchResource>> Search()
+        public async Task<List<ActionTemplateSearchResource>> Search()
         {
-            return Client.Get<List<ActionTemplateSearchResource>>(Client.RootDocument.Link("ActionTemplatesSearch"));
+            return await Client.Get<List<ActionTemplateSearchResource>>(await Repository.Link("ActionTemplatesSearch").ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        public async Task<List<ActionTemplateCategoryResource>> Categories()
+        {
+            return await Client.Get<List<ActionTemplateCategoryResource>>(await Repository.Link("ActionTemplatesCategories").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         public Task<ActionTemplateResource> GetVersion(ActionTemplateResource resource, int version)
@@ -33,6 +38,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Post<ActionsUpdateResource, ActionUpdateResultResource[]>(actionTemplate.Links["ActionsUpdate"], update, new { actionTemplate.Id });
         }
+        
         public Task SetLogo(ActionTemplateResource resource, string fileName, Stream contents)
         {
             return Client.Post(resource.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);

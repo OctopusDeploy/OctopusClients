@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Octopus.Client
@@ -8,7 +10,6 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClientFactory : IOctopusClientFactory
     {
-#if SYNC_CLIENT
         /// <summary>
         /// Creates an instance of the client.
         /// </summary>
@@ -16,9 +17,9 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
         public IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint)
         {
-            return new OctopusClient(serverEndpoint);
+            var  requestingTool = DetermineRequestingTool();
+            return new OctopusClient(serverEndpoint, requestingTool);
         }
-#endif
 
         /// <summary>
         /// Creates an instance of the client.
@@ -28,7 +29,24 @@ namespace Octopus.Client
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
         public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null)
         {
-            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions);
+            var requestingTool = DetermineRequestingTool();
+            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions, requestingTool);
+        }
+
+        private string DetermineRequestingTool()
+        {
+            var launchAssembly = Assembly.GetEntryAssembly();
+                
+            if (launchAssembly != null && launchAssembly.GetTypes().Any(x => x.FullName == "Octo.Program" || x.FullName == "Octopus.DotNet.Cli.Program"))
+            {
+                var octoExtensionVersion = Environment.GetEnvironmentVariable("OCTOEXTENSION");
+                if (!string.IsNullOrWhiteSpace(octoExtensionVersion))
+                    return $"octo plugin/{octoExtensionVersion}";
+
+                return "octo";
+            }
+
+            return null;
         }
     }
 }

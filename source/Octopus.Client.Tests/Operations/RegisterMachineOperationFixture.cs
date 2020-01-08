@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using FluentAssertions;
+using Nancy;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
@@ -36,7 +38,30 @@ namespace Octopus.Client.Tests.Operations
             environments = new ResourceCollection<EnvironmentResource>(new EnvironmentResource[0], LinkCollection.Self("/foo"));
             machines = new ResourceCollection<MachineResource>(new MachineResource[0], LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(new MachinePolicyResource[0], LinkCollection.Self("/foo"));
-            client.RootDocument.Returns(new RootResource {Links = LinkCollection.Self("/api").Add("Environments", "/api/environments").Add("Machines", "/api/machines").Add("MachinePolicies", "/api/machinepolicies")});
+            var rootDocument = new RootResource
+            {
+                ApiVersion = "3.0.0",
+                Version = "2099.0.0",
+                Links = LinkCollection.Self("/api")
+                    .Add("Environments", "/api/environments")
+                    .Add("Machines", "/api/machines")
+                    .Add("MachinePolicies", "/api/machinepolicies")
+                    .Add("CurrentUser", "/api/users/me")
+                    .Add("SpaceHome", "/api/spaces")
+            };
+            client.Get<RootResource>(Arg.Any<string>()).Returns(rootDocument);
+            client.Repository.LoadRootDocument().Returns(rootDocument);
+            client.Get<SpaceResource[]>(Arg.Any<string>())
+                .Returns(new[] {new SpaceResource() {Id = "Spaces-1", IsDefault = true}});
+            client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource()
+            {
+                Links =
+                {
+                    {"Spaces", ""}
+                }
+            });
+            client.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
+            client.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
 
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));
@@ -53,7 +78,7 @@ namespace Octopus.Client.Tests.Operations
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus server. Ensure the environment exists and you have permission to access it.");
+            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
         [Test]
@@ -63,7 +88,7 @@ namespace Octopus.Client.Tests.Operations
 
             operation.EnvironmentNames = new[] {"Production", "Atlantis", "Hyperborea"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus server. Ensure the environments exist and you have permission to access them.");
+            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]

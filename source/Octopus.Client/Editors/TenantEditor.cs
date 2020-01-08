@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -33,6 +34,40 @@ namespace Octopus.Client.Editors
             else
             {
                 existing.Name = name;
+                Instance = repository.Modify(existing);
+            }
+
+            return this;
+        }
+        
+        /// <summary>
+        /// Checks to see if a Tenant exists with the specified name, and if not, creates it.
+        /// Otherwise, modifies the name and the description.
+        /// </summary>
+        /// <param name="name">The Tenant's name</param>
+        /// <param name="description">The Tenant's description</param>
+        /// <param name="cloneId">If provided, the Id of the Tenant that you want to clone</param>
+        /// <returns></returns>
+        public TenantEditor CreateOrModify(string name, string description, string cloneId = null)
+        {
+            if (!(repository as TenantRepository).Repository.HasLinkParameter("Tenants", "clone"))
+                throw new OperationNotSupportedByOctopusServerException(cloneId == null
+                    ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
+                    : "Cloning Tenants requires Octopus version 2019.8.0 or newer.", "2019.8.0");
+            
+            var existing = repository.FindByName(name);
+            if (existing == null)
+            {
+                Instance = repository.Create(new TenantResource
+                {
+                    Name = name,
+                    Description = description,
+                }, new { clone = cloneId });
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
                 Instance = repository.Modify(existing);
             }
 

@@ -10,11 +10,8 @@ using Nancy.Extensions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Repositories.Async;
 using Sync = Octopus.Client.Repositories;
-
-#if HAS_BEST_CONVENTIONAL
 using Conventional;
 using Conventional.Conventions;
-#endif
 
 namespace Octopus.Client.Tests.Conventions
 {
@@ -26,9 +23,13 @@ namespace Octopus.Client.Tests.Conventions
         private static readonly TypeInfo[] RepositoryInterfaceTypes = ExportedTypes
             .Where(t => t.IsInterface && t.Name.EndsWith("Repository"))
             .Where(t => t.AsType() != typeof(IOctopusAsyncRepository) && t.AsType() != typeof(IResourceRepository))
-#if SYNC_CLIENT
+            .Where(t => t.AsType() != typeof(IOctopusSpaceAsyncRepository))
+            .Where(t => t.AsType() != typeof(IOctopusSystemAsyncRepository))
+            .Where(t => t.AsType() != typeof(IOctopusCommonAsyncRepository))
             .Where(t => t.AsType() != typeof(IOctopusRepository) && t.AsType() != typeof(Sync.IResourceRepository))
-#endif
+            .Where(t => t.AsType() != typeof(IOctopusSpaceRepository))
+            .Where(t => t.AsType() != typeof(IOctopusSystemRepository))
+            .Where(t => t.AsType() != typeof(IOctopusCommonRepository))
             .ToArray();
 
         static readonly TypeInfo[] AsyncRepositoryInterfaceTypes = RepositoryInterfaceTypes.Where(i => i.Namespace.EndsWith(".Async")).ToArray();
@@ -51,7 +52,9 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AllAsyncRepositoriesShouldBeAvailableViaIOctopusAsyncRepository()
         {
-            var exposedTypes = typeof(IOctopusAsyncRepository).GetProperties()
+            var exposedTypes = typeof(IOctopusAsyncRepository)
+                .GetInterfaces()
+                .SelectMany(i => i.GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
@@ -68,26 +71,12 @@ namespace Octopus.Client.Tests.Conventions
             AsyncRepositoryInterfaceTypes.Should().NotBeEmpty();
         }
 
-#if SYNC_CLIENT
-        [Test]
-        public void ThereShouldBeSyncRepositories()
-        {
-            SyncRepositoryInterfaceTypes.Should().NotBeEmpty();
-        }
-#else
-        [Test]
-        public void ThereShouldBeNoSyncRepositories()
-        {
-            SyncRepositoryInterfaceTypes.Should().BeEmpty();
-        }
-#endif
-
-#if SYNC_CLIENT
-
         [Test]
         public void AllSyncRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
-            var exposedTypes = typeof(IOctopusRepository).GetProperties()
+            var exposedTypes = typeof(IOctopusRepository)
+                .GetInterfaces()
+                .SelectMany(i => i.GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .ToArray();
 
@@ -97,8 +86,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"All sync *Repository types should be exposed by {nameof(IOctopusRepository)}. Missing: {string.Join(", ", missingTypes.Select(t => t.Name))}");
             }
         }
-#endif
-
 
         [Test]
         public void AllRepositoriesShouldImplementNonGenericSimpleInterface()
@@ -207,12 +194,12 @@ namespace Octopus.Client.Tests.Conventions
         {
             var denied = new[]
             {
-#if SYNC_CLIENT
                 typeof (Sync.IChannelRepository),
+                typeof (Sync.IRunbookProcessRepository),
                 typeof (Sync.IDeploymentProcessRepository),
                 typeof (Sync.ITaskRepository),
-#endif
                 typeof (IChannelRepository),
+                typeof (IRunbookProcessRepository),
                 typeof (IDeploymentProcessRepository),
                 typeof (ITaskRepository)
             };
@@ -257,7 +244,6 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatGetNamedResourcesShouldUsuallyImplementIFindByName()
         {
@@ -289,20 +275,22 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void MostAsyncRepositoriesThatGetResourcesShouldImplementIPaginate()
         {
             var ignored = new[]
             {
+                typeof (IRunbookProcessRepository).GetTypeInfo(),
                 typeof (IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (IInterruptionRepository).GetTypeInfo(),
                 typeof (IEventRepository).GetTypeInfo(),
                 typeof (IVariableSetRepository).GetTypeInfo(),
                 typeof (IChannelRepository).GetTypeInfo(),
                 typeof (IProjectTriggerRepository).GetTypeInfo(),
-                typeof (ICommunityActionTemplateRepository).GetTypeInfo()
+                typeof (ICommunityActionTemplateRepository).GetTypeInfo(),
+                typeof (IScopedUserRoleRepository).GetTypeInfo(),
+                typeof (IUpgradeConfigurationRepository).GetTypeInfo()
             };
 
             var missing = AsyncRepositoryInterfaceTypes
@@ -317,19 +305,21 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void MostSyncRepositoriesThatGetResourcesShouldImplementIPaginate()
         {
             var ignored = new[]
             {
+                typeof (Sync.IRunbookProcessRepository).GetTypeInfo(),
                 typeof (Sync.IDeploymentProcessRepository).GetTypeInfo(),
                 typeof (Sync.IInterruptionRepository).GetTypeInfo(),
                 typeof (Sync.IEventRepository).GetTypeInfo(),
                 typeof (Sync.IVariableSetRepository).GetTypeInfo(),
                 typeof (Sync.IChannelRepository).GetTypeInfo(),
                 typeof (Sync.IProjectTriggerRepository).GetTypeInfo(),
-                typeof (Sync.ICommunityActionTemplateRepository).GetTypeInfo()
+                typeof (Sync.ICommunityActionTemplateRepository).GetTypeInfo(),
+                typeof (Sync.IScopedUserRoleRepository).GetTypeInfo(),
+                typeof (Sync.IUpgradeConfigurationRepository).GetTypeInfo()
             };
 
             var missing = SyncRepositoryInterfaceTypes
@@ -343,7 +333,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
@@ -351,6 +340,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new []
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(IRunbookRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -371,13 +361,13 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
         {
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.IRunbookRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 
@@ -397,7 +387,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
 
         [Test]
         public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
@@ -405,6 +394,7 @@ namespace Octopus.Client.Tests.Conventions
             var ignored = new[]
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
+                typeof(IRunbookRunRepository).GetTypeInfo(),
                 typeof(ITaskRepository).GetTypeInfo()
             };
 
@@ -425,13 +415,13 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
-#if SYNC_CLIENT
         [Test]
         public void SyncRepositoriesThatImplementCreateShouldAlsoImplementDelete()
         {
             var ignored = new[]
             {
                 typeof(Sync.IDeploymentRepository).GetTypeInfo(),
+                typeof(Sync.IRunbookRunRepository).GetTypeInfo(),
                 typeof(Sync.ITaskRepository).GetTypeInfo()
             };
 
@@ -451,9 +441,6 @@ namespace Octopus.Client.Tests.Conventions
                 Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
             }
         }
-#endif
-
-#if HAS_BEST_CONVENTIONAL
 
         [Test]
         public void AllSyncRepositoryInterfacesShouldFollowTheseConventions()
@@ -494,7 +481,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllResourcePropertiesShouldHavePublicSetters()
         {
             ResourceTypes
-                .Except(new[] { typeof(LifecycleResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
+                .Except(new[] { typeof(LifecycleResource), typeof(RunbookProcessResource), typeof(DeploymentProcessResource), typeof(CertificateResource) })
                 .MustConformTo(Convention.PropertiesMustHavePublicSetters)
                 .WithFailureAssertion(Assert.Fail);
         }
@@ -517,6 +504,5 @@ namespace Octopus.Client.Tests.Conventions
                 return ConventionResult.NotSatisfied(type.FullName, string.Format(FailureMessage, parentNamespace, type.Namespace));
             }
         }
-#endif
     }
 }

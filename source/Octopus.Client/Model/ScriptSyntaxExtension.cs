@@ -16,6 +16,8 @@ namespace Octopus.Client.Model
                     return "csx";
                 case ScriptSyntax.FSharp:
                     return "fsx";
+                case ScriptSyntax.Python:
+                    return "py";
                 default:
                     throw new ArgumentOutOfRangeException("syntax");
             }

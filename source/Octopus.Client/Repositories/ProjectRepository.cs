@@ -17,13 +17,18 @@ namespace Octopus.Client.Repositories
         IReadOnlyList<ProjectTriggerResource> GetAllTriggers(ProjectResource project);
         void SetLogo(ProjectResource project, string fileName, Stream contents);
         ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
-        ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId);
+        ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
+        ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(ProjectResource project);
+        RunbookSnapshotResource GetRunbookSnapshotByName(ProjectResource project, string name);
+        ResourceCollection<RunbookResource> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
+        IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project);
     }
-    
+
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        public ProjectRepository(IOctopusClient client)
-            : base(client, "Projects")
+        public ProjectRepository(IOctopusRepository repository)
+            : base(repository, "Projects")
         {
         }
 
@@ -74,12 +79,37 @@ namespace Octopus.Client.Repositories
 
         public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle)
         {
-            return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle);
         }
 
-        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId)
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
-            return new ProjectEditor(this, new ChannelRepository(Client), new DeploymentProcessRepository(Client), new ProjectTriggerRepository(Client), new VariableSetRepository(Client)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+            return new ProjectEditor(this, new ChannelRepository(Repository), new DeploymentProcessRepository(Repository), new ProjectTriggerRepository(Repository), new VariableSetRepository(Repository)).CreateOrModify(name, projectGroup, lifecycle, description, cloneId);
+        }
+
+        public ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { skip, take, searchByName });
+        }
+
+        public IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(ProjectResource project)
+        {
+            return Client.ListAll<RunbookSnapshotResource>(project.Link("RunbookSnapshots"));
+        }
+
+        public RunbookSnapshotResource GetRunbookSnapshotByName(ProjectResource project, string name)
+        {
+            return Client.Get<RunbookSnapshotResource>(project.Link("RunbookSnapshots"), new { name });
+        }
+
+        public ResourceCollection<RunbookResource> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null)
+        {
+            return Client.List<RunbookResource>(project.Link("Runbooks"), new { skip, take, searchByName });
+        }
+
+        public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
+        {
+            return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
     }
 }

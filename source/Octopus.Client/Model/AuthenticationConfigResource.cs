@@ -23,5 +23,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string[] TrustedRedirectUrls { get; set; }
+
+        [Writeable]
+        public string CookieDomain { get; set; }
     }
 }

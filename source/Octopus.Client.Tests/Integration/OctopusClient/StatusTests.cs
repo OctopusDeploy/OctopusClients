@@ -13,12 +13,12 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public StatusTests()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
-            Get($"{TestRootPath}401", p => Response.AsJson(
+            Get($"{TestRootPath}/401", p => Response.AsJson(
                 new { ErrorMessage = "You must be logged in to perform this action. Please provide a valid API key or log in again." },
                 HttpStatusCode.Unauthorized
             ));
 
-            Get(TestRootPath + "{code:int}", p =>
+            Get(TestRootPath + "/{code:int}", p =>
             {
                 var response = CreateErrorResponse($"Status {(int) p.code} as requested");
                 response.StatusCode = (HttpStatusCode) (int) p.code;

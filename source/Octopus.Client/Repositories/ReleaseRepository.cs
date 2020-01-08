@@ -24,15 +24,14 @@ namespace Octopus.Client.Repositories
         DeploymentTemplateResource GetTemplate(ReleaseResource release);
         DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         ReleaseResource SnapshotVariables(ReleaseResource release);    
-        ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false);
-        ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false);
+        ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
     }
     
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
-        public ReleaseRepository(IOctopusClient client)
-            : base(client, "Releases")
+        public ReleaseRepository(IOctopusRepository repository)
+            : base(repository, "Releases")
         {
         }
 
@@ -62,14 +61,9 @@ namespace Octopus.Client.Repositories
             return Get(release.Id);
         }
 
-        public ReleaseResource Create(ReleaseResource resource, bool ignoreChannelRules = false)
+        public ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false)
         {
-            return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, new { ignoreChannelRules });
-        }
-
-        public ReleaseResource Modify(ReleaseResource resource, bool ignoreChannelRules = false)
-        {
-            return Client.Update(resource.Links["Self"], resource, new { ignoreChannelRules });
+            return Client.Create(Repository.Link(CollectionLinkName), release, new { ignoreChannelRules });
         }
 
         public LifecycleProgressionResource GetProgression(ReleaseResource release)

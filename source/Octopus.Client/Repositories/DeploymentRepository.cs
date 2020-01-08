@@ -26,8 +26,8 @@ namespace Octopus.Client.Repositories
 
     class DeploymentRepository : BasicRepository<DeploymentResource>, IDeploymentRepository
     {
-        public DeploymentRepository(IOctopusClient client)
-            : base(client, "Deployments")
+        public DeploymentRepository(IOctopusRepository repository)
+            : base(repository, "Deployments")
         {
         }
 
@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<DeploymentResource> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null)
         {
-            return Client.List<DeploymentResource>(Client.RootDocument.Link("Deployments"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
+            return Client.List<DeploymentResource>(Repository.Link("Deployments"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
         }
 
         [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
@@ -54,7 +54,7 @@ namespace Octopus.Client.Repositories
 
         public void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
         {
-            Client.Paginate(Client.RootDocument.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
+            Client.Paginate(Repository.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
         }
     }
 }

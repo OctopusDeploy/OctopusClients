@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using Octopus.Client.Extensibility;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Migrations
 {
@@ -6,6 +7,8 @@ namespace Octopus.Client.Model.Migrations
     {
         [Writeable]
         public string PackageId { get; set; }
+        [Writeable]
+        public string PackageFeedSpaceId { get; set; }
         [Writeable]
         public string PackageVersion { get; set; }
         [Writeable]

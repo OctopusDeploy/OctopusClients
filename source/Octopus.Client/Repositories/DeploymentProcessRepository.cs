@@ -7,11 +7,11 @@ namespace Octopus.Client.Repositories
     {
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
     }
-    
+
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        public DeploymentProcessRepository(IOctopusClient client)
-            : base(client, "DeploymentProcesses")
+        public DeploymentProcessRepository(IOctopusRepository repository)
+            : base(repository, "DeploymentProcesses")
         {
         }
 

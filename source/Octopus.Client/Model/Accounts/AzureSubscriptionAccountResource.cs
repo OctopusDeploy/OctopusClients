@@ -43,9 +43,18 @@ namespace Octopus.Client.Model.Accounts
 
         public class WebSite
         {
-            public string Name { get; }
+            public string Name { get; set; }
             public string WebSpace { get; set; }
             public string ResourceGroup { get; set; }
         }
+
+        public class WebSlot
+        {
+            public string Name { get; set; }
+            public string Site { get; set; }
+            public string ResourceGroupName { get; set; }
+            public string Region { get; set; }
+        }
+
     }
 }

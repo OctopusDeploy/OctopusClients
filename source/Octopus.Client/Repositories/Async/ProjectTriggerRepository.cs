@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
@@ -11,13 +12,15 @@ namespace Octopus.Client.Repositories.Async
         Task<ProjectTriggerResource> FindByName(ProjectResource project, string name);
 
         Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action);
+        Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds);
     }
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
-        public ProjectTriggerRepository(IOctopusAsyncClient client)
-            : base(client, "ProjectTriggers")
+        public ProjectTriggerRepository(IOctopusAsyncRepository repository)
+            : base(repository, "ProjectTriggers")
         {
+            MinimumCompatibleVersion("2019.11.0");
         }
 
         public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
@@ -27,7 +30,16 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
+            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
+        }
+
+        public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
+        {
+            await ThrowIfServerVersionIsNotCompatible();
+            
+            return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds });
         }
     }
 }

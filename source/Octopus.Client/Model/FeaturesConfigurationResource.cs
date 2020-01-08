@@ -5,15 +5,18 @@ namespace Octopus.Client.Model
     public class FeaturesConfigurationResource : Resource
     {
         [Writeable]
-        public bool IsMultiTenancyEnabled { get; set; }
-
-        [Writeable]
-        public bool IsBuiltInWorkerEnabled { get; set; } = true;
+        public bool IsBuiltInWorkerEnabled { get; set; }
 
         [Writeable]
         public bool IsCommunityActionTemplatesEnabled { get; set; }
 
         [Writeable]
-        public bool IsBuiltInRepoSyncEnabled { get; set; }
+        public bool IsKubernetesEnabled { get; set; }
+
+        [Writeable]
+        public bool IsHelpSidebarEnabled { get; set; }
+
+        [Writeable]
+        public string HelpSidebarSupportLink { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     /// Represents an environment. Environments are user-defined and map to real world deployment environments
     /// such as development, staging, test and production. Projects are deployed to environments.
     /// </summary>
-    public class EnvironmentResource : Resource, INamedResource
+    public class EnvironmentResource : ResourceWithExtensionSettings, INamedResource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets the name of this environment. This should be short, preferably 5-20 characters.
@@ -34,8 +34,7 @@ namespace Octopus.Client.Model
 
         /// <summary>
         /// If set to true, deployments will prompt for manual intervention (Fail/Retry/Ignore) when
-        /// failures are encountered in activities that support it. May be overridden with the
-        /// Octopus.UseGuidedFailure special variable.
+        /// failures are encountered in activities that support it.
         /// </summary>
         [Writeable]
         public bool UseGuidedFailure { get; set; }
@@ -45,5 +44,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public bool AllowDynamicInfrastructure { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

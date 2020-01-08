@@ -11,6 +11,7 @@ namespace Octopus.Client.Repositories
         IDelete<UserResource>,
         ICreate<UserResource>
     {
+        UserResource FindByUsername(string username);
         UserResource Create(string username, string displayName, string password = null, string emailAddress = null);
         UserResource CreateServiceAccount(string username, string displayName);
         UserResource Register(RegisterCommand registerCommand);
@@ -18,11 +19,13 @@ namespace Octopus.Client.Repositories
         void SignIn(string username, string password, bool rememberMe = false);
         void SignOut();
         UserResource GetCurrent();
-        UserPermissionSetResource GetPermissions(UserResource user);
+        SpaceResource[] GetSpaces(UserResource user);
         ApiKeyResource CreateApiKey(UserResource user, string purpose = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResource apiKey);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(string addToTeamId);
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(ReferenceCollection addToTeamIds);
     }
     
@@ -30,11 +33,14 @@ namespace Octopus.Client.Repositories
     {
         readonly BasicRepository<InvitationResource> invitations;
 
-        public UserRepository(IOctopusClient client)
-            : base(client, "Users")
+        public UserRepository(IOctopusRepository repository)
+            : base(repository, "Users")
         {
-            invitations = new InvitationRepository(client);
+            invitations = new LegacyInvitationRepository(repository);
         }
+
+        public UserResource FindByUsername(string username) 
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
         {
@@ -61,16 +67,12 @@ namespace Octopus.Client.Repositories
         }
         public UserResource Register(RegisterCommand registerCommand)
         {
-            return Client.Post<UserResource, UserResource>(Client.RootDocument.Link("Register"), registerCommand);
+            return Client.Post<UserResource, UserResource>(Repository.Link("Register"), registerCommand);
         }
 
         public void SignIn(LoginCommand loginCommand)
         {
-            if (loginCommand.State == null)
-            {
-                loginCommand.State = new LoginState { UsingSecureConnection = Client.IsUsingSecureConnection};
-            }
-            Client.Post(Client.RootDocument.Link("SignIn"), loginCommand);
+           Client.SignIn(loginCommand);
         }
 
         public void SignIn(string username, string password, bool rememberMe = false)
@@ -80,18 +82,18 @@ namespace Octopus.Client.Repositories
 
         public void SignOut()
         {
-            Client.Post(Client.RootDocument.Link("SignOut"));
+            Client.SignOut();
         }
 
         public UserResource GetCurrent()
         {
-            return Client.Get<UserResource>(Client.RootDocument.Link("CurrentUser"));
+            return Client.Get<UserResource>(Repository.Link("CurrentUser"));
         }
-
-        public UserPermissionSetResource GetPermissions(UserResource user)
+        
+        public SpaceResource[] GetSpaces(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");
-            return Client.Get<UserPermissionSetResource>(user.Link("Permissions"));
+            return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
         public ApiKeyResource CreateApiKey(UserResource user, string purpose = null)
@@ -122,12 +124,14 @@ namespace Octopus.Client.Repositories
             Client.Delete(apiKey.Link("Self"));
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public InvitationResource Invite(string addToTeamId)
         {
             if (addToTeamId == null) throw new ArgumentNullException("addToTeamId");
             return Invite(new ReferenceCollection { addToTeamId });
         }
 
+        [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         public InvitationResource Invite(ReferenceCollection addToTeamIds)
         {
             return invitations.Create(new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() });

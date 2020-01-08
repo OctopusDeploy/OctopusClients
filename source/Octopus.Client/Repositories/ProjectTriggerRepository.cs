@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Triggers;
@@ -9,13 +10,15 @@ namespace Octopus.Client.Repositories
     {
         ProjectTriggerResource FindByName(ProjectResource project, string name);
         ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action);
+        ResourceCollection<ProjectTriggerResource> FindByRunbook(params string[] runbookIds);
     }
     
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
-        public ProjectTriggerRepository(IOctopusClient client)
-            : base(client, "ProjectTriggers")
+        public ProjectTriggerRepository(IOctopusRepository repository)
+            : base(repository, "ProjectTriggers")
         {
+            MinimumCompatibleVersion("2019.11.0");
         }
 
         public ProjectTriggerResource FindByName(ProjectResource project, string name)
@@ -25,7 +28,13 @@ namespace Octopus.Client.Repositories
 
         public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
+            
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
+        }
+
+        public ResourceCollection<ProjectTriggerResource> FindByRunbook(params string[] runbookIds)
+        {
+            return Client.List<ProjectTriggerResource>(Repository.Link("ProjectTriggers"), new {runbooks = runbookIds});
         }
     }
 }

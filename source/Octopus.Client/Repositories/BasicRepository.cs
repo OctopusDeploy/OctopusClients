@@ -1,10 +1,12 @@
-﻿#if SYNC_CLIENT
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 using System.Text.RegularExpressions;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories
 {
@@ -13,45 +15,115 @@ namespace Octopus.Client.Repositories
     // ReSharper disable MemberCanBeProtected.Local
     abstract class BasicRepository<TResource> where TResource : class, IResource
     {
+        private readonly Func<IOctopusRepository, string> getCollectionLinkName;
+        public IOctopusRepository Repository { get; }
         readonly IOctopusClient client;
-        protected readonly string CollectionLinkName;
+        protected string CollectionLinkName;
+        private SemanticVersion minimumRequiredVersion;
+        private bool hasMinimumRequiredVersion;
+        protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusClient client, string collectionLinkName)
+        protected BasicRepository(IOctopusRepository repository, string collectionLinkName, Func<IOctopusRepository, string> getCollectionLinkName = null)
         {
-            this.client = client;
-            this.CollectionLinkName = collectionLinkName;
+            Repository = repository;
+            client = repository.Client;
+            CollectionLinkName = collectionLinkName;
+            AdditionalQueryParameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.getCollectionLinkName = getCollectionLinkName;
         }
 
-        public IOctopusClient Client
+        public IOctopusClient Client => client;
+
+        protected virtual void CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            get { return client; }
+            Repository.Scope.Apply(
+                whenSpaceScoped: space =>
+                {
+                    if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                        throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                },
+                whenSystemScoped: () => { },
+                whenUnspecifiedScope: () =>
+                {
+                    var spaceRoot = Repository.LoadSpaceRootDocument();
+                    var isDefaultSpaceFound = spaceRoot != null;
+
+                    if (!isDefaultSpaceFound)
+                    {
+                        throw new DefaultSpaceNotFoundException(spaceResource);
+                    }
+                });
         }
 
-        public TResource Create(TResource resource, object pathParameters = null)
+        protected void MinimumCompatibleVersion(string version)
         {
+            minimumRequiredVersion = SemanticVersion.Parse(version);
+            hasMinimumRequiredVersion = true;
+        }
+
+        protected void ThrowIfServerVersionIsNotCompatible()
+        {
+            if (!hasMinimumRequiredVersion) return;
+
+            var currentServerVersion = Repository.LoadRootDocument().Version;
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
+            {
+                throw new NotSupportedException(
+                    $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
+            }
+        }
+
+        private void AssertSpaceIdMatchesResource(TResource resource)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            if (resource is IHaveSpaceResource spaceResource)
+                CheckSpaceResource(spaceResource);
+        }
+
+        public virtual TResource Create(TResource resource, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            return client.Create(client.RootDocument.Link(CollectionLinkName), resource, pathParameters);
+            AssertSpaceIdMatchesResource(resource);
+
+            var link = ResolveLink();
+            EnrichSpaceId(resource);
+            return client.Create(link, resource, pathParameters);
         }
 
-        public TResource Modify(TResource resource)
+        public virtual TResource Modify(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             return client.Update(resource.Links["Self"], resource);
         }
 
         public void Delete(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource == null) throw new ArgumentNullException(nameof(resource));
+            AssertSpaceIdMatchesResource(resource);
             client.Delete(resource.Links["Self"]);
         }
 
         public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
         {
-            client.Paginate(path ?? client.RootDocument.Link(CollectionLinkName), pathParameters ?? new { }, getNextPage);
+            ThrowIfServerVersionIsNotCompatible();
+
+            var link = ResolveLink();
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, pathParameters);
+            client.Paginate(path ?? link, parameters, getNextPage);
         }
 
         public TResource FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             TResource resource = null;
             Paginate(page =>
             {
@@ -63,6 +135,8 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> FindMany(Func<TResource, bool> search, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var resources = new List<TResource>();
             Paginate(page =>
             {
@@ -74,18 +148,25 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> FindAll(string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             return FindMany(r => true, path, pathParameters);
         }
 
         public List<TResource> GetAll()
         {
-            return client.Get<List<TResource>>(client.RootDocument.Link(CollectionLinkName), new { id = "all" });
+            ThrowIfServerVersionIsNotCompatible();
+
+            var link = ResolveLink();
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
+            return client.Get<List<TResource>>(link, parameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
         {
-            name = (name ?? string.Empty).Trim();
+            ThrowIfServerVersionIsNotCompatible();
 
+            name = (name ?? string.Empty).Trim();
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
                 pathParameters = new {name = name};
@@ -100,6 +181,8 @@ namespace Octopus.Client.Repositories
 
         public List<TResource> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
             return FindMany(r =>
             {
@@ -111,30 +194,35 @@ namespace Octopus.Client.Repositories
 
         public TResource Get(string idOrHref)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (string.IsNullOrWhiteSpace(idOrHref))
                 return null;
-
+            var link = ResolveLink();
             if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                return client.Get<TResource>(idOrHref);
+                return client.Get<TResource>(idOrHref, AdditionalQueryParameters);
             }
-
-            return client.Get<TResource>(client.RootDocument.Link(CollectionLinkName), new { id = idOrHref });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
+            return client.Get<TResource>(link, parameters);
         }
 
         public virtual List<TResource> Get(params string[] ids)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (ids == null) return new List<TResource>();
             var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
             if (actualIds.Length == 0) return new List<TResource>();
 
             var resources = new List<TResource>();
-            var link = client.RootDocument.Link(CollectionLinkName);
-            if(!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
+            var link = ResolveLink();
+            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
             client.Paginate<TResource>(
                 link,
-                new { ids = actualIds },
+                parameters,
                 page =>
                 {
                     resources.AddRange(page.Items);
@@ -146,8 +234,31 @@ namespace Octopus.Client.Repositories
 
         public TResource Refresh(TResource resource)
         {
+            ThrowIfServerVersionIsNotCompatible();
+
             if (resource == null) throw new ArgumentNullException("resource");
             return Get(resource.Id);
+        }
+
+        protected virtual void EnrichSpaceId(TResource resource)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            if (resource is IHaveSpaceResource spaceResource)
+            {
+                spaceResource.SpaceId = Repository.Scope.Apply(space => space.Id,
+                    () => null,
+                    () => spaceResource.SpaceId);
+            }
+        }
+
+        protected string ResolveLink()
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            if (CollectionLinkName == null && getCollectionLinkName != null)
+                CollectionLinkName = getCollectionLinkName(Repository);
+            return Repository.Link(CollectionLinkName);
         }
     }
 
@@ -155,4 +266,3 @@ namespace Octopus.Client.Repositories
     // ReSharper restore UnusedMember.Local
     // ReSharper restore MemberCanBeProtected.Local
 }
-#endif

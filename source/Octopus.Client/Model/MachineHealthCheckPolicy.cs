@@ -5,22 +5,40 @@ namespace Octopus.Client.Model
 {
     public class MachineHealthCheckPolicy
     {
-        public MachineScriptPolicy TentacleEndpointHealthCheckPolicy { get; set; }
-        public MachineScriptPolicy SshEndpointHealthCheckPolicy { get; set; }
-        public TimeSpan HealthCheckInterval { get; set; }
+        private const string UtcTimezone = "UTC";
+            
+        [Obsolete("Use " + nameof(PowerShellHealthCheckPolicy) + " instead.")]
+        public MachineScriptPolicy TentacleEndpointHealthCheckPolicy => PowerShellHealthCheckPolicy;
+        public MachineScriptPolicy PowerShellHealthCheckPolicy { get; set; }
+        [Obsolete("Use " + nameof(BashHealthCheckPolicy) + " instead.")]
+        public MachineScriptPolicy SshEndpointHealthCheckPolicy => BashHealthCheckPolicy;
+        public MachineScriptPolicy BashHealthCheckPolicy { get; set; }
+        public TimeSpan? HealthCheckInterval { get; set; }
+        public string HealthCheckCron { get; set; }
+        public string HealthCheckCronTimezone { get; set; }
+
+        public HealthCheckType HealthCheckType { get; set; }
 
         public MachineHealthCheckPolicy()
         {
-            TentacleEndpointHealthCheckPolicy = new MachineScriptPolicy();
-            SshEndpointHealthCheckPolicy = new MachineScriptPolicy();
+            PowerShellHealthCheckPolicy = new MachineScriptPolicy();
+            BashHealthCheckPolicy = new MachineScriptPolicy();
             HealthCheckInterval = TimeSpan.FromHours(1);
+            HealthCheckType = HealthCheckType.RunScript;
+            HealthCheckCronTimezone = UtcTimezone;
         }
 
         [JsonConstructor]
-        public MachineHealthCheckPolicy(MachineScriptPolicy tentacleEndpointHealthCheckPolicy, MachineScriptPolicy sshEndpointHealthCheckPolicy)
+        public MachineHealthCheckPolicy(MachineScriptPolicy powerShellHealthCheckPolicy, MachineScriptPolicy bashHealthCheckPolicy)
         {
-            TentacleEndpointHealthCheckPolicy = tentacleEndpointHealthCheckPolicy;
-            SshEndpointHealthCheckPolicy = sshEndpointHealthCheckPolicy;
+            PowerShellHealthCheckPolicy = powerShellHealthCheckPolicy;
+            BashHealthCheckPolicy = bashHealthCheckPolicy;
         }
+    }
+
+    public enum HealthCheckType
+    {
+        RunScript,
+        OnlyConnectivity
     }
 }

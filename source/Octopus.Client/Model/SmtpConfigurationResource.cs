@@ -20,6 +20,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool EnableSsl { get; set; }
+        
+        [Writeable]
+        public int? Timeout { get; set; }
 
         [Writeable]
         public SensitiveValue SmtpPassword { get; set; }

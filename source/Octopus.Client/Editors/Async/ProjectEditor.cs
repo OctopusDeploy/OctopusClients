@@ -9,9 +9,9 @@ namespace Octopus.Client.Editors.Async
     public class ProjectEditor : IResourceEditor<ProjectResource, ProjectEditor>
     {
         private readonly IProjectRepository repository;
-        private readonly Lazy<ProjectChannelsEditor> channels; 
+        private readonly Lazy<ProjectChannelsEditor> channels;
         private readonly Lazy<Task<DeploymentProcessEditor>> deploymentProcess;
-        private readonly Lazy<ProjectTriggersEditor> triggers; 
+        private readonly Lazy<ProjectTriggersEditor> triggers;
         private readonly Lazy<Task<VariableSetEditor>> variables;
 
         public ProjectEditor(
@@ -65,7 +65,7 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId)
+        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
 

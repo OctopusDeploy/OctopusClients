@@ -21,7 +21,8 @@ namespace Octopus.Client.Serialization
                 Converters = new JsonConverterCollection
                 {
                     new StringEnumConverter(),
-                    new IsoDateTimeConverter {DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK"},
+                    new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
+                        "dddd, dd MMMM yyyy h:mm tt zzz", "f" ),
                     new ControlConverter(),
                     new EndpointConverter(),
                     new AccountConverter(),
@@ -29,7 +30,8 @@ namespace Octopus.Client.Serialization
                     new HrefConverter(null),
                     new PropertyValueResource.PropertyValueJsonConverter(),
                     new TriggerActionConverter(),
-                    new TriggerFilterConverter()
+                    new TriggerFilterConverter(),
+                    new EndpointWithMultipleAuthenticationConverter()
                 }
             };
         }

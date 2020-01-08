@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class ActionTemplateResource : Resource, INamedResource
+    public class ActionTemplateResource : Resource, INamedResource, IHaveSpaceResource
     {
         [Required(ErrorMessage = "Please provide a name for the template.")]
         [Writeable]
@@ -32,5 +32,7 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
+
+        public string SpaceId { get; set; }
     }
 }

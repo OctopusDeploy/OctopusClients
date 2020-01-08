@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
@@ -10,7 +11,7 @@ namespace Octopus.Client.Model
     /// in the system. The HTTP API *cannot*
     /// be used to add, modify or delete events.
     /// </summary>
-    public class EventResource : Resource
+    public class EventResource : Resource, IHaveSpaceResource
     {
         /// <summary>
         /// Gets or sets a collection of document ID's that this event relates to. Note that the document ID's may no longer
@@ -34,10 +35,20 @@ namespace Octopus.Client.Model
         public string Username { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the user who created the event is a service user or an interactive user.
+        /// </summary>
+        public bool IsService { get; set; }
+
+        /// <summary>
         /// Gets or sets a description of how the user performing the event
         /// identified themselves to Octopus.
         /// </summary>
         public string IdentityEstablishedWith { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user agent header value from the request that triggered the event
+        /// </summary>
+        public string UserAgent { get; set; }
 
         /// <summary>
         /// Gets or sets the date/time that the event took place.
@@ -69,5 +80,7 @@ namespace Octopus.Client.Model
         /// HTML-formatted diff of the original and new document.
         /// </summary>
         public string Details { get; set; }
+
+        public string SpaceId { get; set; }
     }
 }

@@ -1,16 +1,13 @@
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 #tool "nuget:?package=ILRepack&version=2.0.13"
-#addin "nuget:?package=SharpCompress&version=0.12.4"
-#addin "nuget:?package=Cake.Incubator"
+#addin "nuget:?package=Cake.Incubator&version=4.0.0"
+#addin "nuget:?package=Cake.FileHelpers&version=3.2.0"
 
-using SharpCompress;
-using SharpCompress.Common;
-using SharpCompress.Writer;
-using System.Xml;
 using Cake.Incubator;
+using Cake.Incubator.LoggingExtensions;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -25,17 +22,8 @@ var signingCertificatePassword = Argument("signing_certificate_password", "");
 ///////////////////////////////////////////////////////////////////////////////
 var publishDir = "./publish";
 var artifactsDir = "./artifacts";
-var assetDir = "./BuildAssets";
 var localPackagesDir = "../LocalPackages";
-var globalAssemblyFile = "./source/Octo/Properties/AssemblyInfo.cs";
-var projectToPublish = "./source/Octo/Octo.csproj";
 var octopusClientFolder = "./source/Octopus.Client";
-var octoPublishFolder = $"{publishDir}/Octo";
-var octoMergedFolder =  $"{publishDir}/OctoMerged";
-var octopusCliFolder = "./source/Octopus.Cli";
-var dotNetOctoCliFolder = "./source/Octopus.DotNet.Cli";
-var dotNetOctoPublishFolder = $"{publishDir}/dotnetocto";
-var dotNetOctoMergedFolder =  $"{publishDir}/dotnetocto-Merged";
 
 GitVersion gitVersionInfo;
 string nugetVersion;
@@ -101,7 +89,7 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        GetFiles("**/**/*Tests.csproj")
+        GetFiles("**/**/*.Tests.csproj")
             .ToList()
             .ForEach(testProjectFile =>
             {
@@ -113,111 +101,20 @@ Task("Test")
             });
     });
 
-Task("DotnetPublish")
-    .IsDependentOn("Test")
-    .Does(() =>
-{
-    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-    {
-        Framework = "net451",
-        Configuration = configuration,
-        OutputDirectory = $"{octoPublishFolder}/netfx",
-        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
-    });
-
-    var portablePublishDir =  $"{octoPublishFolder}/portable";
-    DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-    {
-        Framework = "netcoreapp2.1",
-        Configuration = configuration,
-        OutputDirectory = portablePublishDir,
-        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
-    });
-    SignBinaries(portablePublishDir);
-
-    CopyFileToDirectory($"{assetDir}/Octo", portablePublishDir);
-    CopyFileToDirectory($"{assetDir}/Octo.cmd", portablePublishDir);
-
-    var doc = new XmlDocument();
-    doc.Load(@".\source\Octo\Octo.csproj");
-    var rids = doc.SelectSingleNode("Project/PropertyGroup/RuntimeIdentifiers").InnerText;
-    foreach (var rid in rids.Split(';'))
-    {
-        DotNetCorePublish(projectToPublish, new DotNetCorePublishSettings
-        {
-            Framework = "netcoreapp2.1",
-            Configuration = configuration,
-            Runtime = rid,
-            OutputDirectory = $"{octoPublishFolder}/{rid}",
-			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
-        });
-        SignBinaries($"{octoPublishFolder}/{rid}");
-    }
-
-});
-
-
-Task("MergeOctoExe")
-    .IsDependentOn("DotnetPublish")
-    .Does(() => {
-        var inputFolder = $"{octoPublishFolder}/netfx";
-        var outputFolder = $"{octoPublishFolder}/netfx-merged";
-        CreateDirectory(outputFolder);
-        ILRepack(
-            $"{outputFolder}/Octo.exe",
-            $"{inputFolder}/Octo.exe",
-            System.IO.Directory.EnumerateFiles(inputFolder, "*.dll").Select(f => (FilePath) f),
-            new ILRepackSettings {
-                Internalize = true,
-                Parallel = true,
-                Libs = new List<DirectoryPath>() { inputFolder }
-            }
-        );
-        SignBinaries(outputFolder);
-    });
-
-
-Task("Zip")
-    .IsDependentOn("MergeOctoExe")
-    .IsDependentOn("DotnetPublish")
-    .Does(() => {
-
-
-        foreach(var dir in System.IO.Directory.EnumerateDirectories(octoPublishFolder))
-        {
-            var dirName = System.IO.Path.GetFileName(dir);
-
-            if(dirName == "netfx")
-                continue;
-
-            if(dirName == "netfx-merged")
-            {
-                Zip(dir, $"{artifactsDir}/OctopusTools.{nugetVersion}.zip");
-            }
-            else
-            {
-                var outFile = $"{artifactsDir}/OctopusTools.{nugetVersion}.{dirName}";
-                if(dirName == "portable" || dirName.Contains("win"))
-                    Zip(dir, outFile + ".zip");
-
-                if(!dirName.Contains("win"))
-                    TarGzip(dir, outFile);
-            }
-        }
-    });
-
-
-Task("PackClientNuget")
+Task("Merge")
     .IsDependentOn("Test")
     .Does(() => {
         var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
         var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
         CreateDirectory(outputFolder);
 
+        var assemblyPaths = System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f);
+        assemblyPaths = assemblyPaths.Concat(System.IO.Directory.EnumerateFiles(inputFolder, "Octodiff.exe").Select(f => (FilePath) f));
+
         ILRepack(
             $"{outputFolder}/Octopus.Client.dll",
             $"{inputFolder}/Octopus.Client.dll",
-            System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f),
+            assemblyPaths,
             new ILRepackSettings {
                 Internalize = true,
                 Parallel = false,
@@ -228,85 +125,65 @@ Task("PackClientNuget")
 
         DeleteDirectory(inputFolder, true);
         MoveDirectory(outputFolder, inputFolder);
+    });
 
+Task("PackClientNuget")
+    .IsDependentOn("Merge")
+    .Does(() => {
         SignBinaries($"{octopusClientFolder}/bin/{configuration}");
 
-        DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
-            ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
+        try
+        {
+            ReplaceTextInFiles($"{octopusClientFolder}/Octopus.Client.nuspec",
+                "<version>$version$</version>",
+                $"<version>{nugetVersion}</version>");
+
+            DotNetCorePack(octopusClientFolder, new DotNetCorePackSettings {
+                ArgumentCustomization = args => {
+                    args.Append($"/p:Version={nugetVersion}");
+                    args.Append($"/p:NuspecFile=Octopus.Client.nuspec");
+                    return args;
+                },
+                Configuration = configuration,
+                OutputDirectory = artifactsDir,
+                NoBuild = true,
+                IncludeSymbols = false,
+                Verbosity = DotNetCoreVerbosity.Normal,
+            });
+        }
+        finally
+        {
+            ReplaceTextInFiles($"{octopusClientFolder}/Octopus.Client.nuspec",
+                            $"<version>{nugetVersion}</version>",
+                            $"<version>$version$</version>");        
+        }
+    });
+    
+Task("TestClientNugetPackage")
+    .IsDependentOn("PackClientNuget")
+    .Does(() => {
+        // tests that make sure the packed, ilmerged dll we're going to ship actually works the way we expect it to
+        DotNetCoreTest("./source/Octopus.Client.E2ETests/Octopus.Client.E2ETests.csproj", new DotNetCoreTestSettings
+        {
             Configuration = configuration,
-            OutputDirectory = artifactsDir,
-            NoBuild = true,
-            IncludeSymbols = false,
+            NoBuild = true
         });
     });
 
-
-Task("PackOctopusToolsNuget")
-    .IsDependentOn("MergeOctoExe")
-    .Does(() => {
-        var nugetPackDir = $"{publishDir}/nuget";
-        var nuspecFile = "OctopusTools.nuspec";
-
-        CopyDirectory($"{octoPublishFolder}/netfx-merged", nugetPackDir);
-        CopyFileToDirectory($"{assetDir}/LICENSE.txt", nugetPackDir);
-        CopyFileToDirectory($"{assetDir}/VERIFICATION.txt", nugetPackDir);
-        CopyFileToDirectory($"{assetDir}/init.ps1", nugetPackDir);
-        CopyFileToDirectory($"{assetDir}/{nuspecFile}", nugetPackDir);
-
-        NuGetPack($"{nugetPackDir}/{nuspecFile}", new NuGetPackSettings {
-            Version = nugetVersion,
-            OutputDirectory = artifactsDir
-        });
-    });
-
-Task("PackDotNetOctoNuget")
-	.IsDependentOn("DotnetPublish")
-    .Does(() => {
-
-		SignBinaries($"{octopusCliFolder}/bin/{configuration}");
-
-		DotNetCorePack(octopusCliFolder, new DotNetCorePackSettings
-		{
-			Configuration = configuration,
-			OutputDirectory = artifactsDir,
-			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
-            NoBuild = true,
-            IncludeSymbols = false
-		});
-
-		SignBinaries($"{dotNetOctoCliFolder}/bin/{configuration}");
-
-		DotNetCorePack(dotNetOctoCliFolder, new DotNetCorePackSettings
-		{
-			Configuration = configuration,
-			OutputDirectory = artifactsDir,
-			ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}"),
-            NoBuild = true,
-            IncludeSymbols = false
-		});
-    });
 
 Task("CopyToLocalPackages")
     .WithCriteria(BuildSystem.IsLocalBuild)
-    .IsDependentOn("PackClientNuget")
-    .IsDependentOn("PackOctopusToolsNuget")
-    .IsDependentOn("PackDotNetOctoNuget")
-    .IsDependentOn("Zip")
+    .IsDependentOn("TestClientNugetPackage")
     .Does(() =>
 {
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory($"{artifactsDir}/Octopus.Client.{nugetVersion}.nupkg", localPackagesDir);
-    CopyFileToDirectory($"{artifactsDir}/Octopus.Cli.{nugetVersion}.nupkg", localPackagesDir);
-    CopyFileToDirectory($"{artifactsDir}/Octopus.DotNet.Cli.{nugetVersion}.nupkg", localPackagesDir);
 });
 
 private void SignBinaries(string path)
 {
     Information($"Signing binaries in {path}");
 	var files = GetFiles(path + "/**/Octopus.*.dll");
-    files.Add(GetFiles(path + "/**/Octo.dll"));
-    files.Add(GetFiles(path + "/**/Octo.exe"));
-    files.Add(GetFiles(path + "/**/dotnet-octo.dll"));
 
 	Sign(files, new SignToolSignSettings {
 			ToolPath = MakeAbsolute(File("./certificates/signtool.exe")),
@@ -315,28 +192,6 @@ private void SignBinaries(string path)
             Password = signingCertificatePassword
     });
 }
-
-
-private void TarGzip(string path, string outputFile)
-{
-    var outFile = $"{outputFile}.tar.gz";
-    Information("Creating TGZ file {0} from {1}", outFile, path);
-    using (var tarMemStream = new MemoryStream())
-    {
-        using (var tar = WriterFactory.Open(tarMemStream, ArchiveType.Tar, CompressionType.None, true))
-        {
-            tar.WriteAll(path, "*", SearchOption.AllDirectories);
-        }
-
-        tarMemStream.Seek(0, SeekOrigin.Begin);
-
-        using (Stream stream = System.IO.File.Open(outFile, FileMode.Create))
-        using (var zip = WriterFactory.Open(stream, ArchiveType.GZip, CompressionType.GZip))
-            zip.Write($"{outputFile}.tar", tarMemStream);
-    }
-    Information("Successfully created TGZ file: {0}", outFile);
-}
-
 
 
 //////////////////////////////////////////////////////////////////////

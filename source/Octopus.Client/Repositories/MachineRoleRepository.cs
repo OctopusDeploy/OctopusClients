@@ -11,16 +11,16 @@ namespace Octopus.Client.Repositories
     
     class MachineRoleRepository : IMachineRoleRepository
     {
-        readonly IOctopusClient client;
+        private readonly IOctopusRepository repository;
 
-        public MachineRoleRepository(IOctopusClient client)
+        public MachineRoleRepository(IOctopusRepository repository)
         {
-            this.client = client;
+            this.repository = repository;
         }
 
         public List<string> GetAllRoleNames()
         {
-            return client.Get<string[]>(client.RootDocument.Link("MachineRoles")).ToList();
+            return repository.Client.Get<string[]>(repository.Link("MachineRoles")).ToList();
         }
     }
 }

@@ -25,15 +25,14 @@ namespace Octopus.Client.Repositories.Async
         Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release);
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release);    
-        Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false);
-        Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false);
+        Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules = false);
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release);
     }
 
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
-        public ReleaseRepository(IOctopusAsyncClient client)
-            : base(client, "Releases")
+        public ReleaseRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Releases")
         {
         }
 
@@ -59,20 +58,15 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ReleaseResource> SnapshotVariables(ReleaseResource release)
         {
-            await Client.Post(release.Link("SnapshotVariables"));
-            return await Get(release.Id);
+            await Client.Post(release.Link("SnapshotVariables")).ConfigureAwait(false);
+            return await Get(release.Id).ConfigureAwait(false);
         }
 
-        public Task<ReleaseResource> Create(ReleaseResource resource, bool ignoreChannelRules = false)
+        public async Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules = false)
         {
-            return Client.Create(Client.RootDocument.Link(CollectionLinkName), resource, new { ignoreChannelRules });
+            return await Client.Create(await Repository.Link(CollectionLinkName).ConfigureAwait(false), release, new { ignoreChannelRules }).ConfigureAwait(false);
         }
-
-        public Task<ReleaseResource> Modify(ReleaseResource resource, bool ignoreChannelRules = false)
-        {
-            return Client.Update(resource.Links["Self"], resource, new { ignoreChannelRules });
-        }
-
+        
         public Task<LifecycleProgressionResource> GetProgression(ReleaseResource release)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"]);
