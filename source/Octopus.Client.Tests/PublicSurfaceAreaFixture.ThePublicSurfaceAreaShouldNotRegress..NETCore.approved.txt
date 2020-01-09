@@ -2752,6 +2752,8 @@ Octopus.Client.Model
     String Category { get; set; }
     String Comments { get; set; }
     String Details { get; set; }
+    String DetailsJsonAfter { get; set; }
+    String DetailsJsonBefore { get; set; }
     String IdentityEstablishedWith { get; set; }
     Boolean IsService { get; set; }
     String Message { get; set; }

@@ -81,6 +81,16 @@ namespace Octopus.Client.Model
         /// </summary>
         public string Details { get; set; }
 
+        /// <summary>
+        /// Gets or sets the details of the event before any modification (as JSON).
+        /// </summary>
+        public string DetailsJsonBefore { get; set; }
+
+        /// <summary>
+        /// Gets or sets the details of the event after any modification (as JSON).
+        /// </summary>
+        public string DetailsJsonAfter { get; set; }
+
         public string SpaceId { get; set; }
     }
 }
