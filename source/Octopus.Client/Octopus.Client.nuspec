@@ -6,7 +6,7 @@
         <authors>Octopus Deploy</authors>
         <owners>Octopus Deploy</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <licenseUrl>http://octopusdeploy.com/pricing</licenseUrl>
+        <licenseUrl>https://github.com/OctopusDeploy/OctopusClients/blob/master/LICENSE.txt</licenseUrl>
         <projectUrl>http://octopusdeploy.com/</projectUrl>
         <iconUrl>http://i.octopusdeploy.com/resources/Avatar3-32x32.png</iconUrl>
         <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams. 
