@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace Octopus.Client.E2ETests
@@ -20,7 +21,7 @@ namespace Octopus.Client.E2ETests
         internal static string GetRuntime()
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().FullLocalPath());
-            var runtime = new DirectoryInfo(path).Name.Replace("netcoreapp", "netstandard");
+            var runtime = Regex.Replace(new DirectoryInfo(path).Name, @"netcoreapp\d\.\d", "netstandard2.0");
             return runtime;
         }
     }
