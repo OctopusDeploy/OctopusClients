@@ -10,10 +10,10 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>net452;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
@@ -21,7 +21,7 @@
     <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-- So that libuv is copied correctly -->
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS</DefineConstants>
   </PropertyGroup>
 
@@ -59,7 +59,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <PackageReference Include="Best.Conventional" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.0" />
