@@ -23,7 +23,8 @@ namespace Octopus.Client.Repositories
         private bool hasMinimumRequiredVersion;
         protected virtual Dictionary<string, object> AdditionalQueryParameters { get; }
 
-        protected BasicRepository(IOctopusRepository repository, string collectionLinkName, Func<IOctopusRepository, string> getCollectionLinkName = null)
+        protected BasicRepository(IOctopusRepository repository, string collectionLinkName,
+            Func<IOctopusRepository, string> getCollectionLinkName = null)
         {
             Repository = repository;
             client = repository.Client;
@@ -48,7 +49,12 @@ namespace Octopus.Client.Repositories
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound)
+
+                    var versionOfServer = SemanticVersion.Parse(Repository.LoadRootDocument().Version);
+                    var versionSpacesIntroduced = SemanticVersion.Parse("2018.12.2");
+                    var versionIncludesSpaces = versionOfServer.CompareTo(versionSpacesIntroduced) >= 0;
+
+                    if (!isDefaultSpaceFound && versionIncludesSpaces)
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
@@ -111,7 +117,8 @@ namespace Octopus.Client.Repositories
             client.Delete(resource.Links["Self"]);
         }
 
-        public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
+        public void Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null,
+            object pathParameters = null)
         {
             ThrowIfServerVersionIsNotCompatible();
 
@@ -158,7 +165,8 @@ namespace Octopus.Client.Repositories
             ThrowIfServerVersionIsNotCompatible();
 
             var link = ResolveLink();
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
+            var parameters =
+                ParameterHelper.CombineParameters(AdditionalQueryParameters, new {id = IdValueConstant.IdAll});
             return client.Get<List<TResource>>(link, parameters);
         }
 
@@ -174,7 +182,8 @@ namespace Octopus.Client.Repositories
             return FindOne(r =>
             {
                 var named = r as INamedResource;
-                if (named != null) return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
+                if (named != null)
+                    return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
                 return false;
             }, path, pathParameters);
         }
@@ -183,7 +192,8 @@ namespace Octopus.Client.Repositories
         {
             ThrowIfServerVersionIsNotCompatible();
 
-            var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
+            var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()),
+                StringComparer.OrdinalIgnoreCase);
             return FindMany(r =>
             {
                 var named = r as INamedResource;
@@ -203,7 +213,8 @@ namespace Octopus.Client.Repositories
             {
                 return client.Get<TResource>(idOrHref, AdditionalQueryParameters);
             }
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
+
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new {id = idOrHref});
             return client.Get<TResource>(link, parameters);
         }
 
@@ -219,7 +230,7 @@ namespace Octopus.Client.Repositories
             var link = ResolveLink();
             if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
+            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new {ids = actualIds});
             client.Paginate<TResource>(
                 link,
                 parameters,

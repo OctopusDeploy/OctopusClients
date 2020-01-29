@@ -48,10 +48,15 @@ namespace Octopus.Client.Repositories.Async
                 whenSystemScoped: () => { },
                 whenUnspecifiedScope: () =>
                 {
-                    var spaceRoot = Repository.LoadSpaceRootDocument();
+                    var spaceRoot = Repository.LoadSpaceRootDocument().Result;
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound)
+                    
+                    var versionOfServer = SemanticVersion.Parse(Repository.LoadRootDocument().Result.Version);
+                    var versionSpacesIntroduced = SemanticVersion.Parse("2018.12.2");
+                    var versionIncludesSpaces = versionOfServer >= versionSpacesIntroduced;
+                    
+                    if (!isDefaultSpaceFound && versionIncludesSpaces)
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
