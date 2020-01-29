@@ -148,6 +148,37 @@ namespace Octopus.Client.Tests.Repositories
             actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
         }
         
+        
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionSpacesIntroduced_Throws()
+        {
+            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.0"});
+            var resource = CreateSpaceResourceForSpace(null);
+            Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
+            actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
+        }
+        
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionWithSpaces_Throws()
+        {
+            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2020.1.0"});
+            var resource = CreateSpaceResourceForSpace(null);
+            Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
+            actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
+        }
+
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2018.12.5"});
+            var resource = CreateSpaceResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource));
+        }
+        
+        
         [Test]
         public void UnspecifiedRepo_MixedResourceWithSpaceId_Ok()
         {
@@ -245,6 +276,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
             repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
+            repo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.0"});
         }
     }
 }
