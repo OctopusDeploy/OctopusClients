@@ -51,14 +51,14 @@ namespace Octopus.Client.Repositories.Async
                     var spaceRoot = Repository.LoadSpaceRootDocument().Result;
                     var isDefaultSpaceFound = spaceRoot != null;
                     
-                    if (!isDefaultSpaceFound && CheckVersionIncludesSpaces(Repository.LoadRootDocument().Result.Version))
+                    if (!isDefaultSpaceFound && CheckServerVersionIncludesSpaces(Repository.LoadRootDocument().Result.Version))
                     {
                             throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
         }
         
-        private bool CheckVersionIncludesSpaces(string version)
+        private bool CheckServerVersionIncludesSpaces(string version)
         {
             var versionOfServer = SemanticVersion.Parse(version);
             var versionSpacesIntroduced = SemanticVersion.Parse("2019.1.0");
