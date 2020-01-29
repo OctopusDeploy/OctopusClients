@@ -50,17 +50,21 @@ namespace Octopus.Client.Repositories.Async
                 {
                     var spaceRoot = Repository.LoadSpaceRootDocument().Result;
                     var isDefaultSpaceFound = spaceRoot != null;
-
                     
-                    var versionOfServer = SemanticVersion.Parse(Repository.LoadRootDocument().Result.Version);
-                    var versionSpacesIntroduced = SemanticVersion.Parse("2018.12.2");
-                    var versionIncludesSpaces = versionOfServer >= versionSpacesIntroduced;
-                    
-                    if (!isDefaultSpaceFound && versionIncludesSpaces)
+                    if (!isDefaultSpaceFound && CheckVersionIncludesSpaces(Repository.LoadRootDocument().Result.Version))
                     {
-                        throw new DefaultSpaceNotFoundException(spaceResource);
+                            throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
+        }
+        
+        private bool CheckVersionIncludesSpaces(string version)
+        {
+            var versionOfServer = SemanticVersion.Parse(version);
+            var versionSpacesIntroduced = SemanticVersion.Parse("2019.1.0");
+            var versionIncludesSpaces = versionOfServer >= versionSpacesIntroduced;
+
+            return versionIncludesSpaces;
         }
 
         protected void MinimumCompatibleVersion(string version)
