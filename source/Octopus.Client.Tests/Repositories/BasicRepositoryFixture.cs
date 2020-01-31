@@ -256,7 +256,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
             repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
-            repo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.0"});
+            repo.LoadRootDocument().Returns(new RootResource());
         }
     }
 }
