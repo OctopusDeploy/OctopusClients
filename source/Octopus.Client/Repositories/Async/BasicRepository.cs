@@ -134,7 +134,7 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible();
 
             TResource resource = null;
-            await Paginate(page => 
+            await Paginate(page =>
             {
                 resource = page.Items.FirstOrDefault(search);
                 return resource == null;
@@ -151,7 +151,7 @@ namespace Octopus.Client.Repositories.Async
             await Paginate(page =>
             {
                 resources.AddRange(page.Items.Where(search));
-                return true; 
+                return true;
             }, path, pathParameters)
                 .ConfigureAwait(false);
             return resources;
