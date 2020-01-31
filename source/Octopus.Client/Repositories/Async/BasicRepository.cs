@@ -149,10 +149,10 @@ namespace Octopus.Client.Repositories.Async
 
             var resources = new List<TResource>();
             await Paginate(page =>
-                {
-                    resources.AddRange(page.Items.Where(search));
-                    return true;
-                }, path, pathParameters)
+            {
+                resources.AddRange(page.Items.Where(search));
+                return true; 
+            }, path, pathParameters)
                 .ConfigureAwait(false);
             return resources;
         }
@@ -169,7 +169,7 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
-            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new {id = IdValueConstant.IdAll});
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
             return await Client.Get<List<TResource>>(link, parameters).ConfigureAwait(false);
         }
 
@@ -214,7 +214,7 @@ namespace Octopus.Client.Repositories.Async
             var link = await ResolveLink().ConfigureAwait(false);
             var additionalQueryParameters = GetAdditionalQueryParameters();
             var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new { id = idOrHref });
-            var getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+            var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, additionalQueryParameters).ConfigureAwait(false)
                 : Client.Get<TResource>(link, parameters).ConfigureAwait(false);
             return await getTask;
@@ -242,7 +242,6 @@ namespace Octopus.Client.Repositories.Async
                 {
                     resources.AddRange(page.Items);
                     return true;
-                    
                 })
                 .ConfigureAwait(false);
 
