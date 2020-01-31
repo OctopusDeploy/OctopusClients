@@ -47,21 +47,21 @@ namespace Octopus.Client.Repositories
                 {
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
-                  
-                    if (!isDefaultSpaceFound && CheckServerVersionIncludesSpaces(Repository.LoadRootDocument().Version))
+
+                    if (!isDefaultSpaceFound && ServerSupportsSpaces())
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
         }
-        
-        private bool CheckServerVersionIncludesSpaces(string version)
-        {
-            var versionOfServer = SemanticVersion.Parse(version);
-            var versionSpacesIntroduced = SemanticVersion.Parse("2019.1.0");
-            var versionIncludesSpaces = versionOfServer >= versionSpacesIntroduced;
 
-            return versionIncludesSpaces;
+        private bool ServerSupportsSpaces()
+        {
+            var rootDocument = Repository.LoadRootDocument();
+
+            var spacesIsSupported = rootDocument.HasLink("Spaces");
+
+            return spacesIsSupported;
         }
 
         protected void MinimumCompatibleVersion(string version)

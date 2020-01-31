@@ -21,7 +21,8 @@ namespace Octopus.Client.Repositories.Async
         private SemanticVersion minimumRequiredVersion;
         private bool hasMinimumRequiredVersion;
 
-        protected BasicRepository(IOctopusAsyncRepository repository, string collectionLinkName, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null)
+        protected BasicRepository(IOctopusAsyncRepository repository, string collectionLinkName,
+            Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null)
         {
             Client = repository.Client;
             Repository = repository;
@@ -46,25 +47,25 @@ namespace Octopus.Client.Repositories.Async
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
                 },
                 whenSystemScoped: () => { },
-                whenUnspecifiedScope: () =>
+                whenUnspecifiedScope: async () =>
                 {
-                    var spaceRoot = Repository.LoadSpaceRootDocument().Result;
+                    var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
                     var isDefaultSpaceFound = spaceRoot != null;
-                    
-                    if (!isDefaultSpaceFound && CheckServerVersionIncludesSpaces(Repository.LoadRootDocument().Result.Version))
+
+                    if (!isDefaultSpaceFound && await ServerSupportsSpaces())
                     {
-                            throw new DefaultSpaceNotFoundException(spaceResource);
+                        throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
         }
-        
-        private bool CheckServerVersionIncludesSpaces(string version)
-        {
-            var versionOfServer = SemanticVersion.Parse(version);
-            var versionSpacesIntroduced = SemanticVersion.Parse("2019.1.0");
-            var versionIncludesSpaces = versionOfServer >= versionSpacesIntroduced;
 
-            return versionIncludesSpaces;
+        private async Task<bool> ServerSupportsSpaces()
+        {
+            var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
+
+            var spacesIsSupported = rootDocument.HasLink("Spaces");
+
+            return spacesIsSupported;
         }
 
         protected void MinimumCompatibleVersion(string version)
@@ -120,7 +121,8 @@ namespace Octopus.Client.Repositories.Async
             return Client.Delete(resource.Links["Self"]);
         }
 
-        public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
+        public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null,
+            object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();
 
@@ -129,30 +131,32 @@ namespace Octopus.Client.Repositories.Async
             await Client.Paginate(path ?? link, parameters, getNextPage).ConfigureAwait(false);
         }
 
-        public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null, object pathParameters = null)
+        public async Task<TResource> FindOne(Func<TResource, bool> search, string path = null,
+            object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();
 
             TResource resource = null;
             await Paginate(page =>
-            {
-                resource = page.Items.FirstOrDefault(search);
-                return resource == null;
-            }, path, pathParameters)
+                {
+                    resource = page.Items.FirstOrDefault(search);
+                    return resource == null;
+                }, path, pathParameters)
                 .ConfigureAwait(false);
             return resource;
         }
 
-        public async Task<List<TResource>> FindMany(Func<TResource, bool> search, string path = null, object pathParameters = null)
+        public async Task<List<TResource>> FindMany(Func<TResource, bool> search, string path = null,
+            object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();
 
             var resources = new List<TResource>();
             await Paginate(page =>
-            {
-                resources.AddRange(page.Items.Where(search));
-                return true;
-            }, path, pathParameters)
+                {
+                    resources.AddRange(page.Items.Where(search));
+                    return true;
+                }, path, pathParameters)
                 .ConfigureAwait(false);
             return resources;
         }
@@ -169,7 +173,8 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
-            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
+            var parameters =
+                ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new {id = IdValueConstant.IdAll});
             return await Client.Get<List<TResource>>(link, parameters).ConfigureAwait(false);
         }
 
@@ -181,21 +186,24 @@ namespace Octopus.Client.Repositories.Async
 
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
-                pathParameters = new { name = name };
+                pathParameters = new {name = name};
 
             return FindOne(r =>
             {
                 var named = r as INamedResource;
-                if (named != null) return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
+                if (named != null)
+                    return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
                 return false;
             }, path, pathParameters);
         }
 
-        public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
+        public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path = null,
+            object pathParameters = null)
         {
             ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
 
-            var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
+            var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()),
+                StringComparer.OrdinalIgnoreCase);
             return FindMany(r =>
             {
                 var named = r as INamedResource;
@@ -213,8 +221,8 @@ namespace Octopus.Client.Repositories.Async
 
             var link = await ResolveLink().ConfigureAwait(false);
             var additionalQueryParameters = GetAdditionalQueryParameters();
-            var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new { id = idOrHref });
-            var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+            var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new {id = idOrHref});
+            var getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, additionalQueryParameters).ConfigureAwait(false)
                 : Client.Get<TResource>(link, parameters).ConfigureAwait(false);
             return await getTask;
@@ -234,15 +242,15 @@ namespace Octopus.Client.Repositories.Async
             if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
                 link += "{?ids}";
 
-            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { ids = actualIds });
+            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new {ids = actualIds});
             await Client.Paginate<TResource>(
-                link,
-                parameters,
-                page =>
-                {
-                    resources.AddRange(page.Items);
-                    return true;
-                })
+                    link,
+                    parameters,
+                    page =>
+                    {
+                        resources.AddRange(page.Items);
+                        return true;
+                    })
                 .ConfigureAwait(false);
 
             return resources;

@@ -164,35 +164,15 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateSpaceResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
         }
-        
-                
+     
         [Test]
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
         {
             mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2018.1.0"});
             var resource = CreateSpaceResourceForSpace(null);
-            Assert.DoesNotThrowAsync(() => repoForSpaceScopedResource.Create(resource));
-        }
-              
-        [Test]
-        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionSpacesIntroduced_Throws()
-        {
-            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.0"});
-            var resource = CreateSpaceResourceForSpace(null);
-            Assert.ThrowsAsync<DefaultSpaceNotFoundException>(() => repoForSpaceScopedResource.Create(resource));
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
         }
 
-        [Test]
-        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionIncludesSpaces_Throws()
-        {
-            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.6"});
-            var resource = CreateSpaceResourceForSpace(null);
-            Assert.ThrowsAsync<DefaultSpaceNotFoundException>(() => repoForSpaceScopedResource.Create(resource));
-        }
-        
         [Test]
         public void UnspecifiedRepo_MixedResourceWithSpaceId_Ok()
         {
