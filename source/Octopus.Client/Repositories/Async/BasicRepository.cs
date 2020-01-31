@@ -51,7 +51,7 @@ namespace Octopus.Client.Repositories.Async
                     var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound && await ServerSupportsSpaces())
+                    if (!isDefaultSpaceFound && await ServerSupportsSpaces().ConfigureAwait(false))
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
