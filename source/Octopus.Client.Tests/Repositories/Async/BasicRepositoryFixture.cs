@@ -164,7 +164,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateSpaceResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
         }
-     
+        
         [Test]
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
         {

@@ -143,27 +143,8 @@ namespace Octopus.Client.Tests.Repositories
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdDefaultSpaceMissing_Throws()
         {
             mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            var resource = CreateSpaceResourceForSpace(null);
-            Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
-            actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
-        }
-        
-        
-        [Test]
-        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionSpacesIntroduced_Throws()
-        {
-            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2019.1.0"});
-            var resource = CreateSpaceResourceForSpace(null);
-            Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
-            actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
-        }
-        
-        [Test]
-        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionWithSpaces_Throws()
-        {
-            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2020.1.0"});
+            mockRepo.LoadRootDocument().Returns(new RootResource()
+                {Links = new LinkCollection() {{"Spaces", "api/spaces"}}});
             var resource = CreateSpaceResourceForSpace(null);
             Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
             actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
@@ -173,7 +154,6 @@ namespace Octopus.Client.Tests.Repositories
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
         {
             mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
-            mockRepo.LoadRootDocument().Returns(new RootResource() {Version = "2018.12.5"});
             var resource = CreateSpaceResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource));
         }
