@@ -88,6 +88,15 @@ namespace Octopus.Client.Model
                 public const string Properties = "Properties";
                 public const string TargetType = "TargetType";
             }
+            
+            public enum TargetType	
+            {	
+                Machines,	
+                Environments,	
+                Workers,	
+                WorkerPools,	
+                OctopusServer,	
+            }
         }
 
         public static class Migration
