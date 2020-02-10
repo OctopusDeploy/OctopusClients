@@ -1726,14 +1726,6 @@ Octopus.Client.Model
       static System.String TargetRoles
       static System.String TargetType
     }
-    ScriptTaskTarget
-    {
-        Machines = 0
-        Environments = 1
-        Workers = 2
-        WorkerPools = 3
-        OctopusServer = 4
-    }
   }
   class AllowCsvAttribute
     _Attribute
@@ -1961,14 +1953,6 @@ Octopus.Client.Model
         static System.String Syntax
         static System.String TargetRoles
         static System.String TargetType
-      }
-      ScriptTaskTarget
-      {
-          Machines = 0
-          Environments = 1
-          Workers = 2
-          WorkerPools = 3
-          OctopusServer = 4
       }
     }
     abstract class AutoDeploy
@@ -4454,14 +4438,6 @@ Octopus.Client.Model
     Octopus.Client.Model.ScriptSyntax ScriptSyntax
     static Octopus.Client.Model.ScriptSyntaxMeta FromExtension(String)
     static Octopus.Client.Model.ScriptSyntaxMeta FromName(String)
-  }
-  ScriptTaskTarget
-  {
-      Machines = 0
-      Environments = 1
-      Workers = 2
-      WorkerPools = 3
-      OctopusServer = 4
   }
   class SelectedPackage
   {
