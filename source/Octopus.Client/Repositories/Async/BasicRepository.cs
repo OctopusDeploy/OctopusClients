@@ -74,15 +74,21 @@ namespace Octopus.Client.Repositories.Async
         {
             if (!hasMinimumRequiredVersion) return false;
 
-            var currentServerVersion = (await Repository.LoadRootDocument()).Version;
-
-            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
-            {
-                throw new NotSupportedException(
-                    $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
-            }
+            await EnsureServerIsMinimumVersion(
+                minimumRequiredVersion,
+                currentServerVersion => $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
 
             return false;
+        }
+
+        protected async Task EnsureServerIsMinimumVersion(SemanticVersion requiredVersion, Func<string, string> messageGenerator)
+        {
+            var currentServerVersion = (await Repository.LoadRootDocument()).Version;
+
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, requiredVersion))
+            {
+                throw new NotSupportedException(messageGenerator(currentServerVersion));
+            }
         }
 
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
