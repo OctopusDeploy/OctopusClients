@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
@@ -41,16 +42,18 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        protected override void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected override async Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            Repository.Scope.Apply(
+            await Repository.Scope.Apply(
                 whenSpaceScoped: space =>
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+
+                    return Task.FromResult("");
                 },
-                whenSystemScoped: () => { },
-                whenUnspecifiedScope: () => { });
+                whenSystemScoped: () => Task.FromResult(""),
+                whenUnspecifiedScope: () => Task.FromResult("")).ConfigureAwait(false);
         }
 
         

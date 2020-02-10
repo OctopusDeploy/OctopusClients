@@ -37,15 +37,16 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        protected virtual void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected virtual async Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            Repository.Scope.Apply(
+            await Repository.Scope.Apply(
                 whenSpaceScoped: space =>
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                    return Task.FromResult("");
                 },
-                whenSystemScoped: () => { },
+                whenSystemScoped: () => Task.FromResult(""),
                 whenUnspecifiedScope: async () =>
                 {
                     var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
@@ -55,7 +56,7 @@ namespace Octopus.Client.Repositories.Async
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
-                });
+                }).ConfigureAwait(false);
         }
 
         private async Task<bool> ServerSupportsSpaces()
@@ -73,10 +74,10 @@ namespace Octopus.Client.Repositories.Async
             hasMinimumRequiredVersion = true;
         }
 
-        private void AssertSpaceIdMatchesResource(TResource resource)
+        private async Task AssertSpaceIdMatchesResource(TResource resource)
         {
             if (resource is IHaveSpaceResource spaceResource)
-                CheckSpaceResource(spaceResource);
+                await CheckSpaceResource(spaceResource).ConfigureAwait(false);
         }
 
         protected async Task<bool> ThrowIfServerVersionIsNotCompatible()
@@ -99,25 +100,26 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
-            AssertSpaceIdMatchesResource(resource);
+            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
             EnrichSpaceId(resource);
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
 
-        public virtual Task<TResource> Modify(TResource resource)
+        public virtual async Task<TResource> Modify(TResource resource)
         {
-            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
 
-            AssertSpaceIdMatchesResource(resource);
-            return Client.Update(resource.Links["Self"], resource);
+            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            return await Client.Update(resource.Links["Self"], resource).ConfigureAwait(false);
         }
 
-        public Task Delete(TResource resource)
+        public async Task Delete(TResource resource)
         {
-            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
 
-            AssertSpaceIdMatchesResource(resource);
-            return Client.Delete(resource.Links["Self"]);
+            await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            
+            await Client.Delete(resource.Links["Self"]).ConfigureAwait(false);
         }
 
         public async Task Paginate(Func<ResourceCollection<TResource>, bool> getNextPage, string path = null, object pathParameters = null)
