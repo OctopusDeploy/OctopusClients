@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories
 {
@@ -149,6 +149,7 @@ namespace Octopus.Client.Repositories
             BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             EnsureSingleSpaceContext();
+            EnsureValidTargetType(targetType);
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.AdHocScript.Name,
@@ -176,6 +177,7 @@ namespace Octopus.Client.Repositories
             BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
+            EnsureValidTargetType(targetType);
 
             var resource = new TaskResource() {SpaceId = template.SpaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
@@ -190,6 +192,16 @@ namespace Octopus.Client.Repositories
                 {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
             };
             return Create(resource);
+        }
+
+        private void EnsureValidTargetType(BuiltInTasks.AdHocScript.TargetType? targetType)
+        {
+            if (targetType == BuiltInTasks.AdHocScript.TargetType.OctopusServer)
+            {
+                var minimumRequiredVersion = new SemanticVersion("2019.13.5");
+                EnsureServerIsMinimumVersion(minimumRequiredVersion,
+                    currentServerVersion => $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with the TargetType value of 'OctopusServer' for this API call. Please upgrade your Octopus Server to version '{minimumRequiredVersion}' or greater.");
+            }
         }
 
         public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)
