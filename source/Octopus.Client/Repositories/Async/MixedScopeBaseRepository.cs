@@ -42,18 +42,18 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        protected override async Task CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected override Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            await Repository.Scope.Apply(
+            return Repository.Scope.Apply(
                 whenSpaceScoped: space =>
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
 
-                    return Task.FromResult("");
+                    return Task.FromResult(0);
                 },
-                whenSystemScoped: () => Task.FromResult(""),
-                whenUnspecifiedScope: () => Task.FromResult("")).ConfigureAwait(false);
+                whenSystemScoped: () => Task.FromResult(0),
+                whenUnspecifiedScope: () => Task.FromResult(0));
         }
 
         

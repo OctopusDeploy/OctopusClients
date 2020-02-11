@@ -37,16 +37,16 @@ namespace Octopus.Client.Repositories.Async
         public IOctopusAsyncClient Client { get; }
         public IOctopusAsyncRepository Repository { get; }
 
-        protected virtual async Task CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected virtual Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            await Repository.Scope.Apply(
+            return Repository.Scope.Apply(
                 whenSpaceScoped: space =>
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
-                    return Task.FromResult("");
+                    return Task.FromResult(0);
                 },
-                whenSystemScoped: () => Task.FromResult(""),
+                whenSystemScoped: () => Task.FromResult(0),
                 whenUnspecifiedScope: async () =>
                 {
                     var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
@@ -56,7 +56,7 @@ namespace Octopus.Client.Repositories.Async
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
-                }).ConfigureAwait(false);
+                });
         }
 
         private async Task<bool> ServerSupportsSpaces()
