@@ -41,21 +41,19 @@ namespace Octopus.Client.Repositories.Async
                 throw new SpaceContextSwitchException();
             }
         }
-
         protected override Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-            return Repository.Scope.Apply(
+            Repository.Scope.Apply(
                 whenSpaceScoped: space =>
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
-
-                    return Task.FromResult(0);
                 },
-                whenSystemScoped: () => Task.FromResult(0),
-                whenUnspecifiedScope: () => Task.FromResult(0));
-        }
+                whenSystemScoped: () => { },
+                whenUnspecifiedScope: () => { });
 
+            return Task.FromResult(0);
+        }
         
         protected SpaceContext GetCurrentSpaceContext()
         {
