@@ -143,10 +143,21 @@ namespace Octopus.Client.Tests.Repositories
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdDefaultSpaceMissing_Throws()
         {
             mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            mockRepo.LoadRootDocument().Returns(new RootResource()
+                {Links = new LinkCollection() {{"Spaces", "api/spaces"}}});
             var resource = CreateSpaceResourceForSpace(null);
             Action actionUnderTest = () => repoForSpaceScopedResource.Create(resource);
             actionUnderTest.ShouldThrow<DefaultSpaceNotFoundException>();
         }
+
+        [Test]
+        public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
+        {
+            mockRepo.SetupScopeAsUnspecifiedWithDefaultSpaceDisabled();
+            var resource = CreateSpaceResourceForSpace(null);
+            Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource));
+        }
+        
         
         [Test]
         public void UnspecifiedRepo_MixedResourceWithSpaceId_Ok()
@@ -245,6 +256,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
             repo.LoadSpaceRootDocument().Returns((SpaceRootResource)null);
+            repo.LoadRootDocument().Returns(new RootResource());
         }
     }
 }

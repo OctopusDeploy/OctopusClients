@@ -48,11 +48,20 @@ namespace Octopus.Client.Repositories
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound)
+                    if (!isDefaultSpaceFound && ServerSupportsSpaces())
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
+        }
+
+        private bool ServerSupportsSpaces()
+        {
+            var rootDocument = Repository.LoadRootDocument();
+
+            var spacesIsSupported = rootDocument.HasLink("Spaces");
+
+            return spacesIsSupported;
         }
 
         protected void MinimumCompatibleVersion(string version)
