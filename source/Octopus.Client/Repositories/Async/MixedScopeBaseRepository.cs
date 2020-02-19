@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 
@@ -40,8 +41,7 @@ namespace Octopus.Client.Repositories.Async
                 throw new SpaceContextSwitchException();
             }
         }
-
-        protected override void CheckSpaceResource(IHaveSpaceResource spaceResource)
+        protected override Task CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
             Repository.Scope.Apply(
                 whenSpaceScoped: space =>
@@ -51,8 +51,9 @@ namespace Octopus.Client.Repositories.Async
                 },
                 whenSystemScoped: () => { },
                 whenUnspecifiedScope: () => { });
-        }
 
+            return Task.FromResult(0);
+        }
         
         protected SpaceContext GetCurrentSpaceContext()
         {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories
 {
@@ -16,8 +16,8 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         TaskResource ExecuteBackup(string description = null);
         TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
-        TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
+        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         
         /// <summary>
@@ -139,9 +139,17 @@ namespace Octopus.Client.Repositories
             return Create(resource);
         }
 
-        public TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
+        public TaskResource ExecuteAdHocScript(
+            string scriptBody,
+            string[] machineIds = null,
+            string[] environmentIds = null,
+            string[] targetRoles = null,
+            string description = null,
+            string syntax = "PowerShell",
+            BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             EnsureSingleSpaceContext();
+            EnsureValidTargetType(targetType);
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.AdHocScript.Name,
@@ -152,16 +160,24 @@ namespace Octopus.Client.Repositories
                     {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
                     {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
                     {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
-                    {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
+                    {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
                 }
             };
             return Create(resource);
         }
 
-        public TaskResource ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
-            string[] environmentIds = null, string[] targetRoles = null, string description = null)
+        public TaskResource ExecuteActionTemplate(
+            ActionTemplateResource template,
+            Dictionary<string, PropertyValueResource> properties,
+            string[] machineIds = null,
+            string[] environmentIds = null,
+            string[] targetRoles = null,
+            string description = null,
+            BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
+            EnsureValidTargetType(targetType);
 
             var resource = new TaskResource() {SpaceId = template.SpaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
@@ -172,9 +188,20 @@ namespace Octopus.Client.Repositories
                 {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
                 {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
                 {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
-                {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
+                {BuiltInTasks.AdHocScript.Arguments.Properties, properties},
+                {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
             };
             return Create(resource);
+        }
+
+        private void EnsureValidTargetType(BuiltInTasks.AdHocScript.TargetType? targetType)
+        {
+            if (targetType == BuiltInTasks.AdHocScript.TargetType.OctopusServer)
+            {
+                var minimumRequiredVersion = new SemanticVersion("2019.13.5");
+                EnsureServerIsMinimumVersion(minimumRequiredVersion,
+                    currentServerVersion => $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with the TargetType value of 'OctopusServer' for this API call. Please upgrade your Octopus Server to version '{minimumRequiredVersion}' or greater.");
+            }
         }
 
         public TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null)

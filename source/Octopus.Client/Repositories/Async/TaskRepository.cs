@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
+using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -16,9 +15,9 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         Task<TaskResource> ExecuteBackup(string description = null);
         Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
-        Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell");
+        Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
-        Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null);
+        Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         
         /// <summary>
@@ -142,9 +141,10 @@ namespace Octopus.Client.Repositories.Async
             return await Create(resource).ConfigureAwait(false);
         }
 
-        public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell")
+        public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             EnsureSingleSpaceContext();
+            await EnsureValidTargetType(targetType);
             var resource = new TaskResource
             {
                 Name = BuiltInTasks.AdHocScript.Name,
@@ -155,17 +155,25 @@ namespace Octopus.Client.Repositories.Async
                     {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
                     {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
                     {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
-                    {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax}
+                    {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
                 }
             };
             return await Create(resource).ConfigureAwait(false);
         }
 
-        public Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource template, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null,
-                                                        string[] environmentIds = null, string[] targetRoles = null, string description = null)
+        public async Task<TaskResource> ExecuteActionTemplate(
+            ActionTemplateResource template,
+            Dictionary<string, PropertyValueResource> properties,
+            string[] machineIds = null,
+            string[] environmentIds = null,
+            string[] targetRoles = null,
+            string description = null,
+            BuiltInTasks.AdHocScript.TargetType? targetType = null)
         {
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
-
+            await EnsureValidTargetType(targetType);
+            
             var resource = new TaskResource(){SpaceId = template.SpaceId};
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
@@ -175,9 +183,20 @@ namespace Octopus.Client.Repositories.Async
                     {BuiltInTasks.AdHocScript.Arguments.TargetRoles, targetRoles},
                     {BuiltInTasks.AdHocScript.Arguments.MachineIds, machineIds},
                     {BuiltInTasks.AdHocScript.Arguments.ActionTemplateId, template.Id},
-                    {BuiltInTasks.AdHocScript.Arguments.Properties, properties}
+                    {BuiltInTasks.AdHocScript.Arguments.Properties, properties},
+                    {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
                 };
-            return Create(resource);
+            return await Create(resource);
+        }
+
+        private async Task EnsureValidTargetType(BuiltInTasks.AdHocScript.TargetType? targetType)
+        {
+            if (targetType == BuiltInTasks.AdHocScript.TargetType.OctopusServer)
+            {
+                var minimumRequiredVersion = new SemanticVersion("2019.13.5");
+                await EnsureServerIsMinimumVersion(minimumRequiredVersion,
+                    currentServerVersion => $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with the TargetType value of 'OctopusServer' for this API call. Please upgrade your Octopus Server to version '{minimumRequiredVersion}' or greater.");
+            }
         }
 
         public Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null)

@@ -48,11 +48,20 @@ namespace Octopus.Client.Repositories
                     var spaceRoot = Repository.LoadSpaceRootDocument();
                     var isDefaultSpaceFound = spaceRoot != null;
 
-                    if (!isDefaultSpaceFound)
+                    if (!isDefaultSpaceFound && ServerSupportsSpaces())
                     {
                         throw new DefaultSpaceNotFoundException(spaceResource);
                     }
                 });
+        }
+
+        private bool ServerSupportsSpaces()
+        {
+            var rootDocument = Repository.LoadRootDocument();
+
+            var spacesIsSupported = rootDocument.HasLink("Spaces");
+
+            return spacesIsSupported;
         }
 
         protected void MinimumCompatibleVersion(string version)
@@ -65,11 +74,17 @@ namespace Octopus.Client.Repositories
         {
             if (!hasMinimumRequiredVersion) return;
 
-            var currentServerVersion = Repository.LoadRootDocument().Version;
-            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, minimumRequiredVersion))
-            {
-                throw new NotSupportedException(
+            EnsureServerIsMinimumVersion(minimumRequiredVersion, currentServerVersion => 
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
+        }
+        
+        protected void EnsureServerIsMinimumVersion(SemanticVersion requiredVersion, Func<string, string> messageGenerator)
+        {
+            var currentServerVersion = Repository.LoadRootDocument().Version;
+
+            if (ServerVersionCheck.IsOlderThanClient(currentServerVersion, requiredVersion))
+            {
+                throw new NotSupportedException(messageGenerator(currentServerVersion));
             }
         }
 
