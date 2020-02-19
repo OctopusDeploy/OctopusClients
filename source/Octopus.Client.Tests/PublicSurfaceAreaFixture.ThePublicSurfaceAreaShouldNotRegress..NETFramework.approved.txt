@@ -7028,8 +7028,10 @@ Octopus.Client.Repositories
   interface IVariableSetRepository
     Octopus.Client.Repositories.IGet<VariableSetResource>
     Octopus.Client.Repositories.IModify<VariableSetResource>
+    Octopus.Client.Repositories.IGetAll<VariableSetResource>
   {
     String[] GetVariableNames(String, String[])
+    Octopus.Client.Model.VariableSetResource GetVariablePreview(String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
@@ -7712,8 +7714,10 @@ Octopus.Client.Repositories.Async
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>
     Octopus.Client.Repositories.Async.IModify<VariableSetResource>
+    Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
     Task<String[]> GetVariableNames(String, String[])
+    Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
