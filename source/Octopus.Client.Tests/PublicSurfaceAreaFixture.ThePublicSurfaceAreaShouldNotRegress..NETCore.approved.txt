@@ -2452,6 +2452,7 @@ Octopus.Client.Model
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
     String WorkerPoolId { get; set; }
+    String WorkerPoolVariable { get; set; }
     Octopus.Client.Model.DeploymentActionResource ClearAllConditions()
     Octopus.Client.Model.DeploymentActionResource ForChannels(Octopus.Client.Model.ChannelResource[])
     Octopus.Client.Model.DeploymentActionResource ForEnvironments(Octopus.Client.Model.EnvironmentResource[])
@@ -5134,6 +5135,7 @@ Octopus.Client.Model
       Certificate = 2
       AmazonWebServicesAccount = 3
       AzureAccount = 4
+      WorkerPool = 5
   }
   class VersioningStrategyResource
   {

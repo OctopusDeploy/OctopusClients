@@ -11,6 +11,7 @@ namespace Octopus.Client.Model
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
+        public string WorkerPoolVariable { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
 
         /// <summary>
