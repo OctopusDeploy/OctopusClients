@@ -3154,12 +3154,18 @@ Octopus.Client.Model
     .ctor()
     String ComplianceSummary { get; set; }
     Int32 DaysToEffectiveExpiryDate { get; set; }
+    Boolean DoesExpiryBlockKeyActivities { get; set; }
+    Int32 EffectiveClusterTaskLimit { get; set; }
     DateTime EffectiveExpiryDate { get; set; }
+    Int32 EffectiveNodeTaskLimit { get; set; }
     String HostingEnvironment { get; set; }
+    Boolean IsClusterTaskLimitControlledByLicense { get; set; }
     Boolean IsCompliant { get; set; }
+    Boolean IsNodeTaskLimitControlledByLicense { get; set; }
     String LicenseKind { get; set; }
     Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
     Octopus.Client.Model.LicenseMessageResource[] Messages { get; set; }
+    String PermissionsMode { get; set; }
   }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
@@ -3767,6 +3773,12 @@ Octopus.Client.Model
     .ctor()
     String Description { get; set; }
     String[] SupportedRestrictions { get; set; }
+  }
+  abstract class PermissionModes
+  {
+    static System.String Full
+    static System.String Restricted
+    static System.String Unspecified
   }
   abstract class PermissionScope
   {
