@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -57,6 +58,11 @@ namespace Octopus.Client.Repositories
             string documentTypes = null,
             string eventAgents = null,
             string projectGroups = null);
+
+        IReadOnlyList<DocumentTypeResource> GetDocumentTypes();
+        IReadOnlyList<EventAgentResource> GetAgents();
+        IReadOnlyList<EventCategoryResource> GetCategories();
+        IReadOnlyList<EventGroupResource> GetGroups();
     }
     
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
@@ -131,6 +137,30 @@ namespace Octopus.Client.Repositories
                 projectGroups,
             });
             return Client.List<EventResource>(Repository.Link("Events"), parameters);
+        }
+        
+        public IReadOnlyList<DocumentTypeResource> GetDocumentTypes()
+        {
+            var link = Repository.Link("EventDocumentTypes");
+            return Client.Get<List<DocumentTypeResource>>(link);
+        }
+        
+        public IReadOnlyList<EventAgentResource> GetAgents()
+        {
+            var link = Repository.Link("EventAgents");
+            return Client.Get<List<EventAgentResource>>(link);
+        }
+        
+        public IReadOnlyList<EventCategoryResource> GetCategories()        
+        {
+            var link = Repository.Link("EventCategories");
+            return Client.Get<List<EventCategoryResource>>(link);
+        }
+        
+        public IReadOnlyList<EventGroupResource> GetGroups()
+        {
+            var link = Repository.Link("EventGroups");
+            return Client.Get<List<EventGroupResource>>(link);
         }
 
         public IEventRepository UsingContext(SpaceContext userDefinedSpaceContext)
