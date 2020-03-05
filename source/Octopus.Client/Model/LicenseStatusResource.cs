@@ -20,11 +20,19 @@ namespace Octopus.Client.Model
         public static readonly string Error = "Error";
     }
 
+    public static class PermissionModes
+    {
+        public static readonly string Unspecified = "Unspecified";
+        public static readonly string Restricted = "Restricted";
+        public static readonly string Full = "Full";
+    }
+
     public class LicenseStatusResource : Resource
     {
         /// <summary>
-        /// One of the values from LicenseKinds
+        /// One of the values from <see cref="LicenseKinds"/>
         /// </summary>
+        [Obsolete("No longer supported from 2019.8.6")]
         public string LicenseKind { get; set; }
         public bool IsCompliant { get; set; }
         public string HostingEnvironment { get; set; }
@@ -35,6 +43,16 @@ namespace Octopus.Client.Model
         public int DaysToEffectiveExpiryDate { get; set; }
         public LicenseMessageResource[] Messages { get; set; }
         public LicenseLimitStatusResource[] Limits { get; set; }
+        public bool DoesExpiryBlockKeyActivities { get; set; }
+        public int EffectiveNodeTaskLimit { get; set; }
+        public int EffectiveClusterTaskLimit { get; set; }
+        public bool IsClusterTaskLimitControlledByLicense { get; set; }
+        public bool IsNodeTaskLimitControlledByLicense { get; set; }
+        
+        /// <summary>
+        /// One of the values from <see cref="PermissionModes"/>
+        /// </summary>
+        public string PermissionsMode { get; set; }
     }
     
     public class LicenseMessageResource
