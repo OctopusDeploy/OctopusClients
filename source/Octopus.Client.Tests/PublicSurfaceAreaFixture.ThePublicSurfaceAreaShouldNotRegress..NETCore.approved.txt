@@ -5234,8 +5234,10 @@ Octopus.Client.Model
   class XOptionsResource
   {
     static System.String XFrameAllowFromDescription
+    static System.String XFrameOptionsDescription
     .ctor()
     String XFrameOptionAllowFrom { get; set; }
+    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Model.Accounts
