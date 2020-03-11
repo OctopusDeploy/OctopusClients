@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
@@ -58,6 +59,11 @@ namespace Octopus.Client.Repositories.Async
             string documentTypes = null,
             string eventAgents = null,
             string projectGroups = null);
+
+        Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes();
+        Task<IReadOnlyList<EventAgentResource>> GetAgents();
+        Task<IReadOnlyList<EventCategoryResource>> GetCategories();
+        Task<IReadOnlyList<EventGroupResource>> GetGroups();
     }
 
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
@@ -133,6 +139,30 @@ namespace Octopus.Client.Repositories.Async
             });
 
             return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), parameters).ConfigureAwait(false);
+        }
+
+        public async Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes()
+        {
+            var link = await Repository.Link("EventDocumentTypes").ConfigureAwait(false);
+            return await Client.Get<List<DocumentTypeResource>>(link).ConfigureAwait(false);
+        }
+        
+        public async Task<IReadOnlyList<EventAgentResource>> GetAgents()
+        {
+            var link = await Repository.Link("EventAgents").ConfigureAwait(false);
+            return await Client.Get<List<EventAgentResource>>(link).ConfigureAwait(false);
+        }
+        
+        public async Task<IReadOnlyList<EventCategoryResource>> GetCategories()        
+        {
+            var link = await Repository.Link("EventCategories").ConfigureAwait(false);
+            return await Client.Get<List<EventCategoryResource>>(link).ConfigureAwait(false);
+        }
+        
+        public async Task<IReadOnlyList<EventGroupResource>> GetGroups()
+        {
+            var link = await Repository.Link("EventGroups").ConfigureAwait(false);
+            return await Client.Get<List<EventGroupResource>>(link).ConfigureAwait(false);
         }
 
         public IEventRepository UsingContext(SpaceContext spaceContext)
