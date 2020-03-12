@@ -50,6 +50,9 @@ namespace Octopus.Client
 
         public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
         {
+#if FULL_FRAMEWORK
+            LocationChecker.CheckAssemblyLocation();
+#endif
             Client = client;
             Scope = repositoryScope ?? RepositoryScope.Unspecified();
             Accounts = new AccountRepository(this);

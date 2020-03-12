@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Octopus.Client.Exceptions;
+using Octopus.Client.Logging;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories;
 
@@ -48,6 +49,9 @@ namespace Octopus.Client
 
         public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
         {
+#if FULL_FRAMEWORK
+            LocationChecker.CheckAssemblyLocation();
+#endif
             Client = client;
             Scope = repositoryScope ?? RepositoryScope.Unspecified();
             Accounts = new AccountRepository(this);
