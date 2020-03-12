@@ -4428,11 +4428,13 @@ Octopus.Client.Model
       TargetRole = 4
       Action = 5
       User = 6
-      Private = 7
-      Channel = 8
-      TenantTag = 9
-      Tenant = 10
-      ProcessOwner = 11
+      Trigger = 7
+      ParentDeployment = 8
+      Private = 9
+      Channel = 10
+      TenantTag = 11
+      Tenant = 12
+      ProcessOwner = 13
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>
