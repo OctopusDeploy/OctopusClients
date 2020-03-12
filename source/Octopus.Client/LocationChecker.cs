@@ -15,15 +15,23 @@ namespace Octopus.Client
         public static void CheckAssemblyLocation()
         {
             var octopusRegNode = Registry.LocalMachine.OpenSubKey(@"Software\Octopus");
-            var serverRegNode = octopusRegNode.OpenSubKey("Server");
-            if (serverRegNode != null)
+            CheckBasedOnApplication(octopusRegNode, "Server");
+            CheckBasedOnApplication(octopusRegNode, "Tentacle");
+        }
+
+        private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application)
+        {
+            var applicationRegNode = octopusRegNode.OpenSubKey(application);
+            if (applicationRegNode != null)
             {
-                var serverInstallationFolder = (string)serverRegNode.GetValue("InstallLocation");
+                var serverInstallationFolder = (string) applicationRegNode.GetValue("InstallLocation");
                 var currentAssemblyLocation = typeof(LocationChecker).Assembly.Location;
 
                 if (currentAssemblyLocation.Contains(serverInstallationFolder))
                 {
-                    var warningMessage = $"Using Octopus.Client from the server's installation folder has been deprecated. In future versions it may not be shipped with server.";
+                    var warningMessage = $"Using Octopus.Client from the {application}'s installation folder has been deprecated. In future versions it may not be shipped with {application}.";
+                    
+                    // Write this to the log, if one is configured. Also write it to the console in case no log has been configured
                     Logger.Warn(warningMessage);
                     Console.WriteLine(warningMessage);
                 }
