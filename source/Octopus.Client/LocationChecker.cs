@@ -29,7 +29,7 @@ namespace Octopus.Client
 
                 if (currentAssemblyLocation.Contains(installationFolder))
                 {
-                    var warningMessage = $"Using Octopus.Client from the {application}'s installation folder has been deprecated. In future versions it may not be shipped with {application}.";
+                    var warningMessage = $"Using Octopus.Client from the {application}'s installation folder has been deprecated. In future versions it may not be shipped with {application}. Please see https://g.octopushq.com/usingoctopusclientfrominstallationfolder.";
                     
                     // Write this to the log, if one is configured. Also write it to the console in case no log has been configured
                     Logger.Warn(warningMessage);
