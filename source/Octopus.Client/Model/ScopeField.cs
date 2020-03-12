@@ -13,11 +13,12 @@ namespace Octopus.Client.Model
         TargetRole,
         Action,
         User,
+        Trigger, // Allows vars coming via triggers to override scoped values
+        ParentDeployment, // Allows vars coming via deploy release step to override scoped values
         Private, // Allows inbuilt vars to override user ones
         Channel,
         TenantTag,
-        Tenant, 
-        ProcessOwner,
-        ParentDeployment,
+        Tenant,
+        ProcessOwner
     }
 }
