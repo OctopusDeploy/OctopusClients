@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Octopus.Client.Serialization;
 using System;
 
 namespace Octopus.Client.Model
@@ -16,5 +18,6 @@ namespace Octopus.Client.Model
         TenantTag,
         Tenant, 
         ProcessOwner,
+        ParentDeployment,
     }
 }
