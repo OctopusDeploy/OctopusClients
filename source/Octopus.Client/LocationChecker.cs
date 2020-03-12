@@ -23,7 +23,7 @@ namespace Octopus.Client
 
                 if (currentAssemblyLocation.Contains(serverInstallationFolder))
                 {
-                    var warningMessage = $"Using Octopus.Client from the server's installation folder has been deprecated. In future versions it may not be shipped with server.";
+                    var warningMessage = $"Using Octopus.Client from the server's installation folder has been deprecated. In future versions it may not be shipped with server. Please see https://g.octopushq.com/usingoctopusclientfrominstallationfolder.";
                     Logger.Warn(warningMessage);
                     Console.WriteLine(warningMessage);
                 }
