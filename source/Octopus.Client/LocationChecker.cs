@@ -24,10 +24,10 @@ namespace Octopus.Client
             var applicationRegNode = octopusRegNode.OpenSubKey(application);
             if (applicationRegNode != null)
             {
-                var serverInstallationFolder = (string) applicationRegNode.GetValue("InstallLocation");
+                var installationFolder = (string) applicationRegNode.GetValue("InstallLocation");
                 var currentAssemblyLocation = typeof(LocationChecker).Assembly.Location;
 
-                if (currentAssemblyLocation.Contains(serverInstallationFolder))
+                if (currentAssemblyLocation.Contains(installationFolder))
                 {
                     var warningMessage = $"Using Octopus.Client from the {application}'s installation folder has been deprecated. In future versions it may not be shipped with {application}.";
                     
