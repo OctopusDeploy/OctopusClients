@@ -2459,6 +2459,8 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
+    String ContainerImage { get; set; }
+    String ContainerRegistry { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
     Boolean IsDisabled { get; set; }
