@@ -2459,8 +2459,6 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
-    String ContainerImage { get; set; }
-    String ContainerRegistry { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
     Boolean IsDisabled { get; set; }
@@ -2469,6 +2467,8 @@ Octopus.Client.Model
     Octopus.Client.Model.PackageReferenceCollection Packages { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; }
+    String WorkerContainerFeedId { get; set; }
+    String WorkerContainerImage { get; set; }
     String WorkerPoolId { get; set; }
     String WorkerPoolVariable { get; set; }
     Octopus.Client.Model.DeploymentActionResource ClearAllConditions()
