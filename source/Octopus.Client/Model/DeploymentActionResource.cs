@@ -13,8 +13,8 @@ namespace Octopus.Client.Model
         public string WorkerPoolId { get; set; }
         public string WorkerPoolVariable { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
-        public string ContainerImage { get; set; }
-        public string ContainerRegistry { get; set; }
+        public string WorkerContainerImage { get; set; }
+        public string WorkerContainerFeedId { get; set; }
         
         /// <summary>
         /// If true, this action cannot be skipped when deploying
