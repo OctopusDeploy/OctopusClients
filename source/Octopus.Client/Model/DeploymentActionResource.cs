@@ -7,15 +7,19 @@ namespace Octopus.Client.Model
 {
     public class DeploymentActionResource : Resource
     {
+        public DeploymentActionResource()
+        {
+            Container = new DeploymentActionContainer();
+        }
+
         public string Name { get; set; }
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
         public string WorkerPoolVariable { get; set; }
+        public DeploymentActionContainer Container { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
-        public string WorkerContainerImage { get; set; }
-        public string WorkerContainerFeedId { get; set; }
-        
+
         /// <summary>
         /// If true, this action cannot be skipped when deploying
         /// </summary>
@@ -34,10 +38,11 @@ namespace Octopus.Client.Model
         public ReferenceCollection TenantTags { get; } = new ReferenceCollection();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-        
+        public IDictionary<string, PropertyValueResource> Properties { get; } =
+            new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
+
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
+        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection();
 
         public DeploymentActionResource ClearAllConditions()
         {
