@@ -2425,6 +2425,12 @@ Octopus.Client.Model
       static System.String DeploymentId
     }
   }
+  class DeploymentActionContainer
+  {
+    .ctor()
+    String FeedId { get; set; }
+    String Image { get; set; }
+  }
   class DeploymentActionPackageResource
   {
     .ctor(String)
@@ -2443,6 +2449,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
+    Octopus.Client.Model.DeploymentActionContainer Container { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
     Boolean IsDisabled { get; set; }
