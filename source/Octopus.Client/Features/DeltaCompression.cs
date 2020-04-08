@@ -33,11 +33,11 @@ namespace Octopus.Client.Features
 
             if (ratio > 0.95)
             {
-                Logger.Info($"The delta file ({deltaFileSize:n0} bytes) is more than 95% the size of the orginal file ({originalFileSize:n0} bytes)");
+                Logger.Info($"The delta file ({deltaFileSize:n0} bytes) is more than 95% the size of the original file ({originalFileSize:n0} bytes)");
                 return false;
             }
 
-            Logger.Info($"The delta file ({deltaFileSize:n0} bytes) is {ratio:p2} the size of the orginal file ({originalFileSize:n0} bytes), uploading...");
+            Logger.Info($"The delta file ({deltaFileSize:n0} bytes) is {ratio:p2} the size of the original file ({originalFileSize:n0} bytes), uploading...");
             return true;
         }
     }
