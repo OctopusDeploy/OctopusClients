@@ -2441,6 +2441,13 @@ Octopus.Client.Model
       static System.String DeploymentId
     }
   }
+  DeploymentActionCondition
+  {
+      Success = 0
+      Failure = 1
+      Always = 2
+      Variable = 3
+  }
   class DeploymentActionPackageResource
   {
     .ctor(String)
@@ -2459,6 +2466,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
+    Octopus.Client.Model.DeploymentActionCondition Condition { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
     Boolean IsDisabled { get; set; }
