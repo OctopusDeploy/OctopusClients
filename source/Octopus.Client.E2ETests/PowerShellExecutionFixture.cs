@@ -26,7 +26,7 @@ namespace Octopus.Client.E2ETests
             var extractedDll = ExtractDll(tempFolder);
             var powerShellFile = CreatePowerShellFile(extractedDll, tempFolder);
 
-            var output = SilentProcessRunner.ExecuteCommand("powershell", $" -NoProfile -NoLogo -NonInteractive -WindowStyle Hidden -ExecutionPolicy Unrestricted -File {powerShellFile}");
+            var output = SilentProcessRunner.ExecuteCommand("powershell", $" -NoProfile -NoLogo -NonInteractive -WindowStyle Hidden -ExecutionPolicy Unrestricted -File \"{powerShellFile}\"");
             output.TrimEnd('\r', '\n').Should().Be("Octopus Deploy");
         }
 #endif

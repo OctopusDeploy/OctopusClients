@@ -9,12 +9,12 @@
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     </PropertyGroup>
     <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-        <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
     <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
         <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
         <DefineConstants>$(DefineConstants);SUPPORTS_ILMERGE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>

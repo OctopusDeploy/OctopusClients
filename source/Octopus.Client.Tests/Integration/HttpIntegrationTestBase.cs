@@ -91,7 +91,9 @@ namespace Octopus.Client.Tests.Integration
             using (var ms = new MemoryStream())
             {
                 s.CopyTo(ms);
+#pragma warning disable PC001
                 return new X509Certificate2(ms.ToArray(), "password");
+#pragma warning restore PC001
             }
         }
 
