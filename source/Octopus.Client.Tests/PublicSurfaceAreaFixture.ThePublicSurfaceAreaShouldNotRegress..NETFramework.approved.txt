@@ -2444,9 +2444,8 @@ Octopus.Client.Model
   DeploymentActionCondition
   {
       Success = 0
-      Failure = 1
-      Always = 2
-      Variable = 3
+      Always = 1
+      Variable = 2
   }
   class DeploymentActionPackageResource
   {
