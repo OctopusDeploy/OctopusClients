@@ -78,37 +78,37 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldHaveANetFrameworkDependencyGroup()
         {
-            var net45DependencyGroup = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5']",
+            var dependencies = nuSpecFile.SelectSingleNode(
+                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']",
                 nameSpaceManager);
-            net45DependencyGroup.Should().NotBeNull("Should have a .NETFramework4.5 dependency group");
+            dependencies.Should().NotBeNull("Should have a .NETFramework4.5.2 dependency group");
         }
         
         [Test]
         public void NuSpecFileShouldHaveNoNetFrameworkDependencies()
         {
-            var net45Dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5']/ns:dependency",
+            var dependencies = nuSpecFile.SelectNodes(
+                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']/ns:dependency",
                 nameSpaceManager);
-            net45Dependencies.Count.Should().Be(0, "There should be no dependencies listed for .NETFramework4.5");
+            dependencies.Count.Should().Be(0, "There should be no dependencies listed for .NETFramework4.5.2");
         }
 
         [Test]
         public void NuSpecFileShouldHaveANetStandardDependencyGroup()
         {
-            var netStandardDependencyGroup = nuSpecFile.SelectSingleNode(
+            var dependencies = nuSpecFile.SelectSingleNode(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']",
                 nameSpaceManager);
-            netStandardDependencyGroup.Should().NotBeNull("Should have a .NETStandard2.0 dependency group");
+            dependencies.Should().NotBeNull("Should have a .NETStandard2.0 dependency group");
         }
 
         [Test]
         public void NuSpecFileShouldHave4NetStandardDependencies()
         {
-            var net45Dependencies = nuSpecFile.SelectNodes(
+            var dependencies = nuSpecFile.SelectNodes(
                 "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency",
                 nameSpaceManager);
-            net45Dependencies.Count.Should().Be(4, "There should be 4 dependencies listed for .NETStandard2.0");
+            dependencies.Count.Should().Be(4, "There should be 4 dependencies listed for .NETStandard2.0");
         }
 
         [Test]
@@ -184,46 +184,46 @@ namespace Octopus.Client.E2ETests
         [Test]
         public void NuSpecFileShouldOnlyHaveFrameworkAssembliesForNetFramework()
         {
-            var nonNet45Dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework != '.NETFramework4.5']",
+            var dependencies = nuSpecFile.SelectNodes(
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework != '.NETFramework4.5.2']",
                 nameSpaceManager);
-            nonNet45Dependencies.Count.Should().Be(0, "There should be only be frameworkAssemblies listed for .NETFramework4.5");
+            dependencies.Count.Should().Be(0, "There should be only be frameworkAssemblies listed for .NETFramework4.5.2");
         }
 
         [Test]
         public void NuSpecFileShouldHave3FrameworkAssembliesForNetFramework()
         {
-            var net45Dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5']",
+            var dependencies = nuSpecFile.SelectNodes(
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2']",
                 nameSpaceManager);
-            net45Dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.5");
+            dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.5.2");
         }
         
         [Test]
         public void NuSpecFileShouldHaveSystemComponentModelDataAnnotationsFrameworkAssemblyForNetFramework()
         {
             var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.ComponentModel.DataAnnotations']",
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.ComponentModel.DataAnnotations']",
                 nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.ComponentModel.DataAnnotations' for .NETFramework4.5");
+            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.ComponentModel.DataAnnotations' for .NETFramework4.5.2");
         }
         
         [Test]
         public void NuSpecFileShouldHaveSystemNetHttpFrameworkAssemblyForNetFramework()
         {
             var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.Net.Http']",
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.Net.Http']",
                 nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Net.Http' for .NETFramework4.5");
+            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Net.Http' for .NETFramework4.5.2");
         }
         
         [Test]
         public void NuSpecFileShouldHaveSystemNumericsFrameworkAssemblyForNetFramework()
         {
             var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5' and @assemblyName = 'System.Numerics']",
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.Numerics']",
                 nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Numerics' for .NETFramework4.5");
+            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Numerics' for .NETFramework4.5.2");
         }
     }
 }

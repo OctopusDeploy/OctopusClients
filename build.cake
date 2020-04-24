@@ -104,8 +104,8 @@ Task("Test")
 Task("Merge")
     .IsDependentOn("Test")
     .Does(() => {
-        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net45";
-        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net45Merged";
+        var inputFolder = $"{octopusClientFolder}/bin/{configuration}/net452";
+        var outputFolder = $"{octopusClientFolder}/bin/{configuration}/net452Merged";
         CreateDirectory(outputFolder);
 
         var assemblyPaths = System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (FilePath) f);
