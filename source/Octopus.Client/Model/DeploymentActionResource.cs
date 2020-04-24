@@ -7,11 +7,17 @@ namespace Octopus.Client.Model
 {
     public class DeploymentActionResource : Resource
     {
+        public DeploymentActionResource()
+        {
+            Container = new DeploymentActionContainer();
+        }
+
         public string Name { get; set; }
         public string ActionType { get; set; }
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
         public string WorkerPoolVariable { get; set; }
+        public DeploymentActionContainer Container { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
 
         /// <summary>
