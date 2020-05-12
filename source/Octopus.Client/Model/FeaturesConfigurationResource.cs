@@ -21,5 +21,8 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public bool IsActionContainersEnabled { get; set; }
+
+        [Writeable]
+        public bool IsConfigurationAsCodeEnabled { get; set; }
     }
 }
