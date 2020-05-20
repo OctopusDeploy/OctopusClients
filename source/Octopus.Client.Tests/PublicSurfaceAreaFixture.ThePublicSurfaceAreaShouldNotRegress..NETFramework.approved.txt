@@ -3979,6 +3979,7 @@ Octopus.Client.Model
     Boolean DiscreteChannelRelease { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
+    Boolean IsVersionControlled { get; set; }
     String LifecycleId { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
@@ -3990,6 +3991,7 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     String VariableSetId { get; set; }
+    Octopus.Client.Model.VersionControlSettingsResource VersionControlSettings { get; set; }
     Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.ReleaseResource)
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.TenantResource, Octopus.Client.Model.ReleaseResource)
@@ -5223,6 +5225,14 @@ Octopus.Client.Model
       AmazonWebServicesAccount = 3
       AzureAccount = 4
       WorkerPool = 5
+  }
+  class VersionControlSettingsResource
+  {
+    .ctor()
+    String DefaultBranch { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Url { get; set; }
+    String Username { get; set; }
   }
   class VersioningStrategyResource
   {

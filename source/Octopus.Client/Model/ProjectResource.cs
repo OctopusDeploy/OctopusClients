@@ -22,6 +22,7 @@ namespace Octopus.Client.Model
             ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
+            VersionControlSettings = new VersionControlSettingsResource();
         }
 
         public ProjectResource(string id, string name, string slug) : this()
@@ -62,6 +63,11 @@ namespace Octopus.Client.Model
         [Writeable]
         [JsonProperty(Order = 25)]
         public bool AutoCreateRelease { get; set; }
+        [Writeable]
+        [JsonProperty(Order = 26)]
+        public bool IsVersionControlled { get; set; }
+        [JsonProperty(Order = 27)]
+        public VersionControlSettingsResource VersionControlSettings { get; set; }
 
         /// <summary>
         /// Treats releases of different channels to the same environment as a 
