@@ -6930,9 +6930,10 @@ Octopus.Client.Repositories
     void Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
   }
   interface IRunbookSnapshotRepository
+    Octopus.Client.Repositories.IFindByName<RunbookSnapshotResource>
+    Octopus.Client.Repositories.IPaginate<RunbookSnapshotResource>
     Octopus.Client.Repositories.IGet<RunbookSnapshotResource>
     Octopus.Client.Repositories.ICreate<RunbookSnapshotResource>
-    Octopus.Client.Repositories.IPaginate<RunbookSnapshotResource>
     Octopus.Client.Repositories.IModify<RunbookSnapshotResource>
     Octopus.Client.Repositories.IDelete<RunbookSnapshotResource>
   {
