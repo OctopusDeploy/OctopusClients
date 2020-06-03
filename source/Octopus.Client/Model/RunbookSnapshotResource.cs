@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class RunbookSnapshotResource : Resource, ISnapshotResource, IHaveSpaceResource
+    public class RunbookSnapshotResource : Resource, INamedResource, ISnapshotResource, IHaveSpaceResource
     {
         [JsonConstructor]
         public RunbookSnapshotResource()

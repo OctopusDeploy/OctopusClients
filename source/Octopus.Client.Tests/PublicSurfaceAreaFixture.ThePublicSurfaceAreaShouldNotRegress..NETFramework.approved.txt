@@ -7620,9 +7620,10 @@ Octopus.Client.Repositories.Async
     Task Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
   }
   interface IRunbookSnapshotRepository
+    Octopus.Client.Repositories.Async.IFindByName<RunbookSnapshotResource>
+    Octopus.Client.Repositories.Async.IPaginate<RunbookSnapshotResource>
     Octopus.Client.Repositories.Async.IGet<RunbookSnapshotResource>
     Octopus.Client.Repositories.Async.ICreate<RunbookSnapshotResource>
-    Octopus.Client.Repositories.Async.IPaginate<RunbookSnapshotResource>
     Octopus.Client.Repositories.Async.IModify<RunbookSnapshotResource>
     Octopus.Client.Repositories.Async.IDelete<RunbookSnapshotResource>
   {
