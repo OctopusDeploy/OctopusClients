@@ -4364,6 +4364,7 @@ Octopus.Client.Model
   class RunbookSnapshotResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.ISnapshotResource
     Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
