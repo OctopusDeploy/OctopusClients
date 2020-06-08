@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class SshEndpointResource : AgentlessEndpointResource
+    public class SshEndpointResource : EndpointResource
     {
         public override CommunicationStyle CommunicationStyle
         {

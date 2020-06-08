@@ -2,7 +2,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class ServiceFabricEndpointResource : AgentlessEndpointResource
+    public class ServiceFabricEndpointResource : EndpointResource
     {
         public override CommunicationStyle CommunicationStyle => CommunicationStyle.AzureServiceFabricCluster;
 
