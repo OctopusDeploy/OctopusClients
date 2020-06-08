@@ -5769,6 +5769,8 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Resource
   {
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    Octopus.Client.Model.DeploymentActionContainer Container { get; set; }
+    Boolean RunningInContainer { get; set; }
   }
   interface IEndpointWithMultipleAuthenticationResource
   {
