@@ -4279,6 +4279,12 @@ Octopus.Client.Model
     Boolean IsEarlyAccessProgram { get; set; }
     String Version { get; set; }
   }
+  RunbookEnvironmentScope
+  {
+      All = 0
+      Specified = 1
+      FromProjectLifecycles = 2
+  }
   class RunbookProcessResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4308,6 +4314,8 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
     String Description { get; set; }
+    Octopus.Client.Model.ReferenceCollection Environments { get; }
+    Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
