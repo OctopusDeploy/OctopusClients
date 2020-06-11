@@ -32,5 +32,11 @@ namespace Octopus.Client.Model.Endpoints
 
         [Writeable]
         public IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
+        
+        [Writeable]
+        public bool RunningInContainer { get; set; }
+
+        [Writeable]
+        public DeploymentActionContainer Container { get; set; }
     }
 }

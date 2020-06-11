@@ -5841,9 +5841,11 @@ Octopus.Client.Model.Endpoints
     String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    Octopus.Client.Model.DeploymentActionContainer Container { get; set; }
     String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
+    Boolean RunningInContainer { get; set; }
     String SkipTlsVerification { get; set; }
   }
   class KubernetesStandardAccountAuthenticationResource
