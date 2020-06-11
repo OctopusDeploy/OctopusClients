@@ -5737,12 +5737,6 @@ Octopus.Client.Model.DeploymentProcess
 }
 Octopus.Client.Model.Endpoints
 {
-  abstract class AgentlessEndpointResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.EndpointResource
-  {
-  }
   AzureServiceFabricCredentialType
   {
       ClientCredential = 0
@@ -5757,7 +5751,7 @@ Octopus.Client.Model.Endpoints
   class AzureWebAppEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     String AccountId { get; set; }
@@ -5775,7 +5769,7 @@ Octopus.Client.Model.Endpoints
   class CloudRegionEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
@@ -5784,7 +5778,7 @@ Octopus.Client.Model.Endpoints
   class CloudServiceEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     String AccountId { get; set; }
@@ -5834,7 +5828,7 @@ Octopus.Client.Model.Endpoints
   class KubernetesEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
@@ -5880,7 +5874,7 @@ Octopus.Client.Model.Endpoints
   class OfflineDropEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     String ApplicationsDirectory { get; set; }
@@ -5901,7 +5895,7 @@ Octopus.Client.Model.Endpoints
   class ServiceFabricEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     String AadClientCredentialSecret { get; set; }
@@ -5920,7 +5914,7 @@ Octopus.Client.Model.Endpoints
   class SshEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.AgentlessEndpointResource
+    Octopus.Client.Model.Endpoints.EndpointResource
   {
     .ctor()
     String AccountId { get; set; }

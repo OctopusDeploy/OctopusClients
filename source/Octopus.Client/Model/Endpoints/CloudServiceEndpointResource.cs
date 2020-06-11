@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class CloudServiceEndpointResource : AgentlessEndpointResource
+    public class CloudServiceEndpointResource : EndpointResource
     {
         public override CommunicationStyle CommunicationStyle
         {

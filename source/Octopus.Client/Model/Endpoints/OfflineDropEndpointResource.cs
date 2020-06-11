@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class OfflineDropEndpointResource : AgentlessEndpointResource
+    public class OfflineDropEndpointResource : EndpointResource
     {
         public OfflineDropEndpointResource()
         {
