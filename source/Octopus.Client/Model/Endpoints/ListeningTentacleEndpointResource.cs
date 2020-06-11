@@ -1,4 +1,3 @@
-using System;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
@@ -9,10 +8,6 @@ namespace Octopus.Client.Model.Endpoints
         {
             get { return CommunicationStyle.TentaclePassive; }
         }
-
-        [Trim]
-        [Writeable]
-        public string Uri { get; set; }
 
         [Writeable]
         public string ProxyId { get; set; }

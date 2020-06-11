@@ -5838,7 +5838,6 @@ Octopus.Client.Model.Endpoints
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String ProxyId { get; set; }
-    String Uri { get; set; }
   }
   class OfflineDropDestinationResource
   {
@@ -5871,7 +5870,6 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    String Uri { get; set; }
   }
   class ServiceFabricEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -5928,6 +5926,7 @@ Octopus.Client.Model.Endpoints
     String CertificateSignatureAlgorithm { get; set; }
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
+    String Uri { get; set; }
   }
 }
 Octopus.Client.Model.Forms

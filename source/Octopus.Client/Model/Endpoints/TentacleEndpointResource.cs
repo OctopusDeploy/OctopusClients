@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -13,6 +12,10 @@ namespace Octopus.Client.Model.Endpoints
 
         [Writeable]
         public TentacleDetailsResource TentacleVersionDetails { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Uri { get; set; }
 
         public string CertificateSignatureAlgorithm { get; set; }
     }
