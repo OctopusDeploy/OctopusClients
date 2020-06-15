@@ -37,5 +37,8 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ReferenceCollection Environments { get; } = new ReferenceCollection();
+
+        [Writeable]
+        public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     }
 }

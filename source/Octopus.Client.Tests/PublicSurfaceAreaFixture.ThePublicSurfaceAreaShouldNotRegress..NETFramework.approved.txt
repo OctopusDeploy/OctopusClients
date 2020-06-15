@@ -4313,6 +4313,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
