@@ -5814,7 +5814,6 @@ Octopus.Client.Model.Endpoints
     String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
-    Boolean RunningInContainer { get; set; }
     String SkipTlsVerification { get; set; }
   }
   class KubernetesStandardAccountAuthenticationResource
