@@ -2446,7 +2446,7 @@ Octopus.Client.Model
       Success = 0
       Variable = 1
   }
-  class DeploymentActionContainer
+  class DeploymentActionContainerResource
   {
     .ctor()
     String FeedId { get; set; }
@@ -2471,7 +2471,7 @@ Octopus.Client.Model
     Boolean CanBeUsedForProjectVersioning { get; set; }
     Octopus.Client.Model.ReferenceCollection Channels { get; }
     Octopus.Client.Model.DeploymentActionCondition Condition { get; set; }
-    Octopus.Client.Model.DeploymentActionContainer Container { get; set; }
+    Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
     Boolean IsDisabled { get; set; }
@@ -5836,7 +5836,7 @@ Octopus.Client.Model.Endpoints
     String ClusterCertificate { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    Octopus.Client.Model.DeploymentActionContainer Container { get; set; }
+    Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
     String DefaultWorkerPoolId { get; set; }
     String Namespace { get; set; }
     String ProxyId { get; set; }
