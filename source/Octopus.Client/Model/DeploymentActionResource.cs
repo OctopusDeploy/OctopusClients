@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
     {
         public DeploymentActionResource()
         {
-            Container = new DeploymentActionContainer();
+            Container = new DeploymentActionContainerResource();
         }
 
         public string Name { get; set; }
@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
         public string WorkerPoolVariable { get; set; }
-        public DeploymentActionContainer Container { get; set; }
+        public DeploymentActionContainerResource Container { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
 
         /// <summary>
