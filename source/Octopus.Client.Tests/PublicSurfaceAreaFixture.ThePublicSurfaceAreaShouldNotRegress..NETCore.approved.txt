@@ -4303,7 +4303,15 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
+    Octopus.Client.Model.RunbookRetentionPeriod RunRetentionPolicy { get; set; }
     String SpaceId { get; set; }
+  }
+  class RunbookRetentionPeriod
+  {
+    .ctor(Int32)
+    Int32 QuantityToKeep { get; }
+    Boolean ShouldKeepForever { get; }
+    static Octopus.Client.Model.RetentionPeriod KeepForever()
   }
   class RunbookRunPreviewResource
     Octopus.Client.Extensibility.IResource

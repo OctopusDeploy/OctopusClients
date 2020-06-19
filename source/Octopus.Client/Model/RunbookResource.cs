@@ -40,5 +40,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+
+        [Writeable]
+        public RunbookRetentionPeriod RunRetentionPolicy { get; set; }
     }
 }

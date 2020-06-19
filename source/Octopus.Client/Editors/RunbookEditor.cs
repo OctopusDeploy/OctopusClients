@@ -30,7 +30,10 @@ namespace Octopus.Client.Editors
                 {
                     ProjectId = project.Id,
                     Name = name,
-                    Description = description
+                    Description = description,
+                    EnvironmentScope = RunbookEnvironmentScope.All,
+                    DefaultGuidedFailureMode = GuidedFailureMode.EnvironmentDefault,
+                    RunRetentionPolicy = new RunbookRetentionPeriod(100)
                 });
             }
             else
