@@ -48,11 +48,6 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
         {
-            return Run(runbook, RunbookRunParameters.MapFrom(runbookRun));
-        }
-
-        public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRun)
-        {
             return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
     }
