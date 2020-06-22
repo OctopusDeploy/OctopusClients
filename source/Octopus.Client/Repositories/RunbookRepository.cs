@@ -1,3 +1,4 @@
+using System.Linq;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 
@@ -12,7 +13,7 @@ namespace Octopus.Client.Repositories
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun);
     }
-    
+
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
         public RunbookRepository(IOctopusRepository repository)
@@ -44,10 +45,15 @@ namespace Octopus.Client.Repositories
         {
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
+public RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        {
+            return Run(runbook, RunbookRunParameters.MapFrom(runbookRun));
+        }
 
-        public RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        public RunbookRunResource Run(RunbookResource runbook, RunbookRunParameters runbookRun)
         {
             return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
+
     }
 }
