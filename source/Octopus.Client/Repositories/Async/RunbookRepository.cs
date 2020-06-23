@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
@@ -12,13 +13,17 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
+        Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
+        private readonly SemanticVersion versionThatIntroducesRunbookRunParameters;
+
         public RunbookRepository(IOctopusAsyncRepository repository)
             : base(repository, "Runbooks")
         {
+            versionThatIntroducesRunbookRunParameters = SemanticVersion.Parse("2020.3.0");
         }
 
         public Task<RunbookResource> FindByName(ProjectResource project, string name)
@@ -46,14 +51,25 @@ namespace Octopus.Client.Repositories.Async
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
-        public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
         {
-            return Run(runbook, RunbookRunParameters.MapFrom(runbookRun));
+            var serverSupportsRunbookRunParameters = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version) >= versionThatIntroducesRunbookRunParameters;
+
+            return serverSupportsRunbookRunParameters
+                ? await Run(runbook, RunbookRunParameters.MapFrom(runbookRun))
+                : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
 
-        public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRun)
+        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
         {
-            return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
+            var serverVersion = (await Repository.LoadRootDocument()).Version;
+            var serverSupportsRunbookRunParameters = SemanticVersion.Parse(serverVersion) >= versionThatIntroducesRunbookRunParameters;
+
+            if (serverSupportsRunbookRunParameters == false)
+                throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
+                                                         $"Please update your Octopus Deploy server to {versionThatIntroducesRunbookRunParameters.ToString()} to access this feature.");
+
+            return await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
         }
     }
 }
