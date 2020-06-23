@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories
         RunbookRunTemplateResource GetRunbookRunTemplate(RunbookResource runbook);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun);
-        RunbookRunResource Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
+        RunbookRunResource[] Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -56,11 +56,11 @@ namespace Octopus.Client.Repositories
             var serverSupportsRunbookRunParameters = SemanticVersion.Parse(Repository.LoadRootDocument().Version) >= versionThatIntroducesRunbookRunParameters;
 
             return serverSupportsRunbookRunParameters
-                ? Run(runbook, RunbookRunParameters.MapFrom(runbookRun))
+                ? Run(runbook, RunbookRunParameters.MapFrom(runbookRun)).FirstOrDefault()
                 : Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
 
-        public RunbookRunResource Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
+        public RunbookRunResource[] Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
         {
             var serverVersion = Repository.LoadRootDocument().Version;
             var serverSupportsRunbookRunParameters = SemanticVersion.Parse(serverVersion) >= versionThatIntroducesRunbookRunParameters;
@@ -69,7 +69,7 @@ namespace Octopus.Client.Repositories
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
                                                          $"Please update your Octopus Deploy server to {versionThatIntroducesRunbookRunParameters.ToString()} to access this feature.");
 
-            return Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
+            return Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
         }
     }
 }

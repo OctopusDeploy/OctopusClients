@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -13,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
-        Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
+        Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -56,11 +57,11 @@ namespace Octopus.Client.Repositories.Async
             var serverSupportsRunbookRunParameters = SemanticVersion.Parse((await Repository.LoadRootDocument()).Version) >= versionThatIntroducesRunbookRunParameters;
 
             return serverSupportsRunbookRunParameters
-                ? await Run(runbook, RunbookRunParameters.MapFrom(runbookRun))
+                ? (await Run(runbook, RunbookRunParameters.MapFrom(runbookRun))).FirstOrDefault()
                 : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
 
-        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
+        public async Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
         {
             var serverVersion = (await Repository.LoadRootDocument()).Version;
             var serverSupportsRunbookRunParameters = SemanticVersion.Parse(serverVersion) >= versionThatIntroducesRunbookRunParameters;
@@ -69,7 +70,7 @@ namespace Octopus.Client.Repositories.Async
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
                                                          $"Please update your Octopus Deploy server to {versionThatIntroducesRunbookRunParameters.ToString()} to access this feature.");
 
-            return await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
+            return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
         }
     }
 }
