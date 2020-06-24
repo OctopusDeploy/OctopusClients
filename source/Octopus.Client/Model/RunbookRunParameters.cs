@@ -50,13 +50,13 @@ namespace Octopus.Client.Model
                 EnvironmentId = runbookRun.EnvironmentId,
                 ForcePackageDownload = runbookRun.ForcePackageDownload,
                 UseGuidedFailure = runbookRun.UseGuidedFailure,
-                SpecificMachineIds = runbookRun.SpecificMachineIds.ToArray(),
-                ExcludedMachineIds = runbookRun.ExcludedMachineIds.ToArray(),
+                SpecificMachineIds = runbookRun.SpecificMachineIds != null ? runbookRun.SpecificMachineIds.ToArray() : new string[0],
+                ExcludedMachineIds = runbookRun.ExcludedMachineIds != null ? runbookRun.ExcludedMachineIds.ToArray() : new string[0],
                 TenantId = runbookRun.TenantId,
-                SkipActions = runbookRun.SkipActions.ToArray(),
+                SkipActions = runbookRun.SkipActions != null ? runbookRun.SkipActions.ToArray() : new string[0],
                 QueueTime = runbookRun.QueueTime,
                 QueueTimeExpiry = runbookRun.QueueTimeExpiry,
-                FormValues = runbookRun.FormValues
+                FormValues = runbookRun.FormValues ?? new Dictionary<string, string>()
             };
         }
     }
