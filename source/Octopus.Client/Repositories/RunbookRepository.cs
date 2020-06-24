@@ -18,12 +18,14 @@ namespace Octopus.Client.Repositories
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
-        private readonly SemanticVersion versionThatIntroducesRunbookRunParameters;
+        private readonly SemanticVersion versionAfterWhichRunbookRunParametersAreAvailable;
+        private readonly SemanticVersion integrationTestVersion;
 
         public RunbookRepository(IOctopusRepository repository)
             : base(repository, "Runbooks")
         {
-            versionThatIntroducesRunbookRunParameters = SemanticVersion.Parse("2020.3.0");
+            integrationTestVersion = SemanticVersion.Parse("0.0.0-local");
+            versionAfterWhichRunbookRunParametersAreAvailable = SemanticVersion.Parse("2020.2.99999");
         }
 
         public RunbookResource FindByName(ProjectResource project, string name)
@@ -51,9 +53,17 @@ namespace Octopus.Client.Repositories
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
 
+        private bool ServerSupportsRunbookRunParameters(string version)
+        {
+            var serverVersion = SemanticVersion.Parse(version);
+
+            return serverVersion >= versionAfterWhichRunbookRunParametersAreAvailable ||
+                   serverVersion == integrationTestVersion;
+        }
+
         public RunbookRunResource Run(RunbookResource runbook, RunbookRunResource runbookRun)
         {
-            var serverSupportsRunbookRunParameters = SemanticVersion.Parse(Repository.LoadRootDocument().Version) >= versionThatIntroducesRunbookRunParameters;
+            var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters(Repository.LoadRootDocument().Version);
 
             return serverSupportsRunbookRunParameters
                 ? Run(runbook, RunbookRunParameters.MapFrom(runbookRun)).FirstOrDefault()
@@ -63,11 +73,11 @@ namespace Octopus.Client.Repositories
         public RunbookRunResource[] Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
         {
             var serverVersion = Repository.LoadRootDocument().Version;
-            var serverSupportsRunbookRunParameters = SemanticVersion.Parse(serverVersion) >= versionThatIntroducesRunbookRunParameters;
+            var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters(serverVersion);
 
             if (serverSupportsRunbookRunParameters == false)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
-                                                         $"Please update your Octopus Deploy server to {versionThatIntroducesRunbookRunParameters.ToString()} to access this feature.");
+                                                         "Please update your Octopus Deploy server to 2020.3.* or newer to access this feature.");
 
             return Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
         }
