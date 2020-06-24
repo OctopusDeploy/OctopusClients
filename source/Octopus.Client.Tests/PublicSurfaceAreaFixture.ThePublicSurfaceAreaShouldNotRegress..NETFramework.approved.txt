@@ -4331,6 +4331,28 @@ Octopus.Client.Model
     Int32 QuantityToKeep { get; set; }
     Boolean ShouldKeepForever { get; set; }
   }
+  class RunbookRunParameters
+  {
+    .ctor()
+    String EnvironmentId { get; set; }
+    String[] EnvironmentIds { get; set; }
+    String[] ExcludedMachineIds { get; set; }
+    Boolean ForcePackageDownload { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
+    String ProjectId { get; set; }
+    Nullable<DateTimeOffset> QueueTime { get; set; }
+    Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
+    String RunbookId { get; set; }
+    String RunbookSnapshotNameOrId { get; set; }
+    String[] SkipActions { get; set; }
+    String[] SpecificMachineIds { get; set; }
+    String TenantId { get; set; }
+    String[] TenantIds { get; set; }
+    String[] TenantTagNames { get; set; }
+    Boolean UseDefaultSnapshot { get; set; }
+    Nullable<Boolean> UseGuidedFailure { get; set; }
+    static Octopus.Client.Model.RunbookRunParameters MapFrom(Octopus.Client.Model.RunbookRunResource)
+  }
   class RunbookRunPreviewResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6917,6 +6939,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
     Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
+    Octopus.Client.Model.RunbookRunResource[] Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunParameters)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -7606,6 +7629,7 @@ Octopus.Client.Repositories.Async
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
+    Task<RunbookRunResource[]> Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunParameters)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.Async.IGet<RunbookRunResource>
