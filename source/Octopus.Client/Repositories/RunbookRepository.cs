@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories
             : base(repository, "Runbooks")
         {
             integrationTestVersion = SemanticVersion.Parse("0.0.0-local");
-            versionAfterWhichRunbookRunParametersAreAvailable = SemanticVersion.Parse("2020.2.99999");
+            versionAfterWhichRunbookRunParametersAreAvailable = SemanticVersion.Parse("2020.3.1");
         }
 
         public RunbookResource FindByName(ProjectResource project, string name)
@@ -57,7 +57,11 @@ namespace Octopus.Client.Repositories
         {
             var serverVersion = SemanticVersion.Parse(version);
 
-            return serverVersion >= versionAfterWhichRunbookRunParametersAreAvailable ||
+            // Note: We want to ensure the server version is >= *any* 2020.3.1, including all pre-releases to consider what may be rolled out to Octopus Cloud.
+            var preReleaseAgnosticServerVersion =
+                new SemanticVersion(serverVersion.Major, serverVersion.Minor, serverVersion.Patch);
+
+            return preReleaseAgnosticServerVersion >= versionAfterWhichRunbookRunParametersAreAvailable ||
                    serverVersion == integrationTestVersion;
         }
 
