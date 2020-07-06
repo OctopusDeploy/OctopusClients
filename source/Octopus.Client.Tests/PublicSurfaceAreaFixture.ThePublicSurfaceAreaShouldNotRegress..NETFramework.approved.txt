@@ -7334,7 +7334,7 @@ Octopus.Client.Repositories.Async
   interface IDashboardRepository
   {
     Task<DashboardResource> GetDashboard()
-    Task<DashboardResource> GetDynamicDashboard(String[], String[])
+    Task<DashboardResource> GetDynamicDashboard(String[], String[], Boolean)
   }
   interface IDefectsRepository
   {
