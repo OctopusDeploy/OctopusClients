@@ -6,9 +6,9 @@ namespace Octopus.Client.Repositories
     public interface IDashboardRepository
     {
         DashboardResource GetDashboard();
-        DashboardResource GetDynamicDashboard(string[] projects, string[] environments);
+        DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool includePrevious);
     }
-    
+
     class DashboardRepository : IDashboardRepository
     {
         private readonly IOctopusRepository repository;
@@ -23,9 +23,9 @@ namespace Octopus.Client.Repositories
             return repository.Client.Get<DashboardResource>(repository.Link("Dashboard"));
         }
 
-        public DashboardResource GetDynamicDashboard(string[] projects, string[] environments)
+        public DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool includePrevious = true)
         {
-            return repository.Client.Get<DashboardResource>(repository.Link("DashboardDynamic"), new { projects, environments });
+            return repository.Client.Get<DashboardResource>(repository.Link("DashboardDynamic"), new { projects, environments, includePrevious });
         }
     }
 }
