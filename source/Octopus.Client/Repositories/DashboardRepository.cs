@@ -6,7 +6,11 @@ namespace Octopus.Client.Repositories
     public interface IDashboardRepository
     {
         DashboardResource GetDashboard();
-        DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool includePrevious = false);
+        
+        /// <param name="projects"></param>
+        /// <param name="environments"></param>
+        /// <param name="withLatestSuccessfulRelease">includes latest successful release in the list of Items</param>
+        DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool withLatestSuccessfulRelease = false);
     }
 
     class DashboardRepository : IDashboardRepository
@@ -23,8 +27,9 @@ namespace Octopus.Client.Repositories
             return repository.Client.Get<DashboardResource>(repository.Link("Dashboard"));
         }
 
-        public DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool includePrevious = false)
+        public DashboardResource GetDynamicDashboard(string[] projects, string[] environments, bool withLatestSuccessfulRelease = false)
         {
+            var includePrevious = withLatestSuccessfulRelease;
             return repository.Client.Get<DashboardResource>(repository.Link("DashboardDynamic"), new { projects, environments, includePrevious });
         }
     }
