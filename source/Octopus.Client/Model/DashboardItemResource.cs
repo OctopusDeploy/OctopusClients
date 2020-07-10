@@ -2,6 +2,11 @@ using System;
 
 namespace Octopus.Client.Model
 {
+    public enum DashboardItemsOptions
+    {
+        IncludeCurrentDeploymentOnly,
+        IncludeCurrentAndPreviousSuccessfulDeployment
+    }
     public class DashboardItemResource : Resource
     {
         public string ProjectId { get; set; }
