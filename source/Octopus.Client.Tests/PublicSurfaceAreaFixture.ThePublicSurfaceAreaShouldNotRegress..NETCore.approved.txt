@@ -2308,6 +2308,11 @@ Octopus.Client.Model
     String TaskId { get; set; }
     String TenantId { get; set; }
   }
+  DashboardItemsOptions
+  {
+      IncludeCurrentDeploymentOnly = 0
+      IncludeCurrentAndPreviousSuccessfulDeployment = 1
+  }
   class DashboardProjectGroupResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6618,7 +6623,7 @@ Octopus.Client.Repositories
   interface IDashboardRepository
   {
     Octopus.Client.Model.DashboardResource GetDashboard()
-    Octopus.Client.Model.DashboardResource GetDynamicDashboard(String[], String[], Boolean)
+    Octopus.Client.Model.DashboardResource GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions)
   }
   interface IDefectsRepository
   {
@@ -7309,7 +7314,7 @@ Octopus.Client.Repositories.Async
   interface IDashboardRepository
   {
     Task<DashboardResource> GetDashboard()
-    Task<DashboardResource> GetDynamicDashboard(String[], String[], Boolean)
+    Task<DashboardResource> GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions)
   }
   interface IDefectsRepository
   {

@@ -7,11 +7,11 @@ namespace Octopus.Client.Repositories.Async
     public interface IDashboardRepository
     {
         Task<DashboardResource> GetDashboard();
-        
+
         /// <param name="projects"></param>
         /// <param name="environments"></param>
-        /// <param name="withLatestSuccessfulRelease">includes latest successful release in the list of Items</param>
-        Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments, bool withLatestSuccessfulRelease = false);
+        /// <param name="dashboardItemsOptions">options for DashboardResource Items property</param>
+        Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments, DashboardItemsOptions dashboardItemsOptions = DashboardItemsOptions.IncludeCurrentDeploymentOnly);
     }
 
     class DashboardRepository : IDashboardRepository
@@ -28,9 +28,9 @@ namespace Octopus.Client.Repositories.Async
             return await repository.Client.Get<DashboardResource>(await repository.Link("Dashboard").ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        public async Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments, bool withLatestSuccessfulRelease = false)
+        public async Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments, DashboardItemsOptions dashboardItemsOptions = DashboardItemsOptions.IncludeCurrentDeploymentOnly)
         {
-            var includePrevious = withLatestSuccessfulRelease;
+            var includePrevious = dashboardItemsOptions == DashboardItemsOptions.IncludeCurrentAndPreviousSuccessfulDeployment;
             return await repository.Client.Get<DashboardResource>(await repository.Link("DashboardDynamic").ConfigureAwait(false), new { projects, environments, includePrevious }).ConfigureAwait(false);
         }
     }
