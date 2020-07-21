@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
+        IProjectRepositoryBeta Beta(bool useBeta);
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
@@ -28,9 +30,19 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
+        private readonly IProjectRepositoryBeta beta;
+
         public ProjectRepository(IOctopusAsyncRepository repository)
             : base(repository, "Projects")
         {
+            beta = new ProjectRepositoryBeta(repository);
+        }
+
+        public IProjectRepositoryBeta Beta(bool useBeta = false)
+        {
+            if (!useBeta) throw new Exception($"You must supply true for {nameof(useBeta)} to use Beta functionality.");
+
+            return beta;
         }
 
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
@@ -111,6 +123,32 @@ namespace Octopus.Client.Repositories.Async
         public Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project)
         {
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
+        }
+    }
+
+    public interface IProjectRepositoryBeta
+    {
+        Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource);
+        Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
+    }
+
+    class ProjectRepositoryBeta : IProjectRepositoryBeta
+    {
+        private readonly IOctopusAsyncClient client;
+
+        public ProjectRepositoryBeta(IOctopusAsyncRepository repository)
+        {
+            this.client = repository.Client;
+        }
+
+        public Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource)
+        {
+            return client.Get<VersionControlBranchResource[]>(projectResource.Link("Branches"));
+        }
+
+        public Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch)
+        {
+            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
         }
     }
 }
