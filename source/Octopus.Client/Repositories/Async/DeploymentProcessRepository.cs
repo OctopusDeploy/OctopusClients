@@ -35,8 +35,7 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IDeploymentProcessRepositoryBeta
     {
-        Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref);
-        Task Modify(DeploymentProcessResource deploymentProcessResource, ProjectResource projectResource, string gitref);
+        Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref = null);
     }
 
     class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
@@ -60,18 +59,6 @@ namespace Octopus.Client.Repositories.Async
             }
 
             return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
-        }
-
-        public async Task Modify(DeploymentProcessResource deploymentProcessResource, ProjectResource projectResource, string gitref = null)
-        {
-            if (!string.IsNullOrWhiteSpace(gitref))
-            {
-                var branchResource = await repository.Projects.Beta(true).GetVersionControlledBranch(projectResource, gitref);
-
-                await client.Put(branchResource.Link("DeploymentProcess"), deploymentProcessResource);
-            }
-
-            await client.Put(projectResource.Link("DeploymentProcess"), deploymentProcessResource);
         }
     }
 }

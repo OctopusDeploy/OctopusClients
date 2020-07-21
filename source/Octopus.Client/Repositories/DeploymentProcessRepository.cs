@@ -34,8 +34,7 @@ namespace Octopus.Client.Repositories
 
     public interface IDeploymentProcessRepositoryBeta
     {
-        DeploymentProcessResource Get(ProjectResource projectResource, string gitref);
-        void Modify(DeploymentProcessResource deploymentProcessResource, ProjectResource projectResource, string gitref);
+        DeploymentProcessResource Get(ProjectResource projectResource, string gitref = null);
     }
 
     class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
@@ -59,18 +58,6 @@ namespace Octopus.Client.Repositories
             }
 
             return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
-        }
-
-        public void Modify(DeploymentProcessResource deploymentProcessResource, ProjectResource projectResource, string gitref = null)
-        {
-            if (!string.IsNullOrWhiteSpace(gitref))
-            {
-                var branchResource = repository.Projects.Beta(true).GetVersionControlledBranch(projectResource, gitref);
-
-                client.Put(branchResource.Link("DeploymentProcess"), deploymentProcessResource);
-            }
-
-            client.Put(projectResource.Link("DeploymentProcess"), deploymentProcessResource);
         }
     }
 }
