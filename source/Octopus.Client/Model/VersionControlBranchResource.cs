@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility;
+﻿using System;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
@@ -12,9 +13,6 @@ namespace Octopus.Client.Model
 
         public string Name { get; }
 
-        /// <remarks>
-        /// TODO: We may want to derive an IVcsControlledResource at some point that this will be a part of
-        /// </remarks>
         public LinkCollection Links { get; }
 
         public void WithLinks(LinkCollection links)
@@ -24,6 +22,16 @@ namespace Octopus.Client.Model
             {
                 Links.Add(link.Key, link.Value);
             }
+        }
+
+        public string Link(string name)
+        {
+            if (!(Links ?? new LinkCollection()).TryGetValue(name, out var value))
+            {
+                throw new Exception($"The document does not define a link for '{name}'");
+            }
+
+            return value;
         }
     }
 }
