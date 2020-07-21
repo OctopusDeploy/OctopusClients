@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
@@ -7,6 +8,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
+        IProjectRepositoryBeta Beta(bool useBeta);
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -27,9 +29,19 @@ namespace Octopus.Client.Repositories
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
+        private readonly IProjectRepositoryBeta beta;
+
         public ProjectRepository(IOctopusRepository repository)
             : base(repository, "Projects")
         {
+            beta = new ProjectRepositoryBeta(repository);
+        }
+
+        public IProjectRepositoryBeta Beta(bool useBeta = false)
+        {
+            if (!useBeta) throw new Exception($"You must supply true for {nameof(useBeta)} to use Beta functionality.");
+
+            return beta;
         }
 
         public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
@@ -110,6 +122,32 @@ namespace Octopus.Client.Repositories
         public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
         {
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
+        }
+    }
+
+    public interface IProjectRepositoryBeta
+    {
+        VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource);
+        VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
+    }
+
+    class ProjectRepositoryBeta : IProjectRepositoryBeta
+    {
+        private readonly IOctopusClient client;
+
+        public ProjectRepositoryBeta(IOctopusRepository repository)
+        {
+            this.client = repository.Client;
+        }
+
+        public VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource)
+        {
+            return client.Get<VersionControlBranchResource[]>(projectResource.Link("Branches"));
+        }
+
+        public VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch)
+        {
+            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
         }
     }
 }
