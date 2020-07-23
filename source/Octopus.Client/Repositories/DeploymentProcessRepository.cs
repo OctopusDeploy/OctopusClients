@@ -5,7 +5,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IDeploymentProcessRepository : IGet<DeploymentProcessResource>, IModify<DeploymentProcessResource>
     {
-        IDeploymentProcessRepositoryBeta Beta(bool useBeta);
+        IDeploymentProcessRepositoryBeta Beta();
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
     }
 
@@ -19,10 +19,8 @@ namespace Octopus.Client.Repositories
             beta = new DeploymentProcessRepositoryBeta(repository);
         }
 
-        public IDeploymentProcessRepositoryBeta Beta(bool useBeta)
+        public IDeploymentProcessRepositoryBeta Beta()
         {
-            if (!useBeta) throw new Exception($"You must supply true for {nameof(useBeta)} to use Beta functionality.");
-
             return beta;
         }
 
@@ -52,7 +50,7 @@ namespace Octopus.Client.Repositories
         {
             if (!string.IsNullOrWhiteSpace(gitref))
             {
-                var branchResource = repository.Projects.Beta(true).GetVersionControlledBranch(projectResource, gitref);
+                var branchResource = repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitref);
 
                 return client.Get<DeploymentProcessResource>(branchResource.Link("DeploymentProcess"));
             }

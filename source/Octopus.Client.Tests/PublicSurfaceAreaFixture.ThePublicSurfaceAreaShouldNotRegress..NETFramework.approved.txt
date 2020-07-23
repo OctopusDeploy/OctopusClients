@@ -6672,7 +6672,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.IModify<DeploymentProcessResource>
   {
-    Octopus.Client.Repositories.IDeploymentProcessRepositoryBeta Beta(Boolean)
+    Octopus.Client.Repositories.IDeploymentProcessRepositoryBeta Beta()
     Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
   }
   interface IDeploymentProcessRepositoryBeta
@@ -6878,7 +6878,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<ProjectResource>
     Octopus.Client.Repositories.IGetAll<ProjectResource>
   {
-    Octopus.Client.Repositories.IProjectRepositoryBeta Beta(Boolean)
+    Octopus.Client.Repositories.IProjectRepositoryBeta Beta()
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -7374,7 +7374,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.Async.IModify<DeploymentProcessResource>
   {
-    Octopus.Client.Repositories.Async.IDeploymentProcessRepositoryBeta Beta(Boolean)
+    Octopus.Client.Repositories.Async.IDeploymentProcessRepositoryBeta Beta()
     Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
   }
   interface IDeploymentProcessRepositoryBeta
@@ -7579,7 +7579,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ProjectResource>
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
-    Octopus.Client.Repositories.Async.IProjectRepositoryBeta Beta(Boolean)
+    Octopus.Client.Repositories.Async.IProjectRepositoryBeta Beta()
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)

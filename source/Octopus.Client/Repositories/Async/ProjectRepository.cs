@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectRepositoryBeta Beta(bool useBeta);
+        IProjectRepositoryBeta Beta();
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
@@ -38,10 +38,8 @@ namespace Octopus.Client.Repositories.Async
             beta = new ProjectRepositoryBeta(repository);
         }
 
-        public IProjectRepositoryBeta Beta(bool useBeta = false)
+        public IProjectRepositoryBeta Beta()
         {
-            if (!useBeta) throw new Exception($"You must supply true for {nameof(useBeta)} to use Beta functionality.");
-
             return beta;
         }
 

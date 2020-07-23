@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectRepositoryBeta Beta(bool useBeta);
+        IProjectRepositoryBeta Beta();
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -37,10 +37,8 @@ namespace Octopus.Client.Repositories
             beta = new ProjectRepositoryBeta(repository);
         }
 
-        public IProjectRepositoryBeta Beta(bool useBeta = false)
+        public IProjectRepositoryBeta Beta()
         {
-            if (!useBeta) throw new Exception($"You must supply true for {nameof(useBeta)} to use Beta functionality.");
-
             return beta;
         }
 
