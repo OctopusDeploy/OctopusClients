@@ -2199,6 +2199,12 @@ Octopus.Client.Model
     String Id { get; set; }
     String LinkUrl { get; set; }
   }
+  class CommitResource`1
+  {
+    .ctor()
+    String CommitMessage { get; set; }
+    Octopus.Client.Model.TResource Resource { get; set; }
+  }
   CommunicationStyle
   {
       None = 0
@@ -5245,6 +5251,14 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
   }
+  class VersionControlBranchResource
+  {
+    .ctor(String)
+    Octopus.Client.Extensibility.LinkCollection Links { get; }
+    String Name { get; }
+    String Link(String)
+    void WithLinks(Octopus.Client.Extensibility.LinkCollection)
+  }
   class VersionControlSettingsResource
   {
     .ctor()
@@ -6639,7 +6653,13 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.IModify<DeploymentProcessResource>
   {
+    Octopus.Client.Repositories.IDeploymentProcessRepositoryBeta Beta()
     Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+  }
+  interface IDeploymentProcessRepositoryBeta
+  {
+    Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>
@@ -6840,6 +6860,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<ProjectResource>
     Octopus.Client.Repositories.IGetAll<ProjectResource>
   {
+    Octopus.Client.Repositories.IProjectRepositoryBeta Beta()
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -6856,6 +6877,11 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
     void SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
+  }
+  interface IProjectRepositoryBeta
+  {
+    Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.VersionControlBranchResource[] GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectTriggerRepository
     Octopus.Client.Repositories.ICreate<ProjectTriggerResource>
@@ -7330,7 +7356,13 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.Async.IModify<DeploymentProcessResource>
   {
+    Octopus.Client.Repositories.Async.IDeploymentProcessRepositoryBeta Beta()
     Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+  }
+  interface IDeploymentProcessRepositoryBeta
+  {
+    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
@@ -7530,6 +7562,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ProjectResource>
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
+    Octopus.Client.Repositories.Async.IProjectRepositoryBeta Beta()
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -7546,6 +7579,11 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
     Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
+  }
+  interface IProjectRepositoryBeta
+  {
+    Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
+    Task<VersionControlBranchResource[]> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectTriggerRepository
     Octopus.Client.Repositories.Async.ICreate<ProjectTriggerResource>
