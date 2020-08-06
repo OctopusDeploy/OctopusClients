@@ -2215,6 +2215,12 @@ Octopus.Client.Model
     String Id { get; set; }
     String LinkUrl { get; set; }
   }
+  class CommitResource`1
+  {
+    .ctor()
+    String CommitMessage { get; set; }
+    Octopus.Client.Model.TResource Resource { get; set; }
+  }
   CommunicationStyle
   {
       None = 0
@@ -6678,6 +6684,7 @@ Octopus.Client.Repositories
   interface IDeploymentProcessRepositoryBeta
   {
     Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>

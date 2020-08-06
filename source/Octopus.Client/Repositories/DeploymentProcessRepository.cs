@@ -33,6 +33,7 @@ namespace Octopus.Client.Repositories
     public interface IDeploymentProcessRepositoryBeta
     {
         DeploymentProcessResource Get(ProjectResource projectResource, string gitref = null);
+        DeploymentProcessResource Modify(DeploymentProcessResource resource, string commitMessage = null);
     }
 
     class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
@@ -56,6 +57,17 @@ namespace Octopus.Client.Repositories
             }
 
             return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
+        }
+
+        public DeploymentProcessResource Modify(DeploymentProcessResource resource, string commitMessage = null)
+        {
+            var commitResource = new CommitResource<DeploymentProcessResource>
+            {
+                Resource = resource,
+                CommitMessage = commitMessage
+            };
+            client.Put(resource.Link("Self"), commitResource);
+            return client.Get<DeploymentProcessResource>(resource.Link("Self"));
         }
     }
 }
