@@ -6659,7 +6659,7 @@ Octopus.Client.Repositories
   interface IDeploymentProcessRepositoryBeta
   {
     Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.DeploymentProcessResource, String)
+    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>
