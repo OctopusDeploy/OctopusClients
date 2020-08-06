@@ -7362,6 +7362,7 @@ Octopus.Client.Repositories.Async
   interface IDeploymentProcessRepositoryBeta
   {
     Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>

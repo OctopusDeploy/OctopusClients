@@ -34,6 +34,9 @@ namespace Octopus.Client.Repositories.Async
     public interface IDeploymentProcessRepositoryBeta
     {
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref = null);
+
+        Task<DeploymentProcessResource> Modify(ProjectResource projectResource, DeploymentProcessResource resource,
+            string commitMessage = null);
     }
 
     class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
@@ -57,6 +60,23 @@ namespace Octopus.Client.Repositories.Async
             }
 
             return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
+        }
+
+        public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource,
+            DeploymentProcessResource resource, string commitMessage = null)
+        {
+            if (!projectResource.IsVersionControlled)
+            {
+                return await client.Update(projectResource.Link("DeploymentProcess"), resource);
+            }
+
+            var commitResource = new CommitResource<DeploymentProcessResource>
+            {
+                Resource = resource,
+                CommitMessage = commitMessage
+            };
+            await client.Update(resource.Link("Self"), commitResource);
+            return await client.Get<DeploymentProcessResource>(resource.Link("Self"));
         }
     }
 }
