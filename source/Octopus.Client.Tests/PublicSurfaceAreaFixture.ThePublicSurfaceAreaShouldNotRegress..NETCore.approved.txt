@@ -4129,6 +4129,8 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
+    String GitCommit { get; set; }
+    String GitRef { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
