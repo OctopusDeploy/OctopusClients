@@ -169,6 +169,13 @@ namespace Octopus.Client.Model
         public DeploymentActionResource AddOrUpdatePackageAction(string name, PackageResource package)
         {
             var action = AddOrUpdateAction(name);
+            var packageReference = new PackageReference
+            {
+                FeedId = package.FeedId,
+                PackageId = package.PackageId
+            };
+            action.Packages.Clear();
+            action.Packages.Add(packageReference);
 
             action.ActionType = "Octopus.TentaclePackage";
             action.Properties["Octopus.Action.Package.PackageId"] = package.PackageId;
