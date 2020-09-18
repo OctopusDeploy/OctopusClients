@@ -420,6 +420,7 @@ namespace Octopus.Client
             webRequest.Method = request.Method;
             webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
             webRequest.UserAgent = octopusCustomHeaders.UserAgent;
+            webRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
             if (webRequest.Method == "PUT")
             {
