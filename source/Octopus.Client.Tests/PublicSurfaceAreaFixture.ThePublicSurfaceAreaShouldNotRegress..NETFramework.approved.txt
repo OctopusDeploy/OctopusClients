@@ -2939,12 +2939,6 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
-  GitRefType
-  {
-      Branch = 0
-      Tag = 1
-      Commit = 2
-  }
   GuidedFailureMode
   {
       EnvironmentDefault = 0
@@ -4156,7 +4150,6 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     String GitCommit { get; set; }
     String GitRef { get; set; }
-    Octopus.Client.Model.GitRefType GitRefType { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
