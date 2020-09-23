@@ -4157,7 +4157,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.VersionControl.VersionControlReference VersionControlReference { get; set; }
+    Octopus.Client.Model.VersionControl.VersionControlReferenceResource VersionControlReferenceResource { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -6363,7 +6363,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
 }
 Octopus.Client.Model.VersionControl
 {
-  class VersionControlReference
+  class VersionControlReferenceResource
   {
     .ctor()
     String GitCommit { get; set; }
