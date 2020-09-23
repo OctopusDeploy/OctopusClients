@@ -72,11 +72,10 @@ namespace Octopus.Client.Model
 
         public List<SelectedPackage> SelectedPackages { get; set; }
 
-        public GitRefType GitRefType { get; set; }
-
         public string GitRef { get; set; }
 
         public string GitCommit { get; set; }
+
         public string SpaceId { get; set; }
     }
 }
