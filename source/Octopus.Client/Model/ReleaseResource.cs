@@ -73,7 +73,7 @@ namespace Octopus.Client.Model
 
         public List<SelectedPackage> SelectedPackages { get; set; }
 
-        public VersionControlReferenceResource VersionControlReferenceResource { get; set; }
+        public VersionControlReferenceResource VersionControlReference { get; set; }
         
         public string SpaceId { get; set; }
     }
