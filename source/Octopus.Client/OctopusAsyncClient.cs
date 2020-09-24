@@ -46,11 +46,6 @@ namespace Octopus.Client
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
             };
 
-            if (handler.SupportsAutomaticDecompression)
-            {
-                handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-            }
-
             if (clientOptions.Proxy != null)
             {
                 handler.UseProxy = true;
