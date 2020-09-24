@@ -4129,8 +4129,6 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
-    String GitCommit { get; set; }
-    String GitRef { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
@@ -4140,6 +4138,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
+    Octopus.Client.Model.VersionControl.VersionControlReferenceResource VersionControlReferenceResource { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -6335,6 +6334,15 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     String Timezone { get; set; }
+  }
+}
+Octopus.Client.Model.VersionControl
+{
+  class VersionControlReferenceResource
+  {
+    .ctor()
+    String GitCommit { get; set; }
+    String GitRef { get; set; }
   }
 }
 Octopus.Client.Model.Versioning
