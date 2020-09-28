@@ -430,11 +430,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         /// <param name="path">The path to the resource to delete.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public Task Delete(string path, object pathParameters = null)
+        /// <param name="resource">An optional resource to pass as the body of the request.</param>
+        public Task Delete(string path, object pathParameters = null, object resource = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            return DispatchRequest<string>(new OctopusRequest("DELETE", uri), true);
+            return DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
         }
 
         /// <summary>
