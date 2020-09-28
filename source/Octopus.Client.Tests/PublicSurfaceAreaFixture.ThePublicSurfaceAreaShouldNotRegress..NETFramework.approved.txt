@@ -67,8 +67,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
-    void Delete(String, Object)
-    void DeleteWithResource(String, Octopus.Client.TResource, Object)
+    void Delete(String, Object, Object)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
@@ -380,8 +379,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
-    void Delete(String, Object)
-    void DeleteWithResource(String, Octopus.Client.TResource, Object)
+    void Delete(String, Object, Object)
     void Dispose()
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
