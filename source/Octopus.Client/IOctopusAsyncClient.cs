@@ -326,8 +326,9 @@ namespace Octopus.Client
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the resource to delete.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <param name="resource">An optional resource to pass as the body of the request.</param>
         /// <returns>A task resource that provides details about the background task that deletes the specified resource.</returns>
-        Task Delete(string path, object pathParameters = null);
+        Task Delete(string path, object pathParameters = null, object resource = null);
 
         /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.
