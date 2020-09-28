@@ -328,7 +328,7 @@ namespace Octopus.Client
         /// <param name="resource">The body of the request.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>A task resource that provides details about the background task that deletes the specified resource.</returns>
-        void Delete<TResource>(string path, TResource resource, object pathParameters = null);
+        void DeleteWithResource<TResource>(string path, TResource resource, object pathParameters = null);
 
         /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.

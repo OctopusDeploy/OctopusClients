@@ -1,20 +1,14 @@
 using System;
-using System.Collections;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using Newtonsoft.Json;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
-using Octopus.Client.Extensibility;
-using Octopus.Client.Extensions;
 using Octopus.Client.Logging;
-using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
@@ -348,7 +342,7 @@ namespace Octopus.Client
         /// <param name="path">The path to the resource to delete.</param>
         /// <param name="resource">The body of the request.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public void Delete<TResource>(string path, TResource resource, object pathParameters = null)
+        public void DeleteWithResource<TResource>(string path, TResource resource = default, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
