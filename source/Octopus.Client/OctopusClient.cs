@@ -343,6 +343,19 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Deletes the resource at the given URI from the server using a the DELETE verb.
+        /// </summary>
+        /// <param name="path">The path to the resource to delete.</param>
+        /// <param name="resource">The body of the request.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        public void Delete<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
+        }
+
+        /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
         /// </summary>
