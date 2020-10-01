@@ -136,6 +136,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncRepositoryBeta Beta { get; }
     Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
@@ -179,6 +180,7 @@ Octopus.Client
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
+    Octopus.Client.Repositories.IOctopusSpaceRepositoryBeta Beta { get; }
     Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -301,6 +303,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncRepositoryBeta Beta { get; }
     Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -432,6 +435,7 @@ Octopus.Client
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
+    Octopus.Client.Repositories.IOctopusSpaceRepositoryBeta Beta { get; }
     Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -2199,10 +2203,15 @@ Octopus.Client.Model
     String Id { get; set; }
     String LinkUrl { get; set; }
   }
-  class CommitResource`1
+  class CommitResource
   {
     .ctor()
     String CommitMessage { get; set; }
+  }
+  class CommitResource`1
+    Octopus.Client.Model.CommitResource
+  {
+    .ctor()
     Octopus.Client.Model.TResource Resource { get; set; }
   }
   CommunicationStyle
@@ -5252,6 +5261,21 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
   }
+  class VcsRunbookResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+    String Description { get; set; }
+    Octopus.Client.Model.ReferenceCollection Environments { get; }
+    Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
+    Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
+    String Name { get; set; }
+  }
   class VersionControlBranchResource
   {
     .ctor(String)
@@ -6499,6 +6523,12 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
+  class BranchScopedRepository
+    Octopus.Client.Repositories.IBranchScopedRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository, Octopus.Client.Model.VersionControlBranchResource)
+    Octopus.Client.Repositories.IVcsRunbookRepository VcsRunbooks { get; }
+  }
   class BuildInformationRepository
     Octopus.Client.Repositories.IBuildInformationRepository
   {
@@ -6561,6 +6591,10 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.BackupConfigurationResource GetConfiguration()
     Octopus.Client.Model.BackupConfigurationResource ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
+  }
+  interface IBranchScopedRepository
+  {
+    Octopus.Client.Repositories.IVcsRunbookRepository VcsRunbooks { get; }
   }
   interface IBuildInformationRepository
   {
@@ -6829,6 +6863,10 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
     Octopus.Client.Model.OctopusServerClusterSummaryResource Summary()
+  }
+  interface IOctopusSpaceRepositoryBeta
+  {
+    Octopus.Client.Repositories.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
   }
   interface IPackageMetadataRepository
   {
@@ -7164,6 +7202,14 @@ Octopus.Client.Repositories
     String[] GetVariableNames(String, String[])
     Octopus.Client.Model.VariableSetResource GetVariablePreview(String, String, String, String, String, String, String, String)
   }
+  interface IVcsRunbookRepository
+  {
+    Octopus.Client.Model.VcsRunbookResource Create(Octopus.Client.Model.VcsRunbookResource, String)
+    void Delete(Octopus.Client.Model.VcsRunbookResource, String)
+    Octopus.Client.Model.VcsRunbookResource Get(String)
+    Octopus.Client.Model.ResourceCollection<VcsRunbookResource> List(String, Int32, Nullable<Int32>)
+    Octopus.Client.Model.VcsRunbookResource Modify(Octopus.Client.Model.VcsRunbookResource, String)
+  }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.IPaginate<WorkerPoolResource>
@@ -7193,6 +7239,12 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
+  class OctopusSpaceRepositoryBeta
+    Octopus.Client.Repositories.IOctopusSpaceRepositoryBeta
+  {
+    .ctor(Octopus.Client.IOctopusRepository)
+    Octopus.Client.Repositories.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
+  }
   class PackageMetadataRepository
     Octopus.Client.Repositories.IPackageMetadataRepository
   {
@@ -7208,9 +7260,25 @@ Octopus.Client.Repositories
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
+  class VcsRunbookRepository
+    Octopus.Client.Repositories.IVcsRunbookRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository, Octopus.Client.Model.VersionControlBranchResource)
+    Octopus.Client.Model.VcsRunbookResource Create(Octopus.Client.Model.VcsRunbookResource, String)
+    void Delete(Octopus.Client.Model.VcsRunbookResource, String)
+    Octopus.Client.Model.VcsRunbookResource Get(String)
+    Octopus.Client.Model.ResourceCollection<VcsRunbookResource> List(String, Int32, Nullable<Int32>)
+    Octopus.Client.Model.VcsRunbookResource Modify(Octopus.Client.Model.VcsRunbookResource, String)
+  }
 }
 Octopus.Client.Repositories.Async
 {
+  class BranchScopedRepository
+    Octopus.Client.Repositories.Async.IBranchScopedRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.VersionControlBranchResource)
+    Octopus.Client.Repositories.Async.IVcsRunbookRepository VcsRunbooks { get; }
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
@@ -7261,6 +7329,10 @@ Octopus.Client.Repositories.Async
   {
     Task<BackupConfigurationResource> GetConfiguration()
     Task<BackupConfigurationResource> ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
+  }
+  interface IBranchScopedRepository
+  {
+    Octopus.Client.Repositories.Async.IVcsRunbookRepository VcsRunbooks { get; }
   }
   interface IBuildInformationRepository
   {
@@ -7531,6 +7603,10 @@ Octopus.Client.Repositories.Async
   {
     Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
     Task<OctopusServerClusterSummaryResource> Summary()
+  }
+  interface IOctopusSpaceAsyncRepositoryBeta
+  {
+    Octopus.Client.Repositories.Async.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
   }
   interface IPackageMetadataRepository
   {
@@ -7867,6 +7943,14 @@ Octopus.Client.Repositories.Async
     Task<String[]> GetVariableNames(String, String[])
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
   }
+  interface IVcsRunbookRepository
+  {
+    Task<VcsRunbookResource> Create(Octopus.Client.Model.VcsRunbookResource, String)
+    Task Delete(Octopus.Client.Model.VcsRunbookResource, String)
+    Task<VcsRunbookResource> Get(String)
+    Task<ResourceCollection<VcsRunbookResource>> List(String, Int32, Nullable<Int32>)
+    Task<VcsRunbookResource> Modify(Octopus.Client.Model.VcsRunbookResource, String)
+  }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IPaginate<WorkerPoolResource>
@@ -7896,11 +7980,27 @@ Octopus.Client.Repositories.Async
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
+  class OctopusSpaceAsyncRepositoryBeta
+    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncRepositoryBeta
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository)
+    Octopus.Client.Repositories.Async.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
+  }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
     Exception
   {
     .ctor(String, Octopus.Client.SpaceContext)
+  }
+  class VcsRunbookRepository
+    Octopus.Client.Repositories.Async.IVcsRunbookRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.VersionControlBranchResource)
+    Task<VcsRunbookResource> Create(Octopus.Client.Model.VcsRunbookResource, String)
+    Task Delete(Octopus.Client.Model.VcsRunbookResource, String)
+    Task<VcsRunbookResource> Get(String)
+    Task<ResourceCollection<VcsRunbookResource>> List(String, Int32, Nullable<Int32>)
+    Task<VcsRunbookResource> Modify(Octopus.Client.Model.VcsRunbookResource, String)
   }
 }
 Octopus.Client.Serialization

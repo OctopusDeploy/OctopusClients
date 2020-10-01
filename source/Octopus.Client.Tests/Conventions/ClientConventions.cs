@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -52,11 +53,7 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AllAsyncRepositoriesShouldBeAvailableViaIOctopusAsyncRepository()
         {
-            var exposedTypes = typeof(IOctopusAsyncRepository)
-                .GetInterfaces()
-                .SelectMany(i => i.GetProperties())
-                .Select(p => p.PropertyType.GetTypeInfo())
-                .ToArray();
+            var exposedTypes = GetRepoTypesReachableFrom(typeof(IOctopusAsyncRepository));
 
             var missingTypes = AsyncRepositoryInterfaceTypes.Except(exposedTypes).ToArray();
             if (missingTypes.Any())
@@ -74,12 +71,8 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AllSyncRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
-            var exposedTypes = typeof(IOctopusRepository)
-                .GetInterfaces()
-                .SelectMany(i => i.GetProperties())
-                .Select(p => p.PropertyType.GetTypeInfo())
-                .ToArray();
-
+            var exposedTypes = GetRepoTypesReachableFrom(typeof(IOctopusRepository));
+            
             var missingTypes = SyncRepositoryInterfaceTypes.Except(exposedTypes).ToArray();
             if (missingTypes.Any())
             {
@@ -87,6 +80,50 @@ namespace Octopus.Client.Tests.Conventions
             }
         }
 
+        private static ISet<Type> GetRepoTypesReachableFrom(Type root)
+        {
+            var visitedSoFar = new HashSet<Type>();
+            RecursivelyCollectRepositoryTypes(root, visitedSoFar);
+            return visitedSoFar;
+        }
+        
+        private static void RecursivelyCollectRepositoryTypes(Type root, ISet<Type> visitedSoFar)
+        {
+            var repoAssembly = typeof(IOctopusRepository).Assembly;
+            
+            var interfaces = root.GetInterfaces()
+                .Concat(new[] {root})
+                .ToArray();
+            
+            var newTypesExposedViaProperty = interfaces
+                .SelectMany(i => i.GetProperties())
+                .Select(p => p.PropertyType.GetTypeInfo())
+                .Where(p => p.Assembly == repoAssembly)
+                .ToArray();
+            
+            var newTypesExposedViaMethod = interfaces
+                .SelectMany(i => i.GetMethods())
+                .Select(p => p.ReturnType.GetTypeInfo())
+                .Where(p => p.Assembly == repoAssembly)
+                .ToArray();
+
+            var newExposedRepositoryTypes = newTypesExposedViaProperty
+                .Concat(newTypesExposedViaMethod)
+                .Where(t => t.Name.Contains("Repository"))
+                .Except(visitedSoFar)
+                .ToArray();
+
+            foreach (var type in newExposedRepositoryTypes)
+            {
+                visitedSoFar.Add(type);
+            }
+
+            foreach (var type in newExposedRepositoryTypes)
+            {
+                RecursivelyCollectRepositoryTypes(type, visitedSoFar);
+            }
+        }
+        
         [Test]
         public void AllRepositoriesShouldImplementNonGenericSimpleInterface()
         {
@@ -456,7 +493,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             AsyncRepositoryInterfaceTypes
                 .MustConformTo(Convention.MustLiveInNamespace("Octopus.Client.Repositories.Async"))
-                .AndMustConformTo(Convention.NameMustEndWith("Repository"))
+                .AndMustConformTo(Convention.NameMustEndWith("Repository").Or(Convention.NameMustEndWith("RepositoryBeta")))
                 .WithFailureAssertion(Assert.Fail);
         }
 

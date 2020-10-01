@@ -57,6 +57,7 @@ namespace Octopus.Client
             ActionTemplates = new ActionTemplateRepository(this);
             Artifacts = new ArtifactRepository(this);
             Backups = new BackupRepository(this);
+            Beta = new OctopusSpaceRepositoryBeta(this);
             BuiltInPackageRepository = new BuiltInPackageRepositoryRepository(this);
             BuildInformationRepository = new BuildInformationRepository(this);
             CertificateConfiguration = new CertificateConfigurationRepository(this);
@@ -123,6 +124,7 @@ namespace Octopus.Client
         public IActionTemplateRepository ActionTemplates { get; }
         public IArtifactRepository Artifacts { get; }
         public IBackupRepository Backups { get; }
+        public IOctopusSpaceRepositoryBeta Beta { get; }
         public IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
         public IBuildInformationRepository BuildInformationRepository { get; }
         public ICertificateConfigurationRepository CertificateConfiguration { get; }
