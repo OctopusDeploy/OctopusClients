@@ -4,6 +4,8 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IBranchScopedRepository
     {
+        // Anything that is tied to a branch will go in here eventually.
+        
         IVcsRunbookRepository Runbooks { get; }
     }
 
