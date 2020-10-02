@@ -1,18 +1,17 @@
 ﻿using Octopus.Client.Model;
-using Octopus.Client.Repositories.Async;
 
-namespace Octopus.Client.Repositories.Async
+namespace Octopus.Client.Repositories
 {
-    public interface IOctopusSpaceAsyncRepositoryBeta
+    public interface IOctopusSpaceBetaRepository
     {
         IBranchScopedRepository ForBranch(VersionControlBranchResource branch);
     }
 
-    public class OctopusSpaceAsyncRepositoryBeta : IOctopusSpaceAsyncRepositoryBeta
+    public class OctopusSpaceBetaRepository : IOctopusSpaceBetaRepository
     {
-        private readonly IOctopusAsyncRepository repository;
+        private readonly IOctopusRepository repository;
 
-        public OctopusSpaceAsyncRepositoryBeta(IOctopusAsyncRepository repository)
+        public OctopusSpaceBetaRepository(IOctopusRepository repository)
         {
             this.repository = repository;
         }

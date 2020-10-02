@@ -6,21 +6,21 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IDeploymentProcessRepository : IGet<DeploymentProcessResource>, IModify<DeploymentProcessResource>
     {
-        IDeploymentProcessRepositoryBeta Beta();
+        IDeploymentProcessBetaRepository Beta();
         Task<ReleaseTemplateResource> GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
     }
 
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        private readonly IDeploymentProcessRepositoryBeta beta;
+        private readonly IDeploymentProcessBetaRepository beta;
 
         public DeploymentProcessRepository(IOctopusAsyncRepository repository)
             : base(repository, "DeploymentProcesses")
         {
-            beta = new DeploymentProcessRepositoryBeta(repository);
+            beta = new DeploymentProcessBetaRepository(repository);
         }
 
-        public IDeploymentProcessRepositoryBeta Beta()
+        public IDeploymentProcessBetaRepository Beta()
         {
             return beta;
         }
@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories.Async
         }
     }
 
-    public interface IDeploymentProcessRepositoryBeta
+    public interface IDeploymentProcessBetaRepository
     {
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref = null);
 
@@ -39,12 +39,12 @@ namespace Octopus.Client.Repositories.Async
             string commitMessage = null);
     }
 
-    class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
+    class DeploymentProcessBetaRepository : IDeploymentProcessBetaRepository
     {
         private readonly IOctopusAsyncRepository repository;
         private readonly IOctopusAsyncClient client;
 
-        public DeploymentProcessRepositoryBeta(IOctopusAsyncRepository repository)
+        public DeploymentProcessBetaRepository(IOctopusAsyncRepository repository)
         {
             this.repository = repository;
             this.client = repository.Client;

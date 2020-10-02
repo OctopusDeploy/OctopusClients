@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectRepositoryBeta Beta();
+        IProjectBetaRepository Beta();
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -29,15 +29,15 @@ namespace Octopus.Client.Repositories
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        private readonly IProjectRepositoryBeta beta;
+        private readonly IProjectBetaRepository beta;
 
         public ProjectRepository(IOctopusRepository repository)
             : base(repository, "Projects")
         {
-            beta = new ProjectRepositoryBeta(repository);
+            beta = new ProjectBetaRepository(repository);
         }
 
-        public IProjectRepositoryBeta Beta()
+        public IProjectBetaRepository Beta()
         {
             return beta;
         }
@@ -123,17 +123,17 @@ namespace Octopus.Client.Repositories
         }
     }
 
-    public interface IProjectRepositoryBeta
+    public interface IProjectBetaRepository
     {
         VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
     }
 
-    class ProjectRepositoryBeta : IProjectRepositoryBeta
+    class ProjectBetaRepository : IProjectBetaRepository
     {
         private readonly IOctopusClient client;
 
-        public ProjectRepositoryBeta(IOctopusRepository repository)
+        public ProjectBetaRepository(IOctopusRepository repository)
         {
             this.client = repository.Client;
         }

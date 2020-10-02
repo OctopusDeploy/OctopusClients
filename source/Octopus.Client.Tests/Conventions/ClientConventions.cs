@@ -493,7 +493,7 @@ namespace Octopus.Client.Tests.Conventions
         {
             AsyncRepositoryInterfaceTypes
                 .MustConformTo(Convention.MustLiveInNamespace("Octopus.Client.Repositories.Async"))
-                .AndMustConformTo(Convention.NameMustEndWith("Repository").Or(Convention.NameMustEndWith("RepositoryBeta")))
+                .AndMustConformTo(Convention.NameMustEndWith("Repository"))
                 .WithFailureAssertion(Assert.Fail);
         }
 
