@@ -4,7 +4,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IBranchScopedRepository
     {
-        IVcsRunbookRepository VcsRunbooks { get; }
+        IVcsRunbookRepository Runbooks { get; }
     }
 
     public class BranchScopedRepository : IBranchScopedRepository
@@ -14,9 +14,9 @@ namespace Octopus.Client.Repositories.Async
         public BranchScopedRepository(IOctopusAsyncRepository repository, VersionControlBranchResource branch)
         {
             this.repository = repository;
-            VcsRunbooks = new VcsRunbookRepository(repository, branch);
+            Runbooks = new VcsRunbookRepository(repository, branch);
         }
         
-        public IVcsRunbookRepository VcsRunbooks { get; }
+        public IVcsRunbookRepository Runbooks { get; }
     }
 }

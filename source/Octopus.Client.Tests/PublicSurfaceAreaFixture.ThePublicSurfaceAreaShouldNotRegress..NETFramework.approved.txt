@@ -6552,7 +6552,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IBranchScopedRepository
   {
     .ctor(Octopus.Client.IOctopusRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Octopus.Client.Repositories.IVcsRunbookRepository VcsRunbooks { get; }
+    Octopus.Client.Repositories.IVcsRunbookRepository Runbooks { get; }
   }
   class BuildInformationRepository
     Octopus.Client.Repositories.IBuildInformationRepository
@@ -6619,7 +6619,7 @@ Octopus.Client.Repositories
   }
   interface IBranchScopedRepository
   {
-    Octopus.Client.Repositories.IVcsRunbookRepository VcsRunbooks { get; }
+    Octopus.Client.Repositories.IVcsRunbookRepository Runbooks { get; }
   }
   interface IBuildInformationRepository
   {
@@ -7302,7 +7302,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IBranchScopedRepository
   {
     .ctor(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Octopus.Client.Repositories.Async.IVcsRunbookRepository VcsRunbooks { get; }
+    Octopus.Client.Repositories.Async.IVcsRunbookRepository Runbooks { get; }
   }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
@@ -7357,7 +7357,7 @@ Octopus.Client.Repositories.Async
   }
   interface IBranchScopedRepository
   {
-    Octopus.Client.Repositories.Async.IVcsRunbookRepository VcsRunbooks { get; }
+    Octopus.Client.Repositories.Async.IVcsRunbookRepository Runbooks { get; }
   }
   interface IBuildInformationRepository
   {
