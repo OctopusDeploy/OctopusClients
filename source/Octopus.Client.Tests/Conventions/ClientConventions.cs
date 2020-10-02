@@ -109,7 +109,7 @@ namespace Octopus.Client.Tests.Conventions
 
             var newExposedRepositoryTypes = newTypesExposedViaProperty
                 .Concat(newTypesExposedViaMethod)
-                .Where(t => t.Name.Contains("Repository"))
+                .Where(t => t.Name.EndsWith("Repository"))
                 .Except(visitedSoFar)
                 .ToArray();
 
