@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectRepositoryBeta Beta();
+        IProjectBetaRepository Beta();
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
@@ -30,15 +30,15 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        private readonly IProjectRepositoryBeta beta;
+        private readonly IProjectBetaRepository beta;
 
         public ProjectRepository(IOctopusAsyncRepository repository)
             : base(repository, "Projects")
         {
-            beta = new ProjectRepositoryBeta(repository);
+            beta = new ProjectBetaRepository(repository);
         }
 
-        public IProjectRepositoryBeta Beta()
+        public IProjectBetaRepository Beta()
         {
             return beta;
         }
@@ -124,17 +124,17 @@ namespace Octopus.Client.Repositories.Async
         }
     }
 
-    public interface IProjectRepositoryBeta
+    public interface IProjectBetaRepository
     {
         Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
     }
 
-    class ProjectRepositoryBeta : IProjectRepositoryBeta
+    class ProjectBetaRepository : IProjectBetaRepository
     {
         private readonly IOctopusAsyncClient client;
 
-        public ProjectRepositoryBeta(IOctopusAsyncRepository repository)
+        public ProjectBetaRepository(IOctopusAsyncRepository repository)
         {
             this.client = repository.Client;
         }
