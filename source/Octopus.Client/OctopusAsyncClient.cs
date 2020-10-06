@@ -169,7 +169,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
-        public async Task SignIn(LoginCommand loginCommand, CancellationToken token = default(CancellationToken))
+        public async Task SignIn(LoginCommand loginCommand, CancellationToken token = default)
         {
             if (loginCommand.State == null)
             {
@@ -185,7 +185,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             Repository = new OctopusAsyncRepository(this);
         }
 
-        public async Task SignOut(CancellationToken token = default(CancellationToken))
+        public async Task SignOut(CancellationToken token = default)
         {
             await Post(await Repository.Link("SignOut").ConfigureAwait(false), token: token).ConfigureAwait(false);
             antiforgeryCookieName = null;
@@ -230,7 +230,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The resource from the server.
         /// </returns>
-        public async Task<TResource> Get<TResource>(string path, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<TResource> Get<TResource>(string path, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -252,7 +252,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The collection of resources from the server.
         /// </returns>
-        public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters = null, CancellationToken token = default)
         {
             return await Get<ResourceCollection<TResource>>(path, pathParameters, token).ConfigureAwait(false);
         }
@@ -268,7 +268,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The collection of resources from the server.
         /// </returns>
-        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters = null, CancellationToken token = default)
         {
             var resources = new List<TResource>();
             await Paginate<TResource>(path, pathParameters, r =>
@@ -290,7 +290,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// page will also be requested.
         /// </param>
         /// <param name="token"></param>
-        public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default(CancellationToken))
+        public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default)
         {
             var page = await List<TResource>(path, pathParameters, token).ConfigureAwait(false);
 
@@ -310,7 +310,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// page will also be requested.
         /// </param>
         /// <param name="token"></param>
-        public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default(CancellationToken))
+        public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default)
         {
             return Paginate(path, null, getNextPage, token);
         }
@@ -327,7 +327,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
-        public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -343,7 +343,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="token"></param>
-        public Task Post<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public Task Post<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -359,7 +359,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="resource">The resource to post.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="token"></param>
-        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true, token).ConfigureAwait(false);
@@ -371,7 +371,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         /// <param name="path">The path to the container resource.</param>
         /// <param name="token"></param>
-        public Task Post(string path, CancellationToken token = default(CancellationToken))
+        public Task Post(string path, CancellationToken token = default)
         {
             var uri = QualifyUri(path);
 
@@ -392,31 +392,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
         /// <param name="token"></param>
-        public Task Put<TResource>(string path, TResource resource, CancellationToken token = default(CancellationToken))
-        {
-            var uri = QualifyUri(path);
-
-            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false, token);
-        }
-
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the PUT verb.
-        /// </summary>
-        /// <exception cref="OctopusSecurityException">
-        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
-        /// account is disabled, or they don't have permission to perform the specified action.
-        /// </exception>
-        /// <exception cref="OctopusServerException">
-        /// If any other error is successfully returned from the server (e.g., a 500
-        /// server error).
-        /// </exception>
-        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
-        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="token"></param>
-        public Task Put(string path, CancellationToken token = default(CancellationToken))
+        public Task Put(string path, CancellationToken token = default)
         {
             var uri = QualifyUri(path);
 
@@ -431,7 +408,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="token"></param>
-        public Task Put<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public Task Put<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -445,7 +422,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="resource">An optional resource to pass as the body of the request.</param>
         /// <param name="token"></param>
-        public Task Delete(string path, object pathParameters = null, object resource = null, CancellationToken token = default(CancellationToken))
+        public Task Delete(string path, object pathParameters = null, object resource = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -464,7 +441,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
-        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -490,7 +467,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="token"></param>
         /// <returns>A stream containing the content of the resource.</returns>
-        public async Task<Stream> GetContent(string path, object pathParameters = null, CancellationToken token = default(CancellationToken))
+        public async Task<Stream> GetContent(string path, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true, token).ConfigureAwait(false);
@@ -503,7 +480,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the resource to create or update.</param>
         /// <param name="contentStream">A stream containing content of the resource.</param>
         /// <param name="token"></param>
-        public Task PutContent(string path, Stream contentStream, CancellationToken token = default(CancellationToken))
+        public Task PutContent(string path, Stream contentStream, CancellationToken token = default)
         {
             if (contentStream == null) throw new ArgumentNullException("contentStream");
             var uri = QualifyUri(path);
