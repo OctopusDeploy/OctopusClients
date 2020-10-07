@@ -14,6 +14,7 @@ namespace Octopus.Client.Model
 
         public string Name { get; set; }
         public string ActionType { get; set; }
+        public string Notes { get; set; }
         public bool IsDisabled { get; set; }
         public string WorkerPoolId { get; set; }
         public string WorkerPoolVariable { get; set; }
@@ -39,10 +40,10 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-        
+
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
-        
+        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection();
+
         public DeploymentActionCondition Condition { get; set; }
 
         public DeploymentActionResource ClearAllConditions()
