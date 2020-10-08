@@ -181,7 +181,7 @@ namespace Octopus.Client.Operations
 
             var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
-            var tenantsById = await repository.Tenants.Get(missing).ConfigureAwait(false);
+            var tenantsById = await repository.Tenants.Get(ids: missing).ConfigureAwait(false);
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
