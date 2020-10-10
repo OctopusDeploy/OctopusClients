@@ -17,9 +17,9 @@ namespace Octopus.Client.Editors.Async
 
         public RunbookProcessResource Instance { get; private set; }
 
-        public async Task<RunbookProcessEditor> Load(string id)
+        public async Task<RunbookProcessEditor> Load(string id, CancellationToken token = default)
         {
-            Instance = await repository.Get(id).ConfigureAwait(false);
+            Instance = await repository.Get(id, token).ConfigureAwait(false);
             return this;
         }
 
