@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="projects"></param>
         /// <param name="environments"></param>
         /// <param name="dashboardItemsOptions">options for DashboardResource Items property</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         Task<DashboardResource> GetDynamicDashboard(string[] projects, string[] environments, DashboardItemsOptions dashboardItemsOptions = DashboardItemsOptions.IncludeCurrentDeploymentOnly, CancellationToken token = default);
     }
 

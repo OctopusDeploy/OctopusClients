@@ -78,21 +78,21 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         Task ExecuteAsync(OctopusServerEndpoint serverEndpoint, CancellationToken token = default);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         Task ExecuteAsync(OctopusAsyncRepository repository, CancellationToken token = default);
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy repository.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken token = default);
     }
 }

@@ -144,7 +144,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
         public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken token = default)

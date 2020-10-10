@@ -137,7 +137,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="serverEndpoint">The Octopus Deploy server endpoint.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
         public async Task ExecuteAsync(OctopusServerEndpoint serverEndpoint, CancellationToken token = default)
@@ -154,7 +154,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
         public async Task ExecuteAsync(OctopusAsyncRepository repository, CancellationToken token = default)
@@ -166,7 +166,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <exception cref="System.ArgumentException">
         /// </exception>
         public abstract Task ExecuteAsync(IOctopusSpaceAsyncRepository repository, CancellationToken token = default);

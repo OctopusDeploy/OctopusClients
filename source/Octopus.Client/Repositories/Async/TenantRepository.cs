@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="name"></param>
         /// <param name="tags"></param>
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         public async Task<List<TenantResource>> FindAll(string name, string[] tags, int pageSize = int.MaxValue, CancellationToken token = default)
         {

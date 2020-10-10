@@ -25,7 +25,7 @@ namespace Octopus.Client.Repositories.Async
         /// Gets all the active tasks (optionally limited to pageSize)
         /// </summary>
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue, CancellationToken token = default);
         
@@ -34,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
         /// </summary>
         /// <param name="pageSize"></param>
         /// <param name="skip"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<TaskResourceCollection> GetActiveWithSummary(int pageSize = int.MaxValue, int skip = 0, CancellationToken token = default);
 
@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories.Async
         /// </summary>
         /// <param name="pageSize"></param>
         /// <param name="skip"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<TaskResourceCollection> GetAllWithSummary(int pageSize = int.MaxValue, int skip = 0, CancellationToken token = default);
         

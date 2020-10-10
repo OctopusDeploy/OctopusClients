@@ -226,7 +226,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <typeparam name="TResource"></typeparam>
         /// <param name="path">The path from which to fetch the resource.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>
         /// The resource from the server.
         /// </returns>
@@ -264,7 +264,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <typeparam name="TResource"></typeparam>
         /// <param name="path">The path from which to fetch the resources.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>
         /// The collection of resources from the server.
         /// </returns>
@@ -289,7 +289,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
         /// page will also be requested.
         /// </param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default)
         {
             var page = await List<TResource>(path, pathParameters, token).ConfigureAwait(false);
@@ -309,7 +309,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
         /// page will also be requested.
         /// </param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken token = default)
         {
             return Paginate(path, null, getNextPage, token);
@@ -323,7 +323,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
@@ -342,7 +342,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Post<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
@@ -358,7 +358,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to post.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
@@ -370,7 +370,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>
         /// <param name="path">The path to the container resource.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Post(string path, CancellationToken token = default)
         {
             var uri = QualifyUri(path);
@@ -392,7 +392,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the container resource.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Put(string path, CancellationToken token = default)
         {
             var uri = QualifyUri(path);
@@ -407,7 +407,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Put<TResource>(string path, TResource resource, object pathParameters = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
@@ -421,7 +421,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the resource to delete.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <param name="resource">An optional resource to pass as the body of the request.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task Delete(string path, object pathParameters = null, object resource = null, CancellationToken token = default)
         {
             var uri = QualifyUri(path, pathParameters);
@@ -437,7 +437,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <param name="path">The path to the resource to update.</param>
         /// <param name="resource">The resource to update.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>
         /// The latest copy of the resource from the server.
         /// </returns>
@@ -465,7 +465,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         /// <param name="path">The path to the resource to fetch.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>A stream containing the content of the resource.</returns>
         public async Task<Stream> GetContent(string path, object pathParameters = null, CancellationToken token = default)
         {
@@ -479,7 +479,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         /// <param name="path">The path to the resource to create or update.</param>
         /// <param name="contentStream">A stream containing content of the resource.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         public Task PutContent(string path, Stream contentStream, CancellationToken token = default)
         {
             if (contentStream == null) throw new ArgumentNullException("contentStream");

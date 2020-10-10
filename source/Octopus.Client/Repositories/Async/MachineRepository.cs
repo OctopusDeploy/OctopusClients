@@ -87,7 +87,7 @@ namespace Octopus.Client.Repositories.Async
         /// Gets all tasks involving the specified machine
         /// </summary>
         /// <param name="machine"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         public Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine, CancellationToken token = default) => GetTasks(machine, new {  skip = 0 }, token);
 
@@ -98,7 +98,7 @@ namespace Octopus.Client.Repositories.Async
         /// </summary>
         /// <param name="machine"></param>
         /// <param name="pathParameters"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         public async Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine, object pathParameters, CancellationToken token = default)
         {

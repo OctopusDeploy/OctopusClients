@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="environments"></param>
         /// <param name="skip">Number of records to skip</param>
         /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null, CancellationToken token = default);
         Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage, CancellationToken token = default);

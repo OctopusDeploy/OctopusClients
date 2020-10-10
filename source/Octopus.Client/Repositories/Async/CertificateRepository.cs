@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="format">The format of the exported certificate. If null, the certificate will be exported exactly as it was originally uploaded (including with original password).</param>
         /// <param name="password">Password for the exported file.  This value is only used if exporting to PCKS#12 or PEM formats.</param>
         /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.  This value is only be used when exporting to PEM format.</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>The exported certificate data.</returns>
         Task<Stream> Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false, CancellationToken token = default);
         
@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="certificate">The certificate to export.</param>
         /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.</param>
         /// <param name="pemOptions">Options specifying which certificates should be included when chain certificates are present</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>The exported certificate in PEM format</returns>
         Task<Stream> ExportAsPem(CertificateResource certificate, bool includePrivateKey = false, CertificateExportPemOptions pemOptions = CertificateExportPemOptions.PrimaryOnly, CancellationToken token = default);
 
@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="certificate">The certificate to be replaced</param>
         /// <param name="certificateData">The new base64-encoded certificate-data</param>
         /// <param name="password">The new password</param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns>The replaced certificate. The ReplacedBy property will contain the ID of the new certificate (which will be the previous ID of the replaced certificate).</returns>
         Task<CertificateResource> Replace(CertificateResource certificate, string certificateData, string password, CancellationToken token = default);
 

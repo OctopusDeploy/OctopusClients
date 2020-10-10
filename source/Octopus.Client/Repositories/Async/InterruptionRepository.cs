@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
         /// <param name="pendingOnly"></param>
         /// <param name="regardingDocumentId"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<ResourceCollection<InterruptionResource>> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null, CancellationToken token = default);
         Task Submit(InterruptionResource interruption, CancellationToken token = default);

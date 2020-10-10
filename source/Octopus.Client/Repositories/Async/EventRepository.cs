@@ -40,7 +40,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="documentTypes"></param>
         /// <param name="eventAgents"></param>
         /// <param name="projectGroups"></param>
-        /// <param name="token"></param>
+        /// <param name="token">A cancellation token</param>
         /// <returns></returns>
         Task<ResourceCollection<EventResource>> List(int skip = 0,
             int? take = null,
