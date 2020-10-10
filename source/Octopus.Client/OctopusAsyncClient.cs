@@ -296,7 +296,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             while (getNextPage(page) && page.Items.Count > 0 && page.HasLink("Page.Next"))
             {
-                page = await List<TResource>(page.Link("Page.Next")).ConfigureAwait(false);
+                page = await List<TResource>(page.Link("Page.Next"), token).ConfigureAwait(false);
             }
         }
 
