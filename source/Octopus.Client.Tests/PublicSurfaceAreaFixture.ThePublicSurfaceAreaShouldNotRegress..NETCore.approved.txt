@@ -1748,6 +1748,7 @@ Octopus.Client.Model
   {
     .ctor()
     String ApiKey { get; set; }
+    String ApiKeyHint { get; set; }
     DateTimeOffset Created { get; set; }
     String Purpose { get; set; }
     String UserId { get; set; }
