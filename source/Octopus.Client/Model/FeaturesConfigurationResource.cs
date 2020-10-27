@@ -18,11 +18,14 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string HelpSidebarSupportLink { get; set; }
-        
+
         [Writeable]
         public bool IsActionContainersEnabled { get; set; }
 
         [Writeable]
         public bool IsConfigurationAsCodeEnabled { get; set; }
+
+        [Writeable]
+        public bool IsImportExportEnabled { get; set; }
     }
 }
