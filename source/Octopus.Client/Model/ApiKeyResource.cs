@@ -10,6 +10,7 @@ namespace Octopus.Client.Model
 
         public string UserId { get; set; }
         public string ApiKey { get; set; }
+        public string ApiKeyMasked { get; set; }
         public string ApiKeyHint { get; set; }
         public DateTimeOffset Created { get; set; }
     }
