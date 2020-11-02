@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         SpaceResource[] GetSpaces(UserResource user);
-        ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null);
+        ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expiry = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResourceBase apiKey);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
@@ -96,12 +96,13 @@ namespace Octopus.Client.Repositories
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
-        public ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null)
+        public ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expiry = null)
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Post<object, ApiKeyCreatedResource>(user.Link("ApiKeys"), new
             {
-                Purpose = purpose ?? "Requested by Octopus.Client"
+                Purpose = purpose ?? "Requested by Octopus.Client",
+                Expiry = expiry
             });
         }
 

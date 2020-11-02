@@ -9,6 +9,7 @@ namespace Octopus.Client.Model
         public string Purpose { get; set; }
         public string UserId { get; set; }
         public DateTimeOffset Created { get; set; }
+        public DateTimeOffset? Expiry { get; set; }
     }
 
     public class ApiKeyResource : ApiKeyResourceBase
