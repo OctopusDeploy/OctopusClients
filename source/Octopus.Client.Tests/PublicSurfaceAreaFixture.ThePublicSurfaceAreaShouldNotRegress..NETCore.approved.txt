@@ -1763,7 +1763,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     DateTimeOffset Created { get; set; }
-    Nullable<DateTimeOffset> Expiry { get; set; }
+    Nullable<DateTimeOffset> Expires { get; set; }
     String Purpose { get; set; }
     String UserId { get; set; }
   }
