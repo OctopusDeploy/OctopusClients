@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
     {
         public bool HasValue { get; set; }
         public string NewValue { get; set; }
+        public string Hint { get; set; }
 
         public static implicit operator SensitiveValue(string newValue)
         {

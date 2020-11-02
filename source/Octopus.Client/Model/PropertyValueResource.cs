@@ -75,7 +75,8 @@ namespace Octopus.Client.Model
                                 new SensitiveValue
                                 {
                                     HasValue = jo.GetValue("HasValue")?.ToObject<bool>() ?? false,
-                                    NewValue = jo.GetValue("NewValue").ToObject<string>()
+                                    NewValue = jo.GetValue("NewValue").ToObject<string>(),
+                                    Hint = jo.GetValue("Hint")?.ToObject<string>()
                                 });
                         }
 
