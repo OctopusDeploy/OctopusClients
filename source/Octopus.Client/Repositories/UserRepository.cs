@@ -20,6 +20,16 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         SpaceResource[] GetSpaces(UserResource user);
+        /// <summary>
+        /// Creates a new API key for a user.
+        /// </summary>
+        /// <param name="user">The user to create the key for.</param>
+        /// <param name="purpose">The purpose of the API key.</param>
+        /// <param name="expires">The expiry date of the key. If null, the key will never expire.</param>
+        /// <returns>The newly created API key resource.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="user"/> was null.
+        /// </exception>
         ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResourceBase apiKey);
