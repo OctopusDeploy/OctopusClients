@@ -1779,6 +1779,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     DateTimeOffset Created { get; set; }
+    Nullable<DateTimeOffset> Expires { get; set; }
     String Purpose { get; set; }
     String UserId { get; set; }
   }
@@ -7208,7 +7209,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICreate<UserResource>
   {
     Octopus.Client.Model.UserResource Create(String, String, String, String)
-    Octopus.Client.Model.ApiKeyCreatedResource CreateApiKey(Octopus.Client.Model.UserResource, String)
+    Octopus.Client.Model.ApiKeyCreatedResource CreateApiKey(Octopus.Client.Model.UserResource, String, Nullable<DateTimeOffset>)
     Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
     Octopus.Client.Model.UserResource FindByUsername(String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -7949,7 +7950,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICreate<UserResource>
   {
     Task<UserResource> Create(String, String, String, String)
-    Task<ApiKeyCreatedResource> CreateApiKey(Octopus.Client.Model.UserResource, String)
+    Task<ApiKeyCreatedResource> CreateApiKey(Octopus.Client.Model.UserResource, String, Nullable<DateTimeOffset>)
     Task<UserResource> CreateServiceAccount(String, String)
     Task<UserResource> FindByUsername(String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)

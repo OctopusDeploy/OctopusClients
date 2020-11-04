@@ -20,7 +20,17 @@ namespace Octopus.Client.Repositories
         void SignOut();
         UserResource GetCurrent();
         SpaceResource[] GetSpaces(UserResource user);
-        ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null);
+        /// <summary>
+        /// Creates a new API key for a user.
+        /// </summary>
+        /// <param name="user">The user to create the key for.</param>
+        /// <param name="purpose">The purpose of the API key.</param>
+        /// <param name="expires">The expiry date of the key. If null, the key will never expire.</param>
+        /// <returns>The newly created API key resource.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="user"/> was null.
+        /// </exception>
+        ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResourceBase apiKey);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
@@ -96,12 +106,13 @@ namespace Octopus.Client.Repositories
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
         }
 
-        public ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null)
+        public ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null)
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Post<object, ApiKeyCreatedResource>(user.Link("ApiKeys"), new
             {
-                Purpose = purpose ?? "Requested by Octopus.Client"
+                Purpose = purpose ?? "Requested by Octopus.Client",
+                Expires = expires
             });
         }
 
