@@ -6906,6 +6906,7 @@ Octopus.Client.Repositories
   }
   interface IProjectBetaRepository
   {
+    void ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.VersionControlBranchResource[] GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
