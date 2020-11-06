@@ -127,15 +127,16 @@ namespace Octopus.Client.Repositories
     {
         VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
+        void ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
     }
 
-    class ProjectBetaRepository : IProjectBetaRepository
+    internal class ProjectBetaRepository : IProjectBetaRepository
     {
         private readonly IOctopusClient client;
 
         public ProjectBetaRepository(IOctopusRepository repository)
         {
-            this.client = repository.Client;
+            client = repository.Client;
         }
 
         public VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource)
@@ -145,7 +146,19 @@ namespace Octopus.Client.Repositories
 
         public VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch)
         {
-            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
+            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new {name = branch});
+        }
+
+        public void ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage)
+        {
+            var payload = new CommitResource<VersionControlSettingsResource>
+            {
+                Resource = versionControlSettings,
+                CommitMessage = commitMessage
+            };
+
+            var url = project.Link("ConvertToVcs");
+            client.Post(url, payload);
         }
     }
 }
