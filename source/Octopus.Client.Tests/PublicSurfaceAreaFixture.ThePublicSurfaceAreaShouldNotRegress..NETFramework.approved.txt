@@ -7672,6 +7672,7 @@ Octopus.Client.Repositories.Async
   }
   interface IProjectBetaRepository
   {
+    Task ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
     Task<VersionControlBranchResource[]> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
