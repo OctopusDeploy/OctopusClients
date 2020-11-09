@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Model.VersionControl;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -128,7 +129,7 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
-        Task ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
@@ -150,17 +151,18 @@ namespace Octopus.Client.Repositories.Async
             return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
         }
 
-        public async Task ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings,
+        public async Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings,
             string commitMessage)
         {
-            var payload = new CommitResource<VersionControlSettingsResource>
+            var payload = new ConvertProjectToVersionControlledCommand
             {
-                Resource = versionControlSettings,
+                VersionControlSettings = versionControlSettings,
                 CommitMessage = commitMessage
             };
 
             var url = project.Link("ConvertToVcs");
-            await client.Post(url, payload);
+            var response = await client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
+            return response;
         }
     }
 }

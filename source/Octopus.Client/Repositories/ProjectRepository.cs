@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
+using Octopus.Client.Model.VersionControl;
 
 namespace Octopus.Client.Repositories
 {
@@ -127,7 +128,7 @@ namespace Octopus.Client.Repositories
     {
         VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
-        void ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
     }
 
     internal class ProjectBetaRepository : IProjectBetaRepository
@@ -149,16 +150,20 @@ namespace Octopus.Client.Repositories
             return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new {name = branch});
         }
 
-        public void ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage)
+        public ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project,
+            VersionControlSettingsResource versionControlSettings, string commitMessage)
         {
-            var payload = new CommitResource<VersionControlSettingsResource>
+            var payload = new ConvertProjectToVersionControlledCommand
             {
-                Resource = versionControlSettings,
+                VersionControlSettings = versionControlSettings,
                 CommitMessage = commitMessage
             };
 
             var url = project.Link("ConvertToVcs");
-            client.Post(url, payload);
+            var response =
+                client.Post<ConvertProjectToVersionControlledCommand, ConvertProjectToVersionControlledResponse>(url,
+                    payload);
+            return response;
         }
     }
 }
