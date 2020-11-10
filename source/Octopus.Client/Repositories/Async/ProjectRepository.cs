@@ -126,7 +126,7 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IProjectBetaRepository
     {
-        Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource);
+        Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
     }
 
@@ -136,12 +136,12 @@ namespace Octopus.Client.Repositories.Async
 
         public ProjectBetaRepository(IOctopusAsyncRepository repository)
         {
-            this.client = repository.Client;
+            client = repository.Client;
         }
 
-        public Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource)
+        public Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource)
         {
-            return client.Get<VersionControlBranchResource[]>(projectResource.Link("Branches"));
+            return client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
         }
 
         public Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch)

@@ -5295,12 +5295,12 @@ Octopus.Client.Model
     String Name { get; set; }
   }
   class VersionControlBranchResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor(String)
-    Octopus.Client.Extensibility.LinkCollection Links { get; }
     String Name { get; }
-    String Link(String)
-    void WithLinks(Octopus.Client.Extensibility.LinkCollection)
   }
   class VersionControlSettingsResource
   {
@@ -6907,7 +6907,7 @@ Octopus.Client.Repositories
   interface IProjectBetaRepository
   {
     Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.VersionControlBranchResource[] GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
@@ -7647,7 +7647,7 @@ Octopus.Client.Repositories.Async
   interface IProjectBetaRepository
   {
     Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Task<VersionControlBranchResource[]> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
+    Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>

@@ -125,7 +125,7 @@ namespace Octopus.Client.Repositories
 
     public interface IProjectBetaRepository
     {
-        VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource);
+        ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
     }
 
@@ -138,9 +138,9 @@ namespace Octopus.Client.Repositories
             this.client = repository.Client;
         }
 
-        public VersionControlBranchResource[] GetVersionControlledBranches(ProjectResource projectResource)
+        public ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource)
         {
-            return client.Get<VersionControlBranchResource[]>(projectResource.Link("Branches"));
+            return client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
         }
 
         public VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch)
