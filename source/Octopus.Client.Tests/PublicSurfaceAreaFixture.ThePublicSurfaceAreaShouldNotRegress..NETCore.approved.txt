@@ -6380,6 +6380,16 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
 }
 Octopus.Client.Model.VersionControl
 {
+  class ConvertProjectToVersionControlledCommand
+  {
+    .ctor()
+    String CommitMessage { get; set; }
+    Octopus.Client.Model.VersionControlSettingsResource VersionControlSettings { get; set; }
+  }
+  class ConvertProjectToVersionControlledResponse
+  {
+    .ctor()
+  }
   class VersionControlReferenceResource
   {
     .ctor()
@@ -6906,6 +6916,7 @@ Octopus.Client.Repositories
   }
   interface IProjectBetaRepository
   {
+    Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.VersionControlBranchResource[] GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
@@ -7646,6 +7657,7 @@ Octopus.Client.Repositories.Async
   }
   interface IProjectBetaRepository
   {
+    Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
     Task<VersionControlBranchResource[]> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }

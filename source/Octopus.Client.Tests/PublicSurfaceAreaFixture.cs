@@ -28,9 +28,9 @@ namespace Octopus.Client.Tests
             var framework = string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
             try
             {
-                var recieved = string.Join("\r\n", lines);
+                var received = string.Join("\r\n", lines);
                 this.Assent(
-                    recieved,
+                    received,
                     new Configuration().UsingNamer(new PostfixNamer(framework))
                 );
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Model.VersionControl;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -128,6 +129,7 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<VersionControlBranchResource[]> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
+        Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
@@ -147,6 +149,20 @@ namespace Octopus.Client.Repositories.Async
         public Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch)
         {
             return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
+        }
+
+        public async Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings,
+            string commitMessage)
+        {
+            var payload = new ConvertProjectToVersionControlledCommand
+            {
+                VersionControlSettings = versionControlSettings,
+                CommitMessage = commitMessage
+            };
+
+            var url = project.Link("ConvertToVcs");
+            var response = await client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
+            return response;
         }
     }
 }
