@@ -5305,6 +5305,7 @@ Octopus.Client.Model
   class VersionControlSettingsResource
   {
     .ctor()
+    String BasePath { get; set; }
     String DefaultBranch { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Url { get; set; }
