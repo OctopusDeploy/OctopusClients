@@ -12,5 +12,7 @@ namespace Octopus.Client.Model
         public SensitiveValue Password { get; set; } = new SensitiveValue();
         [Writeable]
         public string DefaultBranch { get; set; }
+        [Writeable]
+        public string BasePath { get; set; }
     }
 }
