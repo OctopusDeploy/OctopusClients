@@ -6388,6 +6388,25 @@ Octopus.Client.Model.VersionControl
     Octopus.Client.Model.VersionControlSettingsResource VersionControlSettings { get; set; }
   }
   class ConvertProjectToVersionControlledResponse
+    Octopus.Client.Model.VersionControl.IHaveCustomerVisibleMessages
+  {
+    .ctor()
+    Octopus.Client.Model.VersionControl.MessageCollection Messages { get; }
+  }
+  interface IHaveCustomerVisibleMessages
+  {
+    Octopus.Client.Model.VersionControl.MessageCollection Messages { get; }
+  }
+  class MessageCollection
+    IList<String>
+    ICollection<String>
+    IEnumerable<String>
+    IEnumerable
+    IList
+    ICollection
+    IReadOnlyList<String>
+    IReadOnlyCollection<String>
+    List<String>
   {
     .ctor()
   }
