@@ -66,9 +66,8 @@ namespace Octopus.Client
             if (string.IsNullOrWhiteSpace(octopusServerAddress))
                 throw new ArgumentException("An Octopus Server URI was not specified.");
 
-            Uri uri;
-            if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out uri) || !uri.Scheme.StartsWith("http"))
-                throw new ArgumentException("The Octopus Server URI given was invalid. The URI should start with http:// or https:// and be a valid URI.");
+            if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out var uri) || !uri.Scheme.StartsWith("http"))
+                throw new ArgumentException($"The Octopus Server URI '{octopusServerAddress}' is invalid. The URI should start with http:// or https:// and be a valid URI.");
 
             octopusServer = new DefaultLinkResolver(new Uri(octopusServerAddress));
             this.apiKey = apiKey;
@@ -108,7 +107,7 @@ namespace Octopus.Client
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => octopusServer.IsUsingSecureConnection;
-        
+
         /// <summary>
         /// Gets the API key to use when connecting to the Octopus Server. For more information on API keys, please see the API
         /// documentation on authentication
