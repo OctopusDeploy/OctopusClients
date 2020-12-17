@@ -12,7 +12,6 @@ namespace Octopus.Client.Repositories.Async
         IGet<SpaceResource>
     {
         Task SetLogo(SpaceResource space, string fileName, Stream contents);
-        Task<SpaceSearchResult[]> Search(SpaceResource space, string keyword);
         Task<SpaceSearchResult[]> Search(string spaceId, string keyword);
     }
 
@@ -27,14 +26,9 @@ namespace Octopus.Client.Repositories.Async
             return Client.Post(space.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
         }
 
-        public async Task<SpaceSearchResult[]> Search(SpaceResource space, string keyword)
-        {
-            return await Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { id = space.Id, Keyword = keyword }).ConfigureAwait(false);
-        }
-
         public async Task<SpaceSearchResult[]> Search(string spaceId, string keyword)
         {
-            return await Client.Get<SpaceSearchResult[]>(await Repository.Link("SpaceSearch").ConfigureAwait(false), new { id = spaceId, Keyword = keyword }).ConfigureAwait(false);
+            return await Client.Get<SpaceSearchResult[]>(await Repository.Link("SpaceSearch").ConfigureAwait(false), new { id = spaceId, keyword }).ConfigureAwait(false);
         }
     }
 }

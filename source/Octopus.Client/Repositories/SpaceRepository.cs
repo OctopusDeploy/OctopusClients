@@ -11,7 +11,6 @@ namespace Octopus.Client.Repositories
         IGet<SpaceResource>
     {
         void SetLogo(SpaceResource space, string fileName, Stream contents);
-        SpaceSearchResult[] Search(SpaceResource space, string keyword);
         SpaceSearchResult[] Search(string spaceId, string keyword);
     }
 
@@ -26,14 +25,9 @@ namespace Octopus.Client.Repositories
             Client.Post(space.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
         }
 
-        public SpaceSearchResult[] Search(SpaceResource space, string keyword)
-        {
-            return Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { id = space.Id, Keyword = keyword });
-        }
-
         public SpaceSearchResult[] Search(string spaceId, string keyword)
         {
-            return Client.Get<SpaceSearchResult[]>(Repository.Link("SpaceSearch"), new { id = spaceId, Keyword = keyword });
+            return Client.Get<SpaceSearchResult[]>(Repository.Link("SpaceSearch"), new { id = spaceId, keyword });
         }
     }
 }
