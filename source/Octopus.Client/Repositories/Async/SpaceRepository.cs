@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<SpaceSearchResult[]> Search(SpaceResource space, string keyword)
         {
-            return await Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { Keyword = keyword });
+            return await Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { Keyword = keyword }).ConfigureAwait(false);
         }
 
         public async Task<SpaceSearchResult[]> Search(string spaceId, string keyword)
