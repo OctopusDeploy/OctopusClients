@@ -7109,7 +7109,6 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<SpaceResource>
     Octopus.Client.Repositories.IGet<SpaceResource>
   {
-    Octopus.Client.Model.SpaceSearchResult[] Search(Octopus.Client.Model.SpaceResource, String)
     Octopus.Client.Model.SpaceSearchResult[] Search(String, String)
     void SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
   }
@@ -7852,7 +7851,6 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<SpaceResource>
     Octopus.Client.Repositories.Async.IGet<SpaceResource>
   {
-    Task<SpaceSearchResult[]> Search(Octopus.Client.Model.SpaceResource, String)
     Task<SpaceSearchResult[]> Search(String, String)
     Task SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
   }
