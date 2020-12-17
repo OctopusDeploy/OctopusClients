@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories
 
         public SpaceSearchResult[] Search(SpaceResource space, string keyword)
         {
-            return Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { Keyword = keyword });
+            return Client.Get<SpaceSearchResult[]>(space.Link("Search"), new { id = space.Id, Keyword = keyword });
         }
 
         public SpaceSearchResult[] Search(string spaceId, string keyword)
