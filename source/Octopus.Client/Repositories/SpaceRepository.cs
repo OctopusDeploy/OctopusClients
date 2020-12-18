@@ -1,5 +1,4 @@
 ﻿using System.IO;
-
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -12,6 +11,7 @@ namespace Octopus.Client.Repositories
         IGet<SpaceResource>
     {
         void SetLogo(SpaceResource space, string fileName, Stream contents);
+        SpaceSearchResult[] Search(string spaceId, string keyword);
     }
 
     class SpaceRepository : BasicRepository<SpaceResource>, ISpaceRepository
@@ -23,6 +23,11 @@ namespace Octopus.Client.Repositories
         public void SetLogo(SpaceResource space, string fileName, Stream contents)
         {
             Client.Post(space.Link("Logo"), new FileUpload { Contents = contents, FileName = fileName }, false);
+        }
+
+        public SpaceSearchResult[] Search(string spaceId, string keyword)
+        {
+            return Client.Get<SpaceSearchResult[]>(Repository.Link("SpaceSearch"), new { id = spaceId, keyword });
         }
     }
 }
