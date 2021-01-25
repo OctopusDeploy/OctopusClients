@@ -224,7 +224,7 @@ namespace Octopus.Client
             var uri = QualifyUri(path, pathParameters);
 
             var response = DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true);
-            return Get<TResource>(response.Location);
+            return response.ResponseResource;
         }
 
         /// <summary>
@@ -352,8 +352,8 @@ namespace Octopus.Client
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
-            return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
+            var response = DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true);
+            return response.ResponseResource;
         }
 
         /// <summary>
