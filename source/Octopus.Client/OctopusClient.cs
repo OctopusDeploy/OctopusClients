@@ -480,15 +480,9 @@ namespace Octopus.Client
 
         private T ReadResponse<T>(HttpResponseMessage response)
         {
-            return default(T) switch
-            {
-                Stream => GetStream(response.Content),
-                byte[] => GetByteArray(response.Content),
-                string => GetString(response.Content),
-                _ => GetJson(response.Content)
-            };
+            var content = response.Content;
 
-            static T GetStream(HttpContent content)
+            if (typeof(T) == typeof(Stream))
             {
                 var stream = new MemoryStream();
                 content.CopyToAsync(stream).GetAwaiter().GetResult();
@@ -496,29 +490,21 @@ namespace Octopus.Client
                 return (T)(object)stream;
             }
 
-            static T GetByteArray(HttpContent content)
-            {
-                return (T)(object)content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-            }
+            if (typeof(T) == typeof(byte[]))
+                return (T) (object) content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
 
-            static T GetString(HttpContent content)
-            {
-                var str = content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var str = content.ReadAsStringAsync().GetAwaiter().GetResult();
+            if (typeof(T) == typeof(string))
                 return (T)(object)str;
-            }
 
-            T GetJson(HttpContent content)
+            try
             {
-                var str = content.ReadAsStringAsync().GetAwaiter().GetResult();
-                try
-                {
-                    return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
-                }
-                catch (Exception ex)
-                {
-                    throw new OctopusDeserializationException((int)response.StatusCode,
-                        $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
-                }
+                return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
+            }
+            catch (Exception ex)
+            {
+                throw new OctopusDeserializationException((int)response.StatusCode,
+                    $"Unable to process response from server: {ex.Message}. Response content: {(str.Length > 1000 ? str.Substring(0, 1000) : str)}", ex);
             }
         }
 
