@@ -439,9 +439,9 @@ namespace Octopus.Client
                 }
             }
 
-            SendingOctopusRequest?.Invoke(request);
+            OnSendingOctopusRequest(request);
 
-            BeforeSendingHttpRequest?.Invoke(webRequest);
+            OnBeforeSendingHttpRequest(requestMessage);
 
             HttpWebResponse webResponse = null;
 
@@ -500,7 +500,7 @@ namespace Octopus.Client
                 Logger.Trace($"DispatchRequest: {webRequest.Method} {webRequest.RequestUri}");
 
                 webResponse = (HttpWebResponse)webRequest.GetResponse();
-                AfterReceivingHttpResponse?.Invoke(webResponse);
+                OnAfterReceivingHttpResponse(response);
 
                 var resource = default(TResponseResource);
                 if (readResponse)
@@ -548,7 +548,7 @@ namespace Octopus.Client
 
                 var locationHeader = webResponse.Headers.Get("Location");
                 var octopusResponse = new OctopusResponse<TResponseResource>(request, webResponse.StatusCode, locationHeader, resource);
-                ReceivedOctopusResponse?.Invoke(octopusResponse);
+                OnReceivedOctopusResponse(octopusResponse);
 
                 return octopusResponse;
             }
@@ -576,6 +576,14 @@ namespace Octopus.Client
                 }
             }
         }
+
+        protected virtual void OnBeforeSendingHttpRequest(WebRequest request) => BeforeSendingHttpRequest?.Invoke(request);
+
+        protected virtual void OnAfterReceivingHttpResponse(WebResponse response) => AfterReceivingHttpResponse?.Invoke(response);
+
+        protected virtual void OnSendingOctopusRequest(OctopusRequest request) => SendingOctopusRequest?.Invoke(request);
+
+        protected virtual void OnReceivedOctopusResponse(OctopusResponse response) => ReceivedOctopusResponse?.Invoke(response);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
