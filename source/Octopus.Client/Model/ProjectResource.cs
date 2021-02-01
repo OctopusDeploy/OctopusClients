@@ -17,9 +17,13 @@ namespace Octopus.Client.Model
 
         public ProjectResource()
         {
+#pragma warning disable 618
             IncludedLibraryVariableSetIds = new List<string>();
+#pragma warning restore 618
             Templates = new List<ActionTemplateParameterResource>();
+#pragma warning disable 618
             ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
+#pragma warning restore 618
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
             PersistenceSettings = new DatabasePersistenceSettingsResource();
@@ -118,7 +122,7 @@ namespace Octopus.Client.Model
         [Writeable]
         [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public string ReleaseNotesTemplate { get; set; }
-        
+
         [Writeable]
         [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public string DeploymentChangesTemplate { get; set; }
@@ -179,9 +183,13 @@ namespace Octopus.Client.Model
 
             foreach (var set in libraryVariableSets)
             {
+#pragma warning disable 618
                 if (!IncludedLibraryVariableSetIds.Contains(set.Id))
+#pragma warning restore 618
                 {
+#pragma warning disable 618
                     IncludedLibraryVariableSetIds.Add(set.Id);
+#pragma warning restore 618
                 }
             }
 
