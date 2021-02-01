@@ -2528,6 +2528,14 @@ Octopus.Client.Model
       Approved = 0
       Rejected = 1
   }
+  class DeploymentConnectivityPolicy
+  {
+    .ctor()
+    Boolean AllowDeploymentsToNoTargets { get; set; }
+    Boolean ExcludeUnhealthyTargets { get; set; }
+    Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
+    Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
+  }
   class DeploymentPreviewBaseResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2626,9 +2634,9 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
-    String DefaultToSkipIfAlreadyInstalled { get; set; }
+    Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
     String ProjectId { get; set; }
     String ReleaseNotesTemplate { get; set; }
@@ -3986,14 +3994,6 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
   }
-  class ProjectConnectivityPolicy
-  {
-    .ctor()
-    Boolean AllowDeploymentsToNoTargets { get; set; }
-    Boolean ExcludeUnhealthyTargets { get; set; }
-    Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
-    Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
-  }
   class ProjectedTeamReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem
   {
@@ -4042,7 +4042,7 @@ Octopus.Client.Model
     String LifecycleId { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
-    Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
     String ReleaseNotesTemplate { get; set; }
@@ -4372,7 +4372,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
@@ -5342,7 +5342,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }

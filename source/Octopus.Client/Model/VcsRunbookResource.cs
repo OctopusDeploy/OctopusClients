@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         public TenantedDeploymentMode MultiTenancyMode { get; set; }
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
+        public DeploymentConnectivityPolicy ConnectivityPolicy { get; set; } = new DeploymentConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
 
         public RunbookEnvironmentScope EnvironmentScope { get; set; }
 

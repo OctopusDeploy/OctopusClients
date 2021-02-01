@@ -22,7 +22,7 @@ namespace Octopus.Client.Model
 #pragma warning restore 618
             Templates = new List<ActionTemplateParameterResource>();
 #pragma warning disable 618
-            ProjectConnectivityPolicy = new ProjectConnectivityPolicy();
+            ProjectConnectivityPolicy = new DeploymentConnectivityPolicy();
 #pragma warning restore 618
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);

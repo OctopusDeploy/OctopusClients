@@ -30,7 +30,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
+        public DeploymentConnectivityPolicy ConnectivityPolicy { get; set; } = new DeploymentConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
 
         [Writeable]
         public RunbookEnvironmentScope EnvironmentScope { get; set; }

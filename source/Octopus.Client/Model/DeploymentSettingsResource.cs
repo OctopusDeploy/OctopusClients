@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public ProjectConnectivityPolicy ConnectivityPolicy { get; set; } = new ProjectConnectivityPolicy { AllowDeploymentsToNoTargets = false };
+        public DeploymentConnectivityPolicy ConnectivityPolicy { get; set; } = new DeploymentConnectivityPolicy { AllowDeploymentsToNoTargets = false };
 
         [Writeable]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
