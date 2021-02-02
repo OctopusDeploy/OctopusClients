@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -71,6 +71,7 @@ namespace Octopus.Client
             Dashboards = new DashboardRepository(this);
             Defects = new DefectsRepository(this);
             DeploymentProcesses = new DeploymentProcessRepository(this);
+            DeploymentSettings = new DeploymentSettingsRepository(this);
             Deployments = new DeploymentRepository(this);
             Environments = new EnvironmentRepository(this);
             Events = new EventRepository(this);
@@ -139,6 +140,7 @@ namespace Octopus.Client
         public IDashboardRepository Dashboards { get; }
         public IDefectsRepository Defects { get; }
         public IDeploymentProcessRepository DeploymentProcesses { get; }
+        public IDeploymentSettingsRepository DeploymentSettings { get; }
         public IDeploymentRepository Deployments { get; }
         public IEnvironmentRepository Environments { get; }
         public IEventRepository Events { get; }

@@ -146,6 +146,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
@@ -318,6 +319,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -7605,6 +7607,15 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> GetTask(Octopus.Client.Model.DeploymentResource)
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+  }
+  interface IDeploymentSettingsBetaRepository
+  {
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+  }
+  interface IDeploymentSettingsRepository
+  {
+    Octopus.Client.Repositories.Async.IDeploymentSettingsBetaRepository Beta()
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
