@@ -4040,6 +4040,7 @@ Octopus.Client.Model
     Boolean IsVersionControlled { get; set; }
     String LifecycleId { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
     Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
@@ -4049,7 +4050,6 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     String VariableSetId { get; set; }
-    Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
     Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.ReleaseResource)
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.TenantResource, Octopus.Client.Model.ReleaseResource)
