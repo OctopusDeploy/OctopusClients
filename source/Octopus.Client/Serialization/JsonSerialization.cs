@@ -31,7 +31,9 @@ namespace Octopus.Client.Serialization
                     new PropertyValueResource.PropertyValueJsonConverter(),
                     new TriggerActionConverter(),
                     new TriggerFilterConverter(),
-                    new EndpointWithMultipleAuthenticationConverter()
+                    new EndpointWithMultipleAuthenticationConverter(),
+                    new PersistenceSettingsConverter(),
+                    new VersionControlSettingsConverter()
                 }
             };
         }
