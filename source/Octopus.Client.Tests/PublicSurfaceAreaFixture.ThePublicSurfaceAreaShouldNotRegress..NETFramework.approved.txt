@@ -8183,6 +8183,11 @@ Octopus.Client.Serialization
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)
   }
+  class PersistenceSettingsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<PersistenceSettingsResource, PersistenceSettingsType>
+  {
+    .ctor()
+  }
   abstract class Serializer
   {
     static Object Deserialize(String)
@@ -8196,6 +8201,11 @@ Octopus.Client.Serialization
   }
   class TriggerFilterConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
+  {
+    .ctor()
+  }
+  class VersionControlSettingsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<VersionControlCredentialsResource, VersionControlCredentialsType>
   {
     .ctor()
   }
