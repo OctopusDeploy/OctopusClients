@@ -191,6 +191,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
@@ -447,6 +448,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IEventRepository Events { get; }
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -2630,6 +2632,22 @@ Octopus.Client.Model
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
+  }
+  class DeploymentSettingsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+    String DefaultToSkipIfAlreadyInstalled { get; set; }
+    String DeploymentChangesTemplate { get; set; }
+    String ProjectId { get; set; }
+    String ReleaseNotesTemplate { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
   }
   DeploymentStepCondition
   {
@@ -6835,6 +6853,15 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.DeploymentResource)
     void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+  }
+  interface IDeploymentSettingsBetaRepository
+  {
+    Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+  }
+  interface IDeploymentSettingsRepository
+  {
+    Octopus.Client.Repositories.IDeploymentSettingsBetaRepository Beta()
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindByName<EnvironmentResource>

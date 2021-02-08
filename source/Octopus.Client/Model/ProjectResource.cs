@@ -84,18 +84,22 @@ namespace Octopus.Client.Model
         /// with the same name and scope definition appearing later in the list.
         /// </summary>
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public List<string> IncludedLibraryVariableSetIds { get; set; }
 
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public bool DefaultToSkipIfAlreadyInstalled { get; set; }
 
         [Writeable]
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
 
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public VersioningStrategyResource VersioningStrategy { get; set; }
 
         [Writeable]
@@ -105,15 +109,18 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(Order = 45, ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
+        public DeploymentConnectivityPolicy ProjectConnectivityPolicy { get; set; }
 
         [Writeable]
         public ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
 
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public string ReleaseNotesTemplate { get; set; }
         
         [Writeable]
+        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public string DeploymentChangesTemplate { get; set; }
 
         public ProjectResource Clear()
