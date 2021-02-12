@@ -35,6 +35,7 @@ namespace Octopus.Client.Editors
         {
             var channel = repository.FindByName(owner, name);
             if (channel != null) repository.Delete(channel);
+            trackedChannelBuilders.RemoveAll(x => x.Instance.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             return this;
         }
 
