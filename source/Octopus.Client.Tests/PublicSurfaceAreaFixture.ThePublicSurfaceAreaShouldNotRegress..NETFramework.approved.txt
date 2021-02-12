@@ -1745,6 +1745,12 @@ Octopus.Client.Model
   {
     .ctor()
   }
+  class AnonymousVersionControlCredentialsResource
+    Octopus.Client.Model.VersionControlCredentialsResource
+  {
+    .ctor()
+    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+  }
   class ApiConstants
   {
     static System.String AntiforgeryTokenCookiePrefix
@@ -2414,6 +2420,12 @@ Octopus.Client.Model
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
+  }
+  class DatabasePersistenceSettingsResource
+    Octopus.Client.Model.PersistenceSettingsResource
+  {
+    .ctor()
+    Octopus.Client.Model.PersistenceSettingsType Type { get; }
   }
   DaysOfWeek
   {
@@ -3892,6 +3904,15 @@ Octopus.Client.Model
     static System.String Projects
     static System.String Tenants
   }
+  abstract class PersistenceSettingsResource
+  {
+    Octopus.Client.Model.PersistenceSettingsType Type { get; }
+  }
+  PersistenceSettingsType
+  {
+      Database = 0
+      VersionControlled = 1
+  }
   class PhaseDeploymentResource
   {
     .ctor()
@@ -4019,6 +4040,7 @@ Octopus.Client.Model
     Boolean IsVersionControlled { get; set; }
     String LifecycleId { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
     Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
@@ -4028,7 +4050,6 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentMode { get; set; }
     String VariableSetId { get; set; }
-    Octopus.Client.Model.VersionControlSettingsResource VersionControlSettings { get; set; }
     Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.ReleaseResource)
     void AddAutoDeployReleaseOverride(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.TenantResource, Octopus.Client.Model.ReleaseResource)
@@ -5166,6 +5187,14 @@ Octopus.Client.Model
       ShowOnlyMajorMinor = 1
       NeverShow = 2
   }
+  class UsernamePasswordVersionControlCredentialsResource
+    Octopus.Client.Model.VersionControlCredentialsResource
+  {
+    .ctor()
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+    String Username { get; set; }
+  }
   class UserPermissionRestriction
   {
     .ctor()
@@ -5333,14 +5362,24 @@ Octopus.Client.Model
     .ctor(String)
     String Name { get; }
   }
+  abstract class VersionControlCredentialsResource
+  {
+    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+  }
+  VersionControlCredentialsType
+  {
+      Anonymous = 0
+      UsernamePassword = 1
+  }
   class VersionControlSettingsResource
+    Octopus.Client.Model.PersistenceSettingsResource
   {
     .ctor()
     String BasePath { get; set; }
+    Octopus.Client.Model.VersionControlCredentialsResource Credentials { get; set; }
     String DefaultBranch { get; set; }
-    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
-    String Username { get; set; }
   }
   class VersioningStrategyResource
   {
@@ -8144,6 +8183,11 @@ Octopus.Client.Serialization
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)
   }
+  class PersistenceSettingsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<PersistenceSettingsResource, PersistenceSettingsType>
+  {
+    .ctor()
+  }
   abstract class Serializer
   {
     static Object Deserialize(String)
@@ -8157,6 +8201,11 @@ Octopus.Client.Serialization
   }
   class TriggerFilterConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
+  {
+    .ctor()
+  }
+  class VersionControlSettingsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<VersionControlCredentialsResource, VersionControlCredentialsType>
   {
     .ctor()
   }
