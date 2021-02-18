@@ -6,7 +6,7 @@
         SkipUnavailableMachines
     }
 
-    public class ProjectConnectivityPolicy
+    public class DeploymentConnectivityPolicy
     {
         public SkipMachineBehavior SkipMachineBehavior { get; set; }
         public ReferenceCollection TargetRoles { get; set; }
@@ -15,7 +15,7 @@
 
         public bool ExcludeUnhealthyTargets { get; set; }
 
-        public ProjectConnectivityPolicy()
+        public DeploymentConnectivityPolicy()
         {
             TargetRoles = new ReferenceCollection();
         }

@@ -146,6 +146,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
@@ -191,6 +192,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
@@ -317,6 +319,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -447,6 +450,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
+    Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IEventRepository Events { get; }
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -2540,6 +2544,14 @@ Octopus.Client.Model
       Approved = 0
       Rejected = 1
   }
+  class DeploymentConnectivityPolicy
+  {
+    .ctor()
+    Boolean AllowDeploymentsToNoTargets { get; set; }
+    Boolean ExcludeUnhealthyTargets { get; set; }
+    Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
+    Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
+  }
   class DeploymentPreviewBaseResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2630,6 +2642,22 @@ Octopus.Client.Model
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
+  }
+  class DeploymentSettingsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+    Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
+    String DeploymentChangesTemplate { get; set; }
+    String ProjectId { get; set; }
+    String ReleaseNotesTemplate { get; set; }
+    String SpaceId { get; set; }
+    Octopus.Client.Model.VersioningStrategyResource VersioningStrategy { get; set; }
   }
   DeploymentStepCondition
   {
@@ -3985,14 +4013,6 @@ Octopus.Client.Model
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
   }
-  class ProjectConnectivityPolicy
-  {
-    .ctor()
-    Boolean AllowDeploymentsToNoTargets { get; set; }
-    Boolean ExcludeUnhealthyTargets { get; set; }
-    Octopus.Client.Model.SkipMachineBehavior SkipMachineBehavior { get; set; }
-    Octopus.Client.Model.ReferenceCollection TargetRoles { get; set; }
-  }
   class ProjectedTeamReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem
   {
@@ -4041,7 +4061,7 @@ Octopus.Client.Model
     String LifecycleId { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
-    Octopus.Client.Model.ProjectConnectivityPolicy ProjectConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
     String ReleaseNotesTemplate { get; set; }
@@ -4371,7 +4391,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
@@ -5346,7 +5366,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.ProjectConnectivityPolicy ConnectivityPolicy { get; set; }
+    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
@@ -6836,6 +6856,15 @@ Octopus.Client.Repositories
     void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
   }
+  interface IDeploymentSettingsBetaRepository
+  {
+    Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+  }
+  interface IDeploymentSettingsRepository
+  {
+    Octopus.Client.Repositories.IDeploymentSettingsBetaRepository Beta()
+  }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindByName<EnvironmentResource>
     Octopus.Client.Repositories.IPaginate<EnvironmentResource>
@@ -7578,6 +7607,15 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> GetTask(Octopus.Client.Model.DeploymentResource)
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
+  }
+  interface IDeploymentSettingsBetaRepository
+  {
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+  }
+  interface IDeploymentSettingsRepository
+  {
+    Octopus.Client.Repositories.Async.IDeploymentSettingsBetaRepository Beta()
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>

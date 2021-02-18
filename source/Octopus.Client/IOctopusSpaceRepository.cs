@@ -23,6 +23,7 @@ namespace Octopus.Client
         IDashboardRepository Dashboards { get; }
         IDefectsRepository Defects { get; }
         IDeploymentProcessRepository DeploymentProcesses { get; }
+        IDeploymentSettingsRepository DeploymentSettings { get; }
         IDeploymentRepository Deployments { get; }
         IEnvironmentRepository Environments { get; }
         IFeedRepository Feeds { get; }
