@@ -2940,7 +2940,6 @@ Octopus.Client.Model
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsConfigurationAsCodeEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
-    Boolean IsImportExportEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
   }
   class FeedResource
