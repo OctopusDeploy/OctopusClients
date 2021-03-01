@@ -3358,6 +3358,7 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.Resource
   {
+    String Architecture { get; set; }
     Octopus.Client.Model.Endpoints.EndpointResource Endpoint { get; set; }
     Boolean HasLatestCalamari { get; set; }
     Octopus.Client.Model.MachineModelHealthStatus HealthStatus { get; set; }
