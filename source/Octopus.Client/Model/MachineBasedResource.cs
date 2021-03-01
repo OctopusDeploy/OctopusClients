@@ -50,5 +50,6 @@ namespace Octopus.Client.Model
         public string OperatingSystem { get; set; }
         public string ShellName { get; set; }
         public string ShellVersion { get; set; }
+        public string Architecture { get; set; }
     }
 }
