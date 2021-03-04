@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -6,6 +7,9 @@ namespace Octopus.Client.Repositories.Async
     public interface IDeploymentSettingsRepository
     {
         IDeploymentSettingsBetaRepository Beta();
+
+        Task<DeploymentSettingsResource> Get(ProjectResource project);
+        Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource);
     }
 
     class DeploymentSettingsRepository : IDeploymentSettingsRepository
@@ -16,10 +20,19 @@ namespace Octopus.Client.Repositories.Async
         {
             beta = new DeploymentSettingsBetaRepository(repository);
         }
-
         public IDeploymentSettingsBetaRepository Beta()
         {
             return beta;
+        }
+
+        public Task<DeploymentSettingsResource> Get(ProjectResource project)
+        {
+            return beta.Get(project);
+        }
+
+        public Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource)
+        {
+            return beta.Modify(project, resource);
         }
     }
 
