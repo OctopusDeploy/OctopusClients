@@ -88,7 +88,6 @@ namespace Octopus.Client.Model
         /// with the same name and scope definition appearing later in the list.
         /// </summary>
         [Writeable]
-        [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public List<string> IncludedLibraryVariableSetIds { get; set; }
 
         [Writeable]
