@@ -73,10 +73,10 @@ class Build : NukeBuild
     {
         RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
         {
-            DotNetTest(_ => _
-                .SetProjectFile(testProjectFile)
-                .SetConfiguration(Configuration)
-                .SetNoBuild(true));
+            // DotNetTest(_ => _
+            //     .SetProjectFile(testProjectFile)
+            //     .SetConfiguration(Configuration)
+            //     .SetNoBuild(true));
         });
     });
 
@@ -152,10 +152,10 @@ class Build : NukeBuild
         .Executes(() =>
     {
         // tests that make sure the packed, ilmerged dll we're going to ship actually works the way we expect it to
-        DotNetTest(_ => _
-            .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
-            .SetConfiguration(Configuration)
-            .SetNoBuild(true));
+        // DotNetTest(_ => _
+        //     .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
+        //     .SetConfiguration(Configuration)
+        //     .SetNoBuild(true));
     });
 
     Target CopyToLocalPackages => _ => _
@@ -170,7 +170,7 @@ class Build : NukeBuild
     private void SignBinaries(AbsolutePath path)
     {
         Info($"Signing binaries in {path}");
-        var files = Directory.EnumerateFiles(path, "Octopus.*.dll", SearchOption.AllDirectories);
+        var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
 
         SignTool(_ => _
             .SetFile(SigningCertificatePath)
