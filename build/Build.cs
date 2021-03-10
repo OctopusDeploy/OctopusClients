@@ -87,11 +87,10 @@ class Build : NukeBuild
             var inputFolder = OctopusClientFolder / "bin" / Configuration / "net452";
             var outputFolder = OctopusClientFolder / "bin" / Configuration / "net452Merged";
             EnsureExistingDirectory(outputFolder);
+
+            var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.exe");
             
-            var assemblyPaths = System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (AbsolutePath)f);
-            assemblyPaths = assemblyPaths.Concat(System.IO.Directory.EnumerateFiles(inputFolder, "Octodiff.exe").Select(f => (AbsolutePath)f));
-            
-            var inputAssemblies = new List<string> { $"{inputFolder}/Octopus.Client.dll" };
+            var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
             inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
 
             var repackSettings = new RepackOptions()
