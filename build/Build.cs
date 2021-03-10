@@ -69,13 +69,13 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
     {
-        // RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
-        // {
-        //     DotNetTest(_ => _
-        //         .SetProjectFile(testProjectFile)
-        //         .SetConfiguration(Configuration)
-        //         .SetNoBuild(true));
-        // });
+        RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
+        {
+            DotNetTest(_ => _
+                .SetProjectFile(testProjectFile)
+                .SetConfiguration(Configuration)
+                .SetNoBuild(true));
+        });
     });
 
     Target Merge => _ => _
