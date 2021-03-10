@@ -176,7 +176,7 @@ class Build : NukeBuild
             .SetPassword(SigningCertificatePassword)
             .SetFiles(files.Select(x => x.ToString()).ToArray())
             .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
-            .SetTimestampServerDigestAlgorithm("sha246")
+            .SetTimestampServerDigestAlgorithm("sha256")
             .SetRfc3161TimestampServerUrl("http://rfc3161timestamp.globalsign.com/advanced"));
     }
 
