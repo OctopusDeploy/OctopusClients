@@ -15,6 +15,8 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
+[VerbosityMapping(typeof(DotNetVerbosity),
+    Verbose = nameof(DotNetVerbosity.Diagnostic))]
 class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Default);
@@ -49,7 +51,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetRestore(_ => _
-                .SetProjectFile("source")
+                .SetProjectFile(RootDirectory / "source")
                 .SetVersion(OctoVersionInfo.FullSemVer));
         });
 
@@ -68,13 +70,13 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
     {
-        (RootDirectory).GlobFiles("**/**/*.Tests.csproj").ToList().ForEach(testProjectFile =>
-        {
-            DotNetTest(_ => _
-            .SetProjectFile(testProjectFile)
-            .SetConfiguration(Configuration)
-            .SetNoBuild(true));
-        });
+        // (RootDirectory).GlobFiles("**/**/*.Tests.csproj").ToList().ForEach(testProjectFile =>
+        // {
+        //     DotNetTest(_ => _
+        //     .SetProjectFile(testProjectFile)
+        //     .SetConfiguration(Configuration)
+        //     .SetNoBuild(true));
+        // });
     });
 
     Target Merge => _ => _
@@ -98,6 +100,7 @@ class Build : NukeBuild
             Internalize = true,
             Parallel = false,
             XmlDocumentation = true,
+            SearchDirectories = new [] { inputFolder.ToString() }
         };
         
         new ILRepack(repackSettings).Repack();
