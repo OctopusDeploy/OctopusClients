@@ -9,30 +9,40 @@ namespace Octopus.Client.Repositories.Async
         IDeploymentSettingsBetaRepository Beta();
 
         Task<DeploymentSettingsResource> Get(ProjectResource project);
-        Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource);
+        Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
     }
 
     class DeploymentSettingsRepository : IDeploymentSettingsRepository
     {
         private readonly IDeploymentSettingsBetaRepository beta;
+        private readonly IOctopusAsyncClient client;
 
         public DeploymentSettingsRepository(IOctopusAsyncRepository repository)
         {
             beta = new DeploymentSettingsBetaRepository(repository);
+            client = repository.Client;
         }
         public IDeploymentSettingsBetaRepository Beta()
         {
             return beta;
         }
 
-        public Task<DeploymentSettingsResource> Get(ProjectResource project)
+        public async Task<DeploymentSettingsResource> Get(ProjectResource project)
         {
-            return beta.Get(project);
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+
+            return await client.Get<DeploymentSettingsResource>(project.Link("Self"));
         }
 
-        public Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource)
+        public async Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings)
         {
-            return beta.Modify(project, resource);
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+
+            await client.Put(deploymentSettings.Link("Self"));
+
+            return await client.Get<DeploymentSettingsResource>(deploymentSettings.Link("Self"));
         }
     }
 
@@ -54,33 +64,34 @@ namespace Octopus.Client.Repositories.Async
             client = repository.Client;
         }
 
-        public async Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitref = null)
+        public async Task<DeploymentSettingsResource> Get(ProjectResource project, string gitref = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitref))
+            if (!(project.PersistenceSettings is VersionControlSettingsResource settings))
             {
-                var branchResource = await repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitref);
-
-                return await client.Get<DeploymentSettingsResource>(branchResource.Link("DeploymentSettings"));
+                return await repository.DeploymentSettings.Get(project);
             }
 
-            return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"));
+            gitref = gitref ?? settings.DefaultBranch;
+            var branch = await repository.Projects.Beta().GetVersionControlledBranch(project, gitref);
+
+            return await client.Get<DeploymentSettingsResource>(branch.Link("DeploymentSettings"));
         }
 
-        public async Task<DeploymentSettingsResource> Modify(ProjectResource projectResource,
+        public async Task<DeploymentSettingsResource> Modify(ProjectResource project,
             DeploymentSettingsResource resource, string commitMessage = null)
         {
-            if (!projectResource.IsVersionControlled)
+            if (!(project.PersistenceSettings is VersionControlSettingsResource))
             {
-                return await client.Update(projectResource.Link("DeploymentSettings"), resource);
+                return await repository.DeploymentSettings.Modify(project, resource);
             }
 
-            var commitResource = new CommitResource<DeploymentSettingsResource>
+            var commit = new CommitResource<DeploymentSettingsResource>
             {
                 Resource = resource,
                 CommitMessage = commitMessage
             };
 
-            await client.Put(resource.Link("Self"), commitResource);
+            await client.Put(resource.Link("Self"), commit);
 
             return await client.Get<DeploymentSettingsResource>(resource.Link("Self"));
         }
