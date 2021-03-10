@@ -90,7 +90,7 @@ class Build : NukeBuild
         var assemblyPaths = System.IO.Directory.EnumerateFiles(inputFolder, "NewtonSoft.Json.dll").Select(f => (AbsolutePath)f);
         assemblyPaths = assemblyPaths.Concat(System.IO.Directory.EnumerateFiles(inputFolder, "Octodiff.exe").Select(f => (AbsolutePath)f));
         
-        var inputAssemblies = new List<string> { $"{inputFolder}/Octopus.Client.dll" };
+        var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
         inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
 
         var repackSettings = new RepackOptions()
