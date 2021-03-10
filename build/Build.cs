@@ -24,8 +24,8 @@ class Build : NukeBuild
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
     [Parameter] readonly string Configuration = "Release";
-    [Parameter] readonly string SigningCertificatePath;
-    [Parameter] readonly string SigningCertificatePassword;
+    [Parameter] readonly string SigningCertificatePath = "./certificates/OctopusDevelopment.pfx";
+    [Parameter] readonly string SigningCertificatePassword = "Password01!";
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
     ///////////////////////////////////////////////////////////////////////////////
@@ -169,14 +169,14 @@ class Build : NukeBuild
     private void SignBinaries(AbsolutePath path)
     {
         Info($"Signing binaries in {path}");
-        var files = path.GlobFiles("/**/Octopus.*.dll");
+        var files = Directory.EnumerateFiles(path, "Octopus.*.dll", SearchOption.AllDirectories);
 
         SignTool(_ => _
+            .SetFile(SigningCertificatePath)
+            .SetPassword(SigningCertificatePassword)
             .SetFiles(files.Select(x => x.ToString()).ToArray())
             .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
-            .SetTimestampServerUrl("http://rfc3161timestamp.globalsign.com/advanced")
-            .SetFile(SigningCertificatePath)
-            .SetPassword(SigningCertificatePassword));
+            .SetTimestampServerUrl("http://rfc3161timestamp.globalsign.com/advanced"));
     }
 
 
