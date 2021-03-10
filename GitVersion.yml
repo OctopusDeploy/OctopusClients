@@ -1,5 +1,0 @@
-mode: ContinuousDeployment
-legacy-semver-padding: 0
-build-metadata-padding: 0
-ignore:
-  sha: [df7aa6a28acd36e220bd84345c2d560a068b6a07]
