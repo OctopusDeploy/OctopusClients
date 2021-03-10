@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories.Async
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
     }
 
-    class DeploymentSettingsRepository : IDeploymentSettingsRepository
+    internal class DeploymentSettingsRepository : IDeploymentSettingsRepository
     {
         private readonly IDeploymentSettingsBetaRepository beta;
         private readonly IOctopusAsyncClient client;
@@ -22,6 +22,7 @@ namespace Octopus.Client.Repositories.Async
             beta = new DeploymentSettingsBetaRepository(repository);
             client = repository.Client;
         }
+
         public IDeploymentSettingsBetaRepository Beta()
         {
             return beta;
@@ -30,15 +31,18 @@ namespace Octopus.Client.Repositories.Async
         public async Task<DeploymentSettingsResource> Get(ProjectResource project)
         {
             if (project.PersistenceSettings is VersionControlSettingsResource)
-                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
 
             return await client.Get<DeploymentSettingsResource>(project.Link("Self"));
         }
 
-        public async Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings)
+        public async Task<DeploymentSettingsResource> Modify(ProjectResource project,
+            DeploymentSettingsResource deploymentSettings)
         {
             if (project.PersistenceSettings is VersionControlSettingsResource)
-                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
 
             await client.Put(deploymentSettings.Link("Self"));
 
@@ -49,14 +53,15 @@ namespace Octopus.Client.Repositories.Async
     public interface IDeploymentSettingsBetaRepository
     {
         Task<DeploymentSettingsResource> Get(ProjectResource project, string gitref = null);
+
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource,
             string commitMessage = null);
     }
 
-    class DeploymentSettingsBetaRepository : IDeploymentSettingsBetaRepository
+    internal class DeploymentSettingsBetaRepository : IDeploymentSettingsBetaRepository
     {
-        private readonly IOctopusAsyncRepository repository;
         private readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
         public DeploymentSettingsBetaRepository(IOctopusAsyncRepository repository)
         {
@@ -67,9 +72,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task<DeploymentSettingsResource> Get(ProjectResource project, string gitref = null)
         {
             if (!(project.PersistenceSettings is VersionControlSettingsResource settings))
-            {
                 return await repository.DeploymentSettings.Get(project);
-            }
 
             gitref = gitref ?? settings.DefaultBranch;
             var branch = await repository.Projects.Beta().GetVersionControlledBranch(project, gitref);
@@ -81,9 +84,7 @@ namespace Octopus.Client.Repositories.Async
             DeploymentSettingsResource resource, string commitMessage = null)
         {
             if (!(project.PersistenceSettings is VersionControlSettingsResource))
-            {
                 return await repository.DeploymentSettings.Modify(project, resource);
-            }
 
             var commit = new CommitResource<DeploymentSettingsResource>
             {
