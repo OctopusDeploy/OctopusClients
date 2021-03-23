@@ -6791,6 +6791,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<ChannelResource>
     Octopus.Client.Repositories.IDelete<ChannelResource>
     Octopus.Client.Repositories.IPaginate<ChannelResource>
+    Octopus.Client.Repositories.IGetAll<ChannelResource>
   {
     Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
