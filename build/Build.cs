@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,16 @@ class Build : NukeBuild
     AbsolutePath OctopusClientFolder => SourceDir / "Octopus.Client";
     
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
+    
+    // Keep this list in order by most likely to succeed
+    string[] SigningTimestampUrls => new [] {
+        "http://tsa.starfieldtech.com",
+        "http://www.startssl.com/timestamp",
+        "http://timestamp.comodoca.com/rfc3161",
+        "http://timestamp.verisign.com/scripts/timstamp.dll",
+        "http://timestamp.globalsign.com/scripts/timestamp.dll",
+        "https://rfc3161timestamp.globalsign.com/advanced"
+    };
 
     Target Clean => _ => _
         .Executes(() =>
@@ -170,14 +181,31 @@ class Build : NukeBuild
     {
         Info($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
+        
+        var lastException = default(Exception);
+        foreach (var url in SigningTimestampUrls)
+        {
+            try
+            {
+                SignTool(_ => _
+                    .SetFile(SigningCertificatePath)
+                    .SetPassword(SigningCertificatePassword)
+                    .SetFiles(files.Select(x => x.ToString()).ToArray())
+                    .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
+                    .SetTimestampServerDigestAlgorithm("sha256")
+                    .SetDescription("Octopus Client Tool")
+                    .SetUrl("https://octopus.com")
+                    .SetRfc3161TimestampServerUrl(url));
+                return;
+            }
+            catch (Exception ex)
+            {
+                lastException = ex;
+            }
+        }
 
-        SignTool(_ => _
-            .SetFile(SigningCertificatePath)
-            .SetPassword(SigningCertificatePassword)
-            .SetFiles(files.Select(x => x.ToString()).ToArray())
-            .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
-            .SetTimestampServerDigestAlgorithm("sha256")
-            .SetRfc3161TimestampServerUrl("https://rfc3161timestamp.globalsign.com/advanced"));
+        if(lastException != null)
+            throw(lastException);
     }
 
 
