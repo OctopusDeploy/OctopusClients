@@ -4295,6 +4295,14 @@ Octopus.Client.Model
   {
     static System.String Name
   }
+  class RetentionDefaultConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Nullable<Int32> RetentionDays { get; set; }
+  }
   class RetentionPeriod
     IEquatable<RetentionPeriod>
   {
