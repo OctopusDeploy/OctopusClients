@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Octopus.Client.Model;
+using TinyTypes.Json;
 
 namespace Octopus.Client.Serialization
 {
@@ -9,6 +10,11 @@ namespace Octopus.Client.Serialization
     /// </summary>
     public static class JsonSerialization
     {
+        static JsonSerialization()
+        {
+            TinyTypeConverterRegistration.RegisterTinyTypeConverters();
+        }
+
         /// <summary>
         /// The serializer settings used by Octopus when reading and writing JSON from the
         /// Octopus Deploy RESTful API.
@@ -20,6 +26,7 @@ namespace Octopus.Client.Serialization
                 Formatting = Formatting.Indented,
                 Converters = new JsonConverterCollection
                 {
+                    new TinyTypeJsonConverter(),
                     new StringEnumConverter(),
                     new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
                         "dddd, dd MMMM yyyy h:mm tt zzz", "f" ),

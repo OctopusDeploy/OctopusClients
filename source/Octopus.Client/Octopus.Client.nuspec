@@ -9,7 +9,7 @@
         <license type="expression">Apache-2.0</license>
         <projectUrl>https://github.com/OctopusDeploy/OctopusClients</projectUrl>
         <icon>images\icon.png</icon>
-        <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams. 
+        <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
             This package contains the client library for the HTTP API in Octopus.</description>
         <copyright>Octopus Deploy Pty Ltd</copyright>
         <repository type="git" url="https://github.com/OctopusDeploy/OctopusClients" />
@@ -17,9 +17,9 @@
             <group targetFramework=".NETFramework4.5.2">
             </group>
             <group targetFramework=".NETStandard2.0">
-                <dependency id="Microsoft.CSharp" version="4.5.0" exclude="Build,Analyzers" />
-                <dependency id="System.ComponentModel.Annotations" version="4.5.0" exclude="Build,Analyzers" />
-                <dependency id="Newtonsoft.Json" version="11.0.2" />
+                <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
+                <dependency id="System.ComponentModel.Annotations" version="4.7.0" exclude="Build,Analyzers" />
+                <dependency id="Newtonsoft.Json" version="13.0.1" />
                 <dependency id="Octodiff" version="1.2.1" />
             </group>
         </dependencies>
