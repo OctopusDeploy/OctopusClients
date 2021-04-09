@@ -265,7 +265,7 @@ namespace Octopus.Client.Tests.Conventions
 
             var getsNamedResources = getsResources
                 .Where(t => t.GetInterfaces()
-                    .Where(i => i.IsClosedTypeOf(typeof(IGet<>)))
+                    .Where(i => Autofac.TypeExtensions.IsClosedTypeOf(i, typeof(IGet<>)))
                     .Any(i => i.GenericTypeArguments.Any(r => r.IsAssignableTo<INamedResource>())))
                 .ToArray();
 
