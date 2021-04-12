@@ -3565,6 +3565,7 @@ Octopus.Client.Model
       KubernetesAws = 2
       KubernetesAzure = 3
       KubernetesCertificate = 4
+      KubernetesPodService = 5
   }
   class MultiTenancyStatusResource
     Octopus.Client.Extensibility.IResource
@@ -6000,6 +6001,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
     String ClusterCertificate { get; set; }
+    String ClusterCertificatePath { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
@@ -6007,6 +6009,13 @@ Octopus.Client.Model.Endpoints
     String Namespace { get; set; }
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
+  }
+  class KubernetesPodServiceAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String TokenPath { get; set; }
   }
   class KubernetesStandardAccountAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
