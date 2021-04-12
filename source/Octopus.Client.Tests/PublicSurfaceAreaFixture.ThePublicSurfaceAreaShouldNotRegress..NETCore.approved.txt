@@ -5975,6 +5975,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource Authentication { get; set; }
     String ClusterCertificate { get; set; }
+    String ClusterCertificatePath { get; set; }
     String ClusterUrl { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }

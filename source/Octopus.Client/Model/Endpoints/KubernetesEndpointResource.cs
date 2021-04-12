@@ -9,14 +9,14 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string ClusterCertificate { get; set; }
-
-        [Trim]
-        [Writeable]
-        public string ClusterUrl { get; set; }
         
         [Trim]
         [Writeable]
         public string ClusterCertificatePath { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string ClusterUrl { get; set; }
 
         [Trim]
         [Writeable]
