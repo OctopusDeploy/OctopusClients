@@ -3565,6 +3565,7 @@ Octopus.Client.Model
       KubernetesAws = 2
       KubernetesAzure = 3
       KubernetesCertificate = 4
+      KubernetesPodService = 5
   }
   class MultiTenancyStatusResource
     Octopus.Client.Extensibility.IResource
