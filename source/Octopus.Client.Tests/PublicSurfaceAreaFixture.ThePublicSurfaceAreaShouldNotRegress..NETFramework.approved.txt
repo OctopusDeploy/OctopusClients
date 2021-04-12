@@ -6010,6 +6010,13 @@ Octopus.Client.Model.Endpoints
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
   }
+  class KubernetesPodServiceAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String TokenPath { get; set; }
+  }
   class KubernetesStandardAccountAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
   {
