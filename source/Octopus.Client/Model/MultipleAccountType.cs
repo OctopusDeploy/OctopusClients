@@ -15,6 +15,7 @@ namespace Octopus.Client.Model
         KubernetesStandard,
         KubernetesAws,
         KubernetesAzure,
-        KubernetesCertificate
+        KubernetesCertificate,
+        KubernetesPodService
     }
 }
