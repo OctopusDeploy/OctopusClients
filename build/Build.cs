@@ -20,7 +20,7 @@ using static Nuke.Common.Tools.SignTool.SignToolTasks;
     Verbose = nameof(DotNetVerbosity.Diagnostic))]
 class Build : NukeBuild
 {
-    public static int Main() => Execute<Build>(x => x.Default);
+    public static int Main() => Execute<Build>(x => x.TestClientNugetPackage);
     //////////////////////////////////////////////////////////////////////
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
@@ -170,7 +170,7 @@ class Build : NukeBuild
 
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
-        .DependsOn(TestClientNugetPackage)
+        .TriggeredBy(TestClientNugetPackage)
         .Executes(() =>
     {
         EnsureExistingDirectory(LocalPackagesDir);
@@ -207,8 +207,4 @@ class Build : NukeBuild
         if(lastException != null)
             throw(lastException);
     }
-
-
-    Target Default => _ => _
-        .DependsOn(CopyToLocalPackages);
 }
