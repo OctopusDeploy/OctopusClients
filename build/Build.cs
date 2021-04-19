@@ -35,9 +35,9 @@ class Build : NukeBuild
     AbsolutePath LocalPackagesDir => RootDirectory / ".." / "LocalPackages";
     AbsolutePath SourceDir => RootDirectory / "source";
     AbsolutePath OctopusClientFolder => SourceDir / "Octopus.Client";
-    
+
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
-    
+
     // Keep this list in order by most likely to succeed
     string[] SigningTimestampUrls => new [] {
         "http://tsa.starfieldtech.com",
@@ -100,7 +100,7 @@ class Build : NukeBuild
             EnsureExistingDirectory(outputFolder);
 
             var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.exe");
-            
+
             var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
             inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
 
@@ -113,7 +113,7 @@ class Build : NukeBuild
                 XmlDocumentation = true,
                 SearchDirectories = new [] { inputFolder.ToString() }
             };
-            
+
             new ILRepack(repackSettings).Repack();
 
             DeleteDirectory(inputFolder);
@@ -129,7 +129,7 @@ class Build : NukeBuild
         {
             ReplaceTextInFiles(OctopusClientFolder / "Octopus.Client.nuspec", "<version>$version$</version>",
                 $"<version>{OctoVersionInfo.FullSemVer}</version>");
-            
+
             DotNetPack(_ => _
             .SetProject(OctopusClientFolder)
             .SetProcessArgumentConfigurator(args =>
@@ -176,12 +176,12 @@ class Build : NukeBuild
         EnsureExistingDirectory(LocalPackagesDir);
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir);
     });
-    
+
     private void SignBinaries(AbsolutePath path)
     {
         Info($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
-        
+
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
