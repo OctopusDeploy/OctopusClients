@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace></RootNamespace>
     <NoWarn>CS0649;CS0169</NoWarn>
     <NukeRootDirectory>..</NukeRootDirectory>
@@ -11,9 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="ILRepack.Lib" Version="2.1.0-beta1" />
-    <PackageReference Include="Nuke.Common" Version="5.0.2" />
-    <PackageDownload Include="GitVersion.Tool" Version="[5.5.1]" />
-    <PackageReference Include="Nuke.OctoVersion" Version="0.2.369" />
+    <PackageReference Include="Nuke.Common" Version="5.1.0" />
+    <PackageReference Include="Nuke.OctoVersion" Version="0.2.453" />
   </ItemGroup>
 
 </Project>
