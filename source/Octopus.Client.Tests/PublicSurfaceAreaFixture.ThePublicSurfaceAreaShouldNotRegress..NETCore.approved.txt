@@ -6573,6 +6573,12 @@ Octopus.Client.Model.Versioning
 }
 Octopus.Client.Operations
 {
+  class InvalidRegistrationArgumentsException
+    ISerializable
+    ArgumentException
+  {
+    .ctor(String)
+  }
   interface IRegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
