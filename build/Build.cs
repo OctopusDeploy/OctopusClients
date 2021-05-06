@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Nuke.Common;
-using ILRepacking;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Nuke.OctoVersion;
@@ -95,30 +95,30 @@ class Build : NukeBuild
         .DependsOn(Test)
         .Executes(() =>
         {
-            var inputFolder = OctopusClientFolder / "bin" / Configuration / "net452";
-            var outputFolder = OctopusClientFolder / "bin" / Configuration / "net452Merged";
-            EnsureExistingDirectory(outputFolder);
-
-            var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.exe", "Octopus.TinyTypes.dll", "Octopus.TinyTypes.Json.dll", "Octopus.TinyTypes.TypeConverters.dll");
-
-            var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
-            inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
-
-            var repackSettings = new RepackOptions()
+            foreach (var target in new [] {"net452", "netstandard2.0"})
             {
-                OutputFile = outputFolder / "Octopus.Client.dll",
-                InputAssemblies = inputAssemblies.ToArray(),
-                Internalize = true,
-                Parallel = false,
-                XmlDocumentation = true,
-                SearchDirectories = new [] { inputFolder.ToString() }
-            };
+                var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
+                var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
+                EnsureExistingDirectory(outputFolder);
 
-            new ILRepack(repackSettings).Repack();
+                var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.*", "Octopus.TinyTypes.dll", "Octopus.TinyTypes.Json.dll", "Octopus.TinyTypes.TypeConverters.dll");
 
-            DeleteDirectory(inputFolder);
-            MoveDirectory(outputFolder, inputFolder);
-    });
+                var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
+                inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
+
+                ILRepackTasks.ILRepack(_ => _
+                    .SetAssemblies(inputAssemblies)
+                    .SetOutput(outputFolder / "Octopus.Client.dll")
+                    .EnableInternalize()
+                    .DisableParallel()
+                    .EnableXmldocs()
+                    .SetLib(inputFolder)
+                );
+
+                DeleteDirectory(inputFolder);
+                MoveDirectory(outputFolder, inputFolder);
+            }
+        });
 
     Target PackClientNuget => _ => _
         .DependsOn(Merge)

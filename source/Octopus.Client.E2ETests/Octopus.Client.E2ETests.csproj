@@ -14,9 +14,6 @@
     <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
         <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
-        <DefineConstants>$(DefineConstants);SUPPORTS_ILMERGE</DefineConstants>
-    </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Octopus.Client\Octopus.Client.csproj" />
     </ItemGroup>
