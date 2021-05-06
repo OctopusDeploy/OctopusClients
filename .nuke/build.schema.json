@@ -86,7 +86,7 @@
               "Clean",
               "Compile",
               "CopyToLocalPackages",
-              "Default"
+              "Default",
               "Merge",
               "PackClientNuget",
               "Restore",
