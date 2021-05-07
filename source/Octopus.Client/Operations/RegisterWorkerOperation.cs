@@ -39,7 +39,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
         public override void Execute(IOctopusSpaceRepository repository)
         {
@@ -65,7 +65,7 @@ namespace Octopus.Client.Operations
             var missing = WorkerPoolNames.Except(selectedPools.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("worker pool", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("worker pool", missing.ToArray()));
 
             return selectedPools;
         }
@@ -77,7 +77,7 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Workers.FindByName(MachineName);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new InvalidRegistrationArgumentsException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
@@ -89,7 +89,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
         public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
         {
@@ -116,7 +116,7 @@ namespace Octopus.Client.Operations
             var missing = WorkerPoolNames.Except(selectedPools.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("worker pool", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("worker pool", missing.ToArray()));
 
             return selectedPools;
         }
@@ -128,7 +128,7 @@ namespace Octopus.Client.Operations
             {
                 existing = await repository.Workers.FindByName(MachineName).ConfigureAwait(false);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new InvalidRegistrationArgumentsException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
