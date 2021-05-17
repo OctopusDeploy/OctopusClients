@@ -25,7 +25,7 @@ class Build : NukeBuild
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
     [Parameter] readonly string Configuration = "Release";
-    [Parameter] readonly string SigningCertificatePath = "./certificates/OctopusDevelopment.pfx";
+    [Parameter] readonly string SigningCertificatePath = RootDirectory / "certificates" / "OctopusDevelopment.pfx";
     [Parameter] readonly string SigningCertificatePassword = "Password01!";
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
@@ -125,28 +125,37 @@ class Build : NukeBuild
         .Executes(() =>
     {
         SignBinaries(OctopusClientFolder / "bin" / Configuration);
+        var octopusClientNuspec = OctopusClientFolder / "Octopus.Client.nuspec";
         try
         {
-            ReplaceTextInFiles(OctopusClientFolder / "Octopus.Client.nuspec", "<version>$version$</version>",
+            ReplaceTextInFiles(octopusClientNuspec, "<version>$version$</version>",
                 $"<version>{OctoVersionInfo.FullSemVer}</version>");
 
-            DotNetPack(_ => _
-            .SetProject(OctopusClientFolder)
-            .SetProcessArgumentConfigurator(args =>
+            //ensure our dependencies here match the versions in the csproj
+            foreach(var dependency in new []{ "Octopus.TinyTypes", "Octopus.TinyTypes.Json", "Octopus.TinyTypes.TypeConverters" })
             {
-                args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
-                return args;
-            })
-            .SetVersion(OctoVersionInfo.FullSemVer)
-            .SetConfiguration(Configuration)
-            .SetOutputDirectory(ArtifactsDir)
-            .SetNoBuild(true)
-            .SetIncludeSymbols(false)
-            .SetVerbosity(DotNetVerbosity.Normal));
+                var expectedVersion = XmlTasks.XmlPeek(OctopusClientFolder / "Octopus.Client.csproj", $"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version").FirstOrDefault();
+                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
+                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
+            }
+
+            DotNetPack(_ => _
+                .SetProject(OctopusClientFolder)
+                .SetProcessArgumentConfigurator(args =>
+                {
+                    args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
+                    return args;
+                })
+                .SetVersion(OctoVersionInfo.FullSemVer)
+                .SetConfiguration(Configuration)
+                .SetOutputDirectory(ArtifactsDir)
+                .EnableNoBuild()
+                .DisableIncludeSymbols()
+                .SetVerbosity(DotNetVerbosity.Normal));
         }
         finally
         {
-            ReplaceTextInFiles(OctopusClientFolder / "Octopus.Client.nuspec", $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+            ReplaceTextInFiles(octopusClientNuspec, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
         }
     });
 
