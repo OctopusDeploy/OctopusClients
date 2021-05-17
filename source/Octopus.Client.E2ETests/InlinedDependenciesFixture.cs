@@ -51,9 +51,6 @@ namespace Octopus.Client.E2ETests
         [Test]
         [TestCase("Newtonsoft.Json", "Newtonsoft.Json.JsonConvert")]
         [TestCase("Octodiff", "Octodiff.Core.DeltaBuilder")]
-        [TestCase("Octopus.TinyTypes", "Octopus.TinyTypes.CaseInsensitiveStringTinyType")]
-        [TestCase("Octopus.TinyTypes.Json", "TinyTypes.Json.TinyTypeJsonConverter")]
-        [TestCase("Octopus.TinyTypes.TypeConverters", "Octopus.TinyTypes.TypeConverters.TinyTypeConverters")]
         public void HasInlinedDependency(string library, string typeName)
         {
             assembly.GetTypes()
