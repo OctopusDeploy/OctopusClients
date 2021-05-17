@@ -61,7 +61,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
         public override void Execute(IOctopusSpaceRepository repository)
         {
@@ -95,7 +95,7 @@ namespace Octopus.Client.Operations
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("tenant", missing));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -109,7 +109,7 @@ namespace Octopus.Client.Operations
             var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             if (missingTags.Any())
-                throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
         List<EnvironmentResource> GetEnvironments(IOctopusSpaceRepository repository)
@@ -119,7 +119,7 @@ namespace Octopus.Client.Operations
             var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("environment", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("environment", missing.ToArray()));
 
             return selectedEnvironments;
         }
@@ -131,7 +131,7 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Machines.FindByName(MachineName);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A machine named '{MachineName}' already exists on the Octopus Server in the target space. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists on the Octopus Server in the target space. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
@@ -143,7 +143,7 @@ namespace Octopus.Client.Operations
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
         /// <param name="repository">The Octopus Deploy server repository.</param>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="InvalidRegistrationArgumentsException">
         /// </exception>
         public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
         {
@@ -185,7 +185,7 @@ namespace Octopus.Client.Operations
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("tenant", missing));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -199,7 +199,7 @@ namespace Octopus.Client.Operations
             var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             if (missingTags.Any())
-                throw new ArgumentException(CouldNotFindMessage("tag", missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tag", missingTags.ToArray()));
         }
 
         async Task<List<EnvironmentResource>> GetEnvironments(IOctopusSpaceAsyncRepository repository)
@@ -215,7 +215,7 @@ namespace Octopus.Client.Operations
             var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new ArgumentException(CouldNotFindMessage("environment", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("environment", missing.ToArray()));
 
             return selectedEnvironments;
         }
@@ -227,7 +227,7 @@ namespace Octopus.Client.Operations
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
                 if (!AllowOverwrite && existing?.Id != null)
-                    throw new ArgumentException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
+                    throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {
