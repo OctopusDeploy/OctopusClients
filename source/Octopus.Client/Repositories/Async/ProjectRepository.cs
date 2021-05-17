@@ -130,6 +130,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
         Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        Task<DeploymentProcessResource> GetDeploymentProcess(ProjectResource project);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
@@ -163,6 +164,11 @@ namespace Octopus.Client.Repositories.Async
             var url = project.Link("ConvertToVcs");
             var response = await client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
             return response;
+        }
+
+        public Task<DeploymentProcessResource> GetDeploymentProcess(ProjectResource projectResource)
+        {
+            return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
         }
     }
 }
