@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Nuke.Common;
-using ILRepacking;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Nuke.OctoVersion;
@@ -25,7 +25,7 @@ class Build : NukeBuild
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
     [Parameter] readonly string Configuration = "Release";
-    [Parameter] readonly string SigningCertificatePath = "./certificates/OctopusDevelopment.pfx";
+    [Parameter] readonly string SigningCertificatePath = RootDirectory / "certificates" / "OctopusDevelopment.pfx";
     [Parameter] readonly string SigningCertificatePassword = "Password01!";
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
@@ -95,58 +95,67 @@ class Build : NukeBuild
         .DependsOn(Test)
         .Executes(() =>
         {
-            var inputFolder = OctopusClientFolder / "bin" / Configuration / "net452";
-            var outputFolder = OctopusClientFolder / "bin" / Configuration / "net452Merged";
-            EnsureExistingDirectory(outputFolder);
-
-            var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.exe", "Octopus.TinyTypes.dll", "Octopus.TinyTypes.Json.dll", "Octopus.TinyTypes.TypeConverters.dll");
-
-            var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
-            inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
-
-            var repackSettings = new RepackOptions()
+            foreach (var target in new [] {"net452", "netstandard2.0"})
             {
-                OutputFile = outputFolder / "Octopus.Client.dll",
-                InputAssemblies = inputAssemblies.ToArray(),
-                Internalize = true,
-                Parallel = false,
-                XmlDocumentation = true,
-                SearchDirectories = new [] { inputFolder.ToString() }
-            };
+                var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
+                var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
+                EnsureExistingDirectory(outputFolder);
 
-            new ILRepack(repackSettings).Repack();
+                var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.*");
 
-            DeleteDirectory(inputFolder);
-            MoveDirectory(outputFolder, inputFolder);
-    });
+                var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
+                inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
+
+                ILRepackTasks.ILRepack(_ => _
+                    .SetAssemblies(inputAssemblies)
+                    .SetOutput(outputFolder / "Octopus.Client.dll")
+                    .EnableInternalize()
+                    .DisableParallel()
+                    .EnableXmldocs()
+                    .SetLib(inputFolder)
+                );
+
+                DeleteDirectory(inputFolder);
+                MoveDirectory(outputFolder, inputFolder);
+            }
+        });
 
     Target PackClientNuget => _ => _
         .DependsOn(Merge)
         .Executes(() =>
     {
         SignBinaries(OctopusClientFolder / "bin" / Configuration);
+        var octopusClientNuspec = OctopusClientFolder / "Octopus.Client.nuspec";
         try
         {
-            ReplaceTextInFiles(OctopusClientFolder / "Octopus.Client.nuspec", "<version>$version$</version>",
+            ReplaceTextInFiles(octopusClientNuspec, "<version>$version$</version>",
                 $"<version>{OctoVersionInfo.FullSemVer}</version>");
 
-            DotNetPack(_ => _
-            .SetProject(OctopusClientFolder)
-            .SetProcessArgumentConfigurator(args =>
+            //ensure our dependencies here match the versions in the csproj
+            foreach(var dependency in new []{ "Octopus.TinyTypes", "Octopus.TinyTypes.Json", "Octopus.TinyTypes.TypeConverters" })
             {
-                args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
-                return args;
-            })
-            .SetVersion(OctoVersionInfo.FullSemVer)
-            .SetConfiguration(Configuration)
-            .SetOutputDirectory(ArtifactsDir)
-            .SetNoBuild(true)
-            .SetIncludeSymbols(false)
-            .SetVerbosity(DotNetVerbosity.Normal));
+                var expectedVersion = XmlTasks.XmlPeek(OctopusClientFolder / "Octopus.Client.csproj", $"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version").FirstOrDefault();
+                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
+                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
+            }
+
+            DotNetPack(_ => _
+                .SetProject(OctopusClientFolder)
+                .SetProcessArgumentConfigurator(args =>
+                {
+                    args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
+                    return args;
+                })
+                .SetVersion(OctoVersionInfo.FullSemVer)
+                .SetConfiguration(Configuration)
+                .SetOutputDirectory(ArtifactsDir)
+                .EnableNoBuild()
+                .DisableIncludeSymbols()
+                .SetVerbosity(DotNetVerbosity.Normal));
         }
         finally
         {
-            ReplaceTextInFiles(OctopusClientFolder / "Octopus.Client.nuspec", $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+            ReplaceTextInFiles(octopusClientNuspec, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
         }
     });
 

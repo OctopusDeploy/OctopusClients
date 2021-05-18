@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,8 +14,8 @@ namespace Octopus.Client.E2ETests
     ///  * is a single dll that can be referenced from powershell
     ///  * inlines dependencies properly
     ///  * doesn't pull down unnecessary dependencies
-    /// If you find yourself changing these tests, it's very likely you'll need to change
-    /// https://github.com/OctopusDeploy/docs/blob/master/docs/octopus-rest-api/octopus.client.md 
+    /// If you find yourself changing these tests, it's very likely you'll need to change build.cs and
+    /// https://github.com/OctopusDeploy/docs/blob/master/docs/octopus-rest-api/octopus.client.md
     /// </summary>
     [TestFixture]
     public class NuSpecDependenciesFixture
@@ -75,104 +76,75 @@ namespace Octopus.Client.E2ETests
             dependencyGroups.Count.Should().Be(2, "Should have 2 dependency groups");
         }
 
-        [Test]
-        public void NuSpecFileShouldHaveANetFrameworkDependencyGroup()
+        public static TestCaseData[] DependencyExpectations =
         {
-            var dependencies = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']",
-                nameSpaceManager);
-            dependencies.Should().NotBeNull("Should have a .NETFramework4.5.2 dependency group");
-        }
-        
-        [Test]
-        public void NuSpecFileShouldHaveNoNetFrameworkDependencies()
+            //if you need to change this, you'll probably need to change the Build.cs
+            new TestCaseData(".NETFramework4.5.2",
+                new[] {
+                    "Octopus.TinyTypes",
+                    "Octopus.TinyTypes.Json",
+                    "Octopus.TinyTypes.TypeConverters"
+                }),
+            new TestCaseData(".NETStandard2.0",
+                new[]
+                {
+                    "Octopus.TinyTypes",
+                    "Octopus.TinyTypes.Json",
+                    "Octopus.TinyTypes.TypeConverters",
+                    "Microsoft.CSharp",
+                    "System.ComponentModel.Annotations"
+                }),
+        };
+
+        public static IEnumerable<TestCaseData> DependencyExpectationsFlattened()
         {
-            var dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']/ns:dependency",
-                nameSpaceManager);
-            dependencies.Count.Should().Be(0, "There should be no dependencies listed for .NETFramework4.5.2");
+            foreach(var group in DependencyExpectations)
+                foreach(var dep in (string[]) group.Arguments[1])
+                    yield return new TestCaseData(group.Arguments[0], dep);
         }
 
         [Test]
-        public void NuSpecFileShouldHaveANetStandardDependencyGroup()
+        [TestCaseSource(nameof(DependencyExpectations))]
+        public void NuSpecFileShouldHaveCorrectDependencyGroups(string framework, string[] dependencies)
         {
-            var dependencies = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']",
+            var dependencyGroupNode = nuSpecFile.SelectSingleNode(
+                $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']",
                 nameSpaceManager);
-            dependencies.Should().NotBeNull("Should have a .NETStandard2.0 dependency group");
+            dependencyGroupNode.Should().NotBeNull($"Should have a {framework} dependency group");
         }
 
         [Test]
-        public void NuSpecFileShouldHave4NetStandardDependencies()
+        [TestCaseSource(nameof(DependencyExpectations))]
+        public void NuSpecFileShouldHaveCorrectDependencyCounts(string framework, string[] dependencies)
         {
-            var dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency",
+            var dependencyNodes = nuSpecFile.SelectNodes(
+                $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']/ns:dependency",
                 nameSpaceManager);
-            dependencies.Count.Should().Be(4, "There should be 4 dependencies listed for .NETStandard2.0");
+            dependencyNodes.Count.Should().Be(dependencies.Length, $"There should be {dependencies.Length} dependencies listed for {framework}");
         }
 
         [Test]
-        public void NuSpecFileShouldHaveNetStandardDependencyOnMicrosoftCSharp()
+        [TestCaseSource(nameof(DependencyExpectationsFlattened))]
+        public void NuSpecFileShouldHaveExpectedDependency(string framework, string dependency)
         {
-            var dependency = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Microsoft.CSharp']",
+            var node = nuSpecFile.SelectSingleNode(
+                $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']/ns:dependency[@id='{dependency}']",
                 nameSpaceManager);
-            dependency.Should()
-                .NotBeNull("There should be a Microsoft.CSharp dependency for .NETStandard2.0");
+            node.Should()
+                .NotBeNull($"There should be a {dependency} dependency for {framework}");
         }
 
         [Test]
-        public void NuSpecFileShouldHaveNetStandardDependencyOnSystemComponentModelAnnotations()
-        {
-            var dependency = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='System.ComponentModel.Annotations']",
-                nameSpaceManager);
-            dependency.Should()
-                .NotBeNull("There should be a System.ComponentModel.Annotations dependency for .NETStandard2.0");
-        }
-        
-        [Test]
-        public void NuSpecFileShouldHaveNetStandardDependencyOnNewtonsoftJson()
-        {
-            var dependency = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Newtonsoft.Json']",
-                nameSpaceManager);
-            dependency.Should()
-                .NotBeNull("There should be a Newtonsoft.Json dependency for .NETStandard2.0, as we cant inline it until we get to netcore 3");
-        }
-        
-        [Test]
-        public void NuSpecFileShouldHaveNetStandardDependencyOnOctodiff()
-        {
-            var dependency = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Octodiff']",
-                nameSpaceManager);
-            dependency.Should()
-                .NotBeNull("There should be a Octodiff dependency for .NETStandard2.0, as we cant inline it until we get to netcore 3");
-        }
-
-        [Test]
-        public void NetStandardDependencyOnNewtonsoftJsonShouldBeSameVersionAsCsProj()
+        [TestCaseSource(nameof(DependencyExpectationsFlattened))]
+        public void DependencyVersionShouldBeSameVersionAsCsProj(string framework, string dependency)
         {
             var actualVersion = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Newtonsoft.Json']/@version",
+                $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']/ns:dependency[@id='{dependency}']/@version",
                 nameSpaceManager);
-            var expectedVersion = csProjFile.SelectSingleNode("//Project/ItemGroup/PackageReference[@Include='Newtonsoft.Json']/@Version");
+            var expectedVersion = csProjFile.SelectSingleNode($"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version");
             actualVersion.Value.Should()
-                .Be(expectedVersion.Value, "The Newtonsoft.Json dependency version in the nuspec should match the one in the csproj");
+                .Be(expectedVersion.Value, $"The {dependency} dependency version in the nuspec should match the one in the csproj");
         }
-        
-        [Test]
-        public void NetStandardDependencyOnOctodiffShouldBeSameVersionAsCsProj()
-        {
-            var actualVersion = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='Octodiff']/@version",
-                nameSpaceManager);
-            var expectedVersion = csProjFile.SelectSingleNode("//Project/ItemGroup/PackageReference[@Include='Octodiff']/@Version");
-            actualVersion.Value.Should()
-                .Be(expectedVersion.Value, "The Octodiff dependency version in the nuspec should match the one in the csproj");
-        }
-        
 
         [Test]
         public void NuSpecFileShouldHaveAFrameworkAssembliesNode()
@@ -198,32 +170,17 @@ namespace Octopus.Client.E2ETests
                 nameSpaceManager);
             dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.5.2");
         }
-        
+
         [Test]
-        public void NuSpecFileShouldHaveSystemComponentModelDataAnnotationsFrameworkAssemblyForNetFramework()
+        [TestCase("System.ComponentModel.DataAnnotations")]
+        [TestCase("System.Net.Http")]
+        [TestCase("System.Numerics")]
+        public void NuSpecFileShouldHaveSystemComponentModelDataAnnotationsFrameworkAssemblyForNetFramework(string assemblyName)
         {
             var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.ComponentModel.DataAnnotations']",
+                $"//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = '{assemblyName}']",
                 nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.ComponentModel.DataAnnotations' for .NETFramework4.5.2");
-        }
-        
-        [Test]
-        public void NuSpecFileShouldHaveSystemNetHttpFrameworkAssemblyForNetFramework()
-        {
-            var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.Net.Http']",
-                nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Net.Http' for .NETFramework4.5.2");
-        }
-        
-        [Test]
-        public void NuSpecFileShouldHaveSystemNumericsFrameworkAssemblyForNetFramework()
-        {
-            var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.5.2' and @assemblyName = 'System.Numerics']",
-                nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull("Should have a frameworkAssembly node for 'System.Numerics' for .NETFramework4.5.2");
+            frameworkAssembly.Should().NotBeNull($"Should have a frameworkAssembly node for '{assemblyName}' for .NETFramework4.5.2");
         }
     }
 }

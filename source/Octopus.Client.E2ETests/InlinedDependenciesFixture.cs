@@ -47,43 +47,16 @@ namespace Octopus.Client.E2ETests
         {
 
         }
-#if SUPPORTS_ILMERGE
-        [Test]
-        public void HasInlinedNewtonsoftJson()
-        {
-            assembly.GetTypes()
-                .FirstOrDefault(x => x.FullName == "Newtonsoft.Json.JsonConvert")
-                .Should()
-                .NotBeNull(
-                    "We should have ilmerged Newtonsoft.Json in, so customers dont need to reference that separately");
-        }
 
         [Test]
-        public void HasInlinedOctodiff()
+        [TestCase("Newtonsoft.Json", "Newtonsoft.Json.JsonConvert")]
+        [TestCase("Octodiff", "Octodiff.Core.DeltaBuilder")]
+        public void HasInlinedDependency(string library, string typeName)
         {
             assembly.GetTypes()
-                .FirstOrDefault(x => x.FullName == "Octodiff.Core.DeltaBuilder")
+                .FirstOrDefault(x => x.FullName == typeName)
                 .Should()
-                .NotBeNull("We should have ilmerged Octodiff in, so customers dont need to reference that separately");
+                .NotBeNull($"We should have ilmerged {library} in, so customers dont need to reference that separately");
         }
-#else
-        [Test]
-        public void HasNotInlinedNewtonsoftJson()
-        {
-            assembly.GetTypes()
-                .FirstOrDefault(x => x.FullName == "Newtonsoft.Json.JsonConvert")
-                .Should()
-                .BeNull("We aren't able to ilmerge Newtonsoft.Json in yet as it's only available from netcore 3");
-        }
-
-        [Test]
-        public void HasNotInlinedOctodiff()
-        {
-            assembly.GetTypes()
-                .FirstOrDefault(x => x.FullName == "Octodiff.Core.DeltaBuilder")
-                .Should()
-                .BeNull("We aren't able to ilmerge Octodiff in yet as it's only available from netcore 3");
-        }
-#endif
     }
 }

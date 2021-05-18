@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack.Lib" Version="2.1.0-beta1" />
     <PackageReference Include="Nuke.Common" Version="5.1.0" />
+    <PackageReference Include="ILRepack" Version="2.0.18" />
     <PackageReference Include="Nuke.OctoVersion" Version="0.2.453" />
   </ItemGroup>
 
