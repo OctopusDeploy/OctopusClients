@@ -6098,6 +6098,7 @@ Octopus.Client.Model.Endpoints
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String Inputs { get; set; }
+    String StepPackageId { get; set; }
   }
   class TentacleDetailsResource
   {
