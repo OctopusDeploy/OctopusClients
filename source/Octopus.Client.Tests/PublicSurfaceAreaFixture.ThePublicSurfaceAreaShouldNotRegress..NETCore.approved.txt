@@ -2251,6 +2251,7 @@ Octopus.Client.Model
       AzureCloudService = 7
       AzureServiceFabricCluster = 8
       Kubernetes = 9
+      StepPackage = 10
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -6063,6 +6064,15 @@ Octopus.Client.Model.Endpoints
       static System.String Linux64
       static System.String Osx64
     }
+  }
+  class StepPackageEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.EndpointResource
+  {
+    .ctor()
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String Inputs { get; set; }
   }
   class TentacleDetailsResource
   {
