@@ -8,6 +8,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using Octopus.Client.Extensibility;
 using Octopus.Client.Logging;
 
 namespace Octopus.Client
@@ -223,7 +224,14 @@ namespace Octopus.Client
             var uri = QualifyUri(path, pathParameters);
 
             var response = DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true);
-            return Get<TResource>(response.Location);
+
+            var getUrl = response.Location;
+            if (response.ResponseResource is IResource res)
+            {
+                getUrl = res.Links["Self"];
+            }
+            
+            return Get<TResource>(getUrl);
         }
 
         /// <summary>
@@ -351,8 +359,15 @@ namespace Octopus.Client
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
-            return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
+            var response = DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), readResponse: true);
+
+            var getUrl = path;
+            if (response.ResponseResource is IResource res)
+            {
+                getUrl = res.Links["Self"].AsString();
+            }
+
+            return Get<TResource>(getUrl);
         }
 
         /// <summary>
