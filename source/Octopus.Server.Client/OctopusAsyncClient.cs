@@ -13,7 +13,6 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
 

@@ -8,7 +8,6 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
-using Octopus.Client.Extensibility;
 using Octopus.Client.Logging;
 
 namespace Octopus.Client
