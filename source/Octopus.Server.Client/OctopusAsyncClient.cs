@@ -327,12 +327,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
 
-            var getUrl = path;
-            if (response.ResponseResource is IResource res)
-            {
-                getUrl = res.Links["Self"];
-            }
-            
+            var getUrl = UrlHelper.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             var result = await Get<TResource>(getUrl).ConfigureAwait(false);
             return result;
         }
@@ -464,12 +459,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true).ConfigureAwait(false);
 
-            var getUrl = path;
-            if (response.ResponseResource is IResource res)
-            {
-                getUrl = res.Links["Self"];
-            }
-            
+            var getUrl = UrlHelper.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             var result = await Get<TResource>(getUrl).ConfigureAwait(false);
             return result;
         }

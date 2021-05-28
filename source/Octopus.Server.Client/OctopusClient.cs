@@ -225,12 +225,7 @@ namespace Octopus.Client
 
             var response = DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true);
 
-            var getUrl = response.Location;
-            if (response.ResponseResource is IResource res)
-            {
-                getUrl = res.Links["Self"];
-            }
-            
+            var getUrl = UrlHelper.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             return Get<TResource>(getUrl);
         }
 
@@ -361,12 +356,7 @@ namespace Octopus.Client
 
             var response = DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), readResponse: true);
 
-            var getUrl = path;
-            if (response.ResponseResource is IResource res)
-            {
-                getUrl = res.Links["Self"].AsString();
-            }
-
+            var getUrl = UrlHelper.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             return Get<TResource>(getUrl);
         }
 
