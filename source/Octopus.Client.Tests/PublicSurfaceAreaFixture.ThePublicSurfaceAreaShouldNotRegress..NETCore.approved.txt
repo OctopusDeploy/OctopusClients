@@ -7626,6 +7626,8 @@ Octopus.Client.Repositories.Async
   interface IDeploymentSettingsRepository
   {
     Octopus.Client.Repositories.Async.IDeploymentSettingsBetaRepository Beta()
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
