@@ -68,11 +68,14 @@
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Default",
               "Merge",
-              "PackClientNuget",
+              "PackMergedClientNuget",
+              "PackNormalClientNuget",
               "Restore",
               "Test",
-              "TestClientNugetPackage"
+              "TestClientNugetPackage",
+              "TestNormalClientNugetPackage"
             ]
           }
         },
@@ -85,11 +88,14 @@
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Default",
               "Merge",
-              "PackClientNuget",
+              "PackMergedClientNuget",
+              "PackNormalClientNuget",
               "Restore",
               "Test",
-              "TestClientNugetPackage"
+              "TestClientNugetPackage",
+              "TestNormalClientNugetPackage"
             ]
           }
         },

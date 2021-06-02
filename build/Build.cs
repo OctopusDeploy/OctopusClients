@@ -20,7 +20,7 @@ using static Nuke.Common.Tools.SignTool.SignToolTasks;
     Verbose = nameof(DotNetVerbosity.Diagnostic))]
 class Build : NukeBuild
 {
-    public static int Main() => Execute<Build>(x => x.TestClientNugetPackage);
+    public static int Main() => Execute<Build>(x => x.Default);
     //////////////////////////////////////////////////////////////////////
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
@@ -35,11 +35,12 @@ class Build : NukeBuild
     AbsolutePath LocalPackagesDir => RootDirectory / ".." / "LocalPackages";
     AbsolutePath SourceDir => RootDirectory / "source";
     AbsolutePath OctopusClientFolder => SourceDir / "Octopus.Client";
+    AbsolutePath OctopusNormalClientFolder => SourceDir / "Octopus.Server.Client";
 
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
 
     // Keep this list in order by most likely to succeed
-    string[] SigningTimestampUrls => new [] {
+    string[] SigningTimestampUrls => new[] {
         "http://tsa.starfieldtech.com",
         "http://www.startssl.com/timestamp",
         "http://timestamp.comodoca.com/rfc3161",
@@ -69,7 +70,6 @@ class Build : NukeBuild
 
     Target Compile => _ => _
         .DependsOn(Restore)
-        .DependsOn(Clean)
         .Executes(() =>
     {
         DotNetBuild(_ => _
@@ -95,16 +95,18 @@ class Build : NukeBuild
         .DependsOn(Test)
         .Executes(() =>
         {
-            foreach (var target in new [] {"net452", "netstandard2.0"})
+            foreach (var target in new[] { "net452", "netstandard2.0" })
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
                 EnsureExistingDirectory(outputFolder);
 
-                var assemblyPaths = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff.*");
-
-                var inputAssemblies = new List<string> { inputFolder / "Octopus.Client.dll" };
-                inputAssemblies.AddRange(assemblyPaths.Select(x => x.ToString()));
+                // The call to ILRepack with .EnableInternalize() requires the Octopus.Server.Client.dll assembly to be first in the list.
+                var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff*", "Octopus.*.dll")
+                    .Select(x => x.ToString())
+                    .OrderByDescending(x => x.Contains("Octopus.Server.Client.dll"))
+                    .ThenBy(x => x)
+                    .ToArray();
 
                 ILRepackTasks.ILRepack(_ => _
                     .SetAssemblies(inputAssemblies)
@@ -120,7 +122,7 @@ class Build : NukeBuild
             }
         });
 
-    Target PackClientNuget => _ => _
+    Target PackMergedClientNuget => _ => _
         .DependsOn(Merge)
         .Executes(() =>
     {
@@ -130,14 +132,6 @@ class Build : NukeBuild
         {
             ReplaceTextInFiles(octopusClientNuspec, "<version>$version$</version>",
                 $"<version>{OctoVersionInfo.FullSemVer}</version>");
-
-            //ensure our dependencies here match the versions in the csproj
-            foreach(var dependency in new []{ "Octopus.TinyTypes", "Octopus.TinyTypes.Json", "Octopus.TinyTypes.TypeConverters" })
-            {
-                var expectedVersion = XmlTasks.XmlPeek(OctopusClientFolder / "Octopus.Client.csproj", $"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version").FirstOrDefault();
-                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETFramework4.5.2']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
-                XmlTasks.XmlPoke(octopusClientNuspec,$"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '.NETStandard2.0']/ns:dependency[@id='{dependency}']/@version", expectedVersion, ("ns", "http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd"));
-            }
 
             DotNetPack(_ => _
                 .SetProject(OctopusClientFolder)
@@ -159,18 +153,27 @@ class Build : NukeBuild
         }
     });
 
-    private void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
-    {
-        string fileText = File.ReadAllText(path);
-        fileText = fileText.Replace(oldValue, newValue);
-        File.WriteAllText(path, fileText);
-    }
-
-    Target TestClientNugetPackage => _ => _
-        .DependsOn(PackClientNuget)
+    Target PackNormalClientNuget => _ => _
+        .DependsOn(Compile)
         .Executes(() =>
     {
-        // tests that make sure the packed, ilmerged dll we're going to ship actually works the way we expect it to
+        SignBinaries(OctopusNormalClientFolder / "bin" / Configuration);
+
+        DotNetPack(_ => _
+            .SetProject(OctopusNormalClientFolder)
+            .SetVersion(OctoVersionInfo.FullSemVer)
+            .SetConfiguration(Configuration)
+            .SetOutputDirectory(ArtifactsDir)
+            .EnableNoBuild()
+            .DisableIncludeSymbols()
+            .SetVerbosity(DotNetVerbosity.Normal));
+    });
+
+    Target TestClientNugetPackage => _ => _
+        .DependsOn(PackMergedClientNuget)
+        .Executes(() =>
+    {
+        // Tests that make sure the packed, ILMerged DLL we're going to ship actually works the way we expect it to.
         DotNetTest(_ => _
             .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
             .SetConfiguration(Configuration)
@@ -179,14 +182,21 @@ class Build : NukeBuild
 
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
-        .TriggeredBy(TestClientNugetPackage)
+        .DependsOn(PackNormalClientNuget)
+        .DependsOn(PackMergedClientNuget)
         .Executes(() =>
     {
         EnsureExistingDirectory(LocalPackagesDir);
-        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
 
-    private void SignBinaries(AbsolutePath path)
+    Target Default => _ => _
+        .DependsOn(CopyToLocalPackages)
+        .DependsOn(PackNormalClientNuget)
+        .DependsOn(PackMergedClientNuget)
+        .DependsOn(TestClientNugetPackage);
+
+    void SignBinaries(AbsolutePath path)
     {
         Info($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
@@ -213,7 +223,14 @@ class Build : NukeBuild
             }
         }
 
-        if(lastException != null)
-            throw(lastException);
+        if (lastException != null)
+            throw (lastException);
+    }
+
+    void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
+    {
+        var fileText = File.ReadAllText(path);
+        fileText = fileText.Replace(oldValue, newValue);
+        File.WriteAllText(path, fileText);
     }
 }
