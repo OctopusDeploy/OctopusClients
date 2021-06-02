@@ -10,22 +10,18 @@
         <projectUrl>https://github.com/OctopusDeploy/OctopusClients</projectUrl>
         <icon>images\icon.png</icon>
         <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
-            This package contains the client library for the HTTP API in Octopus.</description>
+            This package contains the ILmerged client library for the HTTP API in Octopus.</description>
         <copyright>Octopus Deploy Pty Ltd</copyright>
         <repository type="git" url="https://github.com/OctopusDeploy/OctopusClients" />
         <dependencies>
             <group targetFramework=".NETFramework4.5.2">
-                <dependency id="Octopus.TinyTypes" version="0.1.539" />
-                <dependency id="Octopus.TinyTypes.Json" version="0.1.539" />
-                <dependency id="Octopus.TinyTypes.TypeConverters" version="0.1.539" />
             </group>
+
             <group targetFramework=".NETStandard2.0">
                 <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
                 <dependency id="System.ComponentModel.Annotations" version="4.7.0" exclude="Build,Analyzers" />
-                <dependency id="Octopus.TinyTypes" version="0.1.539" />
-                <dependency id="Octopus.TinyTypes.Json" version="0.1.539" />
-                <dependency id="Octopus.TinyTypes.TypeConverters" version="0.1.539" />
             </group>
+
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework=".NETFramework4.5.2" />

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Octopus.Client.Model;
-using TinyTypes.Json;
+using Octopus.TinyTypes.Json;
 
 namespace Octopus.Client.Serialization
 {

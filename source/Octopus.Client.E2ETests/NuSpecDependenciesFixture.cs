@@ -29,7 +29,7 @@ namespace Octopus.Client.E2ETests
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().FullLocalPath());
             var artifactsFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "artifacts"));
-            var package = Directory.EnumerateFiles(artifactsFolder , "Octopus.Client.*.nupkg").FirstOrDefault();
+            var package = Directory.EnumerateFiles(artifactsFolder, "Octopus.Client.*.nupkg").FirstOrDefault();
             if (package == null)
                 Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder }'");
             using (var zipFile = ZipFile.OpenRead(package))
@@ -38,7 +38,7 @@ namespace Octopus.Client.E2ETests
                 var zipArchiveEntry = zipFile.Entries.FirstOrDefault(x => x.Name == "Octopus.Client.nuspec");
                 if (zipArchiveEntry == null)
                     Assert.Fail($"Unable to find 'Octopus.Client.nuspec' in the nupkg file.");
-               
+
                 using (var stream = zipArchiveEntry.Open())
                 {
                     nameSpaceManager = new XmlNamespaceManager(nuSpecFile.NameTable);
@@ -47,19 +47,21 @@ namespace Octopus.Client.E2ETests
                     nuSpecFile.Load(stream);
                 }
             }
-            
-            var sourceFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "source", "Octopus.Client"));
-            var projectFile = Directory.EnumerateFiles(sourceFolder , "Octopus.Client.csproj").FirstOrDefault();
+
+            // Yep. We're pulling the source from a different location (the Octopus.Server.Client project) as it's the one
+            // which actually has all of the relevant package references.
+            var sourceFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "source", "Octopus.Server.Client"));
+            var projectFile = Directory.EnumerateFiles(sourceFolder, "Octopus.Server.Client.csproj").FirstOrDefault();
             if (projectFile == null)
-                Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Client.csproj' at '{artifactsFolder }'");
+                Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Server.Client.csproj' at '{artifactsFolder }'");
             csProjFile = new XmlDocument();
             csProjFile.Load(projectFile);
         }
-        
+
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            
+
         }
 
         [Test]
@@ -80,17 +82,11 @@ namespace Octopus.Client.E2ETests
         {
             //if you need to change this, you'll probably need to change the Build.cs
             new TestCaseData(".NETFramework4.5.2",
-                new[] {
-                    "Octopus.TinyTypes",
-                    "Octopus.TinyTypes.Json",
-                    "Octopus.TinyTypes.TypeConverters"
+                new string[] {
                 }),
             new TestCaseData(".NETStandard2.0",
                 new[]
                 {
-                    "Octopus.TinyTypes",
-                    "Octopus.TinyTypes.Json",
-                    "Octopus.TinyTypes.TypeConverters",
                     "Microsoft.CSharp",
                     "System.ComponentModel.Annotations"
                 }),
@@ -98,8 +94,8 @@ namespace Octopus.Client.E2ETests
 
         public static IEnumerable<TestCaseData> DependencyExpectationsFlattened()
         {
-            foreach(var group in DependencyExpectations)
-                foreach(var dep in (string[]) group.Arguments[1])
+            foreach (var group in DependencyExpectations)
+                foreach (var dep in (string[])group.Arguments[1])
                     yield return new TestCaseData(group.Arguments[0], dep);
         }
 
@@ -152,7 +148,7 @@ namespace Octopus.Client.E2ETests
             var node = nuSpecFile.SelectSingleNode("//ns:package/ns:metadata/ns:frameworkAssemblies", nameSpaceManager);
             node.Should().NotBeNull("We should have a frameworkAssemblies node");
         }
-        
+
         [Test]
         public void NuSpecFileShouldOnlyHaveFrameworkAssembliesForNetFramework()
         {
