@@ -32,5 +32,25 @@ namespace Octopus.Client.Repositories
         {
             return new ChannelEditor(this).CreateOrModify(project, name, description);
         }
+
+        public override ChannelResource Create(ChannelResource resource, object pathParameters = null)
+        {
+            var projectResource = Repository.Projects.Get(resource.ProjectId);
+            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
+            {
+                return Create(projectResource, resource, pathParameters);
+            }
+
+            return base.Create(resource, pathParameters);
+        }
+
+        ChannelResource Create(ProjectResource projectResource, ChannelResource channelResource, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            var link = projectResource.Links["Channels"];
+            EnrichSpaceId(channelResource);
+            return Client.Create(link, channelResource, pathParameters);
+        }
     }
 }

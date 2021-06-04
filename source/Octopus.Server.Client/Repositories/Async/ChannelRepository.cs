@@ -38,6 +38,26 @@ namespace Octopus.Client.Repositories.Async
             return new ChannelEditor(this).CreateOrModify(project, name, description);
         }
 
+        public override async Task<ChannelResource> Create(ChannelResource resource, object pathParameters = null)
+        {
+            var projectResource = await Repository.Projects.Get(resource.ProjectId);
+            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
+            {
+                return await Create(projectResource, resource, pathParameters);
+            }
+
+            return await base.Create(resource, pathParameters);
+        }
+
+        async Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, object pathParameters = null)
+        {
+            await ThrowIfServerVersionIsNotCompatible();
+
+            var link = projectResource.Links["Channels"];
+            EnrichSpaceId(channelResource);
+            return await Client.Create(link, channelResource, pathParameters).ConfigureAwait(false);
+        }
+
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ChannelResource channel,
             int skip = 0, int? take = null, string searchByVersion = null)
         {
