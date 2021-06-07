@@ -7615,13 +7615,13 @@ Octopus.Client.Repositories.Async
     Task<T> Get()
     Task<T> Modify(Octopus.Client.Repositories.Async.T)
   }
-  interface ICreateProjectScoped`1
-  {
-    Task<TResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Repositories.Async.TResource, Object)
-  }
   interface ICreate`1
   {
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
+  }
+  interface ICreateProjectScoped`1
+  {
+    Task<TResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Repositories.Async.TResource, Object)
   }
   interface IDashboardConfigurationRepository
   {
