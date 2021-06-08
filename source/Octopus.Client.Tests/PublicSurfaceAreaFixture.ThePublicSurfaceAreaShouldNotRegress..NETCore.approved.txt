@@ -2191,6 +2191,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveProject
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -3085,6 +3086,10 @@ Octopus.Client.Model
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
     Boolean UseGuidedFailure { get; set; }
+  }
+  interface IHaveProject
+  {
+    String ProjectId { get; set; }
   }
   class InterruptionResource
     Octopus.Client.Extensibility.IResource
@@ -6803,6 +6808,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICreateProjectScoped<ChannelResource>
     Octopus.Client.Repositories.IModify<ChannelResource>
     Octopus.Client.Repositories.IGet<ChannelResource>
+    Octopus.Client.Repositories.IGetProjectScoped<ChannelResource>
     Octopus.Client.Repositories.IDelete<ChannelResource>
     Octopus.Client.Repositories.IPaginate<ChannelResource>
     Octopus.Client.Repositories.IGetAll<ChannelResource>
@@ -6936,6 +6942,10 @@ Octopus.Client.Repositories
   interface IGetAll`1
   {
     List<TResource> GetAll()
+  }
+  interface IGetProjectScoped`1
+  {
+    Octopus.Client.Repositories.TResource Get(Octopus.Client.Model.ProjectResource, String)
   }
   interface IGet`1
   {
@@ -7566,6 +7576,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICreateProjectScoped<ChannelResource>
     Octopus.Client.Repositories.Async.IModify<ChannelResource>
     Octopus.Client.Repositories.Async.IGet<ChannelResource>
+    Octopus.Client.Repositories.Async.IGetProjectScoped<ChannelResource>
     Octopus.Client.Repositories.Async.IDelete<ChannelResource>
     Octopus.Client.Repositories.Async.IPaginate<ChannelResource>
   {
@@ -7703,6 +7714,10 @@ Octopus.Client.Repositories.Async
   interface IGetAll`1
   {
     Task<List<TResource>> GetAll()
+  }
+  interface IGetProjectScoped`1
+  {
+    Task<TResource> Get(Octopus.Client.Model.ProjectResource, String)
   }
   interface IGet`1
   {

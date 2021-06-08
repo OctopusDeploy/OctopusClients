@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
@@ -8,5 +9,10 @@ namespace Octopus.Client.Repositories
         TResource Get(string idOrHref);
         List<TResource> Get(params string[] ids);
         TResource Refresh(TResource resource);
+    }
+
+    public interface IGetProjectScoped<TResource>
+    {
+        TResource Get(ProjectResource projectResource, string idOrHref);
     }
 }

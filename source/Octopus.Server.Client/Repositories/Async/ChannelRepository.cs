@@ -5,7 +5,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
+    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IGetProjectScoped<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
     {
         IChannelBetaRepository Beta();
         Task<ChannelResource> FindByName(ProjectResource project, string name);
@@ -17,7 +17,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ReleaseResource> GetReleaseByVersion(ChannelResource channel, string version);
     }
 
-    class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
+    class ChannelRepository : ProjectScopedRepository<ChannelResource>, IChannelRepository
     {
         private readonly IChannelBetaRepository beta;
         public ChannelRepository(IOctopusAsyncRepository repository) : base(repository, "Channels")
@@ -40,26 +40,6 @@ namespace Octopus.Client.Repositories.Async
         public Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description)
         {
             return new ChannelEditor(this).CreateOrModify(project, name, description);
-        }
-
-        public override async Task<ChannelResource> Create(ChannelResource resource, object pathParameters = null)
-        {
-            var projectResource = await Repository.Projects.Get(resource.ProjectId);
-            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
-            {
-                return await Create(projectResource, resource, pathParameters);
-            }
-
-            return await base.Create(resource, pathParameters);
-        }
-
-        public async Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, object pathParameters = null)
-        {
-            await ThrowIfServerVersionIsNotCompatible();
-
-            var link = projectResource.Link(CollectionLinkName);
-            EnrichSpaceId(channelResource);
-            return await Client.Create(link, channelResource, pathParameters).ConfigureAwait(false);
         }
 
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ChannelResource channel,

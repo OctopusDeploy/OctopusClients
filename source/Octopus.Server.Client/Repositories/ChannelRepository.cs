@@ -4,7 +4,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
 {
-    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>, IGetAll<ChannelResource>
+    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IGetProjectScoped<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>, IGetAll<ChannelResource>
     {
         IChannelBetaRepository Beta();
         ChannelResource FindByName(ProjectResource project, string name);
@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
         ChannelEditor CreateOrModify(ProjectResource project, string name, string description);
     }
 
-    class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
+    class ChannelRepository : ProjectScopedRepository<ChannelResource>, IChannelRepository
     {
         private readonly IChannelBetaRepository beta;
         public ChannelRepository(IOctopusRepository repository) : base(repository, "Channels")
@@ -35,30 +35,6 @@ namespace Octopus.Client.Repositories
         public ChannelEditor CreateOrModify(ProjectResource project, string name, string description)
         {
             return new ChannelEditor(this).CreateOrModify(project, name, description);
-        }
-
-        public override ChannelResource Create(ChannelResource resource, object pathParameters = null)
-        {
-            ThrowIfServerVersionIsNotCompatible();
-
-            var projectResource = Repository.Projects.Get(resource.ProjectId);
-            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
-            {
-                // Use the Project-scoped Create method if the parent project is version controlled
-                return Create(projectResource, resource, pathParameters);
-            }
-
-            // Use the default one otherwise
-            return base.Create(resource, pathParameters);
-        }
-
-        public ChannelResource Create(ProjectResource projectResource, ChannelResource channelResource, object pathParameters = null)
-        {
-            ThrowIfServerVersionIsNotCompatible();
-
-            var link = projectResource.Link(CollectionLinkName);
-            EnrichSpaceId(channelResource);
-            return Client.Create(link, channelResource, pathParameters);
         }
     }
 
