@@ -6972,7 +6972,6 @@ Octopus.Client.Repositories
   interface IGetProjectScoped`1
   {
     Octopus.Client.Repositories.TResource Get(Octopus.Client.Model.ProjectResource, String)
-    List<TResource> Get(Octopus.Client.Model.ProjectResource, String[])
   }
   interface IGet`1
   {
@@ -7745,7 +7744,6 @@ Octopus.Client.Repositories.Async
   interface IGetProjectScoped`1
   {
     Task<TResource> Get(Octopus.Client.Model.ProjectResource, String)
-    Task<List<TResource>> Get(Octopus.Client.Model.ProjectResource, String[])
   }
   interface IGet`1
   {

@@ -14,6 +14,5 @@ namespace Octopus.Client.Repositories
     public interface IGetProjectScoped<TResource>
     {
         TResource Get(ProjectResource projectResource, string idOrHref);
-        List<TResource> Get(ProjectResource projectResource, params string[] ids);
     }
 }

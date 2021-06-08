@@ -41,44 +41,14 @@ namespace Octopus.Client.Repositories
             return Client.Create(link, resource, pathParameters);
         }
 
-        public TResource Get(ProjectResource projectResource, string idOrHref)
+        public TResource Get(ProjectResource projectResource, string id)
         {
             ThrowIfServerVersionIsNotCompatible();
 
-            if (string.IsNullOrWhiteSpace(idOrHref))
+            if (string.IsNullOrWhiteSpace(id))
                 return null;
-            var link = projectResource.Link(CollectionLinkName);
-            if (idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-            {
-                return Client.Get<TResource>(idOrHref, AdditionalQueryParameters);
-            }
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = idOrHref });
-            return Client.Get<TResource>(link, parameters);
-        }
-
-        public  List<TResource> Get(ProjectResource projectResource, params string[] ids)
-        {
-            ThrowIfServerVersionIsNotCompatible();
-
-            if (ids == null) return new List<TResource>();
-            var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
-            if (actualIds.Length == 0) return new List<TResource>();
-
-            var resources = new List<TResource>();
-            var link = projectResource.Link(CollectionLinkName);
-            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
-                link += "{?ids}";
-            var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { ids = actualIds });
-            Client.Paginate<TResource>(
-                link,
-                parameters,
-                page =>
-                {
-                    resources.AddRange(page.Items);
-                    return true;
-                });
-
-            return resources;
+            var link = $"{projectResource.Link(CollectionLinkName)}/{id}";
+            return Client.Get<TResource>(link, AdditionalQueryParameters);
         }
     }
 

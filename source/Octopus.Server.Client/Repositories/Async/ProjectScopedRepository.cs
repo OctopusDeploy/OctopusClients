@@ -44,48 +44,16 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
         }
 
-        public async Task<TResource> Get(ProjectResource projectResource, string idOrHref)
+        public async Task<TResource> Get(ProjectResource projectResource, string id)
         {
             await ThrowIfServerVersionIsNotCompatible();
 
-            if (string.IsNullOrWhiteSpace(idOrHref))
+            if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            var link = projectResource.Link(CollectionLinkName);
+            var link = $"{projectResource.Link(CollectionLinkName)}/{id}";
             var additionalQueryParameters = GetAdditionalQueryParameters();
-            var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new { id = idOrHref });
-            var  getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
-                ? Client.Get<TResource>(idOrHref, additionalQueryParameters).ConfigureAwait(false)
-                : Client.Get<TResource>(link, parameters).ConfigureAwait(false);
-            return await getTask;
-        }
-
-        public async Task<List<TResource>> Get(ProjectResource projectResource, params string[] ids)
-        {
-            await ThrowIfServerVersionIsNotCompatible();
-
-            if (ids == null) return new List<TResource>();
-            var actualIds = ids.Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
-            if (actualIds.Length == 0) return new List<TResource>();
-
-            var resources = new List<TResource>();
-
-            var link = projectResource.Link(CollectionLinkName);
-            if (!Regex.IsMatch(link, @"\{\?.*\Wids\W"))
-                link += "{?ids}";
-
-            var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { ids = actualIds });
-            await Client.Paginate<TResource>(
-                    link,
-                    parameters,
-                    page =>
-                    {
-                        resources.AddRange(page.Items);
-                        return true;
-                    })
-                .ConfigureAwait(false);
-
-            return resources;
+            return await Client.Get<TResource>(link, additionalQueryParameters).ConfigureAwait(false);
         }
     }
 
