@@ -47,7 +47,8 @@ namespace Octopus.Client.Repositories
 
             if (string.IsNullOrWhiteSpace(id))
                 return null;
-            var link = $"{projectResource.Link(CollectionLinkName)}/{id}";
+            var baseUrl = UrlTemplate.Resolve(projectResource.Link(CollectionLinkName), null);
+            var link = $"{baseUrl}/{id}";
             return Client.Get<TResource>(link, AdditionalQueryParameters);
         }
     }

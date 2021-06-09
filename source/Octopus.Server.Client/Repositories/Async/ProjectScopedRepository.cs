@@ -51,7 +51,8 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            var link = $"{projectResource.Link(CollectionLinkName)}/{id}";
+            var baseUrl = UrlTemplate.Resolve(projectResource.Link(CollectionLinkName), null);
+            var link = $"{baseUrl}/{id}";
             var additionalQueryParameters = GetAdditionalQueryParameters();
             return await Client.Get<TResource>(link, additionalQueryParameters).ConfigureAwait(false);
         }
