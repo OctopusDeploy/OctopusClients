@@ -44,7 +44,7 @@ namespace Octopus.Client.Repositories.Async
                 throw new NotSupportedException(
                     $"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
 
-            await client.Put(deploymentSettings.Link("Self"));
+            await client.Put(deploymentSettings.Link("Self"), project);
 
             return await client.Get<DeploymentSettingsResource>(deploymentSettings.Link("Self"));
         }
