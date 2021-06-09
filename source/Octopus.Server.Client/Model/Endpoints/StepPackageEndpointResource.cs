@@ -9,9 +9,17 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string Inputs { get; set; }
-        
+
+        [Trim]
+        [Writeable]
+        public string DeploymentTargetId { get; set; }
+
         [Trim]
         [Writeable]
         public string StepPackageId { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string StepPackageVersion { get; set; }
     }
 }
