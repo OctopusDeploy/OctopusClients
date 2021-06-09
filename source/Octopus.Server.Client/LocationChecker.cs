@@ -23,7 +23,8 @@ namespace Octopus.Client
 
         private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application, string processName = "")
         {
-            if (Process.GetCurrentProcess().ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)) return;
+            if (Process.GetCurrentProcess().ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)) 
+                return;
             using (var applicationRegNode = octopusRegNode.OpenSubKey(application))
             {
                 if (applicationRegNode != null)
