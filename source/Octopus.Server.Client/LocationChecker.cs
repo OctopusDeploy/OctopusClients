@@ -16,12 +16,12 @@ namespace Octopus.Client
             {
                 if (octopusRegNode == null) 
                     return;
-                // CheckBasedOnApplication(octopusRegNode, "Server");
+                CheckBasedOnApplication(octopusRegNode, "Server", "octopus.server");
                 CheckBasedOnApplication(octopusRegNode, "Tentacle", "tentacle");
             }
         }
 
-        private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application, string processName = "")
+        private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application, string processName)
         {
             if (Process.GetCurrentProcess().ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)) return;
             using (var applicationRegNode = octopusRegNode.OpenSubKey(application))
