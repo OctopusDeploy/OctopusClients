@@ -51,10 +51,15 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            var baseUrl = UrlTemplate.Resolve(projectResource.Link(CollectionLinkName), null);
-            var link = $"{baseUrl}/{id}";
-            var additionalQueryParameters = GetAdditionalQueryParameters();
-            return await Client.Get<TResource>(link, additionalQueryParameters).ConfigureAwait(false);
+            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
+            {
+                var link = projectResource.Link(CollectionLinkName);
+                var additionalQueryParameters = GetAdditionalQueryParameters();
+                var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new {id = id});
+                return await Client.Get<TResource>(link, parameters).ConfigureAwait(false);
+            }
+
+            return await Get(id);
         }
     }
 
