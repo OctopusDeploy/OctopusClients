@@ -130,6 +130,9 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
         Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef);
+        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef);
+        Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
@@ -163,6 +166,30 @@ namespace Octopus.Client.Repositories.Async
             var url = project.Link("ConvertToVcs");
             var response = await client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
             return response;
+        }
+
+        public async Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef)
+        {
+            projectResource.EnsureVersionControlled();
+            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
+            return await client.List<ChannelResource>(branch.Link("Channels"));
+        }
+
+        public async Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef)
+        {
+            projectResource.EnsureVersionControlled();
+            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
+            return await client.ListAll<ChannelResource>(branch.Link("Channels"));
+        }
+
+        public async Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
+        {
+            projectResource.EnsureVersionControlled();
+
+            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
+            var url = $"{branch.Link("Channels")}/{idOrName}";
+
+            return await client.Get<ChannelResource>(url);
         }
     }
 }

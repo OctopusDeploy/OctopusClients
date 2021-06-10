@@ -5,7 +5,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class ChannelResource : Resource, INamedResource, IHaveSpaceResource
+    public class ChannelResource : Resource, INamedResource, IHaveSpaceResource, IHaveProject
     {
         public ChannelResource()
         {

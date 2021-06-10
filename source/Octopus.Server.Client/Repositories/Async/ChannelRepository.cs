@@ -5,8 +5,9 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IChannelRepository : ICreate<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
+    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IGetProjectScoped<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
     {
+        IChannelBetaRepository Beta();
         Task<ChannelResource> FindByName(ProjectResource project, string name);
         Task<ChannelEditor> CreateOrModify(ProjectResource project, string name);
         Task<ChannelEditor> CreateOrModify(ProjectResource project, string name, string description);
@@ -16,12 +17,15 @@ namespace Octopus.Client.Repositories.Async
         Task<ReleaseResource> GetReleaseByVersion(ChannelResource channel, string version);
     }
 
-    class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
+    class ChannelRepository : ProjectScopedRepository<ChannelResource>, IChannelRepository
     {
-        public ChannelRepository(IOctopusAsyncRepository repository)
-            : base(repository, "Channels")
+        private readonly IChannelBetaRepository beta;
+        public ChannelRepository(IOctopusAsyncRepository repository) : base(repository, "Channels")
         {
+            beta = new ChannelBetaRepository(repository);
         }
+
+        public IChannelBetaRepository Beta() => beta;
 
         public Task<ChannelResource> FindByName(ProjectResource project, string name)
         {
@@ -52,6 +56,32 @@ namespace Octopus.Client.Repositories.Async
         public Task<ReleaseResource> GetReleaseByVersion(ChannelResource channel, string version)
         {
             return Client.Get<ReleaseResource>(channel.Link("Releases"), new { version });
+        }
+    }
+
+    public interface IChannelBetaRepository
+    {
+        Task<ChannelResource> Create(ProjectResource projectResource, string gitRef, ChannelResource channelResource, object pathParameters = null);
+    }
+
+    internal class ChannelBetaRepository : IChannelBetaRepository
+    {
+        private readonly IOctopusAsyncClient client;
+
+        public ChannelBetaRepository(IOctopusAsyncRepository repository)
+        {
+            client = repository.Client;
+        }
+
+        public async Task<ChannelResource> Create(
+            ProjectResource projectResource, 
+            string gitRef,
+            ChannelResource channelResource,
+            object pathParameters = null)
+        {
+            var branch = await client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = gitRef });
+            var link = branch.Link("Channels");
+            return await client.Create(link, channelResource, pathParameters);
         }
     }
 }
