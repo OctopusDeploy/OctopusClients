@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using Microsoft.Win32;
 using Octopus.Client.Logging;
 
@@ -18,13 +16,15 @@ namespace Octopus.Client
             {
                 if (octopusRegNode == null) 
                     return;
-                CheckBasedOnApplication(octopusRegNode, "Server");
-                CheckBasedOnApplication(octopusRegNode, "Tentacle");
+                CheckBasedOnApplication(octopusRegNode, "Server", "octopus.server");
+                CheckBasedOnApplication(octopusRegNode, "Tentacle", "tentacle");
             }
         }
 
-        private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application)
+        private static void CheckBasedOnApplication(RegistryKey octopusRegNode, string application, string processName)
         {
+            if (Process.GetCurrentProcess().ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)) 
+                return;
             using (var applicationRegNode = octopusRegNode.OpenSubKey(application))
             {
                 if (applicationRegNode != null)
