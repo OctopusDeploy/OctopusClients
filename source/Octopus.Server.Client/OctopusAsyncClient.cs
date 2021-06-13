@@ -27,6 +27,7 @@ namespace Octopus.Client
      
         private readonly OctopusServerEndpoint serverEndpoint;
         private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+        private readonly ResourceSelfLinkExtractor resourceSelfLinkExtractor = new ResourceSelfLinkExtractor();
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
@@ -325,7 +326,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var uri = QualifyUri(path, pathParameters);
 
             var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
-            return await Get<TResource>(response.Location).ConfigureAwait(false);
+
+            var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
+            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            return result;
         }
 
         /// <summary>
@@ -453,9 +457,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             var uri = QualifyUri(path, pathParameters);
 
-            await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false).ConfigureAwait(false);
-            var result = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
-            return result.ResponseResource;
+            var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true).ConfigureAwait(false);
+
+            var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
+            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            return result;
         }
 
         /// <summary>

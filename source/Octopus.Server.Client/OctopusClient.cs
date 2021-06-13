@@ -23,6 +23,7 @@ namespace Octopus.Client
         readonly CookieContainer cookieContainer = new CookieContainer();
         readonly Uri cookieOriginUri;
         readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
+        private readonly ResourceSelfLinkExtractor resourceSelfLinkExtractor = new ResourceSelfLinkExtractor();
         readonly OctopusCustomHeaders octopusCustomHeaders;
         private string antiforgeryCookieName = null;
 
@@ -223,7 +224,9 @@ namespace Octopus.Client
             var uri = QualifyUri(path, pathParameters);
 
             var response = DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true);
-            return Get<TResource>(response.Location);
+
+            var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
+            return Get<TResource>(getUrl);
         }
 
         /// <summary>
@@ -351,8 +354,10 @@ namespace Octopus.Client
         {
             var uri = QualifyUri(path, pathParameters);
 
-            DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
-            return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
+            var response = DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), readResponse: true);
+
+            var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
+            return Get<TResource>(getUrl);
         }
 
         /// <summary>
