@@ -14,7 +14,8 @@ namespace Octopus.Client.Serialization
                 {AccountType.AzureServicePrincipal, typeof(AzureServicePrincipalAccountResource)},
                 {AccountType.SshKeyPair, typeof(SshKeyPairAccountResource)},
                 {AccountType.AmazonWebServicesAccount, typeof(AmazonWebServicesAccountResource)},
-                {AccountType.Token, typeof(TokenAccountResource)}
+                {AccountType.Token, typeof(TokenAccountResource)},
+                {AccountType.GoogleCloudAccount, typeof(GoogleCloudAccountResource)}
             };
 
         protected override IDictionary<AccountType, Type> DerivedTypeMappings => AccountTypeMappings;
