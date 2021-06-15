@@ -1,4 +1,5 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
+using Octopus.Client.Model.VersionControl;
 
 namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 {
@@ -11,5 +12,7 @@ namespace Octopus.Client.Model.Triggers.ScheduledTriggers
 
         [Writeable]
         public string EnvironmentId { get; set; }
+
+        public VersionControlReferenceResource VersionControlReference { get; set; }
     }
 }
