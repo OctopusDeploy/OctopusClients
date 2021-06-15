@@ -26,6 +26,8 @@ namespace Octopus.Client.Extensions
                 accountType = AccountType.AmazonWebServicesAccount;
             else if (type == typeof(TokenAccountResource))
                 accountType = AccountType.Token;
+            else if (type == typeof(GoogleCloudAccountResource))
+                accountType = AccountType.GoogleCloudAccount;
             else
                 throw new ArgumentException($"Account type {type} is not supported");
 

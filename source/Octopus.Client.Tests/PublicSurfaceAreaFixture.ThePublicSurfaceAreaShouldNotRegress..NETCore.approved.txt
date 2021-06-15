@@ -5511,6 +5511,7 @@ Octopus.Client.Model.Accounts
       AmazonWebServicesAccount = 5
       AmazonWebServicesRoleAccount = 6
       Token = 7
+      GoogleCloudAccount = 8
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -5598,6 +5599,17 @@ Octopus.Client.Model.Accounts
       String ResourceGroupName { get; set; }
       String Site { get; set; }
     }
+  }
+  class GoogleCloudAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    Octopus.Client.Model.SensitiveValue JsonKey { get; set; }
   }
   class ResourceGroup
   {
