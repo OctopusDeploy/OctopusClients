@@ -6131,8 +6131,8 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    String DeploymentTargetId { get; set; }
-    String Inputs { get; set; }
+    String DeploymentTargetTypeId { get; set; }
+    Object Inputs { get; set; }
     String StepPackageId { get; set; }
     String StepPackageVersion { get; set; }
   }
