@@ -123,6 +123,7 @@ namespace Octopus.Client.Tests.Integration
                          { "SpaceHome", $"{TestRootPath}/api/{{spaceId}}" },
                          { "Users", $"{TestRootPath}/api/users/{{id}}" },
                          { "SignIn", $"{TestRootPath}/api/users/login" },
+                         { "Machines", $"{TestRootPath}/api/machines" },
                      }
                  }
              ));
