@@ -3556,6 +3556,7 @@ Octopus.Client.Model
       KubernetesAzure = 3
       KubernetesCertificate = 4
       KubernetesPodService = 5
+      KubernetesGoogleCloud = 6
   }
   class MultiTenancyStatusResource
     Octopus.Client.Extensibility.IResource
@@ -6003,6 +6004,20 @@ Octopus.Client.Model.Endpoints
     String ProxyId { get; set; }
     String SkipTlsVerification { get; set; }
   }
+  class KubernetesGoogleCloudAuthenticationResource
+    Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
+    Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
+  {
+    .ctor()
+    String AuthenticationType { get; }
+    String ClusterName { get; set; }
+    Boolean ImpersonateServiceAccount { get; set; }
+    String Project { get; set; }
+    String Region { get; set; }
+    String ServiceAccountEmails { get; set; }
+    Boolean UseVmServiceAccount { get; set; }
+    String Zone { get; set; }
+  }
   class KubernetesPodServiceAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
   {
@@ -6106,8 +6121,8 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    String DeploymentTargetId { get; set; }
-    String Inputs { get; set; }
+    String DeploymentTargetTypeId { get; set; }
+    Object Inputs { get; set; }
     String StepPackageId { get; set; }
     String StepPackageVersion { get; set; }
   }

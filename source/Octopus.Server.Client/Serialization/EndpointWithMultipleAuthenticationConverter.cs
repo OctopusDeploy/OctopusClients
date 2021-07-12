@@ -18,6 +18,7 @@ namespace Octopus.Client.Serialization
                 {MultipleAccountType.KubernetesCertificate, typeof(KubernetesCertificateAuthenticationResource)},
                 {MultipleAccountType.KubernetesStandard, typeof(KubernetesStandardAccountAuthenticationResource)},
                 {MultipleAccountType.KubernetesPodService, typeof(KubernetesPodServiceAuthenticationResource)},
+                {MultipleAccountType.KubernetesGoogleCloud, typeof(KubernetesGoogleCloudAuthenticationResource)},
             };
 
         protected override IDictionary<MultipleAccountType, Type> DerivedTypeMappings => FeedTypeMappings;

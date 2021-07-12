@@ -188,6 +188,7 @@ class Build : NukeBuild
     {
         EnsureExistingDirectory(LocalPackagesDir);
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
 
     Target Default => _ => _

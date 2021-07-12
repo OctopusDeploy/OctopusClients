@@ -8,11 +8,11 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
-        public string Inputs { get; set; }
+        public object Inputs { get; set; }
 
         [Trim]
         [Writeable]
-        public string DeploymentTargetId { get; set; }
+        public string DeploymentTargetTypeId { get; set; }
 
         [Trim]
         [Writeable]
