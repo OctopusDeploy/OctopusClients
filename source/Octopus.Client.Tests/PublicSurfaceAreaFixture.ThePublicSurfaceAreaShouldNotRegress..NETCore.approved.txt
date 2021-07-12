@@ -6483,6 +6483,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String EnvironmentId { get; set; }
     String Variables { get; set; }
+    Octopus.Client.Model.VersionControl.VersionControlReferenceResource VersionControlReference { get; set; }
   }
   MonthlyScheduleType
   {
