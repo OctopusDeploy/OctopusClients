@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Nuke.Common;
@@ -11,7 +10,6 @@ using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Nuke.OctoVersion;
 using OctoVersion.Core;
-using static Nuke.Common.Logger;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -27,6 +25,11 @@ class Build : NukeBuild
     [Parameter] readonly string Configuration = "Release";
     [Parameter] readonly string SigningCertificatePath = RootDirectory / "certificates" / "OctopusDevelopment.pfx";
     [Parameter] readonly string SigningCertificatePassword = "Password01!";
+
+    [Parameter] string AzureKeyVaultUrl = "";
+    [Parameter] string AzureKeyVaultAppId = "";
+    [Parameter, Secret] string AzureKeyVaultAppSecret = "";
+    [Parameter] string AzureKeyVaultCertificateName = "";
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
     ///////////////////////////////////////////////////////////////////////////////
@@ -38,6 +41,11 @@ class Build : NukeBuild
     AbsolutePath OctopusNormalClientFolder => SourceDir / "Octopus.Server.Client";
 
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
+
+    [PackageExecutable(
+        packageId: "azuresigntool",
+        packageExecutable: "azuresigntool.dll")]
+    readonly Tool AzureSignTool = null!;
 
     // Keep this list in order by most likely to succeed
     string[] SigningTimestampUrls => new[] {
@@ -199,14 +207,49 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
-        Info($"Signing binaries in {path}");
-        var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
+        Logger.Info($"Signing binaries in {path}");
+        var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
+        if (string.IsNullOrEmpty(AzureKeyVaultUrl)
+            && string.IsNullOrEmpty(AzureKeyVaultAppId)
+            && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
+            && string.IsNullOrEmpty(AzureKeyVaultCertificateName))
+        {
+            SignWithSignTool(files);
+        }
+        else
+        {
+            SignWithAzureSignTool(files);
+        }
+        Logger.Info($"Finished signing {files.Length} files.");
+    }
+
+    void SignWithAzureSignTool(AbsolutePath[] files)
+    {
+        Logger.Info("Signing files using azuresigntool and the production code signing certificate.");
+
+        var arguments = "sign " +
+                        $"--azure-key-vault-url \"{AzureKeyVaultUrl}\" " +
+                        $"--azure-key-vault-client-id \"{AzureKeyVaultAppId}\" " +
+                        $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
+                        $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
+                        $"--file-digest sha256 ";
+
+        foreach (var file in files)
+            arguments += $"\"{file}\" ";
+
+        AzureSignTool(arguments);
+    }
+
+    void SignWithSignTool(AbsolutePath[] files)
+    {
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
             try
             {
+                Logger.Info("Signing files using signtool and the self-signed development code signing certificate.");
+
                 SignTool(_ => _
                     .SetFile(SigningCertificatePath)
                     .SetPassword(SigningCertificatePassword)
