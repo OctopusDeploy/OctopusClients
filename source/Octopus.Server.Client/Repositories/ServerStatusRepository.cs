@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories
         ServerStatusResource GetServerStatus();
         SystemInfoResource GetSystemInfo(ServerStatusResource status);
         ServerStatusHealthResource GetServerHealth();
+        ServerDocumentCountsResource GetServerDocumentCounts(ServerStatusResource status);
     }
 
     class ServerStatusRepository : BasicRepository<ServerStatusResource>, IServerStatusRepository
@@ -31,6 +32,12 @@ namespace Octopus.Client.Repositories
         {
             if (status == null) throw new ArgumentNullException("status");
             return Client.Get<SystemInfoResource>(status.Link("SystemInfo"));
+        }
+
+        public ServerDocumentCountsResource GetServerDocumentCounts(ServerStatusResource status)
+        {
+            if (status == null) throw new ArgumentNullException("status");
+            return Client.Get<ServerDocumentCountsResource>(status.Link("DocumentCounts"));
         }
     }
 }

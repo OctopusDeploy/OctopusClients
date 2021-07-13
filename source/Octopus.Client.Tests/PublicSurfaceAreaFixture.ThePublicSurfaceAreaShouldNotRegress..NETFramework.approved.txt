@@ -4747,6 +4747,29 @@ Octopus.Client.Model
     .ctor()
     String ServerUri { get; set; }
   }
+  class ServerDocumentCountsResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Int32 Certificates { get; set; }
+    Int32 Deployments { get; set; }
+    Int32 DeploymentTargets { get; set; }
+    Int32 Environments { get; set; }
+    Int32 Packages { get; set; }
+    Int32 Projects { get; set; }
+    Int32 Releases { get; set; }
+    Int32 RunbookRuns { get; set; }
+    Int32 Runbooks { get; set; }
+    Int32 Spaces { get; set; }
+    Int32 Teams { get; set; }
+    Int32 Tenants { get; set; }
+    Int32 Users { get; set; }
+    Int32 VariableSets { get; set; }
+    Int32 WorkerPools { get; set; }
+    Int32 Workers { get; set; }
+  }
   class ServerStatusHealthResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -7279,6 +7302,7 @@ Octopus.Client.Repositories
   }
   interface IServerStatusRepository
   {
+    Octopus.Client.Model.ServerDocumentCountsResource GetServerDocumentCounts(Octopus.Client.Model.ServerStatusResource)
     Octopus.Client.Model.ServerStatusHealthResource GetServerHealth()
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
@@ -8050,6 +8074,7 @@ Octopus.Client.Repositories.Async
   }
   interface IServerStatusRepository
   {
+    Task<ServerDocumentCountsResource> GetServerDocumentCounts(Octopus.Client.Model.ServerStatusResource)
     Task<ServerStatusHealthResource> GetServerHealth()
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
