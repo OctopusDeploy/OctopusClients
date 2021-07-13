@@ -28,15 +28,22 @@
             "GitHubActions",
             "GitLab",
             "Jenkins",
+            "Rider",
             "SpaceAutomation",
             "TeamCity",
             "Terminal",
-            "TravisCI"
+            "TravisCI",
+            "VisualStudio",
+            "VSCode"
           ]
         },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
+        },
+        "Partition": {
+          "type": "string",
+          "description": "Partition to use on CI"
         },
         "Plan": {
           "type": "boolean",
@@ -74,8 +81,7 @@
               "PackNormalClientNuget",
               "Restore",
               "Test",
-              "TestClientNugetPackage",
-              "TestNormalClientNugetPackage"
+              "TestClientNugetPackage"
             ]
           }
         },
@@ -94,8 +100,7 @@
               "PackNormalClientNuget",
               "Restore",
               "Test",
-              "TestClientNugetPackage",
-              "TestNormalClientNugetPackage"
+              "TestClientNugetPackage"
             ]
           }
         },
