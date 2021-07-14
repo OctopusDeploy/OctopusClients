@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Nuke.Common;
+using Nuke.Common.CI.TeamCity;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
@@ -217,21 +218,26 @@ class Build : NukeBuild
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
+            TeamCity.Instance?.OpenBlock("Signing and timestamping with server " + url);
             try
             {
                 if (useSignTool)
                     SignWithSignTool(files, url);
                 else
                     SignWithAzureSignTool(files, url);
+                lastException = null;
             }
             catch (Exception ex)
             {
                 lastException = ex;
             }
+            TeamCity.Instance?.CloseBlock("Signing and timestamping with server " + url);
+            if (lastException == null)
+                break;
         }
 
         if (lastException != null)
-            throw (lastException);
+            throw lastException;
         Logger.Info($"Finished signing {files.Length} files.");
     }
 
@@ -253,12 +259,14 @@ class Build : NukeBuild
         foreach (var file in files)
             arguments += $"\"{file}\" ";
 
-        AzureSignTool(arguments);
+        AzureSignTool(arguments, customLogger: (_, message) => Logger.Normal(message));
     }
 
     void SignWithSignTool(AbsolutePath[] files, string url)
     {
-        Logger.Info("Signing files using signtool and the self-signed development code signing certificate.");
+        Logger.Info("Signing files using signtool.");
+
+        SignToolLogger = (_, message) => Logger.Normal(message);
 
         SignTool(_ => _
             .SetFile(SigningCertificatePath)
