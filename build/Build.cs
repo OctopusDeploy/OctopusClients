@@ -251,10 +251,10 @@ class Build : NukeBuild
                         $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
                         $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
                         $"--file-digest sha256 " +
-                        $"--timestamp-digest sha256 " +
                         $"--description \"Octopus Client Library\" " +
                         $"--description-url \"https://octopus.com\" " +
-                        $"--timestamp-rfc3161 {timestampUrl}";
+                        $"--timestamp-rfc3161 {timestampUrl}" +
+                        $"--timestamp-digest sha256 ";
 
         foreach (var file in files)
             arguments += $"\"{file}\" ";
