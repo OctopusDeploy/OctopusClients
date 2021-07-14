@@ -259,14 +259,14 @@ class Build : NukeBuild
         foreach (var file in files)
             arguments += $"\"{file}\" ";
 
-        AzureSignTool(arguments, customLogger: (_, message) => Logger.Normal(message));
+        AzureSignTool(arguments, customLogger: LogStdErrAsWarning);
     }
 
     void SignWithSignTool(AbsolutePath[] files, string url)
     {
         Logger.Info("Signing files using signtool.");
 
-        SignToolLogger = (_, message) => Logger.Normal(message);
+        SignToolLogger = LogStdErrAsWarning;
 
         SignTool(_ => _
             .SetFile(SigningCertificatePath)
@@ -277,6 +277,14 @@ class Build : NukeBuild
             .SetDescription("Octopus Client Library")
             .SetUrl("https://octopus.com")
             .SetRfc3161TimestampServerUrl(url));
+    }
+
+    static void LogStdErrAsWarning(OutputType type, string message)
+    {
+        if (type == OutputType.Err)
+            Logger.Warn(message);
+        else
+            Logger.Normal(message);
     }
 
     void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
