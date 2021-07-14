@@ -52,7 +52,7 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IDeploymentSettingsBetaRepository
     {
-        Task<DeploymentSettingsResource> Get(ProjectResource project, string gitref = null);
+        Task<DeploymentSettingsResource> Get(ProjectResource project, string gitRef = null);
 
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource,
             string commitMessage = null);
@@ -69,13 +69,13 @@ namespace Octopus.Client.Repositories.Async
             client = repository.Client;
         }
 
-        public async Task<DeploymentSettingsResource> Get(ProjectResource project, string gitref = null)
+        public async Task<DeploymentSettingsResource> Get(ProjectResource project, string gitRef = null)
         {
             if (!(project.PersistenceSettings is VersionControlSettingsResource settings))
                 return await repository.DeploymentSettings.Get(project);
 
-            gitref = gitref ?? settings.DefaultBranch;
-            var branch = await repository.Projects.Beta().GetVersionControlledBranch(project, gitref);
+            gitRef = gitRef ?? settings.DefaultBranch;
+            var branch = await repository.Projects.Beta().GetVersionControlledBranch(project, gitRef);
 
             return await client.Get<DeploymentSettingsResource>(branch.Link("DeploymentSettings"));
         }

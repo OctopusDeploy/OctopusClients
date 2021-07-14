@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories
 
     public interface IDeploymentSettingsBetaRepository
     {
-        DeploymentSettingsResource Get(ProjectResource project, string gitref = null);
+        DeploymentSettingsResource Get(ProjectResource project, string gitRef = null);
         DeploymentSettingsResource Modify(ProjectResource project, DeploymentSettingsResource resource, string commitMessage = null);
     }
 
@@ -39,11 +39,11 @@ namespace Octopus.Client.Repositories
             client = repository.Client;
         }
 
-        public DeploymentSettingsResource Get(ProjectResource projectResource, string gitref = null)
+        public DeploymentSettingsResource Get(ProjectResource projectResource, string gitRef = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitref))
+            if (!string.IsNullOrWhiteSpace(gitRef))
             {
-                var branchResource = repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitref);
+                var branchResource = repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitRef);
 
                 return client.Get<DeploymentSettingsResource>(branchResource.Link("DeploymentSettings"));
             }
