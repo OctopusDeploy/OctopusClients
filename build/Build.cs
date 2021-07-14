@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Nuke.Common;
+using Nuke.Common.CI.TeamCity;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
@@ -11,7 +12,6 @@ using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Nuke.OctoVersion;
 using OctoVersion.Core;
-using static Nuke.Common.Logger;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -27,6 +27,11 @@ class Build : NukeBuild
     [Parameter] readonly string Configuration = "Release";
     [Parameter] readonly string SigningCertificatePath = RootDirectory / "certificates" / "OctopusDevelopment.pfx";
     [Parameter] readonly string SigningCertificatePassword = "Password01!";
+
+    [Parameter] string AzureKeyVaultUrl = "";
+    [Parameter] string AzureKeyVaultAppId = "";
+    [Parameter, Secret] string AzureKeyVaultAppSecret = "";
+    [Parameter] string AzureKeyVaultCertificateName = "";
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
     ///////////////////////////////////////////////////////////////////////////////
@@ -38,6 +43,11 @@ class Build : NukeBuild
     AbsolutePath OctopusNormalClientFolder => SourceDir / "Octopus.Server.Client";
 
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
+
+    [PackageExecutable(
+        packageId: "azuresigntool",
+        packageExecutable: "azuresigntool.dll")]
+    readonly Tool AzureSignTool = null!;
 
     // Keep this list in order by most likely to succeed
     string[] SigningTimestampUrls => new[] {
@@ -203,33 +213,83 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
-        Info($"Signing binaries in {path}");
-        var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll"));
+        Logger.Info($"Signing binaries in {path}");
+        var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
+        var useSignTool = string.IsNullOrEmpty(AzureKeyVaultUrl)
+                          && string.IsNullOrEmpty(AzureKeyVaultAppId)
+                          && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
+                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName);
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
+            TeamCity.Instance?.OpenBlock("Signing and timestamping with server " + url);
             try
             {
-                SignTool(_ => _
-                    .SetFile(SigningCertificatePath)
-                    .SetPassword(SigningCertificatePassword)
-                    .SetFiles(files.Select(x => x.ToString()).ToArray())
-                    .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
-                    .SetTimestampServerDigestAlgorithm("sha256")
-                    .SetDescription("Octopus Client Tool")
-                    .SetUrl("https://octopus.com")
-                    .SetRfc3161TimestampServerUrl(url));
-                return;
+                if (useSignTool)
+                    SignWithSignTool(files, url);
+                else
+                    SignWithAzureSignTool(files, url);
+                lastException = null;
             }
             catch (Exception ex)
             {
                 lastException = ex;
             }
+            TeamCity.Instance?.CloseBlock("Signing and timestamping with server " + url);
+            if (lastException == null)
+                break;
         }
 
         if (lastException != null)
-            throw (lastException);
+            throw lastException;
+        Logger.Info($"Finished signing {files.Length} files.");
+    }
+
+    void SignWithAzureSignTool(AbsolutePath[] files, string timestampUrl)
+    {
+        Logger.Info("Signing files using azuresigntool and the production code signing certificate.");
+
+        var arguments = "sign " +
+                        $"--azure-key-vault-url \"{AzureKeyVaultUrl}\" " +
+                        $"--azure-key-vault-client-id \"{AzureKeyVaultAppId}\" " +
+                        $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
+                        $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
+                        $"--file-digest sha256 " +
+                        $"--description \"Octopus Client Library\" " +
+                        $"--description-url \"https://octopus.com\" " +
+                        $"--timestamp-rfc3161 {timestampUrl} " +
+                        $"--timestamp-digest sha256 ";
+
+        foreach (var file in files)
+            arguments += $"\"{file}\" ";
+
+        AzureSignTool(arguments, customLogger: LogStdErrAsWarning);
+    }
+
+    void SignWithSignTool(AbsolutePath[] files, string url)
+    {
+        Logger.Info("Signing files using signtool.");
+
+        SignToolLogger = LogStdErrAsWarning;
+
+        SignTool(_ => _
+            .SetFile(SigningCertificatePath)
+            .SetPassword(SigningCertificatePassword)
+            .SetFiles(files.Select(x => x.ToString()).ToArray())
+            .SetProcessToolPath(RootDirectory / "certificates" / "signtool.exe")
+            .SetTimestampServerDigestAlgorithm("sha256")
+            .SetDescription("Octopus Client Library")
+            .SetUrl("https://octopus.com")
+            .SetRfc3161TimestampServerUrl(url));
+    }
+
+    static void LogStdErrAsWarning(OutputType type, string message)
+    {
+        if (type == OutputType.Err)
+            Logger.Warn(message);
+        else
+            Logger.Normal(message);
     }
 
     void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)

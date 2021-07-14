@@ -6,6 +6,19 @@
     "build": {
       "type": "object",
       "properties": {
+        "AzureKeyVaultAppId": {
+          "type": "string"
+        },
+        "AzureKeyVaultAppSecret": {
+          "type": "string",
+          "default": "Secrets must be entered via 'nuke :secret [profile]'"
+        },
+        "AzureKeyVaultCertificateName": {
+          "type": "string"
+        },
+        "AzureKeyVaultUrl": {
+          "type": "string"
+        },
         "Configuration": {
           "type": "string"
         },
