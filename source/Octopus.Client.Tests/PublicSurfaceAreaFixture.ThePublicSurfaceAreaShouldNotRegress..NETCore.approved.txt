@@ -7098,6 +7098,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource, String)
+    IReadOnlyList<RunbookResource> GetAllRunbooks(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ChannelResource GetChannel(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
@@ -7869,6 +7870,7 @@ Octopus.Client.Repositories.Async
   {
     Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource, String)
+    Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(Octopus.Client.Model.ProjectResource, String)
     Task<ChannelResource> GetChannel(Octopus.Client.Model.ProjectResource, String, String)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource, String)
     Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
