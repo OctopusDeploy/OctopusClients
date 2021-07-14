@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
@@ -54,9 +54,11 @@ class Build : NukeBuild
     {
         EnsureCleanDirectory(ArtifactsDir);
         EnsureCleanDirectory(PublishDir);
-        SourceDir.GlobDirectories("**/bin").ForEach(x => EnsureCleanDirectory(x));
-        SourceDir.GlobDirectories("**/obj").ForEach(x => EnsureCleanDirectory(x));
-        SourceDir.GlobDirectories("**/TestResults").ForEach(x => EnsureCleanDirectory(x));
+        SourceDir.GlobDirectories("**/bin").ForEach(EnsureCleanDirectory);
+        SourceDir.GlobDirectories("**/obj").ForEach(EnsureCleanDirectory);
+        SourceDir.GlobDirectories("**/TestResults").ForEach(EnsureCleanDirectory);
+        DeleteFile(LocalPackagesDir / $"Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg");
+        DeleteFile(LocalPackagesDir / $"Octopus.Server.Client.{OctoVersionInfo.FullSemVer}.nupkg");
     });
 
     Target Restore => _ => _
@@ -87,11 +89,12 @@ class Build : NukeBuild
             DotNetTest(_ => _
                 .SetProjectFile(testProjectFile)
                 .SetConfiguration(Configuration)
-                .SetNoBuild(true));
+                .EnableNoBuild());
         });
     });
 
     Target Merge => _ => _
+        .DependsOn(Compile)
         .DependsOn(Test)
         .Executes(() =>
         {
@@ -177,9 +180,10 @@ class Build : NukeBuild
         DotNetTest(_ => _
             .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
             .SetConfiguration(Configuration)
-            .SetNoBuild(true));
+            .EnableNoBuild());
     });
 
+    [PublicAPI]
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
         .DependsOn(PackNormalClientNuget)
