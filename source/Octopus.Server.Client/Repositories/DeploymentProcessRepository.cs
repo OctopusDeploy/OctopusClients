@@ -1,4 +1,3 @@
-using System;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -44,19 +43,17 @@ namespace Octopus.Client.Repositories
         public DeploymentProcessRepositoryBeta(IOctopusRepository repository)
         {
             this.repository = repository;
-            this.client = repository.Client;
+            client = repository.Client;
         }
 
         public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitRef))
-            {
-                var branchResource = repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitRef);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.DeploymentProcesses.Get(projectResource.DeploymentProcessId);
 
-                return client.Get<DeploymentProcessResource>(branchResource.Link("DeploymentProcess"));
-            }
+            gitRef = gitRef ?? settings.DefaultBranch;
 
-            return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
+            return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
         }
 
         public DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null)

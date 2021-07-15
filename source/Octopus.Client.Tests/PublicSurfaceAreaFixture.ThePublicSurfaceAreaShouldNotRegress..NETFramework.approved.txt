@@ -6946,6 +6946,8 @@ Octopus.Client.Repositories
   interface IDeploymentSettingsRepository
   {
     Octopus.Client.Repositories.IDeploymentSettingsBetaRepository Beta()
+    Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindByName<EnvironmentResource>

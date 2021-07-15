@@ -75,9 +75,8 @@ namespace Octopus.Client.Repositories.Async
                 return await repository.DeploymentSettings.Get(project);
 
             gitRef = gitRef ?? settings.DefaultBranch;
-            var branch = await repository.Projects.Beta().GetVersionControlledBranch(project, gitRef);
 
-            return await client.Get<DeploymentSettingsResource>(branch.Link("DeploymentSettings"));
+            return await client.Get<DeploymentSettingsResource>(project.Link("DeploymentSettings"), new { gitRef });
         }
 
         public async Task<DeploymentSettingsResource> Modify(ProjectResource project,

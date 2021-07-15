@@ -1,3 +1,4 @@
+using System;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories
@@ -5,20 +6,46 @@ namespace Octopus.Client.Repositories
     public interface IDeploymentSettingsRepository
     {
         IDeploymentSettingsBetaRepository Beta();
+
+        DeploymentSettingsResource Get(ProjectResource project);
+        DeploymentSettingsResource Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
     }
 
     class DeploymentSettingsRepository : IDeploymentSettingsRepository
     {
         private readonly IDeploymentSettingsBetaRepository beta;
+        private readonly IOctopusClient client;
 
         public DeploymentSettingsRepository(IOctopusRepository repository)
         {
             beta = new DeploymentSettingsBetaRepository(repository);
+            client = repository.Client;
         }
 
         public IDeploymentSettingsBetaRepository Beta()
         {
             return beta;
+        }
+
+        public DeploymentSettingsResource Get(ProjectResource project)
+        {
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+
+            return client.Get<DeploymentSettingsResource>(project.Link("DeploymentSettings"));
+        }
+
+        public DeploymentSettingsResource Modify(ProjectResource project,
+            DeploymentSettingsResource deploymentSettings)
+        {
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IDeploymentSettingsBetaRepository)}.");
+
+            client.Put(deploymentSettings.Link("Self"), deploymentSettings);
+
+            return client.Get<DeploymentSettingsResource>(deploymentSettings.Link("Self"));
         }
     }
 
@@ -41,30 +68,26 @@ namespace Octopus.Client.Repositories
 
         public DeploymentSettingsResource Get(ProjectResource projectResource, string gitRef = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitRef))
-            {
-                var branchResource = repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitRef);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.DeploymentSettings.Get(projectResource);
 
-                return client.Get<DeploymentSettingsResource>(branchResource.Link("DeploymentSettings"));
-            }
+            gitRef = gitRef ?? settings.DefaultBranch;
 
-            return client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"));
+            return client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new { gitRef });
         }
 
         public DeploymentSettingsResource Modify(ProjectResource projectResource, DeploymentSettingsResource resource, string commitMessage = null)
         {
-            if (!projectResource.IsVersionControlled)
-            {
-                return client.Update(projectResource.Link("DeploymentSettings"), resource);
-            }
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource))
+                return repository.DeploymentSettings.Modify(projectResource, resource);
 
-            var commitResource = new CommitResource<DeploymentSettingsResource>
+            var commit = new CommitResource<DeploymentSettingsResource>
             {
                 Resource = resource,
                 CommitMessage = commitMessage
             };
 
-            client.Put(resource.Link("Self"), commitResource);
+            client.Put(resource.Link("Self"), commit);
 
             return client.Get<DeploymentSettingsResource>(resource.Link("Self"));
         }

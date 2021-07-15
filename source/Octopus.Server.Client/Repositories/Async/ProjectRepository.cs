@@ -216,9 +216,7 @@ namespace Octopus.Client.Repositories.Async
             
             gitRef = gitRef ?? settings.DefaultBranch;
             
-            var branch = await GetVersionControlledBranch(projectResource, gitRef);
-
-            return await client.ListAll<RunbookResource>(branch.Link("Runbooks"), new { gitRef });
+            return await client.ListAll<RunbookResource>(projectResource.Link("Runbooks"), new { gitRef });
         }
     }
 }

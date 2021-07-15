@@ -52,14 +52,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitRef))
-            {
-                var branchResource = await repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitRef);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.DeploymentProcesses.Get(projectResource.DeploymentProcessId);
 
-                return await client.Get<DeploymentProcessResource>(branchResource.Link("DeploymentProcess"));
-            }
+            gitRef = gitRef ?? settings.DefaultBranch;
 
-            return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
+            return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
         }
 
         public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource,
