@@ -48,12 +48,8 @@ namespace Octopus.Client.Repositories
             if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
-            {
-                var link = projectResource.Link(CollectionLinkName);
-                var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = id });
-                return Client.Get<TResource>(link, parameters);
-            }
+            if (projectResource.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use the Beta Repository instead.");
 
             return Get(id);
         }

@@ -61,6 +61,10 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project)
         {
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IProjectBetaRepository)}.");
+            
             return Client.List<ChannelResource>(project.Link("Channels"));
         }
 
@@ -130,17 +134,20 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
         Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
         Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
-        Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef);
-        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef);
+        Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef = null);
+        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef = null);
         Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
+        Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource projectResource, string gitRef = null);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
     {
+        private readonly IOctopusAsyncRepository repository;
         private readonly IOctopusAsyncClient client;
 
         public ProjectBetaRepository(IOctopusAsyncRepository repository)
         {
+            this.repository = repository;
             client = repository.Client;
         }
 
@@ -168,28 +175,48 @@ namespace Octopus.Client.Repositories.Async
             return response;
         }
 
-        public async Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef)
+        public async Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef = null)
         {
-            projectResource.EnsureVersionControlled();
-            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
-            return await client.List<ChannelResource>(branch.Link("Channels"));
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.Projects.GetChannels(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var branch = await GetVersionControlledBranch(projectResource, gitRef);
+
+            return await client.List<ChannelResource>(branch.Link("Channels"), new { gitRef });
         }
 
-        public async Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef)
+        public async Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef = null)
         {
-            projectResource.EnsureVersionControlled();
-            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
-            return await client.ListAll<ChannelResource>(branch.Link("Channels"));
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.Projects.GetAllChannels(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var branch = await GetVersionControlledBranch(projectResource, gitRef);
+
+            return await client.ListAll<ChannelResource>(branch.Link("Channels"), new { gitRef });
         }
 
         public async Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
         {
             projectResource.EnsureVersionControlled();
 
-            VersionControlBranchResource branch = await GetVersionControlledBranch(projectResource, gitRef);
+            var branch = await GetVersionControlledBranch(projectResource, gitRef);
             var url = $"{branch.Link("Channels")}/{idOrName}";
 
             return await client.Get<ChannelResource>(url);
+        }
+
+        public async Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource projectResource, string gitRef = null)
+        {
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.Projects.GetAllRunbooks(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            return await client.ListAll<RunbookResource>(projectResource.Link("Runbooks"), new { gitRef });
         }
     }
 }

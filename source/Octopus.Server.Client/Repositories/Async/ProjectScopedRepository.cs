@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model;
-using Octopus.Client.Util;
-using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -51,13 +45,8 @@ namespace Octopus.Client.Repositories.Async
             if (string.IsNullOrWhiteSpace(id))
                 return null;
 
-            if (projectResource.PersistenceSettings.Type == PersistenceSettingsType.VersionControlled)
-            {
-                var link = projectResource.Link(CollectionLinkName);
-                var additionalQueryParameters = GetAdditionalQueryParameters();
-                var parameters = ParameterHelper.CombineParameters(additionalQueryParameters, new {id = id});
-                return await Client.Get<TResource>(link, parameters).ConfigureAwait(false);
-            }
+            if (projectResource.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException($"Version Controlled projects are still in Beta. Use the Beta Repository instead.");
 
             return await Get(id);
         }

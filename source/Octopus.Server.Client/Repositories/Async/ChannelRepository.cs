@@ -61,27 +61,44 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IChannelBetaRepository
     {
-        Task<ChannelResource> Create(ProjectResource projectResource, string gitRef, ChannelResource channelResource, object pathParameters = null);
+        Task<ChannelResource> Get(ProjectResource projectResource, string idOrHref, string gitRef = null);
+        Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null);
     }
 
     internal class ChannelBetaRepository : IChannelBetaRepository
     {
         private readonly IOctopusAsyncClient client;
+        private readonly IOctopusAsyncRepository repository;
 
         public ChannelBetaRepository(IOctopusAsyncRepository repository)
         {
+            this.repository = repository;
             client = repository.Client;
+        }
+
+        public async Task<ChannelResource> Get(ProjectResource projectResource, string idOrHref, string gitRef = null)
+        {
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.Channels.Get(projectResource, idOrHref);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var link = projectResource.Link("Channels");
+            return await client.Get<ChannelResource>(link, new { id = idOrHref, gitRef });
         }
 
         public async Task<ChannelResource> Create(
             ProjectResource projectResource, 
-            string gitRef,
             ChannelResource channelResource,
-            object pathParameters = null)
+            string gitRef = null)
         {
-            var branch = await client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = gitRef });
-            var link = branch.Link("Channels");
-            return await client.Create(link, channelResource, pathParameters);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.Channels.Create(projectResource, channelResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var link = projectResource.Link("Channels");
+            return await client.Create(link, channelResource, new { gitRef });
         }
     }
 }

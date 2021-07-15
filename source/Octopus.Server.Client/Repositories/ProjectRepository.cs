@@ -60,6 +60,10 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<ChannelResource> GetChannels(ProjectResource project)
         {
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IProjectBetaRepository)}.");
+            
             return Client.List<ChannelResource>(project.Link("Channels"));
         }
 
@@ -120,6 +124,10 @@ namespace Octopus.Client.Repositories
 
         public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
         {
+            if (project.PersistenceSettings is VersionControlSettingsResource)
+                throw new NotSupportedException(
+                    $"Version Controlled projects are still in Beta. Use {nameof(IProjectBetaRepository)}.");
+            
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
     }
@@ -129,17 +137,20 @@ namespace Octopus.Client.Repositories
         ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
         ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
-        ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef);
-        IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef);
+        ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef = null);
+        IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef = null);
         ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
+        IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource projectResource, string gitRef = null);
     }
 
     internal class ProjectBetaRepository : IProjectBetaRepository
     {
+        private readonly IOctopusRepository repository;
         private readonly IOctopusClient client;
 
         public ProjectBetaRepository(IOctopusRepository repository)
         {
+            this.repository = repository;
             client = repository.Client;
         }
 
@@ -171,16 +182,26 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef)
         {
-            projectResource.EnsureVersionControlled();
-            VersionControlBranchResource branch = GetVersionControlledBranch(projectResource, gitRef);
-            return client.List<ChannelResource>(branch.Link("Channels"));
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Projects.GetChannels(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var branch = GetVersionControlledBranch(projectResource, gitRef);
+
+            return client.List<ChannelResource>(branch.Link("Channels"), new { gitRef });
         }
 
         public IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef)
         {
-            projectResource.EnsureVersionControlled();
-            VersionControlBranchResource branch = GetVersionControlledBranch(projectResource, gitRef);
-            return client.ListAll<ChannelResource>(branch.Link("Channels"));
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Projects.GetAllChannels(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var branch = GetVersionControlledBranch(projectResource, gitRef);
+
+            return client.ListAll<ChannelResource>(branch.Link("Channels"), new { gitRef });
         }
 
         public ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
@@ -191,6 +212,16 @@ namespace Octopus.Client.Repositories
             var url = $"{branch.Link("Channels")}/{idOrName}";
 
             return client.Get<ChannelResource>(url);
+        }
+
+        public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource projectResource, string gitRef = null)
+        {
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Projects.GetAllRunbooks(projectResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            return client.ListAll<RunbookResource>(projectResource.Link("Runbooks"), new { gitRef });
         }
     }
 }

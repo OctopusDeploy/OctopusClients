@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories.Async
 
     public interface IDeploymentProcessBetaRepository
     {
-        Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref = null);
+        Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef = null);
 
         Task<DeploymentProcessResource> Modify(ProjectResource projectResource, DeploymentProcessResource resource,
             string commitMessage = null);
@@ -50,16 +50,14 @@ namespace Octopus.Client.Repositories.Async
             this.client = repository.Client;
         }
 
-        public async Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitref = null)
+        public async Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef = null)
         {
-            if (!string.IsNullOrWhiteSpace(gitref))
-            {
-                var branchResource = await repository.Projects.Beta().GetVersionControlledBranch(projectResource, gitref);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return await repository.DeploymentProcesses.Get(projectResource.DeploymentProcessId);
 
-                return await client.Get<DeploymentProcessResource>(branchResource.Link("DeploymentProcess"));
-            }
+            gitRef = gitRef ?? settings.DefaultBranch;
 
-            return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
+            return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
         }
 
         public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource,
