@@ -53,6 +53,17 @@ namespace Octopus.Client.Repositories
             client = repository.Client;
         }
 
+        public ChannelResource Get(ProjectResource projectResource, string idOrHref, string gitRef = null)
+        {
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Channels.Get(projectResource, idOrHref);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var link = projectResource.Link("Channels");
+            return client.Get<ChannelResource>(link, new { id = idOrHref, gitRef });
+        }
+
         public ChannelResource Create(
             ProjectResource projectResource, 
             ChannelResource channelResource,
