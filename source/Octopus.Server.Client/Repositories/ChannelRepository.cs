@@ -1,4 +1,3 @@
-using System;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
 
@@ -40,27 +39,32 @@ namespace Octopus.Client.Repositories
 
     public interface IChannelBetaRepository
     {
-        ChannelResource Create(ProjectResource projectResource, string gitRef, ChannelResource channelResource, object pathParameters = null);
+        ChannelResource Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null);
     }
 
     internal class ChannelBetaRepository : IChannelBetaRepository
     {
+        private readonly IOctopusRepository repository;
         private readonly IOctopusClient client;
 
         public ChannelBetaRepository(IOctopusRepository repository)
         {
+            this.repository = repository;
             client = repository.Client;
         }
 
         public ChannelResource Create(
             ProjectResource projectResource, 
-            string gitRef,
             ChannelResource channelResource,
-            object pathParameters = null)
+            string gitRef = null)
         {
-            var branch = client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = gitRef });
-            var link = branch.Link("Channels");
-            return client.Create(link, channelResource, pathParameters);
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Channels.Create(projectResource, channelResource);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var link = projectResource.Link("Channels");
+            return client.Create(link, channelResource, new { gitRef });
         }
     }
 }

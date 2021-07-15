@@ -6831,7 +6831,7 @@ Octopus.Client.Repositories
   }
   interface IChannelBetaRepository
   {
-    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ChannelResource, Object)
+    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
@@ -7602,7 +7602,7 @@ Octopus.Client.Repositories.Async
   }
   interface IChannelBetaRepository
   {
-    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.ChannelResource, Object)
+    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>
