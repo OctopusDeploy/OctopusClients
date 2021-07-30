@@ -124,10 +124,6 @@ namespace Octopus.Client.Repositories
 
         public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
         {
-            if (project.PersistenceSettings is VersionControlSettingsResource)
-                throw new NotSupportedException(
-                    $"Version Controlled projects are still in Beta. Use {nameof(IProjectBetaRepository)}.");
-            
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
     }
@@ -140,7 +136,6 @@ namespace Octopus.Client.Repositories
         ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef = null);
         IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef = null);
         ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
-        IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource projectResource, string gitRef = null);
     }
 
     internal class ProjectBetaRepository : IProjectBetaRepository
@@ -212,16 +207,6 @@ namespace Octopus.Client.Repositories
             var url = $"{branch.Link("Channels")}/{idOrName}";
 
             return client.Get<ChannelResource>(url);
-        }
-
-        public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource projectResource, string gitRef = null)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return repository.Projects.GetAllRunbooks(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-            
-            return client.ListAll<RunbookResource>(projectResource.Link("Runbooks"), new { gitRef });
         }
     }
 }
