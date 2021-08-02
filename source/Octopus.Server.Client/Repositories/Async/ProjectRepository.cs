@@ -137,7 +137,6 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef = null);
         Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef = null);
         Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
-        Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource projectResource, string gitRef = null);
     }
 
     class ProjectBetaRepository : IProjectBetaRepository
@@ -207,16 +206,6 @@ namespace Octopus.Client.Repositories.Async
             var url = $"{branch.Link("Channels")}/{idOrName}";
 
             return await client.Get<ChannelResource>(url);
-        }
-
-        public async Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource projectResource, string gitRef = null)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return await repository.Projects.GetAllRunbooks(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-            
-            return await client.ListAll<RunbookResource>(projectResource.Link("Runbooks"), new { gitRef });
         }
     }
 }
