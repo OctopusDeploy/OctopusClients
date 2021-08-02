@@ -62,7 +62,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IChannelBetaRepository
     {
         Task<ChannelResource> Get(ProjectResource projectResource, string idOrHref, string gitRef = null);
-        Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null);
+        Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null, string commitMessage = null);
     }
 
     internal class ChannelBetaRepository : IChannelBetaRepository
@@ -90,7 +90,8 @@ namespace Octopus.Client.Repositories.Async
         public async Task<ChannelResource> Create(
             ProjectResource projectResource, 
             ChannelResource channelResource,
-            string gitRef = null)
+            string gitRef = null,
+            string commitMessage = null)
         {
             if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
                 return await repository.Channels.Create(projectResource, channelResource);
@@ -98,7 +99,14 @@ namespace Octopus.Client.Repositories.Async
             gitRef = gitRef ?? settings.DefaultBranch;
             
             var link = projectResource.Link("Channels");
-            return await client.Create(link, channelResource, new { gitRef });
+
+            var commitResouce = new CommitResource<ChannelResource>
+            {
+                CommitMessage = commitMessage,
+                Resource = channelResource
+            };
+
+            return await client.Post<CommitResource, ChannelResource>(link, commitResouce, new { gitRef });
         }
     }
 }
