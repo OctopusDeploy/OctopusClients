@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -54,8 +55,8 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<DeploymentSettingsResource> Get(ProjectResource project, string gitRef = null);
 
-        Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource,
-            string commitMessage = null);
+        Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource resource, string commitMessage = null);
+        Task<DeploymentSettingsResource> Modify(ProjectResource project, ModifyDeploymentSettingsCommand command);
     }
 
     internal class DeploymentSettingsBetaRepository : IDeploymentSettingsBetaRepository
@@ -79,21 +80,27 @@ namespace Octopus.Client.Repositories.Async
             return await client.Get<DeploymentSettingsResource>(project.Link("DeploymentSettings"), new { gitRef });
         }
 
-        public async Task<DeploymentSettingsResource> Modify(ProjectResource project,
-            DeploymentSettingsResource resource, string commitMessage = null)
+        public async Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, DeploymentSettingsResource resource, string commitMessage = null)
         {
-            if (!(project.PersistenceSettings is VersionControlSettingsResource))
-                return await repository.DeploymentSettings.Modify(project, resource);
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(resource);
+            var command = Serializer.Deserialize<ModifyDeploymentSettingsCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return await Modify(projectResource, command);
+        }
 
-            var commit = new CommitResource<DeploymentSettingsResource>
+        public async Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, ModifyDeploymentSettingsCommand command)
+        {
+            if (!projectResource.IsVersionControlled)
             {
-                Resource = resource,
-                CommitMessage = commitMessage
-            };
-
-            await client.Put(resource.Link("Self"), commit);
-
-            return await client.Get<DeploymentSettingsResource>(resource.Link("Self"));
+                return await client.Update(projectResource.Link("DeploymentSettings"), command);
+            }
+            
+            await client.Update(command.Link("Self"), command);
+            return await client.Get<DeploymentSettingsResource>(command.Link("Self"));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories
 {
@@ -53,6 +54,7 @@ namespace Octopus.Client.Repositories
     {
         DeploymentSettingsResource Get(ProjectResource project, string gitRef = null);
         DeploymentSettingsResource Modify(ProjectResource project, DeploymentSettingsResource resource, string commitMessage = null);
+        DeploymentSettingsResource Modify(ProjectResource projectResource, ModifyDeploymentSettingsCommand command);
     }
 
     class DeploymentSettingsBetaRepository : IDeploymentSettingsBetaRepository
@@ -78,18 +80,23 @@ namespace Octopus.Client.Repositories
 
         public DeploymentSettingsResource Modify(ProjectResource projectResource, DeploymentSettingsResource resource, string commitMessage = null)
         {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(resource);
+            var command = Serializer.Deserialize<ModifyDeploymentSettingsCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return Modify(projectResource, command);
+        }
+
+        public DeploymentSettingsResource Modify(ProjectResource projectResource, ModifyDeploymentSettingsCommand command)
+        {
             if (!(projectResource.PersistenceSettings is VersionControlSettingsResource))
-                return repository.DeploymentSettings.Modify(projectResource, resource);
+                return repository.DeploymentSettings.Modify(projectResource, command);
 
-            var commit = new CommitResource<DeploymentSettingsResource>
-            {
-                Resource = resource,
-                CommitMessage = commitMessage
-            };
-
-            client.Put(resource.Link("Self"), commit);
-
-            return client.Get<DeploymentSettingsResource>(resource.Link("Self"));
+            client.Put(command.Link("Self"), command);
+            return client.Get<DeploymentSettingsResource>(command.Link("Self"));
         }
     }
 }

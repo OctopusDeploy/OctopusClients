@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -63,6 +64,7 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<ChannelResource> Get(ProjectResource projectResource, string idOrHref, string gitRef = null);
         Task<ChannelResource> Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null, string commitMessage = null);
+        Task<ChannelResource> Create(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null);
     }
 
     internal class ChannelBetaRepository : IChannelBetaRepository
@@ -90,23 +92,28 @@ namespace Octopus.Client.Repositories.Async
         public async Task<ChannelResource> Create(
             ProjectResource projectResource, 
             ChannelResource channelResource,
-            string gitRef = null,
+            string gitRef = null, 
             string commitMessage = null)
         {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(channelResource);
+            var command = Serializer.Deserialize<ModifyChannelCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return await Create(projectResource, command, gitRef);
+        }
+
+        public async Task<ChannelResource> Create(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null)
+        {
             if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return await repository.Channels.Create(projectResource, channelResource);
+                return await repository.Channels.Create(projectResource, command);
             
             gitRef = gitRef ?? settings.DefaultBranch;
             
             var link = projectResource.Link("Channels");
-
-            var commitResouce = new CommitResource<ChannelResource>
-            {
-                CommitMessage = commitMessage,
-                Resource = channelResource
-            };
-
-            return await client.Post<CommitResource, ChannelResource>(link, commitResouce, new { gitRef });
+            return await client.Create(link, command, new { gitRef });
         }
     }
 }
