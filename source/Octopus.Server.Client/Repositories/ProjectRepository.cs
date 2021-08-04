@@ -181,10 +181,8 @@ namespace Octopus.Client.Repositories
                 return repository.Projects.GetChannels(projectResource);
             
             gitRef = gitRef ?? settings.DefaultBranch;
-            
-            var branch = GetVersionControlledBranch(projectResource, gitRef);
 
-            return client.List<ChannelResource>(branch.Link("Channels"), new { gitRef });
+            return client.List<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
         }
 
         public IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef)
@@ -193,20 +191,14 @@ namespace Octopus.Client.Repositories
                 return repository.Projects.GetAllChannels(projectResource);
             
             gitRef = gitRef ?? settings.DefaultBranch;
-            
-            var branch = GetVersionControlledBranch(projectResource, gitRef);
 
-            return client.ListAll<ChannelResource>(branch.Link("Channels"), new { gitRef });
+            return client.ListAll<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
         }
 
         public ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
         {
             projectResource.EnsureVersionControlled();
-
-            VersionControlBranchResource branch = GetVersionControlledBranch(projectResource, gitRef);
-            var url = $"{branch.Link("Channels")}/{idOrName}";
-
-            return client.Get<ChannelResource>(url);
+            return client.Get<ChannelResource>(projectResource.Links["Channels"], new { gitRef, id = idOrName });
         }
     }
 }
