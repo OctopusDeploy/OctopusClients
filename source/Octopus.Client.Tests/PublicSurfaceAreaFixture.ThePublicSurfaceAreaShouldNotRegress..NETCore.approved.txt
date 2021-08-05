@@ -2300,6 +2300,18 @@ Octopus.Client.Model
     static System.String StepName
     static Dictionary<String, String> AsDisplaySettings(String)
   }
+  class CreateChannelCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveProject
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.ChannelResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
   class DashboardConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6869,8 +6881,10 @@ Octopus.Client.Repositories
   interface IChannelBetaRepository
   {
     Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
+    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
     Octopus.Client.Model.ChannelResource Get(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
@@ -7643,8 +7657,10 @@ Octopus.Client.Repositories.Async
   interface IChannelBetaRepository
   {
     Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
+    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
     Task<ChannelResource> Get(Octopus.Client.Model.ProjectResource, String, String)
+    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>

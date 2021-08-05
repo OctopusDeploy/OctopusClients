@@ -42,7 +42,9 @@ namespace Octopus.Client.Repositories
     {
         ChannelResource Get(ProjectResource projectResource, string idOrHref, string gitRef = null);
         ChannelResource Create(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null, string commitMessage = null);
-        ChannelResource Create(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null);
+        ChannelResource Create(ProjectResource projectResource, CreateChannelCommand command, string gitRef = null);
+        ChannelResource Modify(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null, string commitMessage = null);
+        ChannelResource Modify(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null);
     }
 
     internal class ChannelBetaRepository : IChannelBetaRepository
@@ -76,14 +78,14 @@ namespace Octopus.Client.Repositories
             // TODO: revisit/obsolete this API when we have converters
             // until then we need a way to re-use the response from previous client calls
             var json = Serializer.Serialize(channelResource);
-            var command = Serializer.Deserialize<ModifyChannelCommand>(json);
+            var command = Serializer.Deserialize<CreateChannelCommand>(json);
             
             command.ChangeDescription = commitMessage;
             
             return Create(projectResource, command, gitRef);
         }
 
-        public ChannelResource Create(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null)
+        public ChannelResource Create(ProjectResource projectResource, CreateChannelCommand command, string gitRef = null)
         {
             if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
                 return repository.Channels.Create(projectResource, command);
@@ -92,6 +94,30 @@ namespace Octopus.Client.Repositories
             
             var link = projectResource.Link("Channels");
             return client.Create(link, command, new { gitRef });
+        }
+
+        public ChannelResource Modify(ProjectResource projectResource, ChannelResource channelResource, string gitRef = null,
+            string commitMessage = null)
+        {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(channelResource);
+            var command = Serializer.Deserialize<ModifyChannelCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return Modify(projectResource, command, gitRef);
+        }
+
+        public ChannelResource Modify(ProjectResource projectResource, ModifyChannelCommand command, string gitRef = null)
+        {
+            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
+                return repository.Channels.Modify(command);
+            
+            gitRef = gitRef ?? settings.DefaultBranch;
+            
+            var link = command.Link("Self");
+            return client.Update(link, command, new { gitRef });
         }
     }
 }
