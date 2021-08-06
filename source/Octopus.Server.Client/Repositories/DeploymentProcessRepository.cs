@@ -5,21 +5,21 @@ namespace Octopus.Client.Repositories
 {
     public interface IDeploymentProcessRepository : IGet<DeploymentProcessResource>, IModify<DeploymentProcessResource>
     {
-        IDeploymentProcessRepositoryBeta Beta();
+        IDeploymentProcessBetaRepository Beta();
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
     }
 
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        private readonly DeploymentProcessRepositoryBeta beta;
+        private readonly DeploymentProcessBetaRepository beta;
 
         public DeploymentProcessRepository(IOctopusRepository repository)
             : base(repository, "DeploymentProcesses")
         {
-            beta = new DeploymentProcessRepositoryBeta(repository);
+            beta = new DeploymentProcessBetaRepository(repository);
         }
 
-        public IDeploymentProcessRepositoryBeta Beta()
+        public IDeploymentProcessBetaRepository Beta()
         {
             return beta;
         }
@@ -30,19 +30,19 @@ namespace Octopus.Client.Repositories
         }
     }
 
-    public interface IDeploymentProcessRepositoryBeta
+    public interface IDeploymentProcessBetaRepository
     {
         DeploymentProcessResource Get(ProjectResource projectResource, string gitRef = null);
         DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null);
         DeploymentProcessResource Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command);
     }
 
-    class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
+    class DeploymentProcessBetaRepository : IDeploymentProcessBetaRepository
     {
         private readonly IOctopusRepository repository;
         private readonly IOctopusClient client;
 
-        public DeploymentProcessRepositoryBeta(IOctopusRepository repository)
+        public DeploymentProcessBetaRepository(IOctopusRepository repository)
         {
             this.repository = repository;
             client = repository.Client;

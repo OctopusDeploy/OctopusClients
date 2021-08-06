@@ -6967,18 +6967,18 @@ Octopus.Client.Repositories
   {
     void Delete(Octopus.Client.Repositories.TResource)
   }
-  interface IDeploymentProcessRepository
-    Octopus.Client.Repositories.IGet<DeploymentProcessResource>
-    Octopus.Client.Repositories.IModify<DeploymentProcessResource>
-  {
-    Octopus.Client.Repositories.IDeploymentProcessRepositoryBeta Beta()
-    Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
-  }
-  interface IDeploymentProcessRepositoryBeta
+  interface IDeploymentProcessBetaRepository
   {
     Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
     Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentProcessCommand)
+  }
+  interface IDeploymentProcessRepository
+    Octopus.Client.Repositories.IGet<DeploymentProcessResource>
+    Octopus.Client.Repositories.IModify<DeploymentProcessResource>
+  {
+    Octopus.Client.Repositories.IDeploymentProcessBetaRepository Beta()
+    Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>
