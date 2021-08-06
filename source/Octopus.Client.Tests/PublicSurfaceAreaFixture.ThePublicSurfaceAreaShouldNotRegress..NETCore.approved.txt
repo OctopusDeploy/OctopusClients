@@ -2300,6 +2300,18 @@ Octopus.Client.Model
     static System.String StepName
     static Dictionary<String, String> AsDisplaySettings(String)
   }
+  class CreateChannelCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveProject
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.ChannelResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
   class DashboardConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3048,6 +3060,10 @@ Octopus.Client.Model
     String LastModifiedBy { get; set; }
     Nullable<DateTimeOffset> LastModifiedOn { get; set; }
   }
+  interface ICommitCommand
+  {
+    String ChangeDescription { get; set; }
+  }
   class IdentityClaimResource
   {
     .ctor()
@@ -3547,6 +3563,39 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
+  }
+  class ModifyChannelCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveProject
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.ChannelResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
+  class ModifyDeploymentProcessCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IProcessResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.DeploymentProcessResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
+  class ModifyDeploymentSettingsCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.DeploymentSettingsResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
   }
   MultipleAccountType
   {
@@ -6832,6 +6881,10 @@ Octopus.Client.Repositories
   interface IChannelBetaRepository
   {
     Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
+    Octopus.Client.Model.ChannelResource Get(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
@@ -6899,6 +6952,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
+    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentProcessCommand)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>
@@ -6916,6 +6970,7 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentSettingsCommand)
   }
   interface IDeploymentSettingsRepository
   {
@@ -7602,7 +7657,10 @@ Octopus.Client.Repositories.Async
   interface IChannelBetaRepository
   {
     Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
     Task<ChannelResource> Get(Octopus.Client.Model.ProjectResource, String, String)
+    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
+    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>
@@ -7665,6 +7723,7 @@ Octopus.Client.Repositories.Async
   {
     Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
     Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
+    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentProcessCommand)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
@@ -7689,6 +7748,7 @@ Octopus.Client.Repositories.Async
   {
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentSettingsCommand)
   }
   interface IDeploymentSettingsRepository
   {
@@ -8313,7 +8373,7 @@ Octopus.Client.Serialization
   }
   abstract class Serializer
   {
-    static Object Deserialize(String)
+    static Octopus.Client.Serialization.T Deserialize(String)
     static String Serialize(Object, Octopus.Client.Serialization.T)
     static String Serialize(Object)
   }

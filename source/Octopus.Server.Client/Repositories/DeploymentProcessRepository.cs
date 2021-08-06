@@ -1,4 +1,5 @@
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories
 {
@@ -33,6 +34,7 @@ namespace Octopus.Client.Repositories
     {
         DeploymentProcessResource Get(ProjectResource projectResource, string gitRef = null);
         DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null);
+        DeploymentProcessResource Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command);
     }
 
     class DeploymentProcessRepositoryBeta : IDeploymentProcessRepositoryBeta
@@ -58,18 +60,25 @@ namespace Octopus.Client.Repositories
 
         public DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null)
         {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(resource);
+            var command = Serializer.Deserialize<ModifyDeploymentProcessCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return Modify(projectResource, command);
+        }
+
+        public DeploymentProcessResource Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command)
+        {
             if (!projectResource.IsVersionControlled)
             {
-                return client.Update(projectResource.Link("DeploymentProcess"), resource);
+                return client.Update(projectResource.Link("DeploymentProcess"), command);
             }
 
-            var commitResource = new CommitResource<DeploymentProcessResource>
-            {
-                Resource = resource,
-                CommitMessage = commitMessage
-            };
-            client.Put(resource.Link("Self"), commitResource);
-            return client.Get<DeploymentProcessResource>(resource.Link("Self"));
+            client.Put(command.Link("Self"), command);
+            return client.Get<DeploymentProcessResource>(command.Link("Self"));
         }
     }
 }

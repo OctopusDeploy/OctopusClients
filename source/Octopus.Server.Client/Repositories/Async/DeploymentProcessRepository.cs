@@ -1,6 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -34,9 +34,8 @@ namespace Octopus.Client.Repositories.Async
     public interface IDeploymentProcessBetaRepository
     {
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef = null);
-
-        Task<DeploymentProcessResource> Modify(ProjectResource projectResource, DeploymentProcessResource resource,
-            string commitMessage = null);
+        Task<DeploymentProcessResource> Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null);
+        Task<DeploymentProcessResource> Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand resource);
     }
 
     class DeploymentProcessBetaRepository : IDeploymentProcessBetaRepository
@@ -60,21 +59,27 @@ namespace Octopus.Client.Repositories.Async
             return await client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
         }
 
-        public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource,
-            DeploymentProcessResource resource, string commitMessage = null)
+        public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null)
+        {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(resource);
+            var command = Serializer.Deserialize<ModifyDeploymentProcessCommand>(json);
+            
+            command.ChangeDescription = commitMessage;
+            
+            return await Modify(projectResource, command);
+        }
+
+        public async Task<DeploymentProcessResource> Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command)
         {
             if (!projectResource.IsVersionControlled)
             {
-                return await client.Update(projectResource.Link("DeploymentProcess"), resource);
+                return await client.Update(projectResource.Link("DeploymentProcess"), command);
             }
-
-            var commitResource = new CommitResource<DeploymentProcessResource>
-            {
-                Resource = resource,
-                CommitMessage = commitMessage
-            };
-            await client.Update(resource.Link("Self"), commitResource);
-            return await client.Get<DeploymentProcessResource>(resource.Link("Self"));
+            
+            await client.Update(command.Link("Self"), command);
+            return await client.Get<DeploymentProcessResource>(command.Link("Self"));
         }
     }
 }

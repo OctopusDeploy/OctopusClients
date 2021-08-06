@@ -27,7 +27,7 @@ namespace Octopus.Client.Serialization
             return serializedObject;
         }
         
-        public static object Deserialize<T>(string input)
+        public static T Deserialize<T>(string input)
         {
             return JsonConvert.DeserializeObject<T>(input, JsonSerialization.GetDefaultSerializerSettings());
         }
