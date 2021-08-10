@@ -46,6 +46,12 @@ namespace Octopus.Client.Model
 
         public DeploymentActionCondition Condition { get; set; }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string StepPackageVersion { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public object Inputs { get; set; }
+
         public DeploymentActionResource ClearAllConditions()
         {
             Channels.Clear();
