@@ -14,12 +14,12 @@ namespace Octopus.Client.Model
     /// Storing collections of nested objects in the property-bag gets very messy, so packge-references were moved into their own class
     /// and collection on the deployment actions.
     /// </history>
-    public class PackageReference 
+    public class PackageReference
     {
         string name;
-        
+
         /// <summary>
-        /// Constructs a named package-reference. 
+        /// Constructs a named package-reference.
         /// </summary>
         /// <param name="name">The package-reference name.</param>
         /// <param name="packageId">The package ID or a variable-expression</param>
@@ -29,9 +29,9 @@ namespace Octopus.Client.Model
             :this(name, packageId, feedId, acquisitionLocation.ToString())
         {
         }
-        
+
         /// <summary>
-        /// Constructs a named package-reference. 
+        /// Constructs a named package-reference.
         /// </summary>
         /// <param name="name">The package-reference name.</param>
         /// <param name="packageId">The package ID or a variable-expression</param>
@@ -42,7 +42,7 @@ namespace Octopus.Client.Model
             :this(null, name, packageId, feedId, acquisitionLocation)
         {
         }
-        
+
         /// <summary>
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
@@ -50,7 +50,7 @@ namespace Octopus.Client.Model
         :this(null, packageId, feedId, acquisitionLocation)
         {
         }
-        
+
         /// <summary>
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
@@ -58,7 +58,7 @@ namespace Octopus.Client.Model
         :this(null, packageId, feedId, acquisitionLocation)
         {
         }
-        
+
         /// <summary>
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
@@ -68,9 +68,9 @@ namespace Octopus.Client.Model
 
         public PackageReference()
         {
-           Properties = new Dictionary<string, string>(); 
+           Properties = new Dictionary<string, string>();
         }
-        
+
         /// <summary>
         /// For JSON deserialization only
         /// </summary>
@@ -84,7 +84,7 @@ namespace Octopus.Client.Model
             AcquisitionLocation = acquisitionLocation;
             this.name = name;
         }
-        
+
         /// <summary>
         /// The ID of the package reference.
         /// It should be noted this is *not* the Package ID (e.g. Acme.Web)
@@ -92,36 +92,43 @@ namespace Octopus.Client.Model
         /// is created.
         /// </summary>
         public string Id { get; set; }
-        
+
         /// <summary>
         /// An name for the package-reference.
         /// This may be empty, and should be empty for deployment actions with a single package reference.
         /// This is used to discriminate the package-references. Package ID isn't suitable because an action may potentially
         /// have multiple references to the same package ID (e.g. if you wanted to use different versions of the same package).
-        /// Also, the package ID may be a variable-expression. 
+        /// Also, the package ID may be a variable-expression.
         /// </summary>
         public string Name
         {
             get => name ?? "";
             set => name = value;
         }
-        
+
         /// <summary>
-        /// Package ID or a variable-expression 
+        /// Package ID or a variable-expression
         /// </summary>
         public string PackageId { get; set; }
-        
+
         /// <summary>
         /// Feed ID or a variable-expression
         /// </summary>
         public string FeedId { get; set; }
-        
+
         /// <summary>
         /// The package-acquisition location.
-        /// One of <see cref="PackageAcquisitionLocation"/> or a variable-expression 
+        /// One of <see cref="PackageAcquisitionLocation"/> or a variable-expression
         /// </summary>
-        public string AcquisitionLocation { get; set; } 
-        
+        public string AcquisitionLocation { get; set; }
+
+        /// <summary>
+        /// This reference identifier is populated when a step package step contains a package reference
+        /// It allows us to correlate the reference within the step package inputs to this Server package reference
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string StepPackageInputsReferenceId { get; set; }
+
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, string> Properties { get; private set; }
 
@@ -132,7 +139,8 @@ namespace Octopus.Client.Model
         {
             return new PackageReference(name, PackageId, FeedId, AcquisitionLocation)
             {
-                Properties = new Dictionary<string, string>(Properties)
+                Properties = new Dictionary<string, string>(Properties),
+                StepPackageInputsReferenceId = StepPackageInputsReferenceId
             };
         }
     }
