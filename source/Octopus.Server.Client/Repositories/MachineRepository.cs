@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
+using Octopus.Client.Model.DeploymentTargets;
 using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Repositories
@@ -12,7 +13,7 @@ namespace Octopus.Client.Repositories
         MachineResource Discover(DiscoverMachineOptions options);
         MachineConnectionStatus GetConnectionStatus(MachineResource machine);
         List<MachineResource> FindByThumbprint(string thumbprint);
-        IReadOnlyList<TaskResource> GetTasks(MachineResource machine);
+        IReadOnlyList<TaskResource> GetTasks(MachineResource machine, DeploymentTargetTaskType? type = null);
         IReadOnlyList<TaskResource> GetTasks(MachineResource machine, object pathParameters);
 
 
@@ -80,16 +81,20 @@ namespace Octopus.Client.Repositories
         }
 
         /// <summary>
-        /// Gets all tasks involving the specified machine
+        /// Gets tasks involving the specified machine. If `type` is specified, only gets tasks of the specified type.
+        /// If `type` is not specified, gets tasks of all types.
         /// </summary>
         /// <param name="machine"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine) => GetTasks(machine, new {skip = 0});
+        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine, DeploymentTargetTaskType? type = null) => GetTasks(machine, new {skip = 0, type});
 
         /// <summary>
-        /// Gets all tasks involving the specified machine
+        /// Gets tasks involving the specified machine. If `type` is specified, only gets tasks of the specified type.
+        /// If `type` is not specified, gets tasks of all types.
         /// 
-        /// The `take` pathParmeter is only respected in Octopus 4.0.6 and later
+        /// The `take` pathParameter is only respected in Octopus 4.0.6 and later
+        /// The `type` pathParameter is only respected in Octopus 2021.3 and later
         /// </summary>
         /// <param name="machine"></param>
         /// <param name="pathParameters"></param>
