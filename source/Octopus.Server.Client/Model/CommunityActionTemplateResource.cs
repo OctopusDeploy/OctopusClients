@@ -22,6 +22,12 @@ namespace Octopus.Client.Model
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
 
-        public LinkCollection Links { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string StepPackageVersion { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public object Inputs { get; set; }
+
+        public LinkCollection Links { get; set; }        
     }
 }
