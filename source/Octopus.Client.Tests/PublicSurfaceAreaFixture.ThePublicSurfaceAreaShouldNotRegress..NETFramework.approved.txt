@@ -5974,6 +5974,14 @@ Octopus.Client.Model.DeploymentProcess
       Target = 1
   }
 }
+Octopus.Client.Model.DeploymentTargets
+{
+  DeploymentTargetTaskType
+  {
+      Deployment = 0
+      RunbookRun = 1
+  }
+}
 Octopus.Client.Model.Endpoints
 {
   AzureServiceFabricCredentialType
@@ -7131,7 +7139,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineResource Discover(Octopus.Client.Model.DiscoverMachineOptions)
     List<MachineResource> FindByThumbprint(String)
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.MachineResource)
-    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource)
+    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Nullable<DeploymentTargetTaskType>)
     IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Object)
     Octopus.Client.Model.ResourceCollection<MachineResource> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
   }
