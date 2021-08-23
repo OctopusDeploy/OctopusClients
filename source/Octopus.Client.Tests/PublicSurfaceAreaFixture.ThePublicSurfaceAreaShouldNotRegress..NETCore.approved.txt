@@ -1594,11 +1594,13 @@ Octopus.Client.Model
     String ActionType { get; set; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
+    Object Inputs { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.PackageReferenceCollection Packages { get; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
     String SpaceId { get; set; }
+    String StepPackageVersion { get; set; }
     Int32 Version { get; set; }
   }
   class ActionTemplateSearchResource
@@ -2262,10 +2264,12 @@ Octopus.Client.Model
     String Description { get; set; }
     String HistoryUrl { get; set; }
     String Id { get; set; }
+    Object Inputs { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
     IList<ActionTemplateParameterResource> Parameters { get; }
     IDictionary<String, PropertyValueResource> Properties { get; }
+    String StepPackageVersion { get; set; }
     String Type { get; set; }
     Int32 Version { get; set; }
     String Website { get; set; }
