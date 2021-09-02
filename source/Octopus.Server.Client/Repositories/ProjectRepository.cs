@@ -60,10 +60,6 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<ChannelResource> GetChannels(ProjectResource project)
         {
-            if (project.PersistenceSettings is VersionControlSettingsResource)
-                throw new NotSupportedException(
-                    $"Version Controlled projects are still in Beta. Use {nameof(IProjectBetaRepository)}.");
-            
             return Client.List<ChannelResource>(project.Link("Channels"));
         }
 
