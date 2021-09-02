@@ -133,9 +133,6 @@ namespace Octopus.Client.Repositories
         ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource);
         VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
         ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
-        ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef = null);
-        IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef = null);
-        ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
     }
 
     internal class ProjectBetaRepository : IProjectBetaRepository
@@ -173,32 +170,6 @@ namespace Octopus.Client.Repositories
                 client.Post<ConvertProjectToVersionControlledCommand, ConvertProjectToVersionControlledResponse>(url,
                     payload);
             return response;
-        }
-
-        public ResourceCollection<ChannelResource> GetChannels(ProjectResource projectResource, string gitRef)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return repository.Projects.GetChannels(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-
-            return client.List<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
-        }
-
-        public IReadOnlyList<ChannelResource> GetAllChannels(ProjectResource projectResource, string gitRef)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return repository.Projects.GetAllChannels(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-
-            return client.ListAll<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
-        }
-
-        public ChannelResource GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
-        {
-            projectResource.EnsureVersionControlled();
-            return client.Get<ChannelResource>(projectResource.Links["Channels"], new { gitRef, id = idOrName });
         }
     }
 }
