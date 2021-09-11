@@ -39,5 +39,6 @@ namespace Octopus.Client.Model
         
         public string Id { get; set; }
         public LinkCollection Links { get; set; }
+        public string GitRef { get; set; }
     }
 }
