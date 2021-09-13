@@ -1541,6 +1541,7 @@ Octopus.Client.Model
   {
     .ctor()
     String[] ActionIds { get; set; }
+    String GitRef { get; set; }
     String Id { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String ProcessId { get; set; }
