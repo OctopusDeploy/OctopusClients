@@ -7,11 +7,11 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.AutomationEnvironments
 {
-    public class AutomationEnvironmentProvider : IAutomationEnvironmentProvider
-    {
-        private static readonly ILog Logger = LogProvider.For<AutomationEnvironmentProvider>();
+  public class AutomationEnvironmentProvider : IAutomationEnvironmentProvider
+  {
+    private static readonly ILog Logger = LogProvider.For<AutomationEnvironmentProvider>();
 
-        internal static readonly Dictionary<AutomationEnvironment, string[]> KnownEnvironmentVariables = new Dictionary<AutomationEnvironment, string[]>
+    internal static readonly Dictionary<AutomationEnvironment, string[]> KnownEnvironmentVariables = new Dictionary<AutomationEnvironment, string[]>
         {
             { AutomationEnvironment.Octopus, new []{"AgentProgramDirectoryPath"}},
             // https://confluence.jetbrains.com/display/TCD9/Predefined+Build+Parameters
@@ -24,6 +24,8 @@ namespace Octopus.Client.AutomationEnvironments
             { AutomationEnvironment.BitBucket, new [] {"BITBUCKET_BUILD_NUMBER"}},
             { AutomationEnvironment.Jenkins, new [] {"JENKINS_URL"}},
             { AutomationEnvironment.CircleCI, new [] {"CIRCLECI"}},
+            // https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
+            { AutomationEnvironment.GitHubActions, new [] {"GITHUB_ACTIONS"}},
             { AutomationEnvironment.GitLabCI, new [] {"GITLAB_CI"}},
             { AutomationEnvironment.Travis, new [] {"TRAVIS"}},
             { AutomationEnvironment.GoCD, new [] {"GO_PIPELINE_LABEL"}},
@@ -44,38 +46,38 @@ namespace Octopus.Client.AutomationEnvironments
             { AutomationEnvironment.StriderCD, new [] {"STRIDER"}}
         };
 
-        internal static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
+    internal static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
 
-        static bool EnvironmentVariableHasValue(string variableName)
-        {
-            return !string.IsNullOrEmpty(environmentVariableReader.GetVariableValue(variableName));
-        }
-
-        public AutomationEnvironment DetermineAutomationEnvironment()
-        {
-            return KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
-        }
-
-        public string DetermineAutomationEnvironmentWithVersion()
-        {
-            var environment = DetermineAutomationEnvironment();
-            var envString = environment.ToString();
-
-            if (environment == AutomationEnvironment.TeamCity)
-            {
-                // the TeamCity version is formatted like "2018.1.3 (Build 12345)", we just want the bit before the first space
-                envString = $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First()).Split(' ').First()}";
-            }
-
-            Logger.InfoFormat("Detected automation environment: {environment}", envString);
-
-            return envString;
-        }
-    }
-
-    internal interface IAutomationEnvironmentProvider
+    static bool EnvironmentVariableHasValue(string variableName)
     {
-        AutomationEnvironment DetermineAutomationEnvironment();
-        string DetermineAutomationEnvironmentWithVersion();
+      return !string.IsNullOrEmpty(environmentVariableReader.GetVariableValue(variableName));
     }
+
+    public AutomationEnvironment DetermineAutomationEnvironment()
+    {
+      return KnownEnvironmentVariables.Where(kev => kev.Value.Any(EnvironmentVariableHasValue)).Select(x => x.Key).Distinct().FirstOrDefault();
+    }
+
+    public string DetermineAutomationEnvironmentWithVersion()
+    {
+      var environment = DetermineAutomationEnvironment();
+      var envString = environment.ToString();
+
+      if (environment == AutomationEnvironment.TeamCity)
+      {
+        // the TeamCity version is formatted like "2018.1.3 (Build 12345)", we just want the bit before the first space
+        envString = $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First()).Split(' ').First()}";
+      }
+
+      Logger.InfoFormat("Detected automation environment: {environment}", envString);
+
+      return envString;
+    }
+  }
+
+  internal interface IAutomationEnvironmentProvider
+  {
+    AutomationEnvironment DetermineAutomationEnvironment();
+    string DetermineAutomationEnvironmentWithVersion();
+  }
 }
