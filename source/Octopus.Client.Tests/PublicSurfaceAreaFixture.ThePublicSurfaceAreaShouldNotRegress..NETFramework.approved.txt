@@ -6920,14 +6920,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
     void UnArchive(Octopus.Client.Model.CertificateResource)
   }
-  interface IChannelBetaRepository
-  {
-    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Octopus.Client.Model.ChannelResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
-    Octopus.Client.Model.ChannelResource Get(Octopus.Client.Model.ProjectResource, String, String)
-    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Octopus.Client.Model.ChannelResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
-  }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
     Octopus.Client.Repositories.ICreateProjectScoped<ChannelResource>
@@ -6938,7 +6930,6 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ChannelResource>
     Octopus.Client.Repositories.IGetAll<ChannelResource>
   {
-    Octopus.Client.Repositories.IChannelBetaRepository Beta()
     Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Editors.ChannelEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.ChannelResource FindByName(Octopus.Client.Model.ProjectResource, String)
@@ -7196,9 +7187,6 @@ Octopus.Client.Repositories
   interface IProjectBetaRepository
   {
     Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
-    IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.ChannelResource GetChannel(Octopus.Client.Model.ProjectResource, String, String)
-    Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
@@ -7696,14 +7684,6 @@ Octopus.Client.Repositories.Async
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
   }
-  interface IChannelBetaRepository
-  {
-    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Task<ChannelResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.CreateChannelCommand, String)
-    Task<ChannelResource> Get(Octopus.Client.Model.ProjectResource, String, String)
-    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ChannelResource, String, String)
-    Task<ChannelResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyChannelCommand, String)
-  }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>
     Octopus.Client.Repositories.Async.ICreateProjectScoped<ChannelResource>
@@ -7713,7 +7693,6 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ChannelResource>
     Octopus.Client.Repositories.Async.IPaginate<ChannelResource>
   {
-    Octopus.Client.Repositories.Async.IChannelBetaRepository Beta()
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String)
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
     Task<ChannelResource> FindByName(Octopus.Client.Model.ProjectResource, String)
