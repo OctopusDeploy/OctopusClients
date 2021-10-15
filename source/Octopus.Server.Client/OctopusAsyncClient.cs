@@ -45,6 +45,7 @@ namespace Octopus.Client
             {
                 CookieContainer = cookieContainer,
                 Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
+                UseProxy = clientOptions.AllowDefaultProxy
             };
 
             if (clientOptions.Proxy != null)
@@ -63,7 +64,10 @@ namespace Octopus.Client
 #endif
 
             if (serverEndpoint.Proxy != null)
+            {
+                handler.UseProxy = true;
                 handler.Proxy = serverEndpoint.Proxy;
+            }
 
             client = new HttpClient(handler, true);
             client.Timeout = clientOptions.Timeout;
