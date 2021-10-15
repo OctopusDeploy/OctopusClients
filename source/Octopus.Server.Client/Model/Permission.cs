@@ -172,6 +172,8 @@ namespace Octopus.Client.Model
         [Description("Edit tag sets")] TagSetEdit,
 
         [Description("Delete tag sets")] TagSetDelete,
+        
+        [Description("View telemetry data")] TelemetryView,
 
         [Description("Create health check policies")] MachinePolicyCreate,
 
