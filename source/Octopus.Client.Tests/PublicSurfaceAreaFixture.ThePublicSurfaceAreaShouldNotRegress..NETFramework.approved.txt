@@ -418,6 +418,7 @@ Octopus.Client
   class OctopusClientOptions
   {
     .ctor()
+    Boolean AllowDefaultProxy { get; set; }
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
