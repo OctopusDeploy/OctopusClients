@@ -3979,6 +3979,8 @@ Octopus.Client.Model
       RunbookRunView = 115
       RunbookRunDelete = 116
       RunbookRunCreate = 117
+      ServiceConnectionView = 118
+      ServiceConnectionEdit = 119
   }
   class PermissionDescription
   {
