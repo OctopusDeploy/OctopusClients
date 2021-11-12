@@ -248,5 +248,9 @@ namespace Octopus.Client.Model
         [Description("Delete runbook runs")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookRunDelete,
 
         [Description("Create runbook runs")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] RunbookRunCreate,
+
+        [Description("View Git credentials")] GitCredentialView,
+
+        [Description("Edit Git credentials")] GitCredentialEdit
     }
 }
