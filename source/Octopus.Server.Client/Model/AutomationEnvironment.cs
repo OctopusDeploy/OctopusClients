@@ -11,7 +11,6 @@
         BitBucket,
         Jenkins,
         CircleCI,
-        GitHubActions,
         GitLabCI,
         Travis,
         GoCD,
@@ -29,6 +28,7 @@
         Semaphore,
         Shippable,
         SolanoCI,
-        StriderCD
+        StriderCD,
+        GitHubActions
     }
 }
