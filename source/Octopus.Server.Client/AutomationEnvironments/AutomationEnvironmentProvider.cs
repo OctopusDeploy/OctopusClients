@@ -24,8 +24,6 @@ namespace Octopus.Client.AutomationEnvironments
             { AutomationEnvironment.BitBucket, new [] {"BITBUCKET_BUILD_NUMBER"}},
             { AutomationEnvironment.Jenkins, new [] {"JENKINS_URL"}},
             { AutomationEnvironment.CircleCI, new [] {"CIRCLECI"}},
-            // https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
-            { AutomationEnvironment.GitHubActions, new [] {"GITHUB_ACTIONS"}},
             { AutomationEnvironment.GitLabCI, new [] {"GITLAB_CI"}},
             { AutomationEnvironment.Travis, new [] {"TRAVIS"}},
             { AutomationEnvironment.GoCD, new [] {"GO_PIPELINE_LABEL"}},
@@ -44,6 +42,8 @@ namespace Octopus.Client.AutomationEnvironments
             { AutomationEnvironment.Shippable, new [] {"SHIPPABLE"}},
             { AutomationEnvironment.SolanoCI, new [] {"TDDIUM"}},
             { AutomationEnvironment.StriderCD, new [] {"STRIDER"}}
+            // https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
+            { AutomationEnvironment.GitHubActions, new [] {"GITHUB_ACTIONS"}},
         };
 
         internal static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
