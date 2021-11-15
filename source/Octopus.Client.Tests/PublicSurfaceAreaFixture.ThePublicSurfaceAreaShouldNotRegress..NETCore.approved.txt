@@ -356,6 +356,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.Async.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.Async.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.Async.ITenantVariablesRepository TenantVariables { get; }
     Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
@@ -490,6 +491,7 @@ Octopus.Client
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
     Octopus.Client.Repositories.ITeamsRepository Teams { get; }
+    Octopus.Client.Repositories.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
     Octopus.Client.Repositories.ITenantVariablesRepository TenantVariables { get; }
     Octopus.Client.Repositories.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
@@ -7402,6 +7404,13 @@ Octopus.Client.Repositories
   {
     List<ScopedUserRoleResource> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }
+  interface ITelemetryConfigurationRepository
+  {
+    Octopus.Client.Model.TelemetryConfigurationResource DisableTelemetry()
+    Octopus.Client.Model.TelemetryConfigurationResource EnableTelemetry()
+    Octopus.Client.Model.TelemetryConfigurationResource GetTelemetryConfiguration()
+    Octopus.Client.Model.TelemetryConfigurationResource ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
+  }
   interface ITenantRepository
     Octopus.Client.Repositories.ICreate<TenantResource>
     Octopus.Client.Repositories.IModify<TenantResource>
@@ -7545,6 +7554,15 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusRepository)
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
+  class TelemetryConfigurationRepository
+    Octopus.Client.Repositories.ITelemetryConfigurationRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository)
+    Octopus.Client.Model.TelemetryConfigurationResource DisableTelemetry()
+    Octopus.Client.Model.TelemetryConfigurationResource EnableTelemetry()
+    Octopus.Client.Model.TelemetryConfigurationResource GetTelemetryConfiguration()
+    Octopus.Client.Model.TelemetryConfigurationResource ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
   class VcsRunbookRepository
     Octopus.Client.Repositories.IVcsRunbookRepository
@@ -8171,6 +8189,13 @@ Octopus.Client.Repositories.Async
   {
     Task<List<ScopedUserRoleResource>> GetScopedUserRoles(Octopus.Client.Model.TeamResource)
   }
+  interface ITelemetryConfigurationRepository
+  {
+    Task<TelemetryConfigurationResource> DisableTelemetry()
+    Task<TelemetryConfigurationResource> EnableTelemetry()
+    Task<TelemetryConfigurationResource> GetTelemetryConfiguration()
+    Task<TelemetryConfigurationResource> ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
+  }
   interface ITenantRepository
     Octopus.Client.Repositories.Async.ICreate<TenantResource>
     Octopus.Client.Repositories.Async.IModify<TenantResource>
@@ -8305,6 +8330,15 @@ Octopus.Client.Repositories.Async
     Exception
   {
     .ctor(String, Octopus.Client.SpaceContext)
+  }
+  class TelemetryConfigurationRepository
+    Octopus.Client.Repositories.Async.ITelemetryConfigurationRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository)
+    Task<TelemetryConfigurationResource> DisableTelemetry()
+    Task<TelemetryConfigurationResource> EnableTelemetry()
+    Task<TelemetryConfigurationResource> GetTelemetryConfiguration()
+    Task<TelemetryConfigurationResource> ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
   class VcsRunbookRepository
     Octopus.Client.Repositories.Async.IVcsRunbookRepository
