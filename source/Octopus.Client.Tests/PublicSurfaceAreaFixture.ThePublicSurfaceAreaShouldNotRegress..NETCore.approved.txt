@@ -5249,7 +5249,6 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean AllowChecking { get; set; }
-    Boolean IncludeStatistics { get; set; }
     Octopus.Client.Model.UpgradeNotificationMode NotificationMode { get; set; }
   }
   UpgradeNotificationMode
