@@ -235,6 +235,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.Async.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
@@ -254,6 +255,7 @@ Octopus.Client
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.IUserRepository Users { get; }
@@ -5140,6 +5142,15 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection MemberUserIds { get; set; }
     String Name { get; set; }
     String SpaceId { get; set; }
+  }
+  class TelemetryConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Boolean Enabled { get; set; }
+    DateTimeOffset ShowAsNewUntil { get; set; }
   }
   TenantedDeploymentMode
   {
