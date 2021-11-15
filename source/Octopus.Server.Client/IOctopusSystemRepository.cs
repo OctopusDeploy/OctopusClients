@@ -25,6 +25,7 @@ namespace Octopus.Client
         IUserRepository Users { get; }
         IUserRolesRepository UserRoles { get; }
         IUpgradeConfigurationRepository UpgradeConfiguration { get; }
+        ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
 
         /// <summary>
         /// Gets a document that identifies the Octopus Server (from /api) and provides links to the resources available on the
