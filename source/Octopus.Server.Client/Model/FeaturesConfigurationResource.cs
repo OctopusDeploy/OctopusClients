@@ -24,5 +24,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool IsConfigurationAsCodeEnabled { get; set; }
+        
+        [Writeable]
+        public bool IsStepUiFrameworkEnabled { get; set; }
     }
 }
