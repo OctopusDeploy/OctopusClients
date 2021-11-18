@@ -41,7 +41,9 @@ namespace Octopus.Client.AutomationEnvironments
             { AutomationEnvironment.Semaphore, new [] {"SEMAPHORE"}},
             { AutomationEnvironment.Shippable, new [] {"SHIPPABLE"}},
             { AutomationEnvironment.SolanoCI, new [] {"TDDIUM"}},
-            { AutomationEnvironment.StriderCD, new [] {"STRIDER"}}
+            { AutomationEnvironment.StriderCD, new [] {"STRIDER"}},
+            // https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
+            { AutomationEnvironment.GitHubActions, new [] {"GITHUB_ACTIONS"}}
         };
 
         internal static IEnvironmentVariableReader environmentVariableReader = new EnvironmentVariableReader();
