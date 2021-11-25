@@ -20,7 +20,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task InvalidSslCertificateIsRejected()
         {
-            OctopusAsyncRepository.SecondsToWaitForServerToStart = 2;
+            OctopusAsyncRepository.SecondsToWaitForServerToStart = 60;
             try
             {
                 await OctopusAsyncClient.Create(new OctopusServerEndpoint(HostBaseSslUri + TestRootPath)).ConfigureAwait(false);
