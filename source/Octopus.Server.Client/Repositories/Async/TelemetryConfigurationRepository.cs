@@ -33,18 +33,18 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<TelemetryConfigurationResource> EnableTelemetry()
         {
-            return await repository.Client.Update(await repository.Link(LinkName).ConfigureAwait(false), new TelemetryConfigurationResource
+            return await ModifyTelemetryConfiguration(new TelemetryConfigurationResource
             {
                 Enabled = true
-            }).ConfigureAwait(false);
+            });
         }
 
         public async Task<TelemetryConfigurationResource> DisableTelemetry()
         {
-            return await repository.Client.Update(await repository.Link(LinkName).ConfigureAwait(false), new TelemetryConfigurationResource
+            return await ModifyTelemetryConfiguration(new TelemetryConfigurationResource
             {
                 Enabled = false
-            }).ConfigureAwait(false);
+            });
         }
     }
 }
