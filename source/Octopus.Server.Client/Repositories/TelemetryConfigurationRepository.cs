@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
 
         public TelemetryConfigurationResource EnableTelemetry()
         {
-            return repository.Client.Update(repository.Link(LinkName), new TelemetryConfigurationResource
+            return ModifyTelemetryConfiguration(new TelemetryConfigurationResource
             {
                 Enabled = true
             });
@@ -41,7 +41,7 @@ namespace Octopus.Client.Repositories
 
         public TelemetryConfigurationResource DisableTelemetry()
         {
-            return repository.Client.Update(repository.Link(LinkName), new TelemetryConfigurationResource
+            return ModifyTelemetryConfiguration(new TelemetryConfigurationResource
             {
                 Enabled = false
             });
