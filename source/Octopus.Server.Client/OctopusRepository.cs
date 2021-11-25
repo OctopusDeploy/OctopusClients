@@ -103,6 +103,7 @@ namespace Octopus.Client
             TagSets = new TagSetRepository(this);
             Tasks = new TaskRepository(this);
             Teams = new TeamsRepository(this);
+            TelemetryConfigurationRepository = new TelemetryConfigurationRepository(this);
             Tenants = new TenantRepository(this);
             TenantVariables = new TenantVariablesRepository(this);
             UserRoles = new UserRolesRepository(this);
@@ -183,6 +184,7 @@ namespace Octopus.Client
         public IUserPermissionsRepository UserPermissions { get; }
         public IUserTeamsRepository UserTeams { get; }
         public IUpgradeConfigurationRepository UpgradeConfiguration { get; }
+        public ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
 
         public bool HasLink(string name)
         {
