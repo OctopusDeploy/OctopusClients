@@ -1923,6 +1923,7 @@ Octopus.Client.Model
       Shippable = 24
       SolanoCI = 25
       StriderCD = 26
+      GitHubActions = 27
   }
   class AwsElasticContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource
@@ -2983,6 +2984,7 @@ Octopus.Client.Model
     Boolean IsConfigurationAsCodeEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
+    Boolean IsStepUiFrameworkEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource

@@ -28,6 +28,7 @@
         Semaphore,
         Shippable,
         SolanoCI,
-        StriderCD
+        StriderCD,
+        GitHubActions
     }
 }
