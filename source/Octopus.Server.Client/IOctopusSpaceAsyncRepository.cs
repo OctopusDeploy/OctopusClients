@@ -27,6 +27,7 @@ namespace Octopus.Client
         IDeploymentRepository Deployments { get; }
         IEnvironmentRepository Environments { get; }
         IFeedRepository Feeds { get; }
+        IGitCredentialRepository GitCredentials { get; }
         IInterruptionRepository Interruptions { get; }
         ILibraryVariableSetRepository LibraryVariableSets { get; }
         ILifecyclesRepository Lifecycles { get; }

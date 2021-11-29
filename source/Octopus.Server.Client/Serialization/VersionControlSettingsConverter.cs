@@ -11,6 +11,7 @@ namespace Octopus.Client.Serialization
             {
                 {VersionControlCredentialsType.Anonymous, typeof(AnonymousVersionControlCredentialsResource)},
                 {VersionControlCredentialsType.UsernamePassword, typeof(UsernamePasswordVersionControlCredentialsResource)},
+                {VersionControlCredentialsType.Reference, typeof(ReferenceVersionControlCredentialsResource)},
             };
 
         static readonly Type defaultType = typeof(AnonymousVersionControlCredentialsResource);
