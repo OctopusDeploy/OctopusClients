@@ -113,7 +113,8 @@ namespace Octopus.Client.HttpRouting
             route = routeTemplate;
             foreach (var token in tokens)
             {
-                var property = properties.Where(p => p.Name.Equals(token, StringComparison.InvariantCultureIgnoreCase))
+                var property = properties
+                    .Where(p => p.Name.Equals(token, StringComparison.InvariantCultureIgnoreCase))
                     .Single();
                 var value = property.GetValue(payload);
                 if (value is null) return false;
@@ -126,8 +127,8 @@ namespace Octopus.Client.HttpRouting
 
         private Type FindRouteType(Type httpRouteTypeInterface)
         {
-            var routeType = httpRouteTypesByPayloadType.GetOrAdd(httpRouteTypeInterface, t =>
-                scanForHttpRouteTypes()
+            var routeType = httpRouteTypesByPayloadType.GetOrAdd(httpRouteTypeInterface,
+                t => scanForHttpRouteTypes()
                     .Where(t.IsAssignableFrom)
                     .SingleOrDefault());
 

@@ -8430,6 +8430,12 @@ Octopus.Client.Serialization
   {
     .ctor()
   }
+  class PrivateMemberContractResolver
+    IContractResolver
+    DefaultContractResolver
+  {
+    .ctor()
+  }
   abstract class Serializer
   {
     static Octopus.Client.Serialization.T Deserialize(String)
