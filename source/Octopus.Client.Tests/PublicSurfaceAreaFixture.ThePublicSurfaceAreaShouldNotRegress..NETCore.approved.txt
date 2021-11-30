@@ -32,6 +32,7 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object, Object)
+    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -48,6 +49,7 @@ Octopus.Client
     Task Put(String, Octopus.Client.TResource, Object)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
@@ -276,6 +278,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object, Object)
     void Dispose()
+    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -292,6 +295,7 @@ Octopus.Client
     Task Put(String, Octopus.Client.TResource, Object)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
@@ -426,6 +430,7 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
+    Func<Type[]> ScanForHttpRouteTypes { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
@@ -1488,8 +1493,8 @@ Octopus.Client.Extensions
 {
   abstract class StringExtensions
   {
-    static String CommaSeperate(IEnumerable<Object>)
-    static String NewLineSeperate(IEnumerable<Object>)
+    static String CommaSeparate(IEnumerable<Object>)
+    static String NewLineSeparate(IEnumerable<Object>)
   }
   abstract class TaskStateExtensions
   {
@@ -1503,6 +1508,16 @@ Octopus.Client.Extensions
   abstract class UriExtensions
   {
     static String HexEscape(Char)
+  }
+}
+Octopus.Client.HttpRouting
+{
+  interface IHttpRouteExtractor
+  {
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
   }
 }
 Octopus.Client.Logging

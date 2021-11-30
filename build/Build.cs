@@ -108,7 +108,7 @@ class Build : NukeBuild
         .DependsOn(Test)
         .Executes(() =>
         {
-            foreach (var target in new[] { "net452", "netstandard2.0" })
+            foreach (var target in new[] { "net452", "netstandard2.1" })
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";

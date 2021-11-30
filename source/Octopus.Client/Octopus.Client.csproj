@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -20,11 +20,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-		<TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net452;netstandard2.1</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>

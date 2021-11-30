@@ -22,7 +22,7 @@ namespace Octopus.Client.Tests.Conventions
                 .ToArray();
 
             if (different.Any())
-                Assert.Fail($"The following properties are present on IOctopusRepository but not on IOctopusAsyncRepository, or have different type names: " + different.CommaSeperate());
+                Assert.Fail($"The following properties are present on IOctopusRepository but not on IOctopusAsyncRepository, or have different type names: " + different.CommaSeparate());
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace Octopus.Client.Tests.Conventions
                 .ToArray();
 
             if (different.Any())
-                Assert.Fail($"The following properties are present on IOctopusRepository but not on IOctopusAsyncRepository, or have different type names: " + different.CommaSeperate());
+                Assert.Fail($"The following properties are present on IOctopusRepository but not on IOctopusAsyncRepository, or have different type names: " + different.CommaSeparate());
         }
 
         public static IEnumerable<TestCaseData> SyncRepositories()
@@ -70,12 +70,12 @@ namespace Octopus.Client.Tests.Conventions
                            let s = GetMatchingMethod(a, syncRepository, parameters)
                            where s == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
                            where !(asyncRepository.Name == "ITaskRepository" && a.Name == "WaitForCompletion")
-                           select $"{a.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
+                           select $"{a.Name}({parameters.Select(p => p.Name).CommaSeparate()})";
 
             var missing = missingQ.ToArray();
 
             if (missing.Any())
-                Assert.Fail($"The following methods are present on the sync {syncRepository.Name} but not on the async one, or have different return types:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following methods are present on the sync {syncRepository.Name} but not on the async one, or have different return types:\r\n{missing.NewLineSeparate()}");
 
         }
 
@@ -94,11 +94,11 @@ namespace Octopus.Client.Tests.Conventions
                            let a = GetMatchingMethod(s, asyncRepository, parameters)
                            where a == null || !IsEquivalentReturnType(a.ReturnType, s.ReturnType)
                            where !(syncRepository.Name == "ITaskRepository" && s.Name == "WaitForCompletion")
-                           select $"{s.Name}({parameters.Select(p => p.Name).CommaSeperate()})";
+                           select $"{s.Name}({parameters.Select(p => p.Name).CommaSeparate()})";
 
             var missing = missingQ.ToArray();
             if (missing.Any())
-                Assert.Fail($"The following methods are present on the async {asyncRepository.Name} but not on the sync one, or have different return types:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following methods are present on the async {asyncRepository.Name} but not on the sync one, or have different return types:\r\n{missing.NewLineSeparate()}");
 
         }
 
@@ -118,7 +118,7 @@ namespace Octopus.Client.Tests.Conventions
             var missing = syncInterfaces.Except(asyncInterfaces).ToArray();
 
             if (missing.Any())
-                Assert.Fail($"The following interfaces are implemented on the sync {syncRepository.Name} but not on the async one:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following interfaces are implemented on the sync {syncRepository.Name} but not on the async one:\r\n{missing.NewLineSeparate()}");
         }
 
         [TestCaseSource(nameof(SyncRepositories))]
@@ -137,7 +137,7 @@ namespace Octopus.Client.Tests.Conventions
             var missing = asyncInterfaces.Except(syncInterfaces).ToArray();
 
             if (missing.Any())
-                Assert.Fail($"The following interfaces are implemented on the async {asyncRepository.Name} but not on the sync one:\r\n{missing.NewLineSeperate()}");
+                Assert.Fail($"The following interfaces are implemented on the async {asyncRepository.Name} but not on the sync one:\r\n{missing.NewLineSeparate()}");
 
         }
 
