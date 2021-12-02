@@ -659,7 +659,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             try
             {
-                return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
+                var deserialized = JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
+                return deserialized;
             }
             catch (Exception ex)
             {

@@ -105,7 +105,6 @@ class Build : NukeBuild
 
     Target Merge => _ => _
         .DependsOn(Compile)
-        .DependsOn(Test)
         .Executes(() =>
         {
             foreach (var target in new[] { "net452", "netstandard2.1" })
@@ -206,6 +205,7 @@ class Build : NukeBuild
     });
 
     Target Default => _ => _
+        .DependsOn(Test)
         .DependsOn(CopyToLocalPackages)
         .DependsOn(PackNormalClientNuget)
         .DependsOn(PackMergedClientNuget)
