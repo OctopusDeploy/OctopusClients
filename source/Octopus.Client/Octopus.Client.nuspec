@@ -17,7 +17,7 @@
             <group targetFramework=".NETFramework4.5.2">
             </group>
 
-            <group targetFramework=".netstandard2.1">
+            <group targetFramework=".netstandard2.0">
                 <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
                 <dependency id="System.ComponentModel.Annotations" version="4.7.0" exclude="Build,Analyzers" />
             </group>
@@ -33,7 +33,7 @@
         <file src="icon.png" target="images\" />
         <file src="bin\release\net452\Octopus.Client.dll" target="lib\net452" />
         <file src="bin\release\net452\Octopus.Client.xml" target="lib\net452" />
-        <file src="bin\release\netstandard2.1\Octopus.Client.dll" target="lib\netstandard2.1" />
-        <file src="bin\release\netstandard2.1\Octopus.Client.xml" target="lib\netstandard2.1" />
+        <file src="bin\release\netstandard2.0\Octopus.Client.dll" target="lib\netstandard2.0" />
+        <file src="bin\release\netstandard2.0\Octopus.Client.xml" target="lib\netstandard2.0" />
     </files>
 </package>

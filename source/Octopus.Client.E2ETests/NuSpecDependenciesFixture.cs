@@ -84,7 +84,7 @@ namespace Octopus.Client.E2ETests
             new TestCaseData(".NETFramework4.5.2",
                 new string[] {
                 }),
-            new TestCaseData(".netstandard2.1",
+            new TestCaseData(".netstandard2.0",
                 new[]
                 {
                     "Microsoft.CSharp",

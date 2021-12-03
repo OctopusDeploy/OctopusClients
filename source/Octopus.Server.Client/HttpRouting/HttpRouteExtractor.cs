@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Octopus.Client.Extensions;
 using Octopus.Server.MessageContracts.Base;
 using Octopus.Server.MessageContracts.Base.HttpRoutes;
 using HttpMethod = System.Net.Http.HttpMethod;
@@ -64,9 +69,10 @@ namespace Octopus.Client.HttpRouting
             where TCommand : ICommand<TCommand, TResponse>
             where TResponse : IResponse
         {
+            var httpMethod = ExtractHttpMethod(command);
             var httpRouteTypeInterface = typeof(IHttpCommandRouteFor<TCommand, TResponse>);
             var routeType = FindRouteType(httpRouteTypeInterface);
-            var route = ExtractHttpRouteInternal(command, routeType);
+            var route = ExtractHttpRouteInternal(httpMethod, command, routeType);
             return route;
         }
 
@@ -74,13 +80,14 @@ namespace Octopus.Client.HttpRouting
             where TRequest : IRequest<TRequest, TResponse>
             where TResponse : IResponse
         {
+            var httpMethod = ExtractHttpMethod(request);
             var httpRouteTypeInterface = typeof(IHttpRequestRouteFor<TRequest, TResponse>);
             var routeType = FindRouteType(httpRouteTypeInterface);
-            var route = ExtractHttpRouteInternal(request, routeType);
+            var route = ExtractHttpRouteInternal(httpMethod, request, routeType);
             return route;
         }
 
-        private Uri ExtractHttpRouteInternal<T>(T payload, Type routeType)
+        private Uri ExtractHttpRouteInternal<T>(HttpMethod httpMethod, T payload, Type routeType)
         {
             var routeTemplatesAndTokens = routeType
                 .GetFields()
@@ -98,31 +105,60 @@ namespace Octopus.Client.HttpRouting
 
             foreach (var kvp in routeTemplatesAndTokens)
             {
-                if (TryReplaceAllRouteTokens(kvp.Key, kvp.Value, payload, out var route))
+                var routeTemplate = kvp.Key;
+                var routePlaceholderTokens = kvp.Value;
+                if (TryReplaceAllRouteTokens(httpMethod, routeTemplate, routePlaceholderTokens, payload, out var route))
                     return new Uri(route, UriKind.Relative);
             }
 
-            throw new Exception("Unable to resolve route template.");
+            throw new PayloadRoutingException("Unable to resolve route template.");
         }
 
-        private bool TryReplaceAllRouteTokens(string routeTemplate, string[] tokens, object payload,
+        private bool TryReplaceAllRouteTokens(HttpMethod httpMethod, string routeTemplate, string[] tokens,
+            object payload,
             out string route)
         {
-            var properties = payload.GetType().GetProperties();
+            var payloadProperties = PayloadProperties(payload);
 
             route = routeTemplate;
             foreach (var token in tokens)
             {
-                var property = properties
-                    .Where(p => p.Name.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-                    .Single();
-                var value = property.GetValue(payload);
+                var payloadProperty = payloadProperties
+                    .Where(kvp => kvp.Key.Equals(token, StringComparison.InvariantCultureIgnoreCase))
+                    .SingleOrDefault();
+                var key = payloadProperty.Key;
+                var value = payloadProperty.Value;
                 if (value is null) return false;
 
-                route = route.Replace($"{{{token}}}", value.ToString());
+                route = route.Replace($"{{{token}}}", WebUtility.UrlEncode(value.ToString()));
+                payloadProperties.Remove(key);
+            }
+
+            // If we're routing a GET request, every property not added to the route gets added as a query string
+            // parameter - otherwise it can just go as a JSON payload.
+            if (httpMethod == HttpMethod.Get)
+            {
+                var queryString = payloadProperties
+                    .OrderBy(kvp => kvp.Key)
+                    .Select(kvp => $"{kvp.Key.ToCamelCase()}={WebUtility.UrlEncode(kvp.Value.ToString())}")
+                    .StringJoin("&");
+
+                if (!string.IsNullOrEmpty(queryString)) route += $"?{queryString}";
             }
 
             return true;
+        }
+
+        private static IDictionary<string, object> PayloadProperties(object payload)
+        {
+            var payloadProperties = payload
+                .GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttributes<ValidationAttribute>().Any()) // Only properties with validation attributes are candidates.
+                .ToDictionary(p => p.Name, p => p.GetValue(payload))
+                .Where(kvp => kvp.Value != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return payloadProperties;
         }
 
         private Type FindRouteType(Type httpRouteTypeInterface)

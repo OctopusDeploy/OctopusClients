@@ -21,7 +21,7 @@ namespace Octopus.Client.E2ETests
         internal static string GetRuntime()
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().FullLocalPath());
-            var runtime = Regex.Replace(new DirectoryInfo(path).Name, @"netcoreapp\d\.\d", "netstandard2.1");
+            var runtime = Regex.Replace(new DirectoryInfo(path).Name, @"netcoreapp\d\.\d", "netstandard2.0");
             return runtime;
         }
     }

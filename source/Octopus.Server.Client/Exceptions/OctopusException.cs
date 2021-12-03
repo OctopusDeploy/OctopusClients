@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace Octopus.Client.Exceptions
 {
@@ -30,6 +31,12 @@ namespace Octopus.Client.Exceptions
             : base(message, innerException)
         {
             this.httpStatusCode = httpStatusCode;
+        }
+
+        protected OctopusException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
 
         /// <summary>
