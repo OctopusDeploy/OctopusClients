@@ -1510,6 +1510,8 @@ Octopus.Client.Extensions
   {
     static String CommaSeparate(IEnumerable<Object>)
     static String NewLineSeparate(IEnumerable<Object>)
+    static String StringJoin(IEnumerable<String>, String)
+    static String ToCamelCase(String)
   }
   abstract class TaskStateExtensions
   {
@@ -1533,6 +1535,14 @@ Octopus.Client.HttpRouting
     HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
     Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
     Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+  }
+  class PayloadRoutingException
+    ISerializable
+    _Exception
+    Octopus.Client.Exceptions.OctopusException
+  {
+    .ctor(String)
+    .ctor(String, Exception)
   }
 }
 Octopus.Client.Logging

@@ -17,9 +17,9 @@
             <group targetFramework=".NETFramework4.5.2">
             </group>
 
-            <group targetFramework=".netstandard2.0">
+            <group targetFramework=".NETStandard2.0">
                 <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
-                <dependency id="System.ComponentModel.Annotations" version="4.7.0" exclude="Build,Analyzers" />
+                <dependency id="System.ComponentModel.Annotations" version="5.0.0" exclude="Build,Analyzers" />
             </group>
 
         </dependencies>

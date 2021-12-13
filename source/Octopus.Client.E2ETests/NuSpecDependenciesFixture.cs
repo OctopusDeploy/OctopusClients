@@ -84,7 +84,7 @@ namespace Octopus.Client.E2ETests
             new TestCaseData(".NETFramework4.5.2",
                 new string[] {
                 }),
-            new TestCaseData(".netstandard2.0",
+            new TestCaseData(".NETStandard2.0",
                 new[]
                 {
                     "Microsoft.CSharp",
@@ -137,9 +137,12 @@ namespace Octopus.Client.E2ETests
             var actualVersion = nuSpecFile.SelectSingleNode(
                 $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']/ns:dependency[@id='{dependency}']/@version",
                 nameSpaceManager);
+            actualVersion.Should().NotBeNull();
+
             var expectedVersion = csProjFile.SelectSingleNode($"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version");
-            actualVersion.Value.Should()
-                .Be(expectedVersion.Value, $"The {dependency} dependency version in the nuspec should match the one in the csproj");
+            expectedVersion.Should().NotBeNull();
+
+            actualVersion!.Value.Should().Be(expectedVersion!.Value, $"The {dependency} dependency version in the nuspec should match the one in the csproj");
         }
 
         [Test]
