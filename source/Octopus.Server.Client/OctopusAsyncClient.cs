@@ -197,7 +197,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
             var httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool, httpRouteExtractor);
+            var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool, httpRouteExtractor);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
             await client.Repository.LoadRootDocument().ConfigureAwait(false);

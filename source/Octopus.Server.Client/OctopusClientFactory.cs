@@ -15,23 +15,25 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
-        public IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint)
+        /// <param name="options">The configuration options for this client instance.</param>
+        public IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default)
         {
+            options ??= new OctopusClientOptions();
             var requestingTool = DetermineRequestingTool();
-            return new OctopusClient(serverEndpoint, requestingTool);
+            return new OctopusClient(serverEndpoint, requestingTool, options);
         }
 
         /// <summary>
         ///     Creates an instance of the client.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        /// <param name="octopusClientOptions"></param>
+        /// <param name="options">The configuration options for this client instance.</param>
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
-        public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint,
-            OctopusClientOptions octopusClientOptions = null)
+        public Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default)
         {
+            options ??= new OctopusClientOptions();
             var requestingTool = DetermineRequestingTool();
-            return OctopusAsyncClient.Create(serverEndpoint, octopusClientOptions, requestingTool);
+            return OctopusAsyncClient.Create(serverEndpoint, options, requestingTool);
         }
 
         private string DetermineRequestingTool()
