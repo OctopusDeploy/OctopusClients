@@ -51,12 +51,12 @@ class Build : NukeBuild
 
     // Keep this list in order by most likely to succeed
     string[] SigningTimestampUrls => new[] {
+        "http://timestamp.digicert.com?alg=sha256",
+        "http://timestamp.comodoca.com",
         "http://tsa.starfieldtech.com",
         "http://www.startssl.com/timestamp",
         "http://timestamp.comodoca.com/rfc3161",
         "http://timestamp.verisign.com/scripts/timstamp.dll",
-        "http://timestamp.globalsign.com/scripts/timestamp.dll",
-        "https://rfc3161timestamp.globalsign.com/advanced"
     };
 
     Target Clean => _ => _
@@ -255,11 +255,11 @@ class Build : NukeBuild
                         $"--azure-key-vault-client-id \"{AzureKeyVaultAppId}\" " +
                         $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
                         $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
-                        $"--file-digest sha256 " +
-                        $"--description \"Octopus Client Library\" " +
-                        $"--description-url \"https://octopus.com\" " +
+                        "--file-digest sha256 " +
+                        "--description \"Octopus Client Library\" " +
+                        "--description-url \"https://octopus.com\" " +
                         $"--timestamp-rfc3161 {timestampUrl} " +
-                        $"--timestamp-digest sha256 ";
+                        "--timestamp-digest sha256 ";
 
         foreach (var file in files)
             arguments += $"\"{file}\" ";
@@ -298,4 +298,5 @@ class Build : NukeBuild
         fileText = fileText.Replace(oldValue, newValue);
         File.WriteAllText(path, fileText);
     }
+
 }
