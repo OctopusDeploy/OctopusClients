@@ -12,9 +12,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
+using Octopus.Client.HttpRouting;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
+using Octopus.Server.MessageContracts.Base;
 
 namespace Octopus.Client
 {   
@@ -34,12 +37,14 @@ namespace Octopus.Client
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged = false;
         private string antiforgeryCookieName = null;
+        private readonly IHttpRouteExtractor httpRouteExtractor;
 
         // Use the Create method to instantiate
-        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool, IHttpRouteExtractor httpRouteExtractor)
         {
             var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
+            this.httpRouteExtractor = httpRouteExtractor;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             var handler = new HttpClientHandler
             {
@@ -123,12 +128,42 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
         }
 
+        public async Task<TResponse> Do<TCommand, TResponse>(ICommand<TCommand, TResponse> command, CancellationToken cancellationToken)
+            where TCommand : ICommand<TCommand, TResponse>
+            where TResponse : IResponse
+        {
+            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(command);
+            var method = httpRouteExtractor.ExtractHttpMethod(command);
+
+            var response = await Send<TResponse>(method, relativeRoute, command, cancellationToken);
+            return response;
+        }
+
+        public async Task<TResponse> Request<TRequest, TResponse>(IRequest<TRequest, TResponse> request, CancellationToken cancellationToken)
+            where TRequest : IRequest<TRequest, TResponse>
+            where TResponse : IResponse
+        {
+            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(request);
+            var method = httpRouteExtractor.ExtractHttpMethod(request);
+
+            var response = await Send<TResponse>(method, relativeRoute, request, cancellationToken);
+            return response;
+        }
+
+        private async Task<TResponse> Send<TResponse>(HttpMethod method, Uri relativeRoute, object payload, CancellationToken cancellationToken)
+        {
+            var uri = serverEndpoint.OctopusServer.Resolve(relativeRoute.ToString());
+            var octopusRequest = new OctopusRequest(method.Method.ToUpperInvariant(), uri, payload);
+            var response = await DispatchRequest<TResponse>(octopusRequest, true, cancellationToken);
+            return response.ResponseResource;
+        }
+
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
+                return await Create(serverEndpoint, options ?? new OctopusClientOptions(), true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException ex)
             {
@@ -161,7 +196,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
-            var client = new OctopusAsyncClient(serverEndpoint, options ?? new OctopusClientOptions(), addHandler, requestingTool);
+            var httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
+            var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool, httpRouteExtractor);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
             await client.Repository.LoadRootDocument().ConfigureAwait(false);
@@ -512,7 +548,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse)
+        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken = default)
         {
             using (var message = new HttpRequestMessage())
             {
@@ -550,7 +586,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     : HttpCompletionOption.ResponseHeadersRead;
                 try
                 {
-                    using (var response = await client.SendAsync(message, completionOption).ConfigureAwait(false))
+                    using (var response = await client.SendAsync(message, completionOption, cancellationToken).ConfigureAwait(false))
                     {
                         AfterReceivedHttpResponse?.Invoke(response);
 
@@ -571,7 +607,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                 }
                 catch (TaskCanceledException)
                 {
-                    throw new TimeoutException($"Timeout getting response from {request.Uri}, client timeout is set to {client.Timeout}.");
+                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).");
                 }
             }
         }
@@ -623,7 +659,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
             try
             {
-                return JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
+                var deserialized = JsonConvert.DeserializeObject<T>(str, defaultJsonSerializerSettings);
+                return deserialized;
             }
             catch (Exception ex)
             {

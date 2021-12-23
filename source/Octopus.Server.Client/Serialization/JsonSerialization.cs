@@ -24,6 +24,7 @@ namespace Octopus.Client.Serialization
             return new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
+                ContractResolver = new PrivateMemberContractResolver(),
                 Converters = new JsonConverterCollection
                 {
                     new TinyTypeJsonConverter(),

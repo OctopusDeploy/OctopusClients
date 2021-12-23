@@ -59,7 +59,7 @@ namespace Octopus.Client.Tests.Repositories
 
             var nullProperties = nullPropertiesQ.ToArray();
             if (nullProperties.Any())
-                Assert.Fail("The following properties are null after OctopusAsyncRepository instantiation: " + nullProperties.CommaSeperate());
+                Assert.Fail("The following properties are null after OctopusAsyncRepository instantiation: " + nullProperties.CommaSeparate());
         }
     }
 }

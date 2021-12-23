@@ -8,7 +8,12 @@ using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Octopus.Client.HttpRouting;
 using Octopus.Client.Logging;
+using Octopus.Server.MessageContracts.Base;
 
 namespace Octopus.Client
 {
@@ -26,18 +31,23 @@ namespace Octopus.Client
         private readonly ResourceSelfLinkExtractor resourceSelfLinkExtractor = new ResourceSelfLinkExtractor();
         readonly OctopusCustomHeaders octopusCustomHeaders;
         private string antiforgeryCookieName = null;
+        private readonly IHttpRouteExtractor httpRouteExtractor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint) :this(serverEndpoint, null)
+        /// <param name="options">The configuration options for this client instance.</param>
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default) :this(serverEndpoint, null, options)
         {
         }
 
-        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string requestingTool)
+        internal OctopusClient(OctopusServerEndpoint serverEndpoint, string requestingTool, OctopusClientOptions options = default)
         {
             this.serverEndpoint = serverEndpoint;
+            options ??= new OctopusClientOptions();
+
+            httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
             Repository = new OctopusRepository(this);
@@ -60,6 +70,36 @@ namespace Octopus.Client
         public IOctopusSystemRepository ForSystem()
         {
             return new OctopusRepository(this, RepositoryScope.ForSystem());
+        }
+
+        public TResponse Do<TCommand, TResponse>(ICommand<TCommand, TResponse> command, CancellationToken cancellationToken)
+            where TCommand : ICommand<TCommand, TResponse>
+            where TResponse : IResponse
+        {
+            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(command);
+            var method = httpRouteExtractor.ExtractHttpMethod(command);
+
+            var response = Send<TResponse>(method, relativeRoute, command, cancellationToken);
+            return response;
+        }
+
+        public TResponse Request<TRequest, TResponse>(IRequest<TRequest, TResponse> request, CancellationToken cancellationToken)
+            where TRequest : IRequest<TRequest, TResponse>
+            where TResponse : IResponse
+        {
+            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(request);
+            var method = httpRouteExtractor.ExtractHttpMethod(request);
+
+            var response = Send<TResponse>(method, relativeRoute, request, cancellationToken);
+            return response;
+        }
+
+        private TResponse Send<TResponse>(HttpMethod method, Uri relativeRoute, object payload, CancellationToken cancellationToken)
+        {
+            var uri = serverEndpoint.OctopusServer.Resolve(relativeRoute.ToString());
+            var octopusRequest = new OctopusRequest(method.Method.ToUpperInvariant(), uri, payload);
+            var response = DispatchRequest<TResponse>(octopusRequest, true);
+            return response.ResponseResource;
         }
 
         public void SignIn(LoginCommand loginCommand)

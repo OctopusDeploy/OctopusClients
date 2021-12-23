@@ -137,9 +137,12 @@ namespace Octopus.Client.E2ETests
             var actualVersion = nuSpecFile.SelectSingleNode(
                 $"//ns:package/ns:metadata/ns:dependencies/ns:group[@targetFramework = '{framework}']/ns:dependency[@id='{dependency}']/@version",
                 nameSpaceManager);
+            actualVersion.Should().NotBeNull();
+
             var expectedVersion = csProjFile.SelectSingleNode($"//Project/ItemGroup/PackageReference[@Include='{dependency}']/@Version");
-            actualVersion.Value.Should()
-                .Be(expectedVersion.Value, $"The {dependency} dependency version in the nuspec should match the one in the csproj");
+            expectedVersion.Should().NotBeNull();
+
+            actualVersion!.Value.Should().Be(expectedVersion!.Value, $"The {dependency} dependency version in the nuspec should match the one in the csproj");
         }
 
         [Test]

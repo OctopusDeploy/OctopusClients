@@ -132,7 +132,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingInterface.Any())
             {
-                Assert.Fail($"All *Repository types should implement a non-generic interface representing the repository contract {nameof(OctopusAsyncRepository)}.{Environment.NewLine}{missingInterface.Select(x => $"{x.Repository.Name} expected to implement I{x.Repository.Name}").NewLineSeperate()}");
+                Assert.Fail($"All *Repository types should implement a non-generic interface representing the repository contract {nameof(OctopusAsyncRepository)}.{Environment.NewLine}{missingInterface.Select(x => $"{x.Repository.Name} expected to implement I{x.Repository.Name}").NewLineSeparate()}");
             }
         }
 
@@ -155,7 +155,7 @@ namespace Octopus.Client.Tests.Conventions
             var missingExposure = exposureMap.Where(x => x.DeclaredMethodMap.Any(map => map.InterfaceType == null)).ToArray();
             if (missingExposure.Any())
             {
-                Assert.Fail($"The following repositories do not expose at least one of their public members by interface, and hence won't be accessible by clients.{Environment.NewLine}{exposureMap.Where(x => x.DeclaredMethodMap.Any(map => map.InterfaceType == null)).Select(x => $"{x.Repository.Name}: {x.DeclaredMethodMap.Where(map => map.InterfaceType == null).Select(map => $"{map.DelcaredMethod.Name}({map.DelcaredMethod.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}").CommaSeperate()})").CommaSeperate()}").NewLineSeperate()}");
+                Assert.Fail($"The following repositories do not expose at least one of their public members by interface, and hence won't be accessible by clients.{Environment.NewLine}{exposureMap.Where(x => x.DeclaredMethodMap.Any(map => map.InterfaceType == null)).Select(x => $"{x.Repository.Name}: {x.DeclaredMethodMap.Where(map => map.InterfaceType == null).Select(map => $"{map.DelcaredMethod.Name}({map.DelcaredMethod.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}").CommaSeparate()})").CommaSeparate()}").NewLineSeparate()}");
             }
         }
 
@@ -177,7 +177,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (confusedRepositories.Any())
             {
-                Assert.Fail($"Repositories should represent consistent Resource type. These repositories have an identity crisis: {Environment.NewLine}{confusedRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}>").NewLineSeperate()}");
+                Assert.Fail($"Repositories should represent consistent Resource type. These repositories have an identity crisis: {Environment.NewLine}{confusedRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeparate()}>").NewLineSeparate()}");
             }
         }
 
@@ -202,7 +202,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (confusingRepositories.Any())
             {
-                Assert.Fail($"Repositories should be named like their Resource type. These repositories could be confusing: {Environment.NewLine}{confusingRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeperate()}> - based on the resource type this should be named something like {x.ResourceTypes.First().Name.Replace("Resource", "")}Repository? Or maybe this is using the wrong generic type argument?").NewLineSeperate()}");
+                Assert.Fail($"Repositories should be named like their Resource type. These repositories could be confusing: {Environment.NewLine}{confusingRepositories.Select(x => $"{x.Repository.Name}<{x.ResourceTypes.Select(r => r.Name).CommaSeparate()}> - based on the resource type this should be named something like {x.ResourceTypes.First().Name.Replace("Resource", "")}Repository? Or maybe this is using the wrong generic type argument?").NewLineSeparate()}");
             }
         }
 
@@ -222,7 +222,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (shouldProbablyBeINamedResource.Any())
             {
-                Assert.Fail($"The following top-level resource types have a Name property, and should probably implement INamedResource: {Environment.NewLine}{shouldProbablyBeINamedResource.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"The following top-level resource types have a Name property, and should probably implement INamedResource: {Environment.NewLine}{shouldProbablyBeINamedResource.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -245,7 +245,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (misleadingRepositories.Any())
             {
-                Assert.Fail($"The following repositories allow the client to FindByName, but this will end up returning a misleading result, and the resource should be loaded in another way:{Environment.NewLine}{misleadingRepositories.Select(r => $"{r.Name}").NewLineSeperate()}");
+                Assert.Fail($"The following repositories allow the client to FindByName, but this will end up returning a misleading result, and the resource should be loaded in another way:{Environment.NewLine}{misleadingRepositories.Select(r => $"{r.Name}").NewLineSeparate()}");
             }
         }
 
@@ -277,7 +277,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingFindByName.Any())
             {
-                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -309,7 +309,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingFindByName.Any())
             {
-                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement IGet<INamedResource> should usually implement IFindByName<INamedResource>, unless that named resource is a singleton or owned by another aggregate.{Environment.NewLine}{missingFindByName.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -338,7 +338,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missing.Any())
             {
-                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -367,7 +367,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missing.Any())
             {
-                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Most repositories that get resources should implement IPaginate<TResource> unless the repository should target one specific resource like a singleton or child of another aggregate.{Environment.NewLine}{missing.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -394,7 +394,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingModify.Any())
             {
-                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -421,7 +421,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingModify.Any())
             {
-                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IModify<IResource>.{Environment.NewLine}{missingModify.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -448,7 +448,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingDelete.Any())
             {
-                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 
@@ -475,7 +475,7 @@ namespace Octopus.Client.Tests.Conventions
 
             if (missingDelete.Any())
             {
-                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeperate()}");
+                Assert.Fail($"Repositories that implement ICreate<IResource> should usually implement IDelete<IResource>.{Environment.NewLine}{missingDelete.Select(t => t.Name).NewLineSeparate()}");
             }
         }
 

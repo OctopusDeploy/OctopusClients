@@ -12,15 +12,16 @@ namespace Octopus.Client
         /// Creates an appropriate <see cref="IOctopusClient" /> for the provided <see cref="OctopusServerEndpoint" />.
         /// </summary>
         /// <param name="serverEndpoint">The endpoint to create a client for.</param>
+        /// <param name="options">The configuration options for this client instance.</param>
         /// <returns>The <see cref="IOctopusClient" /> instance.</returns>
-        IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint);
+        IOctopusClient CreateClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default);
 
         /// <summary>
         /// Creates an appropriate <see cref="IOctopusAsyncClient" /> for the provided <see cref="OctopusServerEndpoint" />.
         /// </summary>
         /// <param name="serverEndpoint">The endpoint to create a client for.</param>
-        /// <param name="octopusClientOptions"></param>
+        /// <param name="options">The configuration options for this client instance.</param>
         /// <returns>The <see cref="IOctopusAsyncClient" /> instance.</returns>
-        Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions octopusClientOptions = null);
+        Task<IOctopusAsyncClient> CreateAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default);
     }
 }

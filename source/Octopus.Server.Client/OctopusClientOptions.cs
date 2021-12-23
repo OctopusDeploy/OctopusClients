@@ -40,5 +40,15 @@ namespace Octopus.Client
         /// Whether or not the default proxy can be used if the proxy is not set.
         /// </summary>
         public bool AllowDefaultProxy { get; set; } = true;
+
+        /// <summary>
+        ///     Provides a way for Octopus.Server.Client to scan for all types implementing IHttpRequestRouteFor or
+        ///     IHttpCommandRouteFor.
+        /// </summary>
+        /// <remarks>
+        ///     Will be hit every time a new type of command or request payload is sent to allow for dynamic loading of assemblies
+        ///     into the appdomain, so a reasonably-well-filtered collection is recommended.
+        /// </remarks>
+        public Func<Type[]> ScanForHttpRouteTypes { get; set; } = AppDomainScanner.ScanForAllTypes;
     }
 }

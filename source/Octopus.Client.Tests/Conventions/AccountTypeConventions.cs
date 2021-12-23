@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests.Conventions
                 .ToArray();
 
             if (typesThatCannotBeMapped.Any())
-                Assert.Fail($"The following AccountResource types cannot be mapped to an AccountType: " + typesThatCannotBeMapped.CommaSeperate());
+                Assert.Fail($"The following AccountResource types cannot be mapped to an AccountType: " + typesThatCannotBeMapped.CommaSeparate());
         }
     }
 }

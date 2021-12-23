@@ -32,6 +32,7 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object, Object)
+    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -48,6 +49,7 @@ Octopus.Client
     Task Put(String, Octopus.Client.TResource, Object)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
@@ -68,6 +70,7 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object, Object)
+    Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
@@ -84,6 +87,7 @@ Octopus.Client
     void Put(String, Octopus.Client.TResource, Object)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
@@ -91,7 +95,7 @@ Octopus.Client
   interface IOctopusClientFactory
   {
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
-    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
   }
   interface IOctopusCommonAsyncRepository
   {
@@ -276,6 +280,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task Delete(String, Object, Object)
     void Dispose()
+    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -292,6 +297,7 @@ Octopus.Client
     Task Put(String, Octopus.Client.TResource, Object)
     Task PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
@@ -383,13 +389,14 @@ Octopus.Client
     event Action<WebRequest> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
-    .ctor(Octopus.Client.OctopusServerEndpoint)
+    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     void Delete(String, Object, Object)
     void Dispose()
+    Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
@@ -407,6 +414,7 @@ Octopus.Client
     void Put(String, Octopus.Client.TResource, Object)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
+    Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
@@ -416,7 +424,7 @@ Octopus.Client
   {
     .ctor()
     Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
-    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
   }
   class OctopusClientOptions
   {
@@ -426,6 +434,7 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
+    Func<Type[]> ScanForHttpRouteTypes { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
@@ -1488,8 +1497,10 @@ Octopus.Client.Extensions
 {
   abstract class StringExtensions
   {
-    static String CommaSeperate(IEnumerable<Object>)
-    static String NewLineSeperate(IEnumerable<Object>)
+    static String CommaSeparate(IEnumerable<Object>)
+    static String NewLineSeparate(IEnumerable<Object>)
+    static String StringJoin(IEnumerable<String>, String)
+    static String ToCamelCase(String)
   }
   abstract class TaskStateExtensions
   {
@@ -1503,6 +1514,23 @@ Octopus.Client.Extensions
   abstract class UriExtensions
   {
     static String HexEscape(Char)
+  }
+}
+Octopus.Client.HttpRouting
+{
+  interface IHttpRouteExtractor
+  {
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+  }
+  class PayloadRoutingException
+    ISerializable
+    Octopus.Client.Exceptions.OctopusException
+  {
+    .ctor(String)
+    .ctor(String, Exception)
   }
 }
 Octopus.Client.Logging
@@ -8412,6 +8440,12 @@ Octopus.Client.Serialization
   }
   class PersistenceSettingsConverter
     Octopus.Client.Serialization.InheritedClassConverter<PersistenceSettingsResource, PersistenceSettingsType>
+  {
+    .ctor()
+  }
+  class PrivateMemberContractResolver
+    IContractResolver
+    DefaultContractResolver
   {
     .ctor()
   }
