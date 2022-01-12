@@ -3014,6 +3014,7 @@ Octopus.Client.Model
     Boolean IsHelpSidebarEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
     Boolean IsStepUiFrameworkEnabled { get; set; }
+    Boolean IsServiceNowIntegrationEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
