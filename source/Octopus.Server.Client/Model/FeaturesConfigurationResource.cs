@@ -27,5 +27,8 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public bool IsStepUiFrameworkEnabled { get; set; }
+
+        [Writeable]
+        public bool IsServiceNowIntegrationEnabled { get; set; }
     }
 }
