@@ -26,5 +26,14 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string CookieDomain { get; set; }
+
+        [Writeable]
+        public int SessionTimeoutInSeconds { get; set; }
+
+        [Writeable]
+        public int MaximumSessionDurationInSeconds { get; set; }
+
+        [Writeable]
+        public bool RememberMeEnabled { get; set; }
     }
 }
