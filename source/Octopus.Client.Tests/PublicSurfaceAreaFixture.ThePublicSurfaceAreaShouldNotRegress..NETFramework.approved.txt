@@ -1904,6 +1904,9 @@ Octopus.Client.Model
     String Id { get; set; }
     Boolean IsSelfServiceIdentityEditingEnabled { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Int32 MaximumSessionDurationInSeconds { get; set; }
+    Boolean RememberMeEnabled { get; set; }
+    Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
   }
   abstract class AutoDeploy
