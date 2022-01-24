@@ -41,7 +41,8 @@ namespace Octopus.Client.Serialization
                     new TriggerFilterConverter(),
                     new EndpointWithMultipleAuthenticationConverter(),
                     new PersistenceSettingsConverter(),
-                    new VersionControlSettingsConverter()
+                    new VersionControlSettingsConverter(),
+                    new GitCredentialDetailsConverter()
                 }
             };
         }

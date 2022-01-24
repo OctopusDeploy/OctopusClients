@@ -153,6 +153,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
+    Octopus.Client.Repositories.Async.IGitCredentialRepository GitCredentials { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
     Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
@@ -332,6 +333,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
+    Octopus.Client.Repositories.Async.IGitCredentialRepository GitCredentials { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
     Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.Async.ILicensesRepository Licenses { get; }
@@ -4018,6 +4020,8 @@ Octopus.Client.Model
       RunbookRunView = 115
       RunbookRunDelete = 116
       RunbookRunCreate = 117
+      GitCredentialView = 118
+      GitCredentialEdit = 119
   }
   class PermissionDescription
   {
@@ -4272,6 +4276,13 @@ Octopus.Client.Model
     .ctor(String, String)
     String Id { get; set; }
     String Name { get; set; }
+  }
+  class ReferenceVersionControlCredentialsResource
+    Octopus.Client.Model.VersionControlCredentialsResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
   }
   class RegisterCommand
     Octopus.Client.Extensibility.IResource
@@ -5513,6 +5524,7 @@ Octopus.Client.Model
   {
       Anonymous = 0
       UsernamePassword = 1
+      Reference = 2
   }
   class VersionControlSettingsResource
     Octopus.Client.Model.PersistenceSettingsResource
@@ -6359,6 +6371,58 @@ Octopus.Client.Model.Forms
     String Name { get; }
     Object CoerceValue(String)
     Type GetNativeValueType()
+  }
+}
+Octopus.Client.Model.GitCredentials
+{
+  class CreateGitCredentialCommand
+  {
+    .ctor()
+    String Description { get; set; }
+    Octopus.Client.Model.GitCredentials.GitCredentialDetails Details { get; set; }
+    String Name { get; set; }
+  }
+  abstract class GitCredentialDetails
+  {
+    Octopus.Client.Model.GitCredentials.GitCredentialDetailsType Type { get; }
+  }
+  GitCredentialDetailsType
+  {
+      UsernamePassword = 0
+  }
+  class GitCredentialResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String Description { get; set; }
+    Octopus.Client.Model.GitCredentials.GitCredentialDetails Details { get; set; }
+    String Name { get; set; }
+    String SpaceId { get; set; }
+  }
+  class GitCredentialUsage
+  {
+    .ctor()
+    Int32 OtherProjects { get; set; }
+    Octopus.Client.Model.GitCredentials.GitCredentialUsageProject[] Projects { get; set; }
+  }
+  class GitCredentialUsageProject
+  {
+    .ctor()
+    String Name { get; set; }
+    String ProjectId { get; set; }
+    String Slug { get; set; }
+  }
+  class UsernamePasswordGitCredentialDetails
+    Octopus.Client.Model.GitCredentials.GitCredentialDetails
+  {
+    .ctor()
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    Octopus.Client.Model.GitCredentials.GitCredentialDetailsType Type { get; }
+    String Username { get; set; }
   }
 }
 Octopus.Client.Model.IssueTrackers
@@ -7905,6 +7969,16 @@ Octopus.Client.Repositories.Async
     Task<List<TResource>> Get(String[])
     Task<TResource> Refresh(Octopus.Client.Repositories.Async.TResource)
   }
+  interface IGitCredentialRepository
+    Octopus.Client.Repositories.Async.IGet<GitCredentialResource>
+    Octopus.Client.Repositories.Async.IFindByName<GitCredentialResource>
+    Octopus.Client.Repositories.Async.IPaginate<GitCredentialResource>
+    Octopus.Client.Repositories.Async.ICreate<GitCredentialResource>
+    Octopus.Client.Repositories.Async.IModify<GitCredentialResource>
+    Octopus.Client.Repositories.Async.IDelete<GitCredentialResource>
+  {
+    Task<GitCredentialUsage> Usage(Octopus.Client.Model.GitCredentials.GitCredentialResource)
+  }
   interface IInterruptionRepository
     Octopus.Client.Repositories.Async.IGet<InterruptionResource>
   {
@@ -8438,6 +8512,11 @@ Octopus.Client.Serialization
   }
   class FeedConverter
     Octopus.Client.Serialization.InheritedClassConverter<FeedResource, FeedType>
+  {
+    .ctor()
+  }
+  class GitCredentialDetailsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<GitCredentialDetails, GitCredentialDetailsType>
   {
     .ctor()
   }

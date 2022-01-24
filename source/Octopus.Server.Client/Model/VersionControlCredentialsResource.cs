@@ -5,9 +5,10 @@ namespace Octopus.Client.Model
     public enum VersionControlCredentialsType
     {
         Anonymous,
-        UsernamePassword
+        UsernamePassword,
+        Reference
     }
-    
+
     public abstract class VersionControlCredentialsResource
     {
         public abstract VersionControlCredentialsType Type { get; }
@@ -26,5 +27,13 @@ namespace Octopus.Client.Model
         public string Username { get; set; }
         [Writeable]
         public SensitiveValue Password { get; set; } = new SensitiveValue();
+    }
+
+    public class ReferenceVersionControlCredentialsResource : VersionControlCredentialsResource
+    {
+        public override VersionControlCredentialsType Type { get; } = VersionControlCredentialsType.Reference;
+
+        [Writeable]
+        public string Id { get; set; }
     }
 }

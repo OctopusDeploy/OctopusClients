@@ -77,6 +77,7 @@ namespace Octopus.Client
             Events = new EventRepository(this);
             FeaturesConfiguration = new FeaturesConfigurationRepository(this);
             Feeds = new FeedRepository(this);
+            GitCredentials = new GitCredentialRepository(this);
             Interruptions = new InterruptionRepository(this);
             LibraryVariableSets = new LibraryVariableSetRepository(this);
             Licenses = new LicensesRepository(this);
@@ -147,6 +148,7 @@ namespace Octopus.Client
         public IEventRepository Events { get; }
         public IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         public IFeedRepository Feeds { get; }
+        public IGitCredentialRepository GitCredentials { get; }
         public IInterruptionRepository Interruptions { get; }
         public ILibraryVariableSetRepository LibraryVariableSets { get; }
         public ILicensesRepository Licenses { get; }
