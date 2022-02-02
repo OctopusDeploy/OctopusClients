@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories
 
         public DeploymentSettingsResource Get(ProjectResource projectResource, string gitRef)
         {
-            if (projectResource.PersistenceSettings is not VersionControlSettingsResource)
+            if (!projectResource.IsVersionControlled)
             {
                 throw new NotSupportedException(
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");

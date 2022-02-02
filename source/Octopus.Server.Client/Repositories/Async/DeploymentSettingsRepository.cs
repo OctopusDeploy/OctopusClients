@@ -23,10 +23,12 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitRef)
         {
-            if (projectResource.IsVersionControlled)
+            if (!projectResource.IsVersionControlled)
+            {
                 throw new NotSupportedException(
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
-            
+            }
+
             return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new {gitRef});
         }
         
@@ -48,9 +50,10 @@ namespace Octopus.Client.Repositories.Async
         
         public async Task<DeploymentSettingsResource> Get(ProjectResource projectResource)
         {
-            if (projectResource.IsVersionControlled)
-                throw new NotSupportedException(
-                    $"Version Controlled projects require using the overload that includes a gitRef parameter.");
+            if (projectResource.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            {
+                return await Get(projectResource, vcsResource.DefaultBranch);
+            }
 
             return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"));
         }

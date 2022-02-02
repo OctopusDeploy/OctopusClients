@@ -5489,21 +5489,6 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
   }
-  class VcsRunbookResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
-    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
-    String Description { get; set; }
-    Octopus.Client.Model.ReferenceCollection Environments { get; }
-    Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
-    String Name { get; set; }
-  }
   class VersionControlBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource

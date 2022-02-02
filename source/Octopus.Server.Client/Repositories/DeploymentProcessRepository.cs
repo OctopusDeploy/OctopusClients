@@ -28,18 +28,23 @@ namespace Octopus.Client.Repositories
 
         public DeploymentProcessResource Get(ProjectResource projectResource)
         {
+            if (projectResource.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            {
+               return Get(projectResource, vcsResource.DefaultBranch);
+            }
+            
             return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName));
         }
 
         public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef)
         {
-            if (projectResource.PersistenceSettings is not VersionControlSettingsResource)
+            if (!projectResource.IsVersionControlled)
             {
                 throw new NotSupportedException(
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName), new {gitRef});
+            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName), new { gitRef });
         }
 
         public DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage)
