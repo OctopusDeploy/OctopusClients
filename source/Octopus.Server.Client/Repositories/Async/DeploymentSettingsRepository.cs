@@ -8,8 +8,15 @@ namespace Octopus.Client.Repositories.Async
     public interface IDeploymentSettingsRepository
     {
         Task<DeploymentSettingsResource> Get(ProjectResource project);
+        
         Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitRef);
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
+
+        /// <summary>
+        /// This overload is only relevant for VCS Projects. If passed a database backed deployment setting, the commit message will be ignored.
+        /// </summary>
+        Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, DeploymentSettingsResource resource,
+            string commitMessage);
     }
 
     internal class DeploymentSettingsRepository : IDeploymentSettingsRepository
