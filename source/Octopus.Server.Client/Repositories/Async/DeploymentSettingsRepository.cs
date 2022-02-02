@@ -10,13 +10,16 @@ namespace Octopus.Client.Repositories.Async
         Task<DeploymentSettingsResource> Get(ProjectResource project);
         
         Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitRef);
+        
+        [Obsolete("ProjectResource is no longer required to be passed in")]
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
+        
+        Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings);
 
         /// <summary>
         /// This overload is only relevant for VCS Projects. If passed a database backed deployment setting, the commit message will be ignored.
         /// </summary>
-        Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, DeploymentSettingsResource resource,
-            string commitMessage);
+        Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource resource, string commitMessage);
     }
 
     internal class DeploymentSettingsRepository : IDeploymentSettingsRepository
@@ -39,10 +42,8 @@ namespace Octopus.Client.Repositories.Async
             return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new {gitRef});
         }
         
-        public async Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, DeploymentSettingsResource resource, string commitMessage)
+        public async Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource resource, string commitMessage)
         {
-            if (!projectResource.IsVersionControlled)
-                throw new NotSupportedException($"Database backed projects do not support supplying commit messages.");
             
             // TODO: revisit/obsolete this API when we have converters
             // until then we need a way to re-use the response from previous client calls
@@ -67,10 +68,16 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<DeploymentSettingsResource> Modify(ProjectResource projectResource, DeploymentSettingsResource deploymentSettings)
         {
+            return await Modify(deploymentSettings);
+        }
+
+        public async Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings)
+        {
             await client.Put(deploymentSettings.Link("Self"), deploymentSettings);
 
             return await client.Get<DeploymentSettingsResource>(deploymentSettings.Link("Self"));
         }
+
     }
 
 }
