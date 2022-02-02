@@ -7,6 +7,7 @@ namespace Octopus.Client.Repositories
     public interface IDeploymentProcessRepository : IGet<DeploymentProcessResource>, IModify<DeploymentProcessResource>
     {
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
+        DeploymentProcessResource Get(ProjectResource projectResource);
         DeploymentProcessResource Get(ProjectResource projectResource, string gitRef);
         DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage);
     }
@@ -23,6 +24,11 @@ namespace Octopus.Client.Repositories
         public ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
         {
             return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new {channel = channel?.Id});
+        }
+
+        public DeploymentProcessResource Get(ProjectResource projectResource)
+        {
+            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName));
         }
 
         public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef)

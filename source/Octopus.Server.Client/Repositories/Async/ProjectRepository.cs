@@ -10,7 +10,10 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectBetaRepository Beta();
+        Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
+        Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
+        Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
@@ -31,19 +34,43 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        private readonly IProjectBetaRepository beta;
 
         public ProjectRepository(IOctopusAsyncRepository repository)
             : base(repository, "Projects")
         {
-            beta = new ProjectBetaRepository(repository);
         }
 
-        public IProjectBetaRepository Beta()
+        public Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource)
         {
-            return beta;
+            if (!projectResource.IsVersionControlled)
+                throw new NotSupportedException($"Database backed projects do not support branches");
+            
+            return Client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
         }
 
+        public Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch)
+        {
+            if (!projectResource.IsVersionControlled)
+                throw new NotSupportedException($"Database backed projects do not support branches");
+
+            return Client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
+        }
+
+        public async Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings,
+            string commitMessage)
+        {
+            var payload = new ConvertProjectToVersionControlledCommand
+            {
+                VersionControlSettings = versionControlSettings,
+                CommitMessage = commitMessage
+            };
+
+            var url = project.Link("ConvertToVcs");
+            var response = await Client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
+            return response;
+        }
+
+        
         public Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
         {
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });
@@ -122,78 +149,6 @@ namespace Octopus.Client.Repositories.Async
         public Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project)
         {
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
-        }
-    }
-
-    public interface IProjectBetaRepository
-    {
-        Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource);
-        Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch);
-        Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
-        Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef = null);
-        Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef = null);
-        Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName);
-    }
-
-    class ProjectBetaRepository : IProjectBetaRepository
-    {
-        private readonly IOctopusAsyncRepository repository;
-        private readonly IOctopusAsyncClient client;
-
-        public ProjectBetaRepository(IOctopusAsyncRepository repository)
-        {
-            this.repository = repository;
-            client = repository.Client;
-        }
-
-        public Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(ProjectResource projectResource)
-        {
-            return client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
-        }
-
-        public Task<VersionControlBranchResource> GetVersionControlledBranch(ProjectResource projectResource, string branch)
-        {
-            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new { name = branch });
-        }
-
-        public async Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings,
-            string commitMessage)
-        {
-            var payload = new ConvertProjectToVersionControlledCommand
-            {
-                VersionControlSettings = versionControlSettings,
-                CommitMessage = commitMessage
-            };
-
-            var url = project.Link("ConvertToVcs");
-            var response = await client.Post<ConvertProjectToVersionControlledCommand,ConvertProjectToVersionControlledResponse>(url, payload);
-            return response;
-        }
-
-        public async Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource projectResource, string gitRef = null)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return await repository.Projects.GetChannels(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-
-            return await client.List<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
-        }
-
-        public async Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource projectResource, string gitRef = null)
-        {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return await repository.Projects.GetAllChannels(projectResource);
-            
-            gitRef = gitRef ?? settings.DefaultBranch;
-
-            return await client.ListAll<ChannelResource>(projectResource.Link("Channels"), new { gitRef });
-        }
-
-        public async Task<ChannelResource> GetChannel(ProjectResource projectResource, string gitRef, string idOrName)
-        {
-            projectResource.EnsureVersionControlled();
-            return await client.Get<ChannelResource>(projectResource.Links["Channels"], new { gitRef, id = idOrName });
         }
     }
 }

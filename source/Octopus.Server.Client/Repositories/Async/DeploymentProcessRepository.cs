@@ -10,6 +10,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ReleaseTemplateResource> GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
 
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef);
+        Task<DeploymentProcessResource> Get(ProjectResource projectResource);
         Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings, string commitMessage);
     }
 
@@ -36,6 +37,11 @@ namespace Octopus.Client.Repositories.Async
             }
 
             return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName), new {gitRef});
+        }
+
+        public Task<DeploymentProcessResource> Get(ProjectResource projectResource)
+        {
+            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName));
         }
 
         public async Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings,
