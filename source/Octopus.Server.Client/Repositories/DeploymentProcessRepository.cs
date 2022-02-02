@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
                return Get(projectResource, vcsResource.DefaultBranch);
             }
             
-            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName));
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
         }
 
         public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef)
@@ -44,7 +44,7 @@ namespace Octopus.Client.Repositories
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName), new { gitRef });
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
         }
 
         public DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage)

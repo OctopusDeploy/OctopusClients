@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories.Async
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName), new {gitRef});
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new {gitRef});
         }
 
         public Task<DeploymentProcessResource> Get(ProjectResource projectResource)
@@ -46,7 +46,7 @@ namespace Octopus.Client.Repositories.Async
                 return Get(projectResource, vcsResource.DefaultBranch);
             }
 
-            return Client.Get<DeploymentProcessResource>(projectResource.Link(this.CollectionLinkName));
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
         }
 
         public async Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings,
