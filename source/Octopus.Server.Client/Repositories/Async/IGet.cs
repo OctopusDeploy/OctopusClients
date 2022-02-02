@@ -11,9 +11,4 @@ namespace Octopus.Client.Repositories.Async
         Task<List<TResource>> Get(params string[] ids);
         Task<TResource> Refresh(TResource resource);
     }
-
-    public interface IGetProjectScoped<TResource>
-    {
-        Task<TResource> Get(ProjectResource projectResource, string idOrHref);
-    }
 }
