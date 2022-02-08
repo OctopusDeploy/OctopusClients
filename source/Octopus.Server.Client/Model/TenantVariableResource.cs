@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         public Dictionary<string, Project> ProjectVariables { get; set; } = new Dictionary<string, Project>();
 
         public Dictionary<string, Library> LibraryVariables { get; set; } = new Dictionary<string, Library>();
-
+        public string ConcurrencyToken { get; set; }
         public class Project
         {
             public Project(string projectId)

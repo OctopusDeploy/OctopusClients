@@ -5221,6 +5221,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String ConcurrencyToken { get; set; }
     Dictionary<String, Library> LibraryVariables { get; set; }
     Dictionary<String, Project> ProjectVariables { get; set; }
     String SpaceId { get; set; }
