@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
-using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IChannelRepository : ICreate<ChannelResource>, ICreateProjectScoped<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IGetProjectScoped<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
+    public interface IChannelRepository : ICreate<ChannelResource>, IModify<ChannelResource>, IGet<ChannelResource>, IDelete<ChannelResource>, IPaginate<ChannelResource>
     {
         Task<ChannelResource> FindByName(ProjectResource project, string name);
         Task<ChannelEditor> CreateOrModify(ProjectResource project, string name);
@@ -17,12 +16,12 @@ namespace Octopus.Client.Repositories.Async
         Task<ReleaseResource> GetReleaseByVersion(ChannelResource channel, string version);
     }
 
-    class ChannelRepository : ProjectScopedRepository<ChannelResource>, IChannelRepository
+    class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
     {
-        public ChannelRepository(IOctopusAsyncRepository repository) : base(repository, "Channels")
+        public ChannelRepository(IOctopusAsyncRepository repository)
+            : base(repository, "Channels")
         {
         }
-
 
         public Task<ChannelResource> FindByName(ProjectResource project, string name)
         {

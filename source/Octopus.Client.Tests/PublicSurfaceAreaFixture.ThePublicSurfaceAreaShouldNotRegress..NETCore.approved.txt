@@ -140,7 +140,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
-    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncBetaRepository Beta { get; }
     Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateRepository Certificates { get; }
@@ -186,7 +185,6 @@ Octopus.Client
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
-    Octopus.Client.Repositories.IOctopusSpaceBetaRepository Beta { get; }
     Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -314,7 +312,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
-    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncBetaRepository Beta { get; }
     Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.Async.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -453,7 +450,6 @@ Octopus.Client
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
-    Octopus.Client.Repositories.IOctopusSpaceBetaRepository Beta { get; }
     Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
     Octopus.Client.Repositories.IBuiltInPackageRepositoryRepository BuiltInPackageRepository { get; }
     Octopus.Client.Repositories.ICertificateConfigurationRepository CertificateConfiguration { get; }
@@ -5468,21 +5464,6 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
   }
-  class VcsRunbookResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
-    Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
-    String Description { get; set; }
-    Octopus.Client.Model.ReferenceCollection Environments { get; }
-    Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
-    Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
-    String Name { get; set; }
-  }
   class VersionControlBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6884,12 +6865,6 @@ Octopus.Client.Operations
 }
 Octopus.Client.Repositories
 {
-  class BranchScopedRepository
-    Octopus.Client.Repositories.IBranchScopedRepository
-  {
-    .ctor(Octopus.Client.IOctopusRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Octopus.Client.Repositories.IVcsRunbookRepository Runbooks { get; }
-  }
   class BuildInformationRepository
     Octopus.Client.Repositories.IBuildInformationRepository
   {
@@ -6953,10 +6928,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.BackupConfigurationResource GetConfiguration()
     Octopus.Client.Model.BackupConfigurationResource ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
   }
-  interface IBranchScopedRepository
-  {
-    Octopus.Client.Repositories.IVcsRunbookRepository Runbooks { get; }
-  }
   interface IBuildInformationRepository
   {
     void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
@@ -7009,10 +6980,8 @@ Octopus.Client.Repositories
   }
   interface IChannelRepository
     Octopus.Client.Repositories.ICreate<ChannelResource>
-    Octopus.Client.Repositories.ICreateProjectScoped<ChannelResource>
     Octopus.Client.Repositories.IModify<ChannelResource>
     Octopus.Client.Repositories.IGet<ChannelResource>
-    Octopus.Client.Repositories.IGetProjectScoped<ChannelResource>
     Octopus.Client.Repositories.IDelete<ChannelResource>
     Octopus.Client.Repositories.IPaginate<ChannelResource>
     Octopus.Client.Repositories.IGetAll<ChannelResource>
@@ -7032,10 +7001,6 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Repositories.T Get()
     Octopus.Client.Repositories.T Modify(Octopus.Client.Repositories.T)
-  }
-  interface ICreateProjectScoped`1
-  {
-    Octopus.Client.Repositories.TResource Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Repositories.TResource, Object)
   }
   interface ICreate`1
   {
@@ -7061,18 +7026,14 @@ Octopus.Client.Repositories
   {
     void Delete(Octopus.Client.Repositories.TResource)
   }
-  interface IDeploymentProcessBetaRepository
-  {
-    Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
-    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentProcessCommand)
-  }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.IModify<DeploymentProcessResource>
   {
-    Octopus.Client.Repositories.IDeploymentProcessBetaRepository Beta()
+    Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.DeploymentProcessResource Get(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ReleaseTemplateResource GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+    Octopus.Client.Model.DeploymentProcessResource Modify(Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.IGet<DeploymentResource>
@@ -7086,17 +7047,13 @@ Octopus.Client.Repositories
     void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
   }
-  interface IDeploymentSettingsBetaRepository
-  {
-    Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
-    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentSettingsCommand)
-  }
   interface IDeploymentSettingsRepository
   {
-    Octopus.Client.Repositories.IDeploymentSettingsBetaRepository Beta()
+    Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.DeploymentSettingsResource Get(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.DeploymentSettingsResource)
+    Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindByName<EnvironmentResource>
@@ -7149,10 +7106,6 @@ Octopus.Client.Repositories
   interface IGetAll`1
   {
     List<TResource> GetAll()
-  }
-  interface IGetProjectScoped`1
-  {
-    Octopus.Client.Repositories.TResource Get(Octopus.Client.Model.ProjectResource, String)
   }
   interface IGet`1
   {
@@ -7249,10 +7202,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
     Octopus.Client.Model.OctopusServerClusterSummaryResource Summary()
   }
-  interface IOctopusSpaceBetaRepository
-  {
-    Octopus.Client.Repositories.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
-  }
   interface IPackageMetadataRepository
   {
     Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
@@ -7270,12 +7219,6 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
-  }
-  interface IProjectBetaRepository
-  {
-    Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
-    Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
@@ -7299,7 +7242,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<ProjectResource>
     Octopus.Client.Repositories.IGetAll<ProjectResource>
   {
-    Octopus.Client.Repositories.IProjectBetaRepository Beta()
+    Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -7315,6 +7258,8 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookSnapshotResource GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
     void SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
   interface IProjectTriggerRepository
@@ -7596,14 +7541,6 @@ Octopus.Client.Repositories
     String[] GetVariableNames(String, String[])
     Octopus.Client.Model.VariableSetResource GetVariablePreview(String, String, String, String, String, String, String, String)
   }
-  interface IVcsRunbookRepository
-  {
-    Octopus.Client.Model.VcsRunbookResource Create(Octopus.Client.Model.VcsRunbookResource, String)
-    void Delete(Octopus.Client.Model.VcsRunbookResource, String)
-    Octopus.Client.Model.VcsRunbookResource Get(String)
-    Octopus.Client.Model.ResourceCollection<VcsRunbookResource> List(String, Int32, Nullable<Int32>)
-    Octopus.Client.Model.VcsRunbookResource Modify(Octopus.Client.Model.VcsRunbookResource, String)
-  }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.IPaginate<WorkerPoolResource>
@@ -7633,12 +7570,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
-  class OctopusSpaceBetaRepository
-    Octopus.Client.Repositories.IOctopusSpaceBetaRepository
-  {
-    .ctor(Octopus.Client.IOctopusRepository)
-    Octopus.Client.Repositories.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
-  }
   class PackageMetadataRepository
     Octopus.Client.Repositories.IPackageMetadataRepository
   {
@@ -7663,25 +7594,9 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TelemetryConfigurationResource GetTelemetryConfiguration()
     Octopus.Client.Model.TelemetryConfigurationResource ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
-  class VcsRunbookRepository
-    Octopus.Client.Repositories.IVcsRunbookRepository
-  {
-    .ctor(Octopus.Client.IOctopusRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Octopus.Client.Model.VcsRunbookResource Create(Octopus.Client.Model.VcsRunbookResource, String)
-    void Delete(Octopus.Client.Model.VcsRunbookResource, String)
-    Octopus.Client.Model.VcsRunbookResource Get(String)
-    Octopus.Client.Model.ResourceCollection<VcsRunbookResource> List(String, Int32, Nullable<Int32>)
-    Octopus.Client.Model.VcsRunbookResource Modify(Octopus.Client.Model.VcsRunbookResource, String)
-  }
 }
 Octopus.Client.Repositories.Async
 {
-  class BranchScopedRepository
-    Octopus.Client.Repositories.Async.IBranchScopedRepository
-  {
-    .ctor(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Octopus.Client.Repositories.Async.IVcsRunbookRepository Runbooks { get; }
-  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
@@ -7732,10 +7647,6 @@ Octopus.Client.Repositories.Async
   {
     Task<BackupConfigurationResource> GetConfiguration()
     Task<BackupConfigurationResource> ModifyConfiguration(Octopus.Client.Model.BackupConfigurationResource)
-  }
-  interface IBranchScopedRepository
-  {
-    Octopus.Client.Repositories.Async.IVcsRunbookRepository Runbooks { get; }
   }
   interface IBuildInformationRepository
   {
@@ -7789,10 +7700,8 @@ Octopus.Client.Repositories.Async
   }
   interface IChannelRepository
     Octopus.Client.Repositories.Async.ICreate<ChannelResource>
-    Octopus.Client.Repositories.Async.ICreateProjectScoped<ChannelResource>
     Octopus.Client.Repositories.Async.IModify<ChannelResource>
     Octopus.Client.Repositories.Async.IGet<ChannelResource>
-    Octopus.Client.Repositories.Async.IGetProjectScoped<ChannelResource>
     Octopus.Client.Repositories.Async.IDelete<ChannelResource>
     Octopus.Client.Repositories.Async.IPaginate<ChannelResource>
   {
@@ -7814,10 +7723,6 @@ Octopus.Client.Repositories.Async
   {
     Task<T> Get()
     Task<T> Modify(Octopus.Client.Repositories.Async.T)
-  }
-  interface ICreateProjectScoped`1
-  {
-    Task<TResource> Create(Octopus.Client.Model.ProjectResource, Octopus.Client.Repositories.Async.TResource, Object)
   }
   interface ICreate`1
   {
@@ -7843,18 +7748,14 @@ Octopus.Client.Repositories.Async
   {
     Task Delete(Octopus.Client.Repositories.Async.TResource)
   }
-  interface IDeploymentProcessBetaRepository
-  {
-    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
-    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentProcessResource, String)
-    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentProcessCommand)
-  }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
     Octopus.Client.Repositories.Async.IModify<DeploymentProcessResource>
   {
-    Octopus.Client.Repositories.Async.IDeploymentProcessBetaRepository Beta()
+    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource)
     Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.DeploymentProcessResource, String)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
@@ -7868,17 +7769,13 @@ Octopus.Client.Repositories.Async
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
   }
-  interface IDeploymentSettingsBetaRepository
-  {
-    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
-    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, String)
-    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.ModifyDeploymentSettingsCommand)
-  }
   interface IDeploymentSettingsRepository
   {
-    Octopus.Client.Repositories.Async.IDeploymentSettingsBetaRepository Beta()
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource)
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
@@ -7931,10 +7828,6 @@ Octopus.Client.Repositories.Async
   interface IGetAll`1
   {
     Task<List<TResource>> GetAll()
-  }
-  interface IGetProjectScoped`1
-  {
-    Task<TResource> Get(Octopus.Client.Model.ProjectResource, String)
   }
   interface IGet`1
   {
@@ -8040,10 +7933,6 @@ Octopus.Client.Repositories.Async
     Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
     Task<OctopusServerClusterSummaryResource> Summary()
   }
-  interface IOctopusSpaceAsyncBetaRepository
-  {
-    Octopus.Client.Repositories.Async.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
-  }
   interface IPackageMetadataRepository
   {
     Task<OctopusPackageMetadataMappedResource> Get(String)
@@ -8061,15 +7950,6 @@ Octopus.Client.Repositories.Async
   {
     Task<PerformanceConfigurationResource> Get()
     Task<PerformanceConfigurationResource> Modify(Octopus.Client.Model.PerformanceConfigurationResource)
-  }
-  interface IProjectBetaRepository
-  {
-    Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
-    Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource, String)
-    Task<ChannelResource> GetChannel(Octopus.Client.Model.ProjectResource, String, String)
-    Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource, String)
-    Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
   }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>
@@ -8093,7 +7973,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ProjectResource>
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
-    Octopus.Client.Repositories.Async.IProjectBetaRepository Beta()
+    Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -8109,6 +7989,8 @@ Octopus.Client.Repositories.Async
     Task<RunbookSnapshotResource> GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
+    Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
     Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
   interface IProjectTriggerRepository
@@ -8391,14 +8273,6 @@ Octopus.Client.Repositories.Async
     Task<String[]> GetVariableNames(String, String[])
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
   }
-  interface IVcsRunbookRepository
-  {
-    Task<VcsRunbookResource> Create(Octopus.Client.Model.VcsRunbookResource, String)
-    Task Delete(Octopus.Client.Model.VcsRunbookResource, String)
-    Task<VcsRunbookResource> Get(String)
-    Task<ResourceCollection<VcsRunbookResource>> List(String, Int32, Nullable<Int32>)
-    Task<VcsRunbookResource> Modify(Octopus.Client.Model.VcsRunbookResource, String)
-  }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IPaginate<WorkerPoolResource>
@@ -8428,12 +8302,6 @@ Octopus.Client.Repositories.Async
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
-  class OctopusSpaceAsyncBetaRepository
-    Octopus.Client.Repositories.Async.IOctopusSpaceAsyncBetaRepository
-  {
-    .ctor(Octopus.Client.IOctopusAsyncRepository)
-    Octopus.Client.Repositories.Async.IBranchScopedRepository ForBranch(Octopus.Client.Model.VersionControlBranchResource)
-  }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
     Exception
@@ -8448,16 +8316,6 @@ Octopus.Client.Repositories.Async
     Task<TelemetryConfigurationResource> EnableTelemetry()
     Task<TelemetryConfigurationResource> GetTelemetryConfiguration()
     Task<TelemetryConfigurationResource> ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
-  }
-  class VcsRunbookRepository
-    Octopus.Client.Repositories.Async.IVcsRunbookRepository
-  {
-    .ctor(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.VersionControlBranchResource)
-    Task<VcsRunbookResource> Create(Octopus.Client.Model.VcsRunbookResource, String)
-    Task Delete(Octopus.Client.Model.VcsRunbookResource, String)
-    Task<VcsRunbookResource> Get(String)
-    Task<ResourceCollection<VcsRunbookResource>> List(String, Int32, Nullable<Int32>)
-    Task<VcsRunbookResource> Modify(Octopus.Client.Model.VcsRunbookResource, String)
   }
 }
 Octopus.Client.Serialization

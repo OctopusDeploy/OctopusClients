@@ -1,3 +1,4 @@
+using System;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
 
@@ -5,80 +6,57 @@ namespace Octopus.Client.Repositories
 {
     public interface IDeploymentProcessRepository : IGet<DeploymentProcessResource>, IModify<DeploymentProcessResource>
     {
-        IDeploymentProcessBetaRepository Beta();
         ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel);
+        DeploymentProcessResource Get(ProjectResource projectResource);
+        DeploymentProcessResource Get(ProjectResource projectResource, string gitRef);
+        DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage);
     }
+    
 
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
-        private readonly DeploymentProcessBetaRepository beta;
 
         public DeploymentProcessRepository(IOctopusRepository repository)
             : base(repository, "DeploymentProcesses")
         {
-            beta = new DeploymentProcessBetaRepository(repository);
-        }
-
-        public IDeploymentProcessBetaRepository Beta()
-        {
-            return beta;
         }
 
         public ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
         {
-            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id });
-        }
-    }
-
-    public interface IDeploymentProcessBetaRepository
-    {
-        DeploymentProcessResource Get(ProjectResource projectResource, string gitRef = null);
-        DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null);
-        DeploymentProcessResource Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command);
-    }
-
-    class DeploymentProcessBetaRepository : IDeploymentProcessBetaRepository
-    {
-        private readonly IOctopusRepository repository;
-        private readonly IOctopusClient client;
-
-        public DeploymentProcessBetaRepository(IOctopusRepository repository)
-        {
-            this.repository = repository;
-            client = repository.Client;
+            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new {channel = channel?.Id});
         }
 
-        public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef = null)
+        public DeploymentProcessResource Get(ProjectResource projectResource)
         {
-            if (!(projectResource.PersistenceSettings is VersionControlSettingsResource settings))
-                return repository.DeploymentProcesses.Get(projectResource.DeploymentProcessId);
-
-            gitRef = gitRef ?? settings.DefaultBranch;
-
-            return client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
-        }
-
-        public DeploymentProcessResource Modify(ProjectResource projectResource, DeploymentProcessResource resource, string commitMessage = null)
-        {
-            // TODO: revisit/obsolete this API when we have converters
-            // until then we need a way to re-use the response from previous client calls
-            var json = Serializer.Serialize(resource);
-            var command = Serializer.Deserialize<ModifyDeploymentProcessCommand>(json);
+            if (projectResource.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            {
+               return Get(projectResource, vcsResource.DefaultBranch);
+            }
             
-            command.ChangeDescription = commitMessage;
-            
-            return Modify(projectResource, command);
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
         }
 
-        public DeploymentProcessResource Modify(ProjectResource projectResource, ModifyDeploymentProcessCommand command)
+        public DeploymentProcessResource Get(ProjectResource projectResource, string gitRef)
         {
             if (!projectResource.IsVersionControlled)
             {
-                return client.Update(projectResource.Link("DeploymentProcess"), command);
+                throw new NotSupportedException(
+                    $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            client.Put(command.Link("Self"), command);
-            return client.Get<DeploymentProcessResource>(command.Link("Self"));
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef });
+        }
+
+        public DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage)
+        {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(deploymentSettings);
+            var command = Serializer.Deserialize<ModifyDeploymentProcessCommand>(json);
+
+            command.ChangeDescription = commitMessage;
+
+            return Modify(command);
         }
     }
 }
