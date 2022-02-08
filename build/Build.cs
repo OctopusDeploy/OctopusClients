@@ -8,10 +8,10 @@ using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.ILRepack;
+using Nuke.Common.Tools.OctoVersion;
 using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
-using Nuke.OctoVersion;
-using OctoVersion.Core;
+using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -20,6 +20,8 @@ using static Nuke.Common.Tools.SignTool.SignToolTasks;
     Verbose = nameof(DotNetVerbosity.Diagnostic))]
 class Build : NukeBuild
 {
+    const string CiBranchNameEnvVariable = "OCTOVERSION_CurrentBranch";
+
     public static int Main() => Execute<Build>(x => x.Default);
     //////////////////////////////////////////////////////////////////////
     // ARGUMENTS
@@ -42,8 +44,15 @@ class Build : NukeBuild
     AbsolutePath OctopusClientFolder => SourceDir / "Octopus.Client";
     AbsolutePath OctopusNormalClientFolder => SourceDir / "Octopus.Server.Client";
 
-    [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
+    [Parameter("Whether to auto-detect the branch name - this is okay for a local build, but should not be used under CI.")] 
+    readonly bool AutoDetectBranch = IsLocalBuild;
+    
+    [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
+    string BranchName { get; set; }
 
+    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))] 
+    public OctoVersionInfo OctoVersionInfo;
+    
     [PackageExecutable(
         packageId: "azuresigntool",
         packageExecutable: "azuresigntool.dll")]
@@ -213,7 +222,7 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
-        Logger.Info($"Signing binaries in {path}");
+        Log.Information($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
         var useSignTool = string.IsNullOrEmpty(AzureKeyVaultUrl)
@@ -243,12 +252,13 @@ class Build : NukeBuild
 
         if (lastException != null)
             throw lastException;
-        Logger.Info($"Finished signing {files.Length} files.");
+        
+        Log.Information($"Finished signing {files.Length} files.");
     }
 
     void SignWithAzureSignTool(AbsolutePath[] files, string timestampUrl)
     {
-        Logger.Info("Signing files using azuresigntool and the production code signing certificate.");
+        Log.Information("Signing files using azuresigntool and the production code signing certificate.");
 
         var arguments = "sign " +
                         $"--azure-key-vault-url \"{AzureKeyVaultUrl}\" " +
@@ -269,7 +279,7 @@ class Build : NukeBuild
 
     void SignWithSignTool(AbsolutePath[] files, string url)
     {
-        Logger.Info("Signing files using signtool.");
+        Log.Information("Signing files using signtool.");
 
         SignToolLogger = LogStdErrAsWarning;
 
@@ -287,9 +297,9 @@ class Build : NukeBuild
     static void LogStdErrAsWarning(OutputType type, string message)
     {
         if (type == OutputType.Err)
-            Logger.Warn(message);
+            Log.Warning(message);
         else
-            Logger.Normal(message);
+            Log.Debug(message);
     }
 
     void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
