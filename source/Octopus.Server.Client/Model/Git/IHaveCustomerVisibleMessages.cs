@@ -1,4 +1,4 @@
-namespace Octopus.Client.Model.VersionControl
+namespace Octopus.Client.Model.Git
 {
     public interface IHaveCustomerVisibleMessages
     {

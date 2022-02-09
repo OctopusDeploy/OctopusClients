@@ -58,7 +58,7 @@ namespace Octopus.Client.Repositories.Async
         
         public async Task<DeploymentSettingsResource> Get(ProjectResource projectResource)
         {
-            if (projectResource.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            if (projectResource.PersistenceSettings is GitPersistenceSettingsResource vcsResource)
             {
                 return await Get(projectResource, vcsResource.DefaultBranch);
             }

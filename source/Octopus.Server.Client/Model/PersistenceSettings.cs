@@ -18,14 +18,14 @@ namespace Octopus.Client.Model
         public override PersistenceSettingsType Type { get; } = PersistenceSettingsType.Database;
     }
 
-    public class VersionControlSettingsResource : PersistenceSettingsResource
+    public class GitPersistenceSettingsResource : PersistenceSettingsResource
     {
         public override PersistenceSettingsType Type { get; } = PersistenceSettingsType.VersionControlled;
         [Writeable]
         public string Url { get; set; }
         [Writeable]
-        public VersionControlCredentialsResource Credentials { get; set; } =
-            new AnonymousVersionControlCredentialsResource();
+        public ProjectGitCredentialResource Credentials { get; set; } =
+            new AnonymousProjectGitCredentialResource();
         [Writeable]
         public string DefaultBranch { get; set; }
         [Writeable]

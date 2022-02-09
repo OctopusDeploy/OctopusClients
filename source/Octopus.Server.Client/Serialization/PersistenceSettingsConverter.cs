@@ -10,7 +10,7 @@ namespace Octopus.Client.Serialization
             new Dictionary<PersistenceSettingsType, Type>
             {
                 {PersistenceSettingsType.Database, typeof(DatabasePersistenceSettingsResource)},
-                {PersistenceSettingsType.VersionControlled, typeof(VersionControlSettingsResource)},
+                {PersistenceSettingsType.VersionControlled, typeof(GitPersistenceSettingsResource)},
             };
 
         static readonly Type defaultType = typeof(DatabasePersistenceSettingsResource);
