@@ -257,7 +257,6 @@ namespace Octopus.Client.Model
 
         [Description("Edit Git credentials")] public static readonly Permission GitCredentialEdit = new Permission("GitCredentialEdit");
 
-        [JsonConstructor]
         public Permission(string id)
         {
             Id = id;
