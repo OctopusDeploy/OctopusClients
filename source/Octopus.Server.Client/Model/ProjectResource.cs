@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// Represents a project.
     /// </summary>
-    public class ProjectResource : ResourceWithExtensionSettings, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource
+    public class ProjectResource : ResourceWithExtensionSettings, INamedResource, IVariableTemplateContainer, IVariableTemplateContainerEditor<ProjectResource>, IHaveSpaceResource, IHaveSlugResource
     {
         private readonly IVariableTemplateContainerEditor<ProjectResource> variableTemplateEditor;
 

@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 namespace Octopus.Client.Model.Accounts
 {
     [DebuggerDisplay("Name = {Name}")]
-    public abstract class AccountResource : Resource, INamedResource, IHaveSpaceResource
+    public abstract class AccountResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         protected AccountResource()
         {
@@ -56,5 +56,7 @@ namespace Octopus.Client.Model.Accounts
         public abstract AccountType AccountType { get; }
 
         public string SpaceId { get; set; }
+        
+        public string Slug { get; set; }
     }
 }

@@ -6,10 +6,12 @@ using Octopus.Client.Model.DeploymentProcess;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentStepResource
+    public class DeploymentStepResource : IHaveSlugResource
     {
         public string Id { get; set; }
         public string Name { get; set; }
+
+        public string Slug { get; set; }
 
         /// <summary>
         /// This flag causes packages to be downloaded before the step runs regardless of whether any

@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class TeamResource : Resource, INamedResource, IHaveSpaceResource
+    public class TeamResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         public TeamResource()
         {
@@ -64,6 +64,8 @@ namespace Octopus.Client.Model
         public bool CanChangeMembers { get; set; }
 
         public string SpaceId { get; set; }
+
+        public string Slug { get; set; }
     }
 
     /// <summary>
