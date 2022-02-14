@@ -44,15 +44,15 @@ class Build : NukeBuild
     AbsolutePath OctopusClientFolder => SourceDir / "Octopus.Client";
     AbsolutePath OctopusNormalClientFolder => SourceDir / "Octopus.Server.Client";
 
-    [Parameter("Whether to auto-detect the branch name - this is okay for a local build, but should not be used under CI.")] 
+    [Parameter("Whether to auto-detect the branch name - this is okay for a local build, but should not be used under CI.")]
     readonly bool AutoDetectBranch = IsLocalBuild;
-    
+
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))] 
+    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
-    
+
     [PackageExecutable(
         packageId: "azuresigntool",
         packageExecutable: "azuresigntool.dll")]
@@ -99,8 +99,65 @@ class Build : NukeBuild
             .SetVersion(OctoVersionInfo.FullSemVer));
     });
 
+    Target Merge => _ => _
+        .DependsOn(Compile)
+        .Executes(async () =>
+        {
+            foreach (var target in new[] {"net452", "netstandard2.0"})
+            {
+                var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
+                var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
+                EnsureExistingDirectory(outputFolder);
+
+                // CAREFUL: We don't want to expose third-party libraries like Newtonsoft.Json so we definitely want to
+                // internalize those, but we also don't want to hide any Octopus contracts.
+                //
+                // WARNING: There's an apparent bug in il-repack which ignores all types from subsequent assemblies, even
+                // if a set of exclusion regular expressions is provided. To work around this, we do a two-stage merge:
+                // 1) all of the Octopus assemblies into a temporary assembly, with internalization disabled entirely (leaving everything Octopus.* public); and
+                // 2) that temporary assembly plus all of the third-party assemblies, leaving only the types from the first (Octopus temporary) assembly as public.
+                // --andrewh 14/2/2022.
+
+                // Stage 1: Merge all the Octopus assemblies.
+                var stage1Assemblies = inputFolder.GlobFiles("Octopus.*.dll")
+                    .Select(x => x.ToString())
+                    .OrderBy(x => x)
+                    .ToArray();
+
+                var temporaryDllPath = inputFolder / "Octopus.Client.ILMerge.Temporary.dll";
+
+                ILRepackTasks.ILRepack(_ => _
+                    .SetAssemblies(stage1Assemblies)
+                    .SetOutput(temporaryDllPath)
+                    .DisableParallel()
+                    .EnableXmldocs()
+                    .SetLib(inputFolder));
+
+                var stage2Assemblies = inputFolder.GlobFiles("Octopus.Client.ILMerge.Temporary.dll",
+                        "NewtonSoft.Json.dll", "Octodiff*")
+                    .Select(x => x.ToString())
+                    .OrderByDescending(x => x.Contains("Octopus.Client.ILMerge.Temporary.dll"))
+                    .ThenBy(x => x)
+                    .ToArray();
+
+                var outputDllPath = outputFolder / "Octopus.Client.dll";
+
+                ILRepackTasks.ILRepack(_ => _
+                    .SetAssemblies(stage2Assemblies)
+                    .SetOutput(outputDllPath)
+                    .EnableInternalize()
+                    .DisableParallel()
+                    .EnableXmldocs()
+                    .SetLib(inputFolder));
+
+                DeleteDirectory(inputFolder);
+                MoveDirectory(outputFolder, inputFolder);
+            }
+        });
+
     Target Test => _ => _
         .DependsOn(Compile)
+        .DependsOn(Merge)   // IMPORTANT: Tests must be run _after_ the merge so that we're confident that we're testing the ILMerged code.  -andrewh 14/2/2022.
         .Executes(() =>
     {
         RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
@@ -111,38 +168,6 @@ class Build : NukeBuild
                 .EnableNoBuild());
         });
     });
-
-    Target Merge => _ => _
-        .DependsOn(Compile)
-        .DependsOn(Test)
-        .Executes(() =>
-        {
-            foreach (var target in new[] { "net452", "netstandard2.0" })
-            {
-                var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
-                var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
-                EnsureExistingDirectory(outputFolder);
-
-                // The call to ILRepack with .EnableInternalize() requires the Octopus.Server.Client.dll assembly to be first in the list.
-                var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octodiff*", "Octopus.*.dll")
-                    .Select(x => x.ToString())
-                    .OrderByDescending(x => x.Contains("Octopus.Server.Client.dll"))
-                    .ThenBy(x => x)
-                    .ToArray();
-
-                ILRepackTasks.ILRepack(_ => _
-                    .SetAssemblies(inputAssemblies)
-                    .SetOutput(outputFolder / "Octopus.Client.dll")
-                    .EnableInternalize()
-                    .DisableParallel()
-                    .EnableXmldocs()
-                    .SetLib(inputFolder)
-                );
-
-                DeleteDirectory(inputFolder);
-                MoveDirectory(outputFolder, inputFolder);
-            }
-        });
 
     Target PackMergedClientNuget => _ => _
         .DependsOn(Merge)
@@ -252,7 +277,7 @@ class Build : NukeBuild
 
         if (lastException != null)
             throw lastException;
-        
+
         Log.Information($"Finished signing {files.Length} files.");
     }
 
