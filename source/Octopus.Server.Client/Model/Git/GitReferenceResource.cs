@@ -1,8 +1,8 @@
 ﻿using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model.VersionControl
+namespace Octopus.Client.Model.Git
 {
-    public class VersionControlReferenceResource
+    public class GitReferenceResource
     {
         [WriteableOnCreate]
         public string GitRef { get; set; }

@@ -50,7 +50,7 @@ namespace Octopus.Client.Repositories
         public DeploymentSettingsResource Get(ProjectResource project)
         {
             string gitRef = null;
-            if (project.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            if (project.PersistenceSettings is GitPersistenceSettingsResource vcsResource)
             {
                 gitRef = vcsResource.DefaultBranch;
             }

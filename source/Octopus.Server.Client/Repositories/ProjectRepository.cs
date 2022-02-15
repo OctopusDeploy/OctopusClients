@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
-using Octopus.Client.Model.VersionControl;
+using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
         
-        ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource);
-        VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
-        ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
+        ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource);
+        GitBranchResource GetGitBranch(ProjectResource projectResource, string branch);
+        ConvertProjectToGitResponse ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -39,34 +39,34 @@ namespace Octopus.Client.Repositories
         {
         }
         
-        public ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource)
+        public ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource)
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
             
-            return Client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
+            return Client.Get<ResourceCollection<GitBranchResource>>(projectResource.Link("Branches"));
         }
 
-        public VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch)
+        public GitBranchResource GetGitBranch(ProjectResource projectResource, string branch)
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
 
-            return Client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new {name = branch});
+            return Client.Get<GitBranchResource>(projectResource.Link("Branches"), new {name = branch});
         }
 
-        public ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project,
-            VersionControlSettingsResource versionControlSettings, string commitMessage)
+        public ConvertProjectToGitResponse ConvertToGit(ProjectResource project,
+            GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage)
         {
-            var payload = new ConvertProjectToVersionControlledCommand
+            var payload = new ConvertProjectToGitCommand
             {
-                VersionControlSettings = versionControlSettings,
+                VersionControlSettings = gitPersistenceSettings,
                 CommitMessage = commitMessage
             };
 
-            var url = project.Link("ConvertToVcs");
+            var url = project.Link("ConvertToGit");
             var response =
-                Client.Post<ConvertProjectToVersionControlledCommand, ConvertProjectToVersionControlledResponse>(url,
+                Client.Post<ConvertProjectToGitCommand, ConvertProjectToGitResponse>(url,
                     payload);
             return response;
         }

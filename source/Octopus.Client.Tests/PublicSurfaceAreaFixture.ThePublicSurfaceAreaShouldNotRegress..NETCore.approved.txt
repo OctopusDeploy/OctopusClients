@@ -1767,11 +1767,11 @@ Octopus.Client.Model
   {
     .ctor()
   }
-  class AnonymousVersionControlCredentialsResource
-    Octopus.Client.Model.VersionControlCredentialsResource
+  class AnonymousProjectGitCredentialResource
+    Octopus.Client.Model.ProjectGitCredentialResource
   {
     .ctor()
-    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+    Octopus.Client.Model.ProjectGitCredentialType Type { get; }
   }
   class ApiConstants
   {
@@ -3031,6 +3031,14 @@ Octopus.Client.Model
     Stream Contents { get; set; }
     String FileName { get; set; }
   }
+  class GitBranchResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor(String)
+    String Name { get; }
+  }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3045,6 +3053,16 @@ Octopus.Client.Model
     String FeedUri { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
+  }
+  class GitPersistenceSettingsResource
+    Octopus.Client.Model.PersistenceSettingsResource
+  {
+    .ctor()
+    String BasePath { get; set; }
+    Octopus.Client.Model.ProjectGitCredentialResource Credentials { get; set; }
+    String DefaultBranch { get; set; }
+    Octopus.Client.Model.PersistenceSettingsType Type { get; }
+    String Url { get; set; }
   }
   GuidedFailureMode
   {
@@ -4107,6 +4125,16 @@ Octopus.Client.Model
     Boolean IsDirectlyAssigned { get; set; }
     String SpaceId { get; set; }
   }
+  abstract class ProjectGitCredentialResource
+  {
+    Octopus.Client.Model.ProjectGitCredentialType Type { get; }
+  }
+  ProjectGitCredentialType
+  {
+      Anonymous = 0
+      UsernamePassword = 1
+      Reference = 2
+  }
   class ProjectGroupResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4253,12 +4281,12 @@ Octopus.Client.Model
     String Id { get; set; }
     String Name { get; set; }
   }
-  class ReferenceVersionControlCredentialsResource
-    Octopus.Client.Model.VersionControlCredentialsResource
+  class ReferenceProjectGitCredentialResource
+    Octopus.Client.Model.ProjectGitCredentialResource
   {
     .ctor()
     String Id { get; set; }
-    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+    Octopus.Client.Model.ProjectGitCredentialType Type { get; }
   }
   class RegisterCommand
     Octopus.Client.Extensibility.IResource
@@ -4317,7 +4345,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.VersionControl.VersionControlReferenceResource VersionControlReference { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource VersionControlReference { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -5312,12 +5340,12 @@ Octopus.Client.Model
       ShowOnlyMajorMinor = 1
       NeverShow = 2
   }
-  class UsernamePasswordVersionControlCredentialsResource
-    Octopus.Client.Model.VersionControlCredentialsResource
+  class UsernamePasswordProjectGitCredentialResource
+    Octopus.Client.Model.ProjectGitCredentialResource
   {
     .ctor()
     Octopus.Client.Model.SensitiveValue Password { get; set; }
-    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
+    Octopus.Client.Model.ProjectGitCredentialType Type { get; }
     String Username { get; set; }
   }
   class UserPermissionRestriction
@@ -5463,34 +5491,6 @@ Octopus.Client.Model
       AmazonWebServicesAccount = 3
       AzureAccount = 4
       WorkerPool = 5
-  }
-  class VersionControlBranchResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor(String)
-    String Name { get; }
-  }
-  abstract class VersionControlCredentialsResource
-  {
-    Octopus.Client.Model.VersionControlCredentialsType Type { get; }
-  }
-  VersionControlCredentialsType
-  {
-      Anonymous = 0
-      UsernamePassword = 1
-      Reference = 2
-  }
-  class VersionControlSettingsResource
-    Octopus.Client.Model.PersistenceSettingsResource
-  {
-    .ctor()
-    String BasePath { get; set; }
-    Octopus.Client.Model.VersionControlCredentialsResource Credentials { get; set; }
-    String DefaultBranch { get; set; }
-    Octopus.Client.Model.PersistenceSettingsType Type { get; }
-    String Url { get; set; }
   }
   class VersioningStrategyResource
   {
@@ -6328,6 +6328,44 @@ Octopus.Client.Model.Forms
     Type GetNativeValueType()
   }
 }
+Octopus.Client.Model.Git
+{
+  class ConvertProjectToGitCommand
+  {
+    .ctor()
+    String CommitMessage { get; set; }
+    Octopus.Client.Model.GitPersistenceSettingsResource VersionControlSettings { get; set; }
+  }
+  class ConvertProjectToGitResponse
+    Octopus.Client.Model.Git.IHaveCustomerVisibleMessages
+  {
+    .ctor()
+    Octopus.Client.Model.Git.MessageCollection Messages { get; }
+  }
+  class GitReferenceResource
+  {
+    .ctor()
+    String GitCommit { get; set; }
+    String GitRef { get; set; }
+  }
+  interface IHaveCustomerVisibleMessages
+  {
+    Octopus.Client.Model.Git.MessageCollection Messages { get; }
+  }
+  class MessageCollection
+    IList<String>
+    ICollection<String>
+    IEnumerable<String>
+    IEnumerable
+    IList
+    ICollection
+    IReadOnlyList<String>
+    IReadOnlyCollection<String>
+    List<String>
+  {
+    .ctor()
+  }
+}
 Octopus.Client.Model.GitCredentials
 {
   class CreateGitCredentialCommand
@@ -6339,11 +6377,7 @@ Octopus.Client.Model.GitCredentials
   }
   abstract class GitCredentialDetails
   {
-    Octopus.Client.Model.GitCredentials.GitCredentialDetailsType Type { get; }
-  }
-  GitCredentialDetailsType
-  {
-      UsernamePassword = 0
+    Octopus.Client.Model.GitCredentials.GitCredentialType Type { get; }
   }
   class GitCredentialResource
     Octopus.Client.Extensibility.IResource
@@ -6357,6 +6391,10 @@ Octopus.Client.Model.GitCredentials
     Octopus.Client.Model.GitCredentials.GitCredentialDetails Details { get; set; }
     String Name { get; set; }
     String SpaceId { get; set; }
+  }
+  GitCredentialType
+  {
+      UsernamePassword = 0
   }
   class GitCredentialUsage
   {
@@ -6376,7 +6414,7 @@ Octopus.Client.Model.GitCredentials
   {
     .ctor()
     Octopus.Client.Model.SensitiveValue Password { get; set; }
-    Octopus.Client.Model.GitCredentials.GitCredentialDetailsType Type { get; }
+    Octopus.Client.Model.GitCredentials.GitCredentialType Type { get; }
     String Username { get; set; }
   }
 }
@@ -6642,7 +6680,7 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String EnvironmentId { get; set; }
     String Variables { get; set; }
-    Octopus.Client.Model.VersionControl.VersionControlReferenceResource VersionControlReference { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource VersionControlReference { get; set; }
   }
   MonthlyScheduleType
   {
@@ -6665,44 +6703,6 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     String Timezone { get; set; }
-  }
-}
-Octopus.Client.Model.VersionControl
-{
-  class ConvertProjectToVersionControlledCommand
-  {
-    .ctor()
-    String CommitMessage { get; set; }
-    Octopus.Client.Model.VersionControlSettingsResource VersionControlSettings { get; set; }
-  }
-  class ConvertProjectToVersionControlledResponse
-    Octopus.Client.Model.VersionControl.IHaveCustomerVisibleMessages
-  {
-    .ctor()
-    Octopus.Client.Model.VersionControl.MessageCollection Messages { get; }
-  }
-  interface IHaveCustomerVisibleMessages
-  {
-    Octopus.Client.Model.VersionControl.MessageCollection Messages { get; }
-  }
-  class MessageCollection
-    IList<String>
-    ICollection<String>
-    IEnumerable<String>
-    IEnumerable
-    IList
-    ICollection
-    IReadOnlyList<String>
-    IReadOnlyCollection<String>
-    List<String>
-  {
-    .ctor()
-  }
-  class VersionControlReferenceResource
-  {
-    .ctor()
-    String GitCommit { get; set; }
-    String GitRef { get; set; }
   }
 }
 Octopus.Client.Model.Versioning
@@ -7242,7 +7242,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<ProjectResource>
     Octopus.Client.Repositories.IGetAll<ProjectResource>
   {
-    Octopus.Client.Model.VersionControl.ConvertProjectToVersionControlledResponse ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
+    Octopus.Client.Model.Git.ConvertProjectToGitResponse ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -7251,6 +7251,8 @@ Octopus.Client.Repositories
     IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.GitBranchResource GetGitBranch(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<GitBranchResource> GetGitBranches(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
@@ -7258,8 +7260,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.RunbookSnapshotResource GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
-    Octopus.Client.Model.VersionControlBranchResource GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
     void SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
   interface IProjectTriggerRepository
@@ -7973,7 +7973,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ProjectResource>
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
-    Task<ConvertProjectToVersionControlledResponse> ConvertToVersionControlled(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.VersionControlSettingsResource, String)
+    Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -7982,6 +7982,8 @@ Octopus.Client.Repositories.Async
     Task<IReadOnlyList<RunbookSnapshotResource>> GetAllRunbookSnapshots(Octopus.Client.Model.ProjectResource)
     Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
+    Task<GitBranchResource> GetGitBranch(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<GitBranchResource>> GetGitBranches(Octopus.Client.Model.ProjectResource)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
@@ -7989,8 +7991,6 @@ Octopus.Client.Repositories.Async
     Task<RunbookSnapshotResource> GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
-    Task<VersionControlBranchResource> GetVersionControlledBranch(Octopus.Client.Model.ProjectResource, String)
-    Task<ResourceCollection<VersionControlBranchResource>> GetVersionControlledBranches(Octopus.Client.Model.ProjectResource)
     Task SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
   interface IProjectTriggerRepository
@@ -8346,7 +8346,12 @@ Octopus.Client.Serialization
     .ctor()
   }
   class GitCredentialDetailsConverter
-    Octopus.Client.Serialization.InheritedClassConverter<GitCredentialDetails, GitCredentialDetailsType>
+    Octopus.Client.Serialization.InheritedClassConverter<GitCredentialDetails, GitCredentialType>
+  {
+    .ctor()
+  }
+  class GitSettingsConverter
+    Octopus.Client.Serialization.InheritedClassConverter<ProjectGitCredentialResource, ProjectGitCredentialType>
   {
     .ctor()
   }
@@ -8403,11 +8408,6 @@ Octopus.Client.Serialization
   }
   class TriggerFilterConverter
     Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
-  {
-    .ctor()
-  }
-  class VersionControlSettingsConverter
-    Octopus.Client.Serialization.InheritedClassConverter<VersionControlCredentialsResource, VersionControlCredentialsType>
   {
     .ctor()
   }

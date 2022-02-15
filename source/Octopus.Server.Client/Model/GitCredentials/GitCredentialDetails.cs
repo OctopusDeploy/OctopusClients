@@ -2,19 +2,19 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.GitCredentials
 {
-    public enum GitCredentialDetailsType
+    public enum GitCredentialType
     {
         UsernamePassword
     }
-    
+
     public abstract class GitCredentialDetails 
     {
-        public abstract GitCredentialDetailsType Type { get; }
+        public abstract GitCredentialType Type { get; }
     }
 
     public class UsernamePasswordGitCredentialDetails : GitCredentialDetails
     {
-        public override GitCredentialDetailsType Type { get; } = GitCredentialDetailsType.UsernamePassword;
+        public override GitCredentialType Type { get; } = GitCredentialType.UsernamePassword;
 
         [Writeable]
         public string Username { get; set; }

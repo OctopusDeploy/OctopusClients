@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories
 
         public DeploymentProcessResource Get(ProjectResource projectResource)
         {
-            if (projectResource.PersistenceSettings is VersionControlSettingsResource vcsResource)
+            if (projectResource.PersistenceSettings is GitPersistenceSettingsResource vcsResource)
             {
                return Get(projectResource, vcsResource.DefaultBranch);
             }
