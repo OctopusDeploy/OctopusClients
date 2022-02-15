@@ -118,8 +118,12 @@ class Build : NukeBuild
                 // 2) that temporary assembly plus all of the third-party assemblies, leaving only the types from the first (Octopus temporary) assembly as public.
                 // --andrewh 14/2/2022.
 
-                // Stage 1: Merge all the Octopus assemblies.
-                var stage1Assemblies = inputFolder.GlobFiles("Octopus.*.dll")
+                // Stage 1: Merge all the Octopus assemblies whose contracts we want to not internalize.
+                var stage1Assemblies = inputFolder.GlobFiles(
+                        "Octopus.Server.Client.dll",
+                        "Octopus.Server.MessageContracts.Base.dll",
+                        "Octopus.Server.MessageContracts.Base.HttpRoutes.dll"
+                    )
                     .Select(x => x.ToString())
                     .OrderBy(x => x)
                     .ToArray();
@@ -133,9 +137,10 @@ class Build : NukeBuild
                     .EnableXmldocs()
                     .SetLib(inputFolder));
 
-                var stage2Assemblies = inputFolder.GlobFiles("Octopus.Client.ILMerge.Temporary.dll",
-                        "NewtonSoft.Json.dll", "Octodiff*")
+                // Step 2: Merge all the remaining assemblies whose innards will be marked as internal if they're currently public.
+                var stage2Assemblies = inputFolder.GlobFiles("*.dll", "*.exe")
                     .Select(x => x.ToString())
+                    .Except(stage1Assemblies)
                     .OrderByDescending(x => x.Contains("Octopus.Client.ILMerge.Temporary.dll"))
                     .ThenBy(x => x)
                     .ToArray();
