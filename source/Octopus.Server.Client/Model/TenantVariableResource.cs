@@ -10,8 +10,9 @@ namespace Octopus.Client.Model
         public string TenantName { get; set; }
 
         public Dictionary<string, Project> ProjectVariables { get; set; } = new Dictionary<string, Project>();
-
         public Dictionary<string, Library> LibraryVariables { get; set; } = new Dictionary<string, Library>();
+        
+        // Token to validate that no variables for the given tenant have changed since this TenantVariableResource was last requested.
         public string ConcurrencyToken { get; set; }
         public class Project
         {
