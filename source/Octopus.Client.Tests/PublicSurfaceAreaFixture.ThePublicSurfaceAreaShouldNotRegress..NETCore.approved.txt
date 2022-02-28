@@ -3894,128 +3894,134 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.DashboardRenderMode DefaultDashboardRenderMode { get; set; }
   }
-  Permission
+  class Permission
+    IEquatable<Permission>
   {
-      AdministerSystem = 0
-      ProjectEdit = 1
-      ProjectView = 2
-      ProjectCreate = 3
-      ProjectDelete = 4
-      ProcessView = 5
-      ProcessEdit = 6
-      VariableEdit = 7
-      VariableEditUnscoped = 8
-      VariableView = 9
-      VariableViewUnscoped = 10
-      ReleaseCreate = 11
-      ReleaseView = 12
-      ReleaseEdit = 13
-      ReleaseDelete = 14
-      DefectReport = 15
-      DefectResolve = 16
-      DeploymentCreate = 17
-      DeploymentDelete = 18
-      DeploymentView = 19
-      EnvironmentView = 20
-      EnvironmentCreate = 21
-      EnvironmentEdit = 22
-      EnvironmentDelete = 23
-      MachineCreate = 24
-      MachineEdit = 25
-      MachineView = 26
-      MachineDelete = 27
-      ArtifactView = 28
-      ArtifactCreate = 29
-      ArtifactEdit = 30
-      ArtifactDelete = 31
-      FeedView = 32
-      EventView = 33
-      LibraryVariableSetView = 34
-      LibraryVariableSetCreate = 35
-      LibraryVariableSetEdit = 36
-      LibraryVariableSetDelete = 37
-      ProjectGroupView = 38
-      ProjectGroupCreate = 39
-      ProjectGroupEdit = 40
-      ProjectGroupDelete = 41
-      TeamCreate = 42
-      TeamView = 43
-      TeamEdit = 44
-      TeamDelete = 45
-      UserView = 46
-      UserInvite = 47
-      UserRoleView = 48
-      UserRoleEdit = 49
-      TaskView = 50
-      TaskViewLog = 51
-      TaskCreate = 52
-      TaskCancel = 53
-      TaskEdit = 54
-      InterruptionView = 55
-      InterruptionSubmit = 56
-      InterruptionViewSubmitResponsible = 57
-      BuiltInFeedPush = 58
-      BuiltInFeedAdminister = 59
-      BuiltInFeedDownload = 60
-      ActionTemplateView = 61
-      ActionTemplateCreate = 62
-      ActionTemplateEdit = 63
-      ActionTemplateDelete = 64
-      LifecycleCreate = 65
-      LifecycleView = 66
-      LifecycleEdit = 67
-      LifecycleDelete = 68
-      AccountView = 69
-      AccountEdit = 70
-      AccountCreate = 71
-      AccountDelete = 72
-      TenantCreate = 73
-      TenantEdit = 74
-      TenantView = 75
-      TenantDelete = 76
-      TagSetCreate = 77
-      TagSetEdit = 78
-      TagSetDelete = 79
-      TelemetryView = 80
-      MachinePolicyCreate = 81
-      MachinePolicyView = 82
-      MachinePolicyEdit = 83
-      MachinePolicyDelete = 84
-      ProxyCreate = 85
-      ProxyView = 86
-      ProxyEdit = 87
-      ProxyDelete = 88
-      SubscriptionCreate = 89
-      SubscriptionView = 90
-      SubscriptionEdit = 91
-      SubscriptionDelete = 92
-      TriggerCreate = 93
-      TriggerView = 94
-      TriggerEdit = 95
-      TriggerDelete = 96
-      CertificateView = 97
-      CertificateCreate = 98
-      CertificateEdit = 99
-      CertificateDelete = 100
-      CertificateExportPrivateKey = 101
-      UserEdit = 102
-      ConfigureServer = 103
-      FeedEdit = 104
-      WorkerView = 105
-      WorkerEdit = 106
-      SpaceEdit = 107
-      SpaceView = 108
-      SpaceDelete = 109
-      SpaceCreate = 110
-      BuildInformationPush = 111
-      BuildInformationAdminister = 112
-      RunbookView = 113
-      RunbookEdit = 114
-      RunbookRunView = 115
-      RunbookRunDelete = 116
-      RunbookRunCreate = 117
-      GitCredentialView = 118
-      GitCredentialEdit = 119
+    static Octopus.Client.Model.Permission AccountCreate
+    static Octopus.Client.Model.Permission AccountDelete
+    static Octopus.Client.Model.Permission AccountEdit
+    static Octopus.Client.Model.Permission AccountView
+    static Octopus.Client.Model.Permission ActionTemplateCreate
+    static Octopus.Client.Model.Permission ActionTemplateDelete
+    static Octopus.Client.Model.Permission ActionTemplateEdit
+    static Octopus.Client.Model.Permission ActionTemplateView
+    static Octopus.Client.Model.Permission AdministerSystem
+    static Octopus.Client.Model.Permission ArtifactCreate
+    static Octopus.Client.Model.Permission ArtifactDelete
+    static Octopus.Client.Model.Permission ArtifactEdit
+    static Octopus.Client.Model.Permission ArtifactView
+    static Octopus.Client.Model.Permission BuildInformationAdminister
+    static Octopus.Client.Model.Permission BuildInformationPush
+    static Octopus.Client.Model.Permission BuiltInFeedAdminister
+    static Octopus.Client.Model.Permission BuiltInFeedDownload
+    static Octopus.Client.Model.Permission BuiltInFeedPush
+    static Octopus.Client.Model.Permission CertificateCreate
+    static Octopus.Client.Model.Permission CertificateDelete
+    static Octopus.Client.Model.Permission CertificateEdit
+    static Octopus.Client.Model.Permission CertificateExportPrivateKey
+    static Octopus.Client.Model.Permission CertificateView
+    static Octopus.Client.Model.Permission ConfigureServer
+    static Octopus.Client.Model.Permission DefectReport
+    static Octopus.Client.Model.Permission DefectResolve
+    static Octopus.Client.Model.Permission DeploymentCreate
+    static Octopus.Client.Model.Permission DeploymentDelete
+    static Octopus.Client.Model.Permission DeploymentView
+    static Octopus.Client.Model.Permission EnvironmentCreate
+    static Octopus.Client.Model.Permission EnvironmentDelete
+    static Octopus.Client.Model.Permission EnvironmentEdit
+    static Octopus.Client.Model.Permission EnvironmentView
+    static Octopus.Client.Model.Permission EventView
+    static Octopus.Client.Model.Permission FeedEdit
+    static Octopus.Client.Model.Permission FeedView
+    static Octopus.Client.Model.Permission GitCredentialEdit
+    static Octopus.Client.Model.Permission GitCredentialView
+    static Octopus.Client.Model.Permission InterruptionSubmit
+    static Octopus.Client.Model.Permission InterruptionView
+    static Octopus.Client.Model.Permission InterruptionViewSubmitResponsible
+    static Octopus.Client.Model.Permission LibraryVariableSetCreate
+    static Octopus.Client.Model.Permission LibraryVariableSetDelete
+    static Octopus.Client.Model.Permission LibraryVariableSetEdit
+    static Octopus.Client.Model.Permission LibraryVariableSetView
+    static Octopus.Client.Model.Permission LifecycleCreate
+    static Octopus.Client.Model.Permission LifecycleDelete
+    static Octopus.Client.Model.Permission LifecycleEdit
+    static Octopus.Client.Model.Permission LifecycleView
+    static Octopus.Client.Model.Permission MachineCreate
+    static Octopus.Client.Model.Permission MachineDelete
+    static Octopus.Client.Model.Permission MachineEdit
+    static Octopus.Client.Model.Permission MachinePolicyCreate
+    static Octopus.Client.Model.Permission MachinePolicyDelete
+    static Octopus.Client.Model.Permission MachinePolicyEdit
+    static Octopus.Client.Model.Permission MachinePolicyView
+    static Octopus.Client.Model.Permission MachineView
+    static Octopus.Client.Model.Permission ProcessEdit
+    static Octopus.Client.Model.Permission ProcessView
+    static Octopus.Client.Model.Permission ProjectCreate
+    static Octopus.Client.Model.Permission ProjectDelete
+    static Octopus.Client.Model.Permission ProjectEdit
+    static Octopus.Client.Model.Permission ProjectGroupCreate
+    static Octopus.Client.Model.Permission ProjectGroupDelete
+    static Octopus.Client.Model.Permission ProjectGroupEdit
+    static Octopus.Client.Model.Permission ProjectGroupView
+    static Octopus.Client.Model.Permission ProjectView
+    static Octopus.Client.Model.Permission ProxyCreate
+    static Octopus.Client.Model.Permission ProxyDelete
+    static Octopus.Client.Model.Permission ProxyEdit
+    static Octopus.Client.Model.Permission ProxyView
+    static Octopus.Client.Model.Permission ReleaseCreate
+    static Octopus.Client.Model.Permission ReleaseDelete
+    static Octopus.Client.Model.Permission ReleaseEdit
+    static Octopus.Client.Model.Permission ReleaseView
+    static Octopus.Client.Model.Permission RunbookEdit
+    static Octopus.Client.Model.Permission RunbookRunCreate
+    static Octopus.Client.Model.Permission RunbookRunDelete
+    static Octopus.Client.Model.Permission RunbookRunView
+    static Octopus.Client.Model.Permission RunbookView
+    static Octopus.Client.Model.Permission SpaceCreate
+    static Octopus.Client.Model.Permission SpaceDelete
+    static Octopus.Client.Model.Permission SpaceEdit
+    static Octopus.Client.Model.Permission SpaceView
+    static Octopus.Client.Model.Permission SubscriptionCreate
+    static Octopus.Client.Model.Permission SubscriptionDelete
+    static Octopus.Client.Model.Permission SubscriptionEdit
+    static Octopus.Client.Model.Permission SubscriptionView
+    static Octopus.Client.Model.Permission TagSetCreate
+    static Octopus.Client.Model.Permission TagSetDelete
+    static Octopus.Client.Model.Permission TagSetEdit
+    static Octopus.Client.Model.Permission TaskCancel
+    static Octopus.Client.Model.Permission TaskCreate
+    static Octopus.Client.Model.Permission TaskEdit
+    static Octopus.Client.Model.Permission TaskView
+    static Octopus.Client.Model.Permission TaskViewLog
+    static Octopus.Client.Model.Permission TeamCreate
+    static Octopus.Client.Model.Permission TeamDelete
+    static Octopus.Client.Model.Permission TeamEdit
+    static Octopus.Client.Model.Permission TeamView
+    static Octopus.Client.Model.Permission TelemetryView
+    static Octopus.Client.Model.Permission TenantCreate
+    static Octopus.Client.Model.Permission TenantDelete
+    static Octopus.Client.Model.Permission TenantEdit
+    static Octopus.Client.Model.Permission TenantView
+    static Octopus.Client.Model.Permission TriggerCreate
+    static Octopus.Client.Model.Permission TriggerDelete
+    static Octopus.Client.Model.Permission TriggerEdit
+    static Octopus.Client.Model.Permission TriggerView
+    static Octopus.Client.Model.Permission UserEdit
+    static Octopus.Client.Model.Permission UserInvite
+    static Octopus.Client.Model.Permission UserRoleEdit
+    static Octopus.Client.Model.Permission UserRoleView
+    static Octopus.Client.Model.Permission UserView
+    static Octopus.Client.Model.Permission VariableEdit
+    static Octopus.Client.Model.Permission VariableEditUnscoped
+    static Octopus.Client.Model.Permission VariableView
+    static Octopus.Client.Model.Permission VariableViewUnscoped
+    static Octopus.Client.Model.Permission WorkerEdit
+    static Octopus.Client.Model.Permission WorkerView
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.Permission)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
   }
   class PermissionDescription
   {
@@ -8382,6 +8388,14 @@ Octopus.Client.Serialization
     JsonConverter
   {
     .ctor(String, String[])
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
+  class PermissionConverter
+    JsonConverter
+  {
+    .ctor()
     Boolean CanConvert(Type)
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)

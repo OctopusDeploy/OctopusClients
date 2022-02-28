@@ -29,7 +29,8 @@ namespace Octopus.Client.Serialization
                 {
                     new TinyTypeJsonConverter(),
                     new StringEnumConverter(),
-                    new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK", 
+                    new PermissionConverter(),
+                    new MultiIsoDateTimeFormatConverter("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK",
                         "dddd, dd MMMM yyyy h:mm tt zzz", "f" ),
                     new ControlConverter(),
                     new EndpointConverter(),
