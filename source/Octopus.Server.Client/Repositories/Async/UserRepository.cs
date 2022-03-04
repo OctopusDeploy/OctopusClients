@@ -34,6 +34,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ApiKeyCreatedResource> CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null);
         Task<List<ApiKeyResource>> GetApiKeys(UserResource user);
         Task RevokeApiKey(ApiKeyResourceBase apiKey);
+        Task RevokeSessions(UserResource user);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         Task<InvitationResource> Invite(string addToTeamId);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
@@ -135,6 +136,11 @@ namespace Octopus.Client.Repositories.Async
         public Task RevokeApiKey(ApiKeyResourceBase apiKey)
         {
             return Client.Delete(apiKey.Link("Self"));
+        }
+
+        public Task RevokeSessions(UserResource user)
+        {
+            return Client.Put(user.Link("RevokeSessions"));
         }
 
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
