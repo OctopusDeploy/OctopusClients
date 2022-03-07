@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Octopus.Client.Model;
@@ -35,6 +36,22 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void SerializesPermissionKeyedDictionaryCorrectly()
+        {
+            var testObject = new PermissionKeyedDictionary
+            {
+                Name = "Test",
+                SpacePermissions = new Dictionary<Permission, List<SimpleRestriction>>
+                    {
+                        {Permission.AccountView, new List<SimpleRestriction> { new SimpleRestriction { EnvironmentId = "Dev"}}},
+                        {Permission.AccountEdit, new List<SimpleRestriction> { new SimpleRestriction { EnvironmentId = "Dev"}}}
+                    }
+            };
+            var serializedText = JsonConvert.SerializeObject(testObject, settings);
+            Assert.AreEqual("{\"Name\":\"Test\",\"SpacePermissions\":{\"AccountView\":[{\"EnvironmentId\":\"Dev\"}],\"AccountEdit\":[{\"EnvironmentId\":\"Dev\"}]}}", serializedText);
+        }
+
+        [Test]
         public void DeserializesSinglePermissionCorrectly()
         {
             var testObject = JsonConvert.DeserializeObject<SinglePermissionTestStructure>("{\"Name\":\"Test\",\"Permission\":\"AdministerSystem\"}", settings);
@@ -58,6 +75,14 @@ namespace Octopus.Client.Tests.Serialization
             CollectionAssert.AreEquivalent(new List<Permission> { Permission.AccountView, Permission.AccountEdit, new Permission("SomeUnknownValue") }, testObject.Permissions);
         }
 
+        [Test]
+        public void DeserializesDictionaryKeyedOnPermissionsCorrectly()
+        {
+            var testObject = JsonConvert.DeserializeObject<PermissionKeyedDictionary>("{\"Name\":\"Test\",\"SpacePermissions\":{\"AccountView\":[{\"EnvironmentId\":\"Prod\"}],\"AccountEdit\":[{\"EnvironmentId\":\"Prod\"}]}}", settings);
+            Assert.IsNotNull(testObject);
+            testObject.SpacePermissions.Keys.Count.Should().Be(2);
+        }
+
         class SinglePermissionTestStructure
         {
             public string Name { get; set; }
@@ -68,6 +93,17 @@ namespace Octopus.Client.Tests.Serialization
         {
             public string Name { get; set; }
             public List<Permission> Permissions { get; set; }
+        }
+
+        class PermissionKeyedDictionary
+        {
+            public string Name { get; set; }
+            public Dictionary<Permission, List<SimpleRestriction>> SpacePermissions { get; set; }
+        }
+
+        class SimpleRestriction
+        {
+            public string EnvironmentId { get; set; }
         }
     }
 }
