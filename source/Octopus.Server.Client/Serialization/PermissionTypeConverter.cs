@@ -6,7 +6,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Serialization
 {
-    public class PermissionTypeConverter : TypeConverter
+    class PermissionTypeConverter : TypeConverter
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
