@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using Newtonsoft.Json;
 using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Model
