@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Model
 {
@@ -12,6 +13,7 @@ namespace Octopus.Client.Model
     /// that are supported by the permission type.
     /// </summary>
     [DebuggerDisplay("Id")]
+    [TypeConverter(typeof(PermissionTypeConverter))]
     public class Permission : IEquatable<Permission>
     {
         [Description("Perform system-level functions like configuring HTTP web hosting, the public URL, server nodes, maintenance mode, and server diagnostics")]public static readonly Permission AdministerSystem = new Permission("AdministerSystem");
