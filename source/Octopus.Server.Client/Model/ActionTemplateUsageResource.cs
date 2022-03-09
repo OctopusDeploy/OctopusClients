@@ -20,6 +20,7 @@ namespace Octopus.Client.Model
 
         [Obsolete("Use " + nameof(ProcessId) + " with " + nameof(ProcessType) + " instead")]
         public string DeploymentProcessId { get; set; }
+        //used for VCS only
         public string Branch { get; set; }
         public string Release { get; set; }
     }
