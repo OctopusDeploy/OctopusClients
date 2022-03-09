@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using Octopus.Client.Editors;
 using Octopus.Client.Model;
-using Octopus.Client.Model.VersionControl;
+using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        IProjectBetaRepository Beta();
+        
+        ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource);
+        GitBranchResource GetGitBranch(ProjectResource projectResource, string branch);
+        ConvertProjectToGitResponse ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -30,19 +33,44 @@ namespace Octopus.Client.Repositories
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
-        private readonly IProjectBetaRepository beta;
 
         public ProjectRepository(IOctopusRepository repository)
             : base(repository, "Projects")
         {
-            beta = new ProjectBetaRepository(repository);
         }
-
-        public IProjectBetaRepository Beta()
+        
+        public ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource)
         {
-            return beta;
+            if (!projectResource.IsVersionControlled)
+                throw new NotSupportedException($"Database backed projects do not support branches");
+            
+            return Client.Get<ResourceCollection<GitBranchResource>>(projectResource.Link("Branches"));
         }
 
+        public GitBranchResource GetGitBranch(ProjectResource projectResource, string branch)
+        {
+            if (!projectResource.IsVersionControlled)
+                throw new NotSupportedException($"Database backed projects do not support branches");
+
+            return Client.Get<GitBranchResource>(projectResource.Link("Branches"), new {name = branch});
+        }
+
+        public ConvertProjectToGitResponse ConvertToGit(ProjectResource project,
+            GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage)
+        {
+            var payload = new ConvertProjectToGitCommand
+            {
+                VersionControlSettings = gitPersistenceSettings,
+                CommitMessage = commitMessage
+            };
+
+            var url = project.Link("ConvertToGit");
+            var response =
+                Client.Post<ConvertProjectToGitCommand, ConvertProjectToGitResponse>(url,
+                    payload);
+            return response;
+        }
+        
         public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
         {
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });
@@ -121,51 +149,6 @@ namespace Octopus.Client.Repositories
         public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project)
         {
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
-        }
-    }
-
-    public interface IProjectBetaRepository
-    {
-        ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource);
-        VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch);
-        ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project, VersionControlSettingsResource versionControlSettings, string commitMessage);
-    }
-
-    internal class ProjectBetaRepository : IProjectBetaRepository
-    {
-        private readonly IOctopusRepository repository;
-        private readonly IOctopusClient client;
-
-        public ProjectBetaRepository(IOctopusRepository repository)
-        {
-            this.repository = repository;
-            client = repository.Client;
-        }
-
-        public ResourceCollection<VersionControlBranchResource> GetVersionControlledBranches(ProjectResource projectResource)
-        {
-            return client.Get<ResourceCollection<VersionControlBranchResource>>(projectResource.Link("Branches"));
-        }
-
-        public VersionControlBranchResource GetVersionControlledBranch(ProjectResource projectResource, string branch)
-        {
-            return client.Get<VersionControlBranchResource>(projectResource.Link("Branches"), new {name = branch});
-        }
-
-        public ConvertProjectToVersionControlledResponse ConvertToVersionControlled(ProjectResource project,
-            VersionControlSettingsResource versionControlSettings, string commitMessage)
-        {
-            var payload = new ConvertProjectToVersionControlledCommand
-            {
-                VersionControlSettings = versionControlSettings,
-                CommitMessage = commitMessage
-            };
-
-            var url = project.Link("ConvertToVcs");
-            var response =
-                client.Post<ConvertProjectToVersionControlledCommand, ConvertProjectToVersionControlledResponse>(url,
-                    payload);
-            return response;
         }
     }
 }

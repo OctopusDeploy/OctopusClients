@@ -12,10 +12,12 @@
 
   <ItemGroup>
     <PackageReference Include="ILRepack" Version="2.0.18" />
-    <PackageReference Include="Nuke.OctoVersion" Version="0.2.453" />
+    <PackageReference Include="Nuke.Common" Version="6.0.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageDownload Include="AzureSignTool" Version="[2.0.17]" />
-    <PackageReference Include="Nuke.Common" Version="5.2.1" />
-    <PackageReference Include="Nuke.OctoVersion" Version="0.2.560" />
+    <PackageDownload Include="OctoVersion.Tool" Version="[0.2.951]" />
   </ItemGroup>
 
 </Project>

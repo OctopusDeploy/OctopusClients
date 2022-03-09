@@ -2,9 +2,9 @@
 
 namespace Octopus.Client.Model
 {
-    public class VersionControlBranchResource : Resource
+    public class GitBranchResource : Resource
     {
-        public VersionControlBranchResource(string name)
+        public GitBranchResource(string name)
         {
             Name = name;
             Links = new LinkCollection();

@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         public override async Task<UserRoleResource> Create(UserRoleResource resource, object pathParameters = null)
         {
             await ThrowIfServerVersionIsNotCompatible();
-            
+
             await RemoveInvalidPermissions(resource).ConfigureAwait(false);
             return await base.Create(resource, pathParameters).ConfigureAwait(false);
         }
@@ -28,25 +28,25 @@ namespace Octopus.Client.Repositories.Async
         public override async Task<UserRoleResource> Modify(UserRoleResource resource)
         {
             await ThrowIfServerVersionIsNotCompatible();
-            
+
             await RemoveInvalidPermissions(resource).ConfigureAwait(false);
             return await base.Modify(resource).ConfigureAwait(false);
         }
 
+#pragma warning disable 618
+        static readonly Permission TaskViewLogPermission = Permission.TaskViewLog;
+#pragma warning restore 618
+
         private async Task RemoveInvalidPermissions(UserRoleResource resource)
         {
-#pragma warning disable 618
-            const Permission taskViewLogPermission = Permission.TaskViewLog;
-#pragma warning restore 618
-            
             var versionWhenTaskViewLogWasRemoved = SemanticVersion.Parse("2019.1.7");
             var rootDocument = await Repository.LoadRootDocument().ConfigureAwait(false);
             var serverSupportsTaskViewLog = SemanticVersion.Parse(rootDocument.Version) < versionWhenTaskViewLogWasRemoved;
 
             if (!serverSupportsTaskViewLog)
             {
-                resource.GrantedSpacePermissions = RemoveDeprecatedPermission(taskViewLogPermission, resource.GrantedSpacePermissions);
-                resource.GrantedSystemPermissions = RemoveDeprecatedPermission(taskViewLogPermission, resource.GrantedSystemPermissions);
+                resource.GrantedSpacePermissions = RemoveDeprecatedPermission(TaskViewLogPermission, resource.GrantedSpacePermissions);
+                resource.GrantedSystemPermissions = RemoveDeprecatedPermission(TaskViewLogPermission, resource.GrantedSystemPermissions);
             }
 
             List<Permission> RemoveDeprecatedPermission(Permission permissionToRemove, List<Permission> permissions)

@@ -33,6 +33,7 @@ namespace Octopus.Client.Repositories
         ApiKeyCreatedResource CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null);
         List<ApiKeyResource> GetApiKeys(UserResource user);
         void RevokeApiKey(ApiKeyResourceBase apiKey);
+        void RevokeSessions(UserResource user);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(string addToTeamId);
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
@@ -133,6 +134,11 @@ namespace Octopus.Client.Repositories
         public void RevokeApiKey(ApiKeyResourceBase apiKey)
         {
             Client.Delete(apiKey.Link("Self"));
+        }
+
+        public void RevokeSessions(UserResource user)
+        {
+            Client.Put(user.Link("RevokeSessions"));
         }
 
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]

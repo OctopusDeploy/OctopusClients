@@ -20,6 +20,8 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool IsDefault { get; set; }
 
+        public bool IsPrivate { get; set; }
+
         public bool TaskQueueStopped { get; set; }
 
         [Writeable]

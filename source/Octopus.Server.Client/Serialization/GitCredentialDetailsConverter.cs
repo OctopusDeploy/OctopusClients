@@ -5,17 +5,17 @@ using Octopus.Client.Model.GitCredentials;
 
 namespace Octopus.Client.Serialization
 {
-    public class GitCredentialDetailsConverter : InheritedClassConverter<GitCredentialDetails, GitCredentialDetailsType>
+    public class GitCredentialDetailsConverter : InheritedClassConverter<GitCredentialDetails, GitCredentialType>
     {
-        static readonly IDictionary<GitCredentialDetailsType, Type> GitCredentialDetailsTypeMappings =
-            new Dictionary<GitCredentialDetailsType, Type>
+        static readonly IDictionary<GitCredentialType, Type> GitCredentialDetailsTypeMappings =
+            new Dictionary<GitCredentialType, Type>
             {
-                {GitCredentialDetailsType.UsernamePassword, typeof(UsernamePasswordGitCredentialDetails)}
+                {GitCredentialType.UsernamePassword, typeof(UsernamePasswordGitCredentialDetails)}
             };
 
-        static readonly Type defaultType = typeof(AnonymousVersionControlCredentialsResource);
+        static readonly Type defaultType = typeof(AnonymousProjectGitCredentialResource);
 
-        protected override IDictionary<GitCredentialDetailsType, Type> DerivedTypeMappings => GitCredentialDetailsTypeMappings;
+        protected override IDictionary<GitCredentialType, Type> DerivedTypeMappings => GitCredentialDetailsTypeMappings;
         protected override string TypeDesignatingPropertyName => nameof(GitCredentialDetails.Type);
 
         protected override Type DefaultType { get; } = defaultType;
