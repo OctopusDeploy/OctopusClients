@@ -2273,13 +2273,6 @@ Octopus.Client.Model
     String Tag { get; set; }
     String VersionRange { get; set; }
   }
-  class CommitDetails
-  {
-    .ctor()
-    String Comment { get; set; }
-    String Id { get; set; }
-    String LinkUrl { get; set; }
-  }
   class CommitResource
   {
     .ctor()
@@ -5927,7 +5920,7 @@ Octopus.Client.Model.BuildInformation
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetails[] Commits { get; set; }
     Nullable<DateTimeOffset> Created { get; set; }
     String IncompleteDataWarning { get; set; }
     String IssueTrackerName { get; set; }
@@ -5956,7 +5949,7 @@ Octopus.Client.Model.BuildInformation
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetails[] Commits { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsCommitUrl { get; set; }
@@ -6444,7 +6437,7 @@ Octopus.Client.Model.IssueTrackers
     String Comment { get; set; }
     String Id { get; set; }
   }
-  class CommitDetail
+  class CommitDetails
   {
     .ctor()
     String Comment { get; set; }
