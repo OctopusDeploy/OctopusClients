@@ -16,6 +16,7 @@ namespace Octopus.Client.Model.BuildInformation
         public string VcsCommitNumber { get; set; }
         public string VcsCommitUrl { get; set; }
 
+        public string IssueTrackerName { get; set; }
         public WorkItemLink[] WorkItems { get; set; }
         public CommitDetails[] Commits { get; set; }
     }
