@@ -5924,6 +5924,7 @@ Octopus.Client.Model.BuildInformation
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
     Octopus.Client.Model.IssueTrackers.CommitDetails[] Commits { get; set; }
+    String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
     String VcsCommitUrl { get; set; }
