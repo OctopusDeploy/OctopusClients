@@ -18,6 +18,6 @@ namespace Octopus.Client.Model.BuildInformation
 
         public string IssueTrackerName { get; set; }
         public WorkItemLink[] WorkItems { get; set; }
-        public CommitDetail[] Commits { get; set; }
+        public CommitDetails[] Commits { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace Octopus.Client
     {
         private readonly Lazy<RootResource> loadRootResource;
         private readonly Lazy<SpaceRootResource> loadSpaceRootResource;
-        
+
         public OctopusRepository(OctopusServerEndpoint endpoint) : this(new OctopusClient(endpoint))
         {
         }
@@ -84,7 +84,6 @@ namespace Octopus.Client
             Migrations = new MigrationRepository(this);
             OctopusServerNodes = new OctopusServerNodeRepository(this);
             PerformanceConfiguration = new PerformanceConfigurationRepository(this);
-            PackageMetadataRepository = new PackageMetadataRepository(this);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             Runbooks = new RunbookRepository(this);
@@ -152,7 +151,6 @@ namespace Octopus.Client
         public IMigrationRepository Migrations { get; }
         public IOctopusServerNodeRepository OctopusServerNodes { get; }
         public IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-        public IPackageMetadataRepository PackageMetadataRepository { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IRunbookRepository Runbooks { get; }
@@ -198,7 +196,7 @@ namespace Octopus.Client
                 link = loadRootResource.Value.Link(linkName);
             else
                 return false;
-            
+
             var template = new UrlTemplate(link);
             return template.GetParameterNames().Contains(parameterName);
         }
@@ -213,7 +211,7 @@ namespace Octopus.Client
         public RootResource LoadRootDocument() => loadRootResource.Value;
         public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
 
-        RootResource LoadRootDocumentInner()                                                                                    
+        RootResource LoadRootDocumentInner()
         {
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
