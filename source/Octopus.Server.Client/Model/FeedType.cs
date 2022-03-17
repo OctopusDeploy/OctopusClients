@@ -10,6 +10,7 @@
         GitHub,
         BuiltIn,
         Helm,
-        AwsElasticContainerRegistry
+        AwsElasticContainerRegistry,
+        S3
     }
 }
