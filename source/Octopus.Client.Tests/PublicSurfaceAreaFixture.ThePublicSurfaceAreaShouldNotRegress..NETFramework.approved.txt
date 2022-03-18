@@ -3030,6 +3030,7 @@ Octopus.Client.Model
       BuiltIn = 6
       Helm = 7
       AwsElasticContainerRegistry = 8
+      S3 = 9
   }
   class FileUpload
   {
@@ -4643,6 +4644,19 @@ Octopus.Client.Model
     .ctor()
     String NextNameIncrement { get; set; }
     String RunbookProcessId { get; set; }
+  }
+  class S3FeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+    Boolean UseMachineCredentials { get; set; }
   }
   class ScheduledTaskDetailsResource
     Octopus.Client.Extensibility.IResource
