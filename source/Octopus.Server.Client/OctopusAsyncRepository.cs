@@ -87,7 +87,6 @@ namespace Octopus.Client
             Migrations = new MigrationRepository(this);
             OctopusServerNodes = new OctopusServerNodeRepository(this);
             PerformanceConfiguration = new PerformanceConfigurationRepository(this);
-            PackageMetadataRepository = new PackageMetadataRepository(this);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             Runbooks = new RunbookRepository(this);
@@ -157,7 +156,6 @@ namespace Octopus.Client
         public IMigrationRepository Migrations { get; }
         public IOctopusServerNodeRepository OctopusServerNodes { get; }
         public IPerformanceConfigurationRepository PerformanceConfiguration { get; }
-        public IPackageMetadataRepository PackageMetadataRepository { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IRunbookRepository Runbooks { get; }
@@ -195,7 +193,7 @@ namespace Octopus.Client
             var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
         }
-        
+
         public async Task<bool> HasLinkParameter(string linkName, string parameterName)
         {
             string link;
@@ -203,7 +201,7 @@ namespace Octopus.Client
 
             if (spaceRootDocument != null && spaceRootDocument.HasLink(linkName))
                 link = spaceRootDocument.Link(linkName);
-            else 
+            else
             {
                 var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
                 if (rootDocument.HasLink(linkName))
@@ -211,7 +209,7 @@ namespace Octopus.Client
                 else
                     return false;
             }
-            
+
             var template = new UrlTemplate(link);
             return template.GetParameterNames().Contains(parameterName);
         }
@@ -280,7 +278,7 @@ namespace Octopus.Client
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({rootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
             return rootDocument;
         }
-        
+
         Task<SpaceRootResource> LoadSpaceRootDocumentInner()
         {
             return Scope.Apply(LoadSpaceRootResourceFor,

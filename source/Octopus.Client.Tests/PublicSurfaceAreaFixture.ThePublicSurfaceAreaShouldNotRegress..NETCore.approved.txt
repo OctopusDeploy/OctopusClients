@@ -159,7 +159,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
-    Octopus.Client.Repositories.Async.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -204,7 +203,6 @@ Octopus.Client
     Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
-    Octopus.Client.Repositories.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -340,7 +338,6 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
-    Octopus.Client.Repositories.Async.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
@@ -477,7 +474,6 @@ Octopus.Client
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
-    Octopus.Client.Repositories.IPackageMetadataRepository PackageMetadataRepository { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
@@ -2262,13 +2258,6 @@ Octopus.Client.Model
     String Tag { get; set; }
     String VersionRange { get; set; }
   }
-  class CommitDetails
-  {
-    .ctor()
-    String Comment { get; set; }
-    String Id { get; set; }
-    String LinkUrl { get; set; }
-  }
   class CommitResource
   {
     .ctor()
@@ -3026,6 +3015,7 @@ Octopus.Client.Model
       BuiltIn = 6
       Helm = 7
       AwsElasticContainerRegistry = 8
+      S3 = 9
   }
   class FileUpload
   {
@@ -3807,17 +3797,6 @@ Octopus.Client.Model
       ExecutionTarget = 1
       NotAcquired = 2
   }
-  class PackageBuildMetadata
-  {
-    .ctor()
-    String BuildNumber { get; set; }
-    String BuildUrl { get; set; }
-    String PackageId { get; set; }
-    String VcsCommitNumber { get; set; }
-    String VcsRoot { get; set; }
-    String VcsType { get; set; }
-    String Version { get; set; }
-  }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4307,8 +4286,8 @@ Octopus.Client.Model
   class ReleaseChanges
   {
     .ctor()
+    List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     List<CommitDetails> Commits { get; set; }
-    List<PackageBuildMetadata> PackageBuildMetadata { get; set; }
     String ReleaseNotes { get; set; }
     String Version { get; set; }
     List<WorkItemLink> WorkItems { get; set; }
@@ -4648,6 +4627,19 @@ Octopus.Client.Model
     String NextNameIncrement { get; set; }
     String RunbookProcessId { get; set; }
   }
+  class S3FeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    String AccessKey { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+    Boolean UseMachineCredentials { get; set; }
+  }
   class ScheduledTaskDetailsResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4924,6 +4916,7 @@ Octopus.Client.Model
     Boolean IsDefault { get; set; }
     Boolean IsPrivate { get; set; }
     String Name { get; set; }
+    String PrivateSpaceOwner { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeamMembers { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeams { get; set; }
     Boolean TaskQueueStopped { get; set; }
@@ -5918,7 +5911,7 @@ Octopus.Client.Model.BuildInformation
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetails[] Commits { get; set; }
     Nullable<DateTimeOffset> Created { get; set; }
     String IncompleteDataWarning { get; set; }
     String IssueTrackerName { get; set; }
@@ -5947,7 +5940,7 @@ Octopus.Client.Model.BuildInformation
     String BuildEnvironment { get; set; }
     String BuildNumber { get; set; }
     String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
+    Octopus.Client.Model.IssueTrackers.CommitDetails[] Commits { get; set; }
     String IssueTrackerName { get; set; }
     String PackageId { get; set; }
     String VcsCommitNumber { get; set; }
@@ -6436,7 +6429,7 @@ Octopus.Client.Model.IssueTrackers
     String Comment { get; set; }
     String Id { get; set; }
   }
-  class CommitDetail
+  class CommitDetails
   {
     .ctor()
     String Comment { get; set; }
@@ -6446,9 +6439,10 @@ Octopus.Client.Model.IssueTrackers
   class WorkItemLink
   {
     .ctor()
+    String Description { get; set; }
     String Id { get; set; }
-    String LinkText { get; set; }
     String LinkUrl { get; set; }
+    String Source { get; set; }
   }
 }
 Octopus.Client.Model.Migrations
@@ -6494,52 +6488,6 @@ Octopus.Client.Model.Migrations
     String SpaceId { get; set; }
     String SuccessCallbackUri { get; set; }
     String TaskId { get; set; }
-  }
-}
-Octopus.Client.Model.PackageMetadata
-{
-  class OctopusPackageMetadata
-  {
-    .ctor()
-    String BuildEnvironment { get; set; }
-    String BuildNumber { get; set; }
-    String BuildUrl { get; set; }
-    String CommentParser { get; set; }
-    Octopus.Client.Model.IssueTrackers.Commit[] Commits { get; set; }
-    String VcsCommitNumber { get; set; }
-    String VcsRoot { get; set; }
-    String VcsType { get; set; }
-  }
-  class OctopusPackageMetadataMappedResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String BuildEnvironment { get; set; }
-    String BuildNumber { get; set; }
-    String BuildUrl { get; set; }
-    Octopus.Client.Model.IssueTrackers.CommitDetail[] Commits { get; set; }
-    Nullable<DateTimeOffset> Created { get; set; }
-    String IncompleteDataWarning { get; set; }
-    String IssueTrackerName { get; set; }
-    String PackageId { get; set; }
-    String VcsCommitNumber { get; set; }
-    String VcsCommitUrl { get; set; }
-    String VcsRoot { get; set; }
-    String VcsType { get; set; }
-    String Version { get; set; }
-    Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
-  }
-  class OctopusPackageMetadataVersionResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata OctopusPackageMetadata { get; set; }
-    String PackageId { get; set; }
-    String Version { get; set; }
   }
 }
 Octopus.Client.Model.Triggers
@@ -7212,12 +7160,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.OctopusServerNodeDetailsResource Details(Octopus.Client.Model.OctopusServerNodeResource)
     Octopus.Client.Model.OctopusServerClusterSummaryResource Summary()
   }
-  interface IPackageMetadataRepository
-  {
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
-  }
   interface IPaginate`1
   {
     List<TResource> FindAll(String, Object)
@@ -7581,14 +7523,6 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
-  class PackageMetadataRepository
-    Octopus.Client.Repositories.IPackageMetadataRepository
-  {
-    .ctor(Octopus.Client.IOctopusRepository)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Get(String)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata)
-    Octopus.Client.Model.PackageMetadata.OctopusPackageMetadataMappedResource Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
-  }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
   {
@@ -7943,12 +7877,6 @@ Octopus.Client.Repositories.Async
   {
     Task<OctopusServerNodeDetailsResource> Details(Octopus.Client.Model.OctopusServerNodeResource)
     Task<OctopusServerClusterSummaryResource> Summary()
-  }
-  interface IPackageMetadataRepository
-  {
-    Task<OctopusPackageMetadataMappedResource> Get(String)
-    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Octopus.Client.Model.OverwriteMode)
-    Task<OctopusPackageMetadataMappedResource> Push(String, String, Octopus.Client.Model.PackageMetadata.OctopusPackageMetadata, Boolean)
   }
   interface IPaginate`1
   {
