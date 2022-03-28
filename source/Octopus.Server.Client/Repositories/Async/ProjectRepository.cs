@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
                 CommitMessage = commitMessage
             };
 
-            var url = project.HasLink("ConvertToGit") ? project.Link("ConvertToGit") : project.Link("ConvertToVcs");
+            var url = project.Link("ConvertToGit");
             var response = await Client.Post<ConvertProjectToGitCommand,ConvertProjectToGitResponse>(url, payload);
             return response;
         }
