@@ -30,6 +30,8 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool IsDisabled { get; set; }
 
+        public bool IsDynamic { get; set; }
+
         [Writeable]
         public string MachinePolicyId { get; set; }
 
