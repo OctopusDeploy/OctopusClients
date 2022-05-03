@@ -31,5 +31,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection SpaceManagersTeamMembers { get; set; }
         
         public string PrivateSpaceOwner { get; set; }
+        
+        public IconResource Icon { get; set; }
     }
 }
