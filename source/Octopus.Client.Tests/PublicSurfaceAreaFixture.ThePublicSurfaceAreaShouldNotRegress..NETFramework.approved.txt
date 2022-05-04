@@ -3135,6 +3135,12 @@ Octopus.Client.Model
   {
     String ChangeDescription { get; set; }
   }
+  class IconResource
+  {
+    .ctor(String, String)
+    String Color { get; set; }
+    String Id { get; set; }
+  }
   class IdentityClaimResource
   {
     .ctor()
@@ -4176,6 +4182,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
+    Octopus.Client.Model.IconResource Icon { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
     Boolean IsVersionControlled { get; set; }
@@ -4934,6 +4941,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    Octopus.Client.Model.IconResource Icon { get; set; }
     Boolean IsDefault { get; set; }
     Boolean IsPrivate { get; set; }
     String Name { get; set; }

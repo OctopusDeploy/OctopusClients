@@ -125,6 +125,8 @@ namespace Octopus.Client.Model
         [Writeable]
         [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public string DeploymentChangesTemplate { get; set; }
+        
+        public IconResource Icon { get; set; }
 
         public ProjectResource Clear()
         {
