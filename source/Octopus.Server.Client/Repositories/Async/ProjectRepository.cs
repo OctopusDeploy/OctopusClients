@@ -10,6 +10,8 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
+        IProjectBetaRepository Beta();
+
         Task<ResourceCollection<GitBranchResource>> GetGitBranches(ProjectResource projectResource);
         Task<GitBranchResource> GetGitBranch(ProjectResource projectResource, string branch);
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
@@ -34,11 +36,15 @@ namespace Octopus.Client.Repositories.Async
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
     {
+        readonly IProjectBetaRepository beta;
 
         public ProjectRepository(IOctopusAsyncRepository repository)
             : base(repository, "Projects")
         {
+            beta = new ProjectBetaRepository(repository);
         }
+
+        public IProjectBetaRepository Beta() => beta;
 
         public Task<ResourceCollection<GitBranchResource>> GetGitBranches(ProjectResource projectResource)
         {
