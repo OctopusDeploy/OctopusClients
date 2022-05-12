@@ -3046,11 +3046,17 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
+  class GitPersistenceSettingsConversionStateResource
+  {
+    .ctor()
+    Boolean VariablesAreInGit { get; set; }
+  }
   class GitPersistenceSettingsResource
     Octopus.Client.Model.PersistenceSettingsResource
   {
     .ctor()
     String BasePath { get; set; }
+    Octopus.Client.Model.GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
     Octopus.Client.Model.ProjectGitCredentialResource Credentials { get; set; }
     String DefaultBranch { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
@@ -6353,6 +6359,16 @@ Octopus.Client.Model.Git
     .ctor()
     Octopus.Client.Model.Git.MessageCollection Messages { get; }
   }
+  class ConvertProjectVariablesToGitCommand
+  {
+    .ctor()
+    String Branch { get; set; }
+    String CommitMessage { get; set; }
+  }
+  class ConvertProjectVariablesToGitResponse
+  {
+    .ctor()
+  }
   class GitReferenceResource
   {
     .ctor()
@@ -7898,6 +7914,10 @@ Octopus.Client.Repositories.Async
     Task<PerformanceConfigurationResource> Get()
     Task<PerformanceConfigurationResource> Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
+  interface IProjectBetaRepository
+  {
+    Task<ConvertProjectVariablesToGitResponse> MigrateVariablesToGit(Octopus.Client.Model.ProjectResource, String, String)
+  }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.Async.IFindByName<ProjectGroupResource>
     Octopus.Client.Repositories.Async.IPaginate<ProjectGroupResource>
@@ -7920,6 +7940,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ProjectResource>
     Octopus.Client.Repositories.Async.IGetAll<ProjectResource>
   {
+    Octopus.Client.Repositories.Async.IProjectBetaRepository Beta()
     Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
@@ -8213,11 +8234,16 @@ Octopus.Client.Repositories.Async
   {
     Task<TeamNameResource[]> Get(Octopus.Client.Model.UserResource)
   }
+  interface IVariableSetBetaRepository
+  {
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+  }
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>
     Octopus.Client.Repositories.Async.IModify<VariableSetResource>
     Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
+    Octopus.Client.Repositories.Async.IVariableSetBetaRepository Beta()
     Task<String[]> GetVariableNames(String, String[])
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
   }

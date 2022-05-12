@@ -30,5 +30,12 @@ namespace Octopus.Client.Model
         public string DefaultBranch { get; set; }
         [Writeable]
         public string BasePath { get; set; }
+
+        public GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
+    }
+    
+    public class GitPersistenceSettingsConversionStateResource
+    {
+        public bool VariablesAreInGit { get; set; }
     }
 }

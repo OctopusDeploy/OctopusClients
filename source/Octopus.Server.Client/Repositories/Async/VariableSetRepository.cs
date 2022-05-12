@@ -7,16 +7,22 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IVariableSetRepository : IGet<VariableSetResource>, IModify<VariableSetResource>, IGetAll<VariableSetResource>
     {
+        IVariableSetBetaRepository Beta();
         Task<string[]> GetVariableNames(string projects, string[] environments);
         Task<VariableSetResource> GetVariablePreview(string project, string channel, string tenant, string runbook, string action, string environment, string machine, string role);
     }
 
     class VariableSetRepository : BasicRepository<VariableSetResource>, IVariableSetRepository
     {
+        readonly IVariableSetBetaRepository beta;
+
         public VariableSetRepository(IOctopusAsyncRepository repository)
             : base(repository, "Variables")
         {
+            beta = new VariableSetBetaRepository(repository);
         }
+
+        public IVariableSetBetaRepository Beta() => beta;
 
         public async Task<string[]> GetVariableNames(string project, string[] environments)
         {
