@@ -32,12 +32,17 @@ namespace Octopus.Client.Repositories.Async
                 CommitMessage = commitMessage
             };
 
+            if (!projectResource.HasLink("MigrateVariablesToGit"))
+            {
+                throw new NotSupportedException("Git variables migration is not available for this project");
+            }
+
             return await client.Post<ConvertProjectVariablesToGitCommand, ConvertProjectVariablesToGitResponse>(projectResource.Link("MigrateVariablesToGit"), command);
         }
 
         bool ProjectHasVariablesInGit(ProjectResource projectResource)
         {
-            return projectResource.PersistenceSettings is GitPersistenceSettingsResource gitSettings && gitSettings.ConversionState.VariablesAreInGit;
+            return projectResource.PersistenceSettings is GitPersistenceSettingsResource {ConversionState: {VariablesAreInGit: true}};
         }
     }
 }

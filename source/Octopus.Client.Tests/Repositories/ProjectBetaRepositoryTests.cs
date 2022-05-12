@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -45,6 +46,35 @@ namespace Octopus.Client.Tests.Repositories
             urlUsed.Should().Be(migrateLink);
             commandUsed.Branch.Should().Be("branchy-branch");
             commandUsed.CommitMessage.Should().Be("Test commit message");
+        }
+
+        [Test]
+        public void MigrateVariablesToGit_GitProjectWithVariablesAlreadyInGit_ThrowsError()
+        {
+            // Arrange
+            var project = new ProjectResource
+            {
+                PersistenceSettings = new GitPersistenceSettingsResource
+                {
+                    ConversionState = new GitPersistenceSettingsConversionStateResource
+                    {
+                        VariablesAreInGit = true
+                    }
+                }
+            };
+
+            // Act + Assert
+            repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).ShouldThrow<NotSupportedException>().WithMessage("*already been migrated*");
+        }
+
+        [Test]
+        public void MigrateVariablesToGit_DoesNotHaveMigrateLink_ThrowsError()
+        {
+            // Arrange
+            var project = new ProjectResource();
+
+            // Act + Assert
+            repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).ShouldThrow<NotSupportedException>().WithMessage("*not available*");
         }
     }
 }
