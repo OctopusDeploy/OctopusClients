@@ -45,6 +45,8 @@ namespace Octopus.Client.Model
 
         public List<SelectedPackage> SelectedPackages { get; set; }
 
+        public RunbookSnapshotGitReferenceResource GitReference { get; set; }
+
         public string ProjectVariableSetSnapshotId { get; set; }
 
         public string SpaceId { get; set; }

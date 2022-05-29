@@ -4311,6 +4311,13 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
   }
+  class ReleaseGitReferenceResource
+  {
+    .ctor()
+    String GitCommit { get; set; }
+    String GitRef { get; set; }
+    String VariablesGitCommit { get; set; }
+  }
   class ReleaseProgressionResource
   {
     .ctor()
@@ -4345,7 +4352,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.Git.GitReferenceResource VersionControlReference { get; set; }
+    Octopus.Client.Model.ReleaseGitReferenceResource VersionControlReference { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -4611,6 +4618,12 @@ Octopus.Client.Model
     .ctor()
     Boolean IsRunbookProcessModified { get; set; }
   }
+  class RunbookSnapshotGitReferenceResource
+  {
+    .ctor()
+    String GitRef { get; set; }
+    String VariablesGitCommit { get; set; }
+  }
   class RunbookSnapshotResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4623,6 +4636,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     String FrozenProjectVariableSetId { get; set; }
     String FrozenRunbookProcessId { get; set; }
+    Octopus.Client.Model.RunbookSnapshotGitReferenceResource GitReference { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String Name { get; set; }
     String Notes { get; set; }

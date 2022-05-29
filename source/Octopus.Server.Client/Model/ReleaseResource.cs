@@ -5,7 +5,6 @@ using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model.BuildInformation;
-using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Model
 {
@@ -73,8 +72,8 @@ namespace Octopus.Client.Model
 
         public List<SelectedPackage> SelectedPackages { get; set; }
 
-        public GitReferenceResource VersionControlReference { get; set; }
-        
+        public ReleaseGitReferenceResource VersionControlReference { get; set; }
+
         public string SpaceId { get; set; }
     }
 }
