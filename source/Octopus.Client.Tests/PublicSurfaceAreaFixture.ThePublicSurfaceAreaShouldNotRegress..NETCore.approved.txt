@@ -4311,13 +4311,6 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     Octopus.Client.Model.DeploymentActionPackageResource ReleaseCreationPackage { get; set; }
   }
-  class ReleaseGitReferenceResource
-  {
-    .ctor()
-    String GitCommit { get; set; }
-    String GitRef { get; set; }
-    String VariablesGitCommit { get; set; }
-  }
   class ReleaseProgressionResource
   {
     .ctor()
@@ -4343,7 +4336,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
-    Octopus.Client.Model.ReleaseGitReferenceResource GitReference { get; set; }
+    Octopus.Client.Model.SnapshotGitReferenceResource GitReference { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
@@ -4619,12 +4612,6 @@ Octopus.Client.Model
     .ctor()
     Boolean IsRunbookProcessModified { get; set; }
   }
-  class RunbookSnapshotGitReferenceResource
-  {
-    .ctor()
-    String GitRef { get; set; }
-    String VariablesGitCommit { get; set; }
-  }
   class RunbookSnapshotResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4637,7 +4624,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     String FrozenProjectVariableSetId { get; set; }
     String FrozenRunbookProcessId { get; set; }
-    Octopus.Client.Model.RunbookSnapshotGitReferenceResource GitReference { get; set; }
+    Octopus.Client.Model.SnapshotGitReferenceResource GitReference { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String Name { get; set; }
     String Notes { get; set; }
@@ -4933,6 +4920,12 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }
     Nullable<Int32> Timeout { get; set; }
+  }
+  class SnapshotGitReferenceResource
+    Octopus.Client.Model.Git.GitReferenceResource
+  {
+    .ctor()
+    String VariablesGitCommit { get; set; }
   }
   class SpaceResource
     Octopus.Client.Extensibility.IResource

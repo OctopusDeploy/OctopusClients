@@ -77,22 +77,26 @@ namespace Octopus.Client.Model
         [Obsolete("Use GitReference")]
         public GitReferenceResource VersionControlReference
         {
-            get =>
-                new()
+            get => GitReference;
+            set
+            {
+                if (value is null)
                 {
-                    GitRef = GitReference.GitRef,
-                    GitCommit = GitReference.GitCommit,
-                };
-            set =>
-                GitReference = new ReleaseGitReferenceResource
+                    GitReference = null;
+                }
+                else
                 {
-                    GitRef = value.GitRef,
-                    GitCommit = value.GitCommit,
-                };
+                    GitReference = new SnapshotGitReferenceResource
+                    {
+                        GitRef = value.GitRef,
+                        GitCommit = value.GitCommit,
+                    };
+                }
+            }
         }
 
         [JsonProperty("VersionControlReference")]
-        public ReleaseGitReferenceResource GitReference { get; set; }
+        public SnapshotGitReferenceResource GitReference { get; set; }
 
         public string SpaceId { get; set; }
     }
