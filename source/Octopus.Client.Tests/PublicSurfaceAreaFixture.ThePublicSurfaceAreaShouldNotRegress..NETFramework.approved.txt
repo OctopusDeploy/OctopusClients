@@ -4363,6 +4363,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
+    Octopus.Client.Model.ReleaseGitReferenceResource GitReference { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
@@ -4372,7 +4373,7 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.ReleaseGitReferenceResource VersionControlReference { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource VersionControlReference { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
