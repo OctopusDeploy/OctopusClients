@@ -8238,6 +8238,7 @@ Octopus.Client.Repositories.Async
   interface IVariableSetBetaRepository
   {
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
   }
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>
