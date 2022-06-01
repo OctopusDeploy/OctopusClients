@@ -73,8 +73,31 @@ namespace Octopus.Client.Model
 
         public List<SelectedPackage> SelectedPackages { get; set; }
 
-        public GitReferenceResource VersionControlReference { get; set; }
-        
+        [JsonIgnore]
+        [Obsolete("Use GitReference")]
+        public GitReferenceResource VersionControlReference
+        {
+            get => GitReference;
+            set
+            {
+                if (value is null)
+                {
+                    GitReference = null;
+                }
+                else
+                {
+                    GitReference = new SnapshotGitReferenceResource
+                    {
+                        GitRef = value.GitRef,
+                        GitCommit = value.GitCommit,
+                    };
+                }
+            }
+        }
+
+        [JsonProperty("VersionControlReference")]
+        public SnapshotGitReferenceResource GitReference { get; set; }
+
         public string SpaceId { get; set; }
     }
 }

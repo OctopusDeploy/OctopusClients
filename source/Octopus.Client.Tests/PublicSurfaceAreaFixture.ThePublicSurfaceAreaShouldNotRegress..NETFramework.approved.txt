@@ -4356,6 +4356,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     List<ReleasePackageVersionBuildInformationResource> BuildInformation { get; set; }
     String ChannelId { get; set; }
+    Octopus.Client.Model.SnapshotGitReferenceResource GitReference { get; set; }
     Boolean IgnoreChannelRules { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String ProjectDeploymentProcessSnapshotId { get; set; }
@@ -4642,6 +4643,7 @@ Octopus.Client.Model
     DateTimeOffset Assembled { get; set; }
     String FrozenProjectVariableSetId { get; set; }
     String FrozenRunbookProcessId { get; set; }
+    Octopus.Client.Model.SnapshotGitReferenceResource GitReference { get; set; }
     List<String> LibraryVariableSetSnapshotIds { get; set; }
     String Name { get; set; }
     String Notes { get; set; }
@@ -4938,6 +4940,12 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     Nullable<Int32> SmtpPort { get; set; }
     Nullable<Int32> Timeout { get; set; }
+  }
+  class SnapshotGitReferenceResource
+    Octopus.Client.Model.Git.GitReferenceResource
+  {
+    .ctor()
+    String VariablesGitCommit { get; set; }
   }
   class SpaceResource
     Octopus.Client.Extensibility.IResource
