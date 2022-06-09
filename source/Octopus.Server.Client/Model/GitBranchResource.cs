@@ -10,6 +10,19 @@ namespace Octopus.Client.Model
             Links = new LinkCollection();
         }
 
+        public string CanonicalName { get; }
+        public string Name { get; }
+    }
+    
+    public class GitTagResource : Resource
+    {
+        public GitTagResource(string name)
+        {
+            Name = name;
+            Links = new LinkCollection();
+        }
+
+        public string CanonicalName { get; }
         public string Name { get; }
     }
 }

@@ -3046,6 +3046,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor(String)
+    String CanonicalName { get; }
     String Name { get; }
   }
   class GitHubFeedResource
@@ -3078,6 +3079,15 @@ Octopus.Client.Model
     String DefaultBranch { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
+  }
+    class GitTagResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor(String)
+    String CanonicalName { get; }
+    String Name { get; }
   }
   GuidedFailureMode
   {
@@ -7264,6 +7274,8 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.GitBranchResource GetGitBranch(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<GitBranchResource> GetGitBranches(Octopus.Client.Model.ProjectResource)
+        Octopus.Client.Model.GitTagResource GetGitTag(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<GitTagResource> GetGitTags(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
@@ -7987,6 +7999,8 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
     Task<GitBranchResource> GetGitBranch(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<GitBranchResource>> GetGitBranches(Octopus.Client.Model.ProjectResource)
+        Task<GitTagResource> GetGitTag(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
