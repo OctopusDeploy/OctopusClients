@@ -3026,20 +3026,18 @@ Octopus.Client.Model
   class GitBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ValidatedGitReferenceResource
   {
+    .ctor(String, String)
     .ctor(String)
-    String CanonicalName { get; }
-    String Name { get; }
   }
   class GitCommitResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ValidatedGitReferenceResource
   {
+    .ctor(String, String)
     .ctor(String)
-    String CanonicalName { get; }
-    String Name { get; }
   }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
@@ -3075,11 +3073,10 @@ Octopus.Client.Model
   class GitTagResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ValidatedGitReferenceResource
   {
+    .ctor(String, String)
     .ctor(String)
-    String CanonicalName { get; }
-    String Name { get; }
   }
   GuidedFailureMode
   {
@@ -5454,6 +5451,15 @@ Octopus.Client.Model
     List<String> SpacePermissionDescriptions { get; set; }
     List<String> SupportedRestrictions { get; set; }
     List<String> SystemPermissionDescriptions { get; set; }
+  }
+  abstract class ValidatedGitReferenceResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor(String, String)
+    String CanonicalName { get; }
+    String Name { get; }
   }
   class VariablePromptOptions
   {

@@ -2,39 +2,48 @@
 
 namespace Octopus.Client.Model
 {
-    public class GitBranchResource : Resource
+    public abstract class ValidatedGitReferenceResource : Resource
     {
-        public GitBranchResource(string name)
+        public ValidatedGitReferenceResource(string name, string canonicalName)
         {
             Name = name;
+            CanonicalName = canonicalName;
             Links = new LinkCollection();
         }
 
         public string CanonicalName { get; }
         public string Name { get; }
     }
-    
-    public class GitTagResource : Resource
+    public class GitBranchResource : ValidatedGitReferenceResource
     {
-        public GitTagResource(string name)
+        public GitBranchResource(string name, string canonicalName) : base(name, canonicalName)
         {
-            Name = name;
-            Links = new LinkCollection();
         }
-
-        public string CanonicalName { get; }
-        public string Name { get; }
+        
+        public GitBranchResource(string name) : base(name, name)
+        {
+        }
     }
     
-    public class GitCommitResource : Resource
+    public class GitTagResource : ValidatedGitReferenceResource
     {
-        public GitCommitResource(string name)
+        public GitTagResource(string name, string canonicalName) : base(name, canonicalName)
         {
-            Name = name;
-            Links = new LinkCollection();
         }
-
-        public string CanonicalName { get; }
-        public string Name { get; }
+        
+        public GitTagResource(string name) : base(name, name)
+        {
+        }
+    }
+    
+    public class GitCommitResource : ValidatedGitReferenceResource
+    {
+        public GitCommitResource(string name, string canonicalName) : base(name, canonicalName)
+        {
+        }
+        
+        public GitCommitResource(string name) : base(name, name)
+        {
+        }
     }
 }
