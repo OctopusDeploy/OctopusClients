@@ -3049,7 +3049,7 @@ Octopus.Client.Model
     String CanonicalName { get; }
     String Name { get; }
   }
-    class GitCommitResource
+  class GitCommitResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
@@ -3089,7 +3089,7 @@ Octopus.Client.Model
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
   }
-    class GitTagResource
+  class GitTagResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
