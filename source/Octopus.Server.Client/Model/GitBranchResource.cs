@@ -25,4 +25,16 @@ namespace Octopus.Client.Model
         public string CanonicalName { get; }
         public string Name { get; }
     }
+    
+    public class GitCommitResource : Resource
+    {
+        public GitCommitResource(string name)
+        {
+            Name = name;
+            Links = new LinkCollection();
+        }
+
+        public string CanonicalName { get; }
+        public string Name { get; }
+    }
 }

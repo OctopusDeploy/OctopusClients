@@ -3032,6 +3032,15 @@ Octopus.Client.Model
     String CanonicalName { get; }
     String Name { get; }
   }
+    class GitCommitResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor(String)
+    String CanonicalName { get; }
+    String Name { get; }
+  }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
