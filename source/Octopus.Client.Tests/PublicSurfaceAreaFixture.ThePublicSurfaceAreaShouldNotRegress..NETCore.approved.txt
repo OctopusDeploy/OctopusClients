@@ -3028,7 +3028,6 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
-    .ctor(String, String)
     .ctor(String)
   }
   class GitCommitResource
@@ -3036,7 +3035,6 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
-    .ctor(String, String)
     .ctor(String)
   }
   class GitHubFeedResource
@@ -3075,7 +3073,6 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
-    .ctor(String, String)
     .ctor(String)
   }
   GuidedFailureMode
@@ -5457,7 +5454,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Resource
   {
-    .ctor(String, String)
+    .ctor(String)
     String CanonicalName { get; }
     String Name { get; }
   }
