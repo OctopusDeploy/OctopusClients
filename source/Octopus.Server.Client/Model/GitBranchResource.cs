@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
         }
 
         public string CanonicalName { get; }
-        public string Name { get; }
+        public string Name { get; set; }
     }
     public class GitBranchResource : ValidatedGitReferenceResource
     {
