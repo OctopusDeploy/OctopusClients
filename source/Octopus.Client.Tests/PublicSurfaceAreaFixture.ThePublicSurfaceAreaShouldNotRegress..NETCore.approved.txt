@@ -5456,7 +5456,7 @@ Octopus.Client.Model
   {
     .ctor(String)
     String CanonicalName { get; }
-    String Name { get; }
+    String Name { get; set; }
   }
   class VariablePromptOptions
   {
