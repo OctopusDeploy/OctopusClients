@@ -3026,10 +3026,16 @@ Octopus.Client.Model
   class GitBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
+    Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String)
-    String Name { get; }
+  }
+  class GitCommitResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ValidatedGitReferenceResource
+  {
+    .ctor(String)
   }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
@@ -3061,6 +3067,13 @@ Octopus.Client.Model
     String DefaultBranch { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
+  }
+  class GitTagResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.ValidatedGitReferenceResource
+  {
+    .ctor(String)
   }
   GuidedFailureMode
   {
@@ -5436,6 +5449,15 @@ Octopus.Client.Model
     List<String> SupportedRestrictions { get; set; }
     List<String> SystemPermissionDescriptions { get; set; }
   }
+  abstract class ValidatedGitReferenceResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor(String)
+    String CanonicalName { get; }
+    String Name { get; set; }
+  }
   class VariablePromptOptions
   {
     .ctor()
@@ -7238,6 +7260,9 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.GitBranchResource GetGitBranch(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<GitBranchResource> GetGitBranches(Octopus.Client.Model.ProjectResource)
+    Octopus.Client.Model.GitCommitResource GetGitCommit(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.GitTagResource GetGitTag(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.ResourceCollection<GitTagResource> GetGitTags(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
@@ -7961,6 +7986,9 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<ChannelResource>> GetChannels(Octopus.Client.Model.ProjectResource)
     Task<GitBranchResource> GetGitBranch(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<GitBranchResource>> GetGitBranches(Octopus.Client.Model.ProjectResource)
+    Task<GitCommitResource> GetGitCommit(Octopus.Client.Model.ProjectResource, String)
+    Task<GitTagResource> GetGitTag(Octopus.Client.Model.ProjectResource, String)
+    Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
