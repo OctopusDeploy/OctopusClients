@@ -258,6 +258,10 @@ namespace Octopus.Client.Model
 
         [Description("Edit Git credentials")] public static readonly Permission GitCredentialEdit = new Permission("GitCredentialEdit");
 
+        [Description("Delete archived event files")] public static readonly Permission EventRetentionDelete = new Permission("EventRetentionDelete");
+        
+        [Description("View/list archived event files")] public static readonly Permission EventRetentionView = new Permission("EventRetentionView");
+
         public Permission(string id)
         {
             Id = id;
