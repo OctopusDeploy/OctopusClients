@@ -20,6 +20,9 @@
         "AzureKeyVaultCertificateName": {
           "type": "string"
         },
+        "AzureKeyVaultTenantId": {
+          "type": "string"
+        },
         "AzureKeyVaultUrl": {
           "type": "string"
         },
