@@ -5557,6 +5557,15 @@ Octopus.Client.Model
       Variables = 0
       ScriptModule = 1
   }
+  class VariableSetPreviewResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.VariableSetResource
+  {
+    .ctor()
+    List<String> UnresolvedValues { get; set; }
+  }
   class VariableSetResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -8347,7 +8356,7 @@ Octopus.Client.Repositories.Async
   interface IVariableSetBetaRepository
   {
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
-    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
+    Task<VariableSetPreviewResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
   }
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>

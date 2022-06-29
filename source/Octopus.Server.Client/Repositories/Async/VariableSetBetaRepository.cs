@@ -6,7 +6,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IVariableSetBetaRepository
     {
         Task<VariableSetResource> Get(ProjectResource projectResource, string gitRef = null);
-        Task<VariableSetResource> GetVariablePreview(ProjectResource projectResource, string channel = null, string tenant = null, string runbook = null, string action = null, string environment = null, string machine = null, string role = null, string gitRef = null);
+        Task<VariableSetPreviewResource> GetVariablePreview(ProjectResource projectResource, string channel = null, string tenant = null, string runbook = null, string action = null, string environment = null, string machine = null, string role = null, string gitRef = null);
     }
 
     class VariableSetBetaRepository : IVariableSetBetaRepository
@@ -35,10 +35,10 @@ namespace Octopus.Client.Repositories.Async
             return await client.Get<VariableSetResource>(projectResource.Link("Variables"));
         }
 
-        public async Task<VariableSetResource> GetVariablePreview(ProjectResource projectResource, string channel = null, string tenant = null, string runbook = null, string action = null, string environment = null, string machine = null, string role = null, string gitRef = null)
+        public async Task<VariableSetPreviewResource> GetVariablePreview(ProjectResource projectResource, string channel = null, string tenant = null, string runbook = null, string action = null, string environment = null, string machine = null, string role = null, string gitRef = null)
         {
             var project = projectResource.Id;
-            return await client.Get<VariableSetResource>(await repository.Link("VariablePreview"), new { project, channel, tenant, runbook, action, environment, machine, role, gitRef });
+            return await client.Get<VariableSetPreviewResource>(await repository.Link("VariablePreview"), new { project, channel, tenant, runbook, action, environment, machine, role, gitRef });
         }
 
         bool ProjectHasVariablesInGit(ProjectResource projectResource)
