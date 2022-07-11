@@ -44,7 +44,6 @@ namespace Octopus.Client.Model
         public string FeedName { get; set; }
 
         public string VersionSelectedLastRelease { get; set; }
-        public DateTimeOffset? SelectedPackagePublished { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the <see cref="PackageId" /> or <see cref="FeedId" /> contain no
