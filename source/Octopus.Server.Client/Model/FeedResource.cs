@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// The FeedResource type has been deprecated on Octopus Deploy 3.5 servers. Use NuGetFeedResource instead")]
     /// </summary>
-    public class FeedResource : Resource, INamedResource, IHaveSpaceResource
+    public class FeedResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         [Writeable]
         public string Name { get; set; }
@@ -18,6 +18,8 @@ namespace Octopus.Client.Model
         public virtual FeedType FeedType { get; }
 
         public string SpaceId { get; set; }
+
+        public string Slug { get; set; }
 
         /// <summary>
         /// The package-acquisition locations supported by the feed.
