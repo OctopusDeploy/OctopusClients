@@ -257,10 +257,10 @@ class Build : NukeBuild
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
         var useSignTool = string.IsNullOrEmpty(AzureKeyVaultUrl)
-                        && string.IsNullOrEmpty(AzureKeyVaultAppId)
-                        && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
-                        && string.IsNullOrEmpty(AzureKeyVaultCertificateName)
-                        && string.IsNullOrEmpty(AzureKeyVaultTenantId);
+                          && string.IsNullOrEmpty(AzureKeyVaultAppId)
+                          && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
+                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName)
+                          && string.IsNullOrEmpty(AzureKeyVaultTenantId);
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
