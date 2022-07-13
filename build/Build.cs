@@ -165,7 +165,7 @@ class Build : NukeBuild
         .DependsOn(Merge)   // IMPORTANT: Tests must be run _after_ the merge so that we're confident that we're testing the ILMerged code.  -andrewh 14/2/2022.
         .Executes(() =>
     {
-    RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
+        RootDirectory.GlobFiles("**/**/*.Tests.csproj").ForEach(testProjectFile =>
         {
             DotNetTest(_ => _
                 .SetProjectFile(testProjectFile)
@@ -250,7 +250,6 @@ class Build : NukeBuild
         .DependsOn(PackMergedClientNuget)
         .DependsOn(Test)
         .DependsOn(TestClientNugetPackage);
-        
 
     void SignBinaries(AbsolutePath path)
     {
