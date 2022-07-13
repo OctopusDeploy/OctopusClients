@@ -3090,7 +3090,6 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
-    .ctor(String, String)
     .ctor(String)
   }
   GuidedFailureMode
@@ -4413,6 +4412,7 @@ Octopus.Client.Model
     String NuGetPackageId { get; set; }
     String PackageId { get; set; }
     String PackageReferenceName { get; set; }
+    Nullable<DateTimeOffset> SelectedPackagePublished { get; set; }
     String StepName { get; set; }
     String VersionSelectedLastRelease { get; set; }
   }
