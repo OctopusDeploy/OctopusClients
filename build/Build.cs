@@ -34,6 +34,8 @@ class Build : NukeBuild
     [Parameter] string AzureKeyVaultAppId = "";
     [Parameter, Secret] string AzureKeyVaultAppSecret = "";
     [Parameter] string AzureKeyVaultCertificateName = "";
+    [Parameter] string AzureKeyVaultTenantId = "";
+
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
     ///////////////////////////////////////////////////////////////////////////////
@@ -259,7 +261,9 @@ class Build : NukeBuild
         var useSignTool = string.IsNullOrEmpty(AzureKeyVaultUrl)
                           && string.IsNullOrEmpty(AzureKeyVaultAppId)
                           && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
-                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName);
+                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName)
+                          && string.IsNullOrEmpty(AzureKeyVaultTenantId);
+
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
@@ -296,6 +300,7 @@ class Build : NukeBuild
                         $"--azure-key-vault-client-id \"{AzureKeyVaultAppId}\" " +
                         $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
                         $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
+                        $"--azure-key-vault-tenant-id \"{AzureKeyVaultTenantId}\" " +
                         "--file-digest sha256 " +
                         "--description \"Octopus Client Library\" " +
                         "--description-url \"https://octopus.com\" " +
