@@ -60,6 +60,7 @@ namespace Octopus.Client.Tests.Integration
 #if NET452
                         o.UseHttps(GetCert());
 #else
+                        o.AllowSynchronousIO=true;
                         o.Listen(IPAddress.Any, HostPort);
                         o.Listen(IPAddress.Any, HostSslPort, c => c.UseHttps(GetCert()));
 #endif
