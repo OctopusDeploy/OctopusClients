@@ -243,7 +243,7 @@ namespace Octopus.Client.Tests.Integration
                 app.UseOwin(x => x.UseNancy());
             }
         }
-  
+
 #region Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
