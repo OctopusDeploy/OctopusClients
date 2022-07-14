@@ -108,7 +108,7 @@ namespace Octopus.Client.Tests.Integration
             TestRootPath = "/";
             if (pathPrefixBehaviour == UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
                 TestRootPath = $"/{GetType().Name}";
-
+            
             Get($"{TestRootPath}/api", p => Response.AsJson(
                  new RootResource()
                  {
@@ -221,7 +221,7 @@ namespace Octopus.Client.Tests.Integration
                 }
             }
         }
-
+ 
         private dynamic GetResourceNameFromRequestUri(dynamic parameters)
         {
             var escapedUri = "/" + parameters.uri;
@@ -244,8 +244,8 @@ namespace Octopus.Client.Tests.Integration
                 app.UseOwin(x => x.UseNancy());
             }
         }
-
-        #region Nancy JSON Serializers
+        
+#region Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
             private readonly JsonSerializer serializer;
@@ -413,6 +413,6 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-        #endregion
+#endregion
     }
 }
