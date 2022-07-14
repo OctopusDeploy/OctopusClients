@@ -2999,6 +2999,7 @@ Octopus.Client.Model
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsConfigurationAsCodeEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
+    Boolean IsJiraServiceManagementIntegrationEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
     Boolean IsServiceNowIntegrationEnabled { get; set; }
     Boolean IsStepUiFrameworkEnabled { get; set; }
