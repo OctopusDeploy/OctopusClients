@@ -18,9 +18,8 @@
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier><!--So that libuv is copied correctly -->
-    <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-->So that libuv is copied correctly -->
+    <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!--So that libuv is copied correctly -->
   </PropertyGroup>
-	
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS</DefineConstants>
   </PropertyGroup>

@@ -57,7 +57,6 @@ namespace Octopus.Client.Tests.Integration
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel(o =>
                     {
-                        o.AllowSynchronousIO = true;
                         o.Listen(IPAddress.Any, HostPort);
                         o.Listen(IPAddress.Any, HostSslPort, c => c.UseHttps(GetCert()));
 
@@ -79,7 +78,7 @@ namespace Octopus.Client.Tests.Integration
                     Console.Error.WriteLine(ex);
                 }
             });
-            var applicationLifetime = (IApplicationLifetime)currentHost.Services.GetService(typeof(IApplicationLifetime));
+            var applicationLifetime = (IApplicationLifetime) currentHost.Services.GetService(typeof(IApplicationLifetime));
             applicationLifetime.ApplicationStarted.WaitHandle.WaitOne();
         }
 
@@ -244,7 +243,7 @@ namespace Octopus.Client.Tests.Integration
                 app.UseOwin(x => x.UseNancy());
             }
         }
-        
+  
 #region Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
