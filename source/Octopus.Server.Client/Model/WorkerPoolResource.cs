@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
     /// Represents a pool of workers. WorkerPools are user-defined and map to pools of machines that
     /// can do work as part of a deployment: for example, running scripts and deploying to Azure.
     /// </summary>
-    public class WorkerPoolResource : Resource, INamedResource, IHaveSpaceResource
+    public class WorkerPoolResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         public WorkerPoolResource()
         {
@@ -44,6 +44,8 @@ namespace Octopus.Client.Model
         public int SortOrder { get; set; }
 
         public string SpaceId { get; set; }
+
+        public string Slug { get; set; }
 
         public WorkerPoolType WorkerPoolType { get; set; }
     }

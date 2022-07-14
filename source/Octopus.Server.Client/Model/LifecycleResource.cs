@@ -7,7 +7,7 @@ using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
-    public class LifecycleResource : Resource, INamedResource, IHaveSpaceResource
+    public class LifecycleResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         public LifecycleResource()
         {
@@ -84,5 +84,7 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
+        
+        public string Slug { get; set; }
     }
 }

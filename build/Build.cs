@@ -6,6 +6,7 @@ using Nuke.Common;
 using Nuke.Common.CI.TeamCity;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
+using Nuke.Common.Tools.AzureSignTool;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Tools.OctoVersion;
@@ -23,6 +24,7 @@ class Build : NukeBuild
     const string CiBranchNameEnvVariable = "OCTOVERSION_CurrentBranch";
 
     public static int Main() => Execute<Build>(x => x.Default);
+
     //////////////////////////////////////////////////////////////////////
     // ARGUMENTS
     //////////////////////////////////////////////////////////////////////
@@ -34,6 +36,8 @@ class Build : NukeBuild
     [Parameter] string AzureKeyVaultAppId = "";
     [Parameter, Secret] string AzureKeyVaultAppSecret = "";
     [Parameter] string AzureKeyVaultCertificateName = "";
+    [Parameter] string AzureKeyVaultTenantId = "";
+
     ///////////////////////////////////////////////////////////////////////////////
     // GLOBAL VARIABLES
     ///////////////////////////////////////////////////////////////////////////////
@@ -53,13 +57,9 @@ class Build : NukeBuild
     [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
-    [PackageExecutable(
-        packageId: "azuresigntool",
-        packageExecutable: "azuresigntool.dll")]
-    readonly Tool AzureSignTool = null!;
-
     // Keep this list in order by most likely to succeed
-    string[] SigningTimestampUrls => new[] {
+    string[] SigningTimestampUrls => new[]
+    {
         "http://timestamp.digicert.com?alg=sha256",
         "http://timestamp.comodoca.com",
         "http://tsa.starfieldtech.com",
@@ -259,7 +259,8 @@ class Build : NukeBuild
         var useSignTool = string.IsNullOrEmpty(AzureKeyVaultUrl)
                           && string.IsNullOrEmpty(AzureKeyVaultAppId)
                           && string.IsNullOrEmpty(AzureKeyVaultAppSecret)
-                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName);
+                          && string.IsNullOrEmpty(AzureKeyVaultCertificateName)
+                          && string.IsNullOrEmpty(AzureKeyVaultTenantId);
         var lastException = default(Exception);
         foreach (var url in SigningTimestampUrls)
         {
@@ -276,6 +277,7 @@ class Build : NukeBuild
             {
                 lastException = ex;
             }
+
             TeamCity.Instance?.CloseBlock("Signing and timestamping with server " + url);
             if (lastException == null)
                 break;
@@ -291,21 +293,18 @@ class Build : NukeBuild
     {
         Log.Information("Signing files using azuresigntool and the production code signing certificate.");
 
-        var arguments = "sign " +
-                        $"--azure-key-vault-url \"{AzureKeyVaultUrl}\" " +
-                        $"--azure-key-vault-client-id \"{AzureKeyVaultAppId}\" " +
-                        $"--azure-key-vault-client-secret \"{AzureKeyVaultAppSecret}\" " +
-                        $"--azure-key-vault-certificate \"{AzureKeyVaultCertificateName}\" " +
-                        "--file-digest sha256 " +
-                        "--description \"Octopus Client Library\" " +
-                        "--description-url \"https://octopus.com\" " +
-                        $"--timestamp-rfc3161 {timestampUrl} " +
-                        "--timestamp-digest sha256 ";
-
-        foreach (var file in files)
-            arguments += $"\"{file}\" ";
-
-        AzureSignTool(arguments, customLogger: LogStdErrAsWarning);
+        AzureSignToolTasks.AzureSignTool(settings => settings
+            .SetKeyVaultUrl(AzureKeyVaultUrl)
+            .SetKeyVaultClientId(AzureKeyVaultAppId)
+            .SetKeyVaultClientSecret(AzureKeyVaultAppSecret)
+            .SetKeyVaultCertificateName(AzureKeyVaultCertificateName)
+            .SetKeyVaultTenantId(AzureKeyVaultTenantId)
+            .SetDescription("Octopus Client Library")
+            .SetDescriptionUrl("https://octopus.com")
+            .SetFileDigest(AzureSignToolDigestAlgorithm.sha256)
+            .SetTimestampRfc3161Url(timestampUrl)
+            .SetTimestampDigest(AzureSignToolDigestAlgorithm.sha256)
+            .SetFiles(files.Select(x => x.ToString())));
     }
 
     void SignWithSignTool(AbsolutePath[] files, string url)
@@ -339,5 +338,4 @@ class Build : NukeBuild
         fileText = fileText.Replace(oldValue, newValue);
         File.WriteAllText(path, fileText);
     }
-
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Octopus.Client.Model
 {
-    public class DeploymentActionResource : Resource
+    public class DeploymentActionResource : Resource, IHaveSlugResource
     {
         public DeploymentActionResource()
         {
@@ -20,6 +20,7 @@ namespace Octopus.Client.Model
         public string WorkerPoolVariable { get; set; }
         public DeploymentActionContainerResource Container { get; set; }
         public bool CanBeUsedForProjectVersioning { get; set; }
+        public string Slug { get; set; }
 
         /// <summary>
         /// If true, this action cannot be skipped when deploying
