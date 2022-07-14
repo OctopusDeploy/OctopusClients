@@ -1,4 +1,4 @@
-﻿#if NET452
+﻿#if NET462
 using System;
 using System.Runtime.InteropServices;
 

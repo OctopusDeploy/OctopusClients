@@ -30,7 +30,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var e = ex.InnerException?.InnerException;
                 e.GetType().Name.Should().Be("AuthenticationException");
-                e.Message.Should().Be("The remote certificate is invalid according to the validation procedure.");
+                e.Message.Should().Be("The remote certificate was rejected by the provided RemoteCertificateValidationCallback.");
             }
             OctopusAsyncRepository.SecondsToWaitForServerToStart = 60;
         }

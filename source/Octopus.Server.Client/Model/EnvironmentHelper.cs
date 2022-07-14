@@ -27,13 +27,13 @@ namespace Octopus.Client.Model
 
         static IEnumerable<string> GetEnvironmentVars()
         {
-#if NET452
+#if NET462
             yield return SafelyGet(() => $"{Environment.OSVersion}");
 #else
             yield return SafelyGet(() => $"{RuntimeInformation.OSDescription}");
 #endif
             yield return SafelyGet(() => $"{(Environment.Is64BitOperatingSystem ? "x64" : "x86")}");
-#if NET452
+#if NET462
             if (ExecutionEnvironment.IsRunningOnNix || ExecutionEnvironment.IsRunningOnMac)
                 yield return SafelyGet(() => $"mono");
 #endif

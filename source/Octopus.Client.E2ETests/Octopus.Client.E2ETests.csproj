@@ -9,10 +9,10 @@
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
-    <!--<PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-        <TargetFrameworks>net452;netcoreapp3.1</TargetFrameworks>
-    </PropertyGroup>-->
-    <PropertyGroup>
+    <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
+        <TargetFrameworks>net462;net6.0</TargetFrameworks>
+    </PropertyGroup>
+	<PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
         <TargetFrameworks>net6.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
@@ -30,10 +30,11 @@
         <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
         <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.15" />
         <PackageReference Include="FluentAssertions" Version="4.15.0" />
-    </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="System.IO.Compression" />
-    </ItemGroup>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+		<Reference Include="System.IO.Compression"/>
+	</ItemGroup>
 
 </Project>

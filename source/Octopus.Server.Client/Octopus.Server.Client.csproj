@@ -17,19 +17,19 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <DebugType>embedded</DebugType>
     <DefineConstants>$(DefineConstants);FULL_FRAMEWORK</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS;LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Net.Http" />
@@ -49,8 +49,8 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     <PackageReference Include="Octodiff" Version="1.2.1" />
     <PackageReference Include="Octopus.Server.MessageContracts.Base" Version="3.0.400" />
     <PackageReference Include="Octopus.Server.MessageContracts.Base.HttpRoutes" Version="3.0.400" />
-    <PackageReference Include="Octopus.TinyTypes" Version="2.2.118" />
-    <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.118" />
-    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.118" />
+    <PackageReference Include="Octopus.TinyTypes" Version="2.2.968-net6upgrade" />
+    <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.968-net6upgrade" />
+    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.968-net6upgrade" />
   </ItemGroup>
 </Project>

@@ -103,7 +103,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(async () =>
         {
-            foreach (var target in new[] {"net452", "netstandard2.0"})
+            foreach (var target in new[] {"net462", "netstandard2.0"})
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
@@ -248,6 +248,7 @@ class Build : NukeBuild
         .DependsOn(CopyToLocalPackages)
         .DependsOn(PackNormalClientNuget)
         .DependsOn(PackMergedClientNuget)
+        .DependsOn(Test)
         .DependsOn(TestClientNugetPackage);
 
     void SignBinaries(AbsolutePath path)
