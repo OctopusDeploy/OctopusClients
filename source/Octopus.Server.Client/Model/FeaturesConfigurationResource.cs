@@ -30,5 +30,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool IsServiceNowIntegrationEnabled { get; set; }
+
+        [Writeable]
+        public bool IsJiraServiceManagementIntegrationEnabled { get; set; }
     }
 }
