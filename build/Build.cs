@@ -248,6 +248,7 @@ class Build : NukeBuild
         .DependsOn(CopyToLocalPackages)
         .DependsOn(PackNormalClientNuget)
         .DependsOn(PackMergedClientNuget)
+        .DependsOn(Test)
         .DependsOn(TestClientNugetPackage);
 
     void SignBinaries(AbsolutePath path)
