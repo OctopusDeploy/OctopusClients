@@ -3227,6 +3227,12 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     String TaskId { get; set; }
     String Title { get; set; }
+    String Type { get; set; }
+  }
+  abstract class InterruptionTypes
+  {
+    static System.String GuidedFailure
+    static System.String ManualIntervention
   }
   class InvitationResource
     Octopus.Client.Extensibility.IResource

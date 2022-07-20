@@ -5,17 +5,40 @@ using Octopus.Client.Model.Forms;
 
 namespace Octopus.Client.Model
 {
+    public static class InterruptionTypes
+    {
+        public static readonly string ManualIntervention = "ManualIntervention";
+        public static readonly string GuidedFailure = "GuidedFailure";
+    }
+
     /// <summary>
     /// An interruption is a request by a process running in the Octopus Server for
     /// user action or input.
     /// </summary>
     public class InterruptionResource : Resource, IHaveSpaceResource
     {
+        private string type;
+
         /// <summary>
         /// Gets or sets a title for this interruption.
         /// </summary>
         [JsonProperty(Order = 2)]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of interruption. See InterruptionTypes for known values.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        public string Type
+        {
+            get => type
+                   ?? (
+                       (Title ?? "").EndsWith(" requires failure guidance")
+                           ? InterruptionTypes.GuidedFailure
+                           : InterruptionTypes.ManualIntervention
+                   );
+            set => type = value;
+        }
 
         /// <summary>
         /// Gets the time at which the interruption was created.
