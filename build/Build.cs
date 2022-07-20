@@ -54,7 +54,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net6.0", BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     // Keep this list in order by most likely to succeed

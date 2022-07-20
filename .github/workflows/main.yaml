@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - 'corebuild'
+    tags-ignore:
+      - '**'
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+env:
+  OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }}
+  OCTOVERSION_Patch: ${{ github.run_number }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Test
+      run: ./build.sh --Target Test
+    - name: Build
+      run: ./build.sh --Target Build
+  test-ubuntu-20:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0-focal
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test Ubuntu 20
+      run: ./build.sh --Target Test
+  test-ubuntu-22:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0-jammy
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test Ubuntu 22
+      run: ./build.sh --Target Test
+    
