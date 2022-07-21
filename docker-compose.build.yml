@@ -1,0 +1,20 @@
+## docker-compose -f docker-compose.build.yml build
+
+version: "3.9"
+services:
+  test-base-ubuntu16:
+    build: "build/containers/test-base/ubuntu16/."
+  test-base-ubuntu18:
+    build: "build/containers/test-base/ubuntu18/."
+  test-base-ubuntu20:
+    build: "build/containers/test-base/ubuntu20/."
+  test-base-debian:
+    build: "build/containers/test-base/debianBuster/."
+  test-base-fedora35:
+    build: "build/containers/test-base/fedora35/."
+  test-base-rhel9:
+    build: "build/containers/test-base/rhel9/."
+  test-base-rocky9:
+    build: "build/containers/test-base/rocky9/."
+  test-base-centos7:
+    build: "build/containers/test-base/centos7/."

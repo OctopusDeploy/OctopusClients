@@ -1,7 +1,7 @@
+## docker-compose -f docker-compose.build.yml run
+
 version: "3.9"
 services:
-  test-base-ubuntu16:
-    build: "build/containers/test-base/ubuntu16/."
   test-ubuntu16:
     build:
       target: test
