@@ -3244,6 +3244,18 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     String TaskId { get; set; }
     String Title { get; set; }
+    Octopus.Client.Model.InterruptionType Type { get; set; }
+  }
+  class InterruptionType
+    IEquatable<InterruptionType>
+  {
+    static Octopus.Client.Model.InterruptionType GuidedFailure
+    static Octopus.Client.Model.InterruptionType ManualIntervention
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.InterruptionType)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
   }
   class InvitationResource
     Octopus.Client.Extensibility.IResource
@@ -8453,6 +8465,14 @@ Octopus.Client.Serialization
   abstract class InheritedClassConverter`2
     JsonConverter
   {
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
+  class InterruptionTypeConverter
+    JsonConverter
+  {
+    .ctor()
     Boolean CanConvert(Type)
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)
