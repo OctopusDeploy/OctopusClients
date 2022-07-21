@@ -41,8 +41,8 @@ RUN chmod 755 /usr/bin/nunit-console && curl -L -o /tmp/NUnit-3.4.1.zip https://
     mkdir -p /opt/NUnit/NUnit-3.4.1 && cd /opt/NUnit/NUnit-3.4.1 && unzip /tmp/NUnit-3.4.1.zip
 
 # Install .NET SDKs
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 3.1 --install-dir /usr/share/dotnet
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 5.0 --install-dir /usr/share/dotnet
+# RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 3.1 --install-dir /usr/share/dotnet
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0 --install-dir /usr/share/dotnet
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
