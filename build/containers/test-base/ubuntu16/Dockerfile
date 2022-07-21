@@ -30,8 +30,7 @@ RUN curl --silent --fail --show-error --location --output packages-microsoft-pro
     rm -f packages-microsoft-prod.deb && \
     apt-get update -y && \
     apt-get install -y \
-        dotnet-sdk-3.1 \
-        dotnet-sdk-5.0 \
+        dotnet-sdk-6.0 \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

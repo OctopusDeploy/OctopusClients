@@ -1,5 +1,11 @@
 version: "3.9"
 services:
-  ubuntu16:
-    build: "./build/containers/ubuntu16"
-    image: "${OCTOPUSCLIENTS_DOCKER_BASENAME}:ubuntu16"
+  test-base-ubuntu16:
+    build: "build/containers/test-base/ubuntu16/."
+  test-ubuntu16:
+    build:
+      target: test
+      args:
+        - CODE_VERSION=ubuntu16
+        - BASE_IMAGE=octopusclients-test
+      context: "./dockerfiles"
