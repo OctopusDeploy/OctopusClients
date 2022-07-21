@@ -1,0 +1,19 @@
+on:
+  # push:
+  #   branches:
+  #     - 'corebuild'
+  #   tags-ignore:
+  #     - '**'
+
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+env:
+  OCTOPUSCLIENTS_DOCKER_BASENAME: docker.packages.octopushq.com/octopusdeploy/tool-containers/octopusclients-test
+
+jobs:
+  build-ubuntu16:
+    runs-on: ubuntu-latest
+    steps:
+    - run: docker compose build ubuntu16

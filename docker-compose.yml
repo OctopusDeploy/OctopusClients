@@ -1,0 +1,5 @@
+version: "3.9"
+services:
+  ubuntu16:
+    build: "./build/containers/ubuntu16"
+    image: "${OCTOPUSCLIENTS_DOCKER_BASENAME}:ubuntu16"
