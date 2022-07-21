@@ -4,18 +4,19 @@ FROM $BASE_IMAGE:$CODE_VERSION AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
-COPY source/Octopus.Client/*.csproj source/Octopus.Client/*.csproj
-COPY source/Octopus.Client.Tests/*.csproj source/Octopus.Client.Tests/*.csproj*.csproj
-RUN dotnet restore source/Octopus.Client.Tests/.
+COPY source/NuGet.Config .
+COPY source/Octopus.Client/*.csproj Octopus.Client/
+COPY source/Octopus.Client.Tests/*.csproj Octopus.Client.Tests/
+COPY source/Octopus.Server.Client/*.csproj Octopus.Server.Client/
+RUN dotnet restore Octopus.Client.Tests/.
 
 # copy and build app and libraries
-COPY source/Octopus.Client/ source/Octopus.Client/
-COPY source/Octopus.Client.Tests/ source/Octopus.Client.Tests/
-WORKDIR /source/Octopus.Client.Tests
-RUN dotnet build -c release --no-restore
+COPY source/Octopus.Client Octopus.Client
+COPY source/Octopus.Client.Tests Octopus.Client.Tests
+COPY source/Octopus.Server.Client/ Octopus.Server.Client/
+RUN dotnet build -c release --no-restore Octopus.Client.Tests/.
 
 # target entrypoint with: docker build --target test
 FROM build AS test
-WORKDIR /source/tests
-COPY tests/ .
+WORKDIR /source/Octopus.Client.Tests
 ENTRYPOINT ["dotnet", "test", "--logger:trx"]
