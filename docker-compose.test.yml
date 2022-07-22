@@ -8,4 +8,3 @@ services:
       args:
         - CODE_VERSION=ubuntu16
         - BASE_IMAGE=octopusclients-test
-      context: "./dockerfiles"
