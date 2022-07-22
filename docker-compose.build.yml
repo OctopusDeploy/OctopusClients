@@ -8,7 +8,7 @@ services:
     build: "build/containers/test-base/ubuntu18/."
   test-base-ubuntu20:
     build: "build/containers/test-base/ubuntu20/."
-  test-base-debian:
+  test-base-debian-buster:
     build: "build/containers/test-base/debianBuster/."
   test-base-fedora35:
     build: "build/containers/test-base/fedora35/."
