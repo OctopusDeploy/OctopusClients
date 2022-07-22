@@ -7,7 +7,13 @@ WORKDIR /source
 COPY . .
 RUN dotnet restore ./source
 
-# target entrypoint with: docker build --target test
+# # target entrypoint with: docker build --target test
 FROM build AS test
+
+ARG CODE_VERSION
+ENV CODE_VERSION=${CODE_VERSION}
+
 WORKDIR /source/source/Octopus.Client.Tests
-ENTRYPOINT ["dotnet", "test", "--configuration:Release", "--logger:trx", "--no-restore"]
+
+ENTRYPOINT dotnet test --configuration:Release --logger:"trx;LogFilePrefix=$CODE_VERSION" --no-restore
+
