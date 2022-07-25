@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using System.Collections.Generic;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
@@ -30,6 +31,8 @@ namespace Octopus.Client.Model
         public string DefaultBranch { get; set; }
         [Writeable]
         public string BasePath { get; set; }
+        [Writeable]
+        public List<string> ProtectedBranchNamePatterns { get; set; } = new();
 
         public GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
     }
