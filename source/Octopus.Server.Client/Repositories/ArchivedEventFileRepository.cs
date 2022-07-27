@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
             ThrowIfServerVersionIsNotCompatible();
 
             return Client.List<ArchivedEventFileResource>(
-                Repository.Link("events/archives"),
+                Repository.Link(CollectionLinkName),
                 new
                 {
                     skip,

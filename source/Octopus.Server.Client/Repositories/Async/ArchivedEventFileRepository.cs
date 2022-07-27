@@ -34,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible();
 
             return await Client.List<ArchivedEventFileResource>(
-                await Repository.Link("events/archives").ConfigureAwait(false),
+                await Repository.Link(CollectionLinkName).ConfigureAwait(false),
                 new
                 {
                     skip,
