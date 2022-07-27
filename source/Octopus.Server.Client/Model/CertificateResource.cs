@@ -9,7 +9,7 @@ using Octopus.Client.Extensibility;
 namespace Octopus.Client.Model
 {
     [DebuggerDisplay("Name = {Name}")]
-    public class CertificateResource : Resource, INamedResource, IHaveSpaceResource
+    public class CertificateResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         [JsonConstructor]
         protected CertificateResource()
@@ -36,6 +36,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string Name { get; set; }
+        
+        [Writeable]
+        public string Slug { get; set; }
 
         [Writeable]
         public string Notes { get; set; }
