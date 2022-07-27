@@ -72,6 +72,7 @@ namespace Octopus.Client
             Deployments = new DeploymentRepository(this);
             Environments = new EnvironmentRepository(this);
             Events = new EventRepository(this);
+            ArchivedEventFiles = new ArchivedEventFileRepository(this);
             FeaturesConfiguration = new FeaturesConfigurationRepository(this);
             Feeds = new FeedRepository(this);
             Interruptions = new InterruptionRepository(this);
@@ -139,6 +140,7 @@ namespace Octopus.Client
         public IDeploymentRepository Deployments { get; }
         public IEnvironmentRepository Environments { get; }
         public IEventRepository Events { get; }
+        public IArchivedEventFileRepository ArchivedEventFiles { get; }
         public IFeaturesConfigurationRepository FeaturesConfiguration { get; }
         public IFeedRepository Feeds { get; }
         public IInterruptionRepository Interruptions { get; }

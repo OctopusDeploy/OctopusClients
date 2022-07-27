@@ -5,6 +5,7 @@ namespace Octopus.Client
     public interface IOctopusCommonRepository
     {
         IEventRepository Events { get; }
+        IArchivedEventFileRepository ArchivedEventFiles { get; }
         ITaskRepository Tasks { get; }
         ITeamsRepository Teams { get; }
         IScopedUserRoleRepository ScopedUserRoles { get; }
