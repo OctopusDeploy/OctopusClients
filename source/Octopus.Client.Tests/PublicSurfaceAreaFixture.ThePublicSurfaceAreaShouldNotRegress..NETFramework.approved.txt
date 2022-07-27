@@ -2184,7 +2184,6 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     .ctor(String, String)
@@ -2208,7 +2207,6 @@ Octopus.Client.Model
     Boolean SelfSigned { get; }
     String SerialNumber { get; }
     String SignatureAlgorithmName { get; }
-    String Slug { get; set; }
     String SpaceId { get; set; }
     IList<String> SubjectAlternativeNames { get; set; }
     String SubjectCommonName { get; }
