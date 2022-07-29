@@ -4594,6 +4594,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -4608,6 +4609,7 @@ Octopus.Client.Model
     String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
     Octopus.Client.Model.RunbookRetentionPeriod RunRetentionPolicy { get; set; }
+    String Slug { get; set; }
     String SpaceId { get; set; }
   }
   class RunbookRetentionPeriod
