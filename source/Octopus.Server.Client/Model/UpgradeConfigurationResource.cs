@@ -9,9 +9,5 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool AllowChecking { get; set; }
-
-        [Writeable]
-        public bool IncludeStatistics { get; set; }
-
     }
 }
