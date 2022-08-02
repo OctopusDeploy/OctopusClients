@@ -15,5 +15,7 @@ namespace Octopus.Client.Model
         [Obsolete("Replaced by " + nameof(TelemetryConfigurationResource) + "." + nameof(TelemetryConfigurationResource.Enabled))]
         public bool IncludeStatistics { get; set; }
 
+        [Writeable]
+        public int ParallelMachineProcessingLimit { get; set; }
     }
 }
