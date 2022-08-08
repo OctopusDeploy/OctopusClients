@@ -262,6 +262,14 @@ namespace Octopus.Client.Model
         
         [Description("View/list archived event files")] public static readonly Permission EventRetentionView = new Permission("EventRetentionView");
 
+        [Description("View Insights workspaces")] public static readonly Permission InsightsWorkspaceView = new ("InsightsWorkspaceView");
+
+        [Description("Create Insights workspaces")] public static readonly Permission InsightsWorkspaceCreate = new("InsightsWorkspaceCreate");
+
+        [Description("Edit Insights workspaces")] public static readonly Permission InsightsWorkspaceEdit = new("InsightsWorkspaceEdit");
+
+        [Description("Delete Insights workspaces")] public static readonly Permission InsightsWorkspaceDelete = new("InsightsWorkspaceDelete");
+
         public Permission(string id)
         {
             Id = id;
