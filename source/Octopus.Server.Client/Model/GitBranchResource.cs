@@ -15,8 +15,11 @@ namespace Octopus.Client.Model
     }
     public class GitBranchResource : ValidatedGitReferenceResource
     {
-        public GitBranchResource(string canonicalName) : base(canonicalName)
+        public bool IsProtected { get; }
+    
+        public GitBranchResource(string canonicalName, bool isProtected = false) : base(canonicalName)
         {
+            IsProtected = isProtected;
         }
     }
     
