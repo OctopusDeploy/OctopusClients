@@ -7,7 +7,6 @@ on:
     branches:
       - master
       - release/*
-      - corebuild
     tags-ignore:
       - '**'
     
@@ -373,22 +372,22 @@ jobs:
         uses: OctopusDeploy/install-octopus-cli-action@v1
         with:
           version: latest   
-      # - name: Push to Octopus 🐙
-      #   uses: OctopusDeploy/push-package-action@v1
-      #   with:
-      #     server: ${{ secrets.DEPLOY_URL }}
-      #     space: Integrations
-      #     api_key: ${{ secrets.DEPLOY_API_KEY }}
-      #     packages: |
-      #       ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
-      #       ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
-      # - name: Create Release in Octopus 🐙
-      #   uses: OctopusDeploy/create-release-action@v1.1.1
-      #   with:
-      #     server: ${{ secrets.DEPLOY_URL }}
-      #     space: Integrations
-      #     api_key: ${{ secrets.DEPLOY_API_KEY }}
-      #     project: "Octopus.Client"
-      #     packages: |
-      #       Octopus.Client:${{ steps.build.outputs.octoversion_fullsemver }}
-      #       Octopus.Server.Client.${{ steps.build.outputs.octoversion_fullsemver }}.nupkg
+      - name: Push to Octopus 🐙
+        uses: OctopusDeploy/push-package-action@v1
+        with:
+          server: ${{ secrets.DEPLOY_URL }}
+          space: Integrations
+          api_key: ${{ secrets.DEPLOY_API_KEY }}
+          packages: |
+            ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+            ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+      - name: Create Release in Octopus 🐙
+        uses: OctopusDeploy/create-release-action@v1.1.1
+        with:
+          server: ${{ secrets.DEPLOY_URL }}
+          space: Integrations
+          api_key: ${{ secrets.DEPLOY_API_KEY }}
+          project: "Octopus.Client"
+          packages: |
+            Octopus.Client:${{ steps.build.outputs.octoversion_fullsemver }}
+            Octopus.Server.Client.${{ steps.build.outputs.octoversion_fullsemver }}.nupkg
