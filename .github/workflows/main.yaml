@@ -1,0 +1,394 @@
+name: "Build Octopus Clients"
+
+# Controls when the action will run.
+on:
+  push:
+    # Triggers the workflow on pull request events and merges/pushes to master
+    branches:
+      - master
+      - release/*
+      - corebuild
+    tags-ignore:
+      - '**'
+    
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+   # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+jobs:
+  build:
+    name: Build Octopus Clients
+    runs-on: windows-latest
+    outputs:
+      octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # all
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Nuke Build 🏗
+        id: build
+        shell: bash
+        # Pass branch and patch number to Nuke OctoVersion
+        # (for pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch)
+        env:
+          OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }}
+          OCTOVERSION_Patch: ${{ github.run_number }}
+        run: ./build.cmd
+      - name: Windows .Net 4.62 unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows.Net 4.62 unit test results
+          path: ./TestResults/Win_net462_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Windows .Net 6.0 unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows .Net 6.0 unit test results
+          path: ./TestResults/Win_net6.0_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Windows .Net 4.62 E2E test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows .Net 4.62 E2E test results
+          path: ./TestResults/Win-E2E_net462_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Windows .Net 6.0 E2E test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows .Net 6.0 E2E test results
+          path: ./TestResults/Win-E2E_net6.0_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: OctoClientsNuget
+          path: ./artifacts/*.nupkg
+      - name: Tag release (when not pre-release) 🏷️
+        id: github-tag
+        if: ${{ !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
+              sha: context.sha
+            })
+            
+  test-ubuntu-16:
+    name: Unit test on Ubuntu 16
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu16
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu16
+    - name: Ubuntu 16 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Ubuntu 16 unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+  
+  test-ubuntu-18:
+    name: Unit test on Ubuntu 18
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu18
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu18
+    - name: Ubuntu 18 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Ubuntu 18 unit test results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-ubuntu-20:
+    name: Unit test on Ubuntu 20
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu20
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu20
+    - name: Ubuntu 20 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Ubuntu 20 unit test results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-debian-buster:
+    name: Unit Test on Debian Buster
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-debian-buster
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-debian-buster
+    - name: Debian Buster unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Debian Buster test results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+    
+  test-fedora-35:
+    name: Unit test on Fedora 35
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-fedora35
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-fedora35
+    - name: Fedora 35 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Fedora 35 unit test results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+  
+  test-centos-7:
+    name: Unit test on Centos 7
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-centos7
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-centos7
+    - name: Centos 7 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Centos 7 unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-rhel-9:
+    name: Unit test on RHEL 9
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-rhel9
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-rhel9
+    - name: RHEL 9 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: RHEL 9 unit test results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-rocky-9:
+    name: Unit test on Rocky 9
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-rocky9
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-rocky9
+    - name: Rocky 9 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Rocky 9 unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-amazon-2:
+    name: Unit test on Amazon Linx 2
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-amazon2
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-amazon2
+    - name: Amazon 2 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Amazon 2 unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-opensuse-leap-15:
+    name: Unit test on OpenSuse Leap 15
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-leap15
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-opensuse-leap15
+    - name: OpenSuse Leap 15 unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: OpenSuse Leap 15 unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-opensuse-tumbleweed:
+    name: Unit test on OpenSuse Tumbleweed
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-tumbleweed
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-opensuse-tumbleweed
+    - name: OpenSuse Tumbleweed unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: OpenSuse Tumbleweed unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
+
+  test-macos:
+    name: Unit test on MAC OS
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Run unit tests 🏗
+        id: test-mac
+        shell: bash
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults 
+      - name: Mac OS unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Mac OS unit test results
+          path: ./TestResults/*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+
+  deplopy_nuget:
+    name: Upload nuget packages to Octopus Deploy
+    runs-on: ubuntu-latest
+    needs: [
+      build, 
+      test-rocky-9, 
+      test-rhel-9, 
+      test-centos-7, 
+      test-fedora-35, 
+      test-debian-buster, 
+      test-ubuntu-16, 
+      test-ubuntu-18, 
+      test-ubuntu-20, 
+      test-macos,
+      test-opensuse-tumbleweed,
+      test-opensuse-leap-15,
+      test-amazon-2 ]
+    steps:
+      - name: Download nuget package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: OctoClientsNuget
+          path: ./artifacts/
+      - name: Install Octopus CLI 🐙
+        uses: OctopusDeploy/install-octopus-cli-action@v1
+        with:
+          version: latest   
+      # - name: Push to Octopus 🐙
+      #   uses: OctopusDeploy/push-package-action@v1
+      #   with:
+      #     server: ${{ secrets.DEPLOY_URL }}
+      #     space: Integrations
+      #     api_key: ${{ secrets.DEPLOY_API_KEY }}
+      #     packages: |
+      #       ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+      #       ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+      # - name: Create Release in Octopus 🐙
+      #   uses: OctopusDeploy/create-release-action@v1.1.1
+      #   with:
+      #     server: ${{ secrets.DEPLOY_URL }}
+      #     space: Integrations
+      #     api_key: ${{ secrets.DEPLOY_API_KEY }}
+      #     project: "Octopus.Client"
+      #     packages: |
+      #       Octopus.Client:${{ steps.build.outputs.octoversion_fullsemver }}
+      #       Octopus.Server.Client.${{ steps.build.outputs.octoversion_fullsemver }}.nupkg

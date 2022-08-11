@@ -54,7 +54,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net6.0", BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     // Keep this list in order by most likely to succeed
@@ -170,7 +170,9 @@ class Build : NukeBuild
             DotNetTest(_ => _
                 .SetProjectFile(testProjectFile)
                 .SetConfiguration(Configuration)
-                .EnableNoBuild());
+                .EnableNoBuild()
+                .SetLoggers("trx;LogFilePrefix=Win")
+                .SetResultsDirectory("./TestResults/"));
         });
     });
 
@@ -229,7 +231,9 @@ class Build : NukeBuild
         DotNetTest(_ => _
             .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
             .SetConfiguration(Configuration)
-            .EnableNoBuild());
+            .EnableNoBuild()
+            .SetLoggers("trx;LogFilePrefix=Win-E2E")
+            .SetResultsDirectory("./TestResults/"));
     });
 
     [PublicAPI]
