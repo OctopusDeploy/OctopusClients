@@ -327,7 +327,7 @@ jobs:
         fail-on-error: true
 
   test-macos:
-    name: Unit test on MAC OS
+    name: Unit test on Mac OS
     needs: build
     runs-on: macos-latest
     steps:
@@ -335,7 +335,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: Core 3.1.x
+          dotnet-version: 5.0.x
       - name: Run unit tests 🏗
         id: test-mac
         shell: bash

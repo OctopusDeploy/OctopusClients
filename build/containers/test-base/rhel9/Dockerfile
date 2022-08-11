@@ -9,6 +9,7 @@ ENV PATH=/usr/share/dotnet:${PATH}
 RUN dnf install \
         findutils \
         libicu \
+        compat-openssl11 \
     -y
 
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 5.0 --install-dir /usr/share/dotnet
