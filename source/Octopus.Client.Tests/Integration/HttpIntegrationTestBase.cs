@@ -57,12 +57,8 @@ namespace Octopus.Client.Tests.Integration
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel(o =>
                     {
-#if NET452
-                        o.UseHttps(GetCert());
-#else
                         o.Listen(IPAddress.Any, HostPort);
                         o.Listen(IPAddress.Any, HostSslPort, c => c.UseHttps(GetCert()));
-#endif
                     }
                 )
                 .UseStartup<Startup>()

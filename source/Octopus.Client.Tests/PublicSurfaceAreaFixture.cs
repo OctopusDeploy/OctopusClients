@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Assent;
 using Assent.Namers;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
@@ -25,7 +26,7 @@ namespace Octopus.Client.Tests
                 .SelectMany(g => FormatNamespace(g.Key, g))
                 .ToArray();
 
-            var framework = string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
+            var framework = FormatDotNetVersion(RuntimeInformation.FrameworkDescription);
             try
             {
                 var received = string.Join("\r\n", lines);
@@ -43,6 +44,14 @@ namespace Octopus.Client.Tests
                 }
                 throw;
             }
+        }
+
+        string FormatDotNetVersion(string frameworkDescription)
+        {
+            if (Regex.IsMatch(frameworkDescription, @"\.NET \d{1,2}\.\d{1,3}\.\d{1,3}"))
+                return ".NETCore";
+            else
+                return string.Concat(RuntimeInformation.FrameworkDescription.Split(' ').Take(2));
         }
 
         IEnumerable<object> FormatNamespace(string name, IEnumerable<TypeInfo> types)

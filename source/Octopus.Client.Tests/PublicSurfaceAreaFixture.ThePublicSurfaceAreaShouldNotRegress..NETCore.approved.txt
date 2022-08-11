@@ -4320,6 +4320,7 @@ Octopus.Client.Model
     IEnumerable
     ISet<String>
     IReadOnlyCollection<String>
+    IReadOnlySet<String>
     ISerializable
     IDeserializationCallback
     HashSet<String>
@@ -4801,6 +4802,7 @@ Octopus.Client.Model
     IEnumerable
     ISet<String>
     IReadOnlyCollection<String>
+    IReadOnlySet<String>
     ISerializable
     IDeserializationCallback
     Octopus.Client.Model.ReferenceCollection
