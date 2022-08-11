@@ -1,0 +1,105 @@
+# docker-compose -f docker-compose.build.yml up
+
+version: "3.9"
+
+services:
+  test-ubuntu16:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=ubuntu16
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-ubuntu18:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=ubuntu18
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-ubuntu20:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=ubuntu20
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-debian-buster:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=debianbuster
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-centos7:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=centos7
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-fedora35:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=fedora35
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-rhel9:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=rhel9
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-rocky9:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=rocky9
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-opensuse-leap15:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=opensuseleap15
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-opensuse-tumbleweed:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=opensusetumbleweed
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+  test-amazon2:
+    build:
+      context: ./
+      target: test
+      args:
+        - CODE_VERSION=amazon2
+        - BASE_IMAGE=octopusclients_test-base
+    volumes:
+      - ${LOCAL_TEST_DIR}:/source/source/Octopus.Client.Tests/TestResults
+    
