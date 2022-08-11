@@ -1,0 +1,37 @@
+## docker-compose -f docker-compose.build.yml build
+
+version: "3.9"
+services:
+  test-base-ubuntu16:
+    image: octopusclients_test-base:ubuntu16
+    build: "build/containers/test-base/ubuntu16/."
+  test-base-ubuntu18:
+    image: octopusclients_test-base:ubuntu18
+    build: "build/containers/test-base/ubuntu18/."
+  test-base-ubuntu20:
+    image: octopusclients_test-base:ubuntu20
+    build: "build/containers/test-base/ubuntu20/."
+  test-base-debian-buster:
+    image: octopusclients_test-base:debianbuster
+    build: "build/containers/test-base/debianBuster/."
+  test-base-fedora35:
+    image: octopusclients_test-base:fedora35
+    build: "build/containers/test-base/fedora35/."
+  test-base-rhel9:
+    image: octopusclients_test-base:rhel9
+    build: "build/containers/test-base/rhel9/."
+  test-base-rocky9:
+    image: octopusclients_test-base:rocky9
+    build: "build/containers/test-base/rocky9/."
+  test-base-centos7:
+    image: octopusclients_test-base:centos7
+    build: "build/containers/test-base/centos7/."
+  test-base-opensuse-leap15:
+    image: octopusclients_test-base:opensuseleap15
+    build: "build/containers/test-base/openSuseLeap15/."
+  test-base-opensuse-tumbleweed:
+    image: octopusclients_test-base:opensusetumbleweed
+    build: "build/containers/test-base/openSuseTumbleweed/."
+  test-base-amazon2:
+    image: octopusclients_test-base:amazon2
+    build: "build/containers/test-base/amazon2/."
