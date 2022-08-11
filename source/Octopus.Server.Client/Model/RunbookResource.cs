@@ -4,11 +4,15 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class RunbookResource : Resource, INamedResource, IHaveSpaceResource
+    public class RunbookResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         [Writeable]
         [Trim]
         public string Name { get; set; }
+        
+        [Writeable]
+        [Trim]
+        public string Slug { get; set; }
 
         [Writeable]
         [Trim]

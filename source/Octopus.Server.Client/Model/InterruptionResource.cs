@@ -11,11 +11,28 @@ namespace Octopus.Client.Model
     /// </summary>
     public class InterruptionResource : Resource, IHaveSpaceResource
     {
+        private InterruptionType type;
+
         /// <summary>
         /// Gets or sets a title for this interruption.
         /// </summary>
         [JsonProperty(Order = 2)]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of interruption. See InterruptionTypes for known values.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        public InterruptionType Type
+        {
+            get => type
+                   ?? (
+                       (Title ?? "").EndsWith(" requires failure guidance")
+                           ? InterruptionType.GuidedFailure
+                           : InterruptionType.ManualIntervention
+                   );
+            set => type = value;
+        }
 
         /// <summary>
         /// Gets the time at which the interruption was created.

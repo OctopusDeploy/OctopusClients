@@ -3097,6 +3097,7 @@ Octopus.Client.Model
     Octopus.Client.Model.GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
     Octopus.Client.Model.ProjectGitCredentialResource Credentials { get; set; }
     String DefaultBranch { get; set; }
+    List<String> ProtectedBranchNamePatterns { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
   }
@@ -3243,6 +3244,18 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     String TaskId { get; set; }
     String Title { get; set; }
+    Octopus.Client.Model.InterruptionType Type { get; set; }
+  }
+  class InterruptionType
+    IEquatable<InterruptionType>
+  {
+    static Octopus.Client.Model.InterruptionType GuidedFailure
+    static Octopus.Client.Model.InterruptionType ManualIntervention
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.InterruptionType)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
   }
   class InvitationResource
     Octopus.Client.Extensibility.IResource
@@ -4583,6 +4596,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -4597,6 +4611,7 @@ Octopus.Client.Model
     String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
     Octopus.Client.Model.RunbookRetentionPeriod RunRetentionPolicy { get; set; }
+    String Slug { get; set; }
     String SpaceId { get; set; }
   }
   class RunbookRetentionPeriod
@@ -8453,6 +8468,14 @@ Octopus.Client.Serialization
   abstract class InheritedClassConverter`2
     JsonConverter
   {
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
+  }
+  class InterruptionTypeConverter
+    JsonConverter
+  {
+    .ctor()
     Boolean CanConvert(Type)
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)

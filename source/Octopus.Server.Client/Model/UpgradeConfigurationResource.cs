@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using System;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
@@ -11,6 +12,7 @@ namespace Octopus.Client.Model
         public bool AllowChecking { get; set; }
 
         [Writeable]
+        [Obsolete("Replaced by " + nameof(TelemetryConfigurationResource) + "." + nameof(TelemetryConfigurationResource.Enabled))]
         public bool IncludeStatistics { get; set; }
 
     }
