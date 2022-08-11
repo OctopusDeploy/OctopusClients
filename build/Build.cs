@@ -170,7 +170,9 @@ class Build : NukeBuild
             DotNetTest(_ => _
                 .SetProjectFile(testProjectFile)
                 .SetConfiguration(Configuration)
-                .EnableNoBuild());
+                .EnableNoBuild()
+                .SetLoggers("trx;LogFilePrefix=Win")
+                .SetResultsDirectory("./TestResults/"));
         });
     });
 
@@ -229,7 +231,9 @@ class Build : NukeBuild
         DotNetTest(_ => _
             .SetProjectFile(SourceDir / "Octopus.Client.E2ETests" / "Octopus.Client.E2ETests.csproj")
             .SetConfiguration(Configuration)
-            .EnableNoBuild());
+            .EnableNoBuild()
+            .SetLoggers("trx;LogFilePrefix=Win-E2E")
+            .SetResultsDirectory("./TestResults/"));
     });
 
     [PublicAPI]
