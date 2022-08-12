@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nancy;
@@ -29,8 +30,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             catch (Exception ex)
             {
                 var e = ex.InnerException?.InnerException;
-                e.GetType().Name.Should().Be("AuthenticationException");
-                e.Message.Should().Be("The remote certificate was rejected by the provided RemoteCertificateValidationCallback.");
+                e.Should().NotBeNull();
+                e!.GetType().Should().Be(typeof(AuthenticationException));
             }
             OctopusAsyncRepository.SecondsToWaitForServerToStart = 60;
         }
