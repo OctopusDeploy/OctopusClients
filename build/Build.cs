@@ -13,6 +13,8 @@ using Nuke.Common.Tools.OctoVersion;
 using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
+using static tools.DockerCompose;
+using static tools.FileSystem;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -223,6 +225,22 @@ class Build : NukeBuild
             .SetVerbosity(DotNetVerbosity.Normal));
     });
 
+
+    Target LocalTest => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            EnsureCleanDirectory(RootDirectory / "TestResults");
+            
+            DockerComposeBuild(RootDirectory / "docker-compose.build.yml", "--no-cache");
+            DockerComposeUp(RootDirectory / "docker-compose.test.yml");
+            DockerComposeDown(RootDirectory / "docker-compose.test.yml");
+
+            var unitTestResultFiles = GetFiles(RootDirectory / "TestResults", "*.trx");
+
+            Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
+        });
+
     Target TestClientNugetPackage => _ => _
         .DependsOn(PackMergedClientNuget)
         .Executes(() =>
@@ -292,7 +310,7 @@ class Build : NukeBuild
 
         Log.Information($"Finished signing {files.Length} files.");
     }
-
+    
     void SignWithAzureSignTool(AbsolutePath[] files, string timestampUrl)
     {
         Log.Information("Signing files using azuresigntool and the production code signing certificate.");
