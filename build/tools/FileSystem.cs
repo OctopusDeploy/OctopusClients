@@ -8,12 +8,6 @@ namespace Tools
     {
         public static string[] GetFiles(AbsolutePath path, string filter)
         {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path!);
-                return Array.Empty<string>();
-            }
-
             return Directory.GetFiles(path, filter);
         }
     }
