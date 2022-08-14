@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Nuke.Common.IO;
 
-namespace tools
+namespace Tools
 {
     public static class FileSystem
     {

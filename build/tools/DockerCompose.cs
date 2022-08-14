@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Serilog;
-using Serilog.Core;
 
-namespace tools
+namespace Tools
 {
     public static class DockerCompose
     {
