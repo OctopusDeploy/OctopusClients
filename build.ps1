@@ -4,7 +4,7 @@ Param(
     [string[]]$BuildArguments
 )
 
-$env:LOCAL_TEST_RESULTS = "$(Get-Location)\TestsResults"
+$env:LOCAL_TEST_DIR = "$(Get-Location)\TestsResults"
 Write-Output "PowerShell $($PSVersionTable.PSEdition) version $($PSVersionTable.PSVersion)"
 
 Set-StrictMode -Version 2.0; $ErrorActionPreference = "Stop"; $ConfirmPreference = "None"; trap { Write-Error $_ -ErrorAction Continue; exit 1 }
