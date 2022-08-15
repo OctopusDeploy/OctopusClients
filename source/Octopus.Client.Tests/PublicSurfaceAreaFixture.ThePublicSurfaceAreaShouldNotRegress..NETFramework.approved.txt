@@ -5455,8 +5455,8 @@ Octopus.Client.Model
     .ctor()
     Boolean AllowChecking { get; set; }
     Boolean IncludeStatistics { get; set; }
+    Int32 MachineTaskProcessingLimit { get; set; }
     Octopus.Client.Model.UpgradeNotificationMode NotificationMode { get; set; }
-    Int32 ParallelMachineProcessingLimit { get; set; }
   }
   UpgradeNotificationMode
   {

@@ -16,6 +16,6 @@ namespace Octopus.Client.Model
         public bool IncludeStatistics { get; set; }
 
         [Writeable]
-        public int ParallelMachineProcessingLimit { get; set; }
+        public int MachineTaskProcessingLimit { get; set; }
     }
 }
