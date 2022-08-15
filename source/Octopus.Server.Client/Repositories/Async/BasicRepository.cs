@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
@@ -113,10 +114,15 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<TResource> Modify(TResource resource)
         {
-            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            return await Modify(resource, CancellationToken.None);
+        }
 
+        public virtual async Task<TResource> Modify(TResource resource, CancellationToken cancellationToken)
+        {
+            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
-            return await Client.Update(resource.Links["Self"], resource).ConfigureAwait(false);
+            return await Client.Update(resource.Links["Self"], resource, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task Delete(TResource resource)

@@ -260,20 +260,18 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public event Action<OctopusResponse> ReceivedOctopusResponse;
 
-        /// <summary>
-        /// Fetches a single resource from the server using the HTTP GET verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resource.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The resource from the server.
-        /// </returns>
+        /// <inheritdoc/>
         public async Task<TResource> Get<TResource>(string path, object pathParameters = null)
+        {
+            return await Get<TResource>(path, CancellationToken.None, pathParameters);
+        }
+        
+        /// <inheritdoc/>        
+        public async Task<TResource> Get<TResource>(string path, CancellationToken cancellationToken, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
             return response.ResponseResource;
         }
 
@@ -350,25 +348,21 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return Paginate(path, null, getNextPage);
         }
 
-        /// <summary>
-        /// Creates a resource at the given URI on the server using the POST verb, then performs a fresh GET request to fetch
-        /// the created item.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The latest copy of the resource from the server.
-        /// </returns>
+        /// <inheritdoc/>
         public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            return await Create(path, resource, CancellationToken.None, pathParameters);
+        }
+
+        /// <inheritdoc/>
+        public async Task<TResource> Create<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
 
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
@@ -482,25 +476,21 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
         }
 
-        /// <summary>
-        /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
-        /// the data.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the resource to update.</param>
-        /// <param name="resource">The resource to update.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The latest copy of the resource from the server.
-        /// </returns>
+        /// <inheritdoc/>
         public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            return await Update(path, resource, CancellationToken.None, pathParameters);
+        }
+
+        /// <inheritdoc/>
+        public async Task<TResource> Update<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true).ConfigureAwait(false);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
 
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
