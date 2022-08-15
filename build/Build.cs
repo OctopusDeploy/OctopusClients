@@ -14,7 +14,6 @@ using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
 using static Tools.DockerCompose;
-using static Tools.FileSystem;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -236,7 +235,7 @@ class Build : NukeBuild
             DockerComposeUp(RootDirectory / "docker-compose.test.yml");
             DockerComposeDown(RootDirectory / "docker-compose.test.yml");
 
-            var unitTestResultFiles = GetFiles(RootDirectory / "TestResults", "*.trx");
+            var unitTestResultFiles =  Directory.GetFiles(RootDirectory / "TestResults", "*.trx"); 
 
             Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
         });
