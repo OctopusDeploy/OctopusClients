@@ -13,6 +13,7 @@ using Nuke.Common.Tools.OctoVersion;
 using Nuke.Common.Tools.SignTool;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
+using static Tools.DockerCompose;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
@@ -54,7 +55,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net6.0", BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     // Keep this list in order by most likely to succeed
@@ -103,7 +104,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(async () =>
         {
-            foreach (var target in new[] {"net452", "netstandard2.0"})
+            foreach (var target in new[] {"net462", "netstandard2.0"})
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
@@ -223,6 +224,22 @@ class Build : NukeBuild
             .SetVerbosity(DotNetVerbosity.Normal));
     });
 
+
+    Target LocalTest => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            EnsureCleanDirectory(RootDirectory / "TestResults");
+            
+            DockerComposeBuild(RootDirectory / "docker-compose.build.yml", "--no-cache");
+            DockerComposeUp(RootDirectory / "docker-compose.test.yml");
+            DockerComposeDown(RootDirectory / "docker-compose.test.yml");
+
+            var unitTestResultFiles =  Directory.GetFiles(RootDirectory / "TestResults", "*.trx"); 
+
+            Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
+        });
+
     Target TestClientNugetPackage => _ => _
         .DependsOn(PackMergedClientNuget)
         .Executes(() =>
@@ -292,7 +309,7 @@ class Build : NukeBuild
 
         Log.Information($"Finished signing {files.Length} files.");
     }
-
+    
     void SignWithAzureSignTool(AbsolutePath[] files, string timestampUrl)
     {
         Log.Information("Signing files using azuresigntool and the production code signing certificate.");

@@ -26,14 +26,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # all
-      - name: Setup .NET 5.0
+      - name: Setup .NET 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
-      - name: Setup .NET Core 3.1   
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1.x
+          dotnet-version: 6.0.x
       - name: Nuke Build 🏗
         id: build
         shell: bash
@@ -43,36 +39,36 @@ jobs:
           OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }}
           OCTOVERSION_Patch: ${{ github.run_number }}
         run: ./build.cmd
-      - name: Windows .Net 4.52 unit test report
+      - name: Windows .Net 4.62 unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows.Net 4.52 unit test results
-          path: ./TestResults/Win_net452_*.trx
+          name: Windows.Net 4.62 unit test results
+          path: ./TestResults/Win_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net Core 3.1 unit test report
+      - name: Windows .Net 6.0 unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net Core 3.1 unit test results
-          path: ./TestResults/Win_netcoreapp3.1_*.trx
+          name: Windows .Net 6.0 unit test results
+          path: ./TestResults/Win_net6.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 4.52 E2E test report
+      - name: Windows .Net 4.62 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net 4.52 E2E test results
-          path: ./TestResults/Win-E2E_net452_*.trx
+          name: Windows .Net 4.62 E2E test results
+          path: ./TestResults/Win-E2E_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net Core 3.1 E2E test report
+      - name: Windows .Net 6.0 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net Core 3.1 E2E test results
-          path: ./TestResults/Win-E2E_netcoreapp3.1_*.trx
+          name: Windows .Net 6.0 E2E test results
+          path: ./TestResults/Win-E2E_net6.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
       - name: Upload NuGet package artifact
@@ -304,28 +300,27 @@ jobs:
         path: results/*.trx
         reporter: dotnet-trx
         fail-on-error: true
-
-  #TODO Get this working with .net 6  
-  # test-opensuse-tumbleweed:
-  #   name: Unit test on OpenSuse Tumbleweed
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     LOCAL_TEST_DIR: ./results/
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Build testing docker image
-  #     run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-tumbleweed
-  #   - name: Run unit tests in docker
-  #     run: docker-compose -f ./docker-compose.test.yml up test-opensuse-tumbleweed
-  #   - name: OpenSuse Tumbleweed unit test report
-  #     uses: dorny/test-reporter@v1
-  #     if: success() || failure()    # run this step even if previous step failed
-  #     with:
-  #       name: OpenSuse Tumbleweed unit tests results
-  #       path: results/*.trx
-  #       reporter: dotnet-trx
-  #       fail-on-error: true
+ 
+  test-opensuse-tumbleweed:
+    name: Unit test on OpenSuse Tumbleweed
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      LOCAL_TEST_DIR: ./results/
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build testing docker image
+      run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-tumbleweed
+    - name: Run unit tests in docker
+      run: docker-compose -f ./docker-compose.test.yml up test-opensuse-tumbleweed
+    - name: OpenSuse Tumbleweed unit test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: OpenSuse Tumbleweed unit tests results
+        path: results/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
 
   test-macos:
     name: Unit test on Mac OS
@@ -365,6 +360,7 @@ jobs:
       test-ubuntu-20, 
       test-macos,
       test-opensuse-leap-15,
+      test-opensuse-tumbleweed,
       test-amazon-2 ]
     steps:
       - name: Download nuget package artifact
