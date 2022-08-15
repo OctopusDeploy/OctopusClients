@@ -31,11 +31,13 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken, Object)
     Task Delete(String, Object, Object)
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, CancellationToken, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
@@ -53,6 +55,7 @@ Octopus.Client
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken, Object)
   }
   interface IOctopusAsyncRepository
     Octopus.Client.IOctopusSpaceAsyncRepository
@@ -277,12 +280,14 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken, Object)
     Task Delete(String, Object, Object)
     void Dispose()
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, CancellationToken, Object)
     Task<Stream> GetContent(String, Object)
     Task<ResourceCollection<TResource>> List(String, Object)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
@@ -300,6 +305,7 @@ Octopus.Client
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignOut()
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken, Object)
   }
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
@@ -8070,6 +8076,7 @@ Octopus.Client.Repositories.Async
   interface IModify`1
   {
     Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
+    Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource, CancellationToken)
   }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.Async.IModify<OctopusServerNodeResource>
