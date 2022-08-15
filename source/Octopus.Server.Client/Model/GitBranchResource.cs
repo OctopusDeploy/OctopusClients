@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility;
+﻿using Newtonsoft.Json;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model
 {
@@ -17,6 +18,7 @@ namespace Octopus.Client.Model
     {
         public bool IsProtected { get; }
     
+        [JsonConstructor]
         public GitBranchResource(string canonicalName, bool isProtected) : base(canonicalName)
         {
             IsProtected = isProtected;
