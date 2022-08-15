@@ -17,9 +17,13 @@ namespace Octopus.Client.Model
     {
         public bool IsProtected { get; }
     
-        public GitBranchResource(string canonicalName, bool isProtected = false) : base(canonicalName)
+        public GitBranchResource(string canonicalName, bool isProtected) : base(canonicalName)
         {
             IsProtected = isProtected;
+        }
+    
+        public GitBranchResource(string canonicalName) : this(canonicalName, false)
+        {
         }
     }
     
