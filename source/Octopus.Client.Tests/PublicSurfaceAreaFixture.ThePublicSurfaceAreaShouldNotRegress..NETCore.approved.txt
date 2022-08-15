@@ -3043,6 +3043,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String, Boolean)
+    .ctor(String)
     Boolean IsProtected { get; }
   }
   class GitCommitResource
