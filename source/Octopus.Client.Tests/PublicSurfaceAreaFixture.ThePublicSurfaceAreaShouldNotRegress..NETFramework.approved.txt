@@ -4006,10 +4006,10 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission FeedView
     static Octopus.Client.Model.Permission GitCredentialEdit
     static Octopus.Client.Model.Permission GitCredentialView
-    static Octopus.Client.Model.Permission InsightsWorkspaceCreate
-    static Octopus.Client.Model.Permission InsightsWorkspaceDelete
-    static Octopus.Client.Model.Permission InsightsWorkspaceEdit
-    static Octopus.Client.Model.Permission InsightsWorkspaceView
+    static Octopus.Client.Model.Permission InsightsReportCreate
+    static Octopus.Client.Model.Permission InsightsReportDelete
+    static Octopus.Client.Model.Permission InsightsReportEdit
+    static Octopus.Client.Model.Permission InsightsReportView
     static Octopus.Client.Model.Permission InterruptionSubmit
     static Octopus.Client.Model.Permission InterruptionView
     static Octopus.Client.Model.Permission InterruptionViewSubmitResponsible
