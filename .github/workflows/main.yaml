@@ -382,7 +382,7 @@ jobs:
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
       - name: Create Release in Octopus 🐙
-        uses: OctopusDeploy/create-release-action@v1.1.1
+        uses: OctopusDeploy/create-release-action@v1
         with:
           server: ${{ secrets.DEPLOY_URL }}
           space: Core Platform
