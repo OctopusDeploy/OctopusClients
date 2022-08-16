@@ -163,6 +163,14 @@ namespace Octopus.Client.Model
         [JsonProperty(Order = 34)]
         public bool HasWarningsOrErrors { get; set; }
 
+        /// <summary>
+        /// Contains a list of all Preconditions which must be
+        /// satisfied prior to this task executing. An empty list
+        /// implies the task is able to run at its scheduled time
+        /// </summary>
+        [JsonProperty(Order = 35)]
+        public List<PreconditionStatus> UnmetPreconditions { get; set; }
+        
         public string SpaceId { get; set; }
     }
 }
