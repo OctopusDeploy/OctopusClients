@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
     {
         public ArchivedEventFileRepository(IOctopusRepository repository) : base(repository, "ArchivedEventFiles")
         {
-            MinimumCompatibleVersion("2022.3.6072");
+            MinimumCompatibleVersion("2022.3.8575");
         }
 
         public Stream GetContent(ArchivedEventFileResource archiveEventFile)

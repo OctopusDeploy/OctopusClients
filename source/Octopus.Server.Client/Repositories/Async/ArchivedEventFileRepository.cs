@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories.Async
     {
         public ArchivedEventFileRepository(IOctopusAsyncRepository repository) : base(repository, "ArchivedEventFiles")
         {
-            MinimumCompatibleVersion("2022.3.6072");
+            MinimumCompatibleVersion("2022.3.8575");
         }
 
         public async Task<Stream> GetContent(ArchivedEventFileResource archiveEventFile)
