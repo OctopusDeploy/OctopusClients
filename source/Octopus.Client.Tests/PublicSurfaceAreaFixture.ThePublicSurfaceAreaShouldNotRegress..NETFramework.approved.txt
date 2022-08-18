@@ -99,6 +99,7 @@ Octopus.Client
   }
   interface IOctopusCommonAsyncRepository
   {
+    Octopus.Client.Repositories.Async.IArchivedEventFileRepository ArchivedEventFiles { get; }
     Octopus.Client.IOctopusAsyncClient Client { get; }
     Octopus.Client.Repositories.Async.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
@@ -115,6 +116,7 @@ Octopus.Client
   }
   interface IOctopusCommonRepository
   {
+    Octopus.Client.Repositories.IArchivedEventFileRepository ArchivedEventFiles { get; }
     Octopus.Client.IOctopusClient Client { get; }
     Octopus.Client.Repositories.IEventRepository Events { get; }
     Octopus.Client.RepositoryScope Scope { get; }
@@ -308,6 +310,7 @@ Octopus.Client
     .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
+    Octopus.Client.Repositories.Async.IArchivedEventFileRepository ArchivedEventFiles { get; }
     Octopus.Client.Repositories.Async.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.IBuildInformationRepository BuildInformationRepository { get; }
@@ -443,6 +446,7 @@ Octopus.Client
     .ctor(Octopus.Client.IOctopusClient, Octopus.Client.RepositoryScope)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
+    Octopus.Client.Repositories.IArchivedEventFileRepository ArchivedEventFiles { get; }
     Octopus.Client.Repositories.IArtifactRepository Artifacts { get; }
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.IBuildInformationRepository BuildInformationRepository { get; }
@@ -6392,6 +6396,29 @@ Octopus.Client.Model.Endpoints
     String Thumbprint { get; set; }
   }
 }
+Octopus.Client.Model.EventRetention
+{
+  class ArchivedEventFileResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Nullable<DateTimeOffset> CreatedDate { get; set; }
+    Double FileBytes { get; set; }
+    Nullable<DateTimeOffset> ModifiedDate { get; set; }
+    String Name { get; set; }
+  }
+  class EventRetentionConfigurationResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    Int32 EventRetentionDays { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+  }
+}
 Octopus.Client.Model.Forms
 {
   class Button
@@ -7018,6 +7045,12 @@ Octopus.Client.Repositories
     List<ActionTemplateSearchResource> Search()
     void SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
     Octopus.Client.Model.ActionUpdateResultResource[] UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
+  }
+  interface IArchivedEventFileRepository
+    Octopus.Client.Repositories.IDelete<ArchivedEventFileResource>
+  {
+    Stream GetContent(Octopus.Client.Model.EventRetention.ArchivedEventFileResource)
+    Octopus.Client.Model.ResourceCollection<ArchivedEventFileResource> List(Int32, Nullable<Int32>)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
@@ -7728,6 +7761,12 @@ Octopus.Client.Repositories.Async
     Task<List<ActionTemplateSearchResource>> Search()
     Task SetLogo(Octopus.Client.Model.ActionTemplateResource, String, Stream)
     Task<ActionUpdateResultResource[]> UpdateActions(Octopus.Client.Model.ActionTemplateResource, Octopus.Client.Model.ActionsUpdateResource)
+  }
+  interface IArchivedEventFileRepository
+    Octopus.Client.Repositories.Async.IDelete<ArchivedEventFileResource>
+  {
+    Task<Stream> GetContent(Octopus.Client.Model.EventRetention.ArchivedEventFileResource)
+    Task<ResourceCollection<ArchivedEventFileResource>> List(Int32, Nullable<Int32>)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>
