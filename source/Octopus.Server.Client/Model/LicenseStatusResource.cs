@@ -69,7 +69,9 @@ namespace Octopus.Client.Model
     {
         public string Name { get; set; }
         public int EffectiveLimit { get; set; }
+        public int LicensedLimit { get; set; }
         public string EffectiveLimitDescription { get; set; }
+        public string LicenseLimitDescription { get; set; }
         public bool IsUnlimited { get; set; }
         public int CurrentUsage { get; set; }
         public string Message { get; set; }

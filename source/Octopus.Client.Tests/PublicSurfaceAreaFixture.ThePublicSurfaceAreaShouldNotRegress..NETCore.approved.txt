@@ -3387,6 +3387,8 @@ Octopus.Client.Model
     Int32 EffectiveLimit { get; set; }
     String EffectiveLimitDescription { get; set; }
     Boolean IsUnlimited { get; set; }
+    Int32 LicensedLimit { get; set; }
+    String LicenseLimitDescription { get; set; }
     String Message { get; set; }
     String Name { get; set; }
   }
