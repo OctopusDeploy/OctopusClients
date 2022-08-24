@@ -3661,7 +3661,7 @@ Octopus.Client.Model
   class MachineUpgradeOptionsResource
   {
     .ctor()
-    Int32 MachineTaskProcessingLimit { get; set; }
+    Nullable<Int32> MachineTaskProcessingLimit { get; set; }
   }
   class MaintenanceConfigurationResource
     Octopus.Client.Extensibility.IResource
