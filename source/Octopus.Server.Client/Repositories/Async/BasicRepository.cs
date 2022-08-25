@@ -104,12 +104,17 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
+            return await Create(resource, CancellationToken.None);
+        }
+
+        public virtual async Task<TResource> Create(TResource resource,  CancellationToken cancellationToken, object pathParameters = null)
+        {
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
             EnrichSpaceId(resource);
-            return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
+            return await Client.Create(link, resource, cancellationToken, pathParameters).ConfigureAwait(false);
         }
 
         public virtual async Task<TResource> Modify(TResource resource)
