@@ -110,7 +110,7 @@ namespace Octopus.Client.Tests.Operations
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
                 && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
-                && m.EnvironmentIds.First() == "environments-2"))
+                && m.EnvironmentIds.First() == "environments-2"), CancellationToken.None)
                 .ConfigureAwait(false);
         }
 
@@ -178,7 +178,7 @@ namespace Octopus.Client.Tests.Operations
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
                 && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
-                && m.EnvironmentIds.First() == "environments-2")).ConfigureAwait(false);
+                && m.EnvironmentIds.First() == "environments-2"), CancellationToken.None).ConfigureAwait(false);
         }
 
         [Test]

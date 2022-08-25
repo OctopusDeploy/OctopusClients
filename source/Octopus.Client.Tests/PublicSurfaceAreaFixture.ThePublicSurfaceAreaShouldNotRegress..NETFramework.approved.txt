@@ -7881,6 +7881,7 @@ Octopus.Client.Repositories.Async
   interface ICreate`1
   {
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, CancellationToken, Object)
   }
   interface IDashboardConfigurationRepository
   {
