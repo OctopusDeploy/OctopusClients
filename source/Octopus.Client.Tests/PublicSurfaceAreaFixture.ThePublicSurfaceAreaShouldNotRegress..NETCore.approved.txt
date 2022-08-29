@@ -6363,6 +6363,7 @@ Octopus.Client.Model.Endpoints
   class TentacleDetailsResource
   {
     .ctor()
+    Boolean UpgradeAvailable { get; set; }
     Boolean UpgradeLocked { get; set; }
     Boolean UpgradeRequired { get; set; }
     Boolean UpgradeSuggested { get; set; }
