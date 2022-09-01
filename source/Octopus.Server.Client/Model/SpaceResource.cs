@@ -15,6 +15,9 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
 
         [Writeable]
+        public string Slug { get; set; }
+
+        [Writeable]
         public string Description { get; set; }
 
         [Writeable]
