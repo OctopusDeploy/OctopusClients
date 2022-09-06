@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests.Repositories
             var project = TestProject(true, true, VariablesLinkKey, variableLink);
 
             // Act
-            await repository.VariableSets.Beta().Get(project, "branchy");
+            await repository.VariableSets.Get(project, "branchy");
 
             // Assert
             getUrlUsed.Should().Be(variableLink);
@@ -51,7 +51,7 @@ namespace Octopus.Client.Tests.Repositories
             var project = TestProject(true, true, SensitiveVariablesLinkKey, variableLink);
 
             // Act
-            await repository.VariableSets.Beta().Get(project);
+            await repository.VariableSets.Get(project);
 
             // Assert
             getUrlUsed.Should().Be(variableLink);
@@ -66,7 +66,7 @@ namespace Octopus.Client.Tests.Repositories
             var project = TestProject(true, false, VariablesLinkKey, variableLink);
 
             // Act
-            await repository.VariableSets.Beta().Get(project);
+            await repository.VariableSets.Get(project);
 
             // Assert
             getUrlUsed.Should().Be(variableLink);
@@ -81,7 +81,7 @@ namespace Octopus.Client.Tests.Repositories
             var project = TestProject(false, false, VariablesLinkKey, variableLink);
 
             // Act
-            await repository.VariableSets.Beta().Get(project);
+            await repository.VariableSets.Get(project);
 
             // Assert
             getUrlUsed.Should().Be(variableLink);

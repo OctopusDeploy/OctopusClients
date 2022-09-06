@@ -4421,7 +4421,6 @@ Octopus.Client.Model
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
-    Octopus.Client.Model.Git.GitReferenceResource VersionControlReference { get; set; }
   }
   class ReleaseSummaryResource
     Octopus.Client.Extensibility.IResource
@@ -5000,9 +4999,10 @@ Octopus.Client.Model
     Nullable<Int32> Timeout { get; set; }
   }
   class SnapshotGitReferenceResource
-    Octopus.Client.Model.Git.GitReferenceResource
   {
     .ctor()
+    String GitCommit { get; set; }
+    String GitRef { get; set; }
     String VariablesGitCommit { get; set; }
   }
   class SpaceResource
@@ -7660,8 +7660,10 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<VariableSetResource>
     Octopus.Client.Repositories.IGetAll<VariableSetResource>
   {
-    String[] GetVariableNames(String, String[])
+    Octopus.Client.Model.VariableSetResource Get(Octopus.Client.Model.ProjectResource, String)
+    String[] GetVariableNames(String, String[], String)
     Octopus.Client.Model.VariableSetResource GetVariablePreview(String, String, String, String, String, String, String, String)
+    Octopus.Client.Model.VariableSetResource GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
@@ -8388,19 +8390,15 @@ Octopus.Client.Repositories.Async
   {
     Task<TeamNameResource[]> Get(Octopus.Client.Model.UserResource)
   }
-  interface IVariableSetBetaRepository
-  {
-    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
-    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
-  }
   interface IVariableSetRepository
     Octopus.Client.Repositories.Async.IGet<VariableSetResource>
     Octopus.Client.Repositories.Async.IModify<VariableSetResource>
     Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
-    Octopus.Client.Repositories.Async.IVariableSetBetaRepository Beta()
-    Task<String[]> GetVariableNames(String, String[])
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<String[]> GetVariableNames(String, String[], String)
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
