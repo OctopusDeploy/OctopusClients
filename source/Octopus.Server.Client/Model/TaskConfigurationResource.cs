@@ -3,11 +3,11 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model;
 
-public class MachineUpgradesConfigurationResource : IResource
+public class TaskConfigurationResource : IResource
 {
-    public MachineUpgradesConfigurationResource()
+    public TaskConfigurationResource()
     {
-        Id = "machineupgrades";
+        Id = "task";
     }
 
     [Writeable]
