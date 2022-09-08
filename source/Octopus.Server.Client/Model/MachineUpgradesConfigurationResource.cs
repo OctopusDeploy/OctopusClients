@@ -3,9 +3,9 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model;
 
-public class MachineUpgradeConfigurationResource : IResource
+public class MachineUpgradesConfigurationResource : IResource
 {
-    public MachineUpgradeConfigurationResource()
+    public MachineUpgradesConfigurationResource()
     {
         Id = "machineupgrades";
     }

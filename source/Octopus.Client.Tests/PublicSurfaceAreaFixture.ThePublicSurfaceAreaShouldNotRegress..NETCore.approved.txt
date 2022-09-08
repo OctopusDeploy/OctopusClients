@@ -3643,9 +3643,12 @@ Octopus.Client.Model
     String TentacleUpdateAccountId { get; set; }
     Octopus.Client.Model.TentacleUpdateBehavior TentacleUpdateBehavior { get; set; }
   }
-  class MachineUpgradeOptionsResource
+  class MachineUpgradesConfigurationResource
+    Octopus.Client.Extensibility.IResource
   {
     .ctor()
+    String Id { get; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     Nullable<Int32> MachineTaskProcessingLimit { get; set; }
   }
   class MaintenanceConfigurationResource
@@ -5440,7 +5443,6 @@ Octopus.Client.Model
     .ctor()
     Boolean AllowChecking { get; set; }
     Boolean IncludeStatistics { get; set; }
-    Octopus.Client.Model.MachineUpgradeOptionsResource MachineUpgradeOptions { get; set; }
     Octopus.Client.Model.UpgradeNotificationMode NotificationMode { get; set; }
   }
   UpgradeNotificationMode
