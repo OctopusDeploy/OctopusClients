@@ -164,6 +164,7 @@ namespace Octopus.Client
         /// <param name="path">The path from which to fetch the resource.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>The resource from the server.</returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TResource> Get<TResource>(string path, object pathParameters = null);
 
         /// <summary>
@@ -203,6 +204,7 @@ namespace Octopus.Client
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null);
 
         /// <summary>
@@ -347,6 +349,7 @@ namespace Octopus.Client
         /// <param name="resource">The resource to update.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null);
 
         /// <summary>
