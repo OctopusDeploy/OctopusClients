@@ -21,6 +21,6 @@ namespace Octopus.Client.Model
     public class MachineUpgradeOptionsResource
     {
         [Writeable]
-        public int? MachineTaskProcessingLimit { get; set; }
+        public int MachineTaskProcessingLimit { get; set; }
     }
 }
