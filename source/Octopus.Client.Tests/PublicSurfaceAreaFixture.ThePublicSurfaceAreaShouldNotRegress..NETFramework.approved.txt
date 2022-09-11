@@ -8460,9 +8460,13 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken, String)
     Task<String[]> GetVariableNames(String, String[], String)
+    Task<String[]> GetVariableNames(String, String[], CancellationToken, String)
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String, CancellationToken)
     Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, CancellationToken, String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
