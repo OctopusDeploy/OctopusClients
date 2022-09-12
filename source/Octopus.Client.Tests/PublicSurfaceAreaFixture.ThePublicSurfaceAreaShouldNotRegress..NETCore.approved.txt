@@ -8183,12 +8183,19 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ReleaseResource>
   {
     Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean)
+    Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, CancellationToken, Boolean)
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, CancellationToken, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, CancellationToken, Int32, Nullable<Int32>)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget, CancellationToken)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
+    Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
+    Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+    Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource, CancellationToken)
   }
   interface IResourceRepository
   {
