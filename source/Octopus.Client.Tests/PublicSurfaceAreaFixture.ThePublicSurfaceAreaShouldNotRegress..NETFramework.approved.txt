@@ -7930,7 +7930,7 @@ Octopus.Client.Repositories.Async
   {
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, CancellationToken)
-    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object, CancellationToken)    
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object, CancellationToken)
   }
   interface IDashboardConfigurationRepository
   {
