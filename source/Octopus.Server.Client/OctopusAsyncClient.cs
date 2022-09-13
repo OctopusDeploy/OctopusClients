@@ -34,9 +34,9 @@ namespace Octopus.Client
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
-        private readonly bool ignoreSslErrors = false;
-        private bool ignoreSslErrorMessageLogged = false;
-        private string antiforgeryCookieName = null;
+        private readonly bool ignoreSslErrors;
+        private bool ignoreSslErrorMessageLogged;
+        private string antiforgeryCookieName;
         private readonly IHttpRouteExtractor httpRouteExtractor;
 
         // Use the Create method to instantiate
@@ -222,7 +222,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand, cancellationToken).ConfigureAwait(false);
+            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand, null, cancellationToken).ConfigureAwait(false);
 
             // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
             antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
@@ -277,11 +277,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc/>
         public async Task<TResource> Get<TResource>(string path, object pathParameters = null)
         {
-            return await Get<TResource>(path, CancellationToken.None, pathParameters);
+            return await Get<TResource>(path, pathParameters, CancellationToken.None);
         }
-        
-        /// <inheritdoc/>        
-        public async Task<TResource> Get<TResource>(string path, CancellationToken cancellationToken, object pathParameters = null)
+
+        /// <inheritdoc/>
+        public async Task<TResource> Get<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await Get<TResource>(path, null, cancellationToken);
+        }
+
+        /// <inheritdoc/>      
+        public async Task<TResource> Get<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
@@ -294,23 +300,35 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc/>
         public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters = null)
         {
-            return await List<TResource>(path, CancellationToken.None, pathParameters);
+            return await List<TResource>(path, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await List<TResource>(path, null, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<ResourceCollection<TResource>> List<TResource>(string path, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
         {
-            return await Get<ResourceCollection<TResource>>(path, cancellationToken, pathParameters).ConfigureAwait(false);
+            return await Get<ResourceCollection<TResource>>(path, pathParameters, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters = null)
         {
-            return await ListAll<TResource>(path, CancellationToken.None, pathParameters);
+            return await ListAll<TResource>(path, pathParameters, CancellationToken.None);
         }
 
+        /// <inheritdoc/>
+        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await ListAll<TResource>(path, null, cancellationToken);
+        }
+        
         /// <inheritdoc />
-        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
         {
             var resources = new List<TResource>();
             await Paginate<TResource>(path, pathParameters, r =>
@@ -333,11 +351,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc />
         public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken cancellationToken)
         {
-            var page = await List<TResource>(path, cancellationToken, pathParameters).ConfigureAwait(false);
+            var page = await List<TResource>(path, pathParameters, cancellationToken).ConfigureAwait(false);
 
             while (getNextPage(page) && page.Items.Count > 0 && page.HasLink("Page.Next"))
             {
-                page = await List<TResource>(page.Link("Page.Next"), cancellationToken).ConfigureAwait(false);
+                page = await List<TResource>(page.Link("Page.Next"), null, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -356,16 +374,22 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc/>
         public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null)
         {
-            return await Create(path, resource, CancellationToken.None, pathParameters);
+            return await Create(path, resource, pathParameters, CancellationToken.None);
         }
 
         /// <inheritdoc/>
-        public async Task<TResource> Create<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<TResource> Create<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Create(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl, cancellationToken).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
             
             return result;
         }
@@ -373,11 +397,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc />
         public Task Post<TResource>(string path, TResource resource, object pathParameters = null)
         {
-            return Post(path, resource, CancellationToken.None, pathParameters);
+            return Post(path, resource, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public Task Post<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return Post(path, resource, null, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task Post<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
+        public Task Post<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -387,11 +417,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc />
         public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
         {
-            return await Post<TResource, TResponse>(path, resource, CancellationToken.None, pathParameters);
+            return await Post<TResource, TResponse>(path, resource, pathParameters, CancellationToken.None);
         }
 
         /// <inheritdoc />
-        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Post<TResource, TResponse>(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc />
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
@@ -416,13 +452,25 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc />
         public Task Put<TResource>(string path, TResource resource)
         {
-            return Put(path, resource, CancellationToken.None);
+            return Put(path, resource, null, CancellationToken.None);
         }
 
         /// <inheritdoc />
         public Task Put<TResource>(string path, TResource resource, CancellationToken cancellationToken)
         {
-            var uri = QualifyUri(path);
+            return Put(path, resource, null, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task Put<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            return Put(path, resource, pathParameters, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public Task Put<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
 
             return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false, cancellationToken);
         }
@@ -441,27 +489,19 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         }
 
         /// <inheritdoc />
-        public Task Put<TResource>(string path, TResource resource, object pathParameters = null)
-        {
-            return Put(path, resource, CancellationToken.None, pathParameters);
-        }
-
-        /// <inheritdoc />
-        public Task Put<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
-        {
-            var uri = QualifyUri(path, pathParameters);
-
-            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false, cancellationToken);
-        }
-
-        /// <inheritdoc />
         public Task Delete(string path, object pathParameters = null, object resource = null)
         {
-            return Delete(path, CancellationToken.None, pathParameters, resource);
+            return Delete(path, pathParameters, resource, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public Task Delete(string path, CancellationToken cancellationToken)
+        {
+            return Delete(path, null, null, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task Delete(string path, CancellationToken cancellationToken, object pathParameters = null, object resource = null)
+        public Task Delete(string path, object pathParameters, object resource, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
 
@@ -471,16 +511,22 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc/>
         public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
         {
-            return await Update(path, resource, CancellationToken.None, pathParameters);
+            return await Update(path, resource, pathParameters, CancellationToken.None);
         }
 
         /// <inheritdoc/>
-        public async Task<TResource> Update<TResource>(string path, TResource resource, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<TResource> Update<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Update(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl, cancellationToken).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
             
             return result;
         }
@@ -488,11 +534,17 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// <inheritdoc />
         public async Task<Stream> GetContent(string path, object pathParameters = null)
         {
-            return await GetContent(path, CancellationToken.None, pathParameters);
+            return await GetContent(path, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public async Task<Stream> GetContent(string path, CancellationToken cancellationToken)
+        {
+            return await GetContent(path, null, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<Stream> GetContent(string path, CancellationToken cancellationToken, object pathParameters = null)
+        public async Task<Stream> GetContent(string path, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
@@ -570,7 +622,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                         var resource = readResponse
                             ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
-                            : default(TResponseResource);
+                            : default;
 
                         var locationHeader = response.Headers.Location?.OriginalString;
                         var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,

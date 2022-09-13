@@ -104,17 +104,22 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
-            return await Create(resource, CancellationToken.None);
+            return await Create(resource, pathParameters, CancellationToken.None);
+        }
+        
+        public virtual async Task<TResource> Create(TResource resource, CancellationToken cancellationToken)
+        {
+            return await Create(resource, null, cancellationToken);
         }
 
-        public virtual async Task<TResource> Create(TResource resource,  CancellationToken cancellationToken, object pathParameters = null)
+        public virtual async Task<TResource> Create(TResource resource,  object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
             EnrichSpaceId(resource);
-            return await Client.Create(link, resource, cancellationToken, pathParameters).ConfigureAwait(false);
+            return await Client.Create(link, resource, pathParameters, cancellationToken).ConfigureAwait(false);
         }
 
         public virtual async Task<TResource> Modify(TResource resource)
@@ -127,7 +132,7 @@ namespace Octopus.Client.Repositories.Async
             await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
             
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
-            return await Client.Update(resource.Links["Self"], resource, cancellationToken).ConfigureAwait(false);
+            return await Client.Update(resource.Links["Self"], resource, null, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task Delete(TResource resource)

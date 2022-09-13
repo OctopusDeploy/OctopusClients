@@ -9,6 +9,7 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TResource> Create(TResource resource, object pathParameters = null);
 
-        Task<TResource> Create(TResource resource, CancellationToken cancellationToken, object pathParameters = null);
+        Task<TResource> Create(TResource resource, CancellationToken cancellationToken);
+        Task<TResource> Create(TResource resource, object pathParameters, CancellationToken cancellationToken);
     }
 }

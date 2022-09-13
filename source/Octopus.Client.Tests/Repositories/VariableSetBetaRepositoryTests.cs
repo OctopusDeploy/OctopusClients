@@ -25,7 +25,7 @@ namespace Octopus.Client.Tests.Repositories
             var asyncClient = Substitute.For<IOctopusAsyncClient>();
             repository = new OctopusAsyncRepository(asyncClient);
 
-            asyncClient.Get<VariableSetResource>(Arg.Do<string>(x => getUrlUsed = x), Arg.Any<CancellationToken>(), Arg.Do<object>(x => getParamsUsed = x));
+            asyncClient.Get<VariableSetResource>(Arg.Do<string>(x => getUrlUsed = x), Arg.Do<object>(x => getParamsUsed = x), Arg.Any<CancellationToken>());
         }
 
         [Test]
