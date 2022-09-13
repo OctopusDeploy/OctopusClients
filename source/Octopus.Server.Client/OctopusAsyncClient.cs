@@ -34,7 +34,7 @@ namespace Octopus.Client
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
-        private readonly bool ignoreSslErrors;
+        private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged;
         private string antiforgeryCookieName;
         private readonly IHttpRouteExtractor httpRouteExtractor;
