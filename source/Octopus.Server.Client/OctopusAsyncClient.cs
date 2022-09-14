@@ -34,9 +34,10 @@ namespace Octopus.Client
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
+        // ReSharper disable once RedundantDefaultMemberInitializer. Mandatory assigment to prevent compiler error CS0649. 
         private readonly bool ignoreSslErrors = false;
-        private bool ignoreSslErrorMessageLogged = false;
-        private string antiforgeryCookieName = null;
+        private bool ignoreSslErrorMessageLogged;
+        private string antiforgeryCookieName;
         private readonly IHttpRouteExtractor httpRouteExtractor;
 
         // Use the Create method to instantiate
@@ -209,13 +210,20 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
 
+        /// <inheritdoc />
         public async Task SignIn(LoginCommand loginCommand)
+        {
+            await SignIn(loginCommand, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public async Task SignIn(LoginCommand loginCommand, CancellationToken cancellationToken)
         {
             if (loginCommand.State == null)
             {
                 loginCommand.State = new LoginState { UsingSecureConnection = IsUsingSecureConnection };
             }
-            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand).ConfigureAwait(false);
+            await Post(await Repository.Link("SignIn").ConfigureAwait(false), loginCommand, null, cancellationToken).ConfigureAwait(false);
 
             // Capture the cookie name here so that the Dispatch method does not rely on the rootDocument to get the InstallationId
             antiforgeryCookieName = cookieContainer.GetCookies(cookieOriginUri)
@@ -225,9 +233,16 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             Repository = new OctopusAsyncRepository(this);
         }
 
+        /// <inheritdoc />
         public async Task SignOut()
         {
-            await Post(await Repository.Link("SignOut").ConfigureAwait(false)).ConfigureAwait(false);
+            await SignOut(CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public async Task SignOut(CancellationToken cancellationToken)
+        {
+            await Post(await Repository.Link("SignOut").ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
             antiforgeryCookieName = null;
         }
 
@@ -260,289 +275,302 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public event Action<OctopusResponse> ReceivedOctopusResponse;
 
-        /// <summary>
-        /// Fetches a single resource from the server using the HTTP GET verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resource.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The resource from the server.
-        /// </returns>
+        /// <inheritdoc/>
         public async Task<TResource> Get<TResource>(string path, object pathParameters = null)
         {
-            var uri = QualifyUri(path, pathParameters);
+            return await Get<TResource>(path, pathParameters, CancellationToken.None);
+        }
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+        /// <inheritdoc/>
+        public async Task<TResource> Get<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await Get<TResource>(path, null, cancellationToken);
+        }
+
+        /// <inheritdoc/>      
+        public async Task<TResource> Get<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
+            
             return response.ResponseResource;
         }
 
         public IOctopusAsyncRepository Repository { get; protected set; }
 
-        /// <summary>
-        /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
-        /// limited in size (pagination) and links to the next page of data is available in the <see cref="Resource.Links" />
-        /// property.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resources.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The collection of resources from the server.
-        /// </returns>
+        /// <inheritdoc/>
         public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters = null)
         {
-            return await Get<ResourceCollection<TResource>>(path, pathParameters).ConfigureAwait(false);
+            return await List<TResource>(path, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await List<TResource>(path, null, cancellationToken);
         }
 
-        /// <summary>
-        /// Fetches a collection of resources from the server using the HTTP GET verb. All pages will be retrieved.
-        /// property.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resources.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The collection of resources from the server.
-        /// </returns>
+        /// <inheritdoc/>
+        public async Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            return await Get<ResourceCollection<TResource>>(path, pathParameters, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
         public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters = null)
+        {
+            return await ListAll<TResource>(path, pathParameters, CancellationToken.None);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, CancellationToken cancellationToken)
+        {
+            return await ListAll<TResource>(path, null, cancellationToken);
+        }
+        
+        /// <inheritdoc />
+        public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
         {
             var resources = new List<TResource>();
             await Paginate<TResource>(path, pathParameters, r =>
             {
                 resources.AddRange(r.Items);
                 return true;
-            }).ConfigureAwait(false);
+            },
+                cancellationToken
+            ).ConfigureAwait(false);
+            
             return resources;
         }
 
-        /// <summary>
-        /// Fetches a collection of resources from the server one page at a time using the HTTP GET verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resources.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="getNextPage">
-        /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
-        /// page will also be requested.
-        /// </param>
+        /// <inheritdoc />
         public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
-            var page = await List<TResource>(path, pathParameters).ConfigureAwait(false);
+            await Paginate(path, pathParameters, getNextPage, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public async Task Paginate<TResource>(string path, object pathParameters, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken cancellationToken)
+        {
+            var page = await List<TResource>(path, pathParameters, cancellationToken).ConfigureAwait(false);
 
             while (getNextPage(page) && page.Items.Count > 0 && page.HasLink("Page.Next"))
             {
-                page = await List<TResource>(page.Link("Page.Next")).ConfigureAwait(false);
+                page = await List<TResource>(page.Link("Page.Next"), null, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        /// <summary>
-        /// Fetches a collection of resources from the server one page at a time using the HTTP GET verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path from which to fetch the resources.</param>
-        /// <param name="getNextPage">
-        /// A callback invoked for each page of data found. If the callback returns <c>true</c>, the next
-        /// page will also be requested.
-        /// </param>
+        /// <inheritdoc />
         public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage)
         {
             return Paginate(path, null, getNextPage);
         }
 
-        /// <summary>
-        /// Creates a resource at the given URI on the server using the POST verb, then performs a fresh GET request to fetch
-        /// the created item.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The latest copy of the resource from the server.
-        /// </returns>
+        /// <inheritdoc />
+        public Task Paginate<TResource>(string path, Func<ResourceCollection<TResource>, bool> getNextPage, CancellationToken cancellationToken)
+        {
+            return Paginate(path, null, getNextPage, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters = null)
         {
+            return await Create(path, resource, pathParameters, CancellationToken.None);
+        }
+
+        /// <inheritdoc/>
+        public async Task<TResource> Create<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Create(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
+        {
             var uri = QualifyUri(path, pathParameters);
-
-            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
-
+            var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
+            
             return result;
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the POST verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <inheritdoc />
         public Task Post<TResource>(string path, TResource resource, object pathParameters = null)
         {
-            var uri = QualifyUri(path, pathParameters);
-
-            return DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), false);
+            return Post(path, resource, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public Task Post<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return Post(path, resource, null, cancellationToken);
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the POST verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to post.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
+        /// <inheritdoc />
+        public Task Post<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
-            var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ConfigureAwait(false);
+
+            return DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), false, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters = null)
+        {
+            return await Post<TResource, TResponse>(path, resource, pathParameters, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Post<TResource, TResponse>(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc />
+        public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
+            
             return response.ResponseResource;
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the POST verb.
-        /// </summary>
-        /// <param name="path">The path to the container resource.</param>
+        /// <inheritdoc />
         public Task Post(string path)
         {
-            var uri = QualifyUri(path);
-
-            return DispatchRequest<string>(new OctopusRequest("POST", uri), false);
+            return Post(path, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the PUT verb.
-        /// </summary>
-        /// <exception cref="OctopusSecurityException">
-        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
-        /// account is disabled, or they don't have permission to perform the specified action.
-        /// </exception>
-        /// <exception cref="OctopusServerException">
-        /// If any other error is successfully returned from the server (e.g., a 500
-        /// server error).
-        /// </exception>
-        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
-        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
+        /// <inheritdoc />
+        public Task Post(string path, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path);
+
+            return DispatchRequest<string>(new OctopusRequest("POST", uri), false, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public Task Put<TResource>(string path, TResource resource)
         {
-            var uri = QualifyUri(path);
-
-            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+            return Put(path, resource, null, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the PUT verb.
-        /// </summary>
-        /// <exception cref="OctopusSecurityException">
-        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
-        /// account is disabled, or they don't have permission to perform the specified action.
-        /// </exception>
-        /// <exception cref="OctopusServerException">
-        /// If any other error is successfully returned from the server (e.g., a 500
-        /// server error).
-        /// </exception>
-        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
-        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
-        /// <param name="path">The path to the container resource.</param>
-        public Task Put(string path)
+        /// <inheritdoc />
+        public Task Put<TResource>(string path, TResource resource, CancellationToken cancellationToken)
         {
-            var uri = QualifyUri(path);
-
-            return DispatchRequest<string>(new OctopusRequest("PUT", uri), false);
+            return Put(path, resource, null, cancellationToken);
         }
 
-        /// <summary>
-        /// Sends a command to a resource at the given URI on the server using the PUT verb.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the container resource.</param>
-        /// <param name="resource">The resource to create.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <inheritdoc />
         public Task Put<TResource>(string path, TResource resource, object pathParameters = null)
         {
-            var uri = QualifyUri(path, pathParameters);
-
-            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false);
+            return Put(path, resource, pathParameters, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Deletes the resource at the given URI from the server using a the DELETE verb.
-        /// </summary>
-        /// <param name="path">The path to the resource to delete.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <param name="resource">An optional resource to pass as the body of the request.</param>
+        /// <inheritdoc />
+        public Task Put<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            return DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), false, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task Put(string path)
+        {
+            return Put(path, CancellationToken.None);
+        }
+
+        public Task Put(string path, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path);
+
+            return DispatchRequest<string>(new OctopusRequest("PUT", uri), false, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public Task Delete(string path, object pathParameters = null, object resource = null)
         {
-            var uri = QualifyUri(path, pathParameters);
-
-            return DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
+            return Delete(path, pathParameters, resource, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public Task Delete(string path, CancellationToken cancellationToken)
+        {
+            return Delete(path, null, null, cancellationToken);
         }
 
-        /// <summary>
-        /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
-        /// the data.
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="path">The path to the resource to update.</param>
-        /// <param name="resource">The resource to update.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>
-        /// The latest copy of the resource from the server.
-        /// </returns>
-        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
+        /// <inheritdoc />
+        public Task Delete(string path, object pathParameters, object resource, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
 
-            var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true).ConfigureAwait(false);
+            return DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true, cancellationToken);
+        }
 
+        /// <inheritdoc/>
+        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
+        {
+            return await Update(path, resource, pathParameters, CancellationToken.None);
+        }
+
+        /// <inheritdoc/>
+        public async Task<TResource> Update<TResource>(string path, TResource resource, CancellationToken cancellationToken)
+        {
+            return await Update(path, resource, null, cancellationToken);
+        }
+        
+        /// <inheritdoc/>
+        public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl).ConfigureAwait(false);
+            var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
+            
             return result;
         }
 
-        /// <summary>
-        /// Fetches raw content from the resource at the specified path, using the GET verb.
-        /// </summary>
-        /// <exception cref="OctopusSecurityException">
-        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
-        /// account is disabled, or they don't have permission to perform the specified action.
-        /// </exception>
-        /// <exception cref="OctopusServerException">
-        /// If any other error is successfully returned from the server (e.g., a 500
-        /// server error).
-        /// </exception>
-        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
-        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
-        /// <param name="path">The path to the resource to fetch.</param>
-        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        /// <returns>A stream containing the content of the resource.</returns>
+        /// <inheritdoc />
         public async Task<Stream> GetContent(string path, object pathParameters = null)
         {
+            return await GetContent(path, pathParameters, CancellationToken.None);
+        }
+        
+        /// <inheritdoc />
+        public async Task<Stream> GetContent(string path, CancellationToken cancellationToken)
+        {
+            return await GetContent(path, null, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<Stream> GetContent(string path, object pathParameters, CancellationToken cancellationToken)
+        {
             var uri = QualifyUri(path, pathParameters);
-            var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true).ConfigureAwait(false);
+            var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
+            
             return response.ResponseResource;
         }
 
-        /// <summary>
-        /// Creates or updates the raw content of the resource at the specified path, using the PUT verb.
-        /// </summary>
-        /// <param name="path">The path to the resource to create or update.</param>
-        /// <param name="contentStream">A stream containing content of the resource.</param>
+        /// <inheritdoc />
         public Task PutContent(string path, Stream contentStream)
+        {
+            return PutContent(path, contentStream, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public Task PutContent(string path, Stream contentStream, CancellationToken cancellationToken)
         {
             if (contentStream == null) throw new ArgumentNullException("contentStream");
             var uri = QualifyUri(path);
-            return DispatchRequest<Stream>(new OctopusRequest("PUT", uri, requestResource: contentStream), false);
+            
+            return DispatchRequest<Stream>(new OctopusRequest("PUT", uri, requestResource: contentStream), false, cancellationToken);
         }
 
         public Uri QualifyUri(string path, object parameters = null)
         {
             var dictionary = parameters as IDictionary<string, object>;
-
             path = (dictionary == null) ? UrlTemplate.Resolve(path, parameters) : UrlTemplate.Resolve(path, dictionary);
 
             return serverEndpoint.OctopusServer.Resolve(path);
@@ -595,7 +623,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
                         var resource = readResponse
                             ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
-                            : default(TResponseResource);
+                            : default;
 
                         var locationHeader = response.Headers.Location?.OriginalString;
                         var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,

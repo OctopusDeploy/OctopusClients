@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
@@ -103,20 +104,35 @@ namespace Octopus.Client.Repositories.Async
 
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
+            return await Create(resource, pathParameters, CancellationToken.None);
+        }
+        
+        public virtual async Task<TResource> Create(TResource resource, CancellationToken cancellationToken)
+        {
+            return await Create(resource, null, cancellationToken);
+        }
+
+        public virtual async Task<TResource> Create(TResource resource,  object pathParameters, CancellationToken cancellationToken)
+        {
             await ThrowIfServerVersionIsNotCompatible();
 
             var link = await ResolveLink().ConfigureAwait(false);
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
             EnrichSpaceId(resource);
-            return await Client.Create(link, resource, pathParameters).ConfigureAwait(false);
+            return await Client.Create(link, resource, pathParameters, cancellationToken).ConfigureAwait(false);
         }
 
         public virtual async Task<TResource> Modify(TResource resource)
         {
-            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            return await Modify(resource, CancellationToken.None);
+        }
 
+        public virtual async Task<TResource> Modify(TResource resource, CancellationToken cancellationToken)
+        {
+            await ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
-            return await Client.Update(resource.Links["Self"], resource).ConfigureAwait(false);
+            return await Client.Update(resource.Links["Self"], resource, null, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task Delete(TResource resource)

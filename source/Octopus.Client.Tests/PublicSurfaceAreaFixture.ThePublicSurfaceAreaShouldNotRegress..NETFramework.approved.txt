@@ -31,28 +31,55 @@ Octopus.Client
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Delete(String, Object, Object)
+    Task Delete(String, CancellationToken)
+    Task Delete(String, Object, Object, CancellationToken)
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, CancellationToken)
+    Task<TResource> Get(String, Object, CancellationToken)
     Task<Stream> GetContent(String, Object)
+    Task<Stream> GetContent(String, CancellationToken)
+    Task<Stream> GetContent(String, Object, CancellationToken)
     Task<ResourceCollection<TResource>> List(String, Object)
+    Task<ResourceCollection<TResource>> List(String, CancellationToken)
+    Task<ResourceCollection<TResource>> List(String, Object, CancellationToken)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
+    Task<IReadOnlyList<TResource>> ListAll(String, CancellationToken)
+    Task<IReadOnlyList<TResource>> ListAll(String, Object, CancellationToken)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
+    Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
+    Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Post(String, Octopus.Client.TResource, Object)
+    Task Post(String, Octopus.Client.TResource, CancellationToken)
+    Task Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
+    Task<TResponse> Post(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResponse> Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Post(String)
+    Task Post(String, CancellationToken)
     Task Put(String, Octopus.Client.TResource)
-    Task Put(String)
+    Task Put(String, Octopus.Client.TResource, CancellationToken)
     Task Put(String, Octopus.Client.TResource, Object)
+    Task Put(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task Put(String)
+    Task Put(String, CancellationToken)
     Task PutContent(String, Stream)
+    Task PutContent(String, Stream, CancellationToken)
     Uri QualifyUri(String, Object)
     Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
+    Task SignOut(CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
   }
   interface IOctopusAsyncRepository
     Octopus.Client.IOctopusSpaceAsyncRepository
@@ -277,29 +304,56 @@ Octopus.Client
     Octopus.Client.Model.RootResource RootDocument { get; }
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Delete(String, Object, Object)
+    Task Delete(String, CancellationToken)
+    Task Delete(String, Object, Object, CancellationToken)
     void Dispose()
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, CancellationToken)
+    Task<TResource> Get(String, Object, CancellationToken)
     Task<Stream> GetContent(String, Object)
+    Task<Stream> GetContent(String, CancellationToken)
+    Task<Stream> GetContent(String, Object, CancellationToken)
     Task<ResourceCollection<TResource>> List(String, Object)
+    Task<ResourceCollection<TResource>> List(String, CancellationToken)
+    Task<ResourceCollection<TResource>> List(String, Object, CancellationToken)
     Task<IReadOnlyList<TResource>> ListAll(String, Object)
+    Task<IReadOnlyList<TResource>> ListAll(String, CancellationToken)
+    Task<IReadOnlyList<TResource>> ListAll(String, Object, CancellationToken)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
+    Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
+    Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Post(String, Octopus.Client.TResource, Object)
+    Task Post(String, Octopus.Client.TResource, CancellationToken)
+    Task Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task<TResponse> Post(String, Octopus.Client.TResource, Object)
+    Task<TResponse> Post(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResponse> Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Post(String)
+    Task Post(String, CancellationToken)
     Task Put(String, Octopus.Client.TResource)
-    Task Put(String)
+    Task Put(String, Octopus.Client.TResource, CancellationToken)
     Task Put(String, Octopus.Client.TResource, Object)
+    Task Put(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task Put(String)
+    Task Put(String, CancellationToken)
     Task PutContent(String, Stream)
+    Task PutContent(String, Stream, CancellationToken)
     Uri QualifyUri(String, Object)
     Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
+    Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
+    Task SignOut(CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
+    Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
   }
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
@@ -7869,6 +7923,8 @@ Octopus.Client.Repositories.Async
   interface ICreate`1
   {
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, CancellationToken)
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object, CancellationToken)
   }
   interface IDashboardConfigurationRepository
   {
@@ -8064,6 +8120,7 @@ Octopus.Client.Repositories.Async
   interface IModify`1
   {
     Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
+    Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource, CancellationToken)
   }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.Async.IModify<OctopusServerNodeResource>
@@ -8164,12 +8221,21 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ReleaseResource>
   {
     Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean)
+    Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean, CancellationToken)
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, CancellationToken)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, CancellationToken)
+    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget, CancellationToken)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
+    Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource)
+    Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+    Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource, CancellationToken)
   }
   interface IResourceRepository
   {
@@ -8416,9 +8482,16 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken)
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<String[]> GetVariableNames(String, String[], String)
+    Task<String[]> GetVariableNames(String, String[], CancellationToken)
+    Task<String[]> GetVariableNames(String, String[], String, CancellationToken)
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String, CancellationToken)
     Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, CancellationToken)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String, CancellationToken)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>

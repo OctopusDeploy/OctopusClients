@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Project Rules" Description="Rule overrides for gradual enablement of nullable reference types." ToolsVersion="10.0">  
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS0618" Action="None"/> <!-- Use of obsolete symbol -->    
+  </Rules>
+</RuleSet>

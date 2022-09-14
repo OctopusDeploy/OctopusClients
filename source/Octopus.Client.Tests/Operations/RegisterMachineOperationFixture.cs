@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-
 using FluentAssertions;
-using Nancy;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
@@ -107,9 +105,10 @@ namespace Octopus.Client.Tests.Operations
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
-                m.Name == "Mymachine"
-                && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
-                && m.EnvironmentIds.First() == "environments-2"))
+                    m.Name == "Mymachine"
+                    && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
+                    && m.EnvironmentIds.First() == "environments-2"),
+                    Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .ConfigureAwait(false);
         }
 
@@ -153,7 +152,8 @@ namespace Octopus.Client.Tests.Operations
             await client.Received().Update("/machines/whatever/1", Arg.Is<MachineResource>(m =>
                 m.Id == "machines/84"
                 && m.Name == "Mymachine"
-                && m.EnvironmentIds.First() == "environments-2")).ConfigureAwait(false);
+                && m.EnvironmentIds.First() == "environments-2"),
+                Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
         }
 
         [Test]
@@ -177,7 +177,8 @@ namespace Octopus.Client.Tests.Operations
             await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
                 m.Name == "Mymachine"
                 && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
-                && m.EnvironmentIds.First() == "environments-2")).ConfigureAwait(false);
+                && m.EnvironmentIds.First() == "environments-2"),
+                Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
         }
 
         [Test]
@@ -202,7 +203,8 @@ namespace Octopus.Client.Tests.Operations
                 m.Id == "machines/84"
                 && m.Name == "Mymachine"
                 && m.EnvironmentIds.First() == "environments-2"
-                && m.MachinePolicyId == "MachinePolicies-1")).ConfigureAwait(false);
+                && m.MachinePolicyId == "MachinePolicies-1"),
+                Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
         }
 
         [Test]
@@ -228,7 +230,8 @@ namespace Octopus.Client.Tests.Operations
                 m.Id == "machines/84"
                 && m.Name == "Mymachine"
                 && m.EnvironmentIds.First() == "environments-2"
-                && m.MachinePolicyId == "MachinePolicies-2")).ConfigureAwait(false);
+                && m.MachinePolicyId == "MachinePolicies-2"),
+                Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
         }
     }
 }
