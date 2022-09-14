@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             var asyncClient = Substitute.For<IOctopusAsyncClient>();
             asyncRepository = new OctopusAsyncRepository(asyncClient);
-            asyncClient.Post<ConvertProjectToGitCommand, ConvertProjectToGitResponse>(Arg.Do<string>(x => asyncUrlUsed = x), Arg.Any<ConvertProjectToGitCommand>()).Returns(new ConvertProjectToGitResponse());
+            asyncClient.Post<ConvertProjectToGitCommand, ConvertProjectToGitResponse>(Arg.Do<string>(x => asyncUrlUsed = x), Arg.Any<ConvertProjectToGitCommand>(), Arg.Any<CancellationToken>()).Returns(new ConvertProjectToGitResponse());
 
             var syncClient = Substitute.For<IOctopusClient>();
             syncRepository = new OctopusRepository(syncClient);

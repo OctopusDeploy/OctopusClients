@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -65,7 +66,7 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
-        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
+        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null, CancellationToken cancellationToken = default)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
 
@@ -77,7 +78,7 @@ namespace Octopus.Client.Editors.Async
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
                     Description = description
-                }, new { clone = cloneId }).ConfigureAwait(false);
+                }, new { clone = cloneId }, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -86,7 +87,7 @@ namespace Octopus.Client.Editors.Async
                 existing.LifecycleId = lifecycle.Id;
                 existing.Description = description;
 
-                Instance = await repository.Modify(existing).ConfigureAwait(false);
+                Instance = await repository.Modify(existing, cancellationToken).ConfigureAwait(false);
             }
 
             return this;
