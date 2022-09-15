@@ -2,10 +2,12 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
+using Octopus.Client.Tasks;
 
 namespace Octopus.Client
 {
@@ -44,7 +46,7 @@ namespace Octopus.Client
     public class OctopusAsyncRepository : IOctopusAsyncRepository
     {
         internal static int SecondsToWaitForServerToStart = 60;
-        private readonly Lazy<Task<RootResource>> loadRootResource;
+        private readonly AsyncLazy<RootResource> loadRootResource;
         private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
         private static readonly string rootDocumentUri = "~/api";
 
@@ -118,7 +120,7 @@ namespace Octopus.Client
             UserPermissions = new UserPermissionsRepository(this);
             UserTeams = new UserTeamsRepository(this);
             UpgradeConfiguration = new UpgradeConfigurationRepository(this);
-            loadRootResource = new Lazy<Task<RootResource>>(LoadRootDocumentInner, true);
+            loadRootResource = new AsyncLazy<RootResource>(LoadRootDocumentInner);
             loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
         }
 
@@ -191,7 +193,7 @@ namespace Octopus.Client
 
         public async Task<bool> HasLink(string name)
         {
-            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+            var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
             var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.HasLink(name) || rootDocument.HasLink(name);
         }
@@ -205,7 +207,7 @@ namespace Octopus.Client
                 link = spaceRootDocument.Link(linkName);
             else
             {
-                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
                 if (rootDocument.HasLink(linkName))
                     link = rootDocument.Link(linkName);
                 else
@@ -218,17 +220,18 @@ namespace Octopus.Client
 
         public async Task<string> Link(string name)
         {
-            var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+            var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
             var spaceRootDocument = await loadSpaceRootResource.Value.ConfigureAwait(false);
             return spaceRootDocument != null && spaceRootDocument.Links.TryGetValue(name, out var value)
                 ? value.AsString()
                 : rootDocument.Link(name);
         }
 
-        public Task<RootResource> LoadRootDocument() => loadRootResource.Value;
+        public Task<RootResource> LoadRootDocument() => LoadRootDocument(CancellationToken.None);
+        public Task<RootResource> LoadRootDocument(CancellationToken cancellationToken) => loadRootResource.Value(cancellationToken);
         public Task<SpaceRootResource> LoadSpaceRootDocument() => loadSpaceRootResource.Value;
 
-        async Task<RootResource> LoadRootDocumentInner()
+        private async Task<RootResource> LoadRootDocumentInner(CancellationToken cancellationToken)
         {
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
@@ -236,6 +239,8 @@ namespace Octopus.Client
             RootResource rootDocument;
             while (true)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                
                 if (watch.Elapsed > TimeSpan.FromSeconds(SecondsToWaitForServerToStart))
                 {
                     if (lastError == null)
@@ -248,12 +253,12 @@ namespace Octopus.Client
 
                 try
                 {
-                    rootDocument = await Client.Get<RootResource>(rootDocumentUri).ConfigureAwait(false);
+                    rootDocument = await Client.Get<RootResource>(rootDocumentUri, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 catch (HttpRequestException ex)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
                     lastError = ex;
                 }
                 catch (OctopusServerException ex)
@@ -264,7 +269,7 @@ namespace Octopus.Client
                         throw;
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(0.5)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(0.5), cancellationToken).ConfigureAwait(false);
                     lastError = ex;
                 }
             }
@@ -278,10 +283,11 @@ namespace Octopus.Client
 
             if (current < min || current > max)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({rootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
+            
             return rootDocument;
         }
 
-        Task<SpaceRootResource> LoadSpaceRootDocumentInner()
+        private Task<SpaceRootResource> LoadSpaceRootDocumentInner()
         {
             return Scope.Apply(LoadSpaceRootResourceFor,
                 () => Task.FromResult<SpaceRootResource>(null),
@@ -300,7 +306,7 @@ namespace Octopus.Client
 
             async Task<SpaceResource> TryGetDefaultSpace()
             {
-                var rootDocument = await loadRootResource.Value.ConfigureAwait(false);
+                var rootDocument = await loadRootResource.Value(CancellationToken.None).ConfigureAwait(false);
                 var spacesIsSupported = rootDocument.HasLink("Spaces");
                 if (!spacesIsSupported)
                 {

@@ -47,28 +47,17 @@ namespace Octopus.Client.Tests.Operations
                     .Add("CurrentUser", "/api/users/me")
                     .Add("SpaceHome", "/api/spaces")
             };
-            client.Get<RootResource>(Arg.Any<string>()).Returns(rootDocument);
-            client.Repository.LoadRootDocument().Returns(rootDocument);
-            client.Get<SpaceResource[]>(Arg.Any<string>())
-                .Returns(new[] {new SpaceResource() {Id = "Spaces-1", IsDefault = true}});
-            client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource()
-            {
-                Links =
-                {
-                    {"Spaces", ""}
-                }
-            });
+            
+            client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(rootDocument);
             client.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
             client.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
 
-            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>()))
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));
-            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>()))
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachineResource>, bool>>()(machines));
-            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>()))
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachinePolicyResource>, bool>>()(machinePolicies));
-
-            client.List<MachineResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(machines);
         }
 
         [Test]

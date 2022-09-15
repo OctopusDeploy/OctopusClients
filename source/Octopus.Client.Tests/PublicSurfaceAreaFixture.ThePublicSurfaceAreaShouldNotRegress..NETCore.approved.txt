@@ -270,6 +270,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
     Octopus.Client.Repositories.Async.IUserRepository Users { get; }
     Task<RootResource> LoadRootDocument()
+    Task<RootResource> LoadRootDocument(CancellationToken)
   }
   interface IOctopusSystemRepository
     Octopus.Client.IOctopusCommonRepository
@@ -431,6 +432,7 @@ Octopus.Client
     Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
     Task<RootResource> LoadRootDocument()
+    Task<RootResource> LoadRootDocument(CancellationToken)
     Task<SpaceRootResource> LoadSpaceRootDocument()
   }
   class OctopusClient
@@ -7922,6 +7924,7 @@ Octopus.Client.Repositories.Async
   interface IDelete`1
   {
     Task Delete(Octopus.Client.Repositories.Async.TResource)
+    Task Delete(Octopus.Client.Repositories.Async.TResource, CancellationToken)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
@@ -7993,22 +7996,31 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<FeedResource>
   {
     Task<List<PackageResource>> GetVersions(Octopus.Client.Model.FeedResource, String[])
+    Task<List<PackageResource>> GetVersions(Octopus.Client.Model.FeedResource, String[], CancellationToken)
   }
   interface IFindByName`1
     Octopus.Client.Repositories.Async.IPaginate<TResource>
   {
     Task<TResource> FindByName(String, String, Object)
+    Task<TResource> FindByName(String, CancellationToken)
+    Task<TResource> FindByName(String, String, Object, CancellationToken)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object)
+    Task<List<TResource>> FindByNames(IEnumerable<String>, CancellationToken)
+    Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object, CancellationToken)
   }
   interface IGetAll`1
   {
     Task<List<TResource>> GetAll()
+    Task<List<TResource>> GetAll(CancellationToken)
   }
   interface IGet`1
   {
     Task<TResource> Get(String)
+    Task<TResource> Get(String, CancellationToken)
     Task<List<TResource>> Get(String[])
+    Task<List<TResource>> Get(CancellationToken, String[])
     Task<TResource> Refresh(Octopus.Client.Repositories.Async.TResource)
+    Task<TResource> Refresh(Octopus.Client.Repositories.Async.TResource, CancellationToken)
   }
   interface IGitCredentialRepository
     Octopus.Client.Repositories.Async.IGet<GitCredentialResource>
@@ -8112,9 +8124,17 @@ Octopus.Client.Repositories.Async
   interface IPaginate`1
   {
     Task<List<TResource>> FindAll(String, Object)
+    Task<List<TResource>> FindAll(CancellationToken)
+    Task<List<TResource>> FindAll(String, Object, CancellationToken)
     Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object)
+    Task<List<TResource>> FindMany(Func<TResource, Boolean>, CancellationToken)
+    Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object, CancellationToken)
     Task<TResource> FindOne(Func<TResource, Boolean>, String, Object)
+    Task<TResource> FindOne(Func<TResource, Boolean>, CancellationToken)
+    Task<TResource> FindOne(Func<TResource, Boolean>, String, Object, CancellationToken)
     Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
+    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
+    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object, CancellationToken)
   }
   interface IPerformanceConfigurationRepository
   {
@@ -8649,6 +8669,15 @@ Octopus.Client.Serialization
     Octopus.Client.Serialization.InheritedClassConverter<TriggerFilterResource, TriggerFilterType>
   {
     .ctor()
+  }
+}
+Octopus.Client.Tasks
+{
+  class AsyncLazy`1
+  {
+    .ctor(Func<CancellationToken, Task<T>>)
+    Boolean HasValue { get; }
+    Task<T> Value(CancellationToken)
   }
 }
 Octopus.Client.Util

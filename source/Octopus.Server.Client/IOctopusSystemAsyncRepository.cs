@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
@@ -45,6 +47,11 @@ namespace Octopus.Client
         /// </exception>
         /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RootResource> LoadRootDocument();
+        
+        /// <inheritdoc cref="IOctopusSystemAsyncRepository.LoadRootDocument()"/>
+        /// <param name="cancellationToken">Cancellation token for the request</param>
+        Task<RootResource> LoadRootDocument(CancellationToken cancellationToken);
     }
 }

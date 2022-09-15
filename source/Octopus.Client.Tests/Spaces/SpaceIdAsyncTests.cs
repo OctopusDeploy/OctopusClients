@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -19,7 +20,7 @@ namespace Octopus.Client.Tests.Spaces
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
             client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource { Id = "Spaces-1", IsDefault = true, Links = new LinkCollection{{"SpaceHome", String.Empty}}} });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
-            client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
+            client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new RootResource()
             {
                 ApiVersion = "3.0.0",
                 Version = "2099.0.0",
