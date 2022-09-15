@@ -106,6 +106,11 @@ namespace Octopus.Client.Repositories.Async
             throw new NotSupportedException("VariableSet does not support this operation");
         }
 
+        public override Task<List<VariableSetResource>> Get(CancellationToken cancellationToken, params string[] ids)
+        {
+            throw new NotSupportedException("VariableSet does not support this operation");
+        }
+
         bool ProjectHasVariablesInGit(ProjectResource projectResource)
         {
             return projectResource.PersistenceSettings is GitPersistenceSettingsResource gitSettings && gitSettings.ConversionState.VariablesAreInGit;

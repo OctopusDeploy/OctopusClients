@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+using System.Threading;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Octopus.Client.Model;
 
@@ -33,7 +27,7 @@ namespace Octopus.Client.Tests.Repositories.Async
 
         void SetupAsyncClient(IOctopusAsyncClient client)
         {
-            client.Repository.LoadRootDocument().Returns(new RootResource()
+            client.Repository.LoadRootDocument(Arg.Any<CancellationToken>()).Returns(new RootResource()
             {
                 Version = NotSupportedOctopusVersion
             });
