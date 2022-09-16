@@ -7931,9 +7931,13 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<DeploymentProcessResource>
   {
     Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource)
+    Task<DeploymentProcessResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource)
+    Task<ReleaseTemplateResource> GetTemplate(Octopus.Client.Model.DeploymentProcessResource, Octopus.Client.Model.ChannelResource, CancellationToken)
     Task<DeploymentProcessResource> Modify(Octopus.Client.Model.DeploymentProcessResource, String)
+    Task<DeploymentProcessResource> Modify(Octopus.Client.Model.DeploymentProcessResource, String, CancellationToken)
   }
   interface IDeploymentRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentResource>
