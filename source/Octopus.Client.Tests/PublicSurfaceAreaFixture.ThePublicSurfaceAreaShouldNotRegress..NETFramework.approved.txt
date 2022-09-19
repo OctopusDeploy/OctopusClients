@@ -1566,6 +1566,12 @@ Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration
 }
 Octopus.Client.Extensions
 {
+  abstract class DateTimeExtensions
+  {
+    static DateTimeZone ToDateTimeZone(String)
+    static DateTimeZone ToDateTimeZoneOrNull(String)
+    static String ToWindowsTimeZoneId(DateTimeZone)
+  }
   abstract class StringExtensions
   {
     static String CommaSeparate(IEnumerable<Object>)
@@ -8597,6 +8603,13 @@ Octopus.Client.Serialization
     Octopus.Client.Serialization.InheritedClassConverter<AccountResource, AccountType>
   {
     .ctor()
+  }
+  class CrossPlatformDateTimeZoneJsonConverter
+    JsonConverter<DateTimeZone>
+  {
+    .ctor()
+    DateTimeZone ReadJson(JsonReader, Type, DateTimeZone, Boolean, JsonSerializer)
+    void WriteJson(JsonWriter, DateTimeZone, JsonSerializer)
   }
   class DateConverter
     IsoDateTimeConverter
