@@ -46,6 +46,7 @@ namespace Octopus.Client.Serialization
                     new PersistenceSettingsConverter(),
                     new GitSettingsConverter(),
                     new GitCredentialDetailsConverter(),
+                    new PermissiveInstantJsonConverter(),
                     new CrossPlatformDateTimeZoneJsonConverter(),
                     NodaConverters.DurationConverter
                 }
