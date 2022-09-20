@@ -8686,6 +8686,13 @@ Octopus.Client.Serialization
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)
   }
+  class PermissiveInstantJsonConverter
+    JsonConverter<Nullable<Instant>>
+  {
+    .ctor()
+    Nullable<Instant> ReadJson(JsonReader, Type, Nullable<Instant>, Boolean, JsonSerializer)
+    void WriteJson(JsonWriter, Nullable<Instant>, JsonSerializer)
+  }
   class PersistenceSettingsConverter
     Octopus.Client.Serialization.InheritedClassConverter<PersistenceSettingsResource, PersistenceSettingsType>
   {
