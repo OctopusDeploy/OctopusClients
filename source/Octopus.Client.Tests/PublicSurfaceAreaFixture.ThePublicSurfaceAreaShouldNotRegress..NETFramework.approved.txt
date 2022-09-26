@@ -2475,6 +2475,7 @@ Octopus.Client.Model
     Boolean IsCurrent { get; set; }
     Boolean IsPrevious { get; set; }
     String ProjectId { get; set; }
+    DateTimeOffset PriorityTime { get; set; }
     DateTimeOffset QueueTime { get; set; }
     String ReleaseId { get; set; }
     String ReleaseVersion { get; set; }
