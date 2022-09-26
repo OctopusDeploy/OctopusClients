@@ -79,11 +79,17 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 8)]
         public DateTimeOffset? QueueTimeExpiry { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the time at which the task was prioritised.
+        /// </summary>
+        [JsonProperty(Order = 9)]
+        public DateTimeOffset PriorityTime { get; set; }
 
         /// <summary>
         /// Gets or sets the time at which the task started executing.
         /// </summary>
-        [JsonProperty(Order = 9)]
+        [JsonProperty(Order = 10)]
         public DateTimeOffset? StartTime { get; set; }
 
         /// <summary>
@@ -91,13 +97,13 @@ namespace Octopus.Client.Model
         /// happen
         /// at least every couple of minutes.
         /// </summary>
-        [JsonProperty(Order = 10)]
+        [JsonProperty(Order = 11)]
         public DateTimeOffset? LastUpdatedTime { get; set; }
 
         /// <summary>
         /// Gets or sets the date/time that the task completed. Will be null if the task has not yet completed.
         /// </summary>
-        [JsonProperty(Order = 11)]
+        [JsonProperty(Order = 12)]
         public DateTimeOffset? CompletedTime { get; set; }
 
         /// <summary>
