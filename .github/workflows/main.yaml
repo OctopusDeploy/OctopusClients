@@ -105,6 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -126,6 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -147,6 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -168,6 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -189,6 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
 
@@ -211,6 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -232,6 +238,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -253,6 +260,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -274,6 +282,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -295,6 +304,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -316,6 +326,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCAL_TEST_DIR: ./results/
+      AssentNonInteractive: true
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
@@ -340,10 +351,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - name: Run unit tests 🏗
         id: test-mac
         shell: bash
+        env:
+          AssentNonInteractive: true
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults 
       - name: Mac OS unit test report
         uses: dorny/test-reporter@v1
