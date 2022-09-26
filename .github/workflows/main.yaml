@@ -25,6 +25,7 @@ on:
 env:
   OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }}
   OCTOVERSION_Patch: ${{ github.run_number }}
+  AssentNonInteractive: true
 
 jobs:
   build:
