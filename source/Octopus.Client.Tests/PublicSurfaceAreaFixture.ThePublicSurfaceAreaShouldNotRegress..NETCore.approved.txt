@@ -3151,6 +3151,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectGitCredentialResource Credentials { get; set; }
     String DefaultBranch { get; set; }
     List<String> ProtectedBranchNamePatterns { get; set; }
+    Boolean ProtectedDefaultBranch { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
   }
