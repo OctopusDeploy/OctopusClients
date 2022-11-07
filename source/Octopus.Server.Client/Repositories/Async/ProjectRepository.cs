@@ -36,6 +36,7 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, CancellationToken cancellationToken);
+        Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, string initialCommitBranch, CancellationToken cancellationToken);
         
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
@@ -190,10 +191,16 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, CancellationToken cancellationToken)
         {
+            return await ConvertToGit(project, gitPersistenceSettings, commitMessage, null, cancellationToken);
+        }
+
+        public async Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, string initialCommitBranch, CancellationToken cancellationToken)
+        {
             var payload = new ConvertProjectToGitCommand
             {
                 VersionControlSettings = gitPersistenceSettings,
-                CommitMessage = commitMessage
+                CommitMessage = commitMessage,
+                InitialCommitBranchName = initialCommitBranch
             };
 
             var url = project.HasLink("ConvertToGit") ? project.Link("ConvertToGit") : project.Link("ConvertToVcs");

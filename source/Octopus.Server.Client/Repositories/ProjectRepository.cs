@@ -16,6 +16,7 @@ namespace Octopus.Client.Repositories
         GitBranchResource GetGitBranch(ProjectResource projectResource, string branch);
         GitCommitResource GetGitCommit(ProjectResource projectResource, string hash);
         ConvertProjectToGitResponse ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
+        ConvertProjectToGitResponse ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, string initialCommitBranch);
         ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         IReadOnlyList<ReleaseResource> GetAllReleases(ProjectResource project);
         ReleaseResource GetReleaseByVersion(ProjectResource project, string version);
@@ -85,10 +86,17 @@ namespace Octopus.Client.Repositories
         public ConvertProjectToGitResponse ConvertToGit(ProjectResource project,
             GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage)
         {
+            return ConvertToGit(project, gitPersistenceSettings, commitMessage, null);
+        }
+
+        public ConvertProjectToGitResponse ConvertToGit(ProjectResource project,
+            GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, string initialCommitBranch)
+        {
             var payload = new ConvertProjectToGitCommand
             {
                 VersionControlSettings = gitPersistenceSettings,
-                CommitMessage = commitMessage
+                CommitMessage = commitMessage,
+                InitialCommitBranchName = initialCommitBranch
             };
 
             var url = project.HasLink("ConvertToGit") ? project.Link("ConvertToGit") : project.Link("ConvertToVcs");
