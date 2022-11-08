@@ -9,5 +9,7 @@ namespace Octopus.Client.Model.Git
 
         [Required]
         public GitPersistenceSettingsResource VersionControlSettings { get; set; }
+
+        public string InitialCommitBranchName { get; set; }
     }
 }

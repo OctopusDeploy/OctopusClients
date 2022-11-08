@@ -3151,6 +3151,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectGitCredentialResource Credentials { get; set; }
     String DefaultBranch { get; set; }
     List<String> ProtectedBranchNamePatterns { get; set; }
+    Boolean ProtectedDefaultBranch { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
   }
@@ -6546,6 +6547,7 @@ Octopus.Client.Model.Git
   {
     .ctor()
     String CommitMessage { get; set; }
+    String InitialCommitBranchName { get; set; }
     Octopus.Client.Model.GitPersistenceSettingsResource VersionControlSettings { get; set; }
   }
   class ConvertProjectToGitResponse
@@ -7420,6 +7422,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<ProjectResource>
   {
     Octopus.Client.Model.Git.ConvertProjectToGitResponse ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
+    Octopus.Client.Model.Git.ConvertProjectToGitResponse ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String, String)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -8180,6 +8183,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IProjectBetaRepository Beta()
     Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
     Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String, CancellationToken)
+    Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String, String, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)

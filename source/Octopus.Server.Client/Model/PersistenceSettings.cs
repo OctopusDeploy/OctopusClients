@@ -32,6 +32,8 @@ namespace Octopus.Client.Model
         [Writeable]
         public string BasePath { get; set; }
         [Writeable]
+        public bool ProtectedDefaultBranch { get; set; }
+        [Writeable]
         public List<string> ProtectedBranchNamePatterns { get; set; } = new();
 
         public GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
