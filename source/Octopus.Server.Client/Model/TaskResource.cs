@@ -99,6 +99,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 11)]
         public DateTimeOffset? CompletedTime { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the time at which the task was prioritised.
+        /// </summary>
+        [JsonProperty(Order = 9)]
+        public DateTimeOffset PrioritizedAt { get; set; }
 
         /// <summary>
         /// Gets the ID of the Octopus Server that created and will control this task.
