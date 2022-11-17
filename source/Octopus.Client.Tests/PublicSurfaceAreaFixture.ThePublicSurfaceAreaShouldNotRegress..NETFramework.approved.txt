@@ -2035,6 +2035,17 @@ Octopus.Client.Model
     String Region { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
+  class AzureContainerRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.DockerFeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+  }
   class AzureRootResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3115,6 +3126,8 @@ Octopus.Client.Model
       Helm = 7
       AwsElasticContainerRegistry = 8
       S3 = 9
+      AzureContainerRegistry = 10
+      GoogleContainerRegistry = 11
   }
   class FileUpload
   {
@@ -3178,6 +3191,17 @@ Octopus.Client.Model
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String)
+  }
+  class GoogleContainerRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.DockerFeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
   }
   GuidedFailureMode
   {

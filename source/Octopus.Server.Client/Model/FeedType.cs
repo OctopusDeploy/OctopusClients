@@ -11,6 +11,8 @@
         BuiltIn,
         Helm,
         AwsElasticContainerRegistry,
-        S3
+        S3,
+        AzureContainerRegistry,
+        GoogleContainerRegistry
     }
 }

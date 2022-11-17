@@ -18,6 +18,8 @@ namespace Octopus.Client.Serialization
                 {FeedType.AwsElasticContainerRegistry, typeof(AwsElasticContainerRegistryFeedResource)},
                 {FeedType.Helm, typeof(HelmFeedResource)},
                 {FeedType.S3, typeof(S3FeedResource)},
+                {FeedType.AzureContainerRegistry, typeof(AzureContainerRegistryFeedResource)},
+                {FeedType.GoogleContainerRegistry, typeof(GoogleContainerRegistryFeedResource)},
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);
