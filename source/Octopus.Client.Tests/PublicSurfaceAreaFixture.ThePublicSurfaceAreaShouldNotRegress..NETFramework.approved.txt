@@ -4196,6 +4196,8 @@ Octopus.Client.Model
   class PermissionDescription
   {
     .ctor()
+    Boolean CanApplyAtSpaceLevel { get; set; }
+    Boolean CanApplyAtSystemLevel { get; set; }
     String Description { get; set; }
     String[] SupportedRestrictions { get; set; }
   }
@@ -8560,6 +8562,7 @@ Octopus.Client.Repositories.Async
     Task<Stream> Export(Octopus.Client.Model.UserPermissionSetResource)
     Task<UserPermissionSetResource> Get(Octopus.Client.Model.UserResource)
     Task<UserPermissionSetResource> GetConfiguration(Octopus.Client.Model.UserResource)
+    Task<IReadOnlyDictionary<Permission, PermissionDescription>> GetDescriptions(Octopus.Client.Model.UserResource)
   }
   interface IUserRepository
     Octopus.Client.Repositories.Async.IPaginate<UserResource>

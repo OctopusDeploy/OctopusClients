@@ -6,5 +6,7 @@ namespace Octopus.Client.Model
     {
         public string Description { get; set; }
         public string[] SupportedRestrictions { get; set; }
+        public bool CanApplyAtSystemLevel { get; set; }
+        public bool CanApplyAtSpaceLevel { get; set; }
     }
 }

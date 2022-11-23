@@ -102,7 +102,7 @@ class Build : NukeBuild
 
     Target Merge => _ => _
         .DependsOn(Compile)
-        .Executes(async () =>
+        .Executes(() =>
         {
             foreach (var target in new[] {"net462", "netstandard2.0"})
             {

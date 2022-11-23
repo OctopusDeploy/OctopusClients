@@ -11,7 +11,9 @@ namespace Octopus.Client.Repositories.Async
         ICanExtendSpaceContext<IUserPermissionsRepository>
     {
         Task<UserPermissionSetResource> Get(UserResource user);
+        [Obsolete("Use GetDescriptions(UserResource) instead. This method only returns empty sets and is only kept for backwards compatibility.")]
         Task<UserPermissionSetResource> GetConfiguration(UserResource user);
+        Task<IReadOnlyDictionary<Permission, PermissionDescription>> GetDescriptions(UserResource user);
         Task<Stream> Export(UserPermissionSetResource userPermissions);
     }
     
@@ -33,10 +35,17 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Get<UserPermissionSetResource>(user.Link("Permissions"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
+        [Obsolete("Use GetDescriptions(UserResource) instead. This method only returns empty sets and is only kept for backwards compatibility.")]
         public async Task<UserPermissionSetResource> GetConfiguration(UserResource user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             return await Client.Get<UserPermissionSetResource>(user.Link("PermissionsConfiguration"), GetAdditionalQueryParameters()).ConfigureAwait(false);
+        }
+
+        public async Task<IReadOnlyDictionary<Permission, PermissionDescription>> GetDescriptions(UserResource user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return await Client.Get<IReadOnlyDictionary<Permission, PermissionDescription>>(user.Link("PermissionsConfiguration"), GetAdditionalQueryParameters()).ConfigureAwait(false);
         }
 
         public async Task<Stream> Export(UserPermissionSetResource userPermissions)
