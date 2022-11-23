@@ -6826,13 +6826,13 @@ Octopus.Client.Model.Triggers
   }
   TriggerFilterType
   {
-    MachineFilter = 0
-    DailySchedule = 1
-    OnceDailySchedule = 2
-    ContinuousDailySchedule = 3
-    DaysPerMonthSchedule = 4
-    DaysPerWeekSchedule = 5
-    CronExpressionSchedule = 6
+      MachineFilter = 0
+      OnceDailySchedule = 1
+      ContinuousDailySchedule = 2
+      DaysPerMonthSchedule = 3
+      CronExpressionSchedule = 4
+      DailySchedule = 5
+      DaysPerWeekSchedule = 6
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
@@ -6875,9 +6875,9 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   }
   DailyScheduledTriggerInterval
   {
-      OnceDaily = 0
-      OnceHourly = 1
-      OnceEveryMinute = 2
+      OnceHourly = 0
+      OnceEveryMinute = 1
+      OnceDaily = 2
   }
   DayOfWeek
   {

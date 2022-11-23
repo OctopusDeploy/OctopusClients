@@ -6,12 +6,12 @@ namespace Octopus.Client.Model.Triggers
     public enum TriggerFilterType
     {
         MachineFilter,
-        DailySchedule,
         OnceDailySchedule,
         ContinuousDailySchedule,
         DaysPerMonthSchedule,
-        DaysPerWeekSchedule,
-        CronExpressionSchedule
+        CronExpressionSchedule,
+        DailySchedule,
+        DaysPerWeekSchedule
     }
 
     public abstract class TriggerFilterResource : Resource
