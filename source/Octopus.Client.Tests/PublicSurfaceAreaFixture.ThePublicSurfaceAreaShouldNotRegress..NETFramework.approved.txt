@@ -6964,8 +6964,8 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
   }
   ScheduledTriggerFilterRunType
   {
-    ScheduledTime = 0
-    Continuously = 1
+      ScheduledTime = 0
+      Continuously = 1
   }
 }
 Octopus.Client.Model.Versioning
