@@ -6831,6 +6831,8 @@ Octopus.Client.Model.Triggers
       ContinuousDailySchedule = 2
       DaysPerMonthSchedule = 3
       CronExpressionSchedule = 4
+      DailySchedule = 5
+      DaysPerWeekSchedule = 6
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
@@ -6858,10 +6860,24 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     String CronExpression { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
   }
+  class DailyScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Nullable<Int16> HourInterval { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerInterval Interval { get; set; }
+    Nullable<Int16> MinuteInterval { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.ScheduledTriggerFilterRunType RunType { get; set; }
+    Nullable<DateTime> StartTime { get; set; }
+  }
   DailyScheduledTriggerInterval
   {
       OnceHourly = 0
       OnceEveryMinute = 1
+      OnceDaily = 2
   }
   DayOfWeek
   {
@@ -6885,6 +6901,21 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     Octopus.Client.Model.Triggers.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
     DateTime StartTime { get; set; }
+  }
+  class DaysPerWeekScheduledTriggerFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScheduledTriggers.DailyScheduledTriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    Boolean Friday { get; set; }
+    Boolean Monday { get; set; }
+    Boolean Saturday { get; set; }
+    Boolean Sunday { get; set; }
+    Boolean Thursday { get; set; }
+    Boolean Tuesday { get; set; }
+    Boolean Wednesday { get; set; }
   }
   class DeployLatestReleaseActionResource
     Octopus.Client.Extensibility.IResource
@@ -6930,6 +6961,11 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     String Timezone { get; set; }
+  }
+  ScheduledTriggerFilterRunType
+  {
+      ScheduledTime = 0
+      Continuously = 1
   }
 }
 Octopus.Client.Model.Versioning

@@ -3,6 +3,7 @@
     public enum DailyScheduledTriggerInterval
     {
         OnceHourly,
-        OnceEveryMinute
+        OnceEveryMinute,
+        OnceDaily,
     }
 }
