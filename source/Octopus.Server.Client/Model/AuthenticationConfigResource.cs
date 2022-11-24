@@ -37,6 +37,6 @@ namespace Octopus.Client.Model
         public bool RememberMeEnabled { get; set; }
 
         [Writeable]
-        public bool ApiKeysEnabled { get; set; }
+        public bool ApiKeysEnabledForNonServiceAccounts { get; set; }
     }
 }
