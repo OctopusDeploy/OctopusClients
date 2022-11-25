@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Octopus.Client.Exceptions;
 
 namespace Octopus.Client.Tests.Integration.OctopusClient
 {
@@ -36,5 +35,20 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
         }
 
+        [Test]
+        public void CancellationThrowsOperationCanceledException()
+        {
+            var sw = Stopwatch.StartNew();
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            var getTask = AsyncClient.Get<string>("~/", cancellationTokenSource.Token);
+            cancellationTokenSource.Cancel();
+
+            var get = () => getTask;
+            get.ShouldThrow<OperationCanceledException>()
+                .Where(ex => ex.CancellationToken == cancellationTokenSource.Token);
+
+            sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
+        }
     }
 }
