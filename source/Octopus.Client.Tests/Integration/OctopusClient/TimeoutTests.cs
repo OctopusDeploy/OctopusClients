@@ -44,7 +44,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var getTask = AsyncClient.Get<string>("~/", cancellationTokenSource.Token);
             cancellationTokenSource.Cancel();
 
-            var get = () => getTask;
+            Func<Task> get = () => getTask;
             get.ShouldThrow<OperationCanceledException>()
                 .Where(ex => ex.CancellationToken == cancellationTokenSource.Token);
 

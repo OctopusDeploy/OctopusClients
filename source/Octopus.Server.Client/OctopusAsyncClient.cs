@@ -637,7 +637,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                     exception.CancellationToken != cancellationToken &&
                     exception.InnerException is TimeoutException)
                 {
-                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).");
+                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).", exception);
                 }
             }
         }
