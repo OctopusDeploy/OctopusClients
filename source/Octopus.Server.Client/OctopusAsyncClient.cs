@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -633,9 +633,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
                         return octopusResponse;
                     }
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException exception) when (
+                    exception.CancellationToken != cancellationToken &&
+                    exception.InnerException is TimeoutException)
                 {
-                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).");
+                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).", exception);
                 }
             }
         }
