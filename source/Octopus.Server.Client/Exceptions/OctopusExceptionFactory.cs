@@ -12,7 +12,6 @@ namespace Octopus.Client.Exceptions
     /// </summary>
     public static class OctopusExceptionFactory
     {
-
         /// <summary>
         /// Creates the appropriate <see cref="OctopusException" /> from a HTTP response.
         /// </summary>
@@ -32,6 +31,7 @@ namespace Octopus.Client.Exceptions
                     body = reader.ReadToEnd();
                 }
             }
+
             return CreateException(statusCode, body);
         }
 
@@ -51,74 +51,95 @@ namespace Octopus.Client.Exceptions
 
         public static OctopusException CreateException(int statusCode, string body)
         {
-            if (statusCode == 400 || statusCode == 409) // Bad request: usually validation error 
+            if (statusCode is 400 or 409) // Bad request: usually validation error 
             {
-                var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                return new OctopusValidationException(statusCode, errors.ErrorMessage, errors.Errors, errors.Details)
-                {
-                    HelpText = errors.HelpText
-                };
+                return CreateOctopusValidationException(statusCode, body);
             }
 
-            if (statusCode == 401 || statusCode == 403) // Forbidden, usually no API key or permissions
+            if (statusCode is 401 or 403) // Forbidden, usually no API key or permissions
             {
-                var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                errors = errors ?? new OctopusErrorsContract
-                         {
-                             ErrorMessage =
-                                 $"The server returned a status code of {statusCode}: {body}"
-                         };
-                return new OctopusSecurityException(statusCode, errors.ErrorMessage) {HelpText = errors.HelpText};
+                return CreateOctopusSecurityException(statusCode, body);
             }
 
             if (statusCode == 404) // Not found
             {
-                var errorMessage = GetErrorMessage(body);
-                return new OctopusResourceNotFoundException(errorMessage);
+                return new OctopusResourceNotFoundException(OctopusErrorsContractFromBody(body).ErrorMessage);
             }
 
             if (statusCode == 405) // Method not allowed
             {
-                var errorMessage = GetErrorMessage(body);
-                return new OctopusMethodNotAllowedFoundException(errorMessage);
+                return new OctopusMethodNotAllowedFoundException(OctopusErrorsContractFromBody(body).ErrorMessage);
             }
 
-            var fullDetails = body;
-            string helpText = null;
-            try
-            {
-                var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                if (errors != null)
-                {
-                    fullDetails = "Octopus Server returned an error: " + errors.ErrorMessage;
-                    helpText = errors.HelpText;
-                    if (!string.IsNullOrWhiteSpace(errors.FullException))
-                    {
-                        fullDetails += Environment.NewLine + "Server exception: " + Environment.NewLine + errors.FullException + Environment.NewLine + "-----------------------" + Environment.NewLine;
-                    }
-                }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch
-            {
-            }
-
-            return new OctopusServerException(statusCode, fullDetails) {HelpText = helpText};
+            return CreateOctopusServerException(statusCode, body);
         }
 
-        static string GetErrorMessage(string body)
+        private static OctopusSecurityException CreateOctopusSecurityException(int statusCode, string body)
         {
-            string errorMessage;
+            var errorsContract = OctopusErrorsContractFromBody(body);
+
+            return new OctopusSecurityException(statusCode, errorsContract.ErrorMessage)
+            {
+                HelpText = errorsContract.HelpText
+            };
+        }
+
+        private static OctopusValidationException CreateOctopusValidationException(int statusCode, string body)
+        {
+            var errorsContract = OctopusErrorsContractFromBody(body);
+
+            return new OctopusValidationException(
+                statusCode,
+                errorsContract.ErrorMessage,
+                errorsContract.Errors,
+                errorsContract.Details)
+            {
+                HelpText = errorsContract.HelpText
+            };
+        }
+
+        private static OctopusServerException CreateOctopusServerException(int statusCode, string body)
+        {
+            var errorsContract = OctopusErrorsContractFromBody(body);
+            var fullDetails = errorsContract.ErrorMessage;
+            if (!string.IsNullOrWhiteSpace(errorsContract.FullException))
+            {
+                fullDetails =
+                    $"Octopus Server returned an error: {errorsContract.ErrorMessage} {Environment.NewLine}Server exception: {Environment.NewLine}{errorsContract.FullException}{Environment.NewLine} ----------------------- {Environment.NewLine}";
+            }
+
+            return new OctopusServerException(statusCode, fullDetails)
+            {
+                HelpText = errorsContract.HelpText
+            };
+        }
+
+        private static OctopusErrorsContract OctopusErrorsContractFromBody(string body)
+        {
+            OctopusErrorsContract result = null;
+            var errorMessage = body;
+
             try
             {
-                var errors = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
-                errorMessage = errors.ErrorMessage;
+                result = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
             }
-            catch
+            catch (Exception jsonEx) when (jsonEx is ArgumentNullException or JsonSerializationException)
             {
-                errorMessage = body;
+                errorMessage = $"JSON deserialize error for {body} :: {jsonEx.Message}";
             }
-            return errorMessage;
+            catch (Exception ex)
+            {
+                errorMessage = $"Unexpected json deserialization error for {body} :: {ex.Message}";
+            }
+
+            return new OctopusErrorsContract
+            {
+                ErrorMessage = result?.ErrorMessage ?? errorMessage,
+                Errors = result?.Errors ?? Array.Empty<string>(),
+                Details = result?.Details,
+                HelpText = result?.HelpText ?? string.Empty,
+                FullException = result?.FullException ?? string.Empty
+            };
         }
 
         /// <summary>
