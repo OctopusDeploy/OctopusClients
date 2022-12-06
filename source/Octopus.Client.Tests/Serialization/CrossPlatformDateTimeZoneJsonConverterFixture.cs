@@ -26,15 +26,16 @@ namespace Octopus.Client.Tests.Serialization
         {
             var date = JsonConvert.DeserializeObject<DateTimeOffset>($@"""{serializedDate}""", serializerSettings);
 
-            var timezone = hasTimeZone ? TimeSpan.FromHours(8) : DateTimeOffset.Now.Offset;
-            var expected = new DateTimeOffset(
+            var expectedDateWithoutOffset = new DateTime(
                 2022,
                 08,
                 24,
                 20,
                 54,
-                46,
-                timezone);
+                46);
+            var expected = hasTimeZone 
+                ? new DateTimeOffset(expectedDateWithoutOffset, TimeSpan.FromHours(8)) 
+                : new DateTimeOffset(expectedDateWithoutOffset);
 
             date
                 .Should()
