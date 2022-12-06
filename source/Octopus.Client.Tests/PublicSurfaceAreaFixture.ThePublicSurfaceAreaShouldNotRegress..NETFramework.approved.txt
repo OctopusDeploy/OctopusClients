@@ -5122,7 +5122,6 @@ Octopus.Client.Model
     Boolean IsDefault { get; set; }
     Boolean IsPrivate { get; set; }
     String Name { get; set; }
-    String PrivateSpaceOwner { get; set; }
     String Slug { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeamMembers { get; set; }
     Octopus.Client.Model.ReferenceCollection SpaceManagersTeams { get; set; }
