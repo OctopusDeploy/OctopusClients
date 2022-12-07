@@ -49,7 +49,7 @@ namespace Octopus.Client.Exceptions
             return CreateException(statusCode, body);
         }
 
-        private static OctopusException CreateException(int statusCode, string body)
+        public static OctopusException CreateException(int statusCode, string body)
         {
             return statusCode switch
             {
@@ -114,10 +114,6 @@ namespace Octopus.Client.Exceptions
             {
                 result = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
                 errorMessage = result?.ErrorMessage ?? body;
-            }
-            catch (Exception jsonEx) when (jsonEx is ArgumentNullException or JsonSerializationException)
-            {
-                errorMessage = $"JSON deserialize error for {body} :: {jsonEx.Message}";
             }
             catch (Exception ex)
             {
