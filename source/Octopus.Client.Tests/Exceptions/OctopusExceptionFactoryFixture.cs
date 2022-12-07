@@ -243,7 +243,6 @@ namespace Octopus.Client.Tests.Exceptions
         [TestCase(HttpStatusCode.UnsupportedMediaType)]
         [TestCase(HttpStatusCode.RequestedRangeNotSatisfiable)]
         [TestCase(HttpStatusCode.ExpectationFailed)]
-        [TestCase(HttpStatusCode.Locked)]
         [TestCase(HttpStatusCode.UpgradeRequired)]
         public async Task
             HttpResponseWithStatusCodeExcluding_400_401_403_404_405_409_AndNoPayload_ShouldCreateOctopusServerException(
