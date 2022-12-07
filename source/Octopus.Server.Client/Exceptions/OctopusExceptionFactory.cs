@@ -49,29 +49,20 @@ namespace Octopus.Client.Exceptions
             return CreateException(statusCode, body);
         }
 
-        public static OctopusException CreateException(int statusCode, string body)
+        private static OctopusException CreateException(int statusCode, string body)
         {
-            if (statusCode is 400 or 409) // Bad request: usually validation error 
+            return statusCode switch
             {
-                return CreateOctopusValidationException(statusCode, body);
-            }
-
-            if (statusCode is 401 or 403) // Forbidden, usually no API key or permissions
-            {
-                return CreateOctopusSecurityException(statusCode, body);
-            }
-
-            if (statusCode == 404) // Not found
-            {
-                return new OctopusResourceNotFoundException(OctopusErrorsContractFromBody(body).ErrorMessage);
-            }
-
-            if (statusCode == 405) // Method not allowed
-            {
-                return new OctopusMethodNotAllowedFoundException(OctopusErrorsContractFromBody(body).ErrorMessage);
-            }
-
-            return CreateOctopusServerException(statusCode, body);
+                // Bad request: usually validation error 
+                400 or 409 => CreateOctopusValidationException(statusCode, body),
+                // Forbidden, usually no API key or permissions
+                401 or 403 => CreateOctopusSecurityException(statusCode, body),
+                // Not found
+                404 => new OctopusResourceNotFoundException(OctopusErrorsContractFromBody(body).ErrorMessage),
+                // Method not allowed
+                405 => new OctopusMethodNotAllowedFoundException(OctopusErrorsContractFromBody(body).ErrorMessage),
+                _ => CreateOctopusServerException(statusCode, body)
+            };
         }
 
         private static OctopusSecurityException CreateOctopusSecurityException(int statusCode, string body)
