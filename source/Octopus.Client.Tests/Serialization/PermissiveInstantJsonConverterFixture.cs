@@ -21,14 +21,16 @@ namespace Octopus.Client.Tests.Serialization
         public void ShouldDeserializeInstantWithoutZone()
         {
             var result = JsonConvert.DeserializeObject<Instant?>(@"""2022-08-24T12:54:46""", serializerSettings);
-            var expected = Instant.FromUtc(
-                    2022,
-                    8,
-                    24,
-                    12,
-                    54,
-                    46)
-                .Minus(Duration.FromTimeSpan(DateTimeOffset.Now.Offset));
+            var expectedDateWithoutOffset = new DateTime(
+                2022,
+                08,
+                24,
+                12,
+                54,
+                46);
+            
+            var expected = Instant.FromDateTimeUtc(new DateTime(expectedDateWithoutOffset.Ticks, DateTimeKind.Utc))
+                .Minus(Duration.FromTimeSpan(new DateTimeOffset(expectedDateWithoutOffset).Offset));
 
             result
                 .Should()
