@@ -50,9 +50,10 @@ public class OctopusExceptionFactoryFixture
 
             if (resultValidationObject is not null)
             {
-                createdException!.ErrorMessage.Should().Be(resultValidationObject.ErrorMessage);
-                createdException!.Errors.Should().BeEquivalentTo(resultValidationObject.Errors);
-                createdException!.HelpText.Should().Be(resultValidationObject.HelpText);
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.ErrorMessage.Should().Be(resultValidationObject.ErrorMessage);
+                createdException.Errors.Should().BeEquivalentTo(resultValidationObject.Errors);
+                createdException.HelpText.Should().Be(resultValidationObject.HelpText);
             }
         }
     }
@@ -105,8 +106,9 @@ public class OctopusExceptionFactoryFixture
 
             if (resultValidationObject is not null)
             {
-                createdException!.Message.Should().Be(resultValidationObject.ErrorMessage);
-                createdException!.HelpText.Should().Be(resultValidationObject.HelpText);
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
+                createdException.HelpText.Should().Be(resultValidationObject.HelpText);
             }
         }
     }
@@ -149,7 +151,8 @@ public class OctopusExceptionFactoryFixture
 
             if (resultValidationObject is not null)
             {
-                createdException!.Message.Should().Be(resultValidationObject.ErrorMessage);
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
             }
         }
     }
@@ -192,7 +195,8 @@ public class OctopusExceptionFactoryFixture
 
             if (resultValidationObject is not null)
             {
-                createdException!.Message.Should().Be(resultValidationObject.ErrorMessage);
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
             }
         }
     }
@@ -272,12 +276,13 @@ public class OctopusExceptionFactoryFixture
 
             if (resultValidationObject is not null)
             {
-                createdException!.Message.Should().Contain(resultValidationObject.ErrorMessage);
-                createdException!.HelpText.Should().Be(resultValidationObject.HelpText);
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.Message.Should().Contain(resultValidationObject.ErrorMessage);
+                createdException.HelpText.Should().Be(resultValidationObject.HelpText);
 
                 if (!string.IsNullOrWhiteSpace(resultValidationObject.FullException))
                 {
-                    createdException!.Message.Should().Contain(resultValidationObject.FullException);
+                    createdException.Message.Should().Contain(resultValidationObject.FullException);
                 }
             }
         }
