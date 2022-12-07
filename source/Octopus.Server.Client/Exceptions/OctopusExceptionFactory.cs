@@ -114,14 +114,15 @@ namespace Octopus.Client.Exceptions
             };
         }
 
-        private static OctopusErrorsContract OctopusErrorsContractFromBody(string body)
+        internal static OctopusErrorsContract OctopusErrorsContractFromBody(string body)
         {
             OctopusErrorsContract result = null;
-            var errorMessage = body;
+            string errorMessage;
 
             try
             {
                 result = JsonConvert.DeserializeObject<OctopusErrorsContract>(body);
+                errorMessage = result?.ErrorMessage ?? body;
             }
             catch (Exception jsonEx) when (jsonEx is ArgumentNullException or JsonSerializationException)
             {
@@ -134,7 +135,7 @@ namespace Octopus.Client.Exceptions
 
             return new OctopusErrorsContract
             {
-                ErrorMessage = result?.ErrorMessage ?? errorMessage,
+                ErrorMessage = errorMessage,
                 Errors = result?.Errors ?? Array.Empty<string>(),
                 Details = result?.Details,
                 HelpText = result?.HelpText ?? string.Empty,
