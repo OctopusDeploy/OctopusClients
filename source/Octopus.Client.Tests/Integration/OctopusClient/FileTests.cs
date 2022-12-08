@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +32,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
                 if (file.ContentType != "application/octet-stream")
                     return
-                        CreateErrorResponse($"ContentType is not 'application/octet-stream' found '{file.ContentType}'");
+                        CreateErrorResponse(
+                            $"ContentType is not 'application/octet-stream' found '{file.ContentType}'");
 
                 if (!CompareStreamToSharedBytes(file.Value))
                     return CreateErrorResponse($"Body does not match");
@@ -52,6 +55,22 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 };
                 _recieved = false;
                 await AsyncClient.Post("~/", file).ConfigureAwait(false);
+                _recieved.Should().BeTrue();
+            }
+        }
+
+        [Test]
+        public void PostFileSync()
+        {
+            using (var ms = new MemoryStream(SharedBytes))
+            {
+                var file = new FileUpload
+                {
+                    Contents = ms,
+                    FileName = "foo.txt"
+                };
+                _recieved = false;
+                SyncClient.Post("~/", file);
                 _recieved.Should().BeTrue();
             }
         }
