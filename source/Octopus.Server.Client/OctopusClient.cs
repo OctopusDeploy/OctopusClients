@@ -519,15 +519,17 @@ namespace Octopus.Client
                             webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
 
                             var requestStream = webRequest.GetRequestStream();
+                            
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
 
-                            var headerTemplate = "Content-Disposition: form-data; filename=\"{0}\"\r\nContent-Type: application/octet-stream\r\n\r\n";
+                            var headerTemplate = "Content-Disposition: form-data; name=file; filename={0}\r\nContent-Type: application/octet-stream\r\n\r\n";
                             var header = string.Format(headerTemplate, fileUploadContent.FileName);
                             var headerbytes = Encoding.UTF8.GetBytes(header);
                             requestStream.Write(headerbytes, 0, headerbytes.Length);
                             fileUploadContent.Contents.CopyTo(requestStream);
                             requestStream.Write(boundarybytes, 0, boundarybytes.Length);
                             requestStream.Flush();
+
                             requestStream.Close();
                         }
                         else
