@@ -105,7 +105,7 @@ namespace Octopus.Client.Exceptions
             };
         }
 
-        internal static OctopusErrorsContract OctopusErrorsContractFromBody(string body)
+        private static OctopusErrorsContract OctopusErrorsContractFromBody(string body)
         {
             OctopusErrorsContract result = null;
             string errorMessage;
