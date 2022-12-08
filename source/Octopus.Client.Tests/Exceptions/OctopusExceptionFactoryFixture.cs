@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
 
@@ -29,59 +30,51 @@ namespace Octopus.Client.Tests.Exceptions
         }
 
         [Test]
-        [TestCaseSource(nameof(CreatedOctopusExceptionTestData))]
-        public async Task CreatedOctopusValidationException_ShouldContainPayloadInformation(
-            OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        [TestCaseSource(nameof(CreatedOctopusValidationExceptionTestData))]
+        public async Task CreatedOctopusValidationException_ShouldContainPayloadInformation(string payload, OctopusValidationException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
-            OctopusExceptionFactory.OctopusErrorsContract resultValidationObject = null;
-            if (HasAnyData(octopusErrorsContract))
+            if (!string.IsNullOrWhiteSpace(payload))
             {
-                var content = JsonConvert.SerializeObject(octopusErrorsContract);
-                httpResponseMessage.Content = new StringContent(content);
-                resultValidationObject = OctopusExceptionFactory.OctopusErrorsContractFromBody(content);
+                httpResponseMessage.Content = new StringContent(payload);
             }
 
-            var createdException =
-                await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusValidationException;
+            var createdException = await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusValidationException;
+            createdException.Should().NotBeNull();
 
             using (new AssertionScope())
             {
-                createdException.Should().NotBeNull();
-
-                if (resultValidationObject != null)
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    createdException.ErrorMessage.Should().Be(resultValidationObject.ErrorMessage);
-                    createdException.Errors.Should().BeEquivalentTo(resultValidationObject.Errors);
-                    createdException.HelpText.Should().Be(resultValidationObject.HelpText);
-                }
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.ErrorMessage.Should().Be(expectedResult.ErrorMessage);
+                createdException.Errors.Should().BeEquivalentTo(expectedResult.Errors);
+                createdException.HelpText.Should().Be(expectedResult.HelpText);
             }
         }
 
-        public static IEnumerable<TestCaseData> CreatedOctopusExceptionTestData()
+        public static IEnumerable<TestCaseData> CreatedOctopusValidationExceptionTestData()
         {
-            yield return new TestCaseData(new OctopusExceptionFactory.OctopusErrorsContract { });
-            yield return new TestCaseData(
-                new OctopusExceptionFactory.OctopusErrorsContract { ErrorMessage = "Error message" });
-            yield return new TestCaseData(
-                new OctopusExceptionFactory.OctopusErrorsContract
-                    { ErrorMessage = "Error message", Errors = new[] { "Additional error" } });
-            yield return new TestCaseData(
-                new OctopusExceptionFactory.OctopusErrorsContract
-                {
-                    ErrorMessage = "Error message", Errors = new[] { "Additional error" }, HelpText = "Help text"
-                });
-            yield return new TestCaseData(
-                new OctopusExceptionFactory.OctopusErrorsContract
-                {
-                    ErrorMessage = "Error message", Errors = new[] { "Additional error" }, HelpText = "Help text",
-                    FullException = "Full exception"
-                });
-            yield return new TestCaseData(
-                new OctopusExceptionFactory.OctopusErrorsContract
-                    { Errors = new[] { "Additional error" }, HelpText = "Help text" });
+            const int httpStatusCode = (int)HttpStatusCode.BadRequest;
+            const string errorMessageValue = "Error Message";
+            const string helpTextValue = "Help Text";
+            var errorsValue = new[] { "Additional Errors" };
+            var jObject = new JObject
+            {
+                { "ErrorMessage", errorMessageValue },
+                { "Errors", JArray.FromObject(errorsValue) },
+                { "HelpText", helpTextValue },
+                { "Random", "not relevant"}
+            };
+
+            yield return new TestCaseData(jObject.ToString(), new OctopusValidationException(httpStatusCode, errorMessageValue, errorsValue) { HelpText = helpTextValue });
+
+            jObject.Remove("Errors");
+            yield return new TestCaseData(jObject.ToString(), new OctopusValidationException(httpStatusCode, errorMessageValue, Array.Empty<string>()) { HelpText = helpTextValue });
+
+            jObject.Remove("HelpText");
+            yield return new TestCaseData(jObject.ToString(), new OctopusValidationException(httpStatusCode, errorMessageValue, Array.Empty<string>()) { HelpText = string.Empty });
+            
+            yield return new TestCaseData(string.Empty, new OctopusValidationException(httpStatusCode, string.Empty, Array.Empty<string>()) { HelpText = string.Empty });
         }
 
         [Test]
@@ -101,34 +94,45 @@ namespace Octopus.Client.Tests.Exceptions
         }
 
         [Test]
-        [TestCaseSource(nameof(CreatedOctopusExceptionTestData))]
-        public async Task CreatedOctopusSecurityException_ShouldContainPayloadInformation(
-            OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        [TestCaseSource(nameof(CreatedOctopusSecurityExceptionTestData))]
+        public async Task CreatedOctopusSecurityException_ShouldContainPayloadInformation(string payload, OctopusSecurityException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Unauthorized);
 
-            OctopusExceptionFactory.OctopusErrorsContract resultValidationObject = null;
-            if (HasAnyData(octopusErrorsContract))
+            if (!string.IsNullOrWhiteSpace(payload))
             {
-                var content = JsonConvert.SerializeObject(octopusErrorsContract);
-                httpResponseMessage.Content = new StringContent(content);
-                resultValidationObject = OctopusExceptionFactory.OctopusErrorsContractFromBody(content);
+                httpResponseMessage.Content = new StringContent(payload);
             }
 
-            var createdException =
-                await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusSecurityException;
+            var createdException = await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusSecurityException;
+            createdException.Should().NotBeNull();
 
             using (new AssertionScope())
             {
-                createdException.Should().NotBeNull();
-
-                if (resultValidationObject != null)
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
-                    createdException.HelpText.Should().Be(resultValidationObject.HelpText);
-                }
+                // ReSharper disable once PossibleNullReferenceException
+                createdException.Message.Should().Be(expectedResult.Message);
+                createdException.HelpText.Should().Be(expectedResult.HelpText);
             }
+        }
+        
+        public static IEnumerable<TestCaseData> CreatedOctopusSecurityExceptionTestData()
+        {
+            const int httpStatusCode = (int)HttpStatusCode.Unauthorized;
+            const string errorMessageValue = "Error Message";
+            const string helpTextValue = "Help Text";
+            var jObject = new JObject
+            {
+                { "ErrorMessage", errorMessageValue },
+                { "HelpText", helpTextValue },
+                { "Random", "not relevant"}
+            };
+
+            yield return new TestCaseData(jObject.ToString(), new OctopusSecurityException(httpStatusCode, errorMessageValue) { HelpText = helpTextValue });
+
+            jObject.Remove("HelpText");
+            yield return new TestCaseData(jObject.ToString(), new OctopusSecurityException(httpStatusCode, errorMessageValue) { HelpText = string.Empty});
+            
+            yield return new TestCaseData(string.Empty, new OctopusSecurityException(httpStatusCode, string.Empty) { HelpText = string.Empty});
         }
 
         [Test]
@@ -147,33 +151,33 @@ namespace Octopus.Client.Tests.Exceptions
         }
 
         [Test]
-        [TestCaseSource(nameof(CreatedOctopusExceptionTestData))]
-        public async Task CreatedOctopusResourceNotFoundException_ShouldContainPayloadInformation(
-            OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        [TestCaseSource(nameof(CreatedOctopusResourceNotFoundExceptionTestData))]
+        public async Task CreatedOctopusResourceNotFoundException_ShouldContainPayloadInformation(string payload, OctopusResourceNotFoundException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-
-            OctopusExceptionFactory.OctopusErrorsContract resultValidationObject = null;
-            if (HasAnyData(octopusErrorsContract))
+            
+            if (!string.IsNullOrWhiteSpace(payload))
             {
-                var content = JsonConvert.SerializeObject(octopusErrorsContract);
-                httpResponseMessage.Content = new StringContent(content);
-                resultValidationObject = OctopusExceptionFactory.OctopusErrorsContractFromBody(content);
+                httpResponseMessage.Content = new StringContent(payload);
             }
 
-            var createdException =
-                await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusResourceNotFoundException;
-
-            using (new AssertionScope())
+            var createdException = await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusResourceNotFoundException;
+            createdException.Should().NotBeNull();
+            // ReSharper disable once PossibleNullReferenceException
+            createdException.Message.Should().Be(expectedResult.Message);
+        }
+        
+        public static IEnumerable<TestCaseData> CreatedOctopusResourceNotFoundExceptionTestData()
+        {
+            const string errorMessageValue = "Error Message";
+            var jObject = new JObject
             {
-                createdException.Should().NotBeNull();
+                { "ErrorMessage", errorMessageValue },
+                { "Random", "not relevant"}
+            };
 
-                if (resultValidationObject != null)
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
-                }
-            }
+            yield return new TestCaseData(jObject.ToString(), new OctopusResourceNotFoundException(errorMessageValue));
+            yield return new TestCaseData(string.Empty, new OctopusResourceNotFoundException(string.Empty));
         }
 
         [Test]
@@ -192,34 +196,33 @@ namespace Octopus.Client.Tests.Exceptions
         }
 
         [Test]
-        [TestCaseSource(nameof(CreatedOctopusExceptionTestData))]
-        public async Task CreatedOctopusMethodNotAllowedFoundException_ShouldContainPayloadInformation(
-            OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        [TestCaseSource(nameof(CreatedOctopusMethodNotAllowedFoundExceptionTestData))]
+        public async Task CreatedOctopusMethodNotAllowedFoundException_ShouldContainPayloadInformation(string payload, OctopusMethodNotAllowedFoundException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
 
-            OctopusExceptionFactory.OctopusErrorsContract resultValidationObject = null;
-            if (HasAnyData(octopusErrorsContract))
+            if (!string.IsNullOrWhiteSpace(payload))
             {
-                var content = JsonConvert.SerializeObject(octopusErrorsContract);
-                httpResponseMessage.Content = new StringContent(content);
-                resultValidationObject = OctopusExceptionFactory.OctopusErrorsContractFromBody(content);
+                httpResponseMessage.Content = new StringContent(payload);
             }
 
-            var createdException =
-                await OctopusExceptionFactory.CreateException(httpResponseMessage) as
-                    OctopusMethodNotAllowedFoundException;
+            var createdException = await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusMethodNotAllowedFoundException;
+            createdException.Should().NotBeNull();
+            // ReSharper disable once PossibleNullReferenceException
+            createdException.Message.Should().Be(expectedResult.Message);
+        }
 
-            using (new AssertionScope())
+        public static IEnumerable<TestCaseData> CreatedOctopusMethodNotAllowedFoundExceptionTestData()
+        {
+            const string errorMessageValue = "Error Message";
+            var jObject = new JObject
             {
-                createdException.Should().NotBeNull();
+                { "ErrorMessage", errorMessageValue },
+                { "Random", "not relevant"}
+            };
 
-                if (resultValidationObject != null)
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    createdException.Message.Should().Be(resultValidationObject.ErrorMessage);
-                }
-            }
+            yield return new TestCaseData(jObject.ToString(), new OctopusMethodNotAllowedFoundException(errorMessageValue));
+            yield return new TestCaseData(string.Empty, new OctopusMethodNotAllowedFoundException(string.Empty));
         }
 
         [Test]
@@ -259,46 +262,60 @@ namespace Octopus.Client.Tests.Exceptions
         }
 
         [Test]
-        [TestCaseSource(nameof(CreatedOctopusExceptionTestData))]
-        public async Task CreatedOctopusServerException_ShouldContainPayloadInformation(
-            OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        [TestCaseSource(nameof(CreatedOctopusServerExceptionTestData))]
+        public async Task CreatedOctopusServerException_ShouldContainPayloadInformation(string payload, OctopusServerException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.Ambiguous);
 
-            OctopusExceptionFactory.OctopusErrorsContract resultValidationObject = null;
-            if (HasAnyData(octopusErrorsContract))
+            if (!string.IsNullOrWhiteSpace(payload))
             {
-                var content = JsonConvert.SerializeObject(octopusErrorsContract);
-                httpResponseMessage.Content = new StringContent(content);
-                resultValidationObject = OctopusExceptionFactory.OctopusErrorsContractFromBody(content);
+                httpResponseMessage.Content = new StringContent(payload);
             }
 
-            var createdException =
-                await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusServerException;
+            var createdException = await OctopusExceptionFactory.CreateException(httpResponseMessage) as OctopusServerException;
+            createdException.Should().NotBeNull();
 
             using (new AssertionScope())
             {
-                createdException.Should().NotBeNull();
-
-                if (resultValidationObject != null)
+                // Branching as Contain is not valid with empty string.
+                // ReSharper disable once PossibleNullReferenceException
+                if (string.IsNullOrWhiteSpace(createdException.Message))
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    createdException.Message.Should().Contain(resultValidationObject.ErrorMessage);
-                    createdException.HelpText.Should().Be(resultValidationObject.HelpText);
-
-                    if (!string.IsNullOrWhiteSpace(resultValidationObject.FullException))
-                    {
-                        createdException.Message.Should().Contain(resultValidationObject.FullException);
-                    }
+                    createdException.Message.Should().Be(expectedResult.Message);
                 }
+                else
+                {
+                    // Using contain as message could be altered when FullException is not empty.
+                    createdException.Message.Should().Contain(expectedResult.Message);
+                }
+                
+                createdException.HelpText.Should().Be(expectedResult.HelpText);
             }
         }
-
-        private static bool HasAnyData(OctopusExceptionFactory.OctopusErrorsContract octopusErrorsContract)
+        
+        public static IEnumerable<TestCaseData> CreatedOctopusServerExceptionTestData()
         {
-            return octopusErrorsContract.Details != null || octopusErrorsContract.Errors != null ||
-                   octopusErrorsContract.ErrorMessage != null || octopusErrorsContract.FullException != null ||
-                   octopusErrorsContract.HelpText != null;
+            const int httpStatusCode = (int)HttpStatusCode.Ambiguous;
+            const string errorMessageValue = "Error Message";
+            const string helpTextValue = "Help Text";
+            const string fullExceptionValue = "Full Exception";
+            var jObject = new JObject
+            {
+                { "ErrorMessage", errorMessageValue },
+                { "HelpText", helpTextValue },
+                { "FullException", fullExceptionValue },
+                { "Random", "not relevant"}
+            };
+
+            yield return new TestCaseData(jObject.ToString(), new OctopusServerException(httpStatusCode, fullExceptionValue) { HelpText = helpTextValue });
+
+            jObject.Remove("FullException");
+            yield return new TestCaseData(jObject.ToString(), new OctopusServerException(httpStatusCode, errorMessageValue) { HelpText = helpTextValue });
+            
+            jObject.Remove("HelpText");
+            yield return new TestCaseData(jObject.ToString(), new OctopusServerException(httpStatusCode, errorMessageValue) { HelpText = string.Empty });
+            
+            yield return new TestCaseData(string.Empty, new OctopusServerException(httpStatusCode, string.Empty) { HelpText = string.Empty });
         }
     }
 }
