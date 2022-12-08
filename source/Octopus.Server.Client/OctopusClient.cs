@@ -526,7 +526,9 @@ namespace Octopus.Client
                             var headerbytes = Encoding.UTF8.GetBytes(header);
                             requestStream.Write(headerbytes, 0, headerbytes.Length);
                             fileUploadContent.Contents.CopyTo(requestStream);
-                            requestStream.Write(boundarybytes, 0, boundarybytes.Length);
+                            
+                            var boundarybytesTrailer = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n"); 
+                            requestStream.Write(boundarybytesTrailer, 0, boundarybytesTrailer.Length);
                             requestStream.Flush();
                             requestStream.Close();
                         }
