@@ -19,7 +19,17 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Post(TestRootPath, p =>
-            {
+            { 
+                using (var reader = new StreamReader(Request.Body))
+                {
+                    var content = reader.ReadToEnd();
+                    if (!content.Trim().EndsWith("--"))
+                    {
+                        return CreateErrorResponse(
+                            $"The request did not include an appropriate boundary trailer ending with --");
+                    }
+                }
+                
                 var file = Request.Files.SingleOrDefault();
                 if (file == null)
                     return CreateErrorResponse($"No file");
