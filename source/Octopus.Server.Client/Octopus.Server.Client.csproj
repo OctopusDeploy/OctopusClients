@@ -11,6 +11,8 @@
     <Description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
 
 This package contains the non-ILmerged client library for the HTTP API in Octopus.</Description>
+    <PackageProjectUrl>https://github.com/OctopusDeploy/OctopusClients</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <!-- copy dependencies to the output folder (for netstandard) so we can ilmerge them together -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
