@@ -101,8 +101,10 @@ jobs:
               sha: context.sha
             })
             
-  test-ubuntu-16:
-    name: Unit test on Ubuntu 16
+  test-linux-distrubtions:
+    strategy:
+      matrix:
+        os: [ubuntu16, ubuntu18, ubuntu20, debian-buster, fedora35, centos7, rhel9, rocky9, amazon2, opensuse-leap15, opensuse-tumbleweed ]
     needs: build
     runs-on: ubuntu-latest
     env:
@@ -110,229 +112,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu16
+      run: docker-compose -f ./docker-compose.build.yml build test-base-${{ matrix.os }}
     - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu16
-    - name: Ubuntu 16 unit test report
+      run: docker-compose -f ./docker-compose.test.yml up test-${{ matrix.os }}
+    - name: ${{ matrix.os }} unit test report
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: Ubuntu 16 unit tests results
+        name: ${{ matrix.os }} unit tests results
         path: results/*.trx
         reporter: dotnet-trx
         fail-on-error: true
   
-  test-ubuntu-18:
-    name: Unit test on Ubuntu 18
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu18
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu18
-    - name: Ubuntu 18 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Ubuntu 18 unit test results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-ubuntu-20:
-    name: Unit test on Ubuntu 20
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-ubuntu20
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-ubuntu20
-    - name: Ubuntu 20 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Ubuntu 20 unit test results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-debian-buster:
-    name: Unit Test on Debian Buster
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-debian-buster
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-debian-buster
-    - name: Debian Buster unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Debian Buster test results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-    
-  test-fedora-35:
-    name: Unit test on Fedora 35
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-fedora35
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-fedora35
-    - name: Fedora 35 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Fedora 35 unit test results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-  
-  test-centos-7:
-    name: Unit test on Centos 7
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-centos7
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-centos7
-    - name: Centos 7 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Centos 7 unit tests results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-rhel-9:
-    name: Unit test on RHEL 9
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-rhel9
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-rhel9
-    - name: RHEL 9 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: RHEL 9 unit test results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-rocky-9:
-    name: Unit test on Rocky 9
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-rocky9
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-rocky9
-    - name: Rocky 9 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Rocky 9 unit tests results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-amazon-2:
-    name: Unit test on Amazon Linx 2
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-amazon2
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-amazon2
-    - name: Amazon 2 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Amazon 2 unit tests results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
-  test-opensuse-leap-15:
-    name: Unit test on OpenSuse Leap 15
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-leap15
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-opensuse-leap15
-    - name: OpenSuse Leap 15 unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: OpenSuse Leap 15 unit tests results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
- 
-  test-opensuse-tumbleweed:
-    name: Unit test on OpenSuse Tumbleweed
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-opensuse-tumbleweed
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-opensuse-tumbleweed
-    - name: OpenSuse Tumbleweed unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: OpenSuse Tumbleweed unit tests results
-        path: results/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
-
   test-macos:
     name: Unit test on Mac OS
     needs: build
@@ -361,18 +152,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [
       build, 
-      test-rocky-9, 
-      test-rhel-9, 
-      test-centos-7, 
-      test-fedora-35, 
-      test-debian-buster, 
-      test-ubuntu-16, 
-      test-ubuntu-18, 
-      test-ubuntu-20, 
-      test-macos,
-      test-opensuse-leap-15,
-      test-opensuse-tumbleweed,
-      test-amazon-2 ]
+      test-linux-distrubtions, 
+      test-macos ]
     steps:
       - name: Download nuget package artifact
         uses: actions/download-artifact@v3
