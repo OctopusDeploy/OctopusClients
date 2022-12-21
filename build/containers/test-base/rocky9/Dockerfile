@@ -10,11 +10,10 @@ RUN dnf install \
         findutils \
         libicu \
         compat-openssl11 \
+        gzip \
     -y
 
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0 --install-dir /usr/share/dotnet
 
-
 # Convention to allow users of this tool container to easily see how it was created.
 COPY Dockerfile /
-
