@@ -5704,24 +5704,6 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionPackageResource DonorPackage { get; set; }
     String Template { get; set; }
   }
-  class WebPortalConfigResource
-    Octopus.Client.Extensibility.IResource
-  {
-    .ctor()
-    String Id { get; set; }
-    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
-    Octopus.Client.Model.WebPortalSecurityResource Security { get; set; }
-  }
-  class WebPortalSecurityResource
-  {
-    .ctor()
-    Boolean ContentSecurityPolicyEnabled { get; set; }
-    String CorsWhitelist { get; set; }
-    Boolean HttpStrictTransportSecurityEnabled { get; set; }
-    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
-    String ReferrerPolicy { get; set; }
-    Octopus.Client.Model.XOptionsResource XOptions { get; set; }
-  }
   class WorkerPoolResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5781,14 +5763,6 @@ Octopus.Client.Model
     String SubjectDistinguishedName { get; set; }
     String Thumbprint { get; set; }
     Int32 Version { get; set; }
-  }
-  class XOptionsResource
-  {
-    static System.String XFrameAllowFromDescription
-    static System.String XFrameOptionsDescription
-    .ctor()
-    String XFrameOptionAllowFrom { get; set; }
-    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Model.Accounts
@@ -7017,6 +6991,41 @@ Octopus.Client.Model.Versioning
     .ctor()
     String Format(String, Object, IFormatProvider)
     Object GetFormat(Type)
+  }
+}
+Octopus.Client.Model.WebPortalConfiguration
+{
+  class WebPortalConfigResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalLoggingResource Logging { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalSecurityResource Security { get; set; }
+  }
+  class WebPortalLoggingResource
+  {
+    .ctor()
+    String[] TrustedProxies { get; set; }
+  }
+  class WebPortalSecurityResource
+  {
+    .ctor()
+    Boolean ContentSecurityPolicyEnabled { get; set; }
+    String CorsWhitelist { get; set; }
+    Boolean HttpStrictTransportSecurityEnabled { get; set; }
+    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
+    String ReferrerPolicy { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.XOptionsResource XOptions { get; set; }
+  }
+  class XOptionsResource
+  {
+    static System.String XFrameAllowFromDescription
+    static System.String XFrameOptionsDescription
+    .ctor()
+    String XFrameOptionAllowFrom { get; set; }
+    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Operations
