@@ -28,5 +28,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string DeploymentChangesTemplate { get; set; }
+
+        [Writeable]
+        public bool ForcePackageDownload { get; set; }
     }
 }
