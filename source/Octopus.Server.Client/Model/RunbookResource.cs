@@ -47,5 +47,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public RunbookRetentionPeriod RunRetentionPolicy { get; set; }
+
+        [Writeable]
+        public bool ForcePackageDownload { get; set; }
     }
 }
