@@ -313,6 +313,20 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Sends a command to a resource at the given URI on the server using the POST verb, and retrieve the response.
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="resource">The resource to create.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        public TResponse Post<TResponse>(string path, object resource, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            return DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true).ResponseResource;
+        }
+
+        /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>
         /// <param name="path">The path to the container resource.</param>
