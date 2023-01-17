@@ -186,7 +186,7 @@ namespace Octopus.Client
         /// <param name="path">The path to the container resource.</param>
         /// <param name="resource">The resource to create.</param>
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
-        void Post<TResource>(string path, TResource resource, object pathParameters = null);
+        void Post(string path, object resource, object pathParameters = null);
 
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb, and retrieve the response.
