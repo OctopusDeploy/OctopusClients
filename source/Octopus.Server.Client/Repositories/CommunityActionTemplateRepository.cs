@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                Client.Post(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
+                Client.Post<string>(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
             }
         }
 
