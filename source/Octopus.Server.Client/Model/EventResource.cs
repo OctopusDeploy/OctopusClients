@@ -81,6 +81,11 @@ namespace Octopus.Client.Model
         /// </summary>
         public string Details { get; set; }
 
+        /// <summary>
+        /// The IP address of the user that created the event.
+        /// </summary>
+        public string IpAddress { get; set; }
+
         public string SpaceId { get; set; }
     }
 }
