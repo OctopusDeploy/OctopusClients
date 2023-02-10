@@ -5,10 +5,8 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public abstract class MachineBasedResource : Resource, INamedResource
+    public abstract class MachineBasedResource : Resource, INamedResource, IHaveSlugResource
     {
-
-
         [Trim]
         [Writeable]
         public string Name { get; set; }
@@ -51,5 +49,7 @@ namespace Octopus.Client.Model
         public string ShellName { get; set; }
         public string ShellVersion { get; set; }
         public string Architecture { get; set; }
+        
+        public string Slug { get; set; }
     }
 }

@@ -3591,6 +3591,7 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     String Architecture { get; set; }
@@ -3604,6 +3605,7 @@ Octopus.Client.Model
     String OperatingSystem { get; set; }
     String ShellName { get; set; }
     String ShellVersion { get; set; }
+    String Slug { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
     String Thumbprint { get; set; }
@@ -3714,7 +3716,6 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection Roles { get; set; }
-    String Slug { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
@@ -5781,6 +5782,7 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.MachineBasedResource
   {
