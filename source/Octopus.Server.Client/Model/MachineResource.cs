@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class MachineResource : MachineBasedResource, IHaveSlugResource
+    public class MachineResource : MachineBasedResource
     {
         public MachineResource()
         {
@@ -129,7 +129,5 @@ namespace Octopus.Client.Model
             TenantTags.Clear();
             return this;
         }
-
-        public string Slug { get; set; }
     }
 }
