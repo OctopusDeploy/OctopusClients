@@ -1955,6 +1955,7 @@ Octopus.Client.Model
     Boolean RememberMeEnabled { get; set; }
     Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
+    Boolean UserApiKeysEnabled { get; set; }
   }
   abstract class AutoDeploy
   {
