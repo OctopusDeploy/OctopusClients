@@ -164,7 +164,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             try
             {
-                return await Create(serverEndpoint, options ?? new OctopusClientOptions(), true).ConfigureAwait(false);
+                return await Create(serverEndpoint, options, true).ConfigureAwait(false);
             }
             catch (PlatformNotSupportedException ex)
             {
@@ -197,6 +197,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
 
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
+            options ??= new OctopusClientOptions();
             var httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
             var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool, httpRouteExtractor);
             // User used to see this exception 

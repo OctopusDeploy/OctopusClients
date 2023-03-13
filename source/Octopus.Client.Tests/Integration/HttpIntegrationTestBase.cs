@@ -157,11 +157,8 @@ namespace Octopus.Client.Tests.Integration
         {
         }
 
-        protected virtual OctopusClientOptions GetClientOptions()
-        {
-            return new OctopusClientOptions();
-        }
-
+        protected virtual OctopusClientOptions GetClientOptions() => null;
+        
         [TearDown]
         public virtual void TearDown()
         {
