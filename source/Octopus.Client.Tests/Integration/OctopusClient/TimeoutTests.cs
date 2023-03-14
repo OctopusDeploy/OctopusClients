@@ -21,7 +21,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
         protected override OctopusClientOptions GetClientOptions()
         {
-            var options = base.GetClientOptions();
+            var options = new OctopusClientOptions();
             options.Timeout = TimeSpan.FromSeconds(5);
             return options;
         }
