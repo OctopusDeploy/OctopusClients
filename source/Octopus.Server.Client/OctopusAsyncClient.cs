@@ -527,10 +527,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
-            var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
-            var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
-            
-            return result;
+            // var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
+            // var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
+
+            return response.ResponseResource;
+
+            // return result;
         }
 
         /// <inheritdoc />
