@@ -7033,7 +7033,7 @@ Octopus.Client.Model.WebPortalConfiguration
     Boolean HttpStrictTransportSecurityEnabled { get; set; }
     Int64 HttpStrictTransportSecurityMaxAge { get; set; }
     String ReferrerPolicy { get; set; }
-    Boolean UnsafeInlineScriptSourceEnabled { get; set; }
+    Boolean UnsafeScriptSourceEnabled { get; set; }
     Octopus.Client.Model.WebPortalConfiguration.XOptionsResource XOptions { get; set; }
   }
   class XOptionsResource

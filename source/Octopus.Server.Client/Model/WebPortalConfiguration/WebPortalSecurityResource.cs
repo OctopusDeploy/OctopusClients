@@ -15,7 +15,7 @@ public class WebPortalSecurityResource
     public bool ContentSecurityPolicyEnabled { get; set; }
     
     [Writeable]
-    public bool UnsafeInlineScriptSourceEnabled { get; set; }
+    public bool UnsafeScriptSourceEnabled { get; set; }
 
     [Writeable]
     public bool HttpStrictTransportSecurityEnabled { get; set; }
