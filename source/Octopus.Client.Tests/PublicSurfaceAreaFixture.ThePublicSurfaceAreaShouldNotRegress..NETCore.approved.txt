@@ -8052,10 +8052,15 @@ Octopus.Client.Repositories.Async
   interface IDeploymentSettingsRepository
   {
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource)
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String, CancellationToken)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
