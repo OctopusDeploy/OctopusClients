@@ -6282,8 +6282,14 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
   {
     .ctor()
+    String AssumedRoleArn { get; set; }
+    String AssumedRoleSession { get; set; }
+    Boolean AssumeRole { get; set; }
+    String AssumeRoleExternalId { get; set; }
+    Nullable<Int32> AssumeRoleSessionDurationSeconds { get; set; }
     String AuthenticationType { get; }
     String ClusterName { get; set; }
+    Boolean UseInstanceRole { get; set; }
   }
   class KubernetesAzureAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
