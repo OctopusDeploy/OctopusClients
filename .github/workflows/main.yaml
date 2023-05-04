@@ -39,7 +39,7 @@ jobs:
         with:
           fetch-depth: 0 # all
       - name: Setup .NET 6.0
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
       # Adjustment is done prior to Nuke build as OCTOVERSION information is included in the result package.
@@ -131,7 +131,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
       - name: Run unit tests 🏗
@@ -165,7 +165,7 @@ jobs:
         with:
           version: latest   
       - name: Push to Octopus 🐙
-        uses: OctopusDeploy/push-package-action@v1
+        uses: OctopusDeploy/push-package-action@v3
         with:
           server: ${{ secrets.DEPLOY_URL }}
           space: Core Platform
@@ -174,7 +174,7 @@ jobs:
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
       - name: Create Release in Octopus 🐙
-        uses: OctopusDeploy/create-release-action@v1
+        uses: OctopusDeploy/create-release-action@v3
         with:
           server: ${{ secrets.DEPLOY_URL }}
           space: Core Platform
