@@ -61,10 +61,10 @@ namespace Octopus.Client
             }
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
-            handler.SslProtocols = options.SslProtocols;
+            handler.SslProtocols = clientOptions.SslProtocols;
             if(addCertificateCallback)
             {
-                ignoreSslErrors = options.IgnoreSslErrors;
+                ignoreSslErrors = clientOptions.IgnoreSslErrors;
                 handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
             }
 #endif
