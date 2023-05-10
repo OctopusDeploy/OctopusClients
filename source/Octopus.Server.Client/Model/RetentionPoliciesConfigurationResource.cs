@@ -9,9 +9,11 @@ namespace Octopus.Client.Model
         {
             Id = "retentionpolicies";
         }
+
         public string Id { get; set; }
 
-        [Writeable] public string CronExpression { get; set; } = "0 */4 * * *";
+        [Writeable]
+        public string CronExpression { get; set; } = "0 */4 * * *";
 
         public LinkCollection Links { get; set; }
     }
