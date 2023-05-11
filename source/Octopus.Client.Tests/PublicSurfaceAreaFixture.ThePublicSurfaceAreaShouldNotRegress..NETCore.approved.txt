@@ -4622,6 +4622,14 @@ Octopus.Client.Model
     static Octopus.Client.Model.RetentionPeriod KeepForever()
     String ToString()
   }
+  class RetentionPoliciesConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String CronExpression { get; set; }
+  }
   class RetentionPolicyResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
