@@ -4624,11 +4624,11 @@ Octopus.Client.Model
   }
   class RetentionPoliciesConfigurationResource
     Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
   {
     .ctor()
     String CronExpression { get; set; }
-    String Id { get; set; }
-    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
   }
   class RetentionPolicyResource
     Octopus.Client.Extensibility.IResource
