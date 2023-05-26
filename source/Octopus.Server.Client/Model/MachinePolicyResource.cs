@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
             MachineConnectivityPolicy = new MachineConnectivityPolicy();
             MachineCleanupPolicy = new MachineCleanupPolicy();
             MachineUpdatePolicy = new MachineUpdatePolicy();
+            MachineRpcCallRetryPolicy = new MachineRpcCallRetryPolicy();
         }
 
         [Writeable]
