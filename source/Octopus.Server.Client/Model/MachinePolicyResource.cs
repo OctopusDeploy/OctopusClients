@@ -13,6 +13,7 @@ namespace Octopus.Client.Model
             MachineConnectivityPolicy = new MachineConnectivityPolicy();
             MachineCleanupPolicy = new MachineCleanupPolicy();
             MachineUpdatePolicy = new MachineUpdatePolicy();
+            MachineRpcCallRetryPolicy = new MachineRpcCallRetryPolicy();
         }
 
         [Writeable]
@@ -42,6 +43,10 @@ namespace Octopus.Client.Model
         [Writeable]
         [JsonProperty(Order=50, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachineUpdatePolicy MachineUpdatePolicy { get; set; }
+
+        [Writeable]
+        [JsonProperty(Order=55, ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public MachineRpcCallRetryPolicy MachineRpcCallRetryPolicy { get; set; }
         
         [Writeable]
         [JsonProperty(Order = 60)]
