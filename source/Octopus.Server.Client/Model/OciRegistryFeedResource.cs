@@ -1,17 +1,18 @@
 using Octopus.Client.Extensibility.Attributes;
 
-namespace Octopus.Client.Model;
-
-public class OciRegistryFeedResource : FeedResource
+namespace Octopus.Client.Model
 {
-    public override FeedType FeedType => FeedType.OciRegistry;
+    public class OciRegistryFeedResource : FeedResource
+    {
+        public override FeedType FeedType => FeedType.OciRegistry;
 
-    [Writeable]
-    public string FeedUri { get; set; }
+        [Writeable] 
+        public string FeedUri { get; set; }
 
-    [Writeable]
-    public string Username { get; set; }
+        [Writeable] 
+        public string Username { get; set; }
 
-    [Writeable]
-    public SensitiveValue Password { get; set; }
+        [Writeable] 
+        public SensitiveValue Password { get; set; }
+    }
 }
