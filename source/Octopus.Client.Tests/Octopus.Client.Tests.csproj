@@ -40,7 +40,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Assent" Version="1.5.0" />
+    <PackageReference Include="Assent" Version="1.9.3" />
     <PackageReference Include="Autofac" Version="4.6.0" />
     <PackageReference Include="FluentAssertions" Version="4.15.0" />
     <PackageReference Include="Nancy" Version="2.0.0" />

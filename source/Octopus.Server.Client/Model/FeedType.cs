@@ -10,6 +10,7 @@
         GitHub,
         BuiltIn,
         Helm,
+        OciRegistry,
         AwsElasticContainerRegistry,
         S3,
         AzureContainerRegistry,

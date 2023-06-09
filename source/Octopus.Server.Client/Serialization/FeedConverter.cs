@@ -17,6 +17,7 @@ namespace Octopus.Client.Serialization
                 {FeedType.BuiltIn, typeof(BuiltInFeedResource)},
                 {FeedType.AwsElasticContainerRegistry, typeof(AwsElasticContainerRegistryFeedResource)},
                 {FeedType.Helm, typeof(HelmFeedResource)},
+                {FeedType.OciRegistry, typeof(OciRegistryFeedResource)},
                 {FeedType.S3, typeof(S3FeedResource)},
                 {FeedType.AzureContainerRegistry, typeof(AzureContainerRegistryFeedResource)},
                 {FeedType.GoogleContainerRegistry, typeof(GoogleContainerRegistryFeedResource)},
