@@ -427,7 +427,7 @@ namespace Octopus.Client.Repositories.Async
             while (true)
             {
                 var stillRunning = await Task.WhenAll(
-                        tasks.Select(t => Client.Get<TaskResource>(t.Link("Self"), additionalQueryParameters))
+                        tasks.Select(t => Client.Get<TaskResource>(t.Link("Self"), additionalQueryParameters, cancellationToken))
                     )
                     .ConfigureAwait(false);
 
