@@ -341,7 +341,7 @@ namespace Octopus.Client.Repositories.Async
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
-            => WaitForCompletion(task, CancellationToken.None, pollIntervalSeconds, timeoutAfterMinutes, (resources, _) => interval(resources));
+            => WaitForCompletion(task, CancellationToken.None, pollIntervalSeconds, timeoutAfterMinutes, (resources, _) => interval?.Invoke(resources));
         
         public Task WaitForCompletion(TaskResource task, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[], CancellationToken> interval = null)
         {
@@ -350,7 +350,7 @@ namespace Octopus.Client.Repositories.Async
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
-            => WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, timeoutAfterMinutes, (resources, token) => interval(resources));
+            => WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, timeoutAfterMinutes, (resources, token) => interval?.Invoke(resources));
         
         public Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[], CancellationToken> interval = null)
         {
@@ -363,14 +363,17 @@ namespace Octopus.Client.Repositories.Async
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], Task> interval = null)
-            => WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, TimeSpan.FromMinutes(timeoutAfterMinutes), (resources, _) => interval(resources));
+            => WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, TimeSpan.FromMinutes(timeoutAfterMinutes), 
+                (resources, _) => interval == null ? Task.CompletedTask : interval(resources));
 
         public Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], CancellationToken, Task> interval = null)
             => WaitForCompletion(tasks, cancellationToken, pollIntervalSeconds, TimeSpan.FromMinutes(timeoutAfterMinutes), interval);
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        public async Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], Task> interval = null)
-            => await WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, timeoutAfter, (resources, _) => interval(resources));
+        public async Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4,
+            TimeSpan? timeoutAfter = null, Func<TaskResource[], Task> interval = null)
+            => await WaitForCompletion(tasks, CancellationToken.None, pollIntervalSeconds, timeoutAfter,
+                (resources, _) => interval == null ? Task.CompletedTask : interval(resources));
         
         public async Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], CancellationToken, Task> interval = null)
         {
