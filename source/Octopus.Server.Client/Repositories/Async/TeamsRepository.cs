@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -33,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
         {
-            await ThrowIfServerVersionIsNotCompatible();
+            await ThrowIfServerVersionIsNotCompatible(CancellationToken.None);
             
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();

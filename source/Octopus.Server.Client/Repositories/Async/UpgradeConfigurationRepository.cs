@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -15,7 +16,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UpgradeConfigurationResource> Get()
         {
-            var link = await ResolveLink();
+            var link = await ResolveLink(CancellationToken.None);
             var upgradeConfiguration = await Client.Get<UpgradeConfigurationResource>(link);
             return upgradeConfiguration;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
@@ -30,14 +31,14 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            ThrowIfServerVersionIsNotCompatible(CancellationToken.None).ConfigureAwait(false);
             
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
 
         public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
         {
-            await ThrowIfServerVersionIsNotCompatible();
+            await ThrowIfServerVersionIsNotCompatible(CancellationToken.None);
             
             return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds });
         }

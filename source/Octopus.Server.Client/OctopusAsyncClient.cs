@@ -577,7 +577,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken = default)
+        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken)
         {
             using (var message = new HttpRequestMessage())
             {
