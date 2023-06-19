@@ -12,21 +12,40 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ITaskRepository : IPaginate<TaskResource>, IGet<TaskResource>, ICreate<TaskResource>, ICanExtendSpaceContext<ITaskRepository>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteHealthCheck(string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
+        Task<TaskResource> ExecuteHealthCheck(CancellationToken cancellationToken, string description = null, int timeoutAfterMinutes = 5, int machineTimeoutAfterMinutes = 1, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
+        
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
+        Task<TaskResource> ExecuteCalamariUpdate(CancellationToken cancellationToken, string description = null, string[] machineIds = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteBackup(string description = null);
+        Task<TaskResource> ExecuteBackup(CancellationToken cancellationToken, string description = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
+        Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken cancellationToken, string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        Task<TaskResource> ExecuteAdHocScript(string scriptBody, CancellationToken cancellationToken, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
+        Task<TaskDetailsResource> GetDetails(TaskResource resource, CancellationToken cancellationToken, bool? includeVerboseOutput = null, int? tail = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        Task<TaskResource> ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, CancellationToken cancellationToken, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(string description = null);
+        Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(CancellationToken cancellationToken, string description = null);
         
         /// <summary>
         /// Gets all the active tasks (optionally limited to pageSize)
         /// </summary>
         /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);
+        Task<List<TaskResource>> GetAllActive(CancellationToken cancellationToken, int pageSize = int.MaxValue);
         
         /// <summary>
         /// Returns all active tasks (optionally limited to pageSize) along with a count of all tasks in each status
@@ -34,7 +53,9 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="pageSize"></param>
         /// <param name="skip"></param>
         /// <returns></returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResourceCollection> GetActiveWithSummary(int pageSize = int.MaxValue, int skip = 0);
+        Task<TaskResourceCollection> GetActiveWithSummary(CancellationToken cancellationToken, int pageSize = int.MaxValue, int skip = 0);
 
         /// <summary>
         /// Returns all tasks (optionally limited to pageSize) along with a count of all tasks in each status
@@ -42,18 +63,40 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="pageSize"></param>
         /// <param name="skip"></param>
         /// <returns></returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResourceCollection> GetAllWithSummary(int pageSize = int.MaxValue, int skip = 0);
+        Task<TaskResourceCollection> GetAllWithSummary(CancellationToken cancellationToken, int pageSize = int.MaxValue, int skip = 0);
         
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<string> GetRawOutputLog(TaskResource resource);
+        Task<string> GetRawOutputLog(TaskResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskTypeResource[]> GetTaskTypes();
+        Task<TaskTypeResource[]> GetTaskTypes(CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Rerun(TaskResource resource);
+        Task Rerun(TaskResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Cancel(TaskResource resource);
+        Task Cancel(TaskResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task ModifyState(TaskResource resource, TaskState newState, string reason);
+        Task ModifyState(TaskResource resource, TaskState newState, string reason, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource);
+        Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(TaskResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
+        Task WaitForCompletion(TaskResource task, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[], CancellationToken> interval = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null);
+        Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[], CancellationToken> interval = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], Task> interval = null);
+        Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Func<TaskResource[], CancellationToken, Task> interval = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], Task> interval = null);
+        Task WaitForCompletion(TaskResource[] tasks, CancellationToken cancellationToken, int pollIntervalSeconds = 4, TimeSpan? timeoutAfter = null, Func<TaskResource[], CancellationToken, Task> interval = null);
     }
 
     class TaskRepository : MixedScopeBaseRepository<TaskResource>, ITaskRepository
@@ -307,7 +350,7 @@ namespace Octopus.Client.Repositories.Async
         public async Task Rerun(TaskResource resource, CancellationToken cancellationToken)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            await Client.Post(resource.Link("Rerun"), (TaskResource)null).ConfigureAwait(false);
+            await Client.Post(resource.Link("Rerun"), (TaskResource)null, cancellationToken).ConfigureAwait(false);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]
