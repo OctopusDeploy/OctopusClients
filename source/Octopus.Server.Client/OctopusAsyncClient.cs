@@ -577,7 +577,12 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return serverEndpoint.OctopusServer.Resolve(path);
         }
 
-        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken = default)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        protected async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(
+            OctopusRequest request, bool readResponse)
+            => await DispatchRequest<TResponseResource>(request, readResponse, CancellationToken.None);
+        
+        protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken)
         {
             using (var message = new HttpRequestMessage())
             {

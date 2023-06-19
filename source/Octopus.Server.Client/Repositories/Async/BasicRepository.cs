@@ -81,8 +81,7 @@ namespace Octopus.Client.Repositories.Async
                 await CheckSpaceResource(spaceResource).ConfigureAwait(false);
         }
 
-        // TODO: default value on token is a stop-gap until cancellation token is fully supported across. 
-        protected async Task<bool> ThrowIfServerVersionIsNotCompatible(CancellationToken cancellationToken = default)
+        protected async Task<bool> ThrowIfServerVersionIsNotCompatible(CancellationToken cancellationToken)
         {
             if (!hasMinimumRequiredVersion) return false;
 
@@ -94,8 +93,7 @@ namespace Octopus.Client.Repositories.Async
             return false;
         }
 
-        // TODO: default value on token is a stop-gap until cancellation token is fully supported across.
-        protected async Task EnsureServerIsMinimumVersion(SemanticVersion requiredVersion, Func<string, string> messageGenerator, CancellationToken cancellationToken = default)
+        protected async Task EnsureServerIsMinimumVersion(SemanticVersion requiredVersion, Func<string, string> messageGenerator, CancellationToken cancellationToken)
         {
             var currentServerVersion = (await Repository.LoadRootDocument(cancellationToken)).Version;
 
@@ -105,6 +103,7 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public virtual async Task<TResource> Create(TResource resource, object pathParameters = null)
         {
             return await Create(resource, pathParameters, CancellationToken.None);
@@ -125,6 +124,7 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Create(link, resource, pathParameters, cancellationToken).ConfigureAwait(false);
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public virtual async Task<TResource> Modify(TResource resource)
         {
             return await Modify(resource, CancellationToken.None);
@@ -373,7 +373,7 @@ namespace Octopus.Client.Repositories.Async
 
         protected virtual void EnrichSpaceId(TResource resource)
         {
-            ThrowIfServerVersionIsNotCompatible().ConfigureAwait(false);
+            ThrowIfServerVersionIsNotCompatible(CancellationToken.None).ConfigureAwait(false);
 
             if (resource is IHaveSpaceResource spaceResource)
             {
@@ -383,8 +383,7 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        // TODO: default value on token is a stop-gap until cancellation token is fully supported across.
-        protected async Task<string> ResolveLink(CancellationToken cancellationToken = default)
+        protected async Task<string> ResolveLink(CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken);
 

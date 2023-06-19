@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -24,7 +25,8 @@ namespace Octopus.Client.Tests.Repositories.Async
             var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
-            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
+            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>(), Arg.Any<CancellationToken>())
+                .Returns(c => Task.FromResult(taskResource));
 
             var callbackCount = 0;
 
@@ -53,7 +55,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
-            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
+            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>(), Arg.Any<CancellationToken>()).Returns(c => Task.FromResult(taskResource));
 
             var callbackCount = 0;
 
@@ -81,7 +83,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var repository = new TaskRepository(new OctopusAsyncRepository(client));
             var taskResource = new TaskResource { Links = new LinkCollection() { { "Self", "" } }, State = TaskState.Queued };
 
-            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>()).Returns(c => Task.FromResult(taskResource));
+            client.Get<TaskResource>(Arg.Any<string>(), Arg.Any<Dictionary<string, object>>(), Arg.Any<CancellationToken>()).Returns(c => Task.FromResult(taskResource));
 
             Action exec = () =>
             {
