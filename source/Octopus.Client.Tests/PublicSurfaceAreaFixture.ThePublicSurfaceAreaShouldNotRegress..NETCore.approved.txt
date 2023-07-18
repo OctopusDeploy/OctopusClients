@@ -7415,6 +7415,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.TResource FindByName(String, String, Object)
     List<TResource> FindByNames(IEnumerable<String>, String, Object)
   }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.IPaginate<TResource>
+  {
+    List<TResource> FindByPartialName(String, String, Object)
+  }
   interface IGetAll`1
   {
     List<TResource> GetAll()
@@ -7773,6 +7778,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<TenantResource>
     Octopus.Client.Repositories.IPaginate<TenantResource>
     Octopus.Client.Repositories.IGetAll<TenantResource>
+    Octopus.Client.Repositories.IFindByPartialName<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
