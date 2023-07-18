@@ -177,6 +177,21 @@ namespace Octopus.Client.Repositories
             return client.Get<List<TResource>>(link, parameters);
         }
 
+        public List<TResource> FindByPartialName(string partialName, string path = null, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            partialName = (partialName ?? string.Empty).Trim();
+            if (pathParameters == null)
+                pathParameters = new { partialName = partialName};
+
+            return FindMany(r =>
+            {
+                var named = r as INamedResource;
+                return named != null && named.Name.Contains(partialName);
+            }, path, pathParameters);
+        }
+
         public TResource FindByName(string name, string path = null, object pathParameters = null)
         {
             ThrowIfServerVersionIsNotCompatible();
