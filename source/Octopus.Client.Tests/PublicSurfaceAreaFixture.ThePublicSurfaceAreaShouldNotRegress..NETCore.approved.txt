@@ -8159,6 +8159,12 @@ Octopus.Client.Repositories.Async
     Task<List<TResource>> FindByNames(IEnumerable<String>, CancellationToken)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object, CancellationToken)
   }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.Async.IPaginate<TResource>
+  {
+    Task<List<TResource>> FindByPartialName(String, CancellationToken)
+    Task<List<TResource>> FindByPartialName(String, String, Object, CancellationToken)
+  }
   interface IGetAll`1
   {
     Task<List<TResource>> GetAll()
@@ -8601,6 +8607,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TenantResource>
     Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
+    Octopus.Client.Repositories.Async.IFindByPartialName<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
     Task<TenantEditor> CreateOrModify(String, String)

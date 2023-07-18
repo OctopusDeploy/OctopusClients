@@ -253,6 +253,26 @@ namespace Octopus.Client.Repositories.Async
             return await Client.Get<List<TResource>>(link, parameters, cancellationToken).ConfigureAwait(false);
         }
 
+        public Task<List<TResource>> FindByPartialName(string partialName, string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+
+            partialName = (partialName ?? string.Empty).Trim();
+            if (pathParameters == null)
+                pathParameters = new { partialName = partialName};
+
+            return FindMany(r =>
+            {
+                var named = r as INamedResource;
+                return named != null && named.Name.Contains(partialName);
+            }, path, pathParameters);
+        }
+        
+        public Task<List<TResource>> FindByPartialName(string partialName, CancellationToken cancellationToken)
+        {
+            return FindByPartialName(partialName, null, null, cancellationToken);
+        }
+
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
         {
             return FindByName(name, path, pathParameters, CancellationToken.None);
