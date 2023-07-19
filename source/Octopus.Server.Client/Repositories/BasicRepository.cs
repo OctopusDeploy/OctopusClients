@@ -5,6 +5,7 @@ using Octopus.Client.Model;
 using System.Text.RegularExpressions;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Extensions;
 using Octopus.Client.Util;
 using Octopus.Client.Validation;
 
@@ -188,7 +189,7 @@ namespace Octopus.Client.Repositories
             return FindMany(r =>
             {
                 var named = r as INamedResource;
-                return named != null && named.Name.Contains(partialName);
+                return named != null && named.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase);
             }, path, pathParameters);
         }
 
