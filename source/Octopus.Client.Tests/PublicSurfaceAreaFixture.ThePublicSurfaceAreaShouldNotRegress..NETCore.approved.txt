@@ -1560,6 +1560,7 @@ Octopus.Client.Extensions
   abstract class StringExtensions
   {
     static String CommaSeparate(IEnumerable<Object>)
+    static Boolean Contains(String, String, StringComparison)
     static String NewLineSeparate(IEnumerable<Object>)
     static String StringJoin(IEnumerable<String>, String)
     static String ToCamelCase(String)
