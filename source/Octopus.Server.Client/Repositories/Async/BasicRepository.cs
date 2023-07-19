@@ -256,7 +256,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<List<TResource>> FindByPartialName(string partialName, string path, object pathParameters, CancellationToken cancellationToken)
         {
-            await ThrowIfServerVersionIsNotCompatible(cancellationToken);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
             partialName = (partialName ?? string.Empty).Trim();
             if (pathParameters == null)
