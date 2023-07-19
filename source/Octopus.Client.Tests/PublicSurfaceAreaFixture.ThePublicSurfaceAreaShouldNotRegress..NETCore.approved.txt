@@ -1560,6 +1560,7 @@ Octopus.Client.Extensions
   abstract class StringExtensions
   {
     static String CommaSeparate(IEnumerable<Object>)
+    static Boolean Contains(String, String, StringComparison)
     static String NewLineSeparate(IEnumerable<Object>)
     static String StringJoin(IEnumerable<String>, String)
     static String ToCamelCase(String)
@@ -7415,6 +7416,11 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.TResource FindByName(String, String, Object)
     List<TResource> FindByNames(IEnumerable<String>, String, Object)
   }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.IPaginate<TResource>
+  {
+    List<TResource> FindByPartialName(String, String, Object)
+  }
   interface IGetAll`1
   {
     List<TResource> GetAll()
@@ -7773,6 +7779,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<TenantResource>
     Octopus.Client.Repositories.IPaginate<TenantResource>
     Octopus.Client.Repositories.IGetAll<TenantResource>
+    Octopus.Client.Repositories.IFindByPartialName<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
@@ -8152,6 +8159,12 @@ Octopus.Client.Repositories.Async
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object)
     Task<List<TResource>> FindByNames(IEnumerable<String>, CancellationToken)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object, CancellationToken)
+  }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.Async.IPaginate<TResource>
+  {
+    Task<List<TResource>> FindByPartialName(String, CancellationToken)
+    Task<List<TResource>> FindByPartialName(String, String, Object, CancellationToken)
   }
   interface IGetAll`1
   {
@@ -8595,6 +8608,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TenantResource>
     Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
+    Octopus.Client.Repositories.Async.IFindByPartialName<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
     Task<TenantEditor> CreateOrModify(String, String)

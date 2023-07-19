@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Extensions;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
 using Octopus.Client.Validation;
@@ -251,6 +252,26 @@ namespace Octopus.Client.Repositories.Async
             var link = await ResolveLink(cancellationToken).ConfigureAwait(false);
             var parameters = ParameterHelper.CombineParameters(GetAdditionalQueryParameters(), new { id = IdValueConstant.IdAll });
             return await Client.Get<List<TResource>>(link, parameters, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<List<TResource>> FindByPartialName(string partialName, string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+
+            partialName = (partialName ?? string.Empty).Trim();
+            if (pathParameters == null)
+                pathParameters = new { partialName = partialName};
+
+            return await FindMany(r =>
+            {
+                var named = r as INamedResource;
+                return named != null && named.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+            }, path, pathParameters);
+        }
+        
+        public Task<List<TResource>> FindByPartialName(string partialName, CancellationToken cancellationToken)
+        {
+            return FindByPartialName(partialName, null, null, cancellationToken);
         }
 
         public Task<TResource> FindByName(string name, string path = null, object pathParameters = null)
