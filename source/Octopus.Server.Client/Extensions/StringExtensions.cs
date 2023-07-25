@@ -26,5 +26,8 @@ namespace Octopus.Client.Extensions
             var result = first + remainder;
             return result;
         }
+
+        public static bool Contains(this string s, string text, StringComparison comp)
+            => s != null && text != null && s.IndexOf(text, comp) != -1;
     }
 }

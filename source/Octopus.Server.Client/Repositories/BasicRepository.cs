@@ -5,6 +5,7 @@ using Octopus.Client.Model;
 using System.Text.RegularExpressions;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Extensibility;
+using Octopus.Client.Extensions;
 using Octopus.Client.Util;
 using Octopus.Client.Validation;
 
@@ -175,6 +176,21 @@ namespace Octopus.Client.Repositories
             var link = ResolveLink();
             var parameters = ParameterHelper.CombineParameters(AdditionalQueryParameters, new { id = IdValueConstant.IdAll });
             return client.Get<List<TResource>>(link, parameters);
+        }
+
+        public List<TResource> FindByPartialName(string partialName, string path = null, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            partialName = (partialName ?? string.Empty).Trim();
+            if (pathParameters == null)
+                pathParameters = new { partialName = partialName};
+
+            return FindMany(r =>
+            {
+                var named = r as INamedResource;
+                return named != null && named.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+            }, path, pathParameters);
         }
 
         public TResource FindByName(string name, string path = null, object pathParameters = null)
