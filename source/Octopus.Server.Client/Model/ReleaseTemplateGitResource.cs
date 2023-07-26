@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Model.Git;
+﻿#nullable enable
+using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Model;
 
@@ -12,12 +13,12 @@ public class ReleaseTemplateGitResource
         FilePaths = filePaths;
         IsResolvable = isResolvable;
     }
-    
+
     public string ActionName { get; }
     public string RepositoryUri { get; }
     public string DefaultBranch { get; }
     public bool IsResolvable { get; }
-    public string[] FilePaths {get;}
-    public string GitCredentialId { get; set; }
-    public GitReferenceResource GitResourceSelectedLastRelease { get; set; }
+    public string[] FilePaths { get; }
+    public string? GitCredentialId { get; set; }
+    public GitReferenceResource? GitResourceSelectedLastRelease { get; set; }
 }
