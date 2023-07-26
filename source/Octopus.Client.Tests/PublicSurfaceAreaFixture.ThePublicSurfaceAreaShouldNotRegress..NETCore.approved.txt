@@ -2641,6 +2641,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
+    Octopus.Client.Model.GitDependencyResource GitResource { get; set; }
     Object Inputs { get; set; }
     Boolean IsDisabled { get; set; }
     Boolean IsRequired { get; set; }
@@ -3138,6 +3139,14 @@ Octopus.Client.Model
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String)
+  }
+  class GitDependencyResource
+  {
+    .ctor(String, String, String, String)
+    String DefaultBranch { get; }
+    String GitCredentialId { get; }
+    String GitCredentialType { get; }
+    String RepositoryUri { get; }
   }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
@@ -4534,6 +4543,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
+    List<SelectedGitResource> SelectedGitResources { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
@@ -4553,7 +4563,19 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    IList<ReleaseTemplateGitResource> GitResources { get; set; }
     IList<ReleaseTemplatePackage> Packages { get; set; }
+  }
+  class ReleaseTemplateGitResource
+  {
+    .ctor(String, String, String, String[], Boolean)
+    String ActionName { get; }
+    String DefaultBranch { get; }
+    String[] FilePaths { get; }
+    String GitCredentialId { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource GitResourceSelectedLastRelease { get; set; }
+    Boolean IsResolvable { get; }
+    String RepositoryUri { get; }
   }
   class ReleaseTemplatePackage
   {
@@ -4831,6 +4853,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String RunbookId { get; set; }
+    List<SelectedGitResource> SelectedGitResources { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
   }
@@ -4983,6 +5006,12 @@ Octopus.Client.Model
     Octopus.Client.Model.ScriptSyntax ScriptSyntax
     static Octopus.Client.Model.ScriptSyntaxMeta FromExtension(String)
     static Octopus.Client.Model.ScriptSyntaxMeta FromName(String)
+  }
+  class SelectedGitResource
+  {
+    .ctor(String, Octopus.Client.Model.Git.GitReferenceResource)
+    String ActionName { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource GitReferenceResource { get; set; }
   }
   class SelectedPackage
   {
