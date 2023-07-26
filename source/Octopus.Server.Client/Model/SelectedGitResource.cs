@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Octopus.Client.Model.Git;
+﻿using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Model;
 

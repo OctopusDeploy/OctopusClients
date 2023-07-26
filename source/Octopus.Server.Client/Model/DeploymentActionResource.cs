@@ -44,6 +44,9 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection();
+        
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public GitDependencyResource GitResource { get; set; } 
 
         public DeploymentActionCondition Condition { get; set; }
 

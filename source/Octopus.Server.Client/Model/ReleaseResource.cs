@@ -5,7 +5,6 @@ using Octopus.Client.Extensibility.Attributes;
 using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Model.BuildInformation;
-using Octopus.Client.Model.Git;
 
 namespace Octopus.Client.Model
 {

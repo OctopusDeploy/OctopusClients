@@ -13,7 +13,8 @@ namespace Octopus.Client.Model
     }
 
     public class ReleaseTemplateBaseResource : Resource
-    {
+    {                                                                
         public IList<ReleaseTemplatePackage> Packages { get; set; }
+        public IList<ReleaseTemplateGitResource> GitResources { get; set; }
     }
 }
