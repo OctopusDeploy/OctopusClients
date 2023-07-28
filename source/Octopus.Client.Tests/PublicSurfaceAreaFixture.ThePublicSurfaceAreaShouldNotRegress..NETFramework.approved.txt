@@ -1972,6 +1972,7 @@ Octopus.Client.Model
     Boolean RememberMeEnabled { get; set; }
     Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
+    Boolean UserApiKeysEnabled { get; set; }
   }
   abstract class AutoDeploy
   {
@@ -2788,6 +2789,7 @@ Octopus.Client.Model
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     String ProjectId { get; set; }
     String ReleaseNotesTemplate { get; set; }
     String SpaceId { get; set; }
@@ -4359,6 +4361,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
@@ -4717,6 +4720,7 @@ Octopus.Client.Model
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
@@ -5735,24 +5739,6 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionPackageResource DonorPackage { get; set; }
     String Template { get; set; }
   }
-  class WebPortalConfigResource
-    Octopus.Client.Extensibility.IResource
-  {
-    .ctor()
-    String Id { get; set; }
-    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
-    Octopus.Client.Model.WebPortalSecurityResource Security { get; set; }
-  }
-  class WebPortalSecurityResource
-  {
-    .ctor()
-    Boolean ContentSecurityPolicyEnabled { get; set; }
-    String CorsWhitelist { get; set; }
-    Boolean HttpStrictTransportSecurityEnabled { get; set; }
-    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
-    String ReferrerPolicy { get; set; }
-    Octopus.Client.Model.XOptionsResource XOptions { get; set; }
-  }
   class WorkerPoolResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5813,14 +5799,6 @@ Octopus.Client.Model
     String SubjectDistinguishedName { get; set; }
     String Thumbprint { get; set; }
     Int32 Version { get; set; }
-  }
-  class XOptionsResource
-  {
-    static System.String XFrameAllowFromDescription
-    static System.String XFrameOptionsDescription
-    .ctor()
-    String XFrameOptionAllowFrom { get; set; }
-    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Model.Accounts
@@ -7062,6 +7040,41 @@ Octopus.Client.Model.Versioning
     .ctor()
     String Format(String, Object, IFormatProvider)
     Object GetFormat(Type)
+  }
+}
+Octopus.Client.Model.WebPortalConfiguration
+{
+  class WebPortalConfigResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalLoggingResource Logging { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalSecurityResource Security { get; set; }
+  }
+  class WebPortalLoggingResource
+  {
+    .ctor()
+    String[] TrustedProxies { get; set; }
+  }
+  class WebPortalSecurityResource
+  {
+    .ctor()
+    Boolean ContentSecurityPolicyEnabled { get; set; }
+    String CorsWhitelist { get; set; }
+    Boolean HttpStrictTransportSecurityEnabled { get; set; }
+    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
+    String ReferrerPolicy { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.XOptionsResource XOptions { get; set; }
+  }
+  class XOptionsResource
+  {
+    static System.String XFrameAllowFromDescription
+    static System.String XFrameOptionsDescription
+    .ctor()
+    String XFrameOptionAllowFrom { get; set; }
+    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Operations
