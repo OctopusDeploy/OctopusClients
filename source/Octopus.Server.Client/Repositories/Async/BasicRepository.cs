@@ -233,11 +233,11 @@ namespace Octopus.Client.Repositories.Async
             return FindAll(path: null, pathParameters: null, cancellationToken);
         }
         
-        public Task<List<TResource>> FindAll(string path, object pathParameters, CancellationToken cancellationToken)
+        public async Task<List<TResource>> FindAll(string path, object pathParameters, CancellationToken cancellationToken)
         {
-            ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            return FindMany(r => true, path, pathParameters, cancellationToken);
+            return await FindMany(r => true, path, pathParameters, cancellationToken);
         }
 
         public async Task<List<TResource>> GetAll()
@@ -284,16 +284,16 @@ namespace Octopus.Client.Repositories.Async
             return FindByName(name, null, null, cancellationToken);
         }
         
-        public Task<TResource> FindByName(string name, string path, object pathParameters, CancellationToken cancellationToken)
+        public async Task<TResource> FindByName(string name, string path, object pathParameters, CancellationToken cancellationToken)
         {
-            ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
             name = (name ?? string.Empty).Trim();
 
             // Some endpoints allow a Name query param which greatly increases efficiency
             pathParameters ??= new { name = name };
 
-            return FindOne(r =>
+            return await FindOne(r =>
             {
                 if (r is INamedResource named) return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
                 return false;
@@ -310,12 +310,12 @@ namespace Octopus.Client.Repositories.Async
             return FindByNames(names, path: null, pathParameters: null, cancellationToken);
         }
         
-        public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path, object pathParameters, CancellationToken cancellationToken)
+        public async Task<List<TResource>> FindByNames(IEnumerable<string> names, string path, object pathParameters, CancellationToken cancellationToken)
         {
-            ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
             var nameSet = new HashSet<string>((names ?? Array.Empty<string>()).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
-            return FindMany(r =>
+            return await FindMany(r =>
             {
                 if (r is INamedResource named) return nameSet.Contains((named.Name ?? string.Empty).Trim());
                 return false;
@@ -384,17 +384,17 @@ namespace Octopus.Client.Repositories.Async
             return Refresh(resource, CancellationToken.None);
         }
         
-        public Task<TResource> Refresh(TResource resource, CancellationToken cancellationToken)
+        public async Task<TResource> Refresh(TResource resource, CancellationToken cancellationToken)
         {
-            ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
             if (resource == null) throw new ArgumentNullException("resource");
-            return Get(resource.Id, cancellationToken);
+            return await Get(resource.Id, cancellationToken);
         }
 
-        protected virtual void EnrichSpaceId(TResource resource)
+        protected virtual async void EnrichSpaceId(TResource resource)
         {
-            ThrowIfServerVersionIsNotCompatible(CancellationToken.None).ConfigureAwait(false);
+            await ThrowIfServerVersionIsNotCompatible(CancellationToken.None).ConfigureAwait(false);
 
             if (resource is IHaveSpaceResource spaceResource)
             {
