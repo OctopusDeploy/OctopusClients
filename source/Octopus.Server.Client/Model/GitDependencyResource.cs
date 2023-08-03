@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System.Drawing;
 
 namespace Octopus.Client.Model;
 
@@ -14,7 +13,7 @@ public class GitDependencyResource
         Name = name;
         RepositoryUri = repositoryUri;
         DefaultBranch = defaultBranch;
-        GitCredentialType = gitCredentialType;  
+        GitCredentialType = gitCredentialType;
         GitCredentialId = gitCredentialId;
         FilePathFilters = filePathFilters;
         Hash = hash;
