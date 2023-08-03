@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Project Rules" Description="Rule overrides for gradual enablement of nullable reference types." ToolsVersion="10.0">  
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
-    <Rule Id="CS0618" Action="None"/> <!-- Use of obsolete symbol -->    
-  </Rules>
+<RuleSet Name="Project Rules" Description="Rule overrides for gradual enablement of nullable reference types." ToolsVersion="10.0">
+    <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+        <Rule Id="CS0618" Action="None"/> <!-- Use of obsolete symbol -->
+        <Rule Id="CS4014" Action="Error"/> <!-- Because this call is not awaited, execution of the current method continues before the call is completed. -->
+    </Rules>
+    <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+        <Rule Id="CA1849" Action="Error"/> <!-- Call async methods when in an async method. -->
+        <Rule Id="CA2012" Action="Error"/> <!-- Use ValueTasks correctly -->
+        <Rule Id="CA2016" Action="Error"/> <!-- Forward the CancellationToken parameter to methods that take one -->
+    </Rules>
+    <Rules AnalyzerId="AsyncFixer" RuleNamespace="AsyncFixer">
+        <Rule Id="AsyncFixer01" Action="None"/> <!-- The method '...' does not need to use async/await -->
+    </Rules>
 </RuleSet>

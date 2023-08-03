@@ -16,6 +16,7 @@
 		<NuspecFile>Octopus.Client.nuspec</NuspecFile>
 		<!-- copy dependencies to the output folder (for netstandard) so we can ilmerge them together -->
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<LangVersion>8</LangVersion>
 
 	</PropertyGroup>
 

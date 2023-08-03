@@ -62,9 +62,9 @@ namespace Octopus.Client.Repositories.Async
                        SpaceContext.AllSpacesAndSystem);
         }
 
-        protected override void EnrichSpaceId(TMixedScopeResource resource)
+        protected override async Task EnrichSpaceId(TMixedScopeResource resource)
         {
-            base.EnrichSpaceId(resource);
+            await base.EnrichSpaceId(resource).ConfigureAwait(false);
 
             if (resource is IHaveSpaceResource spaceResource 
                 && userDefinedSpaceContext != null)
