@@ -1575,6 +1575,7 @@ Octopus.Client.Extensions
   abstract class StringExtensions
   {
     static String CommaSeparate(IEnumerable<Object>)
+    static Boolean Contains(String, String, StringComparison)
     static String NewLineSeparate(IEnumerable<Object>)
     static String StringJoin(IEnumerable<String>, String)
     static String ToCamelCase(String)
@@ -1972,6 +1973,7 @@ Octopus.Client.Model
     Boolean RememberMeEnabled { get; set; }
     Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
+    Boolean UserApiKeysEnabled { get; set; }
   }
   abstract class AutoDeploy
   {
@@ -2656,6 +2658,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
+    Octopus.Client.Model.GitDependencyResource GitResource { get; set; }
     Object Inputs { get; set; }
     Boolean IsDisabled { get; set; }
     Boolean IsRequired { get; set; }
@@ -2788,6 +2791,7 @@ Octopus.Client.Model
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     String ProjectId { get; set; }
     String ReleaseNotesTemplate { get; set; }
     String SpaceId { get; set; }
@@ -3125,10 +3129,11 @@ Octopus.Client.Model
       GitHub = 5
       BuiltIn = 6
       Helm = 7
-      AwsElasticContainerRegistry = 8
-      S3 = 9
-      AzureContainerRegistry = 10
-      GoogleContainerRegistry = 11
+      OciRegistry = 8
+      AwsElasticContainerRegistry = 9
+      S3 = 10
+      AzureContainerRegistry = 11
+      GoogleContainerRegistry = 12
   }
   class FileUpload
   {
@@ -3151,6 +3156,14 @@ Octopus.Client.Model
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String)
+  }
+  class GitDependencyResource
+  {
+    .ctor(String, String, String, String)
+    String DefaultBranch { get; }
+    String GitCredentialId { get; }
+    String GitCredentialType { get; }
+    String RepositoryUri { get; }
   }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
@@ -3928,6 +3941,20 @@ Octopus.Client.Model
     Double[] Data { get; set; }
     String Label { get; set; }
   }
+  class OciRegistryFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
+  }
   class OctopusProjectFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4359,6 +4386,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
     Boolean IsDisabled { get; set; }
@@ -4534,6 +4562,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String ReleaseNotes { get; set; }
+    List<SelectedGitResource> SelectedGitResources { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
     String Version { get; set; }
@@ -4553,7 +4582,19 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    IList<ReleaseTemplateGitResource> GitResources { get; set; }
     IList<ReleaseTemplatePackage> Packages { get; set; }
+  }
+  class ReleaseTemplateGitResource
+  {
+    .ctor(String, String, String, String[], Boolean)
+    String ActionName { get; }
+    String DefaultBranch { get; }
+    String[] FilePaths { get; }
+    String GitCredentialId { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource GitResourceSelectedLastRelease { get; set; }
+    Boolean IsResolvable { get; }
+    String RepositoryUri { get; }
   }
   class ReleaseTemplatePackage
   {
@@ -4647,6 +4688,14 @@ Octopus.Client.Model
     static Octopus.Client.Model.RetentionPeriod KeepForever()
     String ToString()
   }
+  class RetentionPoliciesConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String CronExpression { get; set; }
+  }
   class RetentionPolicyResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4717,6 +4766,7 @@ Octopus.Client.Model
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
+    Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
@@ -4822,6 +4872,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String ProjectVariableSetSnapshotId { get; set; }
     String RunbookId { get; set; }
+    List<SelectedGitResource> SelectedGitResources { get; set; }
     List<SelectedPackage> SelectedPackages { get; set; }
     String SpaceId { get; set; }
   }
@@ -4974,6 +5025,12 @@ Octopus.Client.Model
     Octopus.Client.Model.ScriptSyntax ScriptSyntax
     static Octopus.Client.Model.ScriptSyntaxMeta FromExtension(String)
     static Octopus.Client.Model.ScriptSyntaxMeta FromName(String)
+  }
+  class SelectedGitResource
+  {
+    .ctor(String, Octopus.Client.Model.Git.GitReferenceResource)
+    String ActionName { get; set; }
+    Octopus.Client.Model.Git.GitReferenceResource GitReferenceResource { get; set; }
   }
   class SelectedPackage
   {
@@ -5735,24 +5792,6 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionPackageResource DonorPackage { get; set; }
     String Template { get; set; }
   }
-  class WebPortalConfigResource
-    Octopus.Client.Extensibility.IResource
-  {
-    .ctor()
-    String Id { get; set; }
-    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
-    Octopus.Client.Model.WebPortalSecurityResource Security { get; set; }
-  }
-  class WebPortalSecurityResource
-  {
-    .ctor()
-    Boolean ContentSecurityPolicyEnabled { get; set; }
-    String CorsWhitelist { get; set; }
-    Boolean HttpStrictTransportSecurityEnabled { get; set; }
-    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
-    String ReferrerPolicy { get; set; }
-    Octopus.Client.Model.XOptionsResource XOptions { get; set; }
-  }
   class WorkerPoolResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5813,14 +5852,6 @@ Octopus.Client.Model
     String SubjectDistinguishedName { get; set; }
     String Thumbprint { get; set; }
     Int32 Version { get; set; }
-  }
-  class XOptionsResource
-  {
-    static System.String XFrameAllowFromDescription
-    static System.String XFrameOptionsDescription
-    .ctor()
-    String XFrameOptionAllowFrom { get; set; }
-    String XFrameOptions { get; set; }
   }
 }
 Octopus.Client.Model.Accounts
@@ -6337,8 +6368,14 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
   {
     .ctor()
+    String AssumedRoleArn { get; set; }
+    String AssumedRoleSession { get; set; }
+    Boolean AssumeRole { get; set; }
+    String AssumeRoleExternalId { get; set; }
+    Nullable<Int32> AssumeRoleSessionDurationSeconds { get; set; }
     String AuthenticationType { get; }
     String ClusterName { get; set; }
+    Boolean UseInstanceRole { get; set; }
   }
   class KubernetesAzureAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
@@ -7064,6 +7101,41 @@ Octopus.Client.Model.Versioning
     Object GetFormat(Type)
   }
 }
+Octopus.Client.Model.WebPortalConfiguration
+{
+  class WebPortalConfigResource
+    Octopus.Client.Extensibility.IResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalLoggingResource Logging { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.WebPortalSecurityResource Security { get; set; }
+  }
+  class WebPortalLoggingResource
+  {
+    .ctor()
+    String[] TrustedProxies { get; set; }
+  }
+  class WebPortalSecurityResource
+  {
+    .ctor()
+    Boolean ContentSecurityPolicyEnabled { get; set; }
+    String CorsWhitelist { get; set; }
+    Boolean HttpStrictTransportSecurityEnabled { get; set; }
+    Int64 HttpStrictTransportSecurityMaxAge { get; set; }
+    String ReferrerPolicy { get; set; }
+    Octopus.Client.Model.WebPortalConfiguration.XOptionsResource XOptions { get; set; }
+  }
+  class XOptionsResource
+  {
+    static System.String XFrameAllowFromDescription
+    static System.String XFrameOptionsDescription
+    .ctor()
+    String XFrameOptionAllowFrom { get; set; }
+    String XFrameOptions { get; set; }
+  }
+}
 Octopus.Client.Operations
 {
   class InvalidRegistrationArgumentsException
@@ -7397,6 +7469,11 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Repositories.TResource FindByName(String, String, Object)
     List<TResource> FindByNames(IEnumerable<String>, String, Object)
+  }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.IPaginate<TResource>
+  {
+    List<TResource> FindByPartialName(String, String, Object)
   }
   interface IGetAll`1
   {
@@ -7756,6 +7833,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IFindByName<TenantResource>
     Octopus.Client.Repositories.IPaginate<TenantResource>
     Octopus.Client.Repositories.IGetAll<TenantResource>
+    Octopus.Client.Repositories.IFindByPartialName<TenantResource>
   {
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
@@ -8073,10 +8151,15 @@ Octopus.Client.Repositories.Async
   interface IDeploymentSettingsRepository
   {
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource)
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<DeploymentSettingsResource> Get(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
+    Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String, CancellationToken)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
@@ -8130,6 +8213,12 @@ Octopus.Client.Repositories.Async
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object)
     Task<List<TResource>> FindByNames(IEnumerable<String>, CancellationToken)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object, CancellationToken)
+  }
+  interface IFindByPartialName`1
+    Octopus.Client.Repositories.Async.IPaginate<TResource>
+  {
+    Task<List<TResource>> FindByPartialName(String, CancellationToken)
+    Task<List<TResource>> FindByPartialName(String, String, Object, CancellationToken)
   }
   interface IGetAll`1
   {
@@ -8505,26 +8594,47 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.ICanExtendSpaceContext<ITaskRepository>
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
+    Task Cancel(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
+    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[], String[], String[], String, Nullable<TargetType>)
     Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
+    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>)
     Task<TaskResource> ExecuteBackup(String)
+    Task<TaskResource> ExecuteBackup(CancellationToken, String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])
+    Task<TaskResource> ExecuteCalamariUpdate(CancellationToken, String, String[])
     Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
+    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(CancellationToken, String)
     Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteHealthCheck(CancellationToken, String, Int32, Int32, String, String[], String, String, String[])
     Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
+    Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken, String, String, String[], String, String, String[])
     Task<TaskResourceCollection> GetActiveWithSummary(Int32, Int32)
+    Task<TaskResourceCollection> GetActiveWithSummary(CancellationToken, Int32, Int32)
     Task<List<TaskResource>> GetAllActive(Int32)
+    Task<List<TaskResource>> GetAllActive(CancellationToken, Int32)
     Task<TaskResourceCollection> GetAllWithSummary(Int32, Int32)
+    Task<TaskResourceCollection> GetAllWithSummary(CancellationToken, Int32, Int32)
     Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
+    Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, CancellationToken, Nullable<Boolean>, Nullable<Int32>)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
+    Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
+    Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<TaskTypeResource[]> GetTaskTypes()
+    Task<TaskTypeResource[]> GetTaskTypes(CancellationToken)
     Task ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
+    Task ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String, CancellationToken)
     Task Rerun(Octopus.Client.Model.TaskResource)
+    Task Rerun(Octopus.Client.Model.TaskResource, CancellationToken)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource, CancellationToken, Int32, Int32, Action<TaskResource[], CancellationToken>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Int32, Action<TaskResource[], CancellationToken>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Func<TaskResource[], Task>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Int32, Func<TaskResource[], CancellationToken, Task>)
     Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Nullable<TimeSpan>, Func<TaskResource[], Task>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Nullable<TimeSpan>, Func<TaskResource[], CancellationToken, Task>)
   }
   interface ITeamsRepository
     Octopus.Client.Repositories.Async.ICreate<TeamResource>
@@ -8552,6 +8662,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<TenantResource>
     Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
+    Octopus.Client.Repositories.Async.IFindByPartialName<TenantResource>
   {
     Task<TenantEditor> CreateOrModify(String)
     Task<TenantEditor> CreateOrModify(String, String)

@@ -44,7 +44,9 @@ namespace Octopus.Client.Exceptions
         {
             var statusCode = (int)response.StatusCode;
 
-            var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            // In .NET 6, the ReadAsStringAsync extension method gracefully handles a null input.
+            // In Net462, it crashes; we need this explicit check and conversion to empty-string to achieve the same behaviour.
+            var body = response.Content == null ? "" : await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return CreateException(statusCode, body);
         }

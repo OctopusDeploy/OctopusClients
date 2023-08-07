@@ -584,67 +584,65 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         
         protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken)
         {
-            using (var message = new HttpRequestMessage())
+            using var message = new HttpRequestMessage();
+            
+            message.RequestUri = request.Uri;
+            message.Method = new HttpMethod(request.Method);
+
+            if (request.Method == "PUT" || request.Method == "DELETE")
             {
-                message.RequestUri = request.Uri;
-                message.Method = new HttpMethod(request.Method);
+                message.Method = HttpMethod.Post;
+                message.Headers.Add("X-HTTP-Method-Override", request.Method);
+            }
 
-                if (request.Method == "PUT" || request.Method == "DELETE")
+            if (!string.IsNullOrEmpty(antiforgeryCookieName))
+            {
+                var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
+                    .Cast<Cookie>()
+                    .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
+                if (antiforgeryCookie != null)
                 {
-                    message.Method = HttpMethod.Post;
-                    message.Headers.Add("X-HTTP-Method-Override", request.Method);
+                    message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
                 }
+            }
 
-                if (!string.IsNullOrEmpty(antiforgeryCookieName))
-                {
-                    var antiforgeryCookie = cookieContainer.GetCookies(cookieOriginUri)
-                        .Cast<Cookie>()
-                        .SingleOrDefault(c => string.Equals(c.Name, antiforgeryCookieName));
-                    if (antiforgeryCookie != null)
-                    {
-                        message.Headers.Add(ApiConstants.AntiforgeryTokenHttpHeaderName, antiforgeryCookie.Value);
-                    }
-                }
+            SendingOctopusRequest?.Invoke(request);
 
-                SendingOctopusRequest?.Invoke(request);
+            BeforeSendingHttpRequest?.Invoke(message);
 
-                BeforeSendingHttpRequest?.Invoke(message);
+            if (request.RequestResource != null)
+                message.Content = GetContent(request);
 
-                if (request.RequestResource != null)
-                    message.Content = GetContent(request);
+            Logger.Trace($"DispatchRequest: {request.Method} {message.RequestUri}");
 
-                Logger.Trace($"DispatchRequest: {request.Method} {message.RequestUri}");
+            var completionOption = readResponse ? HttpCompletionOption.ResponseContentRead : HttpCompletionOption.ResponseHeadersRead;
+            
+            try
+            {
+                using var response = await client.SendAsync(message, completionOption, cancellationToken).ConfigureAwait(false);
+                AfterReceivedHttpResponse?.Invoke(response);
 
-                var completionOption = readResponse
-                    ? HttpCompletionOption.ResponseContentRead
-                    : HttpCompletionOption.ResponseHeadersRead;
-                try
-                {
-                    using (var response = await client.SendAsync(message, completionOption, cancellationToken).ConfigureAwait(false))
-                    {
-                        AfterReceivedHttpResponse?.Invoke(response);
+                if (!response.IsSuccessStatusCode)
+                    throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
 
-                        if (!response.IsSuccessStatusCode)
-                            throw await OctopusExceptionFactory.CreateException(response).ConfigureAwait(false);
+                var resource = readResponse
+                    ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
+                    : default;
 
-                        var resource = readResponse
-                            ? await ReadResponse<TResponseResource>(response).ConfigureAwait(false)
-                            : default;
+                var locationHeader = response.Headers.Location?.OriginalString;
+                var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
+                    locationHeader, resource);
+                ReceivedOctopusResponse?.Invoke(octopusResponse);
 
-                        var locationHeader = response.Headers.Location?.OriginalString;
-                        var octopusResponse = new OctopusResponse<TResponseResource>(request, response.StatusCode,
-                            locationHeader, resource);
-                        ReceivedOctopusResponse?.Invoke(octopusResponse);
-
-                        return octopusResponse;
-                    }
-                }
-                catch (TaskCanceledException exception) when (
-                    exception.CancellationToken != cancellationToken &&
-                    exception.InnerException is TimeoutException)
-                {
-                    throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).", exception);
-                }
+                return octopusResponse;
+            }
+            // Note: an earlier iteration of this code used (exception.CancellationToken != cancellationToken) to determine whether
+            // we are observing the specific TimeoutException for this request, from some other ambient timeout exception (e.g. a test framework timeout).
+            // This did not work on the NETFRAMEWORK target, because while .NET 6 flows the cancellationToken through to TaskCanceledException.CancellationToken,
+            // the .NET desktop framework does not; it's not safe to compare tokens and so use the cancellation status as an approximation.
+            catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested && exception.InnerException is TimeoutException)
+            {
+                throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).", exception);
             }
         }
 

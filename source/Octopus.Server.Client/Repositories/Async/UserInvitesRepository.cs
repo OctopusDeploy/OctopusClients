@@ -22,11 +22,11 @@ namespace Octopus.Client.Repositories.Async
             return Invite(new ReferenceCollection { addToTeamId });
         }
 
-        public Task<InvitationResource> Invite(ReferenceCollection addToTeamIds)
+        public async Task<InvitationResource> Invite(ReferenceCollection addToTeamIds)
         {
             var invitationResource = new InvitationResource { AddToTeamIds = addToTeamIds ?? new ReferenceCollection() };
-            EnrichSpaceId(invitationResource);
-            return Create(invitationResource);
+            await EnrichSpaceId(invitationResource).ConfigureAwait(false);
+            return await Create(invitationResource).ConfigureAwait(false);
         }
     }
 }
