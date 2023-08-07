@@ -5,20 +5,22 @@ namespace Octopus.Client.Model;
 
 public class ReleaseTemplateGitResource
 {
-    public ReleaseTemplateGitResource(string actionName, string repositoryUri, string defaultBranch, string[] filePaths, bool isResolvable)
+    public ReleaseTemplateGitResource(string name, string actionName, string repositoryUri, string defaultBranch, string[] filePathFilters, bool isResolvable)
     {
+        Name = name;
         ActionName = actionName;
         RepositoryUri = repositoryUri;
         DefaultBranch = defaultBranch;
-        FilePaths = filePaths;
+        FilePathFilters = filePathFilters;
         IsResolvable = isResolvable;
     }
 
+    public string Name { get; set; }
     public string ActionName { get; }
     public string RepositoryUri { get; }
     public string DefaultBranch { get; }
     public bool IsResolvable { get; }
-    public string[] FilePaths { get; }
+    public string[] FilePathFilters { get; }
     public string? GitCredentialId { get; set; }
     public GitReferenceResource? GitResourceSelectedLastRelease { get; set; }
 }

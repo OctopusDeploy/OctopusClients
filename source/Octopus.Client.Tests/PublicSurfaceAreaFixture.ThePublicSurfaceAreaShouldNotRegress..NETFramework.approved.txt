@@ -3159,10 +3159,12 @@ Octopus.Client.Model
   }
   class GitDependencyResource
   {
-    .ctor(String, String, String, String)
+    .ctor(String, String, String, String, String[], String)
     String DefaultBranch { get; }
+    String[] FilePathFilters { get; }
     String GitCredentialId { get; }
     String GitCredentialType { get; }
+    String Name { get; }
     String RepositoryUri { get; }
   }
   class GitHubFeedResource
@@ -4587,13 +4589,14 @@ Octopus.Client.Model
   }
   class ReleaseTemplateGitResource
   {
-    .ctor(String, String, String, String[], Boolean)
+    .ctor(String, String, String, String, String[], Boolean)
     String ActionName { get; }
     String DefaultBranch { get; }
-    String[] FilePaths { get; }
+    String[] FilePathFilters { get; }
     String GitCredentialId { get; set; }
     Octopus.Client.Model.Git.GitReferenceResource GitResourceSelectedLastRelease { get; set; }
     Boolean IsResolvable { get; }
+    String Name { get; set; }
     String RepositoryUri { get; }
   }
   class ReleaseTemplatePackage

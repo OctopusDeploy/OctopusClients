@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using System;
+
 namespace Octopus.Client.Model;
 
 /// <summary>
@@ -6,16 +8,20 @@ namespace Octopus.Client.Model;
 /// </summary>
 public class GitDependencyResource
 {
-    public GitDependencyResource(string repositoryUri, string defaultBranch, string gitCredentialType, string? gitCredentialId = null)
+    public GitDependencyResource(string repositoryUri, string defaultBranch, string gitCredentialType, string? gitCredentialId = null, string[]? filePathFilters = null, string? name = null)
     {
         RepositoryUri = repositoryUri;
         DefaultBranch = defaultBranch;
         GitCredentialType = gitCredentialType;
         GitCredentialId = gitCredentialId;
+        FilePathFilters = filePathFilters ?? Array.Empty<string>();   
+        Name = name ?? string.Empty;
     }
-    
+
+    public string Name { get; }
     public string RepositoryUri { get; }
     public string DefaultBranch { get; }
+    public string[] FilePathFilters { get; }
     public string GitCredentialType { get; }
     public string? GitCredentialId { get; }
 }
