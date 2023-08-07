@@ -2641,7 +2641,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentActionContainerResource Container { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.ReferenceCollection ExcludedEnvironments { get; }
-    Octopus.Client.Model.GitDependencyResource GitResource { get; set; }
+    Octopus.Client.Model.GitDependencyCollectionResource GitDependencies { get; }
     Object Inputs { get; set; }
     Boolean IsDisabled { get; set; }
     Boolean IsRequired { get; set; }
@@ -3139,6 +3139,26 @@ Octopus.Client.Model
     Octopus.Client.Model.ValidatedGitReferenceResource
   {
     .ctor(String)
+  }
+  class GitDependencyCollectionResource
+    ICollection<GitDependencyResource>
+    IEnumerable<GitDependencyResource>
+    IEnumerable
+  {
+    .ctor()
+    .ctor(IEnumerable<GitDependencyResource>)
+    Int32 Count { get; }
+    Boolean HasPrimaryGitDependency { get; }
+    Boolean IsReadOnly { get; }
+    Octopus.Client.Model.GitDependencyResource PrimaryGitDependency { get; }
+    void Add(Octopus.Client.Model.GitDependencyResource)
+    void Clear()
+    Boolean Contains(Octopus.Client.Model.GitDependencyResource)
+    void CopyTo(Octopus.Client.Model.GitDependencyResource[], Int32)
+    Octopus.Client.Model.GitDependencyResource GetByName(String)
+    IEnumerator<GitDependencyResource> GetEnumerator()
+    Boolean Remove(Octopus.Client.Model.GitDependencyResource)
+    Boolean TryGetByName(String, Octopus.Client.Model.GitDependencyResource&)
   }
   class GitDependencyResource
   {
