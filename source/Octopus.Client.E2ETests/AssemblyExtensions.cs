@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Octopus.Client.Model;
 
 namespace Octopus.Client.E2ETests
 {
@@ -9,10 +8,14 @@ namespace Octopus.Client.E2ETests
     {
         public static string FullLocalPath(this Assembly assembly)
         {
-            var codeBase = assembly.CodeBase;
+#if NETFRAMEWORK
+            var codeBase = assembly.CodeBase ?? throw new NotSupportedException($"Cannot get codebase for assembly {assembly}");
+#else
+            var codeBase = assembly.Location;
+#endif
             var uri = new UriBuilder(codeBase);
             var root = Uri.UnescapeDataString(uri.Path);
-            root = root.Replace('/',Path.DirectorySeparatorChar);
+            root = root.Replace('/', Path.DirectorySeparatorChar);
             return root;
         }
     }

@@ -46,13 +46,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         [Test]
         public async Task GetContent()
         {
-            using (var s = await AsyncClient.GetContent("~/").ConfigureAwait(false))
-            using (var ms = new MemoryStream())
-            {
-                s.CopyTo(ms);
-                var content = Encoding.UTF8.GetString(ms.ToArray());
-                content.RemoveNewlines().Should().Be("{  \"Value\": \"42\"}");
-            }
+            using var s = await AsyncClient.GetContent("~/").ConfigureAwait(false);
+            using var ms = new MemoryStream();
+            
+            await s.CopyToAsync(ms);
+
+            var content = Encoding.UTF8.GetString(ms.ToArray());
+            content.RemoveNewlines().Should().Be("{  \"Value\": \"42\"}");
         }
 
         class TestDto
