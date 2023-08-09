@@ -8,14 +8,22 @@ namespace Octopus.Client.Model;
 /// </summary>
 public class GitDependencyResource
 {
-    public GitDependencyResource(string repositoryUri, string defaultBranch, string gitCredentialType, string? gitCredentialId = null, string[]? filePathFilters = null, string? name = null)
+    public GitDependencyResource(
+        string repositoryUri, 
+        string defaultBranch, 
+        string gitCredentialType,
+        string? gitCredentialId = null, 
+        string[]? filePathFilters = null, 
+        string? name = null,
+        string? stepPackageInputsReferenceId = null)
     {
         RepositoryUri = repositoryUri;
         DefaultBranch = defaultBranch;
         GitCredentialType = gitCredentialType;
         GitCredentialId = gitCredentialId;
-        FilePathFilters = filePathFilters ?? Array.Empty<string>();   
+        FilePathFilters = filePathFilters ?? Array.Empty<string>();
         Name = name ?? string.Empty;
+        StepPackageInputsReferenceId = stepPackageInputsReferenceId;
     }
 
     public string Name { get; }
@@ -24,4 +32,5 @@ public class GitDependencyResource
     public string[] FilePathFilters { get; }
     public string GitCredentialType { get; }
     public string? GitCredentialId { get; }
+    public string? StepPackageInputsReferenceId { get; set; }
 }
