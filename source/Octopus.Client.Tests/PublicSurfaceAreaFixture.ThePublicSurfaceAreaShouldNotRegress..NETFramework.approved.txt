@@ -3179,13 +3179,14 @@ Octopus.Client.Model
   }
   class GitDependencyResource
   {
-    .ctor(String, String, String, String, String[], String)
+    .ctor(String, String, String, String, String[], String, String)
     String DefaultBranch { get; }
     String[] FilePathFilters { get; }
     String GitCredentialId { get; }
     String GitCredentialType { get; }
     String Name { get; }
     String RepositoryUri { get; }
+    String StepPackageInputsReferenceId { get; set; }
   }
   class GitHubFeedResource
     Octopus.Client.Extensibility.IResource
