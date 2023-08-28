@@ -61,7 +61,7 @@ namespace Octopus.Client.Repositories.Async
         
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProgressionResource> GetProgression(ProjectResource project);
-        Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken);
+        Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken, int? releaseHistoryCount = null);
         
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
@@ -268,9 +268,10 @@ namespace Octopus.Client.Repositories.Async
             return GetProgression(project, CancellationToken.None);
         }
 
-        public Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken)
+        public Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken, int? releaseHistoryCount = null)
         {
-            return Client.Get<ProgressionResource>(project.Link("Progression"), cancellationToken);
+            var pathParameters = releaseHistoryCount.HasValue ? new { releaseHistoryCount } : null;
+            return Client.Get<ProgressionResource>(project.Link("Progression"), pathParameters, cancellationToken);
         }
 
         public Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project)
