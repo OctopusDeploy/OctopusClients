@@ -705,6 +705,13 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
   }
+  class AzureOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AzureOidcAccountResource, AzureOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AzureOidcAccountResource, AzureOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     Octopus.Client.Editors.IResourceBuilder
@@ -1049,6 +1056,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
     Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AzureOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AzureSubscriptionAccountResource, AzureOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -5913,6 +5927,7 @@ Octopus.Client.Model.Accounts
       AmazonWebServicesRoleAccount = 6
       Token = 7
       GoogleCloudAccount = 8
+      AzureOidcAccount = 9
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -5926,6 +5941,24 @@ Octopus.Client.Model.Accounts
     String AccessKey { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+  }
+  class AzureOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String ActiveDirectoryEndpointBaseUri { get; set; }
+    String AzureEnvironment { get; set; }
+    String ClientId { get; set; }
+    String ResourceManagementEndpointBaseUri { get; set; }
+    String SubscriptionNumber { get; set; }
+    Boolean TenantedSubjectGeneration { get; set; }
+    String TenantId { get; set; }
   }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
