@@ -5505,6 +5505,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -5512,6 +5513,7 @@ Octopus.Client.Model
     String Description { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
+    String Slug { get; set; }
     String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     Octopus.Client.Model.TenantResource ClearProjects()
