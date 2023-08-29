@@ -6,7 +6,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class TenantResource : Resource, INamedResource, IHaveSpaceResource
+    public class TenantResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         public TenantResource()
         {
@@ -69,5 +69,7 @@ namespace Octopus.Client.Model
 
         [WriteableOnCreate]
         public string ClonedFromTenantId { get; set; }
+
+        public string Slug { get; set; }
     }
 }
