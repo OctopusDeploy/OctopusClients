@@ -8435,7 +8435,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource)
-    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, CancellationToken)
+    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, CancellationToken, Nullable<Int32>)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
