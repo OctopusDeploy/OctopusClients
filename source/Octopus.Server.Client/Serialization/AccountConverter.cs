@@ -12,6 +12,7 @@ namespace Octopus.Client.Serialization
                 {AccountType.UsernamePassword, typeof(UsernamePasswordAccountResource)},
                 {AccountType.AzureSubscription, typeof(AzureSubscriptionAccountResource)},
                 {AccountType.AzureServicePrincipal, typeof(AzureServicePrincipalAccountResource)},
+                {AccountType.AzureOidcAccount, typeof(AzureOidcAccountResource)},
                 {AccountType.SshKeyPair, typeof(SshKeyPairAccountResource)},
                 {AccountType.AmazonWebServicesAccount, typeof(AmazonWebServicesAccountResource)},
                 {AccountType.Token, typeof(TokenAccountResource)},
