@@ -11,10 +11,7 @@ namespace Octopus.Client.Model.Accounts
             CertificateBytes = new SensitiveValue();
         }
 
-        public override AccountType AccountType
-        {
-            get { return AccountType.AzureSubscription; }
-        }
+        public override AccountType AccountType => AccountType.AzureSubscription;
 
         [Trim]
         [Writeable]

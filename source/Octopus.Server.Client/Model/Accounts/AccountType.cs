@@ -9,6 +9,7 @@ namespace Octopus.Client.Model.Accounts
         SshKeyPair,
         AzureSubscription,
         AzureServicePrincipal,
+        AzureOidcAccount,
         AmazonWebServicesAccount,
         AmazonWebServicesRoleAccount,
         Token,
