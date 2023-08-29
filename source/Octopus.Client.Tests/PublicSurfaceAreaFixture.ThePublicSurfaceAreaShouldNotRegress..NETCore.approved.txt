@@ -2615,7 +2615,9 @@ Octopus.Client.Model
   class DeploymentActionContainerResource
   {
     .ctor()
+    String Dockerfile { get; set; }
     String FeedId { get; set; }
+    String GitUrl { get; set; }
     String Image { get; set; }
   }
   class DeploymentActionPackageResource
