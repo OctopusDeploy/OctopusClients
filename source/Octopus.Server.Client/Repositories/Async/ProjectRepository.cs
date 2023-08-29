@@ -60,8 +60,8 @@ namespace Octopus.Client.Repositories.Async
         Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project, CancellationToken cancellationToken);
         
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task<ProgressionResource> GetProgression(ProjectResource project);
-        Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken);
+        Task<ProgressionResource> GetProgression(ProjectResource project, int? releaseHistoryCount = null);
+        Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken, int? releaseHistoryCount = null);
         
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
@@ -263,14 +263,15 @@ namespace Octopus.Client.Repositories.Async
             return Client.ListAll<ChannelResource>(project.Link("Channels"), cancellationToken);
         }
 
-        public Task<ProgressionResource> GetProgression(ProjectResource project)
+        public Task<ProgressionResource> GetProgression(ProjectResource project, int? releaseHistoryCount = null)
         {
-            return GetProgression(project, CancellationToken.None);
+            return GetProgression(project, CancellationToken.None, releaseHistoryCount);
         }
 
-        public Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken)
+        public Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken, int? releaseHistoryCount = null)
         {
-            return Client.Get<ProgressionResource>(project.Link("Progression"), cancellationToken);
+            var pathParameters = releaseHistoryCount.HasValue ? new { releaseHistoryCount } : null;
+            return Client.Get<ProgressionResource>(project.Link("Progression"), pathParameters, cancellationToken);
         }
 
         public Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project)
