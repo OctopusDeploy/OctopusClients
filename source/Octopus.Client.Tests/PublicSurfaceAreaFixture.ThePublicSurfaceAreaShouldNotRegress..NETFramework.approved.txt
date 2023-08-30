@@ -711,6 +711,10 @@ Octopus.Client.Editors
     Octopus.Client.Editors.AccountEditor<AzureOidcAccountResource, AzureOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
+    List<ResourceGroup> ResourceGroups()
+    List<AzureStorageAccount> StorageAccounts()
+    List<WebSite> WebSites()
+    List<WebSlot> WebSiteSlots(Octopus.Client.Model.Accounts.WebSite)
   }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
@@ -1065,6 +1069,10 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.AccountEditor<AzureSubscriptionAccountResource, AzureOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+    Task<List<ResourceGroup>> ResourceGroups()
+    Task<List<AzureStorageAccount>> StorageAccounts()
+    Task<List<WebSite>> WebSites()
+    Task<List<WebSlot>> WebSlots(Octopus.Client.Model.Accounts.WebSite)
   }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
@@ -5959,6 +5967,27 @@ Octopus.Client.Model.Accounts
     String SubscriptionNumber { get; set; }
     Boolean TenantedSubjectGeneration { get; set; }
     String TenantId { get; set; }
+    class ResourceGroup
+    {
+      .ctor()
+      String Id { get; set; }
+      String Name { get; set; }
+    }
+    class WebSite
+    {
+      .ctor()
+      String Name { get; set; }
+      String ResourceGroup { get; set; }
+      String WebSpace { get; set; }
+    }
+    class WebSlot
+    {
+      .ctor()
+      String Name { get; set; }
+      String Region { get; set; }
+      String ResourceGroupName { get; set; }
+      String Site { get; set; }
+    }
   }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
@@ -6055,6 +6084,12 @@ Octopus.Client.Model.Accounts
     String Id { get; set; }
     String Name { get; set; }
   }
+  class ResourceGroup
+  {
+    .ctor()
+    String Id { get; set; }
+    String Name { get; set; }
+  }
   class SshKeyPairAccountResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6114,6 +6149,21 @@ Octopus.Client.Model.Accounts
     String Name { get; set; }
     String ResourceGroup { get; set; }
     String WebSpace { get; set; }
+  }
+  class WebSite
+  {
+    .ctor()
+    String Name { get; set; }
+    String ResourceGroup { get; set; }
+    String WebSpace { get; set; }
+  }
+  class WebSlot
+  {
+    .ctor()
+    String Name { get; set; }
+    String Region { get; set; }
+    String ResourceGroupName { get; set; }
+    String Site { get; set; }
   }
   class WebSlot
   {

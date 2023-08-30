@@ -36,5 +36,26 @@ namespace Octopus.Client.Model.Accounts
         [Trim]
         [Writeable]
         public string ActiveDirectoryEndpointBaseUri { get; set; }
+        
+        public class WebSite
+        {
+            public string Name { get; set; }
+            public string WebSpace { get; set; }
+            public string ResourceGroup { get; set; }
+        }
+
+        public class WebSlot
+        {
+            public string Name { get; set; }
+            public string Site { get; set; }
+            public string ResourceGroupName { get; set; }
+            public string Region { get; set; }
+        }
+
+        public class ResourceGroup
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+        }
     }
 }
