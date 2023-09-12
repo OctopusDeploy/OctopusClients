@@ -5,7 +5,7 @@ namespace Octopus.Client.Model.Accounts
 {
     public class AzureOidcAccountResource : AccountResource
     {
-        public override AccountType AccountType => AccountType.AzureOidcAccount;
+        public override AccountType AccountType => AccountType.AzureOidc;
 
         [Trim]
         [Writeable]
