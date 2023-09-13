@@ -5912,7 +5912,7 @@ Octopus.Client.Model.Accounts
       AmazonWebServicesRoleAccount = 6
       Token = 7
       GoogleCloudAccount = 8
-      AzureOidcAccount = 9
+      AzureOidc = 9
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -5938,6 +5938,7 @@ Octopus.Client.Model.Accounts
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     String ActiveDirectoryEndpointBaseUri { get; set; }
+    String Audience { get; set; }
     String AzureEnvironment { get; set; }
     String ClientId { get; set; }
     String ResourceManagementEndpointBaseUri { get; set; }
