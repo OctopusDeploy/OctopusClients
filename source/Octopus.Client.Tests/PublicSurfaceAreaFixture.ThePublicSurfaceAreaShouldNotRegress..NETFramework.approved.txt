@@ -705,6 +705,13 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
   }
+  class AmazonWebServicesOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   class AzureServicePrincipalAccountEditor
     Octopus.Client.Editors.IResourceEditor<AzureServicePrincipalAccountResource, AzureServicePrincipalAccountEditor>
     Octopus.Client.Editors.IResourceBuilder
@@ -1049,6 +1056,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
     Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AmazonWebServicesOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -5911,8 +5925,9 @@ Octopus.Client.Model.Accounts
       AzureServicePrincipal = 4
       AmazonWebServicesAccount = 5
       AmazonWebServicesRoleAccount = 6
-      Token = 7
-      GoogleCloudAccount = 8
+      AmazonWebServicesOidcAccount = 7
+      Token = 8
+      GoogleCloudAccount = 9
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -5926,6 +5941,20 @@ Octopus.Client.Model.Accounts
     String AccessKey { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+  }
+  class AmazonWebServicesOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String Audience { get; set; }
+    String RoleArn { get; set; }
+    String SessionDuration { get; set; }
   }
   class AzureServicePrincipalAccountResource
     Octopus.Client.Extensibility.IResource
