@@ -24,6 +24,8 @@ namespace Octopus.Client.Extensions
                 accountType = AccountType.AzureSubscription;
             else if (type == typeof(AmazonWebServicesAccountResource))
                 accountType = AccountType.AmazonWebServicesAccount;
+            else if (type == typeof(AmazonWebServicesOidcAccountResource))
+                accountType = AccountType.AmazonWebServicesOidcAccount;
             else if (type == typeof(TokenAccountResource))
                 accountType = AccountType.Token;
             else if (type == typeof(GoogleCloudAccountResource))
