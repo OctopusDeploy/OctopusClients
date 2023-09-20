@@ -5959,14 +5959,16 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
+    String[] AccountTestSubjectKeys { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     String ActiveDirectoryEndpointBaseUri { get; set; }
     String Audience { get; set; }
     String AzureEnvironment { get; set; }
     String ClientId { get; set; }
+    String[] DeploymentSubjectKeys { get; set; }
+    String[] HealthCheckSubjectKeys { get; set; }
     String ResourceManagementEndpointBaseUri { get; set; }
     String SubscriptionNumber { get; set; }
-    Boolean TenantedSubjectGeneration { get; set; }
     String TenantId { get; set; }
     class ResourceGroup
     {

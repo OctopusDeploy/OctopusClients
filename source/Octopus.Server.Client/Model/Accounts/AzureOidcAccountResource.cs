@@ -26,9 +26,6 @@ namespace Octopus.Client.Model.Accounts
         [Writeable]
         public string AzureEnvironment { get; set; }
 
-        [Writeable]
-        public bool TenantedSubjectGeneration { get; set; }
-
         [Trim]
         [Writeable]
         public string ResourceManagementEndpointBaseUri { get; set; }
@@ -36,10 +33,19 @@ namespace Octopus.Client.Model.Accounts
         [Trim]
         [Writeable]
         public string ActiveDirectoryEndpointBaseUri { get; set; }
-        
+
         [Trim]
         [Writeable]
         public string Audience { get; set; }
+
+        [Writeable]
+        public string[] DeploymentSubjectKeys { get; set; }
+
+        [Writeable]
+        public string[] HealthCheckSubjectKeys { get; set; }
+
+        [Writeable]
+        public string[] AccountTestSubjectKeys { get; set; }
         
         public class WebSite
         {
