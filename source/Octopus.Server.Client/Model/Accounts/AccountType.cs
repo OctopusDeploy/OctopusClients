@@ -13,5 +13,6 @@ namespace Octopus.Client.Model.Accounts
         AmazonWebServicesRoleAccount,
         Token,
         GoogleCloudAccount,
+        AzureOidc,
     }
 }
