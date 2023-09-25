@@ -5836,6 +5836,7 @@ Octopus.Client.Model
       AmazonWebServicesAccount = 3
       AzureAccount = 4
       WorkerPool = 5
+      UsernamePassword = 6
   }
   class VersioningStrategyResource
   {
