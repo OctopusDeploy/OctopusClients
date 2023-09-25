@@ -2453,6 +2453,7 @@ Octopus.Client.Model
     static System.String Sensitive
     static System.String SingleLineText
     static System.String StepName
+    static System.String UsernamePassword
     static Dictionary<String, String> AsDisplaySettings(String)
   }
   class CreateChannelCommand
