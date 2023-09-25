@@ -15,7 +15,7 @@ namespace Octopus.Client.Model
         public const string AzureAccount = "AzureAccount";
         public const string AmazonWebServicesAccount = "AmazonWebServicesAccount";
         public const string Certificate = "Certificate";
-        public const string UsernamePasswordAccount = "UsernamePassword";
+        public const string UsernamePassword = "UsernamePassword";
 
         public static Dictionary<string, string> AsDisplaySettings(string controlType)
         {
