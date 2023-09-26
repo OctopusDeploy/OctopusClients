@@ -3780,9 +3780,8 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean Enabled { get; set; }
-    TimeSpan HealthyMachineHealthCheckRetryDuration { get; set; }
+    TimeSpan HealthCheckRetryDuration { get; set; }
     TimeSpan RetryDuration { get; set; }
-    TimeSpan UnHealthyMachineHealthCheckRetryDuration { get; set; }
   }
   class MachineScriptPolicy
   {

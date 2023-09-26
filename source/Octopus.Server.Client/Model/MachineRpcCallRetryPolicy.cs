@@ -6,6 +6,5 @@ public class MachineRpcCallRetryPolicy
 {
     public bool Enabled { get; set; } = true;
     public TimeSpan RetryDuration { get; set; } = TimeSpan.FromMinutes(2.5);
-    public TimeSpan HealthyMachineHealthCheckRetryDuration { get; set; } = TimeSpan.FromMinutes(2.5);
-    public TimeSpan UnHealthyMachineHealthCheckRetryDuration { get; set; } = TimeSpan.FromMinutes(2.5);
+    public TimeSpan HealthCheckRetryDuration { get; set; } = TimeSpan.FromMinutes(2.5);
 }
