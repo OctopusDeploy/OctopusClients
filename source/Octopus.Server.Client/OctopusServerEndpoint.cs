@@ -8,117 +8,94 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusServerEndpoint
     {
-        readonly ILinkResolver octopusServer;
-        readonly string apiKey;
-        readonly ICredentials credentials;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusServerEndpoint" /> class. Since no API key is provided, only
-        /// very limited functionality will be available.
-        /// </summary>
-        /// <param name="octopusServerAddress">
-        /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
-        /// client
-        /// will assume Octopus runs under a virtual directory.
-        /// </param>
-        public OctopusServerEndpoint(string octopusServerAddress)
-            : this(octopusServerAddress, null)
+        public static OctopusServerEndpoint CreateWithToken(string octopusServerAddress, string token)
         {
+            return new OctopusServerEndpoint(octopusServerAddress, token, null, isToken: true);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusServerEndpoint" /> class.
-        /// </summary>
-        /// <param name="octopusServerAddress">
-        /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
-        /// client
-        /// will assume Octopus runs under a virtual directory.
-        /// </param>
-        /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
-        /// see the API documentation on authentication
-        /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
-        /// </param>
+        public static OctopusServerEndpoint CreateWithApiKey(string octopusServerAddress, string apiKey)
+        {
+            return new OctopusServerEndpoint(octopusServerAddress, apiKey);
+        }
+
+        /// <remarks>
+        /// Since no API key is provided, only very limited functionality will be available.
+        /// </remarks>
+        /// <param name="octopusServerAddress"><inheritdoc cref="OctopusServer" path="summary/"/></param>
+        public OctopusServerEndpoint(string octopusServerAddress)
+        {
+            OctopusServer = ParseOctopusServerAddress(octopusServerAddress);
+        }
+
+        /// <param name="octopusServerAddress"><inheritdoc cref="OctopusServer" path="summary/"/></param>
+        /// <param name="apiKey"><inheritdoc cref="ApiKey" path="summary/"/></param>
         public OctopusServerEndpoint(string octopusServerAddress, string apiKey)
             : this(octopusServerAddress, apiKey, null)
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusServerEndpoint" /> class.
-        /// </summary>
-        /// <param name="octopusServerAddress">
-        /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
-        /// client
-        /// will assume Octopus runs under a virtual directory.
+        /// <param name="octopusServerAddress"><inheritdoc cref="OctopusServer" path="summary/"/></param>
+        /// <param name="apiKeyOrToken">
+        /// API Key or Token used for authentication.
+        /// See <see cref="ApiKey"/> and <see cref="Token"/>
         /// </param>
-        /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
-        /// see the API documentation on authentication
-        /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
+        /// <param name="credentials"><inheritdoc cref="Credentials" path="summary/"/></param>
+        /// <param name="isToken">
+        /// Indicates if <see langword="apiKeyOrToken"/> is a token or not. The default is <see langword="false"/>.
         /// </param>
-        /// <param name="credentials">
-        /// Additional credentials to use when communicating to servers that require integrated/basic
-        /// authentication.
-        /// </param>
-        public OctopusServerEndpoint(string octopusServerAddress, string apiKey, ICredentials credentials)
+        public OctopusServerEndpoint(string octopusServerAddress, string apiKeyOrToken, ICredentials credentials, bool isToken = false)
+        : this(ParseOctopusServerAddress(octopusServerAddress), apiKeyOrToken, credentials, isToken)
         {
-            if (string.IsNullOrWhiteSpace(octopusServerAddress))
-                throw new ArgumentException("An Octopus Server URI was not specified.");
-
-            if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out var uri) || !uri.Scheme.StartsWith("http"))
-                throw new ArgumentException($"The Octopus Server URI '{octopusServerAddress}' is invalid. The URI should start with http:// or https:// and be a valid URI.");
-
-            octopusServer = new DefaultLinkResolver(new Uri(octopusServerAddress));
-            this.apiKey = apiKey;
-            this.credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OctopusServerEndpoint" /> class.
-        /// </summary>
-        /// <param name="octopusServer">The resolver that should be used to turn relative links into full URIs.</param>
-        /// <param name="apiKey">
-        /// The API key to use when connecting to the Octopus Server. For more information on API keys, please
-        /// see the API documentation on authentication
-        /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
+        /// <param name="octopusServer"><inheritdoc cref="OctopusServer" path="summary/"/></param>
+        /// <param name="apiKeyOrToken">
+        /// API Key or Token used for authentication.
+        /// See <see cref="ApiKey"/> and <see cref="Token"/>
         /// </param>
-        /// <param name="credentials">
-        /// Additional credentials to use when communicating to servers that require integrated/basic
-        /// authentication.
+        /// <param name="credentials"><inheritdoc cref="Credentials" path="summary/"/></param>
+        /// <param name="isToken">
+        /// Indicates if <see langword="apiKeyOrToken"/> is a token or not. The default is <see langword="false"/>.
         /// </param>
-        public OctopusServerEndpoint(ILinkResolver octopusServer, string apiKey, ICredentials credentials)
+        public OctopusServerEndpoint(ILinkResolver octopusServer, string apiKeyOrToken, ICredentials credentials, bool isToken = false)
         {
-            if (string.IsNullOrWhiteSpace(apiKey))
-                throw new ArgumentException("An API key was not specified. Please set an API key using the ApiKey property. This can be gotten from your user profile page under the Octopus web portal.");
+            if (string.IsNullOrWhiteSpace(apiKeyOrToken))
+                throw new ArgumentException($"{(isToken ? "A Token" : "An API key")} was not specified but is required. If you This can be gotten from your user profile page under the Octopus web portal.");
 
-            this.octopusServer = octopusServer;
-            this.apiKey = apiKey;
-            this.credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
+            OctopusServer = octopusServer;
+            ApiKey = !isToken ? apiKeyOrToken : null;
+            Token = isToken ? apiKeyOrToken : null;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
         /// <summary>
         /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
         /// client  will assume Octopus runs under a virtual directory.
         /// </summary>
-        public ILinkResolver OctopusServer => octopusServer;
+        public ILinkResolver OctopusServer { get; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
-        public bool IsUsingSecureConnection => octopusServer.IsUsingSecureConnection;
+        public bool IsUsingSecureConnection => OctopusServer.IsUsingSecureConnection;
 
         /// <summary>
-        /// Gets the API key to use when connecting to the Octopus Server. For more information on API keys, please see the API
-        /// documentation on authentication
+        /// The API key to use when connecting to the Octopus Server.
+        ///
+        /// For more information on API keys, please see the API documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </summary>
-        public string ApiKey => apiKey;
+        public string ApiKey { get; }
 
         /// <summary>
-        /// Gets the additional credentials to use when communicating to servers that require integrated/basic authentication.
+        /// The JWT Token to use when connecting to the Octopus Server.
         /// </summary>
-        public ICredentials Credentials => credentials;
+        public string Token { get; }
+
+        /// <summary>
+        /// The additional credentials to use when communicating to servers that require integrated/basic authentication.
+        /// </summary>
+        public ICredentials Credentials { get; }
 
         /// <summary>
         /// Recreates the endpoint using the API key of a new user.
@@ -127,12 +104,23 @@ namespace Octopus.Client
         /// <returns>An endpoint with a new user.</returns>
         public OctopusServerEndpoint AsUser(string newUserApiKey)
         {
-            return new OctopusServerEndpoint(octopusServer, newUserApiKey, credentials);
+            return new OctopusServerEndpoint(OctopusServer, newUserApiKey, Credentials);
         }
 
         /// <summary>
         /// A proxy that should be used to connect to the endpoint.
         /// </summary>
         public IWebProxy Proxy { get; set; }
+
+        private static DefaultLinkResolver ParseOctopusServerAddress(string address)
+        {
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentException("An Octopus Server URI was not specified.");
+
+            if (!Uri.TryCreate(address, UriKind.Absolute, out var uri) || !uri.Scheme.StartsWith("http"))
+                throw new ArgumentException($"The Octopus Server URI '{address}' is invalid. The URI should start with http:// or https:// and be a valid URI.");
+
+            return new DefaultLinkResolver(new Uri(address));
+        }
     }
 }
