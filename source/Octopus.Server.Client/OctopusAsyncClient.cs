@@ -34,7 +34,7 @@ namespace Octopus.Client
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
-        // ReSharper disable once RedundantDefaultMemberInitializer. Mandatory assigment to prevent compiler error CS0649. 
+        // ReSharper disable once RedundantDefaultMemberInitializer. Mandatory assignment to prevent compiler error CS0649. 
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged;
         private string antiforgeryCookieName;
