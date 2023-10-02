@@ -153,7 +153,7 @@ namespace Octopus.Client
 
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
         {
-            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
+            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retrieving cookies
             // From what I can see it uses the Uri.Authority value - which contains the port number
             // We need to clear the port in order to successfully get cookies for the same origin
             var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) { Port = 0 };
