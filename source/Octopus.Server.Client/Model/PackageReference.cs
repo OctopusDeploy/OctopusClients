@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     /// Prior to Octopus 2018.8, deployment actions could have at most a single package-reference. This was
     /// captured as properties on the action (Octopus.Action.Package.PackageId, Octopus.Action.Package.FeedId, etc).
     /// In 2018.8, we introduced support for actions with multiple packages (initially script steps and kubernetes step).
-    /// Storing collections of nested objects in the property-bag gets very messy, so packge-references were moved into their own class
+    /// Storing collections of nested objects in the property-bag gets very messy, so package-references were moved into their own class
     /// and collection on the deployment actions.
     /// </history>
     public class PackageReference
