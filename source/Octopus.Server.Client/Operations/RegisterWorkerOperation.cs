@@ -79,7 +79,7 @@ namespace Octopus.Client.Operations
                 if (!AllowOverwrite && existing?.Id != null)
                     throw new InvalidRegistrationArgumentsException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
             {
             }
             return existing ?? new WorkerResource();
@@ -130,7 +130,7 @@ namespace Octopus.Client.Operations
                 if (!AllowOverwrite && existing?.Id != null)
                     throw new InvalidRegistrationArgumentsException($"A worker named '{MachineName}' already exists. Use the 'force' parameter if you intended to update the existing machine.");
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
             {
             }
             return existing ?? new WorkerResource();

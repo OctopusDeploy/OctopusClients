@@ -133,7 +133,7 @@ namespace Octopus.Client.Operations
                 if (!AllowOverwrite && existing?.Id != null)
                     throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists on the Octopus Server in the target space. Use the 'force' parameter if you intended to update the existing machine.");
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
             {
             }
             return existing ?? new MachineResource();
@@ -229,7 +229,7 @@ namespace Octopus.Client.Operations
                 if (!AllowOverwrite && existing?.Id != null)
                     throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
             {
             }
             return existing ?? new MachineResource();
