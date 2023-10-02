@@ -23,8 +23,8 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteBackup(string description = null);
         Task<TaskResource> ExecuteBackup(CancellationToken cancellationToken, string description = null);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
-        Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken cancellationToken, string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
+        Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
+        Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken cancellationToken, string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, CancellationToken cancellationToken, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
