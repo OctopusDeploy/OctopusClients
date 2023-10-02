@@ -23,7 +23,7 @@ namespace Octopus.Client.Model.Endpoints
 
         [Trim]
         [Writeable]
-        [Required(ErrorMessage = "Please specify a storage acccount.")]
+        [Required(ErrorMessage = "Please specify a storage account.")]
         public string StorageAccountName { get; set; }
 
         [Trim]
