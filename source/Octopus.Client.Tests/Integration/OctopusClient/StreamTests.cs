@@ -9,7 +9,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 {
     public class StreamTests : HttpIntegrationTestBase
     {
-        private static bool _recieved;
+        private static bool _received;
 
         public StreamTests()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
@@ -22,7 +22,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 if (!CompareStreamToSharedBytes(Request.Body))
                     return CreateErrorResponse($"Body does not match");
 
-                _recieved = true;
+                _received = true;
                 return HttpStatusCode.NoContent;
             });
         }
@@ -32,10 +32,10 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             using (var ms = new MemoryStream(SharedBytes))
             {
-                _recieved = false;
+                _received = false;
                 Func<Task> post = () => AsyncClient.Post("~/", ms);
                 post.ShouldNotThrow();
-                _recieved.Should().BeTrue();
+                _received.Should().BeTrue();
             }
         }
     }

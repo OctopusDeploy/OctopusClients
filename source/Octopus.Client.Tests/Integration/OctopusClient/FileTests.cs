@@ -13,7 +13,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 {
     public class FileTests : HttpIntegrationTestBase
     {
-        private static bool _recieved;
+        private static bool _received;
 
         public FileTests()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
@@ -48,7 +48,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 if (!CompareStreamToSharedBytes(file.Value))
                     return CreateErrorResponse($"Body does not match");
 
-                _recieved = true;
+                _received = true;
                 return HttpStatusCode.NoContent;
             });
         }
@@ -63,9 +63,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     Contents = ms,
                     FileName = "foo.txt"
                 };
-                _recieved = false;
+                _received = false;
                 await AsyncClient.Post("~/", file).ConfigureAwait(false);
-                _recieved.Should().BeTrue();
+                _received.Should().BeTrue();
             }
         }
 
@@ -79,9 +79,9 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                     Contents = ms,
                     FileName = "foo.txt"
                 };
-                _recieved = false;
+                _received = false;
                 SyncClient.Post("~/", file);
-                _recieved.Should().BeTrue();
+                _received.Should().BeTrue();
             }
         }
     }
