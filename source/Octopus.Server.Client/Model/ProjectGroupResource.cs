@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
     /// <summary>
     /// Project groups are used to organize collections of related projects. For example, a customer may have a project
     /// group named
-    /// "Corporate Website" containing three seperate projects. Project groups affect retention policies and permissions.
+    /// "Corporate Website" containing three separate projects. Project groups affect retention policies and permissions.
     /// </summary>
     public class ProjectGroupResource : Resource, INamedResource, IHaveSpaceResource
     {

@@ -75,7 +75,7 @@ namespace Octopus.Client.Model
 
         /// <summary>
         /// Treats releases of different channels to the same environment as a 
-        /// seperate deployment dimension. 'False' indicates a "hotfix"-style 
+        /// separate deployment dimension. 'False' indicates a "hotfix"-style 
         /// usage of channels (single release active per environment ignoring channels), 
         /// whereas `True` indicates "microservice"-style usage (single release per environment per channel)
         /// </summary>
