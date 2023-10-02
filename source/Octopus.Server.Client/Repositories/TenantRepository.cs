@@ -36,7 +36,7 @@ namespace Octopus.Client.Repositories
         /// </summary>
         /// <param name="name"></param>
         /// <param name="tags"></param>
-        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
+        /// <param name="pageSize">Number of items per page, setting to less than the total items still retrieves all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
         public List<TenantResource> FindAll(string name, string[] tags, int pageSize = Int32.MaxValue)
         {

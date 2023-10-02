@@ -41,7 +41,7 @@ namespace Octopus.Client.Repositories.Async
         /// <summary>
         /// Gets all the active tasks (optionally limited to pageSize)
         /// </summary>
-        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
+        /// <param name="pageSize">Number of items per page, setting to less than the total items still retrieves all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<List<TaskResource>> GetAllActive(int pageSize = int.MaxValue);

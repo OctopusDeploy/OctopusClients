@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories
         /// <summary>
         /// Gets all the active tasks (optionally limited to pageSize)
         /// </summary>
-        /// <param name="pageSize">Number of items per page, setting to less than the total items still retreives all items, but uses multiple requests reducing memory load on the server</param>
+        /// <param name="pageSize">Number of items per page, setting to less than the total items still retrieves all items, but uses multiple requests reducing memory load on the server</param>
         /// <returns></returns>
         List<TaskResource> GetAllActive(int pageSize = Int32.MaxValue);
 
