@@ -101,7 +101,7 @@ jobs:
               sha: context.sha
             })
             
-  test-linux-distrubtions:
+  test-linux-distributions:
     strategy:
       matrix:
         os: [ubuntu16, ubuntu18, ubuntu20, debian-buster, fedora35, centos7, rhel9, rocky9, amazon2, opensuse-leap15, opensuse-tumbleweed ]
@@ -152,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [
       build, 
-      test-linux-distrubtions, 
+      test-linux-distributions, 
       test-macos ]
     steps:
       - name: Download nuget package artifact
