@@ -30,7 +30,7 @@
         /// </summary>
         public string Region { get; set; }
         /// <summary>
-        /// The zone code of the GCP intance
+        /// The zone code of the GCP instance
         /// </summary>
         public string Zone { get; set; }
         /// <summary>
