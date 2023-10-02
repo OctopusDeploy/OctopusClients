@@ -57,7 +57,7 @@ namespace Octopus.Client.Tests.Model
         [TestCase("2.19.i-channel", "2.19.30-baz", "2.19.31-channel", Description = "Tag in mask overrides current tag")]
         [TestCase("2.19.i", "2.19.30-baz", "2.19.31", Description = "Tag on current ignored if not in mask")]
         [TestCase("1.2.c-alpha.i", "1.2.3-alpha.4", "1.2.3-alpha.5", Description = "Increments pre-release")]
-        [TestCase("1.2.0-alpha.i", "1.2.3", "1.2.0-alpha.1", Description = "Increment on non-existintant pre-release identifier assumes previous zero")]
+        [TestCase("1.2.0-alpha.i", "1.2.3", "1.2.0-alpha.1", Description = "Increment on nonexistent pre-release identifier assumes previous zero")]
         [TestCase("1.2.0-alpha.c.i.i", "1.2.0-alpha.2.3.4", "1.2.0-alpha.2.4.0", Description = "Increment on increment pre-release identifier resets to zero")]
         public void ShouldApplyMask(string mask, string current, string expected)
         {
