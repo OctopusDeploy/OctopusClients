@@ -162,10 +162,10 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
                     get { return matchGroup.Value; }
                 }
 
-                public string EvaluateFromMask(string seperator = "")
+                public string EvaluateFromMask(string separator = "")
                 {
                     return IsPresent ?
-                        string.Format("{0}{1}", seperator, IsSubstitute ? "0" : Value) :
+                        string.Format("{0}{1}", separator, IsSubstitute ? "0" : Value) :
                         string.Empty;
                 }
 
