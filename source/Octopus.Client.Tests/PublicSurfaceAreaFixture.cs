@@ -129,7 +129,7 @@ namespace Octopus.Client.Tests
             if (c.IsStatic)
                 return new string[0];
 
-            var parameters = c.GetParameters().Select(p => FormatTypeName(p.ParameterType));
+            var parameters = c.GetParameters().Select(p => FormatTypeName(p.ParameterType, isOptional: p.IsOptional, defaultValue:p.DefaultValue));
             return $"{c.Name}({parameters.CommaSeperate()})".InArray();
         }
 
@@ -138,12 +138,12 @@ namespace Octopus.Client.Tests
             if (m.IsSpecialName)
                 return new string[0];
 
-            var properties = m.GetParameters().Select(p => $"{FormatTypeName(p.ParameterType)}").ToArray();
+            var properties = m.GetParameters().Select(p => $"{FormatTypeName(p.ParameterType, isOptional: p.IsOptional, defaultValue:p.DefaultValue)}").ToArray();
 
             return $"{Static(m.IsStatic)}{FormatTypeName(m.ReturnType)} {m.Name}({properties.CommaSeperate()})".InArray();
         }
 
-        string FormatTypeName(Type type, bool shortName = false)
+        string FormatTypeName(Type type, bool shortName = false, bool isOptional = false, object defaultValue = null)
         {
             if (type == typeof(void))
                 return "void";
@@ -154,11 +154,28 @@ namespace Octopus.Client.Tests
                 name = type.Namespace + "." + name;
 
             if (!type.GetTypeInfo().IsGenericType)
-                return name;
+                return AddDefaultValue(name);
 
             name = name.Substring(0, name.IndexOf('`'));
             var args = type.GetGenericArguments().Select(a => FormatTypeName(a, true));
-            return $"{name}<{args.CommaSeperate()}>";
+            return AddDefaultValue($"{name}<{args.CommaSeperate()}>");
+
+            string AddDefaultValue(string typeName)
+            {
+                if (!isOptional)
+                {
+                    return typeName;
+                }
+
+                string defaultValueString = defaultValue switch
+                {
+                    null => "null",
+                    string stringValue => $"\"{stringValue}\"",
+                    _ => defaultValue.ToString()
+                };
+
+                return $"{typeName} = {defaultValueString}";
+            }
         }
     }
 }
