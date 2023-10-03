@@ -7,6 +7,7 @@
         Certificate,
         AmazonWebServicesAccount,
         AzureAccount,
-        WorkerPool
+        WorkerPool,
+        UsernamePasswordAccount
     }
 }
