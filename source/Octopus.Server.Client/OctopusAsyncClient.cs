@@ -78,7 +78,14 @@ namespace Octopus.Client
             client = new HttpClient(handler, true);
             client.Timeout = clientOptions.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+            if (serverEndpoint.ApiKey != null)
+            {
+                client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+            }
+            if (serverEndpoint.Token != null)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serverEndpoint.Token);
+            }
             client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
             Repository = new OctopusAsyncRepository(this);
         }
