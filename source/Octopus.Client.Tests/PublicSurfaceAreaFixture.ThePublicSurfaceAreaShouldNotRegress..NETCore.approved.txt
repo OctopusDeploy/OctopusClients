@@ -3,7 +3,7 @@ Octopus.Client
   class DefaultLinkResolver
     Octopus.Client.ILinkResolver
   {
-    .ctor(Uri, String)
+    .ctor(Uri, String = "/api")
     Boolean IsUsingSecureConnection { get; }
     Uri Resolve(String)
     String ToString()
@@ -30,54 +30,54 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    Task<TResource> Create(String, Octopus.Client.TResource, Object = null)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
-    Task Delete(String, Object, Object)
+    Task Delete(String, Object = null, Object = null)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
-    Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, Object = null)
     Task<TResource> Get(String, CancellationToken)
     Task<TResource> Get(String, Object, CancellationToken)
-    Task<Stream> GetContent(String, Object)
+    Task<Stream> GetContent(String, Object = null)
     Task<Stream> GetContent(String, CancellationToken)
     Task<Stream> GetContent(String, Object, CancellationToken)
-    Task<ResourceCollection<TResource>> List(String, Object)
+    Task<ResourceCollection<TResource>> List(String, Object = null)
     Task<ResourceCollection<TResource>> List(String, CancellationToken)
     Task<ResourceCollection<TResource>> List(String, Object, CancellationToken)
-    Task<IReadOnlyList<TResource>> ListAll(String, Object)
+    Task<IReadOnlyList<TResource>> ListAll(String, Object = null)
     Task<IReadOnlyList<TResource>> ListAll(String, CancellationToken)
     Task<IReadOnlyList<TResource>> ListAll(String, Object, CancellationToken)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
-    Task Post(String, Octopus.Client.TResource, Object)
+    Task Post(String, Octopus.Client.TResource, Object = null)
     Task Post(String, Octopus.Client.TResource, CancellationToken)
     Task Post(String, Octopus.Client.TResource, Object, CancellationToken)
-    Task<TResponse> Post(String, Octopus.Client.TResource, Object)
+    Task<TResponse> Post(String, Octopus.Client.TResource, Object = null)
     Task<TResponse> Post(String, Octopus.Client.TResource, CancellationToken)
     Task<TResponse> Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Post(String)
     Task Post(String, CancellationToken)
     Task Put(String, Octopus.Client.TResource)
     Task Put(String, Octopus.Client.TResource, CancellationToken)
-    Task Put(String, Octopus.Client.TResource, Object)
+    Task Put(String, Octopus.Client.TResource, Object = null)
     Task Put(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Put(String)
     Task Put(String, CancellationToken)
     Task PutContent(String, Stream)
     Task PutContent(String, Stream, CancellationToken)
-    Uri QualifyUri(String, Object)
+    Uri QualifyUri(String, Object = null)
     Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
     Task SignOut(CancellationToken)
-    Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, Object = null)
     Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
   }
@@ -95,34 +95,34 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
-    void Delete(String, Object, Object)
+    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object = null)
+    void Delete(String, Object = null, Object = null)
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
-    Octopus.Client.TResource Get(String, Object)
-    Stream GetContent(String, Object)
-    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
-    IReadOnlyList<TResource> ListAll(String, Object)
+    Octopus.Client.TResource Get(String, Object = null)
+    Stream GetContent(String, Object = null)
+    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object = null)
+    IReadOnlyList<TResource> ListAll(String, Object = null)
     void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
     void Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
-    void Post(String, Octopus.Client.TResource, Object)
-    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
+    void Post(String, Octopus.Client.TResource, Object = null)
+    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object = null)
     void Post(String)
     void Put(String, Octopus.Client.TResource)
     void Put(String)
-    void Put(String, Octopus.Client.TResource, Object)
+    void Put(String, Octopus.Client.TResource, Object = null)
     void PutContent(String, Stream)
-    Uri QualifyUri(String, Object)
+    Uri QualifyUri(String, Object = null)
     Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
-    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object = null)
   }
   interface IOctopusClientFactory
   {
-    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
-    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
   }
   interface IOctopusCommonAsyncRepository
   {
@@ -303,56 +303,56 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
-    Task<TResource> Create(String, Octopus.Client.TResource, Object)
+    static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
+    Task<TResource> Create(String, Octopus.Client.TResource, Object = null)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
-    Task Delete(String, Object, Object)
+    Task Delete(String, Object = null, Object = null)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
     void Dispose()
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
-    Task<TResource> Get(String, Object)
+    Task<TResource> Get(String, Object = null)
     Task<TResource> Get(String, CancellationToken)
     Task<TResource> Get(String, Object, CancellationToken)
-    Task<Stream> GetContent(String, Object)
+    Task<Stream> GetContent(String, Object = null)
     Task<Stream> GetContent(String, CancellationToken)
     Task<Stream> GetContent(String, Object, CancellationToken)
-    Task<ResourceCollection<TResource>> List(String, Object)
+    Task<ResourceCollection<TResource>> List(String, Object = null)
     Task<ResourceCollection<TResource>> List(String, CancellationToken)
     Task<ResourceCollection<TResource>> List(String, Object, CancellationToken)
-    Task<IReadOnlyList<TResource>> ListAll(String, Object)
+    Task<IReadOnlyList<TResource>> ListAll(String, Object = null)
     Task<IReadOnlyList<TResource>> ListAll(String, CancellationToken)
     Task<IReadOnlyList<TResource>> ListAll(String, Object, CancellationToken)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
     Task Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
     Task Paginate(String, Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
-    Task Post(String, Octopus.Client.TResource, Object)
+    Task Post(String, Octopus.Client.TResource, Object = null)
     Task Post(String, Octopus.Client.TResource, CancellationToken)
     Task Post(String, Octopus.Client.TResource, Object, CancellationToken)
-    Task<TResponse> Post(String, Octopus.Client.TResource, Object)
+    Task<TResponse> Post(String, Octopus.Client.TResource, Object = null)
     Task<TResponse> Post(String, Octopus.Client.TResource, CancellationToken)
     Task<TResponse> Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Post(String)
     Task Post(String, CancellationToken)
     Task Put(String, Octopus.Client.TResource)
     Task Put(String, Octopus.Client.TResource, CancellationToken)
-    Task Put(String, Octopus.Client.TResource, Object)
+    Task Put(String, Octopus.Client.TResource, Object = null)
     Task Put(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Put(String)
     Task Put(String, CancellationToken)
     Task PutContent(String, Stream)
     Task PutContent(String, Stream, CancellationToken)
-    Uri QualifyUri(String, Object)
+    Uri QualifyUri(String, Object = null)
     Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
     Task SignOut(CancellationToken)
-    Task<TResource> Update(String, Octopus.Client.TResource, Object)
+    Task<TResource> Update(String, Octopus.Client.TResource, Object = null)
     Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
   }
@@ -362,7 +362,7 @@ Octopus.Client
     Octopus.Client.IOctopusCommonAsyncRepository
     Octopus.Client.IOctopusSystemAsyncRepository
   {
-    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
+    .ctor(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope = null)
     Octopus.Client.Repositories.Async.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.Async.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.Async.IArchivedEventFileRepository ArchivedEventFiles { get; }
@@ -444,42 +444,42 @@ Octopus.Client
     event Action<WebRequest> BeforeSendingHttpRequest
     event Action<OctopusResponse> ReceivedOctopusResponse
     event Action<OctopusRequest> SendingOctopusRequest
-    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
-    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
-    void Delete(String, Object, Object)
+    Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object = null)
+    void Delete(String, Object = null, Object = null)
     void Dispose()
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
-    Octopus.Client.TResource Get(String, Object)
-    Stream GetContent(String, Object)
+    Octopus.Client.TResource Get(String, Object = null)
+    Stream GetContent(String, Object = null)
     void Initialize()
-    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object)
-    IReadOnlyList<TResource> ListAll(String, Object)
+    Octopus.Client.Model.ResourceCollection<TResource> List(String, Object = null)
+    IReadOnlyList<TResource> ListAll(String, Object = null)
     void Paginate(String, Object, Func<ResourceCollection<TResource>, Boolean>)
     void Paginate(String, Func<ResourceCollection<TResource>, Boolean>)
-    void Post(String, Octopus.Client.TResource, Object)
-    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object)
+    void Post(String, Octopus.Client.TResource, Object = null)
+    Octopus.Client.TResponse Post(String, Octopus.Client.TResource, Object = null)
     void Post(String)
     void Put(String, Octopus.Client.TResource)
     void Put(String)
-    void Put(String, Octopus.Client.TResource, Object)
+    void Put(String, Octopus.Client.TResource, Object = null)
     void PutContent(String, Stream)
-    Uri QualifyUri(String, Object)
+    Uri QualifyUri(String, Object = null)
     Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
-    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object = null)
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
   {
     .ctor()
-    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
-    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
+    Task<IOctopusAsyncClient> CreateAsyncClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
+    Octopus.Client.IOctopusClient CreateClient(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions = null)
   }
   class OctopusClientOptions
   {
@@ -501,7 +501,7 @@ Octopus.Client
   {
     .ctor(Octopus.Client.OctopusServerEndpoint)
     .ctor(Octopus.Client.OctopusServerEndpoint, Octopus.Client.RepositoryScope)
-    .ctor(Octopus.Client.IOctopusClient, Octopus.Client.RepositoryScope)
+    .ctor(Octopus.Client.IOctopusClient, Octopus.Client.RepositoryScope = null)
     Octopus.Client.Repositories.IAccountRepository Accounts { get; }
     Octopus.Client.Repositories.IActionTemplateRepository ActionTemplates { get; }
     Octopus.Client.Repositories.IArchivedEventFileRepository ArchivedEventFiles { get; }
@@ -574,7 +574,7 @@ Octopus.Client
   }
   abstract class OctopusRepositoryExtensions
   {
-    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
+    static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope = null)
     static Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.SpaceResource)
     static Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.IOctopusRepository, Octopus.Client.Model.SpaceResource)
     static Octopus.Client.IOctopusSystemAsyncRepository ForSystem(Octopus.Client.IOctopusAsyncRepository)
@@ -582,7 +582,7 @@ Octopus.Client
   }
   class OctopusRequest
   {
-    .ctor(String, Uri, Object)
+    .ctor(String, Uri, Object = null)
     String Method { get; }
     Object RequestResource { get; }
     Uri Uri { get; }
@@ -605,14 +605,17 @@ Octopus.Client
   {
     .ctor(String)
     .ctor(String, String)
-    .ctor(String, String, ICredentials)
-    .ctor(Octopus.Client.ILinkResolver, String, ICredentials)
+    .ctor(String, String, ICredentials, Boolean = False)
+    .ctor(Octopus.Client.ILinkResolver, String, ICredentials, Boolean = False)
     String ApiKey { get; }
     ICredentials Credentials { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
     IWebProxy Proxy { get; set; }
+    String Token { get; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
+    static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String)
+    static Octopus.Client.OctopusServerEndpoint CreateWithToken(String, String)
   }
   class RepositoryScope
   {
@@ -841,7 +844,7 @@ Octopus.Client.Editors
     .ctor(Octopus.Client.Repositories.IMachineRepository)
     Octopus.Client.Model.MachineResource Instance { get; }
     Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode> = null)
     Octopus.Client.Editors.MachineEditor Customize(Action<MachineResource>)
     Octopus.Client.Editors.MachineEditor Save()
   }
@@ -865,7 +868,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.VariableSetEditor Variables { get; }
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource> VariableTemplates { get; }
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String = null)
     Octopus.Client.Editors.ProjectEditor Customize(Action<ProjectResource>)
     Octopus.Client.Editors.ProjectEditor IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
     Octopus.Client.Editors.ProjectEditor Save()
@@ -948,7 +951,7 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.ITagSetRepository)
     Octopus.Client.Model.TagSetResource Instance { get; }
-    Octopus.Client.Editors.TagSetEditor AddOrUpdateTag(String, String, String)
+    Octopus.Client.Editors.TagSetEditor AddOrUpdateTag(String, String = null, String = "#6e6e6e")
     Octopus.Client.Editors.TagSetEditor ClearTags()
     Octopus.Client.Editors.TagSetEditor CreateOrModify(String)
     Octopus.Client.Editors.TagSetEditor CreateOrModify(String, String)
@@ -967,7 +970,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.TenantEditor ClearTags()
     Octopus.Client.Editors.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
-    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String = null)
     Octopus.Client.Editors.TenantEditor Customize(Action<TenantResource>)
     Octopus.Client.Editors.TenantEditor Save()
     Octopus.Client.Editors.TenantEditor SetLogo(String)
@@ -1148,7 +1151,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IEnvironmentRepository)
     Octopus.Client.Model.EnvironmentResource Instance { get; }
     Task<EnvironmentEditor> CreateOrModify(String)
-    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
+    Task<EnvironmentEditor> CreateOrModify(String, String, Boolean = False)
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
@@ -1197,7 +1200,7 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IMachineRepository)
     Octopus.Client.Model.MachineResource Instance { get; }
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
+    Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode> = null)
     Octopus.Client.Editors.Async.MachineEditor Customize(Action<MachineResource>)
     Task<MachineEditor> Save()
   }
@@ -1221,7 +1224,7 @@ Octopus.Client.Editors.Async
     Task<VariableSetEditor> Variables { get; }
     Octopus.Client.Model.IVariableTemplateContainerEditor<ProjectResource> VariableTemplates { get; }
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String = null)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String, CancellationToken)
     Octopus.Client.Editors.Async.ProjectEditor Customize(Action<ProjectResource>)
@@ -1306,7 +1309,7 @@ Octopus.Client.Editors.Async
   {
     .ctor(Octopus.Client.Repositories.Async.ITagSetRepository)
     Octopus.Client.Model.TagSetResource Instance { get; }
-    Octopus.Client.Editors.Async.TagSetEditor AddOrUpdateTag(String, String, String)
+    Octopus.Client.Editors.Async.TagSetEditor AddOrUpdateTag(String, String = null, String = "#6e6e6e")
     Octopus.Client.Editors.Async.TagSetEditor ClearTags()
     Task<TagSetEditor> CreateOrModify(String)
     Task<TagSetEditor> CreateOrModify(String, String)
@@ -1325,7 +1328,7 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.TenantEditor ClearTags()
     Octopus.Client.Editors.Async.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Task<TenantEditor> CreateOrModify(String)
-    Task<TenantEditor> CreateOrModify(String, String, String)
+    Task<TenantEditor> CreateOrModify(String, String, String = null)
     Octopus.Client.Editors.Async.TenantEditor Customize(Action<TenantResource>)
     Task<TenantEditor> Save()
     Task<TenantEditor> SetLogo(String)
@@ -1634,7 +1637,7 @@ Octopus.Client.Logging
     .ctor(Object, IntPtr)
     IAsyncResult BeginInvoke(Octopus.Client.Logging.LogLevel, Func<String>, Exception, Object[], AsyncCallback, Object)
     Boolean EndInvoke(IAsyncResult)
-    Boolean Invoke(Octopus.Client.Logging.LogLevel, Func<String>, Exception, Object[])
+    Boolean Invoke(Octopus.Client.Logging.LogLevel, Func<String>, Exception = null, Object[])
   }
   LogLevel
   {
@@ -2857,7 +2860,7 @@ Octopus.Client.Model
     Octopus.Client.Model.DeploymentStepResource ClearActions()
     Octopus.Client.Model.DeploymentActionResource FindAction(String)
     Octopus.Client.Model.DeploymentStepResource RemoveAction(String)
-    Octopus.Client.Model.DeploymentStepResource RequirePackagesToBeAcquired(Boolean)
+    Octopus.Client.Model.DeploymentStepResource RequirePackagesToBeAcquired(Boolean = True)
     Octopus.Client.Model.DeploymentStepResource TargetingRoles(String[])
     Octopus.Client.Model.DeploymentStepResource WithCondition(Octopus.Client.Model.DeploymentStepCondition)
     Octopus.Client.Model.DeploymentStepResource WithPackageRequirement(Octopus.Client.Model.DeploymentStepPackageRequirement)
@@ -3180,14 +3183,14 @@ Octopus.Client.Model
     void Clear()
     Boolean Contains(Octopus.Client.Model.GitDependencyResource)
     void CopyTo(Octopus.Client.Model.GitDependencyResource[], Int32)
-    Octopus.Client.Model.GitDependencyResource GetByName(String)
+    Octopus.Client.Model.GitDependencyResource GetByName(String = "")
     IEnumerator<GitDependencyResource> GetEnumerator()
     Boolean Remove(Octopus.Client.Model.GitDependencyResource)
     Boolean TryGetByName(String, Octopus.Client.Model.GitDependencyResource&)
   }
   class GitDependencyResource
   {
-    .ctor(String, String, String, String, String[], String, String)
+    .ctor(String, String, String, String = null, String[] = null, String = null, String = null)
     String DefaultBranch { get; }
     String[] FilePathFilters { get; }
     String GitCredentialId { get; }
@@ -5080,7 +5083,7 @@ Octopus.Client.Model
   {
     .ctor(String)
     .ctor(Octopus.Client.Model.SemanticVersion)
-    .ctor(Version, String, String)
+    .ctor(Version, String = null, String = null)
     .ctor(Int32, Int32, Int32)
     .ctor(Int32, Int32, Int32, String)
     .ctor(Int32, Int32, Int32, String, String)
@@ -5088,16 +5091,16 @@ Octopus.Client.Model
     .ctor(Int32, Int32, Int32, Int32)
     .ctor(Int32, Int32, Int32, Int32, String, String)
     .ctor(Int32, Int32, Int32, Int32, IEnumerable<String>, String)
-    .ctor(Version, IEnumerable<String>, String, String, Boolean)
+    .ctor(Version, IEnumerable<String>, String, String, Boolean = False)
     Boolean IsLegacyVersion { get; }
     Boolean IsSemVer2 { get; }
     String OriginalString { get; }
     Int32 Revision { get; }
     Version Version { get; }
     static String IncrementRelease(String)
-    static Octopus.Client.Model.SemanticVersion Parse(String, Boolean)
+    static Octopus.Client.Model.SemanticVersion Parse(String, Boolean = False)
     String ToString()
-    static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean)
+    static Boolean TryParse(String, Octopus.Client.Model.SemanticVersion&, Boolean = False)
     static Boolean TryParseStrict(String, Octopus.Client.Model.SemanticVersion&)
   }
   class SemanticVersionComparer
@@ -5381,7 +5384,7 @@ Octopus.Client.Model
     Int32 SortOrder { get; set; }
     String SpaceId { get; set; }
     IList<TagResource> Tags { get; set; }
-    Octopus.Client.Model.TagSetResource AddOrUpdateTag(String, String, String)
+    Octopus.Client.Model.TagSetResource AddOrUpdateTag(String, String = null, String = "#6e6e6e")
     Octopus.Client.Model.TagSetResource RemoveTag(String)
   }
   TargetType
@@ -6346,7 +6349,7 @@ Octopus.Client.Model.DeploymentProcess
   class InlineScriptActionFromFileInAssembly
     Octopus.Client.Model.DeploymentProcess.ScriptAction
   {
-    .ctor(String, Assembly)
+    .ctor(String, Assembly = null)
     Assembly ResourceAssembly { get; }
     String ResourceName { get; }
     Octopus.Client.Model.DeploymentProcess.ScriptSource Source { get; }
@@ -6358,7 +6361,7 @@ Octopus.Client.Model.DeploymentProcess
     Octopus.Client.Model.DeploymentProcess.ScriptSource Source { get; }
     Octopus.Client.Model.ScriptSyntax Syntax { get; }
     static Octopus.Client.Model.DeploymentProcess.InlineScriptAction InlineScript(Octopus.Client.Model.ScriptSyntax, String)
-    static Octopus.Client.Model.DeploymentProcess.InlineScriptActionFromFileInAssembly InlineScriptFromFileInAssembly(String, Assembly)
+    static Octopus.Client.Model.DeploymentProcess.InlineScriptActionFromFileInAssembly InlineScriptFromFileInAssembly(String, Assembly = null)
   }
   class ScriptActionFromFileInPackage
     Octopus.Client.Model.DeploymentProcess.ScriptAction
@@ -6670,7 +6673,7 @@ Octopus.Client.Model.Forms
 {
   class Button
   {
-    .ctor(String, String)
+    .ctor(String, String = null)
     String Text { get; }
     Object Value { get; }
   }
@@ -6690,20 +6693,20 @@ Octopus.Client.Model.Forms
   class Form
   {
     .ctor()
-    .ctor(IEnumerable<FormElement>, IDictionary<String, String>)
+    .ctor(IEnumerable<FormElement> = null, IDictionary<String, String> = null)
     List<FormElement> Elements { get; }
     Dictionary<String, String> Values { get; }
   }
   class FormElement
   {
-    .ctor(String, Octopus.Client.Model.Forms.Control, Boolean)
+    .ctor(String, Octopus.Client.Model.Forms.Control, Boolean = False)
     Octopus.Client.Model.Forms.Control Control { get; }
     Boolean IsValueRequired { get; }
     String Name { get; }
   }
   abstract class FormExtensions
   {
-    static void AddElement(Octopus.Client.Model.Forms.Form, String, Octopus.Client.Model.Forms.Control, String, Boolean)
+    static void AddElement(Octopus.Client.Model.Forms.Form, String, Octopus.Client.Model.Forms.Control, String = null, Boolean = False)
     static Object GetCoercedValue(Octopus.Client.Model.Forms.Form, String)
     static void SetValue(Octopus.Client.Model.Forms.Form, String, String)
     static void UpdateValues(Octopus.Client.Model.Forms.Form, IDictionary<String, String>)
@@ -7324,8 +7327,8 @@ Octopus.Client.Repositories
     void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
     void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
-    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
-    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32 = 0, Int32 = 30)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32 = 0, Int32 = 30)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
   }
@@ -7339,15 +7342,15 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<AccountResource>
   {
     Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
-    List<TAccount> FindAllOfType(Object)
+    List<TAccount> FindAllOfType(Object = null)
     Octopus.Client.Repositories.TAccount FindByNameOfType(String)
     List<TAccount> FindByNamesOfType(IEnumerable<String>)
-    List<TAccount> FindManyOfType(Func<TAccount, Boolean>, Object)
-    Octopus.Client.Repositories.TAccount FindOneOfType(Func<TAccount, Boolean>, Object)
+    List<TAccount> FindManyOfType(Func<TAccount, Boolean>, Object = null)
+    Octopus.Client.Repositories.TAccount FindOneOfType(Func<TAccount, Boolean>, Object = null)
     Octopus.Client.Model.Accounts.Usages.AccountUsageResource GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
     Octopus.Client.Repositories.TAccount GetOfType(String)
     List<TAccount> GetOfType(String[])
-    void PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    void PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object = null)
     Octopus.Client.Repositories.TAccount RefreshOfType(Octopus.Client.Repositories.TAccount)
   }
   interface IActionTemplateRepository
@@ -7368,7 +7371,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<ArchivedEventFileResource>
   {
     Stream GetContent(Octopus.Client.Model.EventRetention.ArchivedEventFileResource)
-    Octopus.Client.Model.ResourceCollection<ArchivedEventFileResource> List(Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<ArchivedEventFileResource> List(Int32 = 0, Nullable<Int32> = null)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.IPaginate<ArtifactResource>
@@ -7391,8 +7394,8 @@ Octopus.Client.Repositories
     void Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
     void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Get(String)
-    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32, Int32)
-    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32, Int32)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> LatestBuilds(Int32 = 0, Int32 = 30)
+    Octopus.Client.Model.ResourceCollection<OctopusPackageVersionBuildInformationMappedResource> ListBuilds(String, Int32 = 0, Int32 = 30)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
   }
@@ -7401,9 +7404,9 @@ Octopus.Client.Repositories
     void DeletePackage(Octopus.Client.Model.PackageResource)
     void DeletePackages(IReadOnlyList<PackageResource>)
     Octopus.Client.Model.PackageFromBuiltInFeedResource GetPackage(String, String)
-    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(Int32, Int32)
-    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32, Int32)
-    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean)
+    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> LatestPackages(Int32 = 0, Int32 = 30)
+    Octopus.Client.Model.ResourceCollection<PackageFromBuiltInFeedResource> ListPackages(String, Int32 = 0, Int32 = 30)
+    Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean = False)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Boolean, Boolean)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode)
     Octopus.Client.Model.PackageFromBuiltInFeedResource PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode, Boolean)
@@ -7430,8 +7433,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<CertificateResource>
   {
     void Archive(Octopus.Client.Model.CertificateResource)
-    Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
-    Stream ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
+    Stream Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat> = null, String = null, Boolean = False)
+    Stream ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean = False, Octopus.Client.Model.CertificateExportPemOptions = PrimaryOnly)
     Octopus.Client.Model.CertificateConfigurationResource GetOctopusCertificate()
     Octopus.Client.Model.CertificateResource Replace(Octopus.Client.Model.CertificateResource, String, String)
     void UnArchive(Octopus.Client.Model.CertificateResource)
@@ -7462,7 +7465,7 @@ Octopus.Client.Repositories
   }
   interface ICreate`1
   {
-    Octopus.Client.Repositories.TResource Create(Octopus.Client.Repositories.TResource, Object)
+    Octopus.Client.Repositories.TResource Create(Octopus.Client.Repositories.TResource, Object = null)
   }
   interface IDashboardConfigurationRepository
   {
@@ -7472,7 +7475,7 @@ Octopus.Client.Repositories
   interface IDashboardRepository
   {
     Octopus.Client.Model.DashboardResource GetDashboard()
-    Octopus.Client.Model.DashboardResource GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions)
+    Octopus.Client.Model.DashboardResource GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions = IncludeCurrentDeploymentOnly)
   }
   interface IDefectsRepository
   {
@@ -7499,8 +7502,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<DeploymentResource>
     Octopus.Client.Repositories.IDelete<DeploymentResource>
   {
-    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32, Nullable<Int32>)
-    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindBy(String[], String[], Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32 = 0, Nullable<Int32> = null)
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> FindBy(String[], String[], Int32 = 0, Nullable<Int32> = null)
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.DeploymentResource)
     void Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     void Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
@@ -7525,9 +7528,9 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String)
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String)
     Octopus.Client.Editors.EnvironmentEditor CreateOrModify(String, String, Boolean)
-    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
+    List<MachineResource> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32> = 0, Nullable<Int32> = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null)
     void Sort(String[])
-    Octopus.Client.Model.EnvironmentsSummaryResource Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
+    Octopus.Client.Model.EnvironmentsSummaryResource Summary(String = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null, Nullable<Boolean> = False)
   }
   interface IEventRepository
     Octopus.Client.Repositories.IGet<EventResource>
@@ -7537,8 +7540,8 @@ Octopus.Client.Repositories
     IReadOnlyList<EventCategoryResource> GetCategories()
     IReadOnlyList<DocumentTypeResource> GetDocumentTypes()
     IReadOnlyList<EventGroupResource> GetGroups()
-    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, String, String, Boolean)
-    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32 = 0, String = null, String = null, Boolean = False)
+    Octopus.Client.Model.ResourceCollection<EventResource> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, String = null, Boolean = True, String = null, String = null, String = null, String = null, String = null, String = null, String = null, String = null, Nullable<Int64> = null, Nullable<Int64> = null, String = null, String = null, String = null)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -7558,13 +7561,13 @@ Octopus.Client.Repositories
   interface IFindByName`1
     Octopus.Client.Repositories.IPaginate<TResource>
   {
-    Octopus.Client.Repositories.TResource FindByName(String, String, Object)
-    List<TResource> FindByNames(IEnumerable<String>, String, Object)
+    Octopus.Client.Repositories.TResource FindByName(String, String = null, Object = null)
+    List<TResource> FindByNames(IEnumerable<String>, String = null, Object = null)
   }
   interface IFindByPartialName`1
     Octopus.Client.Repositories.IPaginate<TResource>
   {
-    List<TResource> FindByPartialName(String, String, Object)
+    List<TResource> FindByPartialName(String, String = null, Object = null)
   }
   interface IGetAll`1
   {
@@ -7580,7 +7583,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<InterruptionResource>
   {
     Octopus.Client.Model.UserResource GetResponsibleUser(Octopus.Client.Model.InterruptionResource)
-    Octopus.Client.Model.ResourceCollection<InterruptionResource> List(Int32, Nullable<Int32>, Boolean, String)
+    Octopus.Client.Model.ResourceCollection<InterruptionResource> List(Int32 = 0, Nullable<Int32> = null, Boolean = False, String = null)
     void Submit(Octopus.Client.Model.InterruptionResource)
     void TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
@@ -7634,13 +7637,13 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
     Octopus.Client.Editors.MachineEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Octopus.Client.Model.MachineResource Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Octopus.Client.Model.MachineResource Discover(String, Int32 = 10933, Nullable<DiscoverableEndpointType> = null)
     Octopus.Client.Model.MachineResource Discover(Octopus.Client.Model.DiscoverMachineOptions)
     List<MachineResource> FindByThumbprint(String)
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.MachineResource)
-    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Nullable<DeploymentTargetTaskType>)
+    IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Nullable<DeploymentTargetTaskType> = null)
     IReadOnlyList<TaskResource> GetTasks(Octopus.Client.Model.MachineResource, Object)
-    Octopus.Client.Model.ResourceCollection<MachineResource> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
+    Octopus.Client.Model.ResourceCollection<MachineResource> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null, String = null)
   }
   interface IMachineRoleRepository
   {
@@ -7667,10 +7670,10 @@ Octopus.Client.Repositories
   }
   interface IPaginate`1
   {
-    List<TResource> FindAll(String, Object)
-    List<TResource> FindMany(Func<TResource, Boolean>, String, Object)
-    Octopus.Client.Repositories.TResource FindOne(Func<TResource, Boolean>, String, Object)
-    void Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
+    List<TResource> FindAll(String = null, Object = null)
+    List<TResource> FindMany(Func<TResource, Boolean>, String = null, Object = null)
+    Octopus.Client.Repositories.TResource FindOne(Func<TResource, Boolean>, String = null, Object = null)
+    void Paginate(Func<ResourceCollection<TResource>, Boolean>, String = null, Object = null)
   }
   interface IPerformanceConfigurationRepository
   {
@@ -7702,7 +7705,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.Git.ConvertProjectToGitResponse ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String)
     Octopus.Client.Model.Git.ConvertProjectToGitResponse ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String, String)
     Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
-    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Octopus.Client.Editors.ProjectEditor CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String = null)
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<RunbookResource> GetAllRunbooks(Octopus.Client.Model.ProjectResource)
@@ -7716,10 +7719,10 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<GitTagResource> GetGitTags(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ProgressionResource GetProgression(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ReleaseResource GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
-    Octopus.Client.Model.ResourceCollection<RunbookResource> GetRunbooks(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Octopus.Client.Model.ResourceCollection<ReleaseResource> GetReleases(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
+    Octopus.Client.Model.ResourceCollection<RunbookResource> GetRunbooks(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
     Octopus.Client.Model.RunbookSnapshotResource GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
-    Octopus.Client.Model.ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Octopus.Client.Model.ResourceCollection<RunbookSnapshotResource> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
     Octopus.Client.Model.ResourceCollection<ProjectTriggerResource> GetTriggers(Octopus.Client.Model.ProjectResource)
     void SetLogo(Octopus.Client.Model.ProjectResource, String, Stream)
   }
@@ -7749,9 +7752,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<ReleaseResource>
     Octopus.Client.Repositories.IDelete<ReleaseResource>
   {
-    Octopus.Client.Model.ReleaseResource Create(Octopus.Client.Model.ReleaseResource, Boolean)
-    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
-    Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ReleaseResource Create(Octopus.Client.Model.ReleaseResource, Boolean = False)
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32 = 0, Nullable<Int32> = null)
+    Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32 = 0, Nullable<Int32> = null)
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
@@ -7793,7 +7796,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<RunbookRunResource>
     Octopus.Client.Repositories.IDelete<RunbookRunResource>
   {
-    Octopus.Client.Model.ResourceCollection<RunbookRunResource> FindBy(String[], String[], String[], Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<RunbookRunResource> FindBy(String[], String[], String[], Int32 = 0, Nullable<Int32> = null)
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.RunbookRunResource)
     void Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     void Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
@@ -7806,9 +7809,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<RunbookSnapshotResource>
   {
     Octopus.Client.Model.RunbookSnapshotResource Create(Octopus.Client.Model.RunbookSnapshotResource)
-    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.RunbookSnapshotResource, Int32 = 0, Nullable<Int32> = null)
     Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
-    Octopus.Client.Model.ResourceCollection<RunbookRunResource> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.ResourceCollection<RunbookRunResource> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32 = 0, Nullable<Int32> = null)
     Octopus.Client.Model.RunbookRunTemplateResource GetTemplate(Octopus.Client.Model.RunbookSnapshotResource)
     Octopus.Client.Model.RunbookSnapshotResource SnapshotVariables(Octopus.Client.Model.RunbookSnapshotResource)
   }
@@ -7878,25 +7881,25 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.ICanExtendSpaceContext<ITaskRepository>
   {
     void Cancel(Octopus.Client.Model.TaskResource)
-    Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
-    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
-    Octopus.Client.Model.TaskResource ExecuteBackup(String)
-    Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
-    Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
-    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
-    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
-    Octopus.Client.Model.TaskResourceCollection GetActiveWithSummary(Int32, Int32)
-    List<TaskResource> GetAllActive(Int32)
-    Octopus.Client.Model.TaskResourceCollection GetAllWithSummary(Int32, Int32)
-    Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
+    Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[] = null, String[] = null, String[] = null, String = null, Nullable<TargetType> = null)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[] = null, String[] = null, String[] = null, String = null, String = "PowerShell", Nullable<TargetType> = null)
+    Octopus.Client.Model.TaskResource ExecuteBackup(String = null)
+    Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String = null, String[] = null)
+    Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String = null)
+    Octopus.Client.Model.TaskResource ExecuteHealthCheck(String = null, Int32 = 5, Int32 = 1, String = null, String[] = null, String = null, String = null, String[] = null)
+    Octopus.Client.Model.TaskResource ExecuteTentacleUpgrade(String = null, String = null, String[] = null, String = null, String = null, String[] = null)
+    Octopus.Client.Model.TaskResourceCollection GetActiveWithSummary(Int32 = Int.MaxValue, Int32 = 0)
+    List<TaskResource> GetAllActive(Int32 = Int.MaxValue)
+    Octopus.Client.Model.TaskResourceCollection GetAllWithSummary(Int32 = Int.MaxValue, Int32 = 0)
+    Octopus.Client.Model.TaskDetailsResource GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean> = null, Nullable<Int32> = null)
     IReadOnlyList<TaskResource> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     String GetRawOutputLog(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskTypeResource[] GetTaskTypes()
     void ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String)
     void Rerun(Octopus.Client.Model.TaskResource)
-    void WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
-    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
-    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Nullable<TimeSpan>, Action<TaskResource[]>)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource, Int32 = 4, Int32 = 0, Action<TaskResource[]> = null)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32 = 4, Int32 = 0, Action<TaskResource[]> = null)
+    void WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32 = 4, Nullable<TimeSpan> = null, Action<TaskResource[]> = null)
   }
   interface ITeamsRepository
     Octopus.Client.Repositories.ICreate<TeamResource>
@@ -7929,8 +7932,8 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
-    List<TenantResource> FindAll(String, String[], Int32)
-    List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
+    List<TenantResource> FindAll(String, String[] = null, Int32 = Int.MaxValue)
+    List<TenantsMissingVariablesResource> GetMissingVariables(String = null, String = null, String = null)
     Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)
     Octopus.Client.Model.TenantVariableResource ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
     void SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
@@ -7966,8 +7969,8 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<UserResource>
     Octopus.Client.Repositories.ICreate<UserResource>
   {
-    Octopus.Client.Model.UserResource Create(String, String, String, String)
-    Octopus.Client.Model.ApiKeyCreatedResource CreateApiKey(Octopus.Client.Model.UserResource, String, Nullable<DateTimeOffset>)
+    Octopus.Client.Model.UserResource Create(String, String, String = null, String = null)
+    Octopus.Client.Model.ApiKeyCreatedResource CreateApiKey(Octopus.Client.Model.UserResource, String = null, Nullable<DateTimeOffset> = null)
     Octopus.Client.Model.UserResource CreateServiceAccount(String, String)
     Octopus.Client.Model.UserResource FindByUsername(String)
     List<ApiKeyResource> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -7979,7 +7982,7 @@ Octopus.Client.Repositories
     void RevokeApiKey(Octopus.Client.Model.ApiKeyResourceBase)
     void RevokeSessions(Octopus.Client.Model.UserResource)
     void SignIn(Octopus.Client.Model.LoginCommand)
-    void SignIn(String, String, Boolean)
+    void SignIn(String, String, Boolean = False)
     void SignOut()
   }
   interface IUserRolesRepository
@@ -8001,10 +8004,10 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<VariableSetResource>
     Octopus.Client.Repositories.IGetAll<VariableSetResource>
   {
-    Octopus.Client.Model.VariableSetResource Get(Octopus.Client.Model.ProjectResource, String)
-    String[] GetVariableNames(String, String[], String)
+    Octopus.Client.Model.VariableSetResource Get(Octopus.Client.Model.ProjectResource, String = null)
+    String[] GetVariableNames(String, String[], String = null)
     Octopus.Client.Model.VariableSetResource GetVariablePreview(String, String, String, String, String, String, String, String)
-    Octopus.Client.Model.VariableSetResource GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
+    Octopus.Client.Model.VariableSetResource GetVariablePreview(Octopus.Client.Model.ProjectResource, String = null, String = null, String = null, String = null, String = null, String = null, String = null, String = null)
   }
   interface IWorkerPoolRepository
     Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
@@ -8017,9 +8020,9 @@ Octopus.Client.Repositories
   {
     Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String)
     Octopus.Client.Editors.WorkerPoolEditor CreateOrModify(String, String)
-    List<WorkerResource> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
+    List<WorkerResource> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32> = 0, Nullable<Int32> = null, String = null, Nullable<Boolean> = False, String = null, String = null)
     void Sort(String[])
-    Octopus.Client.Model.WorkerPoolsSummaryResource Summary(String, String, String, Nullable<Boolean>, String, String, Nullable<Boolean>)
+    Octopus.Client.Model.WorkerPoolsSummaryResource Summary(String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, Nullable<Boolean> = False)
   }
   interface IWorkerRepository
     Octopus.Client.Repositories.IFindByName<WorkerResource>
@@ -8030,10 +8033,10 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IDelete<WorkerResource>
   {
     Octopus.Client.Editors.WorkerEditor CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
-    Octopus.Client.Model.WorkerResource Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Octopus.Client.Model.WorkerResource Discover(String, Int32 = 10933, Nullable<DiscoverableEndpointType> = null)
     List<WorkerResource> FindByThumbprint(String)
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
-    Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
+    Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null)
   }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
@@ -8064,15 +8067,15 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<AccountResource>
   {
     Octopus.Client.Model.Accounts.AccountType DetermineAccountType()
-    Task<List<TAccount>> FindAllOfType(Object)
+    Task<List<TAccount>> FindAllOfType(Object = null)
     Task<TAccount> FindByNameOfType(String)
     Task<List<TAccount>> FindByNamesOfType(IEnumerable<String>)
-    Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object)
-    Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object)
+    Task<List<TAccount>> FindManyOfType(Func<TAccount, Boolean>, Object = null)
+    Task<TAccount> FindOneOfType(Func<TAccount, Boolean>, Object = null)
     Task<AccountUsageResource> GetAccountUsage(Octopus.Client.Model.Accounts.AccountResource)
     Task<TAccount> GetOfType(String)
     Task<List<TAccount>> GetOfType(String[])
-    Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object)
+    Task PaginateOfType(Func<ResourceCollection<TAccount>, Boolean>, Object = null)
     Task<TAccount> RefreshOfType(Octopus.Client.Repositories.Async.TAccount)
   }
   interface IActionTemplateRepository
@@ -8093,7 +8096,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<ArchivedEventFileResource>
   {
     Task<Stream> GetContent(Octopus.Client.Model.EventRetention.ArchivedEventFileResource)
-    Task<ResourceCollection<ArchivedEventFileResource>> List(Int32, Nullable<Int32>)
+    Task<ResourceCollection<ArchivedEventFileResource>> List(Int32 = 0, Nullable<Int32> = null)
   }
   interface IArtifactRepository
     Octopus.Client.Repositories.Async.IPaginate<ArtifactResource>
@@ -8116,8 +8119,8 @@ Octopus.Client.Repositories.Async
     Task Delete(Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource)
     Task DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource>)
     Task<OctopusPackageVersionBuildInformationMappedResource> Get(String)
-    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> LatestBuilds(Int32, Int32)
-    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(String, Int32, Int32)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> LatestBuilds(Int32 = 0, Int32 = 30)
+    Task<ResourceCollection<OctopusPackageVersionBuildInformationMappedResource>> ListBuilds(String, Int32 = 0, Int32 = 30)
     Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
     Task<OctopusPackageVersionBuildInformationMappedResource> Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Boolean)
   }
@@ -8126,9 +8129,9 @@ Octopus.Client.Repositories.Async
     Task DeletePackage(Octopus.Client.Model.PackageResource)
     Task DeletePackages(IReadOnlyList<PackageResource>)
     Task<PackageFromBuiltInFeedResource> GetPackage(String, String)
-    Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(Int32, Int32)
-    Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32, Int32)
-    Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean)
+    Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(Int32 = 0, Int32 = 30)
+    Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(String, Int32 = 0, Int32 = 30)
+    Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean = False)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Boolean, Boolean)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode)
     Task<PackageFromBuiltInFeedResource> PushPackage(String, Stream, Octopus.Client.Model.OverwriteMode, Boolean)
@@ -8155,8 +8158,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<CertificateResource>
   {
     Task Archive(Octopus.Client.Model.CertificateResource)
-    Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat>, String, Boolean)
-    Task<Stream> ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean, Octopus.Client.Model.CertificateExportPemOptions)
+    Task<Stream> Export(Octopus.Client.Model.CertificateResource, Nullable<CertificateFormat> = null, String = null, Boolean = False)
+    Task<Stream> ExportAsPem(Octopus.Client.Model.CertificateResource, Boolean = False, Octopus.Client.Model.CertificateExportPemOptions = PrimaryOnly)
     Task<CertificateConfigurationResource> GetOctopusCertificate()
     Task<CertificateResource> Replace(Octopus.Client.Model.CertificateResource, String, String)
     Task UnArchive(Octopus.Client.Model.CertificateResource)
@@ -8173,7 +8176,7 @@ Octopus.Client.Repositories.Async
     Task<ChannelResource> FindByName(Octopus.Client.Model.ProjectResource, String)
     Task<IReadOnlyList<ReleaseResource>> GetAllReleases(Octopus.Client.Model.ChannelResource)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ChannelResource, String)
-    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ChannelResource, Int32, Nullable<Int32>, String)
+    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ChannelResource, Int32 = 0, Nullable<Int32> = null, String = null)
   }
   interface ICommunityActionTemplateRepository
     Octopus.Client.Repositories.Async.IGet<CommunityActionTemplateResource>
@@ -8189,7 +8192,7 @@ Octopus.Client.Repositories.Async
   }
   interface ICreate`1
   {
-    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object)
+    Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object = null)
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, CancellationToken)
     Task<TResource> Create(Octopus.Client.Repositories.Async.TResource, Object, CancellationToken)
   }
@@ -8201,7 +8204,7 @@ Octopus.Client.Repositories.Async
   interface IDashboardRepository
   {
     Task<DashboardResource> GetDashboard()
-    Task<DashboardResource> GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions)
+    Task<DashboardResource> GetDynamicDashboard(String[], String[], Octopus.Client.Model.DashboardItemsOptions = IncludeCurrentDeploymentOnly)
   }
   interface IDefectsRepository
   {
@@ -8233,8 +8236,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<DeploymentResource>
     Octopus.Client.Repositories.Async.IDelete<DeploymentResource>
   {
-    Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32, Nullable<Int32>)
-    Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> FindAll(String[], String[], Int32 = 0, Nullable<Int32> = null)
+    Task<ResourceCollection<DeploymentResource>> FindBy(String[], String[], Int32 = 0, Nullable<Int32> = null)
     Task<TaskResource> GetTask(Octopus.Client.Model.DeploymentResource)
     Task Paginate(String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<DeploymentResource>, Boolean>)
@@ -8264,9 +8267,9 @@ Octopus.Client.Repositories.Async
     Task<EnvironmentEditor> CreateOrModify(String)
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Task<EnvironmentEditor> CreateOrModify(String, String, Boolean)
-    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32>, Nullable<Int32>, String, String, Nullable<Boolean>, String, String, String, String)
+    Task<List<MachineResource>> GetMachines(Octopus.Client.Model.EnvironmentResource, Nullable<Int32> = 0, Nullable<Int32> = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null)
     Task Sort(String[])
-    Task<EnvironmentsSummaryResource> Summary(String, String, String, String, Nullable<Boolean>, String, String, String, String, Nullable<Boolean>)
+    Task<EnvironmentsSummaryResource> Summary(String = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null, Nullable<Boolean> = False)
   }
   interface IEventRepository
     Octopus.Client.Repositories.Async.IGet<EventResource>
@@ -8276,8 +8279,8 @@ Octopus.Client.Repositories.Async
     Task<IReadOnlyList<EventCategoryResource>> GetCategories()
     Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes()
     Task<IReadOnlyList<EventGroupResource>> GetGroups()
-    Task<ResourceCollection<EventResource>> List(Int32, String, String, Boolean)
-    Task<ResourceCollection<EventResource>> List(Int32, Nullable<Int32>, String, String, String, String, Boolean, String, String, String, String, String, String, String, String, Nullable<Int64>, Nullable<Int64>, String, String, String)
+    Task<ResourceCollection<EventResource>> List(Int32 = 0, String = null, String = null, Boolean = False)
+    Task<ResourceCollection<EventResource>> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, String = null, Boolean = True, String = null, String = null, String = null, String = null, String = null, String = null, String = null, String = null, Nullable<Int64> = null, Nullable<Int64> = null, String = null, String = null, String = null)
   }
   interface IFeaturesConfigurationRepository
   {
@@ -8298,10 +8301,10 @@ Octopus.Client.Repositories.Async
   interface IFindByName`1
     Octopus.Client.Repositories.Async.IPaginate<TResource>
   {
-    Task<TResource> FindByName(String, String, Object)
+    Task<TResource> FindByName(String, String = null, Object = null)
     Task<TResource> FindByName(String, CancellationToken)
     Task<TResource> FindByName(String, String, Object, CancellationToken)
-    Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object)
+    Task<List<TResource>> FindByNames(IEnumerable<String>, String = null, Object = null)
     Task<List<TResource>> FindByNames(IEnumerable<String>, CancellationToken)
     Task<List<TResource>> FindByNames(IEnumerable<String>, String, Object, CancellationToken)
   }
@@ -8339,7 +8342,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<InterruptionResource>
   {
     Task<UserResource> GetResponsibleUser(Octopus.Client.Model.InterruptionResource)
-    Task<ResourceCollection<InterruptionResource>> List(Int32, Nullable<Int32>, Boolean, String)
+    Task<ResourceCollection<InterruptionResource>> List(Int32 = 0, Nullable<Int32> = null, Boolean = False, String = null)
     Task Submit(Octopus.Client.Model.InterruptionResource)
     Task TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
@@ -8392,13 +8395,13 @@ Octopus.Client.Repositories.Async
   {
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[], Octopus.Client.Model.TenantResource[], Octopus.Client.Model.TagResource[], Nullable<TenantedDeploymentMode>)
     Task<MachineEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.EnvironmentResource[], String[])
-    Task<MachineResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<MachineResource> Discover(String, Int32 = 10933, Nullable<DiscoverableEndpointType> = null)
     Task<MachineResource> Discover(Octopus.Client.Model.DiscoverMachineOptions)
     Task<List<MachineResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource)
     Task<IReadOnlyList<TaskResource>> GetTasks(Octopus.Client.Model.MachineResource, Object)
-    Task<ResourceCollection<MachineResource>> List(Int32, Nullable<Int32>, String, String, String, String, Nullable<Boolean>, String, String, String, String, String)
+    Task<ResourceCollection<MachineResource>> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null, String = null, String = null)
   }
   interface IMachineRoleRepository
   {
@@ -8426,16 +8429,16 @@ Octopus.Client.Repositories.Async
   }
   interface IPaginate`1
   {
-    Task<List<TResource>> FindAll(String, Object)
+    Task<List<TResource>> FindAll(String = null, Object = null)
     Task<List<TResource>> FindAll(CancellationToken)
     Task<List<TResource>> FindAll(String, Object, CancellationToken)
-    Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object)
+    Task<List<TResource>> FindMany(Func<TResource, Boolean>, String = null, Object = null)
     Task<List<TResource>> FindMany(Func<TResource, Boolean>, CancellationToken)
     Task<List<TResource>> FindMany(Func<TResource, Boolean>, String, Object, CancellationToken)
-    Task<TResource> FindOne(Func<TResource, Boolean>, String, Object)
+    Task<TResource> FindOne(Func<TResource, Boolean>, String = null, Object = null)
     Task<TResource> FindOne(Func<TResource, Boolean>, CancellationToken)
     Task<TResource> FindOne(Func<TResource, Boolean>, String, Object, CancellationToken)
-    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object)
+    Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String = null, Object = null)
     Task Paginate(Func<ResourceCollection<TResource>, Boolean>, CancellationToken)
     Task Paginate(Func<ResourceCollection<TResource>, Boolean>, String, Object, CancellationToken)
   }
@@ -8476,7 +8479,7 @@ Octopus.Client.Repositories.Async
     Task<ConvertProjectToGitResponse> ConvertToGit(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.GitPersistenceSettingsResource, String, String, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, CancellationToken)
-    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String)
+    Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String = null)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, CancellationToken)
     Task<ProjectEditor> CreateOrModify(String, Octopus.Client.Model.ProjectGroupResource, Octopus.Client.Model.LifecycleResource, String, String, CancellationToken)
     Task<IReadOnlyList<ChannelResource>> GetAllChannels(Octopus.Client.Model.ProjectResource)
@@ -8501,19 +8504,19 @@ Octopus.Client.Repositories.Async
     Task<GitTagResource> GetGitTag(Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource)
     Task<ResourceCollection<GitTagResource>> GetGitTags(Octopus.Client.Model.ProjectResource, CancellationToken)
-    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, Nullable<Int32>)
-    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, CancellationToken, Nullable<Int32>)
+    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, Nullable<Int32> = null)
+    Task<ProgressionResource> GetProgression(Octopus.Client.Model.ProjectResource, CancellationToken, Nullable<Int32> = null)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String)
     Task<ReleaseResource> GetReleaseByVersion(Octopus.Client.Model.ProjectResource, String, CancellationToken)
-    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<ResourceCollection<ReleaseResource>> GetReleases(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String, CancellationToken)
-    Task<ResourceCollection<RunbookResource>> GetRunbooks(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Task<ResourceCollection<RunbookResource>> GetRunbooks(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
     Task<ResourceCollection<RunbookResource>> GetRunbooks(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<ResourceCollection<RunbookResource>> GetRunbooks(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String, CancellationToken)
     Task<RunbookSnapshotResource> GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String)
     Task<RunbookSnapshotResource> GetRunbookSnapshotByName(Octopus.Client.Model.ProjectResource, String, CancellationToken)
-    Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String)
+    Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32 = 0, Nullable<Int32> = null, String = null)
     Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(Octopus.Client.Model.ProjectResource, Int32, Nullable<Int32>, String, CancellationToken)
     Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(Octopus.Client.Model.ProjectResource)
@@ -8547,12 +8550,12 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<ReleaseResource>
     Octopus.Client.Repositories.Async.IDelete<ReleaseResource>
   {
-    Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean)
+    Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean = False)
     Task<ReleaseResource> Create(Octopus.Client.Model.ReleaseResource, Boolean, CancellationToken)
-    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32 = 0, Nullable<Int32> = null)
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
-    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32 = 0, Nullable<Int32> = null)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
@@ -8570,7 +8573,7 @@ Octopus.Client.Repositories.Async
   }
   interface IRetentionPolicyRepository
   {
-    Task<TaskResource> ApplyNow(String)
+    Task<TaskResource> ApplyNow(String = null)
   }
   interface IRunbookProcessRepository
     Octopus.Client.Repositories.Async.IGet<RunbookProcessResource>
@@ -8600,7 +8603,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IPaginate<RunbookRunResource>
     Octopus.Client.Repositories.Async.IDelete<RunbookRunResource>
   {
-    Task<ResourceCollection<RunbookRunResource>> FindBy(String[], String[], String[], Int32, Nullable<Int32>)
+    Task<ResourceCollection<RunbookRunResource>> FindBy(String[], String[], String[], Int32 = 0, Nullable<Int32> = null)
     Task<TaskResource> GetTask(Octopus.Client.Model.RunbookRunResource)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     Task Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
@@ -8613,9 +8616,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<RunbookSnapshotResource>
   {
     Task<RunbookSnapshotResource> Create(Octopus.Client.Model.RunbookSnapshotResource)
-    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<ArtifactResource>> GetArtifacts(Octopus.Client.Model.RunbookSnapshotResource, Int32 = 0, Nullable<Int32> = null)
     Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
-    Task<ResourceCollection<RunbookRunResource>> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
+    Task<ResourceCollection<RunbookRunResource>> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32 = 0, Nullable<Int32> = null)
     Task<RunbookRunTemplateResource> GetTemplate(Octopus.Client.Model.RunbookSnapshotResource)
     Task<RunbookSnapshotResource> SnapshotVariables(Octopus.Client.Model.RunbookSnapshotResource)
   }
@@ -8686,28 +8689,28 @@ Octopus.Client.Repositories.Async
   {
     Task Cancel(Octopus.Client.Model.TaskResource)
     Task Cancel(Octopus.Client.Model.TaskResource, CancellationToken)
-    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[], String[], String[], String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteBackup(String)
-    Task<TaskResource> ExecuteBackup(CancellationToken, String)
-    Task<TaskResource> ExecuteCalamariUpdate(String, String[])
-    Task<TaskResource> ExecuteCalamariUpdate(CancellationToken, String, String[])
-    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String)
-    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(CancellationToken, String)
-    Task<TaskResource> ExecuteHealthCheck(String, Int32, Int32, String, String[], String, String, String[])
-    Task<TaskResource> ExecuteHealthCheck(CancellationToken, String, Int32, Int32, String, String[], String, String, String[])
-    Task<TaskResource> ExecuteTentacleUpgrade(String, String, String[], String, String, String[])
-    Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken, String, String, String[], String, String, String[])
-    Task<TaskResourceCollection> GetActiveWithSummary(Int32, Int32)
-    Task<TaskResourceCollection> GetActiveWithSummary(CancellationToken, Int32, Int32)
-    Task<List<TaskResource>> GetAllActive(Int32)
-    Task<List<TaskResource>> GetAllActive(CancellationToken, Int32)
-    Task<TaskResourceCollection> GetAllWithSummary(Int32, Int32)
-    Task<TaskResourceCollection> GetAllWithSummary(CancellationToken, Int32, Int32)
-    Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean>, Nullable<Int32>)
-    Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, CancellationToken, Nullable<Boolean>, Nullable<Int32>)
+    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[] = null, String[] = null, String[] = null, String = null, Nullable<TargetType> = null)
+    Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[] = null, String[] = null, String[] = null, String = null, Nullable<TargetType> = null)
+    Task<TaskResource> ExecuteAdHocScript(String, String[] = null, String[] = null, String[] = null, String = null, String = "PowerShell", Nullable<TargetType> = null)
+    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[] = null, String[] = null, String[] = null, String = null, String = "PowerShell", Nullable<TargetType> = null)
+    Task<TaskResource> ExecuteBackup(String = null)
+    Task<TaskResource> ExecuteBackup(CancellationToken, String = null)
+    Task<TaskResource> ExecuteCalamariUpdate(String = null, String[] = null)
+    Task<TaskResource> ExecuteCalamariUpdate(CancellationToken, String = null, String[] = null)
+    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(String = null)
+    Task<TaskResource> ExecuteCommunityActionTemplatesSynchronisation(CancellationToken, String = null)
+    Task<TaskResource> ExecuteHealthCheck(String = null, Int32 = 5, Int32 = 1, String = null, String[] = null, String = null, String = null, String[] = null)
+    Task<TaskResource> ExecuteHealthCheck(CancellationToken, String = null, Int32 = 5, Int32 = 1, String = null, String[] = null, String = null, String = null, String[] = null)
+    Task<TaskResource> ExecuteTentacleUpgrade(String = null, String = null, String[] = null, String = null, String = null, String[] = null)
+    Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken, String = null, String = null, String[] = null, String = null, String = null, String[] = null)
+    Task<TaskResourceCollection> GetActiveWithSummary(Int32 = Int.MaxValue, Int32 = 0)
+    Task<TaskResourceCollection> GetActiveWithSummary(CancellationToken, Int32 = Int.MaxValue, Int32 = 0)
+    Task<List<TaskResource>> GetAllActive(Int32 = Int.MaxValue)
+    Task<List<TaskResource>> GetAllActive(CancellationToken, Int32 = Int.MaxValue)
+    Task<TaskResourceCollection> GetAllWithSummary(Int32 = Int.MaxValue, Int32 = 0)
+    Task<TaskResourceCollection> GetAllWithSummary(CancellationToken, Int32 = Int.MaxValue, Int32 = 0)
+    Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, Nullable<Boolean> = null, Nullable<Int32> = null)
+    Task<TaskDetailsResource> GetDetails(Octopus.Client.Model.TaskResource, CancellationToken, Nullable<Boolean> = null, Nullable<Int32> = null)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource)
     Task<IReadOnlyList<TaskResource>> GetQueuedBehindTasks(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<String> GetRawOutputLog(Octopus.Client.Model.TaskResource)
@@ -8718,14 +8721,14 @@ Octopus.Client.Repositories.Async
     Task ModifyState(Octopus.Client.Model.TaskResource, Octopus.Client.Model.TaskState, String, CancellationToken)
     Task Rerun(Octopus.Client.Model.TaskResource)
     Task Rerun(Octopus.Client.Model.TaskResource, CancellationToken)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32, Int32, Action<TaskResource[]>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource, CancellationToken, Int32, Int32, Action<TaskResource[], CancellationToken>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Action<TaskResource[]>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Int32, Action<TaskResource[], CancellationToken>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Int32, Func<TaskResource[], Task>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Int32, Func<TaskResource[], CancellationToken, Task>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32, Nullable<TimeSpan>, Func<TaskResource[], Task>)
-    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32, Nullable<TimeSpan>, Func<TaskResource[], CancellationToken, Task>)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource, Int32 = 4, Int32 = 0, Action<TaskResource[]> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource, CancellationToken, Int32 = 4, Int32 = 0, Action<TaskResource[], CancellationToken> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32 = 4, Int32 = 0, Action<TaskResource[]> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32 = 4, Int32 = 0, Action<TaskResource[], CancellationToken> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32 = 4, Int32 = 0, Func<TaskResource[], Task> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32 = 4, Int32 = 0, Func<TaskResource[], CancellationToken, Task> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], Int32 = 4, Nullable<TimeSpan> = null, Func<TaskResource[], Task> = null)
+    Task WaitForCompletion(Octopus.Client.Model.TaskResource[], CancellationToken, Int32 = 4, Nullable<TimeSpan> = null, Func<TaskResource[], CancellationToken, Task> = null)
   }
   interface ITeamsRepository
     Octopus.Client.Repositories.Async.ICreate<TeamResource>
@@ -8758,8 +8761,8 @@ Octopus.Client.Repositories.Async
     Task<TenantEditor> CreateOrModify(String)
     Task<TenantEditor> CreateOrModify(String, String)
     Task<TenantEditor> CreateOrModify(String, String, String)
-    Task<List<TenantResource>> FindAll(String, String[], Int32)
-    Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String, String, String)
+    Task<List<TenantResource>> FindAll(String, String[] = null, Int32 = Int.MaxValue)
+    Task<List<TenantsMissingVariablesResource>> GetMissingVariables(String = null, String = null, String = null)
     Task<TenantVariableResource> GetVariables(Octopus.Client.Model.TenantResource)
     Task<TenantVariableResource> ModifyVariables(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantVariableResource)
     Task SetLogo(Octopus.Client.Model.TenantResource, String, Stream)
@@ -8796,8 +8799,8 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<UserResource>
     Octopus.Client.Repositories.Async.ICreate<UserResource>
   {
-    Task<UserResource> Create(String, String, String, String)
-    Task<ApiKeyCreatedResource> CreateApiKey(Octopus.Client.Model.UserResource, String, Nullable<DateTimeOffset>)
+    Task<UserResource> Create(String, String, String = null, String = null)
+    Task<ApiKeyCreatedResource> CreateApiKey(Octopus.Client.Model.UserResource, String = null, Nullable<DateTimeOffset> = null)
     Task<UserResource> CreateServiceAccount(String, String)
     Task<UserResource> FindByUsername(String)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
@@ -8809,7 +8812,7 @@ Octopus.Client.Repositories.Async
     Task RevokeApiKey(Octopus.Client.Model.ApiKeyResourceBase)
     Task RevokeSessions(Octopus.Client.Model.UserResource)
     Task SignIn(Octopus.Client.Model.LoginCommand)
-    Task SignIn(String, String, Boolean)
+    Task SignIn(String, String, Boolean = False)
     Task SignOut()
   }
   interface IUserRolesRepository
@@ -8831,15 +8834,15 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<VariableSetResource>
     Octopus.Client.Repositories.Async.IGetAll<VariableSetResource>
   {
-    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String)
+    Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String = null)
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<VariableSetResource> Get(Octopus.Client.Model.ProjectResource, String, CancellationToken)
-    Task<String[]> GetVariableNames(String, String[], String)
+    Task<String[]> GetVariableNames(String, String[], String = null)
     Task<String[]> GetVariableNames(String, String[], CancellationToken)
     Task<String[]> GetVariableNames(String, String[], String, CancellationToken)
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String)
     Task<VariableSetResource> GetVariablePreview(String, String, String, String, String, String, String, String, CancellationToken)
-    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
+    Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String = null, String = null, String = null, String = null, String = null, String = null, String = null, String = null)
     Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, CancellationToken)
     Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String, CancellationToken)
   }
@@ -8854,9 +8857,9 @@ Octopus.Client.Repositories.Async
   {
     Task<WorkerPoolEditor> CreateOrModify(String)
     Task<WorkerPoolEditor> CreateOrModify(String, String)
-    Task<List<WorkerResource>> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32>, Nullable<Int32>, String, Nullable<Boolean>, String, String)
+    Task<List<WorkerResource>> GetMachines(Octopus.Client.Model.WorkerPoolResource, Nullable<Int32> = 0, Nullable<Int32> = null, String = null, Nullable<Boolean> = False, String = null, String = null)
     Task Sort(String[])
-    Task<WorkerPoolsSummaryResource> Summary(String, String, String, Nullable<Boolean>, String, String, Nullable<Boolean>)
+    Task<WorkerPoolsSummaryResource> Summary(String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, Nullable<Boolean> = False)
   }
   interface IWorkerRepository
     Octopus.Client.Repositories.Async.IFindByName<WorkerResource>
@@ -8867,10 +8870,10 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IDelete<WorkerResource>
   {
     Task<WorkerEditor> CreateOrModify(String, Octopus.Client.Model.Endpoints.EndpointResource, Octopus.Client.Model.WorkerPoolResource[])
-    Task<WorkerResource> Discover(String, Int32, Nullable<DiscoverableEndpointType>)
+    Task<WorkerResource> Discover(String, Int32 = 10933, Nullable<DiscoverableEndpointType> = null)
     Task<List<WorkerResource>> FindByThumbprint(String)
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
-    Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
+    Task<ResourceCollection<WorkerResource>> List(Int32 = 0, Nullable<Int32> = null, String = null, String = null, String = null, Nullable<Boolean> = False, String = null, String = null, String = null)
   }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
