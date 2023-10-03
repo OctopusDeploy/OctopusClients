@@ -8,6 +8,6 @@
         AmazonWebServicesAccount,
         AzureAccount,
         WorkerPool,
-        UsernamePassword
+        UsernamePasswordAccount
     }
 }

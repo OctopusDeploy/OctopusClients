@@ -2453,7 +2453,7 @@ Octopus.Client.Model
     static System.String Sensitive
     static System.String SingleLineText
     static System.String StepName
-    static System.String UsernamePassword
+    static System.String UsernamePasswordAccount
     static Dictionary<String, String> AsDisplaySettings(String)
   }
   class CreateChannelCommand
@@ -5836,7 +5836,7 @@ Octopus.Client.Model
       AmazonWebServicesAccount = 3
       AzureAccount = 4
       WorkerPool = 5
-      UsernamePassword = 6
+      UsernamePasswordAccount = 6
   }
   class VersioningStrategyResource
   {
