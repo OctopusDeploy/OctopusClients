@@ -600,21 +600,21 @@ Octopus.Client
     Octopus.Client.TResponseResource ResponseResource { get; }
   }
   class OctopusServerEndpoint
-    {
-      .ctor(String)
-      .ctor(String, String)
-      .ctor(String, String, ICredentials, Boolean)
-      .ctor(Octopus.Client.ILinkResolver, String, ICredentials, Boolean)
-      String ApiKey { get; }
-      ICredentials Credentials { get; }
-      Boolean IsUsingSecureConnection { get; }
-      Octopus.Client.ILinkResolver OctopusServer { get; }
-      IWebProxy Proxy { get; set; }
-      String Token { get; }
-      Octopus.Client.OctopusServerEndpoint AsUser(String)
-      static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String)
-      static Octopus.Client.OctopusServerEndpoint CreateWithToken(String, String)
-    }
+  {
+    .ctor(String)
+    .ctor(String, String)
+    .ctor(String, String, ICredentials, Boolean)
+    .ctor(Octopus.Client.ILinkResolver, String, ICredentials, Boolean)
+    String ApiKey { get; }
+    ICredentials Credentials { get; }
+    Boolean IsUsingSecureConnection { get; }
+    Octopus.Client.ILinkResolver OctopusServer { get; }
+    IWebProxy Proxy { get; set; }
+    String Token { get; }
+    Octopus.Client.OctopusServerEndpoint AsUser(String)
+    static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String)
+    static Octopus.Client.OctopusServerEndpoint CreateWithToken(String, String)
+  }
   class RepositoryScope
   {
     Octopus.Client.T Apply(Func<SpaceResource, T>, Func<T>, Func<T>)
