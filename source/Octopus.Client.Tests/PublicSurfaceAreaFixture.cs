@@ -171,6 +171,8 @@ namespace Octopus.Client.Tests
                 {
                     null => "null",
                     string stringValue => $"\"{stringValue}\"",
+                    int integer when integer == int.MaxValue => "Int.MaxValue",
+                    int integer when integer == int.MinValue => "Int.MinValue",
                     _ => defaultValue.ToString()
                 };
 
