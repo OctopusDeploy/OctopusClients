@@ -7,6 +7,8 @@
     <AssemblyName>Octopus.Server.Client</AssemblyName>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <Authors>Octopus Deploy</Authors>
+    <PackageProjectUrl>https://github.com/OctopusDeploy/OctopusClients</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>Octopus Deploy Pty Ltd</Copyright>
     <Description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
 
