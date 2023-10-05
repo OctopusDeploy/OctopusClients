@@ -31,6 +31,10 @@ namespace Octopus.Client.Model
 
         [SupportedAccountTypes(AccountType.UsernamePassword)] [ScriptConsoleSupported] Kubernetes = 9,
         
-        StepPackage = 10
+        StepPackage = 10,
+
+        [ScriptConsoleSupported] [TentacleUpgradeSupported] KubernetesTentaclePassive = 11,
+
+        [ScriptConsoleSupported] [TentacleUpgradeSupported] KubernetesTentacleActive = 12
     }
 }
