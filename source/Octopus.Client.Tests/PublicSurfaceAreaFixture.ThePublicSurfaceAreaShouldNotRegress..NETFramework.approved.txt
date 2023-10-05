@@ -2409,8 +2409,6 @@ Octopus.Client.Model
       AzureServiceFabricCluster = 8
       Kubernetes = 9
       StepPackage = 10
-      KubernetesTentaclePassive = 11
-      KubernetesTentacleActive = 12
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
