@@ -16,6 +16,8 @@
         <dependencies>
             <group targetFramework=".NETFramework4.6.2">
             </group>
+            <group targetFramework=".NETFramework4.8">
+            </group>
 
             <group targetFramework=".NETStandard2.0">
                 <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
@@ -27,12 +29,18 @@
             <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework=".NETFramework4.6.2" />
             <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.6.2" />
             <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.6.2" />
+
+            <frameworkAssembly assemblyName="System.ComponentModel.DataAnnotations" targetFramework=".NETFramework4.8" />
+            <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.8" />
+            <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.8" />
         </frameworkAssemblies>
     </metadata>
     <files>
         <file src="icon.png" target="images\" />
         <file src="bin\release\net462\Octopus.Client.dll" target="lib\net462" />
         <file src="bin\release\net462\Octopus.Client.xml" target="lib\net462" />
+        <file src="bin\release\net48\Octopus.Client.dll" target="lib\net48" />
+        <file src="bin\release\net48\Octopus.Client.xml" target="lib\net48" />
         <file src="bin\release\netstandard2.0\Octopus.Client.dll" target="lib\netstandard2.0" />
         <file src="bin\release\netstandard2.0\Octopus.Client.xml" target="lib\netstandard2.0" />
     </files>

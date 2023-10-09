@@ -104,7 +104,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            foreach (var target in new[] {"net462", "netstandard2.0"})
+            foreach (var target in new[] {"net462", "net48","netstandard2.0"})
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
@@ -230,12 +230,12 @@ class Build : NukeBuild
         .Executes(() =>
         {
             EnsureCleanDirectory(RootDirectory / "TestResults");
-            
+
             DockerComposeBuild(RootDirectory / "docker-compose.build.yml", "--no-cache");
             DockerComposeUp(RootDirectory / "docker-compose.test.yml");
             DockerComposeDown(RootDirectory / "docker-compose.test.yml");
 
-            var unitTestResultFiles =  Directory.GetFiles(RootDirectory / "TestResults", "*.trx"); 
+            var unitTestResultFiles =  Directory.GetFiles(RootDirectory / "TestResults", "*.trx");
 
             Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
         });
@@ -309,7 +309,7 @@ class Build : NukeBuild
 
         Log.Information($"Finished signing {files.Length} files.");
     }
-    
+
     void SignWithAzureSignTool(AbsolutePath[] files, string timestampUrl)
     {
         Log.Information("Signing files using azuresigntool and the production code signing certificate.");
