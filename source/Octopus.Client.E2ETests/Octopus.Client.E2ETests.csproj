@@ -34,7 +34,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="System.IO.Compression" />
+        <Reference Include="System.IO.Compression" />
+        <Reference Include="System.Net.Http" />
     </ItemGroup>
 
 </Project>
