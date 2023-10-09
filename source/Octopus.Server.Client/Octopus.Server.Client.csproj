@@ -60,6 +60,7 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     <PackageReference Include="Octopus.TinyTypes" Version="2.2.1008" />
     <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.1008" />
     <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.1008" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="TimeZoneConverter" Version="3.2.0" />
   </ItemGroup>
 </Project>
