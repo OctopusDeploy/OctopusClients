@@ -81,7 +81,7 @@ namespace Octopus.Client.E2ETests
         public static TestCaseData[] DependencyExpectations =
         {
             //if you need to change this, you'll probably need to change the Build.cs
-            new TestCaseData(".NETFramework4.6.2",
+            new TestCaseData(".NETFramework4.8",
                 new string[] {
                 }),
             new TestCaseData(".NETStandard2.0",
@@ -156,18 +156,18 @@ namespace Octopus.Client.E2ETests
         public void NuSpecFileShouldOnlyHaveFrameworkAssembliesForNetFramework()
         {
             var dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework != '.NETFramework4.6.2']",
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework != '.NETFramework4.8']",
                 nameSpaceManager);
-            dependencies.Count.Should().Be(0, "There should be only be frameworkAssemblies listed for .NETFramework4.6.2");
+            dependencies.Count.Should().Be(0, "There should be only be frameworkAssemblies listed for .NETFramework4.8");
         }
 
         [Test]
         public void NuSpecFileShouldHave3FrameworkAssembliesForNetFramework()
         {
             var dependencies = nuSpecFile.SelectNodes(
-                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.6.2']",
+                "//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.8']",
                 nameSpaceManager);
-            dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.6.2");
+            dependencies.Count.Should().Be(3, "There should be 3 frameworkAssemblies listed for .NETFramework4.8");
         }
 
         [Test]
@@ -177,9 +177,9 @@ namespace Octopus.Client.E2ETests
         public void NuSpecFileShouldHaveSystemComponentModelDataAnnotationsFrameworkAssemblyForNetFramework(string assemblyName)
         {
             var frameworkAssembly = nuSpecFile.SelectSingleNode(
-                $"//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.6.2' and @assemblyName = '{assemblyName}']",
+                $"//ns:package/ns:metadata/ns:frameworkAssemblies/ns:frameworkAssembly[@targetFramework = '.NETFramework4.8 and @assemblyName = '{assemblyName}']",
                 nameSpaceManager);
-            frameworkAssembly.Should().NotBeNull($"Should have a frameworkAssembly node for '{assemblyName}' for .NETFramework4.6.2");
+            frameworkAssembly.Should().NotBeNull($"Should have a frameworkAssembly node for '{assemblyName}' for .NETFramework4.8");
         }
     }
 }
