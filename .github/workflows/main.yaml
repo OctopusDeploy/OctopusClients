@@ -58,6 +58,14 @@ jobs:
           path: ./TestResults/Win_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
+      - name: Windows .Net 4.8 unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows.Net 4.8 unit test results
+          path: ./TestResults/Win_net48_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
       - name: Windows .Net 6.0 unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
@@ -72,6 +80,14 @@ jobs:
         with:
           name: Windows .Net 4.62 E2E test results
           path: ./TestResults/Win-E2E_net462_*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Windows .Net 4.8 E2E test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows .Net 4.8 E2E test results
+          path: ./TestResults/Win-E2E_net48_*.trx
           reporter: dotnet-trx
           fail-on-error: true
       - name: Windows .Net 6.0 E2E test report
