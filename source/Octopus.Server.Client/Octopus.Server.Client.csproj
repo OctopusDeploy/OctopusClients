@@ -20,7 +20,7 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>netstandard2.0;net462;net48</TargetFrameworks>
+    <TargetFrameworks>net462;net48;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
     <TargetFramework>netstandard2.0</TargetFramework>

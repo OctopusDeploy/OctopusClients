@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-        <TargetFrameworks>net462;net6.0</TargetFrameworks>
+        <TargetFrameworks>net462;net48;net6.0</TargetFrameworks>
     </PropertyGroup>
     <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
         <TargetFrameworks>net6.0</TargetFrameworks>
