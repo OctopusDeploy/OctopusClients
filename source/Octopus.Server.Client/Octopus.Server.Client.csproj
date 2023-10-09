@@ -17,13 +17,8 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <RootNamespace>Octopus.Client</RootNamespace>
-	  <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
+    <LangVersion>latest</LangVersion>
     <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
-    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net48' ">
     <DebugType>embedded</DebugType>
@@ -35,7 +30,6 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
   <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
@@ -60,6 +54,7 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     <PackageReference Include="Octopus.TinyTypes" Version="2.2.1008" />
     <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.1008" />
     <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.1008" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="TimeZoneConverter" Version="3.2.0" />
   </ItemGroup>
 </Project>
