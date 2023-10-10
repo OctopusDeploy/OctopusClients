@@ -11,7 +11,7 @@ namespace Octopus.Client
         /// <summary>
         /// Create an instance with a Token to authenticate.
         /// </summary>
-        public static OctopusServerEndpoint CreateWithToken(string octopusServerAddress, string bearerToken, ICredentials credentials = null)
+        public static OctopusServerEndpoint CreateWithBearerToken(string octopusServerAddress, string bearerToken, ICredentials credentials = null)
         {
             return new OctopusServerEndpoint(octopusServerAddress, new BearerTokenValue(bearerToken), credentials);
         }
@@ -27,7 +27,7 @@ namespace Octopus.Client
         private OctopusServerEndpoint(string octopusServerAddress, BearerTokenValue bearerTokenValue, ICredentials credentials)
         {
             if (string.IsNullOrWhiteSpace(bearerTokenValue.Value))
-                throw new ArgumentException("Token is required.");
+                throw new ArgumentException("BearerToken is required.");
 
             OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
             BearerToken = bearerTokenValue.Value;

@@ -613,7 +613,7 @@ Octopus.Client
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
     static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String, ICredentials)
-    static Octopus.Client.OctopusServerEndpoint CreateWithToken(String, String, ICredentials)
+    static Octopus.Client.OctopusServerEndpoint CreateWithBearerToken(String, String, ICredentials)
   }
   class RepositoryScope
   {
