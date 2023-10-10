@@ -31,7 +31,7 @@ namespace Octopus.Client
 
             OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
             Token = token.Value;
-            Credentials = credentials;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
         /// <summary>
@@ -83,8 +83,11 @@ namespace Octopus.Client
         /// Additional credentials to use when communicating to servers that require integrated/basic
         /// authentication.
         /// </param>
-        public OctopusServerEndpoint(string octopusServerAddress, string apiKey, ICredentials credentials) : this(GetLinkResolverFromServerUrl(octopusServerAddress), apiKey, credentials ?? CredentialCache.DefaultNetworkCredentials)
+        public OctopusServerEndpoint(string octopusServerAddress, string apiKey, ICredentials credentials)
         {
+            OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
+            ApiKey = apiKey;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
         /// <summary>
