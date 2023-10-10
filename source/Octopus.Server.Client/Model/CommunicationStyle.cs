@@ -33,8 +33,8 @@ namespace Octopus.Client.Model
         
         StepPackage = 10,
 
-        [ScriptConsoleSupported] [TentacleUpgradeSupported] KubernetesTentaclePassive = 11,
+        [ScriptConsoleSupported] KubernetesTentaclePassive = 11,
 
-        [ScriptConsoleSupported] [TentacleUpgradeSupported] KubernetesTentacleActive = 12
+        [ScriptConsoleSupported] KubernetesTentacleActive = 12
     }
 }
