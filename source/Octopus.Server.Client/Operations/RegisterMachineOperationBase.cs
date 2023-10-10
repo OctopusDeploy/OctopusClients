@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -199,20 +197,31 @@ namespace Octopus.Client.Operations
             if (machinePolicy != null)
                 machine.MachinePolicyId = machinePolicy.Id;
 
-            if (CommunicationStyle == CommunicationStyle.TentaclePassive)
+            switch (CommunicationStyle)
             {
-                var listening = new ListeningTentacleEndpointResource();
-                listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
-                listening.Thumbprint = TentacleThumbprint;
-                listening.ProxyId = proxy?.Id;
-                machine.Endpoint = listening;
-            }
-            else if (CommunicationStyle == CommunicationStyle.TentacleActive)
-            {
-                var polling = new PollingTentacleEndpointResource();
-                polling.Uri = SubscriptionId.ToString();
-                polling.Thumbprint = TentacleThumbprint;
-                machine.Endpoint = polling;
+                case CommunicationStyle.TentaclePassive or CommunicationStyle.KubernetesTentaclePassive:
+                {
+                    var listening = CommunicationStyle == CommunicationStyle.TentaclePassive
+                        ? new ListeningTentacleEndpointResource()
+                        : new ListeningKubernetesTentacleEndpointResource();
+
+                    listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
+                    listening.Thumbprint = TentacleThumbprint;
+                    listening.ProxyId = proxy?.Id;
+                    machine.Endpoint = listening;
+                    break;
+                }
+                case CommunicationStyle.TentacleActive or CommunicationStyle.KubernetesTentacleActive:
+                {
+                    var polling = CommunicationStyle == CommunicationStyle.TentacleActive ?
+                        new PollingTentacleEndpointResource() :
+                        new PollingKubernetesTentacleEndpointResource();
+
+                    polling.Uri = SubscriptionId.ToString();
+                    polling.Thumbprint = TentacleThumbprint;
+                    machine.Endpoint = polling;
+                    break;
+                }
             }
         }
 

@@ -22,7 +22,9 @@ namespace Octopus.Client.Serialization
                 {CommunicationStyle.None, typeof (CloudRegionEndpointResource)},
                 {CommunicationStyle.Kubernetes, typeof (KubernetesEndpointResource)},
                 {CommunicationStyle.AzureServiceFabricCluster, typeof(ServiceFabricEndpointResource)},
-                {CommunicationStyle.StepPackage, typeof(StepPackageEndpointResource)}
+                {CommunicationStyle.StepPackage, typeof(StepPackageEndpointResource)},
+                {CommunicationStyle.KubernetesTentacleActive, typeof(PollingKubernetesTentacleEndpointResource)},
+                {CommunicationStyle.KubernetesTentaclePassive, typeof(ListeningKubernetesTentacleEndpointResource)}
           };
 
         protected override IDictionary<CommunicationStyle, Type> DerivedTypeMappings => EndpointTypes;

@@ -1,5 +1,4 @@
-﻿using System;
-using Octopus.Client.Model.Accounts;
+﻿using Octopus.Client.Model.Accounts;
 
 namespace Octopus.Client.Model
 {
