@@ -82,9 +82,9 @@ namespace Octopus.Client
             {
                 client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
             }
-            if (serverEndpoint.Token != null)
+            if (serverEndpoint.BearerToken != null)
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serverEndpoint.Token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serverEndpoint.BearerToken);
             }
             client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
             Repository = new OctopusAsyncRepository(this);

@@ -11,9 +11,9 @@ namespace Octopus.Client
         /// <summary>
         /// Create an instance with a Token to authenticate.
         /// </summary>
-        public static OctopusServerEndpoint CreateWithToken(string octopusServerAddress, string token, ICredentials credentials = null)
+        public static OctopusServerEndpoint CreateWithToken(string octopusServerAddress, string bearerToken, ICredentials credentials = null)
         {
-            return new OctopusServerEndpoint(octopusServerAddress, new TokenValue(token), credentials);
+            return new OctopusServerEndpoint(octopusServerAddress, new BearerTokenValue(bearerToken), credentials);
         }
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace Octopus.Client
             return new OctopusServerEndpoint(octopusServerAddress, apiKey, credentials);
         }
 
-        private OctopusServerEndpoint(string octopusServerAddress, TokenValue token, ICredentials credentials)
+        private OctopusServerEndpoint(string octopusServerAddress, BearerTokenValue bearerTokenValue, ICredentials credentials)
         {
-            if (string.IsNullOrWhiteSpace(token.Value))
+            if (string.IsNullOrWhiteSpace(bearerTokenValue.Value))
                 throw new ArgumentException("Token is required.");
 
             OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
-            Token = token.Value;
+            BearerToken = bearerTokenValue.Value;
             Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
@@ -132,9 +132,9 @@ namespace Octopus.Client
         public string ApiKey { get; }
 
         /// <summary>
-        /// A JWT Token that can be used to authenticate calls to the Server.
+        /// A Bearer Token that can be used to authenticate calls to the Server.
         /// </summary>
-        public string Token { get; }
+        public string BearerToken { get; }
 
         /// <summary>
         /// Gets the additional credentials to use when communicating to servers that require integrated/basic authentication.
@@ -167,9 +167,9 @@ namespace Octopus.Client
             return new DefaultLinkResolver(new Uri(octopusServerAddress));
         }
 
-        private class TokenValue
+        private class BearerTokenValue
         {
-            public TokenValue(string value)
+            public BearerTokenValue(string value)
             {
                 Value = value;
             }

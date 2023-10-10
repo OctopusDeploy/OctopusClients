@@ -461,9 +461,9 @@ namespace Octopus.Client
             {
                 webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
             }
-            if (serverEndpoint.Token != null)
+            if (serverEndpoint.BearerToken != null)
             {
-                webRequest.Headers["Authorization"] = $"Bearer {serverEndpoint.Token}";
+                webRequest.Headers["Authorization"] = $"Bearer {serverEndpoint.BearerToken}";
             }
             webRequest.UserAgent = octopusCustomHeaders.UserAgent;
 
