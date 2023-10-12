@@ -5445,6 +5445,7 @@ Octopus.Client.Model
   {
     .ctor(IEnumerable<TaskResource>, Octopus.Client.Extensibility.LinkCollection)
     Dictionary<String, Int32> TotalCounts { get; set; }
+    Dictionary<String, Int32> TotalCountsInOtherSpaces { get; set; }
   }
   abstract class TaskRestrictedTo
   {

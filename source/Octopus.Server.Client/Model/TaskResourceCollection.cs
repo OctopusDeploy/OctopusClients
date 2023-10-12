@@ -10,5 +10,6 @@ namespace Octopus.Client.Model
         }
         
         public Dictionary<string, int> TotalCounts { get; set; }
+        public Dictionary<string, int> TotalCountsInOtherSpaces { get; set; }
     }
 }
