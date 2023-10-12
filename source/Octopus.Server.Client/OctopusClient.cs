@@ -457,7 +457,14 @@ namespace Octopus.Client
             webRequest.Timeout = ApiConstants.DefaultClientRequestTimeout;
             webRequest.Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials;
             webRequest.Method = request.Method;
-            webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
+            if (serverEndpoint.ApiKey != null)
+            {
+                webRequest.Headers[ApiConstants.ApiKeyHttpHeaderName] = serverEndpoint.ApiKey;
+            }
+            if (serverEndpoint.BearerToken != null)
+            {
+                webRequest.Headers["Authorization"] = $"Bearer {serverEndpoint.BearerToken}";
+            }
             webRequest.UserAgent = octopusCustomHeaders.UserAgent;
 
             if (webRequest.Method == "PUT")

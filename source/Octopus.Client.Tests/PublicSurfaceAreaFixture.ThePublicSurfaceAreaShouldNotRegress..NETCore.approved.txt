@@ -608,11 +608,14 @@ Octopus.Client
     .ctor(String, String, ICredentials)
     .ctor(Octopus.Client.ILinkResolver, String, ICredentials)
     String ApiKey { get; }
+    String BearerToken { get; }
     ICredentials Credentials { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
+    static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String, ICredentials)
+    static Octopus.Client.OctopusServerEndpoint CreateWithBearerToken(String, String, ICredentials)
   }
   class RepositoryScope
   {

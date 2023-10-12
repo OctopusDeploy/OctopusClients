@@ -8,9 +8,31 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusServerEndpoint
     {
-        readonly ILinkResolver octopusServer;
-        readonly string apiKey;
-        readonly ICredentials credentials;
+        /// <summary>
+        /// Create an instance with a Token to authenticate.
+        /// </summary>
+        public static OctopusServerEndpoint CreateWithBearerToken(string octopusServerAddress, string bearerToken, ICredentials credentials = null)
+        {
+            return new OctopusServerEndpoint(octopusServerAddress, new BearerTokenValue(bearerToken), credentials);
+        }
+
+        /// <summary>
+        /// Create an instance with an API Key to authenticate.
+        /// </summary>
+        public static OctopusServerEndpoint CreateWithApiKey(string octopusServerAddress, string apiKey, ICredentials credentials = null)
+        {
+            return new OctopusServerEndpoint(octopusServerAddress, apiKey, credentials);
+        }
+
+        private OctopusServerEndpoint(string octopusServerAddress, BearerTokenValue bearerTokenValue, ICredentials credentials)
+        {
+            if (string.IsNullOrWhiteSpace(bearerTokenValue.Value))
+                throw new ArgumentException("BearerToken is required.");
+
+            OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
+            BearerToken = bearerTokenValue.Value;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusServerEndpoint" /> class. Since no API key is provided, only
@@ -22,8 +44,8 @@ namespace Octopus.Client
         /// will assume Octopus runs under a virtual directory.
         /// </param>
         public OctopusServerEndpoint(string octopusServerAddress)
-            : this(octopusServerAddress, null)
         {
+            OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
         }
 
         /// <summary>
@@ -63,15 +85,9 @@ namespace Octopus.Client
         /// </param>
         public OctopusServerEndpoint(string octopusServerAddress, string apiKey, ICredentials credentials)
         {
-            if (string.IsNullOrWhiteSpace(octopusServerAddress))
-                throw new ArgumentException("An Octopus Server URI was not specified.");
-
-            if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out var uri) || !uri.Scheme.StartsWith("http"))
-                throw new ArgumentException($"The Octopus Server URI '{octopusServerAddress}' is invalid. The URI should start with http:// or https:// and be a valid URI.");
-
-            octopusServer = new DefaultLinkResolver(new Uri(octopusServerAddress));
-            this.apiKey = apiKey;
-            this.credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
+            OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
+            ApiKey = apiKey;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
         /// <summary>
@@ -92,33 +108,38 @@ namespace Octopus.Client
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("An API key was not specified. Please set an API key using the ApiKey property. This can be gotten from your user profile page under the Octopus web portal.");
 
-            this.octopusServer = octopusServer;
-            this.apiKey = apiKey;
-            this.credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
+            OctopusServer = octopusServer;
+            ApiKey = apiKey;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
         /// <summary>
         /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
         /// client  will assume Octopus runs under a virtual directory.
         /// </summary>
-        public ILinkResolver OctopusServer => octopusServer;
+        public ILinkResolver OctopusServer { get; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
-        public bool IsUsingSecureConnection => octopusServer.IsUsingSecureConnection;
+        public bool IsUsingSecureConnection => OctopusServer.IsUsingSecureConnection;
 
         /// <summary>
         /// Gets the API key to use when connecting to the Octopus Server. For more information on API keys, please see the API
         /// documentation on authentication
         /// (https://github.com/OctopusDeploy/OctopusDeploy-Api/blob/master/sections/authentication.md).
         /// </summary>
-        public string ApiKey => apiKey;
+        public string ApiKey { get; }
+
+        /// <summary>
+        /// A Bearer Token that can be used to authenticate calls to the Server.
+        /// </summary>
+        public string BearerToken { get; }
 
         /// <summary>
         /// Gets the additional credentials to use when communicating to servers that require integrated/basic authentication.
         /// </summary>
-        public ICredentials Credentials => credentials;
+        public ICredentials Credentials { get; }
 
         /// <summary>
         /// Recreates the endpoint using the API key of a new user.
@@ -127,12 +148,35 @@ namespace Octopus.Client
         /// <returns>An endpoint with a new user.</returns>
         public OctopusServerEndpoint AsUser(string newUserApiKey)
         {
-            return new OctopusServerEndpoint(octopusServer, newUserApiKey, credentials);
+            return new OctopusServerEndpoint(OctopusServer, newUserApiKey, Credentials);
         }
 
         /// <summary>
         /// A proxy that should be used to connect to the endpoint.
         /// </summary>
         public IWebProxy Proxy { get; set; }
+
+        private static DefaultLinkResolver GetLinkResolverFromServerUrl(string octopusServerAddress)
+        {
+            if (string.IsNullOrWhiteSpace(octopusServerAddress))
+                throw new ArgumentException("An Octopus Server URI was not specified.");
+
+            if (!Uri.TryCreate(octopusServerAddress, UriKind.Absolute, out var uri) || !uri.Scheme.StartsWith("http"))
+                throw new ArgumentException($"The Octopus Server URI '{octopusServerAddress}' is invalid. The URI should start with http:// or https:// and be a valid URI.");
+
+            return new DefaultLinkResolver(new Uri(octopusServerAddress));
+        }
+
+        private class BearerTokenValue
+        {
+            public BearerTokenValue(string value)
+            {
+                Value = value;
+            }
+
+            public string Value { get; }
+        }
     }
+
+
 }
