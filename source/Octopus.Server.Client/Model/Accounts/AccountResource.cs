@@ -39,7 +39,7 @@ namespace Octopus.Client.Model.Accounts
                     return tenantedDeploymentParticipation.Value;
 
                 // Responses from server versions before TenantedDeploymentParticipation was implemented will default
-                // to pre-existing behaviour 
+                // to preexisting behaviour 
                 return TenantIds.Any() || TenantTags.Any()
                     ? TenantedDeploymentMode.Tenanted 
                     : TenantedDeploymentMode.Untenanted;
