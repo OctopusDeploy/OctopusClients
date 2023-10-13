@@ -149,7 +149,7 @@ namespace Octopus.Client.Tests.Operations
         public async Task ShouldCreateWhenCantDeserializeMachines()
         {
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>()))
-                .Throw(new OctopusDeserializationException(1, "Can not deserialize"));
+                .Throw(new OctopusDeserializationException(1, "Cannot deserialize"));
 
             environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
             environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
