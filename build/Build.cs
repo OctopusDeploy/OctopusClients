@@ -116,9 +116,9 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            if (OperatingSystem.IsMacOS())
+            if (OperatingSystem.IsMacOS() && IsLocalBuild)
             {
-                Log.Warning("Skipping Merge for MacOS");
+                Log.Warning("Skipping Merge for MacOS on Local Build");
                 return;
             }
 
@@ -199,10 +199,10 @@ class Build : NukeBuild
         .DependsOn(Merge)
         .Executes(() =>
     {
-        if (OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS() && IsLocalBuild)
         {
             Log.Warning("Skipping making true Merged Client and " +
-                "instead creating simple Nuget Package for MacOS");
+                "instead creating simple Nuget Package for MacOS for Local Build");
 
             var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.MacOs.nuspec";
             var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
@@ -317,9 +317,9 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
-        if (OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS() && IsLocalBuild)
         {
-            Log.Warning("Skipping signing for MacOS");
+            Log.Warning("Skipping signing for MacOS for Local Build");
             return;
         }
 
