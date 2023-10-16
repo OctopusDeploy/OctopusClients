@@ -12,6 +12,10 @@ RUN yum install \
         libunwind \
     -y
 
+# Centos seems to ship with a version of curl which doesn't work with the https://dot.net url below.
+# Updating it seems to fix the issue.
+RUN yum update curl -y
+
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel 6.0 --install-dir /usr/share/dotnet
 
 # Convention to allow users of this tool container to easily see how it was created.
