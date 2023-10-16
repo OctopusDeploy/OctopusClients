@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+        <id>Octopus.Client</id>
+        <version>$version$</version>
+        <authors>Octopus Deploy</authors>
+        <owners>Octopus Deploy</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <license type="expression">Apache-2.0</license>
+        <projectUrl>https://github.com/OctopusDeploy/OctopusClients</projectUrl>
+        <icon>images\icon.png</icon>
+        <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
+            This package contains the ILmerged client library for the HTTP API in Octopus.</description>
+        <copyright>Octopus Deploy Pty Ltd</copyright>
+        <repository type="git" url="https://github.com/OctopusDeploy/OctopusClients" />
+        <dependencies>
+            <group targetFramework=".NETStandard2.0">
+                <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
+                <dependency id="System.ComponentModel.Annotations" version="5.0.0" exclude="Build,Analyzers" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="icon.png" target="images\" />
+        <file src="bin\release\netstandard2.0\*" target="lib\netstandard2.0" />
+    </files>
+</package>
