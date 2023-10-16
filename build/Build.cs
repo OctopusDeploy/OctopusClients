@@ -116,7 +116,13 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            foreach (var target in new[] {"net462", "net48","netstandard2.0"})
+            if (OperatingSystem.IsMacOS())
+            {
+                Log.Warning("Skipping Merge for MacOS");
+                return;
+            }
+
+            foreach (var target in new[] {"net462", "net48", "netstandard2.0"})
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
@@ -193,6 +199,31 @@ class Build : NukeBuild
         .DependsOn(Merge)
         .Executes(() =>
     {
+        if (OperatingSystem.IsMacOS())
+        {
+            Log.Warning("Skipping making true Merged Client and " +
+                "instead creating simple Nuget Package for MacOS");
+
+            var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.MacOs.nuspec";
+            var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
+
+            ReplaceTextInFiles(octopusClientMacosNuspec, "<version>$version$</version>", $"<version>{FullSemVer}</version>");
+            ReplaceTextInFiles(projectFile, "Octopus.Client.nuspec", "Octopus.Client.MacOs.nuspec");
+
+            DotNetPack(_ => _
+                            .SetProject(OctopusClientFolder)
+                            .SetConfiguration(Configuration)
+                            .SetOutputDirectory(ArtifactsDir)
+                            .EnableNoBuild()
+                            .DisableIncludeSymbols()
+                            .SetVerbosity(DotNetVerbosity.Normal));
+
+            // Put these back after so that future builds work and there are no pending changes locally.
+            ReplaceTextInFiles(octopusClientMacosNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
+            ReplaceTextInFiles(projectFile, "Octopus.Client.MacOs.nuspec", "Octopus.Client.nuspec");
+            return;
+        }
+
         SignBinaries(OctopusClientFolder / "bin" / Configuration);
         var octopusClientNuspec = OctopusClientFolder / "Octopus.Client.nuspec";
         try
@@ -286,6 +317,12 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
+        if (OperatingSystem.IsMacOS())
+        {
+            Log.Warning("Skipping signing for MacOS");
+            return;
+        }
+
         Log.Information($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
