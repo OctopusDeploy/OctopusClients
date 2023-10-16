@@ -14,7 +14,7 @@ RUN apt-get update && \
 
 # Install .NET SDKs
 ENV PATH=/usr/share/dotnet:${PATH}
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0 --install-dir /usr/share/dotnet
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel 6.0 --install-dir /usr/share/dotnet
 
 # Convention to allow users of this tool container to easily see how it was created.
 COPY Dockerfile /

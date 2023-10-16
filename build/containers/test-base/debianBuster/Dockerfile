@@ -22,7 +22,7 @@ RUN unlink /etc/localtime && ln -s /usr/share/zoneinfo/Australia/Brisbane /etc/l
     chmod -R g+rwx /etc/octopus
 
 # Install .NET SDKs
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0 --install-dir /usr/share/dotnet
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel 6.0 --install-dir /usr/share/dotnet
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
