@@ -58,6 +58,18 @@ class Build : NukeBuild
     [OctoVersion(Framework = "net6.0", BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
+    static readonly string Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+    string FullSemVer =>
+        !IsLocalBuild
+            ? OctoVersionInfo.FullSemVer
+            : $"{OctoVersionInfo.FullSemVer}-{Timestamp}";
+
+    string NuGetVersion =>
+        !IsLocalBuild
+            ? OctoVersionInfo.NuGetVersion
+            : $"{OctoVersionInfo.NuGetVersion}-{Timestamp}";
+
     // Keep this list in order by most likely to succeed
     string[] SigningTimestampUrls => new[]
     {
@@ -77,8 +89,8 @@ class Build : NukeBuild
         SourceDir.GlobDirectories("**/bin").ForEach(EnsureCleanDirectory);
         SourceDir.GlobDirectories("**/obj").ForEach(EnsureCleanDirectory);
         SourceDir.GlobDirectories("**/TestResults").ForEach(EnsureCleanDirectory);
-        DeleteFile(LocalPackagesDir / $"Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg");
-        DeleteFile(LocalPackagesDir / $"Octopus.Server.Client.{OctoVersionInfo.FullSemVer}.nupkg");
+        DeleteFile(LocalPackagesDir / $"Octopus.Client.{FullSemVer}.nupkg");
+        DeleteFile(LocalPackagesDir / $"Octopus.Server.Client.{FullSemVer}.nupkg");
     });
 
     Target Restore => _ => _
@@ -87,7 +99,7 @@ class Build : NukeBuild
         {
             DotNetRestore(_ => _
                 .SetProjectFile(SourceDir)
-                .SetVersion(OctoVersionInfo.FullSemVer));
+                .SetVersion(FullSemVer));
         });
 
     Target Compile => _ => _
@@ -97,7 +109,7 @@ class Build : NukeBuild
         DotNetBuild(_ => _
             .SetProjectFile(SourceDir)
             .SetConfiguration(Configuration)
-            .SetVersion(OctoVersionInfo.FullSemVer));
+            .SetVersion(FullSemVer));
     });
 
     Target Merge => _ => _
@@ -186,7 +198,7 @@ class Build : NukeBuild
         try
         {
             ReplaceTextInFiles(octopusClientNuspec, "<version>$version$</version>",
-                $"<version>{OctoVersionInfo.FullSemVer}</version>");
+                $"<version>{FullSemVer}</version>");
 
             DotNetPack(_ => _
                 .SetProject(OctopusClientFolder)
@@ -195,7 +207,7 @@ class Build : NukeBuild
                     args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
                     return args;
                 })
-                .SetVersion(OctoVersionInfo.FullSemVer)
+                .SetVersion(FullSemVer)
                 .SetConfiguration(Configuration)
                 .SetOutputDirectory(ArtifactsDir)
                 .EnableNoBuild()
@@ -204,7 +216,7 @@ class Build : NukeBuild
         }
         finally
         {
-            ReplaceTextInFiles(octopusClientNuspec, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+            ReplaceTextInFiles(octopusClientNuspec, $"<version>{FullSemVer}</version>", $"<version>$version$</version>");
         }
     });
 
@@ -216,7 +228,7 @@ class Build : NukeBuild
 
         DotNetPack(_ => _
             .SetProject(OctopusNormalClientFolder)
-            .SetVersion(OctoVersionInfo.FullSemVer)
+            .SetVersion(FullSemVer)
             .SetConfiguration(Configuration)
             .SetOutputDirectory(ArtifactsDir)
             .EnableNoBuild()
@@ -261,8 +273,8 @@ class Build : NukeBuild
         .Executes(() =>
     {
         EnsureExistingDirectory(LocalPackagesDir);
-        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
-        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
 
     Target Default => _ => _
