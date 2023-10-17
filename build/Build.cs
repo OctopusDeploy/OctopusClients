@@ -116,12 +116,6 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            if (OperatingSystem.IsMacOS() && IsLocalBuild)
-            {
-                Log.Warning("Skipping Merge for MacOS on Local Build");
-                return;
-            }
-
             foreach (var target in new[] {"net462", "net48", "netstandard2.0"})
             {
                 var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
@@ -201,6 +195,8 @@ class Build : NukeBuild
      .DependsOn(Compile)
      .Executes(() =>
         {
+            Log.Warning("Building an Unsigned and non-packed Merged Client Nuget Package for MacOS");
+
             var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.MacOs.nuspec";
             var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
 
@@ -255,7 +251,12 @@ class Build : NukeBuild
       .OnlyWhenStatic(() => IsLocalBuild)
       .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
       .DependsOn(Compile)
-      .Executes(PackNormalClientNugetPackage);
+      .Executes(() =>
+      {
+          Log.Warning("Building an Unsigned Normal Client Nuget Package for MacOS");
+
+          PackNormalClientNugetPackage();
+      });
 
     Target PackNormalClientNuget => _ => _
         .DependsOn(Compile)
@@ -342,12 +343,6 @@ class Build : NukeBuild
 
     void SignBinaries(AbsolutePath path)
     {
-        if (OperatingSystem.IsMacOS() && IsLocalBuild)
-        {
-            Log.Warning("Skipping signing for MacOS for Local Build");
-            return;
-        }
-
         Log.Information($"Signing binaries in {path}");
         var files = path.GlobDirectories("**").SelectMany(x => x.GlobFiles("Octopus.*.dll")).ToArray();
 
