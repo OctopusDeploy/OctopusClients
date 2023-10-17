@@ -189,15 +189,14 @@ class Build : NukeBuild
         });
     });
 
-    Target PackMergedClientNugetForMacOs => _ => _
+    Target PackUnsignedNonMergedClientNuget => _ => _
      .OnlyWhenStatic(() => IsLocalBuild)
-     .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
      .DependsOn(Compile)
      .Executes(() =>
         {
             Log.Warning("Building an Unsigned and non-packed Merged Client Nuget Package for MacOS");
 
-            var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.MacOs.nuspec";
+            var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.Unsigned.Unpacked.nuspec";
             var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
 
             ReplaceTextInFiles(octopusClientMacosNuspec, "<version>$version$</version>", $"<version>{FullSemVer}</version>");
@@ -213,10 +212,10 @@ class Build : NukeBuild
 
             // Put these back after so that future builds work and there are no pending changes locally.
             ReplaceTextInFiles(octopusClientMacosNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
-            ReplaceTextInFiles(projectFile, "Octopus.Client.MacOs.nuspec", "Octopus.Client.nuspec");
+            ReplaceTextInFiles(projectFile, "Octopus.Client.Unsigned.Unpacked.nuspec", "Octopus.Client.nuspec");
         });
 
-    Target PackMergedClientNuget => _ => _
+    Target PackSignedMergedClientNuget => _ => _
         .DependsOn(Merge)
         .Executes(() =>
     {
@@ -247,9 +246,8 @@ class Build : NukeBuild
         }
     });
 
-    Target PackNormalClientNugetForMacOs => _ => _
+    Target PackUnsignedNormalClientNugetForMacOs => _ => _
       .OnlyWhenStatic(() => IsLocalBuild)
-      .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
       .DependsOn(Compile)
       .Executes(() =>
       {
@@ -258,7 +256,7 @@ class Build : NukeBuild
           PackNormalClientNugetPackage();
       });
 
-    Target PackNormalClientNuget => _ => _
+    Target PackSignedNormalClientNuget => _ => _
         .DependsOn(Compile)
         .Executes(() =>
     {
@@ -266,18 +264,6 @@ class Build : NukeBuild
 
         PackNormalClientNugetPackage();
     });
-
-    void PackNormalClientNugetPackage()
-    {
-        DotNetPack(_ => _
-                        .SetProject(OctopusNormalClientFolder)
-                        .SetVersion(FullSemVer)
-                        .SetConfiguration(Configuration)
-                        .SetOutputDirectory(ArtifactsDir)
-                        .EnableNoBuild()
-                        .DisableIncludeSymbols()
-                        .SetVerbosity(DotNetVerbosity.Normal));
-    }
 
     Target LocalTest => _ => _
         .DependsOn(Compile)
@@ -295,7 +281,7 @@ class Build : NukeBuild
         });
 
     Target TestClientNugetPackage => _ => _
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .Executes(() =>
     {
         // Tests that make sure the packed, ILMerged DLL we're going to ship actually works the way we expect it to.
@@ -310,8 +296,8 @@ class Build : NukeBuild
     [PublicAPI]
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
-        .DependsOn(PackNormalClientNuget)
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedNormalClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .Executes(() =>
     {
         EnsureExistingDirectory(LocalPackagesDir);
@@ -320,11 +306,10 @@ class Build : NukeBuild
     });
 
     [PublicAPI]
-    Target CopyToLocalPackagesForMacOs => _ => _
+    Target CopyUnsignedNugetToLocalPackages => _ => _
        .OnlyWhenStatic(() => IsLocalBuild)
-       .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
-       .DependsOn(PackNormalClientNugetForMacOs)
-       .DependsOn(PackMergedClientNugetForMacOs)
+       .DependsOn(PackUnsignedNormalClientNugetForMacOs)
+       .DependsOn(PackUnsignedNonMergedClientNuget)
        .Executes(() =>
        {
            Log.Warning("This build will produce an unsigned, non-packed nuget package - this is not suitable as a release candidate");
@@ -336,10 +321,22 @@ class Build : NukeBuild
 
     Target Default => _ => _
         .DependsOn(CopyToLocalPackages)
-        .DependsOn(PackNormalClientNuget)
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedNormalClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .DependsOn(Test)
         .DependsOn(TestClientNugetPackage);
+
+    void PackNormalClientNugetPackage()
+    {
+        DotNetPack(_ => _
+                        .SetProject(OctopusNormalClientFolder)
+                        .SetVersion(FullSemVer)
+                        .SetConfiguration(Configuration)
+                        .SetOutputDirectory(ArtifactsDir)
+                        .EnableNoBuild()
+                        .DisableIncludeSymbols()
+                        .SetVerbosity(DotNetVerbosity.Normal));
+    }
 
     void SignBinaries(AbsolutePath path)
     {

@@ -9,8 +9,8 @@
         <license type="expression">Apache-2.0</license>
         <projectUrl>https://github.com/OctopusDeploy/OctopusClients</projectUrl>
         <icon>images\icon.png</icon>
-        <description>Octopus Deploy is an automated release management tool for modern developers and DevOps teams.
-            This package contains the ILmerged client library for the HTTP API in Octopus.</description>
+        <description>This package contains an unsigned, non-ILMerged, locally built client library for the HTTP API in Octopus.
+            NOT SUITABLE FOR PUBLISHING</description>
         <copyright>Octopus Deploy Pty Ltd</copyright>
         <repository type="git" url="https://github.com/OctopusDeploy/OctopusClients" />
         <dependencies>
