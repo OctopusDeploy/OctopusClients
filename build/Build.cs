@@ -195,15 +195,12 @@ class Build : NukeBuild
         });
     });
 
-    Target PackMergedClientNuget => _ => _
-        .DependsOn(Merge)
-        .Executes(() =>
-    {
-        if (OperatingSystem.IsMacOS() && IsLocalBuild)
+    Target PackMergedClientNugetForMacOs => _ => _
+     .OnlyWhenStatic(() => IsLocalBuild)
+     .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
+     .DependsOn(Compile)
+     .Executes(() =>
         {
-            Log.Warning("Skipping making true Merged Client and " +
-                "instead creating simple Nuget Package for MacOS for Local Build");
-
             var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.MacOs.nuspec";
             var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
 
@@ -221,9 +218,12 @@ class Build : NukeBuild
             // Put these back after so that future builds work and there are no pending changes locally.
             ReplaceTextInFiles(octopusClientMacosNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
             ReplaceTextInFiles(projectFile, "Octopus.Client.MacOs.nuspec", "Octopus.Client.nuspec");
-            return;
-        }
+        });
 
+    Target PackMergedClientNuget => _ => _
+        .DependsOn(Merge)
+        .Executes(() =>
+    {
         SignBinaries(OctopusClientFolder / "bin" / Configuration);
         var octopusClientNuspec = OctopusClientFolder / "Octopus.Client.nuspec";
         try
@@ -251,22 +251,32 @@ class Build : NukeBuild
         }
     });
 
+    Target PackNormalClientNugetForMacOs => _ => _
+      .OnlyWhenStatic(() => IsLocalBuild)
+      .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
+      .DependsOn(Compile)
+      .Executes(PackNormalClientNugetPackage);
+
     Target PackNormalClientNuget => _ => _
         .DependsOn(Compile)
         .Executes(() =>
     {
         SignBinaries(OctopusNormalClientFolder / "bin" / Configuration);
 
-        DotNetPack(_ => _
-            .SetProject(OctopusNormalClientFolder)
-            .SetVersion(FullSemVer)
-            .SetConfiguration(Configuration)
-            .SetOutputDirectory(ArtifactsDir)
-            .EnableNoBuild()
-            .DisableIncludeSymbols()
-            .SetVerbosity(DotNetVerbosity.Normal));
+        PackNormalClientNugetPackage();
     });
 
+    void PackNormalClientNugetPackage()
+    {
+        DotNetPack(_ => _
+                        .SetProject(OctopusNormalClientFolder)
+                        .SetVersion(FullSemVer)
+                        .SetConfiguration(Configuration)
+                        .SetOutputDirectory(ArtifactsDir)
+                        .EnableNoBuild()
+                        .DisableIncludeSymbols()
+                        .SetVerbosity(DotNetVerbosity.Normal));
+    }
 
     Target LocalTest => _ => _
         .DependsOn(Compile)
@@ -307,6 +317,21 @@ class Build : NukeBuild
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
+
+    [PublicAPI]
+    Target CopyToLocalPackagesForMacOs => _ => _
+       .OnlyWhenStatic(() => IsLocalBuild)
+       .OnlyWhenStatic(() => OperatingSystem.IsMacOS())
+       .DependsOn(PackNormalClientNugetForMacOs)
+       .DependsOn(PackMergedClientNugetForMacOs)
+       .Executes(() =>
+       {
+           Log.Warning("This build will produce an unsigned, non-packed nuget package - this is not suitable as a release candidate");
+
+           EnsureExistingDirectory(LocalPackagesDir);
+           CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+           CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+       });
 
     Target Default => _ => _
         .DependsOn(CopyToLocalPackages)
