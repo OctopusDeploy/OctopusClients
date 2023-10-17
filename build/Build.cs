@@ -115,63 +115,63 @@ class Build : NukeBuild
     Target Merge => _ => _
         .DependsOn(Compile)
         .Executes(() =>
+    {
+        foreach (var target in new[] { "net462", "net48", "netstandard2.0" })
         {
-            foreach (var target in new[] {"net462", "net48","netstandard2.0"})
-            {
-                var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
-                var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
-                EnsureExistingDirectory(outputFolder);
+            var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
+            var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
+            EnsureExistingDirectory(outputFolder);
 
-                // CAREFUL: We don't want to expose third-party libraries like Newtonsoft.Json so we definitely want to
-                // internalize those, but we also don't want to hide any Octopus contracts.
-                //
-                // WARNING: There's an apparent bug in il-repack which ignores all types from subsequent assemblies, even
-                // if a set of exclusion regular expressions is provided. To work around this, we do a two-stage merge:
-                // 1) all of the Octopus assemblies into a temporary assembly, with internalization disabled entirely (leaving everything Octopus.* public); and
-                // 2) that temporary assembly plus all of the third-party assemblies, leaving only the types from the first (Octopus temporary) assembly as public.
-                // --andrewh 14/2/2022.
+            // CAREFUL: We don't want to expose third-party libraries like Newtonsoft.Json so we definitely want to
+            // internalize those, but we also don't want to hide any Octopus contracts.
+            //
+            // WARNING: There's an apparent bug in il-repack which ignores all types from subsequent assemblies, even
+            // if a set of exclusion regular expressions is provided. To work around this, we do a two-stage merge:
+            // 1) all of the Octopus assemblies into a temporary assembly, with internalization disabled entirely (leaving everything Octopus.* public); and
+            // 2) that temporary assembly plus all of the third-party assemblies, leaving only the types from the first (Octopus temporary) assembly as public.
+            // --andrewh 14/2/2022.
 
-                // Stage 1: Merge all the Octopus assemblies whose contracts we want to not internalize.
-                var stage1Assemblies = inputFolder.GlobFiles(
-                        "Octopus.Server.Client.dll",
-                        "Octopus.Server.MessageContracts.Base.dll",
-                        "Octopus.Server.MessageContracts.Base.HttpRoutes.dll"
-                    )
-                    .Select(x => x.ToString())
-                    .OrderBy(x => x)
-                    .ToArray();
+            // Stage 1: Merge all the Octopus assemblies whose contracts we want to not internalize.
+            var stage1Assemblies = inputFolder.GlobFiles(
+                    "Octopus.Server.Client.dll",
+                    "Octopus.Server.MessageContracts.Base.dll",
+                    "Octopus.Server.MessageContracts.Base.HttpRoutes.dll"
+                )
+                .Select(x => x.ToString())
+                .OrderBy(x => x)
+                .ToArray();
 
-                var temporaryDllPath = inputFolder / "Octopus.Client.ILMerge.Temporary.dll";
+            var temporaryDllPath = inputFolder / "Octopus.Client.ILMerge.Temporary.dll";
 
-                ILRepackTasks.ILRepack(_ => _
-                    .SetAssemblies(stage1Assemblies)
-                    .SetOutput(temporaryDllPath)
-                    .DisableParallel()
-                    .EnableXmldocs()
-                    .SetLib(inputFolder));
+            ILRepackTasks.ILRepack(_ => _
+                .SetAssemblies(stage1Assemblies)
+                .SetOutput(temporaryDllPath)
+                .DisableParallel()
+                .EnableXmldocs()
+                .SetLib(inputFolder));
 
-                // Step 2: Merge all the remaining assemblies whose innards will be marked as internal if they're currently public.
-                var stage2Assemblies = inputFolder.GlobFiles("*.dll", "*.exe")
-                    .Select(x => x.ToString())
-                    .Except(stage1Assemblies)
-                    .OrderByDescending(x => x.Contains("Octopus.Client.ILMerge.Temporary.dll"))
-                    .ThenBy(x => x)
-                    .ToArray();
+            // Step 2: Merge all the remaining assemblies whose innards will be marked as internal if they're currently public.
+            var stage2Assemblies = inputFolder.GlobFiles("*.dll", "*.exe")
+                .Select(x => x.ToString())
+                .Except(stage1Assemblies)
+                .OrderByDescending(x => x.Contains("Octopus.Client.ILMerge.Temporary.dll"))
+                .ThenBy(x => x)
+                .ToArray();
 
-                var outputDllPath = outputFolder / "Octopus.Client.dll";
+            var outputDllPath = outputFolder / "Octopus.Client.dll";
 
-                ILRepackTasks.ILRepack(_ => _
-                    .SetAssemblies(stage2Assemblies)
-                    .SetOutput(outputDllPath)
-                    .EnableInternalize()
-                    .DisableParallel()
-                    .EnableXmldocs()
-                    .SetLib(inputFolder));
+            ILRepackTasks.ILRepack(_ => _
+                .SetAssemblies(stage2Assemblies)
+                .SetOutput(outputDllPath)
+                .EnableInternalize()
+                .DisableParallel()
+                .EnableXmldocs()
+                .SetLib(inputFolder));
 
-                DeleteDirectory(inputFolder);
-                MoveDirectory(outputFolder, inputFolder);
-            }
-        });
+            DeleteDirectory(inputFolder);
+            MoveDirectory(outputFolder, inputFolder);
+        }
+    });
 
     Target Test => _ => _
         .DependsOn(Compile)
@@ -189,7 +189,36 @@ class Build : NukeBuild
         });
     });
 
-    Target PackMergedClientNuget => _ => _
+    Target PackUnsignedNonMergedClientNuget => _ => _
+        .OnlyWhenStatic(() => IsLocalBuild)
+        .DependsOn(Compile)
+        .Executes(() =>
+    {
+        Log.Warning("Building an Unsigned and non-packed Merged Client Nuget Package");
+
+        const string unsignedNonMergedClientNuspecFileName = "Octopus.Client.Unsigned.NonMerged.nuspec";
+        const string standardClientNuspecFileName = "Octopus.Client.nuspec";
+
+        var octopusUnsignedNonMergedClientNuspec = OctopusClientFolder / unsignedNonMergedClientNuspecFileName;
+        var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
+
+        ReplaceTextInFiles(octopusUnsignedNonMergedClientNuspec, "<version>$version$</version>", $"<version>{FullSemVer}</version>");
+        ReplaceTextInFiles(projectFile, standardClientNuspecFileName, unsignedNonMergedClientNuspecFileName);
+
+        DotNetPack(_ => _
+            .SetProject(OctopusClientFolder)
+            .SetConfiguration(Configuration)
+            .SetOutputDirectory(ArtifactsDir)
+            .EnableNoBuild()
+            .DisableIncludeSymbols()
+            .SetVerbosity(DotNetVerbosity.Normal));
+
+        // Put these back after so that future builds work and there are no pending changes locally.
+        ReplaceTextInFiles(octopusUnsignedNonMergedClientNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
+        ReplaceTextInFiles(projectFile, unsignedNonMergedClientNuspecFileName, standardClientNuspecFileName);
+    });
+
+    Target PackSignedMergedClientNuget => _ => _
         .DependsOn(Merge)
         .Executes(() =>
     {
@@ -220,40 +249,42 @@ class Build : NukeBuild
         }
     });
 
-    Target PackNormalClientNuget => _ => _
+    Target PackUnsignedNormalClientNuget => _ => _
+        .OnlyWhenStatic(() => IsLocalBuild)
+        .DependsOn(Compile)
+        .Executes(() =>
+    {
+        Log.Warning("Building an Unsigned Normal Client Nuget Package");
+
+        PackNormalClientNugetPackage();
+    });
+
+    Target PackSignedNormalClientNuget => _ => _
         .DependsOn(Compile)
         .Executes(() =>
     {
         SignBinaries(OctopusNormalClientFolder / "bin" / Configuration);
 
-        DotNetPack(_ => _
-            .SetProject(OctopusNormalClientFolder)
-            .SetVersion(FullSemVer)
-            .SetConfiguration(Configuration)
-            .SetOutputDirectory(ArtifactsDir)
-            .EnableNoBuild()
-            .DisableIncludeSymbols()
-            .SetVerbosity(DotNetVerbosity.Normal));
+        PackNormalClientNugetPackage();
     });
-
 
     Target LocalTest => _ => _
         .DependsOn(Compile)
         .Executes(() =>
-        {
-            EnsureCleanDirectory(RootDirectory / "TestResults");
+    {
+        EnsureCleanDirectory(RootDirectory / "TestResults");
 
-            DockerComposeBuild(RootDirectory / "docker-compose.build.yml", "--no-cache");
-            DockerComposeUp(RootDirectory / "docker-compose.test.yml");
-            DockerComposeDown(RootDirectory / "docker-compose.test.yml");
+        DockerComposeBuild(RootDirectory / "docker-compose.build.yml", "--no-cache");
+        DockerComposeUp(RootDirectory / "docker-compose.test.yml");
+        DockerComposeDown(RootDirectory / "docker-compose.test.yml");
 
-            var unitTestResultFiles =  Directory.GetFiles(RootDirectory / "TestResults", "*.trx");
+        var unitTestResultFiles = Directory.GetFiles(RootDirectory / "TestResults", "*.trx");
 
-            Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
-        });
+        Assert.Count(unitTestResultFiles, 11, "Incorrect number of results files found");
+    });
 
     Target TestClientNugetPackage => _ => _
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .Executes(() =>
     {
         // Tests that make sure the packed, ILMerged DLL we're going to ship actually works the way we expect it to.
@@ -268,8 +299,8 @@ class Build : NukeBuild
     [PublicAPI]
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
-        .DependsOn(PackNormalClientNuget)
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedNormalClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .Executes(() =>
     {
         EnsureExistingDirectory(LocalPackagesDir);
@@ -277,12 +308,38 @@ class Build : NukeBuild
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
 
+    [PublicAPI]
+    Target CopyUnsignedNugetToLocalPackages => _ => _
+        .OnlyWhenStatic(() => IsLocalBuild)
+        .DependsOn(PackUnsignedNormalClientNuget)
+        .DependsOn(PackUnsignedNonMergedClientNuget)
+        .Executes(() =>
+    {
+        Log.Warning("This build will produce an unsigned, non-packed nuget package - this is not suitable as a release candidate");
+
+        EnsureExistingDirectory(LocalPackagesDir);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+        CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
+    });
+
     Target Default => _ => _
         .DependsOn(CopyToLocalPackages)
-        .DependsOn(PackNormalClientNuget)
-        .DependsOn(PackMergedClientNuget)
+        .DependsOn(PackSignedNormalClientNuget)
+        .DependsOn(PackSignedMergedClientNuget)
         .DependsOn(Test)
         .DependsOn(TestClientNugetPackage);
+
+    void PackNormalClientNugetPackage()
+    {
+        DotNetPack(_ => _
+            .SetProject(OctopusNormalClientFolder)
+            .SetVersion(FullSemVer)
+            .SetConfiguration(Configuration)
+            .SetOutputDirectory(ArtifactsDir)
+            .EnableNoBuild()
+            .DisableIncludeSymbols()
+            .SetVerbosity(DotNetVerbosity.Normal));
+    }
 
     void SignBinaries(AbsolutePath path)
     {
