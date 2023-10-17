@@ -194,13 +194,16 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
     {
-        Log.Warning("Building an Unsigned and non-packed Merged Client Nuget Package for MacOS");
+        Log.Warning("Building an Unsigned and non-packed Merged Client Nuget Package");
 
-        var octopusClientMacosNuspec = OctopusClientFolder / "Octopus.Client.Unsigned.Unpacked.nuspec";
+        const string unsignedNonMergedClientNuspecFileName = "Octopus.Client.Unsigned.NonMerged.nuspec";
+        const string standardClientNuspecFileName = "Octopus.Client.nuspec";
+
+        var octopusUnsignedNonMergedClientNuspec = OctopusClientFolder / unsignedNonMergedClientNuspecFileName;
         var projectFile = OctopusClientFolder / "Octopus.Client.csproj";
 
-        ReplaceTextInFiles(octopusClientMacosNuspec, "<version>$version$</version>", $"<version>{FullSemVer}</version>");
-        ReplaceTextInFiles(projectFile, "Octopus.Client.nuspec", "Octopus.Client.MacOs.nuspec");
+        ReplaceTextInFiles(octopusUnsignedNonMergedClientNuspec, "<version>$version$</version>", $"<version>{FullSemVer}</version>");
+        ReplaceTextInFiles(projectFile, standardClientNuspecFileName, unsignedNonMergedClientNuspecFileName);
 
         DotNetPack(_ => _
             .SetProject(OctopusClientFolder)
@@ -211,8 +214,8 @@ class Build : NukeBuild
             .SetVerbosity(DotNetVerbosity.Normal));
 
         // Put these back after so that future builds work and there are no pending changes locally.
-        ReplaceTextInFiles(octopusClientMacosNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
-        ReplaceTextInFiles(projectFile, "Octopus.Client.Unsigned.Unpacked.nuspec", "Octopus.Client.nuspec");
+        ReplaceTextInFiles(octopusUnsignedNonMergedClientNuspec, $"<version>{FullSemVer}</version>", "<version>$version$</version>");
+        ReplaceTextInFiles(projectFile, unsignedNonMergedClientNuspecFileName, standardClientNuspecFileName);
     });
 
     Target PackSignedMergedClientNuget => _ => _
@@ -246,12 +249,12 @@ class Build : NukeBuild
         }
     });
 
-    Target PackUnsignedNormalClientNugetForMacOs => _ => _
+    Target PackUnsignedNormalClientNuget => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
         .DependsOn(Compile)
         .Executes(() =>
     {
-        Log.Warning("Building an Unsigned Normal Client Nuget Package for MacOS");
+        Log.Warning("Building an Unsigned Normal Client Nuget Package");
 
         PackNormalClientNugetPackage();
     });
@@ -308,7 +311,7 @@ class Build : NukeBuild
     [PublicAPI]
     Target CopyUnsignedNugetToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
-        .DependsOn(PackUnsignedNormalClientNugetForMacOs)
+        .DependsOn(PackUnsignedNormalClientNuget)
         .DependsOn(PackUnsignedNonMergedClientNuget)
         .Executes(() =>
     {
