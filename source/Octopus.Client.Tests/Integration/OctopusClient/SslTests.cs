@@ -54,7 +54,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
                 Console.WriteLine($"This test is running on '{RuntimeInformation.OSDescription}'");
                 if (File.Exists("/etc/os-release"))
                 {
-                    var file = File.ReadAllText("/etc/os-release");
+                    var file = await File.ReadAllTextAsync("/etc/os-release");
                     if (file.Contains("openSUSE Leap 15.1"))
                         Assert.Inconclusive($"This test is known not to work on platform 'openSuse Leap 15.1'");
                 }
