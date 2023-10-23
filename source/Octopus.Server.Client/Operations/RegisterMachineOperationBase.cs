@@ -70,6 +70,21 @@ namespace Octopus.Client.Operations
         /// </summary>
         public CommunicationStyle CommunicationStyle { get; set; }
 
+        /// <summary>
+        /// The communication behaviour that Kubernetes Agent will use;
+        /// </summary>
+        public AgentCommunicationBehaviour? CommunicationBehaviour { get; set; }
+
+        /// <summary>
+        /// The default Container that the Kubernetes Agent will use to execute Jobs
+        /// </summary>
+        public string DefaultJobExecutionContainer { get; set; }
+
+        /// <summary>
+        /// The default Container Feed that the Kubernetes Agent will use to retrieve Job Execution Containers.
+        /// </summary>
+        public string DefaultJobExecutionContainerFeed { get; set; }
+
         public Uri SubscriptionId { get; set; }
 
         /// <summary>
@@ -199,21 +214,45 @@ namespace Octopus.Client.Operations
             if (machinePolicy != null)
                 machine.MachinePolicyId = machinePolicy.Id;
 
-            if (CommunicationStyle == CommunicationStyle.TentaclePassive)
+            ITentacleEndpointConfiguration tentacleEndpointConfiguration = CommunicationStyle switch
             {
-                var listening = new ListeningTentacleEndpointResource();
-                listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
-                listening.Thumbprint = TentacleThumbprint;
-                listening.ProxyId = proxy?.Id;
-                machine.Endpoint = listening;
-            }
-            else if (CommunicationStyle == CommunicationStyle.TentacleActive)
+                CommunicationStyle.TentaclePassive => new ListeningTentacleEndpointResource(),
+                CommunicationStyle.KubernetesAgent when CommunicationBehaviour == AgentCommunicationBehaviour.Listening => new ListeningTentacleEndpointConfiguration(),
+                CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource(),
+                CommunicationStyle.KubernetesAgent when CommunicationBehaviour == AgentCommunicationBehaviour.Polling => new PollingTentacleEndpointConfiguration(),
+                _ => null
+            };
+
+            if (tentacleEndpointConfiguration is null)
+                return;
+
+            tentacleEndpointConfiguration.Thumbprint = TentacleThumbprint;
+
+            if (tentacleEndpointConfiguration is IListeningTentacleEndpointConfiguration listeningTentacleConfiguration)
             {
-                var polling = new PollingTentacleEndpointResource();
-                polling.Uri = SubscriptionId.ToString();
-                polling.Thumbprint = TentacleThumbprint;
-                machine.Endpoint = polling;
+                listeningTentacleConfiguration.Uri =
+                    new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
+                listeningTentacleConfiguration.ProxyId = proxy?.Id;
             }
+            else
+            {
+                tentacleEndpointConfiguration.Uri = SubscriptionId.ToString();
+            }
+
+            machine.Endpoint = tentacleEndpointConfiguration switch
+            {
+                EndpointResource endpoint => endpoint,
+                TentacleEndpointConfiguration tentacleConfigurationBase => new KubernetesAgentEndpointResource
+                {
+                    TentacleEndpointConfiguration = tentacleConfigurationBase,
+                    KubernetesConfiguration = new KubernetesConfiguration
+                    {
+                        DefaultJobExecutionContainer = DefaultJobExecutionContainer,
+                        DefaultJobExecutionContainerFeed = DefaultJobExecutionContainerFeed
+                    }
+                },
+                _ => machine.Endpoint
+            };
         }
 
         protected static string CouldNotFindMessage(string modelType, params string[] missing)
