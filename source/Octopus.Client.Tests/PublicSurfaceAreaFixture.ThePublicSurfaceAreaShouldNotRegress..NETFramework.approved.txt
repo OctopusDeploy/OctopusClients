@@ -3123,6 +3123,7 @@ Octopus.Client.Model
   {
     .ctor()
     String HelpSidebarSupportLink { get; set; }
+    String HelpSidebarSupportLinkLabel { get; set; }
     Boolean IsActionContainersEnabled { get; set; }
     Boolean IsBuiltInWorkerEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
