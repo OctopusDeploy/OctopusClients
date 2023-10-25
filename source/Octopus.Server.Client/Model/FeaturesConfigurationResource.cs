@@ -18,6 +18,9 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string HelpSidebarSupportLink { get; set; }
+        
+        [Writeable]
+        public string HelpSidebarSupportLinkLabel { get; set; }
 
         [Writeable]
         public bool IsActionContainersEnabled { get; set; }
