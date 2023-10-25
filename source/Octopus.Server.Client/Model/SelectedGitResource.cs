@@ -9,12 +9,19 @@ public class SelectedGitResource
     }
 
     /// <param name="actionName">The name of the deployment action</param>
+    /// <param name="gitReferenceName">The name to use for the git reference</param>
     /// <param name="gitReferenceResource">The selected Git reference</param>
-    public SelectedGitResource(string actionName, GitReferenceResource gitReferenceResource)
+    public SelectedGitResource(string actionName, string gitReferenceName, GitReferenceResource gitReferenceResource)
     {
         ActionName = actionName;
+        GitReferenceName = gitReferenceName;
         GitReferenceResource = gitReferenceResource;
     }
+
+    /// <summary>
+    /// The name to use for the git reference.
+    /// </summary>
+    public string GitReferenceName { get; set; }
 
     /// <summary>
     /// The name of the deployment action
