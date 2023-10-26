@@ -6460,6 +6460,22 @@ Octopus.Client.Model.Endpoints
   {
     String AuthenticationType { get; }
   }
+  interface IListeningTentacleEndpointResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
+  {
+    String ProxyId { get; set; }
+  }
+  interface IPollingTentacleEndpointResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
+  {
+  }
+  interface ITentacleEndpointResource
+  {
+    String CertificateSignatureAlgorithm { get; set; }
+    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
+    String Thumbprint { get; set; }
+    String Uri { get; set; }
+  }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
     Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
@@ -6538,12 +6554,13 @@ Octopus.Client.Model.Endpoints
   class ListeningTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
+    Octopus.Client.Model.Endpoints.IListeningTentacleEndpointResource
     Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String ProxyId { get; set; }
-    String Uri { get; set; }
   }
   class OfflineDropDestinationResource
   {
@@ -6572,11 +6589,12 @@ Octopus.Client.Model.Endpoints
   class PollingTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
+    Octopus.Client.Model.Endpoints.IPollingTentacleEndpointResource
     Octopus.Client.Model.Endpoints.TentacleEndpointResource
   {
     .ctor()
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    String Uri { get; set; }
   }
   class ServiceFabricEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -6641,11 +6659,13 @@ Octopus.Client.Model.Endpoints
   abstract class TentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
+    String Uri { get; set; }
   }
 }
 Octopus.Client.Model.EventRetention
