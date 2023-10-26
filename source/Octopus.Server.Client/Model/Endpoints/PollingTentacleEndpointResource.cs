@@ -1,17 +1,7 @@
-using System;
-using Octopus.Client.Extensibility.Attributes;
-
 namespace Octopus.Client.Model.Endpoints
 {
-    public class PollingTentacleEndpointResource : TentacleEndpointResource
+    public class PollingTentacleEndpointResource : TentacleEndpointResource, IPollingTentacleEndpointResource
     {
-        public override CommunicationStyle CommunicationStyle
-        {
-            get { return CommunicationStyle.TentacleActive; }
-        }
-
-        [Trim]
-        [Writeable]
-        public string Uri { get; set; }
+        public override CommunicationStyle CommunicationStyle => CommunicationStyle.TentacleActive;
     }
 }
