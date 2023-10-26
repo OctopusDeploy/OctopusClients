@@ -57,7 +57,7 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// The communication behaviour that Kubernetes Agent will use;
         /// </summary>
-        public AgentCommunicationBehaviour? CommunicationBehaviour { get; set; }
+        public AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
 
         /// <summary>
         /// The default Container that the Kubernetes Agent will use to execute Jobs

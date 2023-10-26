@@ -9,19 +9,27 @@ public class KubernetesAgentEndpointResource : EndpointResource
 
     public TentacleEndpointConfiguration TentacleEndpointConfiguration { get; set; }
 
-    public KubernetesConfiguration KubernetesConfiguration { get; set; }
+    public DeploymentActionContainerResource DefaultJobExecutionContainer { get; set; }
 }
 
-public class KubernetesConfiguration
+public abstract class TentacleEndpointConfiguration : ITentacleEndpointResource
 {
-    public string DefaultJobExecutionContainer { get; set; }
+    protected TentacleEndpointConfiguration()
+    {
+    }
 
-    public string DefaultJobExecutionContainerFeed { get; set; }
-}
+    protected TentacleEndpointConfiguration(string uri, string thumbprint)
+    {
+        Uri = uri;
+        Thumbprint = thumbprint;
+    }
 
-public abstract class TentacleEndpointConfiguration : ITentacleEndpointConfiguration
-{
-    public abstract AgentCommunicationBehaviour CommunicationBehaviour { get; }
+
+    public abstract AgentCommunicationStyleResource CommunicationStyleResource { get; }
+
+    [Trim]
+    [Writeable]
+    public string Uri { get; set; }
 
     [Required(ErrorMessage = "Please provide a thumbprint for this machine.")]
     [Trim]
@@ -32,20 +40,32 @@ public abstract class TentacleEndpointConfiguration : ITentacleEndpointConfigura
     public TentacleDetailsResource TentacleVersionDetails { get; set; }
 
     public string CertificateSignatureAlgorithm { get; set; }
-
-    [Trim]
-    [Writeable]
-    public string Uri { get; set; }
 }
 
-public sealed class PollingTentacleEndpointConfiguration : TentacleEndpointConfiguration, IPollingTentacleEndpointConfiguration
+public class PollingTentacleEndpointConfiguration : TentacleEndpointConfiguration, IPollingTentacleEndpointResource
 {
-    public override AgentCommunicationBehaviour CommunicationBehaviour => AgentCommunicationBehaviour.Polling;
+    public override AgentCommunicationStyleResource CommunicationStyleResource => AgentCommunicationStyleResource.Polling;
+
+    protected PollingTentacleEndpointConfiguration()
+    {
+    }
+
+    public PollingTentacleEndpointConfiguration(string uri, string thumbprint) : base(uri, thumbprint)
+    {
+    }
 }
 
-public sealed class ListeningTentacleEndpointConfiguration : TentacleEndpointConfiguration, IListeningTentacleEndpointConfiguration
+public class ListeningTentacleEndpointConfiguration : TentacleEndpointConfiguration, IListeningTentacleEndpointResource
 {
-    public override AgentCommunicationBehaviour CommunicationBehaviour => AgentCommunicationBehaviour.Listening;
+    protected ListeningTentacleEndpointConfiguration()
+    {
+    }
+
+    public ListeningTentacleEndpointConfiguration(string uri, string thumbprint) : base(uri, thumbprint)
+    {
+    }
+
+    public override AgentCommunicationStyleResource CommunicationStyleResource => AgentCommunicationStyleResource.Listening;
 
     [Writeable]
     public string ProxyId { get; set; }

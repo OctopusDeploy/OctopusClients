@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class ListeningTentacleEndpointResource : TentacleEndpointResource, IListeningTentacleEndpointConfiguration
+    public class ListeningTentacleEndpointResource : TentacleEndpointResource, IListeningTentacleEndpointResource
     {
         public override CommunicationStyle CommunicationStyle => CommunicationStyle.TentaclePassive;
 
@@ -11,7 +11,7 @@ namespace Octopus.Client.Model.Endpoints
         public string ProxyId { get; set; }
     }
 
-    public interface IListeningTentacleEndpointConfiguration : ITentacleEndpointConfiguration
+    public interface IListeningTentacleEndpointResource : ITentacleEndpointResource
     {
         string ProxyId { get; set; }
     }

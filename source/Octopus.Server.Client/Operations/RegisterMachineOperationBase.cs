@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -73,7 +71,7 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// The communication behaviour that Kubernetes Agent will use;
         /// </summary>
-        public AgentCommunicationBehaviour? CommunicationBehaviour { get; set; }
+        public AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
 
         /// <summary>
         /// The default Container that the Kubernetes Agent will use to execute Jobs
@@ -214,44 +212,52 @@ namespace Octopus.Client.Operations
             if (machinePolicy != null)
                 machine.MachinePolicyId = machinePolicy.Id;
 
-            ITentacleEndpointConfiguration tentacleEndpointConfiguration = CommunicationStyle switch
+            machine.Endpoint = GenerateEndpoint(proxy?.Id);
+        }
+
+        private EndpointResource GenerateEndpoint(string proxyId)
+        {
+            return CommunicationStyle switch
             {
-                CommunicationStyle.TentaclePassive => new ListeningTentacleEndpointResource(),
-                CommunicationStyle.KubernetesAgent when CommunicationBehaviour == AgentCommunicationBehaviour.Listening => new ListeningTentacleEndpointConfiguration(),
-                CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource(),
-                CommunicationStyle.KubernetesAgent when CommunicationBehaviour == AgentCommunicationBehaviour.Polling => new PollingTentacleEndpointConfiguration(),
+                CommunicationStyle.TentaclePassive => new ListeningTentacleEndpointResource
+                {
+                    Uri = GetListeningUri(),
+                    Thumbprint = TentacleThumbprint,
+                    ProxyId = proxyId
+                },
+
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfiguration(GetListeningUri(), TentacleThumbprint)
+                {
+                    ProxyId = proxyId
+                }),
+
+                CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource
+                {
+                    Uri = SubscriptionId.ToString(),
+                    Thumbprint = TentacleThumbprint
+                },
+
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfiguration(SubscriptionId.ToString(), TentacleThumbprint)),
+
                 _ => null
             };
+        }
 
-            if (tentacleEndpointConfiguration is null)
-                return;
+        private string GetListeningUri()
+        {
+            return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
+        }
 
-            tentacleEndpointConfiguration.Thumbprint = TentacleThumbprint;
-
-            if (tentacleEndpointConfiguration is IListeningTentacleEndpointConfiguration listeningTentacleConfiguration)
+        private EndpointResource CreateKubernetesAgentEndpoint(TentacleEndpointConfiguration endpointConfiguration)
+        {
+            return new KubernetesAgentEndpointResource
             {
-                listeningTentacleConfiguration.Uri =
-                    new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
-                listeningTentacleConfiguration.ProxyId = proxy?.Id;
-            }
-            else
-            {
-                tentacleEndpointConfiguration.Uri = SubscriptionId.ToString();
-            }
-
-            machine.Endpoint = tentacleEndpointConfiguration switch
-            {
-                EndpointResource endpoint => endpoint,
-                TentacleEndpointConfiguration tentacleConfigurationBase => new KubernetesAgentEndpointResource
+                TentacleEndpointConfiguration = endpointConfiguration,
+                DefaultJobExecutionContainer = new DeploymentActionContainerResource
                 {
-                    TentacleEndpointConfiguration = tentacleConfigurationBase,
-                    KubernetesConfiguration = new KubernetesConfiguration
-                    {
-                        DefaultJobExecutionContainer = DefaultJobExecutionContainer,
-                        DefaultJobExecutionContainerFeed = DefaultJobExecutionContainerFeed
-                    }
-                },
-                _ => machine.Endpoint
+                    FeedId = DefaultJobExecutionContainerFeed,
+                    Image = DefaultJobExecutionContainer
+                }
             };
         }
 

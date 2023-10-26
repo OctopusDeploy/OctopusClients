@@ -3,12 +3,12 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class PollingTentacleEndpointResource : TentacleEndpointResource, IPollingTentacleEndpointConfiguration
+    public class PollingTentacleEndpointResource : TentacleEndpointResource, IPollingTentacleEndpointResource
     {
         public override CommunicationStyle CommunicationStyle => CommunicationStyle.TentacleActive;
     }
 
-    public interface IPollingTentacleEndpointConfiguration : ITentacleEndpointConfiguration
+    public interface IPollingTentacleEndpointResource : ITentacleEndpointResource
     {
     }
 }
