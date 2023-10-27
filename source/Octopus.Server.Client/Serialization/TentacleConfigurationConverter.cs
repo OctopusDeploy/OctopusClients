@@ -14,5 +14,5 @@ public class TentacleConfigurationConverter: InheritedClassConverter<TentacleEnd
         };
 
     protected override IDictionary<AgentCommunicationModeResource, Type> DerivedTypeMappings => EndpointTypes;
-    protected override string TypeDesignatingPropertyName => nameof(TentacleEndpointConfigurationResource.CommunicationModeResource);
+    protected override string TypeDesignatingPropertyName => nameof(TentacleEndpointConfigurationResource.CommunicationMode);
 }
