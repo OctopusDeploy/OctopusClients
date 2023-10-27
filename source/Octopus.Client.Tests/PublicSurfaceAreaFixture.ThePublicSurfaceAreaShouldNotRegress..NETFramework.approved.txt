@@ -6421,12 +6421,12 @@ Octopus.Client.Model.DeploymentTargets
 }
 Octopus.Client.Model.Endpoints
 {
-  class AgentCommunicationStyleResource
+  class AgentCommunicationModeResource
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
   {
-    static Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource Listening { get; }
-    static Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource Polling { get; }
+    static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Listening { get; }
+    static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Polling { get; }
   }
   AzureServiceFabricCredentialType
   {
@@ -6513,9 +6513,8 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
-    .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource, Octopus.Client.Model.DeploymentActionContainerResource)
+    .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    Octopus.Client.Model.DeploymentActionContainerResource DefaultJobExecutionContainer { get; set; }
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
   }
   class KubernetesAwsAuthenticationResource
@@ -6599,7 +6598,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
-    Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource CommunicationStyleResource { get; }
+    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationModeResource { get; }
     String ProxyId { get; set; }
   }
   class ListeningTentacleEndpointResource
@@ -6643,7 +6642,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
-    Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource CommunicationStyleResource { get; }
+    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationModeResource { get; }
   }
   class PollingTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -6719,7 +6718,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
-    Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource CommunicationStyleResource { get; }
+    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationModeResource { get; }
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
@@ -7341,11 +7340,9 @@ Octopus.Client.Operations
   }
   interface IRegisterMachineOperationBase
   {
-    Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
+    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource AgentCommunicationMode { get; set; }
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
-    String DefaultJobExecutionContainer { get; set; }
-    String DefaultJobExecutionContainerFeed { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
     String ProxyName { get; set; }
@@ -7384,11 +7381,9 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     .ctor(Octopus.Client.IOctopusClientFactory)
-    Octopus.Client.Model.Endpoints.AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
+    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource AgentCommunicationMode { get; set; }
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
-    String DefaultJobExecutionContainer { get; set; }
-    String DefaultJobExecutionContainerFeed { get; set; }
     String MachineName { get; set; }
     String MachinePolicy { get; set; }
     String ProxyName { get; set; }
@@ -9103,7 +9098,7 @@ Octopus.Client.Serialization
     static String Serialize(Object)
   }
   class TentacleConfigurationConverter
-    Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, AgentCommunicationStyleResource>
+    Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, AgentCommunicationModeResource>
   {
     .ctor()
   }
