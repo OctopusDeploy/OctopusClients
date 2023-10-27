@@ -71,17 +71,7 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// The communication behaviour that Kubernetes Agent will use;
         /// </summary>
-        public AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
-
-        /// <summary>
-        /// The default Container that the Kubernetes Agent will use to execute Jobs
-        /// </summary>
-        public string DefaultJobExecutionContainer { get; set; }
-
-        /// <summary>
-        /// The default Container Feed that the Kubernetes Agent will use to retrieve Job Execution Containers.
-        /// </summary>
-        public string DefaultJobExecutionContainerFeed { get; set; }
+        public AgentCommunicationModeResource AgentCommunicationMode { get; set; }
 
         public Uri SubscriptionId { get; set; }
 
@@ -226,10 +216,12 @@ namespace Octopus.Client.Operations
                     ProxyId = proxyId
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri())
-                {
-                    ProxyId = proxyId
-                }),
+                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Listening =>
+                    new KubernetesAgentEndpointResource(
+                        new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri())
+                        {
+                            ProxyId = proxyId
+                        }),
 
                 CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource
                 {
@@ -237,7 +229,9 @@ namespace Octopus.Client.Operations
                     Thumbprint = TentacleThumbprint
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
+                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Polling =>
+                    new KubernetesAgentEndpointResource(
+                        new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
 
                 _ => null
             };
@@ -246,15 +240,6 @@ namespace Octopus.Client.Operations
         private string GetListeningUri()
         {
             return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
-        }
-
-        private EndpointResource CreateKubernetesAgentEndpoint(TentacleEndpointConfigurationResource endpointConfigurationResource)
-        {
-            return new KubernetesAgentEndpointResource(endpointConfigurationResource, new DeploymentActionContainerResource
-            {
-                FeedId = DefaultJobExecutionContainerFeed,
-                Image = DefaultJobExecutionContainer
-            });
         }
 
         protected static string CouldNotFindMessage(string modelType, params string[] missing)

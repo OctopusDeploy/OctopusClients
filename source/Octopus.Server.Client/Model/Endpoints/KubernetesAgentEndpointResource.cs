@@ -8,13 +8,10 @@ public class KubernetesAgentEndpointResource : EndpointResource
     {
     }
 
-    public KubernetesAgentEndpointResource(TentacleEndpointConfigurationResource tentacleEndpointConfiguration, DeploymentActionContainerResource defaultJobExecutionContainer)
+    public KubernetesAgentEndpointResource(TentacleEndpointConfigurationResource tentacleEndpointConfiguration)
     {
         TentacleEndpointConfiguration = tentacleEndpointConfiguration;
-        DefaultJobExecutionContainer = defaultJobExecutionContainer;
     }
 
     public TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
-
-    public DeploymentActionContainerResource DefaultJobExecutionContainer { get; set; }
 }

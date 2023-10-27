@@ -57,17 +57,7 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// The communication behaviour that Kubernetes Agent will use;
         /// </summary>
-        public AgentCommunicationStyleResource AgentCommunicationStyle { get; set; }
-
-        /// <summary>
-        /// The default Container that the Kubernetes Agent will use to execute Jobs
-        /// </summary>
-        public string DefaultJobExecutionContainer { get; set; }
-
-        /// <summary>
-        /// The default Container Feed that the Kubernetes Agent will use to retrieve Job Execution Containers.
-        /// </summary>
-        public string DefaultJobExecutionContainerFeed { get; set; }
+        public AgentCommunicationModeResource AgentCommunicationMode { get; set; }
 
         Uri SubscriptionId { get; set; }
 
