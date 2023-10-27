@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
+using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Operations
 {
@@ -52,6 +53,11 @@ namespace Octopus.Client.Operations
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         CommunicationStyle CommunicationStyle { get; set; }
+
+        /// <summary>
+        /// The communication behaviour that Kubernetes Agent will use;
+        /// </summary>
+        public AgentCommunicationModeResource AgentCommunicationMode { get; set; }
 
         Uri SubscriptionId { get; set; }
 

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -69,6 +67,11 @@ namespace Octopus.Client.Operations
         /// Tentacle will listen for commands from the server (default).
         /// </summary>
         public CommunicationStyle CommunicationStyle { get; set; }
+
+        /// <summary>
+        /// The communication behaviour that Kubernetes Agent will use;
+        /// </summary>
+        public AgentCommunicationModeResource AgentCommunicationMode { get; set; }
 
         public Uri SubscriptionId { get; set; }
 
@@ -199,21 +202,44 @@ namespace Octopus.Client.Operations
             if (machinePolicy != null)
                 machine.MachinePolicyId = machinePolicy.Id;
 
-            if (CommunicationStyle == CommunicationStyle.TentaclePassive)
+            machine.Endpoint = GenerateEndpoint(proxy?.Id);
+        }
+
+        private EndpointResource GenerateEndpoint(string proxyId)
+        {
+            return CommunicationStyle switch
             {
-                var listening = new ListeningTentacleEndpointResource();
-                listening.Uri = new Uri("https://" + TentacleHostname.ToLowerInvariant() + ":" + TentaclePort.ToString(CultureInfo.InvariantCulture) + "/").ToString();
-                listening.Thumbprint = TentacleThumbprint;
-                listening.ProxyId = proxy?.Id;
-                machine.Endpoint = listening;
-            }
-            else if (CommunicationStyle == CommunicationStyle.TentacleActive)
-            {
-                var polling = new PollingTentacleEndpointResource();
-                polling.Uri = SubscriptionId.ToString();
-                polling.Thumbprint = TentacleThumbprint;
-                machine.Endpoint = polling;
-            }
+                CommunicationStyle.TentaclePassive => new ListeningTentacleEndpointResource
+                {
+                    Uri = GetListeningUri(),
+                    Thumbprint = TentacleThumbprint,
+                    ProxyId = proxyId
+                },
+
+                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Listening =>
+                    new KubernetesAgentEndpointResource(
+                        new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri())
+                        {
+                            ProxyId = proxyId
+                        }),
+
+                CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource
+                {
+                    Uri = SubscriptionId.ToString(),
+                    Thumbprint = TentacleThumbprint
+                },
+
+                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Polling =>
+                    new KubernetesAgentEndpointResource(
+                        new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
+
+                _ => null
+            };
+        }
+
+        private string GetListeningUri()
+        {
+            return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
         }
 
         protected static string CouldNotFindMessage(string modelType, params string[] missing)

@@ -3,16 +3,9 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class ListeningTentacleEndpointResource : TentacleEndpointResource
+    public class ListeningTentacleEndpointResource : TentacleEndpointResource, IListeningTentacleEndpointResource
     {
-        public override CommunicationStyle CommunicationStyle
-        {
-            get { return CommunicationStyle.TentaclePassive; }
-        }
-
-        [Trim]
-        [Writeable]
-        public string Uri { get; set; }
+        public override CommunicationStyle CommunicationStyle => CommunicationStyle.TentaclePassive;
 
         [Writeable]
         public string ProxyId { get; set; }

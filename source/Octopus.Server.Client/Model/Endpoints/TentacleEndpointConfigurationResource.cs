@@ -3,8 +3,21 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public abstract class TentacleEndpointResource : EndpointResource, ITentacleEndpointResource
+    public abstract class TentacleEndpointConfigurationResource : ITentacleEndpointResource
     {
+        protected TentacleEndpointConfigurationResource()
+        {
+        }
+
+        protected TentacleEndpointConfigurationResource(string thumbprint, string uri)
+        {
+            Thumbprint = thumbprint;
+            Uri = uri;
+        }
+
+
+        public abstract AgentCommunicationModeResource CommunicationModeResource { get; }
+
         [Required(ErrorMessage = "Please provide a thumbprint for this machine.")]
         [Trim]
         [Writeable]
