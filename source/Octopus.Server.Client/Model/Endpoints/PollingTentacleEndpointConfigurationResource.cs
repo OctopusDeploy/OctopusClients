@@ -8,7 +8,7 @@ namespace Octopus.Client.Model.Endpoints
         {
         }
 
-        public PollingTentacleEndpointConfigurationResource(string uri, string thumbprint) : base(uri, thumbprint)
+        public PollingTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
         {
         }
     }

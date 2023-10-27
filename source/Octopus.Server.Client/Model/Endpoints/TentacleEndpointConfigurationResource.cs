@@ -9,23 +9,23 @@ namespace Octopus.Client.Model.Endpoints
         {
         }
 
-        protected TentacleEndpointConfigurationResource(string uri, string thumbprint)
+        protected TentacleEndpointConfigurationResource(string thumbprint, string uri)
         {
-            Uri = uri;
             Thumbprint = thumbprint;
+            Uri = uri;
         }
 
 
         public abstract AgentCommunicationStyleResource CommunicationStyleResource { get; }
 
-        [Trim]
-        [Writeable]
-        public string Uri { get; set; }
-
         [Required(ErrorMessage = "Please provide a thumbprint for this machine.")]
         [Trim]
         [Writeable]
         public string Thumbprint { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Uri { get; set; }
 
         [Writeable]
         public TentacleDetailsResource TentacleVersionDetails { get; set; }

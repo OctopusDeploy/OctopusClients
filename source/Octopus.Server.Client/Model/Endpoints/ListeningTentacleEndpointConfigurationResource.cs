@@ -8,7 +8,7 @@ namespace Octopus.Client.Model.Endpoints
         {
         }
 
-        public ListeningTentacleEndpointConfigurationResource(string uri, string thumbprint) : base(uri, thumbprint)
+        public ListeningTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
         {
         }
 

@@ -226,7 +226,7 @@ namespace Octopus.Client.Operations
                     ProxyId = proxyId
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfigurationResource(GetListeningUri(), TentacleThumbprint)
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri())
                 {
                     ProxyId = proxyId
                 }),
@@ -237,7 +237,7 @@ namespace Octopus.Client.Operations
                     Thumbprint = TentacleThumbprint
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfigurationResource(SubscriptionId.ToString(), TentacleThumbprint)),
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
 
                 _ => null
             };
