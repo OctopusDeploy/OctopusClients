@@ -226,7 +226,7 @@ namespace Octopus.Client.Operations
                     ProxyId = proxyId
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfiguration(GetListeningUri(), TentacleThumbprint)
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Listening => CreateKubernetesAgentEndpoint(new ListeningTentacleEndpointConfigurationResource(GetListeningUri(), TentacleThumbprint)
                 {
                     ProxyId = proxyId
                 }),
@@ -237,7 +237,7 @@ namespace Octopus.Client.Operations
                     Thumbprint = TentacleThumbprint
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfiguration(SubscriptionId.ToString(), TentacleThumbprint)),
+                CommunicationStyle.KubernetesAgent when AgentCommunicationStyle == AgentCommunicationStyleResource.Polling => CreateKubernetesAgentEndpoint(new PollingTentacleEndpointConfigurationResource(SubscriptionId.ToString(), TentacleThumbprint)),
 
                 _ => null
             };
@@ -248,17 +248,13 @@ namespace Octopus.Client.Operations
             return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
         }
 
-        private EndpointResource CreateKubernetesAgentEndpoint(TentacleEndpointConfiguration endpointConfiguration)
+        private EndpointResource CreateKubernetesAgentEndpoint(TentacleEndpointConfigurationResource endpointConfigurationResource)
         {
-            return new KubernetesAgentEndpointResource
+            return new KubernetesAgentEndpointResource(endpointConfigurationResource, new DeploymentActionContainerResource
             {
-                TentacleEndpointConfiguration = endpointConfiguration,
-                DefaultJobExecutionContainer = new DeploymentActionContainerResource
-                {
-                    FeedId = DefaultJobExecutionContainerFeed,
-                    Image = DefaultJobExecutionContainer
-                }
-            };
+                FeedId = DefaultJobExecutionContainerFeed,
+                Image = DefaultJobExecutionContainer
+            });
         }
 
         protected static string CouldNotFindMessage(string modelType, params string[] missing)

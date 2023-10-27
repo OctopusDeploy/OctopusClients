@@ -10,9 +10,4 @@ namespace Octopus.Client.Model.Endpoints
         [Writeable]
         public string ProxyId { get; set; }
     }
-
-    public interface IListeningTentacleEndpointResource : ITentacleEndpointResource
-    {
-        string ProxyId { get; set; }
-    }
 }
