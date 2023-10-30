@@ -11,8 +11,6 @@ namespace Octopus.Client.Tests
         {
             var client = Substitute.For<IOctopusAsyncClient>();
             client.Should().NotBeNull();
-
-            Assert.True(false);
         }
 
         [Test]
