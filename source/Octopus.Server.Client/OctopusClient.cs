@@ -22,6 +22,8 @@ namespace Octopus.Client
     /// </summary>
     public class OctopusClient : IHttpOctopusClient
     {
+        <Break the build>
+
         private static readonly ILog Logger = LogProvider.For<OctopusClient>();
 
         readonly OctopusServerEndpoint serverEndpoint;
