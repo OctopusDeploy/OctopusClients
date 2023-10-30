@@ -6403,6 +6403,7 @@ Octopus.Client.Model.Endpoints
   {
     static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Listening { get; }
     static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Polling { get; }
+    static Boolean TryParse(String, Octopus.Client.Model.Endpoints.AgentCommunicationModeResource&)
   }
   AzureServiceFabricCredentialType
   {
