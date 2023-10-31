@@ -46,7 +46,7 @@ namespace Octopus.Client.E2ETests
         [Test]
         [TestCase("Newtonsoft.Json", "Newtonsoft.Json.JsonConvert", Visibility.Internal)]
         [TestCase("Octodiff", "Octodiff.Core.DeltaBuilder", Visibility.Internal)]
-        [TestCase("Octopus.TinyTypes", "Octopus.TinyTypes.TinyType`1", Visibility.Public)]
+        [TestCase("Octopus.TinyTypes", "Octopus.TinyTypes.TinyType`1", Visibility.Internal)]
         [TestCase("Octopus.TinyTypes.Json", "Octopus.TinyTypes.Json.TinyTypeJsonConverter", Visibility.Internal)]
         [TestCase("Octopus.TinyTypes.TypeConverters", "Octopus.TinyTypes.TypeConverters.TinyTypeConverter`1", Visibility.Internal)]
         [TestCase("Octopus.Server.MessageContracts.Base", "Octopus.Server.MessageContracts.Base.ICommand`2", Visibility.Public)]

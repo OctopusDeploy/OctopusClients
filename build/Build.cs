@@ -135,8 +135,7 @@ class Build : NukeBuild
             var stage1Assemblies = inputFolder.GlobFiles(
                     "Octopus.Server.Client.dll",
                     "Octopus.Server.MessageContracts.Base.dll",
-                    "Octopus.Server.MessageContracts.Base.HttpRoutes.dll",
-                    "Octopus.TinyTypes.dll"
+                    "Octopus.Server.MessageContracts.Base.HttpRoutes.dll"
                 )
                 .Select(x => x.ToString())
                 .OrderBy(x => x)
