@@ -7304,6 +7304,11 @@ Octopus.Client.Operations
   {
     .ctor(String)
   }
+  interface IRegisterKubernetesClusterOperation
+    Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+  }
   interface IRegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
@@ -7315,7 +7320,6 @@ Octopus.Client.Operations
   }
   interface IRegisterMachineOperationBase
   {
-    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource AgentCommunicationMode { get; set; }
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
     String MachineName { get; set; }
@@ -7336,6 +7340,15 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     String[] WorkerPoolNames { get; set; }
+  }
+  class RegisterKubernetesClusterOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterKubernetesClusterOperation
+    Octopus.Client.Operations.RegisterMachineOperation
+  {
+    .ctor()
+    .ctor(Octopus.Client.IOctopusClientFactory)
   }
   class RegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
