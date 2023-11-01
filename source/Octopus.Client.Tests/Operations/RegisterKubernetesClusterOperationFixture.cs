@@ -60,7 +60,7 @@ namespace Octopus.Client.Tests.Operations
         }
 
         [Test]
-        public async Task ShouldCreateNewListeningKubernetesAgent()
+        public async Task ShouldCreateNewListeningKubernetesTentacle()
         {
             var machineResources = new List<MachineResource>();
             await client.Create("/api/machines", Arg.Do<MachineResource>(m => machineResources.Add(m)), Arg.Any<object>(), Arg.Any<CancellationToken>());
@@ -77,11 +77,11 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesAgentEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesAgentEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
         }
 
         [Test]
-        public async Task ShouldCreateNewPollingKubernetesAgent()
+        public async Task ShouldCreateNewPollingKubernetesTentacle()
         {
             var machineResources = new List<MachineResource>();
             await client.Create("/api/machines", Arg.Do<MachineResource>(m => machineResources.Add(m)), Arg.Any<object>(), Arg.Any<CancellationToken>());
@@ -99,7 +99,7 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesAgentEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesAgentEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
         }
     }
 }
