@@ -6508,15 +6508,6 @@ Octopus.Client.Model.Endpoints
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
-  class KubernetesTentacleEndpointResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Endpoints.EndpointResource
-  {
-    .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
-    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
-    Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
-  }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
     Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
@@ -6591,6 +6582,15 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String AccountId { get; set; }
     String AuthenticationType { get; }
+  }
+  class KubernetesTentacleEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.EndpointResource
+  {
+    .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
   }
   class ListeningTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
