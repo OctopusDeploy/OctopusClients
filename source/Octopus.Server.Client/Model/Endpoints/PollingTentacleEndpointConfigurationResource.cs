@@ -2,7 +2,7 @@ namespace Octopus.Client.Model.Endpoints
 {
     public class PollingTentacleEndpointConfigurationResource : TentacleEndpointConfigurationResource, IPollingTentacleEndpointResource
     {
-        public override AgentCommunicationModeResource CommunicationMode => AgentCommunicationModeResource.Polling;
+        public override TentacleCommunicationModeResource CommunicationMode => TentacleCommunicationModeResource.Polling;
 
         protected PollingTentacleEndpointConfigurationResource()
         {

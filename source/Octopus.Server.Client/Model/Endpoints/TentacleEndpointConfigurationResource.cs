@@ -16,7 +16,7 @@ namespace Octopus.Client.Model.Endpoints
         }
 
 
-        public abstract AgentCommunicationModeResource CommunicationMode { get; }
+        public abstract TentacleCommunicationModeResource CommunicationMode { get; }
 
         [Required(ErrorMessage = "Please provide a thumbprint for this machine.")]
         [Trim]

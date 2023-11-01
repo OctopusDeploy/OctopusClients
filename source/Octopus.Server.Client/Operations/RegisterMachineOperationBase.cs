@@ -68,11 +68,6 @@ namespace Octopus.Client.Operations
         /// </summary>
         public CommunicationStyle CommunicationStyle { get; set; }
 
-        /// <summary>
-        /// The communication behaviour that Kubernetes Agent will use;
-        /// </summary>
-        public AgentCommunicationModeResource AgentCommunicationMode { get; set; }
-
         public Uri SubscriptionId { get; set; }
 
         /// <summary>

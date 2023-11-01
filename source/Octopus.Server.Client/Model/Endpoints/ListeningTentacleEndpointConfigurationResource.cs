@@ -12,7 +12,7 @@ namespace Octopus.Client.Model.Endpoints
         {
         }
 
-        public override AgentCommunicationModeResource CommunicationMode => AgentCommunicationModeResource.Listening;
+        public override TentacleCommunicationModeResource CommunicationMode => TentacleCommunicationModeResource.Listening;
 
         [Writeable]
         public string ProxyId { get; set; }

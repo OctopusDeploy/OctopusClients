@@ -4,15 +4,15 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Serialization;
 
-public class TentacleConfigurationConverter: InheritedClassConverter<TentacleEndpointConfigurationResource, AgentCommunicationModeResource>
+public class TentacleConfigurationConverter: InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
 {
-    static readonly IDictionary<AgentCommunicationModeResource, Type> EndpointTypes =
-        new Dictionary<AgentCommunicationModeResource, Type>
+    static readonly IDictionary<TentacleCommunicationModeResource, Type> EndpointTypes =
+        new Dictionary<TentacleCommunicationModeResource, Type>
         {
-            {AgentCommunicationModeResource.Listening, typeof (ListeningTentacleEndpointConfigurationResource)},
-            {AgentCommunicationModeResource.Polling, typeof(PollingTentacleEndpointConfigurationResource)}
+            {TentacleCommunicationModeResource.Listening, typeof (ListeningTentacleEndpointConfigurationResource)},
+            {TentacleCommunicationModeResource.Polling, typeof(PollingTentacleEndpointConfigurationResource)}
         };
 
-    protected override IDictionary<AgentCommunicationModeResource, Type> DerivedTypeMappings => EndpointTypes;
+    protected override IDictionary<TentacleCommunicationModeResource, Type> DerivedTypeMappings => EndpointTypes;
     protected override string TypeDesignatingPropertyName => nameof(TentacleEndpointConfigurationResource.CommunicationMode);
 }
