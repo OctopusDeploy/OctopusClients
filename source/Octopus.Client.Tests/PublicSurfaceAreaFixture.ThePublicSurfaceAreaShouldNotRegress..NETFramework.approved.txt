@@ -6702,6 +6702,7 @@ Octopus.Client.Model.Endpoints
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
   {
+    .ctor(String)
     static Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource Listening { get; }
     static Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource Polling { get; }
   }
