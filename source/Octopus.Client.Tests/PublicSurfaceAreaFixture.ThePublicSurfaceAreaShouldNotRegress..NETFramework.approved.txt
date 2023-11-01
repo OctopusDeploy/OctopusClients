@@ -6421,13 +6421,6 @@ Octopus.Client.Model.DeploymentTargets
 }
 Octopus.Client.Model.Endpoints
 {
-  class AgentCommunicationModeResource
-    IComparable
-    Octopus.TinyTypes.CaseInsensitiveStringTinyType
-  {
-    static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Listening { get; }
-    static Octopus.Client.Model.Endpoints.AgentCommunicationModeResource Polling { get; }
-  }
   AzureServiceFabricCredentialType
   {
       ClientCredential = 0
@@ -6598,7 +6591,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
-    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationMode { get; }
+    Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
     String ProxyId { get; set; }
   }
   class ListeningTentacleEndpointResource
@@ -6642,7 +6635,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
-    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationMode { get; }
+    Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
   }
   class PollingTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
@@ -6705,6 +6698,14 @@ Octopus.Client.Model.Endpoints
     Object Inputs { get; set; }
     String StepPackageVersion { get; set; }
   }
+  class TentacleCommunicationModeResource
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource Listening { get; }
+    static Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource Polling { get; }
+  }
   class TentacleDetailsResource
   {
     .ctor()
@@ -6718,7 +6719,7 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
-    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource CommunicationMode { get; }
+    Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
@@ -7394,7 +7395,6 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     .ctor(Octopus.Client.IOctopusClientFactory)
-    Octopus.Client.Model.Endpoints.AgentCommunicationModeResource AgentCommunicationMode { get; set; }
     Boolean AllowOverwrite { get; set; }
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; set; }
     String MachineName { get; set; }
@@ -9111,7 +9111,7 @@ Octopus.Client.Serialization
     static String Serialize(Object)
   }
   class TentacleConfigurationConverter
-    Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, AgentCommunicationModeResource>
+    Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
   {
     .ctor()
   }
