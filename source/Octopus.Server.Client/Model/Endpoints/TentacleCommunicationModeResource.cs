@@ -10,7 +10,7 @@ public class TentacleCommunicationModeResource : CaseInsensitiveStringTinyType
     public static TentacleCommunicationModeResource Listening => new(nameof(Listening));
 
     [JsonConstructor]
-    internal TentacleCommunicationModeResource(string value) : base(value)
+    public TentacleCommunicationModeResource(string value) : base(value)
     {
     }
 }
