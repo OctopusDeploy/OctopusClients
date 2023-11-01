@@ -205,7 +205,7 @@ namespace Octopus.Client.Operations
             machine.Endpoint = GenerateEndpoint(proxy?.Id);
         }
 
-        private EndpointResource GenerateEndpoint(string proxyId)
+        protected virtual EndpointResource GenerateEndpoint(string proxyId)
         {
             return CommunicationStyle switch
             {
@@ -216,28 +216,17 @@ namespace Octopus.Client.Operations
                     ProxyId = proxyId
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Listening =>
-                    new KubernetesAgentEndpointResource(
-                        new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri())
-                        {
-                            ProxyId = proxyId
-                        }),
-
                 CommunicationStyle.TentacleActive => new PollingTentacleEndpointResource
                 {
                     Uri = SubscriptionId.ToString(),
                     Thumbprint = TentacleThumbprint
                 },
 
-                CommunicationStyle.KubernetesAgent when AgentCommunicationMode == AgentCommunicationModeResource.Polling =>
-                    new KubernetesAgentEndpointResource(
-                        new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
-
                 _ => null
             };
         }
 
-        private string GetListeningUri()
+        protected string GetListeningUri()
         {
             return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
         }
