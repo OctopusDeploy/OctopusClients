@@ -33,6 +33,6 @@ namespace Octopus.Client.Model
         
         StepPackage = 10,
 
-        [ScriptConsoleSupported] KubernetesAgent = 11
+        [ScriptConsoleSupported] KubernetesTentacle = 11
     }
 }

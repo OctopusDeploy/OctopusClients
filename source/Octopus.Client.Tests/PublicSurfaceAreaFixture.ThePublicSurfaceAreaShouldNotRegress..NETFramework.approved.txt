@@ -2409,7 +2409,7 @@ Octopus.Client.Model
       AzureServiceFabricCluster = 8
       Kubernetes = 9
       StepPackage = 10
-      KubernetesAgent = 11
+      KubernetesTentacle = 11
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -6508,7 +6508,7 @@ Octopus.Client.Model.Endpoints
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
-  class KubernetesAgentEndpointResource
+  class KubernetesTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
