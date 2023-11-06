@@ -16,7 +16,6 @@ namespace Octopus.Client.Tests.Repositories.Async
 {
     public class TaskRepositoryTests
     {
-
         [Test]
         public void WaitForCompletionReportsProgress_ActionOverload()
         {

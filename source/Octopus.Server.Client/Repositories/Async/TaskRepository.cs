@@ -73,6 +73,11 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskTypeResource[]> GetTaskTypes();
         Task<TaskTypeResource[]> GetTaskTypes(CancellationToken cancellationToken);
+        
+        /// <summary>
+        /// Moves queued task to the top of the Task Queue
+        /// </summary>
+        Task Prioritize(TaskResource resource, CancellationToken cancellationToken);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Rerun(TaskResource resource);
         Task Rerun(TaskResource resource, CancellationToken cancellationToken);
@@ -341,6 +346,12 @@ namespace Octopus.Client.Repositories.Async
         public async Task<TaskTypeResource[]> GetTaskTypes(CancellationToken cancellationToken)
         {
             return await Client.Get<TaskTypeResource[]>((await Client.Repository.LoadRootDocument(cancellationToken)).Links["TaskTypes"], cancellationToken);
+        }
+
+        public async Task Prioritize(TaskResource resource, CancellationToken cancellationToken)
+        {
+            EnsureTaskCanRunInTheCurrentContext(resource);
+            await Client.Post(resource.Link("Prioritize"), (TaskResource)null, cancellationToken).ConfigureAwait(false);
         }
 
         [Obsolete("Please use the overload with cancellation token instead.", false)]

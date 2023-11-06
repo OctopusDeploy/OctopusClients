@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Octopus.Client.Model;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Util;
-using Octopus.Client.Validation;
 
 namespace Octopus.Client.Repositories
 {
@@ -46,6 +46,7 @@ namespace Octopus.Client.Repositories
         TaskDetailsResource GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
         string GetRawOutputLog(TaskResource resource);
         TaskTypeResource[] GetTaskTypes();
+        void Prioritize(TaskResource resource);
         void Rerun(TaskResource resource);
         void Cancel(TaskResource resource);
         void ModifyState(TaskResource resource, TaskState newState, string reason);
@@ -236,6 +237,15 @@ namespace Octopus.Client.Repositories
         public TaskTypeResource[] GetTaskTypes()
         {
             return Client.Get<TaskTypeResource[]>(Client.Repository.LoadRootDocument().Links["TaskTypes"]);
+        }
+
+        /// <summary>
+        /// Moves queued task to the top of the Task Queue
+        /// </summary>
+        public void Prioritize(TaskResource resource)
+        {
+            EnsureTaskCanRunInTheCurrentContext(resource);
+            Client.Post(resource.Link("Prioritize"), (TaskResource) null);
         }
 
         public void Rerun(TaskResource resource)
