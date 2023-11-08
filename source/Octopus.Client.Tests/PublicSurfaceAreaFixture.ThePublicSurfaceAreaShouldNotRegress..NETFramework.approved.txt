@@ -1732,6 +1732,7 @@ Octopus.Client.Model
     String ActionType { get; set; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
+    Octopus.Client.Model.GitDependencyCollectionResource GitDependencies { get; }
     Object Inputs { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.PackageReferenceCollection Packages { get; }
