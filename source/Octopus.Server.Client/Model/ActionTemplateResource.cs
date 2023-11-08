@@ -28,6 +28,9 @@ namespace Octopus.Client.Model
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
+        public GitDependencyCollectionResource GitDependencies { get; } = new(); 
+
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
