@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
-using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Operations
 {
@@ -65,16 +63,26 @@ namespace Octopus.Client.Operations
         /// </exception>
         public override void Execute(IOctopusSpaceRepository repository)
         {
-            var selectedEnvironments = GetEnvironments(repository);
-            var machinePolicy = GetMachinePolicy(repository);
             var machine = GetMachine(repository);
-            var tenants = GetTenants(repository);
-            ValidateTenantTags(repository);
             var proxy = GetProxy(repository);
 
-            ApplyBaseChanges(machine, machinePolicy, proxy);
-            ApplyDeploymentTargetChanges(machine, selectedEnvironments, tenants);
+            if (machine.Id == null || AllowOverwrite)
+            {
+                var machinePolicy = GetMachinePolicy(repository);
+                ValidateTenantTags(repository);
+                ApplyBaseChanges(machine, machinePolicy, proxy);
+                ApplyDeploymentTargetChanges(machine, GetEnvironments(repository), GetTenants(repository));
+            }
+            else
+            {
+                PrepareMachineForReRegistration(machine, proxy?.Id);
+            }
 
+            ModifyOrCreateMachine(repository, machine);
+        }
+
+        static void ModifyOrCreateMachine(IOctopusSpaceRepository repository, MachineResource machine)
+        {
             if (machine.Id != null)
                 repository.Machines.Modify(machine);
             else
@@ -130,12 +138,11 @@ namespace Octopus.Client.Operations
             try
             {
                 existing = repository.Machines.FindByName(MachineName);
-                if (!AllowOverwrite && existing?.Id != null)
-                    throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists on the Octopus Server in the target space. Use the 'force' parameter if you intended to update the existing machine.");
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
             {
             }
+
             return existing ?? new MachineResource();
         }
 
@@ -147,17 +154,34 @@ namespace Octopus.Client.Operations
         /// </exception>
         public override async Task ExecuteAsync(IOctopusSpaceAsyncRepository repository)
         {
-            var selectedEnvironments = GetEnvironments(repository).ConfigureAwait(false);
-            var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
-            var machineTask = GetMachine(repository).ConfigureAwait(false);
-            var tenants = GetTenants(repository).ConfigureAwait(false);
-            await ValidateTenantTags(repository).ConfigureAwait(false);
-            var proxy = GetProxy(repository).ConfigureAwait(false);
+            var machine = await GetMachine(repository).ConfigureAwait(false);
+            var proxy = await GetProxy(repository).ConfigureAwait(false);
 
-            var machine = await machineTask;
-            ApplyBaseChanges(machine, await machinePolicy, await proxy);
-            ApplyDeploymentTargetChanges(machine, await selectedEnvironments, await tenants);
+            if (machine.Id == null || AllowOverwrite)
+            {
+                var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
+                await ValidateTenantTags(repository).ConfigureAwait(false);
+                ApplyBaseChanges(machine, await machinePolicy, proxy);
+                var selectedEnvironments = await GetEnvironments(repository).ConfigureAwait(false);
+                var tenants = await GetTenants(repository).ConfigureAwait(false);
+                ApplyDeploymentTargetChanges(machine, selectedEnvironments, tenants);
+            }
+            else
+            {
+                PrepareMachineForReRegistration(machine, proxy?.Id);
+            }
 
+            await ModifyOrCreateMachine(repository, machine).ConfigureAwait(false);
+        }
+
+        protected virtual void PrepareMachineForReRegistration(MachineResource machineResource, string proxyId)
+        {
+            throw new InvalidRegistrationArgumentsException(
+                $"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
+        }
+
+        static async Task ModifyOrCreateMachine(IOctopusSpaceAsyncRepository repository, MachineResource machine)
+        {
             if (machine.Id != null)
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
             else
@@ -226,8 +250,6 @@ namespace Octopus.Client.Operations
             try
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
-                if (!AllowOverwrite && existing?.Id != null)
-                    throw new InvalidRegistrationArgumentsException($"A machine named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing machine.");
             }
             catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
             {

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -11,6 +12,11 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
 
     public RegisterKubernetesClusterOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
     {
+    }
+
+    protected override void PrepareMachineForReRegistration(MachineResource machine, string proxyId)
+    {
+        machine.Endpoint = GenerateEndpoint(proxyId);
     }
 
     protected override EndpointResource GenerateEndpoint(string proxyId)
