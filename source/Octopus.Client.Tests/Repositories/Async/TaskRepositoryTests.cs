@@ -99,7 +99,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             };
 
             var sw = Stopwatch.StartNew();
-            exec.ShouldThrow<TimeoutException>();
+            exec.Should().Throw<TimeoutException>();
             sw.Stop();
 
             sw.Elapsed.Should().BeGreaterOrEqualTo(TimeSpan.FromSeconds(3), "Should run until the cancel time");

@@ -40,7 +40,7 @@ namespace Octopus.Client.Tests.Repositories
 
             // Assert
             getUrlUsed.Should().Be(variableLink);
-            getParamsUsed.ShouldBeEquivalentTo(new {gitRef = "branchy"});
+            getParamsUsed.Should().BeEquivalentTo(new {gitRef = "branchy"});
         }
 
 

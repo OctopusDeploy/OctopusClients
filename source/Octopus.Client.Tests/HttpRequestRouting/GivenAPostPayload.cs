@@ -31,7 +31,7 @@ namespace Octopus.Client.Tests.HttpRequestRouting
 
             Action action = () => httpRouteExtractor.ExtractHttpRoute(command);
 
-            action.ShouldThrow<PayloadRoutingException>();
+            action.Should().Throw<PayloadRoutingException>();
         }
 
         public static IEnumerable<TestCaseData> ValidTestCases()

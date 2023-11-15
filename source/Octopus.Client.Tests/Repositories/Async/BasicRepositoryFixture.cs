@@ -64,7 +64,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             Action activityUnderTest= () => repoForSpaceScopedResource.Create(resource).Wait();
 
             activityUnderTest
-                .ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>()
+                .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
         }
         
@@ -105,7 +105,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateMixedResourceForSpace(otherSpace.Id);
             Action activityUnderTest = () => repoForMixedScopedResource.Modify(resource).Wait();
             activityUnderTest
-                .ShouldThrow<ResourceSpaceDoesNotMatchRepositorySpaceException>()
+                .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
         }
         

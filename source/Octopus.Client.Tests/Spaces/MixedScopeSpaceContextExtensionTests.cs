@@ -20,7 +20,7 @@ namespace Octopus.Client.Tests.Spaces
             repository.LoadRootDocument().Returns(GetRootResource());
             ITeamsRepository teamRepo = new TeamsRepository(repository);
             Action switchContext = () => teamRepo.UsingContext(SpaceContext.AllSpaces());
-            switchContext.ShouldThrow<SpaceContextSwitchException>();
+            switchContext.Should().Throw<SpaceContextSwitchException>();
         }
 
         [Test]

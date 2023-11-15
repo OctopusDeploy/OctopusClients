@@ -27,7 +27,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void ConfiguredTimeoutWorks()
+        public async Task ConfiguredTimeoutWorks()
         {
             var sw = Stopwatch.StartNew();
             Func<Task> get = () => AsyncClient.Get<string>("~/");
@@ -37,16 +37,16 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             // Functionally the timeout works fine, but doing extra work just to get the right kind of exception isn't worth
             // it for .NET framework
 #if NETFRAMEWORK
-            get.ShouldThrow<OperationCanceledException>();
+            await get.Should().ThrowAsync<OperationCanceledException>();
 #else
-            get.ShouldThrow<TimeoutException>();
+            await get.Should().ThrowAsync<TimeoutException>();
 #endif
             
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
         }
 
         [Test]
-        public void CancellationThrowsOperationCanceledException()
+        public async Task CancellationThrowsOperationCanceledException()
         {
             var sw = Stopwatch.StartNew();
             var cancellationTokenSource = new CancellationTokenSource();
@@ -55,7 +55,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             cancellationTokenSource.Cancel();
 
             Func<Task> get = () => getTask;
-            get.ShouldThrow<OperationCanceledException>();
+            await get.Should().ThrowAsync<OperationCanceledException>();
 
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
         }
