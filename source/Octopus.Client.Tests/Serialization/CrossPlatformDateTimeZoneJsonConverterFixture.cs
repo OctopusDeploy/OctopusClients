@@ -39,7 +39,7 @@ namespace Octopus.Client.Tests.Serialization
 
             date
                 .Should()
-                .BeCloseTo(expected, 1000); // Within one second
+                .BeCloseTo(expected, TimeSpan.FromSeconds(1)); // Within one second
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Octopus.Client.Tests.Serialization
 
             date
                 .Should()
-                .BeCloseTo(expected, 1000); // Within one second
+                .BeCloseTo(expected, TimeSpan.FromSeconds(1)); // Within one second
         }
 
         [Test]

@@ -77,7 +77,7 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.ShouldBeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
         }
     }
 }

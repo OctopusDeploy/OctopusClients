@@ -87,7 +87,7 @@ namespace Octopus.Client.Tests.Serialization
         {
             Action action = () => JsonConvert.DeserializeObject<Instant>(@"""Something Else""", serializerSettings);
 
-            action.ShouldThrow<FormatException>()
+            action.Should().Throw<FormatException>()
                 .WithMessage("*was not recognized as a valid DateTime*");
         }
     }

@@ -25,11 +25,11 @@ namespace Octopus.Client.Tests.Integration.Repository
         }
 
         [Test]
-        public void IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
+        public async Task IfTheServerReturnsAnUnauthorisedResultASecurityExceptionShouldBeThrown()
         {
             var repo = new OctopusAsyncRepository(AsyncClient);
             Func<Task> getUser = () => repo.Users.Get("users-1");
-            getUser.ShouldThrow<OctopusSecurityException>().WithMessage(ErrorMessage);
+            await getUser.Should().ThrowAsync<OctopusSecurityException>().WithMessage(ErrorMessage);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Octopus.Client.Tests.Repositories
         }
 
         [Test]
-        public void MigrateVariablesToGit_GitProjectWithVariablesAlreadyInGit_ThrowsError()
+        public async Task MigrateVariablesToGit_GitProjectWithVariablesAlreadyInGit_ThrowsError()
         {
             // Arrange
             var project = new ProjectResource
@@ -64,17 +64,17 @@ namespace Octopus.Client.Tests.Repositories
             };
 
             // Act + Assert
-            repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).ShouldThrow<NotSupportedException>().WithMessage("*already been migrated*");
+            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).Should().ThrowAsync<NotSupportedException>().WithMessage("*already been migrated*");
         }
 
         [Test]
-        public void MigrateVariablesToGit_DoesNotHaveMigrateLink_ThrowsError()
+        public async Task MigrateVariablesToGit_DoesNotHaveMigrateLink_ThrowsError()
         {
             // Arrange
             var project = new ProjectResource();
 
             // Act + Assert
-            repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).ShouldThrow<NotSupportedException>().WithMessage("*not available*");
+            await repository.Projects.Beta().Awaiting(p => p.MigrateVariablesToGit(project, "branchy-branch", "Test commit message")).Should().ThrowAsync<NotSupportedException>().WithMessage("*not available*");
         }
     }
 }

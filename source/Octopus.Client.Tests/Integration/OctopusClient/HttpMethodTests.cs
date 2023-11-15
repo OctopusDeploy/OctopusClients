@@ -50,29 +50,29 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void PostingAObjectWorks()
+        public async Task PostingAObjectWorks()
         {
             _lastMethod = null;
             Func<Task> post = () => AsyncClient.Post("~/", new TestDto { Value = "Foo" });
-            post.ShouldNotThrow();
+            await post.Should().NotThrowAsync();
             _lastMethod.Should().Be("Post");
         }
 
         [Test]
-        public void PuttingAObjectWorks()
+        public async Task PuttingAObjectWorks()
         {
             _lastMethod = null;
             Func<Task> put = () => AsyncClient.Put("~/", new TestDto { Value = "Foo" });
-            put.ShouldNotThrow();
+            await put.Should().NotThrowAsync();
             _lastMethod.Should().Be("Put");
         }
 
         [Test]
-        public void DeleteReachesTheServer()
+        public async Task DeleteReachesTheServer()
         {
             _lastMethod = null;
             Func<Task> delete = () => AsyncClient.Delete("~/");
-            delete.ShouldNotThrow();
+            await delete.Should().NotThrowAsync();
             _lastMethod.Should().Be("Delete");
         }
 

@@ -22,7 +22,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // assert
-            url.ShouldBeEquivalentTo(urlTemplate);
+            url.Should().BeEquivalentTo(urlTemplate);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/users/login?returnUrl=123");
+            url.Should().BeEquivalentTo(@"/api/users/login?returnUrl=123");
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/users/login");
+            url.Should().BeEquivalentTo(@"/api/users/login");
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/projecttriggers/1");
+            url.Should().BeEquivalentTo(@"/api/projecttriggers/1");
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/channels/rule-test?versionRange=1.2");
+            url.Should().BeEquivalentTo(@"/api/channels/rule-test?versionRange=1.2");
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/channels/rule-test?version=2.0.0&versionRange=1.2&preReleaseTag=tag");
+            url.Should().BeEquivalentTo(@"/api/channels/rule-test?version=2.0.0&versionRange=1.2&preReleaseTag=tag");
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/subscriptions?skip=10");
+            url.Should().BeEquivalentTo(@"/api/subscriptions?skip=10");
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/subscriptions/6?skip=10");
+            url.Should().BeEquivalentTo(@"/api/subscriptions/6?skip=10");
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/subscriptions/6");
+            url.Should().BeEquivalentTo(@"/api/subscriptions/6");
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/projects?name=KPP.Bastj%C3%A4nster");
+            url.Should().BeEquivalentTo(@"/api/projects?name=KPP.Bastj%C3%A4nster");
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/tenants?name=Team%20%F0%9F%98%84");
+            url.Should().BeEquivalentTo(@"/api/tenants?name=Team%20%F0%9F%98%84");
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace Octopus.Client.Tests
             var url = urlTemplateResolver.Resolve();
 
             // Assert
-            url.ShouldBeEquivalentTo(@"/api/projects?name=Me%26You");
+            url.Should().BeEquivalentTo(@"/api/projects?name=Me%26You");
         }
     }
 }

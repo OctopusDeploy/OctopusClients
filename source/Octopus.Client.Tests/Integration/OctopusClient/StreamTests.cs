@@ -28,13 +28,13 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         }
 
         [Test]
-        public void PostStream()
+        public async Task PostStream()
         {
             using (var ms = new MemoryStream(SharedBytes))
             {
                 _recieved = false;
                 Func<Task> post = () => AsyncClient.Post("~/", ms);
-                post.ShouldNotThrow();
+                await post.Should().NotThrowAsync();
                 _recieved.Should().BeTrue();
             }
         }

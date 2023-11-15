@@ -65,17 +65,17 @@ namespace Octopus.Client.Tests.Operations
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
         [Test]
-        public void ShouldThrowIfAnyEnvironmentNotFound()
+        public async Task ShouldThrowIfAnyEnvironmentNotFound()
         {
             environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             operation.EnvironmentNames = new[] {"Production", "Atlantis", "Hyperborea"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]
@@ -102,7 +102,7 @@ namespace Octopus.Client.Tests.Operations
         }
 
         [Test]
-        public void ShouldNotUpdateExistingMachine()
+        public async Task ShouldNotUpdateExistingMachine()
         {
             environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
             environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
@@ -117,7 +117,7 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] {"Production"};
 
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.ShouldThrow<ArgumentException>();
+            await exec.Should().ThrowAsync<ArgumentException>();
         }
 
         [Test]
