@@ -66,7 +66,7 @@ namespace Octopus.Client.Operations
             var machine = GetMachine(repository);
             var proxy = GetProxy(repository);
 
-            if (machine.Id == null || AllowOverwrite)
+            if (!IsExistingMachine(machine) || AllowOverwrite)
             {
                 var machinePolicy = GetMachinePolicy(repository);
                 ValidateTenantTags(repository);
@@ -81,9 +81,14 @@ namespace Octopus.Client.Operations
             ModifyOrCreateMachine(repository, machine);
         }
 
+        static bool IsExistingMachine(MachineResource machine)
+        {
+            return machine.Id != null;
+        }
+
         static void ModifyOrCreateMachine(IOctopusSpaceRepository repository, MachineResource machine)
         {
-            if (machine.Id != null)
+            if (IsExistingMachine(machine))
                 repository.Machines.Modify(machine);
             else
                 repository.Machines.Create(machine);
@@ -157,7 +162,7 @@ namespace Octopus.Client.Operations
             var machine = await GetMachine(repository).ConfigureAwait(false);
             var proxy = await GetProxy(repository).ConfigureAwait(false);
 
-            if (machine.Id == null || AllowOverwrite)
+            if (!IsExistingMachine(machine) || AllowOverwrite)
             {
                 var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
                 await ValidateTenantTags(repository).ConfigureAwait(false);
@@ -182,7 +187,7 @@ namespace Octopus.Client.Operations
 
         static async Task ModifyOrCreateMachine(IOctopusSpaceAsyncRepository repository, MachineResource machine)
         {
-            if (machine.Id != null)
+            if (IsExistingMachine(machine))
                 await repository.Machines.Modify(machine).ConfigureAwait(false);
             else
                 await repository.Machines.Create(machine).ConfigureAwait(false);
