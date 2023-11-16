@@ -138,14 +138,14 @@ namespace Octopus.Client.Tests.Operations
 
             var thing = updatedMachines.Should().ContainSingle().Which;
 
-            thing.Should().BeEquivalentTo(new MachineResource
+            thing.Should().BeEquivalentTo(new
             {
                 Id = "machines/84",
                 Name = "Mymachine",
                 EnvironmentIds = new ReferenceCollection("environments-1"),
                 Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://my-new-machine.test.com:10930/") {ProxyId = "proxy-1"}),
                 Links = LinkCollection.Self("/machines/whatever/1")
-            }, cfg => cfg.RespectingRuntimeTypes());
+            });
         }
 
         [Test]
