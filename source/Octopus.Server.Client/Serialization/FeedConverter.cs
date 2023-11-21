@@ -21,6 +21,7 @@ namespace Octopus.Client.Serialization
                 {FeedType.S3, typeof(S3FeedResource)},
                 {FeedType.AzureContainerRegistry, typeof(AzureContainerRegistryFeedResource)},
                 {FeedType.GoogleContainerRegistry, typeof(GoogleContainerRegistryFeedResource)},
+                {FeedType.ArtifactoryGeneric, typeof(ArtifactoryGenericFeedResource)},
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);
