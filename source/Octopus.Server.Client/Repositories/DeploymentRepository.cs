@@ -40,6 +40,11 @@ namespace Octopus.Client.Repositories
         {
             return Client.List<DeploymentResource>(Repository.Link("Deployments"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] });
         }
+        
+        public ResourceCollection<DeploymentResource> FindBy(string[] projects, string[] environments, string[] tenants, int skip = 0, int? take = null)
+        {
+            return Client.List<DeploymentResource>(Repository.Link("Deployments"), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] });
+        }
 
         [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
         public ResourceCollection<DeploymentResource> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null)

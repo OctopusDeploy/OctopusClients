@@ -18,6 +18,18 @@ namespace Octopus.Client.Repositories.Async
         /// <returns></returns>
         Task<ResourceCollection<DeploymentResource>> FindBy(string[] projects, string[] environments, int skip = 0, int? take = null);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projects"></param>
+        /// <param name="environments"></param>
+        /// <param name="tenants">The tenantIds by which to filter deployments</param>
+        /// <param name="skip">Number of records to skip</param>
+        /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
+        /// <returns></returns>
+        Task<ResourceCollection<DeploymentResource>> FindBy(string[] projects, string[] environments, string[] tenants,
+            int skip = 0, int? take = null);
+
         [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
         Task<ResourceCollection<DeploymentResource>> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null);
         Task Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage);
