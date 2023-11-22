@@ -40,6 +40,11 @@ namespace Octopus.Client.Repositories.Async
         {
             return await Client.List<DeploymentResource>(await Repository.Link("Deployments").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0] }).ConfigureAwait(false);
         }
+        
+        public async Task<ResourceCollection<DeploymentResource>> FindBy(string[] projects, string[] environments, string[] tenants, int skip = 0, int? take = null)
+        {
+            return await Client.List<DeploymentResource>(await Repository.Link("Deployments").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }).ConfigureAwait(false);
+        }
 
         [Obsolete("This method is not a find all, it still requires paging. So it has been renamed to `FindBy`")]
         public Task<ResourceCollection<DeploymentResource>> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null)
