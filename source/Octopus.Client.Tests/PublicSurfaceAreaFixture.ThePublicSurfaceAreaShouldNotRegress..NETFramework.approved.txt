@@ -1986,6 +1986,7 @@ Octopus.Client.Model
     String LayoutRegex { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Repository { get; set; }
+    String Username { get; set; }
   }
   class ArtifactResource
     Octopus.Client.Extensibility.IResource
