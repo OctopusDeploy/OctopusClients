@@ -20,5 +20,9 @@ namespace Octopus.Client.Model
         [Trim]
         [Writeable]
         public SensitiveValue Password { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Username { get; set; }
     }
 }
