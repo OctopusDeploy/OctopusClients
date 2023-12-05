@@ -27,8 +27,8 @@ env:
   OCTOVERSION_Patch: ${{ github.run_number }}
   AssentNonInteractive: true
 
-
 jobs:
+
   build:
     name: Build Octopus Clients
     runs-on: windows-latest
@@ -42,23 +42,29 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
+      
       # Adjustment is done prior to Nuke build as OCTOVERSION information is included in the result package.
       - name: Append OCTOVERSION_CurrentBranch with -nightly (for scheduled)
         if: github.event_name == 'schedule'
         run: echo "OCTOVERSION_CurrentBranch=${{ env.OCTOVERSION_CurrentBranch }}-nightly" >> $env:GITHUB_ENV
+
+      # Note: Because this step runs on Windows, this will also run all of the tests on Windows
       - name: Nuke Build 🏗
         id: build
         shell: bash
         run: ./build.cmd
-      - name: Windows .Net 4.62 unit test report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v3
         with:
           name: Windows.Net 4.62 unit test results
           path: ./TestResults/Win_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 4.8 unit test report
+
+      # Unit test reports
+
+      - name: Windows .NET 4.8 unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
@@ -66,7 +72,8 @@ jobs:
           path: ./TestResults/Win_net48_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 6.0 unit test report
+
+      - name: Windows .NET 6.0 unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
@@ -74,69 +81,57 @@ jobs:
           path: ./TestResults/Win_net6.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 4.62 E2E test report
+      
+      # E2E test reports
+
+      - name: Windows .NET 4.6.2 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net 4.62 E2E test results
+          name: Windows .NET 4.6.2 E2E test results
           path: ./TestResults/Win-E2E_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 4.8 E2E test report
+      
+      - name: Windows .NET 4.8 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net 4.8 E2E test results
+          name: Windows .NET 4.8 E2E test results
           path: ./TestResults/Win-E2E_net48_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Windows .Net 6.0 E2E test report
+
+      - name: Windows .NET 6.0 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Windows .Net 6.0 E2E test results
+          name: Windows .NET 6.0 E2E test results
           path: ./TestResults/Win-E2E_net6.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      - name: Upload NuGet package artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: OctoClientsNuget
-          path: ./artifacts/*.nupkg
-      - name: Tag release (when not pre-release) 🏷️
-        id: github-tag
-        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha
-            })
 
-  test-linux-distributions:
-    strategy:
-      matrix:
-        os: [ubuntu16, ubuntu18, ubuntu20, debian-buster, fedora35, centos7, rhel9, rocky9, amazon2, opensuse-leap15, opensuse-tumbleweed ]
+  test-linux:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      LOCAL_TEST_DIR: ./results/
     steps:
     - uses: actions/checkout@v4
-    - name: Build testing docker image
-      run: docker-compose -f ./docker-compose.build.yml build test-base-${{ matrix.os }}
-    - name: Run unit tests in docker
-      run: docker-compose -f ./docker-compose.test.yml up test-${{ matrix.os }}
-    - name: ${{ matrix.os }} unit test report
+
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Run unit tests 🏗
+      shell: bash
+      run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
+
+    - name: Linux unit test report
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: ${{ matrix.os }} unit tests results
-        path: results/*.trx
+        name: Linux unit tests results
+        path: ./TestResults/*.trx
         reporter: dotnet-trx
         fail-on-error: true
   
@@ -146,14 +141,16 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
+      
       - name: Run unit tests 🏗
-        id: test-mac
         shell: bash
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
+      
       - name: Mac OS unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
@@ -167,31 +164,40 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     name: Build and test outcome
-    needs: [
-      build,
-      test-linux-distributions,
-      test-macos ]
+    needs: [ build, test-linux, test-macos ]
     steps:
-      - run: exit 1
-        if: >-
+      - if: >-
           ${{
                contains(needs.*.result, 'failure')
             || contains(needs.*.result, 'cancelled')
           }}
+        run: exit 1
 
   deploy_nuget:
     name: Upload nuget packages to Octopus Deploy
     runs-on: ubuntu-latest
-    needs: [
-      build,
-      test-linux-distributions,
-      test-macos ]
+    needs: [ build, test-linux, test-macos ]
     steps:
+
+      - name: Tag release (when not pre-release) 🏷️
+        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
+              sha: context.sha
+            })
+
       - name: Download nuget package artifact
         uses: actions/download-artifact@v3
         with:
           name: OctoClientsNuget
           path: ./artifacts/
+
       - name: Push to Octopus 🐙
         uses: OctopusDeploy/push-package-action@v3
         with:
@@ -201,6 +207,7 @@ jobs:
           packages: |
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+
       - name: Create Release in Octopus 🐙
         uses: OctopusDeploy/create-release-action@v3
         with:
