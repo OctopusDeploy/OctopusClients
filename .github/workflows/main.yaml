@@ -57,12 +57,33 @@ jobs:
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Windows.Net 4.62 unit test results
+          name: OctoClientsNuget
+          path: ./artifacts/*.nupkg
+
+      - name: Tag release (when not pre-release) 🏷️
+        id: github-tag
+        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
+              sha: context.sha
+            })
+
+      # Unit test reports
+
+      - name: Windows .NET 4.6.2 unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Windows .Net 4.6.2 unit test results
           path: ./TestResults/Win_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-
-      # Unit test reports
 
       - name: Windows .NET 4.8 unit test report
         uses: dorny/test-reporter@v1
