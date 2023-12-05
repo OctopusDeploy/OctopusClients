@@ -35,7 +35,7 @@ jobs:
     outputs:
       octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # all
       - name: Setup .NET 6.0
@@ -106,7 +106,7 @@ jobs:
       - name: Tag release (when not pre-release) 🏷️
         id: github-tag
         if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v3
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -126,7 +126,7 @@ jobs:
     env:
       LOCAL_TEST_DIR: ./results/
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Build testing docker image
       run: docker-compose -f ./docker-compose.build.yml build test-base-${{ matrix.os }}
     - name: Run unit tests in docker
@@ -145,7 +145,7 @@ jobs:
     needs: build
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -192,10 +192,6 @@ jobs:
         with:
           name: OctoClientsNuget
           path: ./artifacts/
-      - name: Install Octopus CLI 🐙
-        uses: OctopusDeploy/install-octopus-cli-action@v1
-        with:
-          version: latest
       - name: Push to Octopus 🐙
         uses: OctopusDeploy/push-package-action@v3
         with:
