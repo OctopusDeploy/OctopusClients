@@ -12,10 +12,10 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>net462;net48;net6.0</TargetFrameworks>
+    <TargetFrameworks>net462;net48;net6.0;net8.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net48' ">
@@ -23,7 +23,7 @@
     <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-- So that libuv is copied correctly -->
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0' ">
     <DefineConstants>$(DefineConstants);HTTP_CLIENT_SUPPORTS_SSL_OPTIONS</DefineConstants>
   </PropertyGroup>
 
@@ -62,9 +62,8 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0' ">
     <PackageReference Include="Best.Conventional" Version="5.0.3" />
-
   </ItemGroup>
 
   <ItemGroup>
