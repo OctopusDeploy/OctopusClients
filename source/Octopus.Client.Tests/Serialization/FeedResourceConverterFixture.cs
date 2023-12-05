@@ -80,6 +80,29 @@ namespace Octopus.Client.Tests.Serialization
             Assert.IsAssignableFrom(typeof(GitHubFeedResource), result);
             Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
         }
+        
+        
+        [Test]
+        public void ArtifactoryGenericFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "Blah",
+                FeedType = FeedType.ArtifactoryGeneric,
+                DownloadAttempts = 91,
+                FeedUri = "https://hello",
+                Repository = "repo",
+                LayoutRegex = "<SomeRegex>"
+            };
+
+            var result = Execute<ArtifactoryGenericFeedResource>(input);
+
+            Assert.AreEqual(FeedType.ArtifactoryGeneric, result.FeedType);
+            Assert.IsAssignableFrom(typeof(ArtifactoryGenericFeedResource), result);
+            Assert.AreEqual(input.FeedUri, result.FeedUri);
+            Assert.AreEqual(input.Repository, result.Repository);
+            Assert.AreEqual(input.LayoutRegex, result.LayoutRegex);
+        }
 
         [Test]
         public void NuGetFeedTypesDeserialize()

@@ -1955,6 +1955,22 @@ Octopus.Client.Model
   {
     static System.String AccountId
   }
+  class ArtifactoryGenericFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    String LayoutRegex { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Repository { get; set; }
+    String Username { get; set; }
+  }
   class ArtifactResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3148,6 +3164,7 @@ Octopus.Client.Model
       S3 = 10
       AzureContainerRegistry = 11
       GoogleContainerRegistry = 12
+      ArtifactoryGeneric = 13
   }
   class FileUpload
   {

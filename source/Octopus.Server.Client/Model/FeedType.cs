@@ -14,6 +14,7 @@
         AwsElasticContainerRegistry,
         S3,
         AzureContainerRegistry,
-        GoogleContainerRegistry
+        GoogleContainerRegistry,
+        ArtifactoryGeneric
     }
 }
