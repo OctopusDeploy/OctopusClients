@@ -200,19 +200,6 @@ jobs:
     needs: [ build, test-linux, test-macos ]
     steps:
 
-      - name: Tag release (when not pre-release) 🏷️
-        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha
-            })
-
       - name: Download nuget package artifact
         uses: actions/download-artifact@v3
         with:
