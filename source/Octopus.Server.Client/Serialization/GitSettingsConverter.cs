@@ -12,6 +12,7 @@ namespace Octopus.Client.Serialization
                 {ProjectGitCredentialType.Anonymous, typeof(AnonymousProjectGitCredentialResource)},
                 {ProjectGitCredentialType.UsernamePassword, typeof(UsernamePasswordProjectGitCredentialResource)},
                 {ProjectGitCredentialType.Reference, typeof(ReferenceProjectGitCredentialResource)},
+                {ProjectGitCredentialType.GitHub, typeof(GitHubProjectGitCredentialResource)},
             };
 
         static readonly Type defaultType = typeof(AnonymousProjectGitCredentialResource);
