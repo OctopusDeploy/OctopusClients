@@ -54,26 +54,6 @@ jobs:
         shell: bash
         run: ./build.cmd
 
-      - name: Upload NuGet package artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: OctoClientsNuget
-          path: ./artifacts/*.nupkg
-
-      - name: Tag release (when not pre-release) 🏷️
-        id: github-tag
-        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha
-            })
-
       # Unit test reports
 
       - name: Windows .NET 4.6.2 unit test report
@@ -131,6 +111,26 @@ jobs:
           path: ./TestResults/Win-E2E_net6.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: OctoClientsNuget
+          path: ./artifacts/*.nupkg
+
+      - name: Tag release (when not pre-release) 🏷️
+        id: github-tag
+        if: ${{ github.event_name != 'schedule' && !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
+              sha: context.sha
+            })
 
   test-linux:
     needs: build
