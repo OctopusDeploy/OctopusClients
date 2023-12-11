@@ -3252,6 +3252,13 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
+  class GitHubProjectGitCredentialResource
+    Octopus.Client.Model.ProjectGitCredentialResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Octopus.Client.Model.ProjectGitCredentialType Type { get; }
+  }
   class GitPersistenceSettingsConversionStateResource
   {
     .ctor()
@@ -4420,6 +4427,7 @@ Octopus.Client.Model
       Anonymous = 0
       UsernamePassword = 1
       Reference = 2
+      GitHub = 3
   }
   class ProjectGroupResource
     Octopus.Client.Extensibility.IResource

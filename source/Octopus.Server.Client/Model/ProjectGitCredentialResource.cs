@@ -6,7 +6,8 @@ namespace Octopus.Client.Model
     {
         Anonymous,
         UsernamePassword,
-        Reference
+        Reference,
+        GitHub
     }
 
     public abstract class ProjectGitCredentialResource
@@ -32,6 +33,14 @@ namespace Octopus.Client.Model
     public class ReferenceProjectGitCredentialResource : ProjectGitCredentialResource
     {
         public override ProjectGitCredentialType Type { get; } = ProjectGitCredentialType.Reference;
+
+        [Writeable]
+        public string Id { get; set; }
+    }
+    
+    public class GitHubProjectGitCredentialResource : ProjectGitCredentialResource
+    {
+        public override ProjectGitCredentialType Type { get; } = ProjectGitCredentialType.GitHub;
 
         [Writeable]
         public string Id { get; set; }
