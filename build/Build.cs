@@ -54,7 +54,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(Framework = "net6.0", BranchParameter = nameof(BranchName), AutoDetectBranchParameter = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net8.0", BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     static readonly string Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -83,13 +83,13 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
     {
-        EnsureCleanDirectory(ArtifactsDir);
-        EnsureCleanDirectory(PublishDir);
-        SourceDir.GlobDirectories("**/bin").ForEach(EnsureCleanDirectory);
-        SourceDir.GlobDirectories("**/obj").ForEach(EnsureCleanDirectory);
-        SourceDir.GlobDirectories("**/TestResults").ForEach(EnsureCleanDirectory);
-        DeleteFile(LocalPackagesDir / $"Octopus.Client.{FullSemVer}.nupkg");
-        DeleteFile(LocalPackagesDir / $"Octopus.Server.Client.{FullSemVer}.nupkg");
+        ArtifactsDir.CreateOrCleanDirectory();
+        PublishDir.CreateOrCleanDirectory();
+        SourceDir.GlobDirectories("**/bin").ForEach(x => x.CreateOrCleanDirectory());
+        SourceDir.GlobDirectories("**/obj").ForEach(x => x.CreateOrCleanDirectory());
+        SourceDir.GlobDirectories("**/TestResults").ForEach(x => x.CreateOrCleanDirectory());
+        (LocalPackagesDir / $"Octopus.Client.{FullSemVer}.nupkg").DeleteFile();
+        (LocalPackagesDir / $"Octopus.Server.Client.{FullSemVer}.nupkg").DeleteFile();
     });
 
     Target Restore => _ => _
@@ -119,7 +119,7 @@ class Build : NukeBuild
         {
             var inputFolder = OctopusClientFolder / "bin" / Configuration / target;
             var outputFolder = OctopusClientFolder / "bin" / Configuration / $"{target}Merged";
-            EnsureExistingDirectory(outputFolder);
+            outputFolder.CreateDirectory();
 
             // CAREFUL: We don't want to expose third-party libraries like Newtonsoft.Json so we definitely want to
             // internalize those, but we also don't want to hide any Octopus contracts.
@@ -167,7 +167,7 @@ class Build : NukeBuild
                 .EnableXmldocs()
                 .SetLib(inputFolder));
 
-            DeleteDirectory(inputFolder);
+            inputFolder.DeleteDirectory();
             MoveDirectory(outputFolder, inputFolder);
         }
     });
@@ -287,7 +287,7 @@ class Build : NukeBuild
         .DependsOn(PackSignedMergedClientNuget)
         .Executes(() =>
     {
-        EnsureExistingDirectory(LocalPackagesDir);
+        LocalPackagesDir.CreateDirectory();
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
@@ -301,7 +301,7 @@ class Build : NukeBuild
     {
         Log.Warning("This build will produce an unsigned, non-packed nuget package - this is not suitable as a release candidate");
 
-        EnsureExistingDirectory(LocalPackagesDir);
+        LocalPackagesDir.CreateDirectory();
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
         CopyFileToDirectory($"{ArtifactsDir}/Octopus.Server.Client.{FullSemVer}.nupkg", LocalPackagesDir, FileExistsPolicy.Overwrite);
     });
