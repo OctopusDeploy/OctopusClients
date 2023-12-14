@@ -39,7 +39,11 @@ jobs:
         with:
           fetch-depth: 0 # all
 
-      # Use the .NET 8 SDK to target .NET 8
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      
       - name: Setup .NET 8.0
         uses: actions/setup-dotnet@v3
         with:
@@ -156,25 +160,30 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
 
-    - name: Run unit tests 🏗
-      shell: bash
-      run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Linux unit test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Linux unit tests results
-        path: ./TestResults/*.trx
-        reporter: dotnet-trx
-        fail-on-error: true
+      - name: Run unit tests 🏗
+        shell: bash
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
+
+      - name: Linux unit test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Linux unit tests results
+          path: ./TestResults/*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
   
   test-macos:
     name: Unit test on Mac OS
@@ -182,6 +191,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
       
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
