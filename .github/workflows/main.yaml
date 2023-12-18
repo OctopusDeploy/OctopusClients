@@ -9,7 +9,7 @@ on:
       - release/*
     tags-ignore:
       - '**'
-    
+
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -43,7 +43,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
-      
+
       - name: Setup .NET 8.0
         uses: actions/setup-dotnet@v3
         with:
@@ -52,7 +52,7 @@ jobs:
       # Adjustment is done prior to Nuke build as OCTOVERSION information is included in the result package.
       - name: Append OCTOVERSION_CurrentBranch with -nightly (for scheduled)
         if: github.event_name == 'schedule'
-        run: echo "OCTOVERSION_CurrentBranch=${{ env.OCTOVERSION_CurrentBranch }}-nightly" >> $GITHUB_ENV
+        run: echo "OCTOVERSION_CurrentBranch=${{ env.OCTOVERSION_CurrentBranch }}-nightly" >> $env:GITHUB_ENV
 
       # Note: Because this step runs on Windows, this will also run all of the tests on Windows
       - name: Nuke Build 🏗
@@ -97,7 +97,7 @@ jobs:
           path: ./TestResults/Win_net8.0_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      
+
       # E2E test reports
 
       - name: Windows .NET 4.6.2 E2E test report
@@ -108,7 +108,7 @@ jobs:
           path: ./TestResults/Win-E2E_net462_*.trx
           reporter: dotnet-trx
           fail-on-error: true
-      
+
       - name: Windows .NET 4.8 E2E test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
@@ -184,7 +184,7 @@ jobs:
           path: ./TestResults/*.trx
           reporter: dotnet-trx
           fail-on-error: true
-  
+
   test-macos:
     name: Unit test on Mac OS
     needs: build
@@ -196,7 +196,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
-      
+
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
@@ -205,7 +205,7 @@ jobs:
       - name: Run unit tests 🏗
         shell: bash
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
-      
+
       - name: Mac OS unit test report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
