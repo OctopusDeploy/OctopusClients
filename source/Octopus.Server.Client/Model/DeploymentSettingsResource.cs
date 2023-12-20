@@ -31,5 +31,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool ForcePackageDownload { get; set; }
+        
+        [Writeable]
+        public KubernetesServerSideApplyResource KubernetesServerSideApply { get; set; }
     }
 }

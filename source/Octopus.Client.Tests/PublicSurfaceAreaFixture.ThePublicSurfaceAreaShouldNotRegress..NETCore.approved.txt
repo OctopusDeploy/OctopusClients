@@ -2821,6 +2821,7 @@ Octopus.Client.Model
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
     Boolean ForcePackageDownload { get; set; }
+    Octopus.Client.Model.KubernetesServerSideApplyResource KubernetesServerSideApply { get; set; }
     String ProjectId { get; set; }
     String ReleaseNotesTemplate { get; set; }
     String SpaceId { get; set; }
@@ -3477,6 +3478,12 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
+  }
+  class KubernetesServerSideApplyResource
+  {
+    .ctor()
+    Boolean Enabled { get; set; }
+    Boolean ForceConflicts { get; set; }
   }
   LeadershipRank
   {
