@@ -15,4 +15,7 @@ public class FeedFilterReferenceResource
 {
     [Writeable]
     public string DeploymentProcessStepSlug { get; set; }
+    
+    [Writeable]
+    public string PackageId { get; set; }
 }
