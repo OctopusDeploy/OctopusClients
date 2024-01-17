@@ -13,7 +13,8 @@ namespace Octopus.Client.Serialization
                 {TriggerActionType.AutoDeploy, typeof(AutoDeployActionResource)},
                 {TriggerActionType.DeployLatestRelease, typeof(DeployLatestReleaseActionResource)},
                 {TriggerActionType.DeployNewRelease, typeof(DeployNewReleaseActionResource)},
-                {TriggerActionType.RunRunbook, typeof(RunRunbookActionResource)}
+                {TriggerActionType.RunRunbook, typeof(RunRunbookActionResource)},
+                {TriggerActionType.CreateRelease, typeof(CreateReleaseActionResource)}
             };
 
         protected override IDictionary<TriggerActionType, Type> DerivedTypeMappings => ActionTypes;

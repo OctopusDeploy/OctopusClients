@@ -11,7 +11,8 @@ namespace Octopus.Client.Model.Triggers
         DaysPerMonthSchedule,
         CronExpressionSchedule,
         DailySchedule,
-        DaysPerWeekSchedule
+        DaysPerWeekSchedule,
+        FeedFilter
     }
 
     public abstract class TriggerFilterResource : Resource
