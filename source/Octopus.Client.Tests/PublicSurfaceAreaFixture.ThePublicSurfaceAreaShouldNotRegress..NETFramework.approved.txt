@@ -7044,6 +7044,15 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
   }
+  class CreateReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    String ChannelId { get; set; }
+  }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
