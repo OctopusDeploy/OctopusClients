@@ -7056,7 +7056,9 @@ Octopus.Client.Model.Triggers
   class FeedFilterReferenceResource
   {
     .ctor()
-    String DeploymentProcessStepSlug { get; set; }
+    String DeploymentActionSlug { get; set; }
+    String DeploymentStepSlug { get; set; }
+    String FeedIdOrName { get; set; }
     String PackageId { get; set; }
   }
   class FeedFilterResource

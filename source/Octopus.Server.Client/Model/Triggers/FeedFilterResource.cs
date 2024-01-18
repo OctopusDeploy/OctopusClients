@@ -14,7 +14,13 @@ public class FeedFilterResource : TriggerFilterResource
 public class FeedFilterReferenceResource
 {
     [Writeable]
-    public string DeploymentProcessStepSlug { get; set; }
+    public string DeploymentStepSlug { get; set; }
+    
+    [Writeable]
+    public string DeploymentActionSlug { get; set; }
+    
+    [Writeable]
+    public string FeedIdOrName { get; set; }
     
     [Writeable]
     public string PackageId { get; set; }
