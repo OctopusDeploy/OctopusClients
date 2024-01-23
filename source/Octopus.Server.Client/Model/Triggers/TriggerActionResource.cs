@@ -5,7 +5,8 @@
         AutoDeploy,
         DeployLatestRelease,
         DeployNewRelease,
-        RunRunbook
+        RunRunbook,
+        CreateRelease
     }
 
     public abstract class TriggerActionResource : Resource

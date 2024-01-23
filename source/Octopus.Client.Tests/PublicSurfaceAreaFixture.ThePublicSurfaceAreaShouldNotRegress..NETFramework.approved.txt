@@ -7044,6 +7044,24 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Boolean ShouldRedeployWhenMachineHasBeenDeployedTo { get; set; }
   }
+  class CreateReleaseActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    String ChannelId { get; set; }
+  }
+  class FeedFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    List<TriggerPackageReferenceResource> Packages { get; set; }
+  }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -7090,6 +7108,7 @@ Octopus.Client.Model.Triggers
       DeployLatestRelease = 1
       DeployNewRelease = 2
       RunRunbook = 3
+      CreateRelease = 4
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -7107,6 +7126,13 @@ Octopus.Client.Model.Triggers
       CronExpressionSchedule = 4
       DailySchedule = 5
       DaysPerWeekSchedule = 6
+      FeedFilter = 7
+  }
+  class TriggerPackageReferenceResource
+  {
+    .ctor()
+    String DeploymentActionSlug { get; set; }
+    String PackageReferenceName { get; set; }
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
