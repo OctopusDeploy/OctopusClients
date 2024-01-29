@@ -52,7 +52,7 @@ jobs:
       # Adjustment is done prior to Nuke build as OCTOVERSION information is included in the result package.
       - name: Append OCTOVERSION_CurrentBranch with -nightly (for scheduled)
         if: github.event_name == 'schedule'
-        run: echo "OCTOVERSION_CurrentBranch=${{ env.OCTOVERSION_CurrentBranch }}-nightly" >> $env:GITHUB_ENV
+        run: echo "OCTOVERSION_CurrentBranch=${{ env.OCTOVERSION_CurrentBranch }}-nightly-$(date +'%Y%m%d%H%M%S')" >> $env:GITHUB_ENV
 
       # Note: Because this step runs on Windows, this will also run all of the tests on Windows
       - name: Nuke Build 🏗
@@ -231,21 +231,28 @@ jobs:
   deploy_nuget:
     name: Upload nuget packages to Octopus Deploy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required to obtain the ID token from GitHub Actions
+      actions: read # Required to download artifact
+    env:
+      OCTOPUS_SPACE: "Core Platform"
     needs: [ build, test-linux, test-macos ]
     steps:
-
       - name: Download nuget package artifact
         uses: actions/download-artifact@v3
         with:
           name: OctoClientsNuget
           path: ./artifacts/
 
+      - name: Login to Octopus Deploy 🐙
+        uses: OctopusDeploy/login@v1
+        with: 
+          server: https://deploy.octopus.app
+          service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
+
       - name: Push to Octopus 🐙
         uses: OctopusDeploy/push-package-action@v3
         with:
-          server: ${{ secrets.DEPLOY_URL }}
-          space: Core Platform
-          api_key: ${{ secrets.DEPLOY_API_KEY }}
           packages: |
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
@@ -253,9 +260,6 @@ jobs:
       - name: Create Release in Octopus 🐙
         uses: OctopusDeploy/create-release-action@v3
         with:
-          server: ${{ secrets.DEPLOY_URL }}
-          space: Core Platform
-          api_key: ${{ secrets.DEPLOY_API_KEY }}
           project: "Octopus.Client"
           packages: |
             Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
