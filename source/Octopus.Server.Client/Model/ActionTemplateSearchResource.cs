@@ -32,6 +32,8 @@ namespace Octopus.Client.Model
         }
         public List<string> Categories { get; set; }
 
+        public IEnumerable<string> Features { get; set; }
+
         public string CommunityActionTemplateId { get; set; }
         public bool HasUpdate { get; set; }
 
