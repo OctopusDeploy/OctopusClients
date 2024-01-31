@@ -1735,6 +1735,7 @@ Octopus.Client.Model
     String Category { get; set; }
     String CommunityActionTemplateId { get; set; }
     String Description { get; set; }
+    IEnumerable<String> Features { get; set; }
     Boolean HasUpdate { get; set; }
     String Id { get; set; }
     Boolean IsBuiltIn { get; set; }
@@ -1744,7 +1745,6 @@ Octopus.Client.Model
     String Name { get; set; }
     String Type { get; set; }
     String Website { get; set; }
-    IEnumerable<string> Features { get; set; }
   }
   class ActionTemplateUsageResource
     Octopus.Client.Extensibility.IResource
