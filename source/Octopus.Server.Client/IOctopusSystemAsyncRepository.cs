@@ -3,22 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Exceptions;
-using IBackupRepository = Octopus.Client.Repositories.Async.IBackupRepository;
-using ICertificateConfigurationRepository = Octopus.Client.Repositories.Async.ICertificateConfigurationRepository;
-using IConfigurationRepository = Octopus.Client.Repositories.Async.IConfigurationRepository;
-using IFeaturesConfigurationRepository = Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository;
-using ILicensesRepository = Octopus.Client.Repositories.Async.ILicensesRepository;
-using IMigrationRepository = Octopus.Client.Repositories.Async.IMigrationRepository;
-using IOctopusServerNodeRepository = Octopus.Client.Repositories.Async.IOctopusServerNodeRepository;
-using IPerformanceConfigurationRepository = Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository;
-using ISchedulerRepository = Octopus.Client.Repositories.Async.ISchedulerRepository;
-using IServerStatusRepository = Octopus.Client.Repositories.Async.IServerStatusRepository;
-using ISpaceRepository = Octopus.Client.Repositories.Async.ISpaceRepository;
-using ITelemetryConfigurationRepository = Octopus.Client.Repositories.Async.ITelemetryConfigurationRepository;
-using IUpgradeConfigurationRepository = Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository;
-using IUserRepository = Octopus.Client.Repositories.Async.IUserRepository;
-using IUserRolesRepository = Octopus.Client.Repositories.Async.IUserRolesRepository;
-using IDeploymentFreezeRepository = Octopus.Client.Repositories.Async.IDeploymentFreezeRepository;
+using Octopus.Client.Repositories.Async;
 
 namespace Octopus.Client
 {
