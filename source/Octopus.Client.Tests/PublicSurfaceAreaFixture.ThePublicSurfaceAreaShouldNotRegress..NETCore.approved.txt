@@ -33,6 +33,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task<TResponse> Create(String, Octopus.Client.TCommand, Object, CancellationToken)
     Task Delete(String, Object, Object)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
@@ -96,6 +97,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
@@ -257,6 +259,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.Async.ICertificateConfigurationRepository CertificateConfiguration { get; }
     Octopus.Client.Repositories.Async.IConfigurationRepository Configuration { get; }
+    Octopus.Client.Repositories.Async.IDeploymentFreezeRepository DeploymentFreezes { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
     Octopus.Client.Repositories.Async.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
@@ -278,6 +281,7 @@ Octopus.Client
     Octopus.Client.Repositories.IBackupRepository Backups { get; }
     Octopus.Client.Repositories.ICommunityActionTemplateRepository CommunityActionTemplates { get; }
     Octopus.Client.Repositories.IConfigurationRepository Configuration { get; }
+    Octopus.Client.Repositories.IDeploymentFreezeRepository DeploymentFreezes { get; }
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
     Octopus.Client.Repositories.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
@@ -307,6 +311,7 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task<TResponse> Create(String, Octopus.Client.TCommand, Object, CancellationToken)
     Task Delete(String, Object, Object)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
@@ -379,6 +384,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.Async.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.Async.IDefectsRepository Defects { get; }
+    Octopus.Client.Repositories.Async.IDeploymentFreezeRepository DeploymentFreezes { get; }
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
@@ -449,6 +455,7 @@ Octopus.Client
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
     void Dispose()
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
@@ -518,6 +525,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDashboardConfigurationRepository DashboardConfigurations { get; }
     Octopus.Client.Repositories.IDashboardRepository Dashboards { get; }
     Octopus.Client.Repositories.IDefectsRepository Defects { get; }
+    Octopus.Client.Repositories.IDeploymentFreezeRepository DeploymentFreezes { get; }
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
@@ -6366,6 +6374,30 @@ Octopus.Client.Model.BuildInformation
     Octopus.Client.Model.IssueTrackers.WorkItemLink[] WorkItems { get; set; }
   }
 }
+Octopus.Client.Model.DeploymentFreezes
+{
+  class CreateDeploymentFreezeCommand
+  {
+    .ctor()
+    DateTimeOffset End { get; set; }
+    String Name { get; set; }
+    Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    DateTimeOffset Start { get; set; }
+  }
+  class CreateDeploymentFreezeResponse
+  {
+    .ctor()
+    DateTimeOffset End { get; set; }
+    String Id { get; set; }
+    String Name { get; set; }
+    Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    DateTimeOffset Start { get; set; }
+  }
+  abstract class DeploymentFreezeClientExtensions
+  {
+    static Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.IOctopusClient, Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
+  }
+}
 Octopus.Client.Model.DeploymentProcess
 {
   class InlineScriptAction
@@ -7466,6 +7498,12 @@ Octopus.Client.Repositories
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
   }
+  class DeploymentFreezeRepository
+    Octopus.Client.Repositories.IDeploymentFreezeRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
@@ -7620,6 +7658,10 @@ Octopus.Client.Repositories
   interface IDelete`1
   {
     void Delete(Octopus.Client.Repositories.TResource)
+  }
+  interface IDeploymentFreezeRepository
+  {
+    Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.IGet<DeploymentProcessResource>
@@ -8192,6 +8234,12 @@ Octopus.Client.Repositories
 }
 Octopus.Client.Repositories.Async
 {
+  class DeploymentFreezeRepository
+    Octopus.Client.Repositories.Async.IDeploymentFreezeRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient)
+    Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
@@ -8351,6 +8399,10 @@ Octopus.Client.Repositories.Async
   {
     Task Delete(Octopus.Client.Repositories.Async.TResource)
     Task Delete(Octopus.Client.Repositories.Async.TResource, CancellationToken)
+  }
+  interface IDeploymentFreezeRepository
+  {
+    Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>

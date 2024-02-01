@@ -392,7 +392,27 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
         Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken);
-        
+
+        /// <summary>
+        /// Creates a resource at the given URI on the server using the POST verb.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the container resource.</param>
+        /// <param name="command">The command to create the resource.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <param name="cancellationToken">The request cancellation token.</param>
+        /// <returns>The response from creating the resource.</returns>
+        Task<TResponse> Create<TCommand, TResponse>(string path, TCommand command, object pathParameters,
+            CancellationToken cancellationToken);
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>

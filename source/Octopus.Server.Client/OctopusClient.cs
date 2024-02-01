@@ -269,6 +269,14 @@ namespace Octopus.Client
             return Get<TResource>(getUrl);
         }
 
+        /// <inheritdoc/>
+        public TResponse Create<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: command), true);
+            return response.ResponseResource;
+        }
+
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>
