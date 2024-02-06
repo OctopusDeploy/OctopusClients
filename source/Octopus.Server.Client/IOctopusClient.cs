@@ -311,6 +311,26 @@ namespace Octopus.Client
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
         TResource Update<TResource>(string path, TResource resource, object pathParameters = null);
+        
+        /// <summary>
+        /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
+        /// the data.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the resource to update.</param>
+        /// <param name="command">The command to update the resource.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <returns>The response from updating the resource.</returns>
+        TResponse Update<TCommand, TResponse>(string path, TCommand command, object pathParameters = null);
 
         /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb. Deletes in Octopus happen

@@ -7,6 +7,9 @@ namespace Octopus.Client.Repositories.Async;
 public interface IDeploymentFreezeRepository
 {
     Task<CreateDeploymentFreezeResponse> Create(CreateDeploymentFreezeCommand command, CancellationToken cancellationToken);
+
+    Task<ModifyDeploymentFreezeResponse> Modify(ModifyDeploymentFreezeCommand command,
+        CancellationToken cancellationToken);
 }
 
 public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymentFreezeRepository
@@ -16,6 +19,14 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
         var link = await client.Repository.Link("DeploymentFreezes");
 
         var response = await client.Create<CreateDeploymentFreezeCommand, CreateDeploymentFreezeResponse>(link, command, null, cancellationToken);
+        return response;
+    }
+
+    public async Task<ModifyDeploymentFreezeResponse> Modify(ModifyDeploymentFreezeCommand command, CancellationToken cancellationToken)
+    {
+        var link = await client.Repository.Link("DeploymentFreezes");
+
+        var response = await client.Update<ModifyDeploymentFreezeCommand, ModifyDeploymentFreezeResponse>(link, command, null, cancellationToken);
         return response;
     }
 }
