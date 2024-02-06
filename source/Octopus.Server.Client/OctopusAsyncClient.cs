@@ -547,6 +547,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             
             return result;
         }
+        
+        /// <inheritdoc/>
+        public async Task<TResponse> Update<TCommand, TResponse>(string path, TCommand resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
+            return response.ResponseResource;
+        }
 
         /// <inheritdoc />
         public async Task<Stream> GetContent(string path, object pathParameters = null)
