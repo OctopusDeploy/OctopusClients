@@ -4193,6 +4193,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission DefectResolve
     static Octopus.Client.Model.Permission DeploymentCreate
     static Octopus.Client.Model.Permission DeploymentDelete
+    static Octopus.Client.Model.Permission DeploymentFreezeAdminister
     static Octopus.Client.Model.Permission DeploymentView
     static Octopus.Client.Model.Permission EnvironmentCreate
     static Octopus.Client.Model.Permission EnvironmentDelete
