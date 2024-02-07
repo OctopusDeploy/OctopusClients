@@ -353,6 +353,25 @@ namespace Octopus.Client
         /// <param name="resource">An optional resource to pass as the body of the request.</param>
         /// <returns>A task resource that provides details about the background task that deletes the specified resource.</returns>
         void Delete(string path, object pathParameters = null, object resource = null);
+        
+        /// <summary>
+        /// Deletes the resource at the given URI from the server using a the DELETE verb.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the resource to delete.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <param name="command">The command to delete the resource.</param>
+        /// <returns>The response from deleting the resource.</returns>
+        TResponse Delete<TCommand, TResponse>(string path, TCommand command, object pathParameters = null);
 
         /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.

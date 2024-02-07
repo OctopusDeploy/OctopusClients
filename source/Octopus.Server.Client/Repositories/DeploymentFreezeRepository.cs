@@ -6,6 +6,7 @@ public interface IDeploymentFreezeRepository
 {
     CreateDeploymentFreezeResponse Create(CreateDeploymentFreezeCommand command);
     ModifyDeploymentFreezeResponse Modify(ModifyDeploymentFreezeCommand command);
+    DeleteDeploymentFreezeResponse Delete(DeleteDeploymentFreezeCommand command);
 }
 
 public class DeploymentFreezeRepository(IOctopusClient client) : IDeploymentFreezeRepository
@@ -22,5 +23,12 @@ public class DeploymentFreezeRepository(IOctopusClient client) : IDeploymentFree
         var link = client.Repository.Link("DeploymentFreezes");
 
         return client.Update<ModifyDeploymentFreezeCommand, ModifyDeploymentFreezeResponse>(link, command);
+    }
+
+    public DeleteDeploymentFreezeResponse Delete(DeleteDeploymentFreezeCommand command)
+    {
+        var link = client.Repository.Link("DeploymentFreezes");
+
+        return client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(link, command);
     }
 }
