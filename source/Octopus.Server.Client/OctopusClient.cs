@@ -407,6 +407,15 @@ namespace Octopus.Client
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             return Get<TResource>(getUrl);
         }
+        
+        /// <inheritdoc/>
+        public TResponse Update<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            var response = DispatchRequest<TResponse>(new OctopusRequest("PUT", uri, requestResource: command), readResponse: true);
+            return response.ResponseResource;
+        }
 
         /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.
