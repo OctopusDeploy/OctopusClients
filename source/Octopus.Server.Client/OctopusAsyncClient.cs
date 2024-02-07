@@ -525,6 +525,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true, cancellationToken);
         }
 
+        /// <inheritdoc />
+        public async Task<TResponse> Delete<TCommand, TResponse>(string path, TCommand command, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path);
+
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("DELETE", uri, command), true, cancellationToken);
+            return response.ResponseResource;
+        }
         /// <inheritdoc/>
         public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null)
         {
@@ -546,6 +554,14 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
             
             return result;
+        }
+        
+        /// <inheritdoc/>
+        public async Task<TResponse> Update<TCommand, TResponse>(string path, TCommand resource, object pathParameters, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
+            return response.ResponseResource;
         }
 
         /// <inheritdoc />
