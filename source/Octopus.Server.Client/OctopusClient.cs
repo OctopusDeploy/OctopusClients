@@ -178,6 +178,43 @@ namespace Octopus.Client
         }
 
         /// <summary>
+        /// Fetches a single response from the server using the HTTP GET verb.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="path">The path from which to fetch the response.</param>
+        /// <param name="request">The request to perform.</param>
+        /// <returns>
+        /// The resource from the server.
+        /// </returns>
+        public TResponse Get<TRequest, TResponse>(string path, TRequest request)
+        {
+            var uri = QualifyUri(path);
+            var response = DispatchRequest<TResponse>(new OctopusRequest("GET", uri, requestResource: request), true);
+
+            return response.ResponseResource;
+        }
+
+        /// <summary>
+        /// Fetches a single response from the server using the HTTP GET verb.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="path">The path from which to fetch the response.</param>
+        /// <param name="request">The request to perform.</param>
+        /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
+        /// <returns>
+        /// The resource from the server.
+        /// </returns>
+        public TResponse Get<TRequest, TResponse>(string path, TRequest request, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+            var response = DispatchRequest<TResponse>(new OctopusRequest("GET", uri, requestResource: request), true);
+
+            return response.ResponseResource;
+        }
+
+        /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
         /// limited in size (pagination) and links to the next page of data is available in the <see cref="Resource.Links" />
         /// property.

@@ -304,6 +304,15 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return response.ResponseResource;
         }
 
+        /// <inheritdoc/>
+        public async Task<TResponse> Get<TRequest, TResponse>(string path, TRequest request, CancellationToken cancellationToken)
+        {
+            var uri = QualifyUri(path);
+            var response = await DispatchRequest<TResponse>(new OctopusRequest("GET", uri, requestResource: request), true, cancellationToken).ConfigureAwait(false);
+
+            return response.ResponseResource;
+        }
+
         public IOctopusAsyncRepository Repository { get; protected set; }
 
         /// <inheritdoc/>

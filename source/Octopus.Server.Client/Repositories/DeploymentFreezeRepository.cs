@@ -4,6 +4,7 @@ namespace Octopus.Client.Repositories;
 
 public interface IDeploymentFreezeRepository
 {
+    GetDeploymentFreezeByIdResponse Get(GetDeploymentFreezeByIdRequest request);
     CreateDeploymentFreezeResponse Create(CreateDeploymentFreezeCommand command);
 
     ModifyDeploymentFreezeResponse Modify(ModifyDeploymentFreezeCommand command);
@@ -13,6 +14,13 @@ public interface IDeploymentFreezeRepository
 
 public class DeploymentFreezeRepository(IOctopusClient client) : IDeploymentFreezeRepository
 {
+    public GetDeploymentFreezeByIdResponse Get(GetDeploymentFreezeByIdRequest request)
+    {
+        var link = client.Repository.Link("DeploymentFreezes");
+
+        return client.Get<GetDeploymentFreezeByIdRequest, GetDeploymentFreezeByIdResponse>(link, request);
+    }
+
     public CreateDeploymentFreezeResponse Create(CreateDeploymentFreezeCommand command)
     {
         var link = client.Repository.Link("DeploymentFreezes");
