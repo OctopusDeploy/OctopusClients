@@ -817,6 +817,28 @@ namespace Octopus.Client
         Task Delete(string path, object pathParameters, object resource, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Deletes the resource at the given URI from the server using a the DELETE verb. Deletes in Octopus happen
+        /// asynchronously via a background task
+        /// that is executed by the Octopus Server. The payload returned by delete will be the task that was created on the
+        /// server.
+        /// </summary>
+        /// <exception cref="OctopusSecurityException">
+        /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
+        /// account is disabled, or they don't have permission to perform the specified action.
+        /// </exception>
+        /// <exception cref="OctopusServerException">
+        /// If any other error is successfully returned from the server (e.g., a 500
+        /// server error).
+        /// </exception>
+        /// <exception cref="OctopusValidationException">HTTP 400: If there was a problem with the request provided by the user.</exception>
+        /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
+        /// <param name="path">The path to the resource to delete.</param>
+        /// <param name="command">The command to delete the resource.</param>
+        /// <param name="cancellationToken">The request cancellation token.</param>
+        /// <returns>The response from deleting the resource.</returns>
+        Task<TResponse> Delete<TCommand, TResponse>(string path, TCommand command, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.
         /// </summary>
         /// <exception cref="OctopusSecurityException">
