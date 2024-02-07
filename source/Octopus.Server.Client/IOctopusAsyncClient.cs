@@ -817,10 +817,7 @@ namespace Octopus.Client
         Task Delete(string path, object pathParameters, object resource, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Deletes the resource at the given URI from the server using a the DELETE verb. Deletes in Octopus happen
-        /// asynchronously via a background task
-        /// that is executed by the Octopus Server. The payload returned by delete will be the task that was created on the
-        /// server.
+        /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>
         /// <exception cref="OctopusSecurityException">
         /// HTTP 401 or 403: Thrown when the current user's API key was not valid, their
