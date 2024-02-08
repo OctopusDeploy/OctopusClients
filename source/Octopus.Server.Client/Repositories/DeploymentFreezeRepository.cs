@@ -18,7 +18,7 @@ public class DeploymentFreezeRepository(IOctopusClient client) : IDeploymentFree
     {
         var link = client.Repository.Link("DeploymentFreezes");
 
-        return client.Get<GetDeploymentFreezeByIdRequest, GetDeploymentFreezeByIdResponse>(link, request);
+        return client.Get<GetDeploymentFreezeByIdResponse>(link, request);
     }
 
     public CreateDeploymentFreezeResponse Create(CreateDeploymentFreezeCommand command)

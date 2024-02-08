@@ -26,9 +26,7 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
     {
         var link = await client.Repository.Link("DeploymentFreezes");
 
-        var response =
-            await client.Get<GetDeploymentFreezeByIdRequest, GetDeploymentFreezeByIdResponse>(link, request,
-                cancellationToken);
+        var response = await client.Get<GetDeploymentFreezeByIdResponse>(link, request, cancellationToken);
         return response;
     }
 

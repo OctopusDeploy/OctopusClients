@@ -177,20 +177,11 @@ namespace Octopus.Client
             return DispatchRequest<TResource>(new OctopusRequest("GET", uri), true).ResponseResource;
         }
 
-        /// <summary>
-        /// Fetches a single response from the server using the HTTP GET verb.
-        /// </summary>
-        /// <typeparam name="TRequest"></typeparam>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="path">The path from which to fetch the response.</param>
-        /// <param name="request">The request to perform.</param>
-        /// <returns>
-        /// The resource from the server.
-        /// </returns>
-        public TResponse Get<TRequest, TResponse>(string path, TRequest request)
+        /// <inheritdoc />
+        public TResponse Get<TRequest, TResponse>(string path, object pathParameters = null)
         {
-            var uri = QualifyUri(path);
-            var response = DispatchRequest<TResponse>(new OctopusRequest("GET", uri, requestResource: request), true);
+            var uri = QualifyUri(path, pathParameters);
+            var response = DispatchRequest<TResponse>(new OctopusRequest("GET", uri), true);
 
             return response.ResponseResource;
         }
