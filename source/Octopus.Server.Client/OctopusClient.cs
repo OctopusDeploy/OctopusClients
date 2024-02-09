@@ -386,6 +386,15 @@ namespace Octopus.Client
 
             DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
         }
+        
+        /// <inheritdoc/>
+        public TResponse Delete<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            var response = DispatchRequest<TResponse>(new OctopusRequest("DELETE", uri, command), true);
+            return response.ResponseResource;
+        }
 
         /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
@@ -406,6 +415,15 @@ namespace Octopus.Client
 
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             return Get<TResource>(getUrl);
+        }
+        
+        /// <inheritdoc/>
+        public TResponse Update<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
+        {
+            var uri = QualifyUri(path, pathParameters);
+
+            var response = DispatchRequest<TResponse>(new OctopusRequest("PUT", uri, requestResource: command), readResponse: true);
+            return response.ResponseResource;
         }
 
         /// <summary>

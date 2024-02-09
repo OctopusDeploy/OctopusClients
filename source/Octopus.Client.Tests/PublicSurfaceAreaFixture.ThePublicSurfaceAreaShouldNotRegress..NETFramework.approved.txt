@@ -37,6 +37,7 @@ Octopus.Client
     Task Delete(String, Object, Object)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
+    Task<TResponse> Delete(String, Octopus.Client.TCommand, CancellationToken)
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
@@ -81,6 +82,7 @@ Octopus.Client
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
     Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task<TResponse> Update(String, Octopus.Client.TCommand, Object, CancellationToken)
   }
   interface IOctopusAsyncRepository
     Octopus.Client.IOctopusSpaceAsyncRepository
@@ -99,6 +101,7 @@ Octopus.Client
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
+    Octopus.Client.TResponse Delete(String, Octopus.Client.TCommand, Object)
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
@@ -120,6 +123,7 @@ Octopus.Client
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Update(String, Octopus.Client.TCommand, Object)
   }
   interface IOctopusClientFactory
   {
@@ -315,6 +319,7 @@ Octopus.Client
     Task Delete(String, Object, Object)
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
+    Task<TResponse> Delete(String, Octopus.Client.TCommand, CancellationToken)
     void Dispose()
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
@@ -360,6 +365,7 @@ Octopus.Client
     Task<TResource> Update(String, Octopus.Client.TResource, Object)
     Task<TResource> Update(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Update(String, Octopus.Client.TResource, Object, CancellationToken)
+    Task<TResponse> Update(String, Octopus.Client.TCommand, Object, CancellationToken)
   }
   class OctopusAsyncRepository
     Octopus.Client.IOctopusAsyncRepository
@@ -457,6 +463,7 @@ Octopus.Client
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
+    Octopus.Client.TResponse Delete(String, Octopus.Client.TCommand, Object)
     void Dispose()
     Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
@@ -480,6 +487,7 @@ Octopus.Client
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
+    Octopus.Client.TResponse Update(String, Octopus.Client.TCommand, Object)
   }
   class OctopusClientFactory
     Octopus.Client.IOctopusClientFactory
@@ -4213,6 +4221,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission DefectResolve
     static Octopus.Client.Model.Permission DeploymentCreate
     static Octopus.Client.Model.Permission DeploymentDelete
+    static Octopus.Client.Model.Permission DeploymentFreezeAdminister
     static Octopus.Client.Model.Permission DeploymentView
     static Octopus.Client.Model.Permission EnvironmentCreate
     static Octopus.Client.Model.Permission EnvironmentDelete
@@ -6417,9 +6426,36 @@ Octopus.Client.Model.DeploymentFreezes
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
   }
+  class DeleteDeploymentFreezeCommand
+  {
+    .ctor()
+    String Id { get; set; }
+  }
+  class DeleteDeploymentFreezeResponse
+  {
+    .ctor()
+  }
   abstract class DeploymentFreezeClientExtensions
   {
     static Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.IOctopusClient, Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
+  }
+  class ModifyDeploymentFreezeCommand
+  {
+    .ctor()
+    DateTimeOffset End { get; set; }
+    String Id { get; set; }
+    String Name { get; set; }
+    Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    DateTimeOffset Start { get; set; }
+  }
+  class ModifyDeploymentFreezeResponse
+  {
+    .ctor()
+    DateTimeOffset End { get; set; }
+    String Id { get; set; }
+    String Name { get; set; }
+    Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    DateTimeOffset Start { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -7528,6 +7564,8 @@ Octopus.Client.Repositories
   {
     .ctor(Octopus.Client.IOctopusClient)
     Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
+    Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeResponse Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand)
+    Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeResponse Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand)
   }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
@@ -7687,6 +7725,8 @@ Octopus.Client.Repositories
   interface IDeploymentFreezeRepository
   {
     Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
+    Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeResponse Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand)
+    Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeResponse Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.IGet<DeploymentProcessResource>
@@ -8264,6 +8304,8 @@ Octopus.Client.Repositories.Async
   {
     .ctor(Octopus.Client.IOctopusAsyncClient)
     Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
+    Task<DeleteDeploymentFreezeResponse> Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand, CancellationToken)
+    Task<ModifyDeploymentFreezeResponse> Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand, CancellationToken)
   }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
@@ -8428,6 +8470,8 @@ Octopus.Client.Repositories.Async
   interface IDeploymentFreezeRepository
   {
     Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
+    Task<DeleteDeploymentFreezeResponse> Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand, CancellationToken)
+    Task<ModifyDeploymentFreezeResponse> Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand, CancellationToken)
   }
   interface IDeploymentProcessRepository
     Octopus.Client.Repositories.Async.IGet<DeploymentProcessResource>
