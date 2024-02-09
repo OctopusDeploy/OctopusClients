@@ -246,7 +246,7 @@ jobs:
       - name: Login to Octopus Deploy 🐙
         uses: OctopusDeploy/login@v1
         with: 
-          server: https://deploy.octopus.app
+          server: ${{ secrets.OCTOPUS_URL }}
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
 
       - name: Push to Octopus 🐙
