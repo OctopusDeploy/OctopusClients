@@ -9,6 +9,9 @@ public interface IDeploymentFreezeRepository
     Task<GetDeploymentFreezeByIdResponse> Get(GetDeploymentFreezeByIdRequest request,
         CancellationToken cancellationToken);
 
+    Task<GetDeploymentFreezesResponse> Get(GetDeploymentFreezesRequest request,
+        CancellationToken cancellationToken);
+
     Task<CreateDeploymentFreezeResponse> Create(CreateDeploymentFreezeCommand command,
         CancellationToken cancellationToken);
 
@@ -27,6 +30,15 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
         var link = await client.Repository.Link("DeploymentFreezes");
 
         var response = await client.Get<GetDeploymentFreezeByIdResponse>(link, request, cancellationToken);
+        return response;
+    }
+
+    public async Task<GetDeploymentFreezesResponse> Get(GetDeploymentFreezesRequest request,
+        CancellationToken cancellationToken)
+    {
+        var link = await client.Repository.Link("DeploymentFreezes");
+
+        var response = await client.Get<GetDeploymentFreezesResponse>(link, request, cancellationToken);
         return response;
     }
 
@@ -52,11 +64,12 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
         return response;
     }
 
-    public async Task<DeleteDeploymentFreezeResponse> Delete(DeleteDeploymentFreezeCommand command, CancellationToken cancellationToken)
+    public async Task<DeleteDeploymentFreezeResponse> Delete(DeleteDeploymentFreezeCommand command,
+        CancellationToken cancellationToken)
     {
         var link = await client.Repository.Link("DeploymentFreezes");
 
         return await client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(link, command,
-                cancellationToken);
+            cancellationToken);
     }
 }

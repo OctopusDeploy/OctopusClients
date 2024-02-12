@@ -6415,6 +6415,15 @@ Octopus.Client.Model.DeploymentFreezes
   {
     static Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.IOctopusClient, Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
   }
+  class DeploymentFreezeResource
+  {
+    .ctor()
+    DateTimeOffset End { get; set; }
+    String Id { get; set; }
+    String Name { get; set; }
+    Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    DateTimeOffset Start { get; set; }
+  }
   class GetDeploymentFreezeByIdRequest
   {
     .ctor()
@@ -6428,6 +6437,23 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; }
     DateTimeOffset Start { get; set; }
+  }
+  class GetDeploymentFreezesRequest
+  {
+    .ctor()
+    IReadOnlyCollection<String> EnvironmentIds { get; set; }
+    IReadOnlyCollection<String> Ids { get; set; }
+    String PartialName { get; set; }
+    IReadOnlyCollection<String> ProjectIds { get; set; }
+    Int32 Skip { get; set; }
+    Int32 Take { get; set; }
+  }
+  class GetDeploymentFreezesResponse
+    Octopus.Server.MessageContracts.Base.IResponse
+  {
+    .ctor()
+    Int32 Count { get; set; }
+    IReadOnlyCollection<DeploymentFreezeResource> DeploymentFreezes { get; set; }
   }
   class ModifyDeploymentFreezeCommand
   {
@@ -7555,6 +7581,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
     Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeResponse Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand)
     Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdResponse Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdRequest)
+    Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesResponse Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest)
     Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeResponse Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand)
   }
   interface IAccountRepository
@@ -7717,6 +7744,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeResponse Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand)
     Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeResponse Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand)
     Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdResponse Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdRequest)
+    Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesResponse Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest)
     Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeResponse Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand)
   }
   interface IDeploymentProcessRepository
@@ -8297,6 +8325,7 @@ Octopus.Client.Repositories.Async
     Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
     Task<DeleteDeploymentFreezeResponse> Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand, CancellationToken)
     Task<GetDeploymentFreezeByIdResponse> Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdRequest, CancellationToken)
+    Task<GetDeploymentFreezesResponse> Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest, CancellationToken)
     Task<ModifyDeploymentFreezeResponse> Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand, CancellationToken)
   }
   interface IAccountRepository
@@ -8464,6 +8493,7 @@ Octopus.Client.Repositories.Async
     Task<CreateDeploymentFreezeResponse> Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeCommand, CancellationToken)
     Task<DeleteDeploymentFreezeResponse> Delete(Octopus.Client.Model.DeploymentFreezes.DeleteDeploymentFreezeCommand, CancellationToken)
     Task<GetDeploymentFreezeByIdResponse> Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezeByIdRequest, CancellationToken)
+    Task<GetDeploymentFreezesResponse> Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest, CancellationToken)
     Task<ModifyDeploymentFreezeResponse> Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand, CancellationToken)
   }
   interface IDeploymentProcessRepository
