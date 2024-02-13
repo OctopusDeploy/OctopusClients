@@ -6449,7 +6449,6 @@ Octopus.Client.Model.DeploymentFreezes
     Int32 Take { get; set; }
   }
   class GetDeploymentFreezesResponse
-    Octopus.Server.MessageContracts.Base.IResponse
   {
     .ctor()
     Int32 Count { get; set; }

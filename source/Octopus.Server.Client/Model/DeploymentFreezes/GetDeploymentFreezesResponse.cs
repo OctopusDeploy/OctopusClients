@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Octopus.Server.MessageContracts.Base;
 
 namespace Octopus.Client.Model.DeploymentFreezes;
 
-public class GetDeploymentFreezesResponse : IResponse
+public class GetDeploymentFreezesResponse
 {
     [Required] public IReadOnlyCollection<DeploymentFreezeResource> DeploymentFreezes { get; set; }
 
