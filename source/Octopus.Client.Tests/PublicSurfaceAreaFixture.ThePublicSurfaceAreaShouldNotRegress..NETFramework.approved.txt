@@ -7168,7 +7168,7 @@ Octopus.Client.Model.Triggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    List<TriggerPackageReferenceResource> Packages { get; set; }
+    List<DeploymentActionPackageResource> Packages { get; set; }
   }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
