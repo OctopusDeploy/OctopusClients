@@ -5,6 +5,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Octopus.Client.Model;
+using Octopus.TinyTypes.TypeConverters;
 
 namespace Octopus.Client.Serialization
 {
@@ -47,13 +48,22 @@ namespace Octopus.Client.Serialization
             {
 
                 var derivedType = designatingProperty.ToObject<string>();
-                var enumType = (TEnumType)Enum.Parse(typeof(TEnumType), derivedType);
-                if (!DerivedTypeMappings.ContainsKey(enumType))
+                TEnumType discriminatingType;
+                if (typeof(TEnumType).IsEnum)
                 {
-                    throw new Exception($"Unable to determine type to deserialize. {TypeDesignatingPropertyName} `{enumType}` does not map to a known type");
+                    discriminatingType = (TEnumType)Enum.Parse(typeof(TEnumType), derivedType);
+                }
+                else
+                {
+                    discriminatingType = (TEnumType)new TinyTypeConverter<TEnumType>().ConvertFrom(derivedType);
+                }
+                
+                if (!DerivedTypeMappings.ContainsKey(discriminatingType))
+                {
+                    throw new Exception($"Unable to determine type to deserialize. {TypeDesignatingPropertyName} `{discriminatingType}` does not map to a known type");
                 }
 
-                type = DerivedTypeMappings[enumType];
+                type = DerivedTypeMappings[discriminatingType];
             }
 
             var ctor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
