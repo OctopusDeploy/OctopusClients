@@ -7168,7 +7168,7 @@ Octopus.Client.Model.Triggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    List<TriggerPackageReferenceResource> Packages { get; set; }
+    List<DeploymentActionPackageResource> Packages { get; set; }
   }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
@@ -7235,12 +7235,6 @@ Octopus.Client.Model.Triggers
       DailySchedule = 5
       DaysPerWeekSchedule = 6
       FeedFilter = 7
-  }
-  class TriggerPackageReferenceResource
-  {
-    .ctor()
-    String DeploymentActionSlug { get; set; }
-    String PackageReferenceName { get; set; }
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers

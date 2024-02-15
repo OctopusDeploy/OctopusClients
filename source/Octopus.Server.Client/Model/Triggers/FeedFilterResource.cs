@@ -8,14 +8,5 @@ public class FeedFilterResource : TriggerFilterResource
     public override TriggerFilterType FilterType => TriggerFilterType.FeedFilter;
 
     [Writeable]
-    public List<TriggerPackageReferenceResource> Packages { get; set; } = new();
-}
-
-public class TriggerPackageReferenceResource
-{
-    [Writeable]
-    public string DeploymentActionSlug { get; set; }
-
-    [Writeable]
-    public string PackageReferenceName { get; set; }
+    public List<DeploymentActionPackageResource> Packages { get; set; } = new();
 }
