@@ -195,11 +195,6 @@ namespace Octopus.Client.Model
         public static class PollFeedsForTriggers
         {
             public const string Name = "PollFeedsForTriggers";
-            
-            public static class Arguments
-            {
-                public static string Triggers = "Triggers";
-            }
         }
     }
 }
