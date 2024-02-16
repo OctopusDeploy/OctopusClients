@@ -4402,6 +4402,10 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
+  abstract class PollFeedsForTriggers
+  {
+    static System.String Name
+  }
   class ProcessReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem
   {
