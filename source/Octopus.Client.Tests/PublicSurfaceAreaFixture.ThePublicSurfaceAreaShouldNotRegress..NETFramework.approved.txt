@@ -2233,6 +2233,10 @@ Octopus.Client.Model
     {
       static System.String Name
     }
+    abstract class PollFeedsForTriggers
+    {
+      static System.String Name
+    }
     abstract class Retention
     {
       static System.String Name
