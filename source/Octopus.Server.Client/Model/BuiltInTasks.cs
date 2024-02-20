@@ -6,7 +6,7 @@ namespace Octopus.Client.Model
     {
         public static string[] TasksThatCanBeQueuedByUsers()
         {
-            // Everything except "Deploy" and "Delete"
+            // Everything except "Deploy", "Delete" and "PollFeedsForTriggers"
             return new[]
             {
                 Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name, SyncCommunityActionTemplates.Name,
