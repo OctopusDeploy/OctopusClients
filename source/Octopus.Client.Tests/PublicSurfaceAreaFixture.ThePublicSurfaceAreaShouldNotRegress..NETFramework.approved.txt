@@ -7175,6 +7175,7 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerFilterResource
   {
     .ctor()
+    String FeedCategory { get; set; }
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
     List<DeploymentActionPackageResource> Packages { get; set; }
   }
