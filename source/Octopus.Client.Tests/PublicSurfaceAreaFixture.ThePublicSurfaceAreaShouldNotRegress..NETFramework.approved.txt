@@ -2029,6 +2029,7 @@ Octopus.Client.Model
     Boolean IsSelfServiceIdentityEditingEnabled { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     Int32 MaximumSessionDurationInSeconds { get; set; }
+    Octopus.Client.Model.OidcConfigResource OidcConfigurationSettings { get; set; }
     Boolean RememberMeEnabled { get; set; }
     Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
@@ -4103,6 +4104,12 @@ Octopus.Client.Model
     String Name { get; set; }
     Octopus.Client.Model.LeadershipRank Rank { get; set; }
     Int32 RunningTaskCount { get; set; }
+  }
+  class OidcConfigResource
+  {
+    .ctor()
+    .ctor(String)
+    String OidcIssuerUrl { get; set; }
   }
   OverwriteMode
   {
