@@ -38,5 +38,23 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool UserApiKeysEnabled { get; set; }
+
+        [Writeable]
+        public OidcConfigResource OidcConfigurationSettings { get; set; }
+    }
+    
+    public class OidcConfigResource
+    {
+        public OidcConfigResource()
+        {
+        }
+
+        public OidcConfigResource(string oidcIssuerUrl)
+        {
+            OidcIssuerUrl = oidcIssuerUrl;
+        }
+
+        [Writeable]
+        public string OidcIssuerUrl { get; set; }
     }
 }
