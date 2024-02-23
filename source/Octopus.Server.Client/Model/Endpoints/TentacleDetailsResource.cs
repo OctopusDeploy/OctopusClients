@@ -11,8 +11,5 @@ namespace Octopus.Client.Model.Endpoints
         public bool UpgradeSuggested { get; set; }
         public bool UpgradeRequired { get; set; }
         public bool UpgradeAvailable { get; set; }
-        public string KubernetesAgentVersion { get; set; }
-        public string HelmReleaseName { get; set; }
-        public string KubernetesAgentNamespace { get; set; }
     }
 }
