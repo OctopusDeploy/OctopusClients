@@ -6644,6 +6644,13 @@ Octopus.Client.Model.Endpoints
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
+  class KubernetesAgentDetailsResource
+  {
+    .ctor()
+    String HelmReleaseName { get; set; }
+    String Namespace { get; set; }
+    String Version { get; set; }
+  }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
     Octopus.Client.Model.Endpoints.KubernetesStandardAccountAuthenticationResource
