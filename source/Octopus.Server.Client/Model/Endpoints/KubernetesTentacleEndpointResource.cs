@@ -8,12 +8,12 @@ public class KubernetesTentacleEndpointResource : EndpointResource
     {
     }
 
-    public KubernetesTentacleEndpointResource(TentacleEndpointConfigurationResource tentacleEndpointConfiguration)
+    public KubernetesTentacleEndpointResource(KubernetesTentacleEndpointConfigurationResource endpointConfiguration)
     {
-        TentacleEndpointConfiguration = tentacleEndpointConfiguration;
+        EndpointConfiguration = endpointConfiguration;
     }
 
-    public TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
+    public KubernetesTentacleEndpointConfigurationResource EndpointConfiguration { get; set; }
 
     public string DefaultNamespace { get; set; }
 }
