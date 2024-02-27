@@ -48,6 +48,11 @@ namespace Octopus.Client.Model
         /// Gets the variable templates.
         /// </summary>
         public List<ActionTemplateParameterResource> Templates { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the version number.
+        /// </summary>
+        public int Version { get; set; }
 
         public LibraryVariableSetResource Clear()
         {
