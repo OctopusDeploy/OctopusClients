@@ -9,7 +9,4 @@ public class FeedFilterResource : TriggerFilterResource
 
     [Writeable]
     public List<DeploymentActionPackageResource> Packages { get; set; } = new();
-
-    [Writeable]
-    public string FeedCategory { get; set; }
 }
