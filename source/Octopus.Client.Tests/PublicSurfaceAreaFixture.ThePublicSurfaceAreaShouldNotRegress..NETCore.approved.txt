@@ -3546,6 +3546,7 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
     String VariableSetId { get; set; }
+    Int32 Version { get; set; }
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateMultiLineTextTemplate(String, String)
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateMultiLineTextTemplate(String, String, String, String)
     Octopus.Client.Model.LibraryVariableSetResource AddOrUpdateSelectTemplate(String, String, IDictionary<String, String>)
