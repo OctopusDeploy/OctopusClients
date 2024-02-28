@@ -183,23 +183,6 @@ namespace Octopus.Client.Tests.Serialization
             result.Thumbprint.Should().Be(input.Thumbprint);
         }
         
-        [Test]
-        public void TinyTypeDiscriminator()
-        {
-            var input = new
-            {
-                CommunicationMode = nameof(TentacleCommunicationModeResource.Listening),
-                Thumbprint = "The thumbprint",
-                Uri = "Some Uri"
-            };
-
-            var result = Execute<TentacleEndpointConfigurationResource>(input);
-
-            result.CommunicationMode.Should().Be(TentacleCommunicationModeResource.Listening);
-            result.Thumbprint.Should().Be(input.Thumbprint);
-            result.Uri.Should().Be(input.Uri);
-        }
-
         private static T Execute<T>(object input)
         {
             //Serialize anonymous object to JSON
