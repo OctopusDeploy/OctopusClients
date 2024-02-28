@@ -2012,6 +2012,7 @@ Octopus.Client.Model
     Boolean IsSelfServiceIdentityEditingEnabled { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     Int32 MaximumSessionDurationInSeconds { get; set; }
+    Octopus.Client.Model.OidcConfigResource OidcConfigurationSettings { get; set; }
     Boolean RememberMeEnabled { get; set; }
     Int32 SessionTimeoutInSeconds { get; set; }
     String[] TrustedRedirectUrls { get; set; }
@@ -2213,6 +2214,10 @@ Octopus.Client.Model
       static System.String Name
     }
     abstract class MigrationPartialExport
+    {
+      static System.String Name
+    }
+    abstract class PollFeedsForTriggers
     {
       static System.String Name
     }
@@ -4080,6 +4085,12 @@ Octopus.Client.Model
     Octopus.Client.Model.LeadershipRank Rank { get; set; }
     Int32 RunningTaskCount { get; set; }
   }
+  class OidcConfigResource
+  {
+    .ctor()
+    .ctor(String)
+    String OidcIssuerUrl { get; set; }
+  }
   OverwriteMode
   {
       FailIfExists = 0
@@ -4377,6 +4388,10 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
+  }
+  abstract class PollFeedsForTriggers
+  {
+    static System.String Name
   }
   class ProcessReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem

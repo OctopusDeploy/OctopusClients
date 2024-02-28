@@ -54,6 +54,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(Order = 61)]
+        [Obsolete("Not used since 2024.1.8781")]
         public TimeSpan PollingRequestMaximumMessageProcessingTimeout { get; set; }
 
         [Writeable]
