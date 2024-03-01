@@ -6769,7 +6769,7 @@ Octopus.Client.Model.Endpoints
     .ctor(Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource)
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultNamespace { get; set; }
-    Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource KubernetesEndpointConfiguration { get; set; }
+    Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
   }
   class ListeningKubernetesTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
