@@ -24,9 +24,9 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
         return CommunicationStyle switch
         {
             CommunicationStyle.TentaclePassive => new KubernetesTentacleEndpointResource(
-                new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri()) { ProxyId = proxyId }),
+                new ListeningKubernetesTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri()) { ProxyId = proxyId }),
             CommunicationStyle.TentacleActive => new KubernetesTentacleEndpointResource(
-                new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
+                new PollingKubernetesTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
             _ => null
         };
     }
