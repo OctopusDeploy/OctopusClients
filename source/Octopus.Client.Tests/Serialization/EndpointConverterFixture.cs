@@ -189,7 +189,8 @@ namespace Octopus.Client.Tests.Serialization
             var json = JsonConvert.SerializeObject(input);
             
             var settings = JsonSerialization.GetDefaultSerializerSettings();
-            return JsonConvert.DeserializeObject<T>(json, settings);
+            return JsonConvert.DeserializeObject<EndpointResource>(json, settings)
+                .Should().BeOfType<T>().Subject;
         }
     }
 }
