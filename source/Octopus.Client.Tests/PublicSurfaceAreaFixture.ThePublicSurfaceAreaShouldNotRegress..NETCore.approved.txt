@@ -6710,6 +6710,7 @@ Octopus.Client.Model.Endpoints
   {
     .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultNamespace { get; set; }
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
   }
   class ListeningTentacleEndpointConfigurationResource
@@ -7480,6 +7481,7 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
+    String DefaultNamespace { get; set; }
   }
   interface IRegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -7521,6 +7523,7 @@ Octopus.Client.Operations
   {
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
+    String DefaultNamespace { get; set; }
   }
   class RegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
