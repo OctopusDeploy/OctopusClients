@@ -108,7 +108,8 @@ class Build : NukeBuild
         DotNetBuild(_ => _
             .SetProjectFile(SourceDir)
             .SetConfiguration(Configuration)
-            .SetVersion(FullSemVer));
+            .SetVersion(FullSemVer)
+            .EnableNoRestore());
     });
 
     Target Merge => _ => _
