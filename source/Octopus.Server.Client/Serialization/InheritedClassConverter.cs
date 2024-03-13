@@ -5,10 +5,12 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Octopus.Client.Model;
+using Octopus.TinyTypes;
+using Octopus.TinyTypes.TypeConverters;
 
 namespace Octopus.Client.Serialization
 {
-    public abstract class InheritedClassConverter<TBaseResource, TEnumType> : JsonConverter
+    public abstract class InheritedClassConverter<TBaseResource, TDiscriminator> : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -45,15 +47,8 @@ namespace Octopus.Client.Serialization
             }
             else
             {
-
                 var derivedType = designatingProperty.ToObject<string>();
-                var enumType = (TEnumType)Enum.Parse(typeof(TEnumType), derivedType);
-                if (!DerivedTypeMappings.ContainsKey(enumType))
-                {
-                    throw new Exception($"Unable to determine type to deserialize. {TypeDesignatingPropertyName} `{enumType}` does not map to a known type");
-                }
-
-                type = DerivedTypeMappings[enumType];
+                type = GetTypeFromDiscriminator(derivedType);
             }
 
             var ctor = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.Instance).Single();
@@ -73,12 +68,44 @@ namespace Octopus.Client.Serialization
             return instance;
         }
 
+        private Type GetTypeFromDiscriminator(string derivedType)
+        {
+            var discriminatingType = GetDiscriminatingTypeFromStringValue(derivedType);
+
+            if (!DerivedTypeMappings.ContainsKey(discriminatingType))
+            {
+                throw new Exception($"Unable to determine type to deserialize. {TypeDesignatingPropertyName} `{discriminatingType}` does not map to a known type");
+            }
+
+            return DerivedTypeMappings[discriminatingType];
+        }
+
+        private static TDiscriminator GetDiscriminatingTypeFromStringValue(string derivedType)
+        {
+            if (typeof(TDiscriminator).IsEnum)
+            {
+                return (TDiscriminator)Enum.Parse(typeof(TDiscriminator), derivedType);
+            }
+
+            if (typeof(TDiscriminator).IsTinyType())
+            {
+                return (TDiscriminator)new TinyTypeConverter<TDiscriminator>().ConvertFrom(derivedType);
+            }
+
+            if (typeof(TDiscriminator) == typeof(string))
+            {
+                return (TDiscriminator)(object)derivedType;
+            }
+            
+            throw new Exception("Discriminator type not supported: " + typeof(TDiscriminator));
+        }
+
         public override bool CanConvert(Type objectType)
         {
             return typeof(TBaseResource).GetTypeInfo().IsAssignableFrom(objectType);
         }
 
-        protected abstract IDictionary<TEnumType, Type> DerivedTypeMappings { get; }
+        protected abstract IDictionary<TDiscriminator, Type> DerivedTypeMappings { get; }
 
         protected abstract string TypeDesignatingPropertyName { get; }
     }
