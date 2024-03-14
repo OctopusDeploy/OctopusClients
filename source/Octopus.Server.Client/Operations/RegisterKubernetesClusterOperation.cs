@@ -16,7 +16,6 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
 
     public string DefaultNamespace { get; set; }
 
-
     protected override void PrepareMachineForReRegistration(MachineResource machine, string proxyId)
     {
         machine.Endpoint = GenerateEndpoint(proxyId);
