@@ -1,3 +1,4 @@
+using System;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -29,10 +30,8 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
                 new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri()) { ProxyId = proxyId }),
             CommunicationStyle.TentacleActive => new KubernetesTentacleEndpointResource(
                 new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
-            _ => null
+            _ => throw new ArgumentOutOfRangeException(nameof(CommunicationStyle), CommunicationStyle, $"Must be either {CommunicationStyle.TentacleActive} or {CommunicationStyle.TentaclePassive} for this operation")
         };
-
-        if (endpoint is null) return null;
 
         endpoint.DefaultNamespace = DefaultNamespace;
 
