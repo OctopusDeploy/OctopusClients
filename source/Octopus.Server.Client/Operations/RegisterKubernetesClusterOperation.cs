@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 
@@ -14,6 +14,8 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
     {
     }
 
+    public string DefaultNamespace { get; set; }
+
     protected override void PrepareMachineForReRegistration(MachineResource machine, string proxyId)
     {
         machine.Endpoint = GenerateEndpoint(proxyId);
@@ -21,13 +23,17 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
 
     protected override EndpointResource GenerateEndpoint(string proxyId)
     {
-        return CommunicationStyle switch
+        var endpoint = CommunicationStyle switch
         {
             CommunicationStyle.TentaclePassive => new KubernetesTentacleEndpointResource(
                 new ListeningTentacleEndpointConfigurationResource(TentacleThumbprint, GetListeningUri()) { ProxyId = proxyId }),
             CommunicationStyle.TentacleActive => new KubernetesTentacleEndpointResource(
                 new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
-            _ => null
+            _ => throw new ArgumentOutOfRangeException(nameof(CommunicationStyle), CommunicationStyle, $"Must be either {CommunicationStyle.TentacleActive} or {CommunicationStyle.TentaclePassive} for this operation")
         };
+
+        endpoint.DefaultNamespace = DefaultNamespace;
+
+        return endpoint;
     }
 }
