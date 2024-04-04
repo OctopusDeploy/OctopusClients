@@ -3655,6 +3655,16 @@ Octopus.Client.Model
     Octopus.Client.Model.LicenseMessageResource[] Messages { get; set; }
     String PermissionsMode { get; set; }
   }
+  class LicenseUsageResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
+    Octopus.Client.Model.SpaceLicenseUsageResource[] SpaceUsage { get; set; }
+    Int32 TaskCap { get; set; }
+  }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5290,6 +5300,14 @@ Octopus.Client.Model
     String GitCommit { get; set; }
     String GitRef { get; set; }
     String VariablesGitCommit { get; set; }
+  }
+  class SpaceLicenseUsageResource
+  {
+    .ctor()
+    Int32 Machines { get; set; }
+    Int32 Projects { get; set; }
+    String SpaceName { get; set; }
+    Int32 Tenants { get; set; }
   }
   class SpaceResource
     Octopus.Client.Extensibility.IResource
