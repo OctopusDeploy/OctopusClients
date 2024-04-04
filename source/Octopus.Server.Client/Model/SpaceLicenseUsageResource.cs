@@ -3,7 +3,7 @@ namespace Octopus.Client.Model;
 public class SpaceLicenseUsageResource
 {
     public string SpaceName { get; set; } = string.Empty;
-    public int Projects { get; set; }
-    public int Tenants { get; set; }
-    public int Machines { get; set; }
+    public int ProjectsCount { get; set; }
+    public int TenantsCount { get; set; }
+    public int MachinesCount { get; set; }
 }
