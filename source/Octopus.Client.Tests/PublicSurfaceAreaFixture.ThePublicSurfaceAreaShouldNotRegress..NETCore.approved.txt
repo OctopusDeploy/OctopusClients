@@ -3645,8 +3645,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
-    Octopus.Client.Model.SpaceLicenseUsageResource[] SpaceUsage { get; set; }
-    Int32 TaskCap { get; set; }
+    Octopus.Client.Model.SpaceLicenseUsageResource[] SpacesUsage { get; set; }
   }
   class LifecycleProgressionResource
     Octopus.Client.Extensibility.IResource
@@ -5285,10 +5284,10 @@ Octopus.Client.Model
   class SpaceLicenseUsageResource
   {
     .ctor()
-    Int32 Machines { get; set; }
-    Int32 Projects { get; set; }
+    Int32 MachinesCount { get; set; }
+    Int32 ProjectsCount { get; set; }
     String SpaceName { get; set; }
-    Int32 Tenants { get; set; }
+    Int32 TenantsCount { get; set; }
   }
   class SpaceResource
     Octopus.Client.Extensibility.IResource
