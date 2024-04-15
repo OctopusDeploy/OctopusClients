@@ -16,6 +16,17 @@ namespace Octopus.Client.Model
         // Token to validate that no variables for the given tenant have changed since this TenantVariableResource was last requested.
         public string ConcurrencyToken { get; set; }
 
+        public bool TryGetProjectVariableValue(
+            ProjectResource project,
+            EnvironmentResource environment,
+            string templateName,
+            out PropertyValueResource value)
+        {
+            value = null;
+            return ProjectVariables.TryGetValue(project.Id, out var projectVariables) &&
+                   projectVariables.TryGetVariableValue(environment, templateName, out value);
+        }
+
         public PropertyValueResource GetProjectVariableValue(
             ProjectResource projectResource,
             EnvironmentResource environmentResource,
@@ -41,6 +52,14 @@ namespace Octopus.Client.Model
             }
 
             projectVariables.SetVariableValue(environmentResource, templateName, value);
+        }
+
+        public bool TryGetLibraryVariableValue(LibraryVariableSetResource libraryVariableSet, string templateName,
+            out PropertyValueResource value)
+        {
+            value = null;
+            return LibraryVariables.TryGetValue(libraryVariableSet.Id, out var libraryVariables) &&
+                   libraryVariables.TryGetVariableValue(templateName, out value);
         }
 
         public PropertyValueResource GetLibraryVariableValue(
@@ -83,6 +102,25 @@ namespace Octopus.Client.Model
             public Dictionary<string, Dictionary<string, PropertyValueResource>> Variables { get; set; } = new Dictionary<string, Dictionary<string, PropertyValueResource>>();
 
             public LinkCollection Links { get; set; }
+
+            public bool TryGetVariableValue(EnvironmentResource environment, string templateName,
+                out PropertyValueResource value)
+            {
+                value = null;
+                if (!Variables.TryGetValue(environment.Id, out var environmentVariables))
+                {
+                    return false;
+                }
+
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    return false;
+                }
+
+                value = environmentVariables[templateId];
+                return true;
+            }
 
             public PropertyValueResource GetVariableValue(EnvironmentResource environment, string templateName)
             {
@@ -132,6 +170,19 @@ namespace Octopus.Client.Model
             public Dictionary<string, PropertyValueResource> Variables { get; set; } = new Dictionary<string, PropertyValueResource>();
 
             public LinkCollection Links { get; set; }
+
+            public bool TryGetVariableValue(string templateName, out PropertyValueResource value)
+            {
+                value = null;
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    return false;
+                }
+
+                value = Variables[templateId];
+                return true;
+            }
 
             public PropertyValueResource GetVariableValue(string templateName)
             {

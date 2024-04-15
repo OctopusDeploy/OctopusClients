@@ -9,6 +9,33 @@ namespace Octopus.Client.Tests.Model
     public class TenantVariableResourceFixture
     {
         [Test]
+        public void TryGettingProjectVariable_Works()
+        {
+            var project = new ProjectResource("Projects-1", "TestProject", "test-project");
+            var environment = new EnvironmentResource { Id = "Environments-1" };
+            var templateId = Guid.NewGuid().ToString();
+            var resource = new TenantVariableResourceBuilder()
+                .WithProjectEnvironment(project, environment)
+                .WithProjectTemplate(project, action => action
+                    .WithId(templateId)
+                    .WithName("ProjectVariable1"))
+                .Build();
+
+            resource.ProjectVariables[project.Id].Variables[environment.Id][templateId] = "SomeValue";
+
+            resource.TryGetProjectVariableValue(project, environment, "ProjectVariable1", out var result)
+                .Should()
+                .BeTrue();
+
+            result.Should().BeEquivalentTo(new PropertyValueResource("SomeValue"));
+
+            resource.TryGetProjectVariableValue(project, environment, "MissingTemplate", out var emptyResult)
+                .Should()
+                .BeFalse();
+            emptyResult.Should().BeNull();
+        }
+
+        [Test]
         public void GettingProjectVariable_Works()
         {
             var project = new ProjectResource("Projects-1", "TestProject", "test-project");
@@ -47,6 +74,29 @@ namespace Octopus.Client.Tests.Model
                 .Should()
                 .ContainKey(templateId)
                 .WhoseValue.Should().BeEquivalentTo(new PropertyValueResource("SomeValue"));
+        }
+
+        [Test]
+        public void TryGettingLibraryVariable_Works()
+        {
+            var libraryVariableSet = new LibraryVariableSetResource { Id = "LibraryVariableSets-1" };
+
+            var templateId = Guid.NewGuid().ToString();
+            const string templateName = "LibraryVariable1";
+
+            var resource = new TenantVariableResourceBuilder()
+                .WithLibraryTemplate(libraryVariableSet, action => action
+                    .WithId(templateId)
+                    .WithName(templateName))
+                .Build();
+
+            resource.LibraryVariables[libraryVariableSet.Id].Variables[templateId] = "SomeValue";
+
+            resource.TryGetLibraryVariableValue(libraryVariableSet, templateName, out var value)
+                .Should()
+                .BeTrue();
+
+            value.Should().BeEquivalentTo(new PropertyValueResource("SomeValue"));
         }
 
         [Test]
