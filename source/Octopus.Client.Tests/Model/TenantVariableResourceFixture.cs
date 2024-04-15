@@ -9,6 +9,26 @@ namespace Octopus.Client.Tests.Model
     public class TenantVariableResourceFixture
     {
         [Test]
+        public void GettingProjectVariable_Works()
+        {
+            var project = new ProjectResource("Projects-1", "TestProject", "test-project");
+            var environment = new EnvironmentResource { Id = "Environments-1" };
+            var templateId = Guid.NewGuid().ToString();
+            var resource = new TenantVariableResourceBuilder()
+                .WithProjectEnvironment(project, environment)
+                .WithProjectTemplate(project, action => action
+                    .WithId(templateId)
+                    .WithName("ProjectVariable1"))
+                .Build();
+
+            resource.ProjectVariables[project.Id].Variables[environment.Id][templateId] = "SomeValue";
+
+            resource.GetProjectVariableValue(project, environment, "ProjectVariable1")
+                .Should()
+                .BeEquivalentTo(new PropertyValueResource("SomeValue"));
+        }
+
+        [Test]
         public void SettingProjectVariable_Works()
         {
             var project = new ProjectResource("Projects-1", "TestProject", "test-project");
@@ -23,10 +43,31 @@ namespace Octopus.Client.Tests.Model
 
             resource.SetProjectVariableValue(project, environment, "ProjectVariable1", "SomeValue");
 
-            resource.ProjectVariables["Projects-1"].Variables["Environments-1"]
+            resource.ProjectVariables[project.Id].Variables[environment.Id]
                 .Should()
                 .ContainKey(templateId)
                 .WhoseValue.Should().BeEquivalentTo(new PropertyValueResource("SomeValue"));
+        }
+
+        [Test]
+        public void GettingLibraryVariable_Works()
+        {
+            var libraryVariableSet = new LibraryVariableSetResource { Id = "LibraryVariableSets-1" };
+
+            var templateId = Guid.NewGuid().ToString();
+            const string templateName = "LibraryVariable1";
+
+            var resource = new TenantVariableResourceBuilder()
+                .WithLibraryTemplate(libraryVariableSet, action => action
+                    .WithId(templateId)
+                    .WithName(templateName))
+                .Build();
+
+            resource.LibraryVariables[libraryVariableSet.Id].Variables[templateId] = "SomeValue";
+
+            resource.GetLibraryVariableValue(libraryVariableSet, templateName)
+                .Should()
+                .BeEquivalentTo(new PropertyValueResource("SomeValue"));
         }
 
         [Test]
