@@ -30,9 +30,6 @@ namespace Octopus.Client.Model.Endpoints
         [Writeable]
         public TentacleDetailsResource TentacleVersionDetails { get; set; }
 
-        [Writeable]
-        public KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
-
         public string CertificateSignatureAlgorithm { get; set; }
     }
 }
