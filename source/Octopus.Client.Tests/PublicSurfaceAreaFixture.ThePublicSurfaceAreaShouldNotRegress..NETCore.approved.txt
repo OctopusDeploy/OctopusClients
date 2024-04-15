@@ -3517,6 +3517,7 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, PropertyValueResource> Variables { get; set; }
+    Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
     void SetVariableValue(String, Octopus.Client.Model.PropertyValueResource)
   }
   class LibraryVariableSetProjectUsage
@@ -4443,6 +4444,7 @@ Octopus.Client.Model
     String ProjectName { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
+    Octopus.Client.Model.PropertyValueResource GetVariableValue(Octopus.Client.Model.EnvironmentResource, String)
     void SetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
   }
   class ProjectedTeamReferenceDataItem
@@ -5662,6 +5664,8 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     String TenantId { get; set; }
     String TenantName { get; set; }
+    Octopus.Client.Model.PropertyValueResource GetLibraryVariableValue(Octopus.Client.Model.LibraryVariableSetResource, String)
+    Octopus.Client.Model.PropertyValueResource GetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String)
     void SetLibraryVariableValue(Octopus.Client.Model.LibraryVariableSetResource, String, Octopus.Client.Model.PropertyValueResource)
     void SetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
     class Library
@@ -5672,6 +5676,7 @@ Octopus.Client.Model
       Octopus.Client.Extensibility.LinkCollection Links { get; set; }
       List<ActionTemplateParameterResource> Templates { get; set; }
       Dictionary<String, PropertyValueResource> Variables { get; set; }
+      Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
       void SetVariableValue(String, Octopus.Client.Model.PropertyValueResource)
     }
     class Project
@@ -5682,6 +5687,7 @@ Octopus.Client.Model
       String ProjectName { get; set; }
       List<ActionTemplateParameterResource> Templates { get; set; }
       Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
+      Octopus.Client.Model.PropertyValueResource GetVariableValue(Octopus.Client.Model.EnvironmentResource, String)
       void SetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
     }
   }
