@@ -3519,6 +3519,7 @@ Octopus.Client.Model
     Dictionary<String, PropertyValueResource> Variables { get; set; }
     Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
     void SetVariableValue(String, Octopus.Client.Model.PropertyValueResource)
+    Boolean TryGetVariableValue(String, Octopus.Client.Model.PropertyValueResource&)
   }
   class LibraryVariableSetProjectUsage
   {
@@ -4446,6 +4447,7 @@ Octopus.Client.Model
     Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
     Octopus.Client.Model.PropertyValueResource GetVariableValue(Octopus.Client.Model.EnvironmentResource, String)
     void SetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
+    Boolean TryGetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource&)
   }
   class ProjectedTeamReferenceDataItem
     Octopus.Client.Model.ReferenceDataItem
@@ -5668,6 +5670,8 @@ Octopus.Client.Model
     Octopus.Client.Model.PropertyValueResource GetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String)
     void SetLibraryVariableValue(Octopus.Client.Model.LibraryVariableSetResource, String, Octopus.Client.Model.PropertyValueResource)
     void SetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
+    Boolean TryGetLibraryVariableValue(Octopus.Client.Model.LibraryVariableSetResource, String, Octopus.Client.Model.PropertyValueResource&)
+    Boolean TryGetProjectVariableValue(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource&)
     class Library
     {
       .ctor(String)
@@ -5678,6 +5682,7 @@ Octopus.Client.Model
       Dictionary<String, PropertyValueResource> Variables { get; set; }
       Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
       void SetVariableValue(String, Octopus.Client.Model.PropertyValueResource)
+      Boolean TryGetVariableValue(String, Octopus.Client.Model.PropertyValueResource&)
     }
     class Project
     {
@@ -5689,6 +5694,7 @@ Octopus.Client.Model
       Dictionary<String, Dictionary<String, PropertyValueResource>> Variables { get; set; }
       Octopus.Client.Model.PropertyValueResource GetVariableValue(Octopus.Client.Model.EnvironmentResource, String)
       void SetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource)
+      Boolean TryGetVariableValue(Octopus.Client.Model.EnvironmentResource, String, Octopus.Client.Model.PropertyValueResource&)
     }
   }
   TentacleUpdateBehavior
