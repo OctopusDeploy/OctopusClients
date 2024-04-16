@@ -6670,6 +6670,7 @@ Octopus.Client.Model.Endpoints
   class KubernetesAgentDetailsResource
   {
     .ctor()
+    .ctor(String, String, String, String)
     String HelmReleaseName { get; set; }
     String Namespace { get; set; }
     String TentacleVersion { get; set; }
@@ -6677,11 +6678,11 @@ Octopus.Client.Model.Endpoints
   }
   class KubernetesAgentUpgradeInformationResource
     IEquatable<KubernetesAgentUpgradeInformationResource>
+    ValueType
   {
     .ctor()
     Boolean UpgradeLocked { get; set; }
     Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeStatus { get; set; }
-    Octopus.Client.Model.Endpoints.KubernetesAgentUpgradeInformationResource <Clone>$()
     Boolean Equals(Object)
     Boolean Equals(Octopus.Client.Model.Endpoints.KubernetesAgentUpgradeInformationResource)
     Int32 GetHashCode()
