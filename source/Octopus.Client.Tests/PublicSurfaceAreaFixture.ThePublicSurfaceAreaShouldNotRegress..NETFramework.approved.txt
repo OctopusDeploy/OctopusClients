@@ -6751,7 +6751,7 @@ Octopus.Client.Model.Endpoints
     String AccountId { get; set; }
     String AuthenticationType { get; }
   }
-  abstract class KubernetesTentacleEndpointConfigurationResource
+  abstract class TentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
@@ -6765,16 +6765,16 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.Endpoints.EndpointResource
   {
-    .ctor(Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource)
+    .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultNamespace { get; set; }
     Octopus.Client.Model.Endpoints.KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
-    Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
+    Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
   }
-  class ListeningKubernetesTentacleEndpointConfigurationResource
+  class ListeningTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
     Octopus.Client.Model.Endpoints.IListeningTentacleEndpointResource
-    Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource
+    Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
     Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
@@ -6815,10 +6815,10 @@ Octopus.Client.Model.Endpoints
     String OctopusWorkingDirectory { get; set; }
     Octopus.Client.Model.SensitiveValue SensitiveVariablesEncryptionPassword { get; set; }
   }
-  class PollingKubernetesTentacleEndpointConfigurationResource
+  class PollingTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
     Octopus.Client.Model.Endpoints.IPollingTentacleEndpointResource
-    Octopus.Client.Model.Endpoints.KubernetesTentacleEndpointConfigurationResource
+    Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource
   {
     .ctor(String, String)
     Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
@@ -9348,7 +9348,7 @@ Octopus.Client.Serialization
     static String Serialize(Object)
   }
   class TentacleConfigurationConverter
-    Octopus.Client.Serialization.InheritedClassConverter<KubernetesTentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
+    Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
   {
     .ctor()
   }
