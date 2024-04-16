@@ -27,9 +27,6 @@ namespace Octopus.Client.Model.Endpoints
         [Writeable]
         public string Uri { get; set; }
 
-        [Writeable]
-        public TentacleDetailsResource TentacleVersionDetails { get; set; }
-
         public string CertificateSignatureAlgorithm { get; set; }
     }
 }

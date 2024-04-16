@@ -6640,7 +6640,6 @@ Octopus.Client.Model.Endpoints
   interface ITentacleEndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
-    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
@@ -6887,7 +6886,6 @@ Octopus.Client.Model.Endpoints
   {
     String CertificateSignatureAlgorithm { get; set; }
     Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
-    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
