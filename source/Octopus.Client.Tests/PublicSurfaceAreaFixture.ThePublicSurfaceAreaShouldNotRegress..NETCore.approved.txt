@@ -6649,7 +6649,20 @@ Octopus.Client.Model.Endpoints
     .ctor()
     String HelmReleaseName { get; set; }
     String Namespace { get; set; }
+    String TentacleVersion { get; set; }
     String Version { get; set; }
+  }
+  class KubernetesAgentUpgradeInformationResource
+    IEquatable<KubernetesAgentUpgradeInformationResource>
+  {
+    .ctor()
+    Boolean UpgradeLocked { get; set; }
+    Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeStatus { get; set; }
+    Octopus.Client.Model.Endpoints.KubernetesAgentUpgradeInformationResource <Clone>$()
+    Boolean Equals(Object)
+    Boolean Equals(Octopus.Client.Model.Endpoints.KubernetesAgentUpgradeInformationResource)
+    Int32 GetHashCode()
+    String ToString()
   }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
@@ -6727,15 +6740,6 @@ Octopus.Client.Model.Endpoints
     String AccountId { get; set; }
     String AuthenticationType { get; }
   }
-  abstract class TentacleEndpointConfigurationResource
-    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
-  {
-    String CertificateSignatureAlgorithm { get; set; }
-    Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
-    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
-    String Thumbprint { get; set; }
-    String Uri { get; set; }
-  }
   class KubernetesTentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6746,6 +6750,7 @@ Octopus.Client.Model.Endpoints
     String DefaultNamespace { get; set; }
     Octopus.Client.Model.Endpoints.KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
+    Octopus.Client.Model.Endpoints.KubernetesAgentUpgradeInformationResource UpgradeInformation { get; set; }
   }
   class ListeningTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
@@ -6877,6 +6882,15 @@ Octopus.Client.Model.Endpoints
     Boolean UpgradeSuggested { get; set; }
     String Version { get; set; }
   }
+  abstract class TentacleEndpointConfigurationResource
+    Octopus.Client.Model.Endpoints.ITentacleEndpointResource
+  {
+    String CertificateSignatureAlgorithm { get; set; }
+    Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
+    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
+    String Thumbprint { get; set; }
+    String Uri { get; set; }
+  }
   abstract class TentacleEndpointResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6887,6 +6901,16 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
+  }
+  class UpgradeStatusResource
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.Endpoints.UpgradeStatusResource NoUpgrades { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeAvailable { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeRequired { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeSuggested { get; }
   }
 }
 Octopus.Client.Model.EventRetention
