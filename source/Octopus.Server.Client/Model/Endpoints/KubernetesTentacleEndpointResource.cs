@@ -17,5 +17,7 @@ public class KubernetesTentacleEndpointResource : EndpointResource
 
     public KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
 
+    public KubernetesAgentUpgradeInformationResource UpgradeInformation { get; set; }
+
     public string DefaultNamespace { get; set; }
 }
