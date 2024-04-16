@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Serialization;
 
@@ -21,7 +20,7 @@ namespace Octopus.Client.Tests.Serialization
                 ProxyId = "The ProxyId"
             };
 
-            var result = Execute<ListeningTentacleEndpointConfigurationResource>(input);
+            var result = Execute<ListeningKubernetesTentacleEndpointConfigurationResource>(input);
 
             result.CommunicationMode.Should().Be(TentacleCommunicationModeResource.Listening);
             result.Uri.Should().Be(input.Uri);
@@ -39,7 +38,7 @@ namespace Octopus.Client.Tests.Serialization
                 Thumbprint = "The thumbprint",
             };
 
-            var result = Execute<PollingTentacleEndpointConfigurationResource>(input);
+            var result = Execute<PollingKubernetesTentacleEndpointConfigurationResource>(input);
 
             result.CommunicationMode.Should().Be(TentacleCommunicationModeResource.Polling);
             result.Uri.Should().Be(input.Uri);
@@ -52,7 +51,7 @@ namespace Octopus.Client.Tests.Serialization
             var json = JsonConvert.SerializeObject(input);
             
             var settings = JsonSerialization.GetDefaultSerializerSettings();
-            return JsonConvert.DeserializeObject<TentacleEndpointConfigurationResource>(json, settings)
+            return JsonConvert.DeserializeObject<KubernetesTentacleEndpointConfigurationResource>(json, settings)
                 .Should().BeOfType<T>().Subject;
         }
     }

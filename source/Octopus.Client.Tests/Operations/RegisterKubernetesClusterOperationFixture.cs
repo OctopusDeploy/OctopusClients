@@ -84,7 +84,7 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new ListeningKubernetesTentacleEndpointConfigurationResource("ABCDEF", "https://mymachine.test.com:10930/")));
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace Octopus.Client.Tests.Operations
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
-            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
+            machineResources.Should().ContainSingle().Which.Endpoint.Should().BeOfType<KubernetesTentacleEndpointResource>().Which.Should().BeEquivalentTo(new KubernetesTentacleEndpointResource(new PollingKubernetesTentacleEndpointConfigurationResource("ABCDEF", "poll://ckyhfyfkcbmzjl8sfgch/")));
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace Octopus.Client.Tests.Operations
             machines.Items.Add(new MachineResource
             {
                 Id = "machines/84", EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1"),
-                Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("123456", "myMachine.test.com") { ProxyId = "proxy-2" })
+                Endpoint = new KubernetesTentacleEndpointResource(new ListeningKubernetesTentacleEndpointConfigurationResource("123456", "myMachine.test.com") { ProxyId = "proxy-2" })
             });
 
             proxies.Items.Add(new ProxyResource { Id = "proxy-1", Name = "MyNewProxy", Links = LinkCollection.Self("/api/proxies/proxy-1") });
@@ -143,7 +143,7 @@ namespace Octopus.Client.Tests.Operations
                 Id = "machines/84",
                 Name = "Mymachine",
                 EnvironmentIds = new ReferenceCollection("environments-1"),
-                Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://my-new-machine.test.com:10930/") {ProxyId = "proxy-1"}),
+                Endpoint = new KubernetesTentacleEndpointResource(new ListeningKubernetesTentacleEndpointConfigurationResource("ABCDEF", "https://my-new-machine.test.com:10930/") {ProxyId = "proxy-1"}),
                 Links = LinkCollection.Self("/machines/whatever/1")
             });
         }

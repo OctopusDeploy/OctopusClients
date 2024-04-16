@@ -3,13 +3,13 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public abstract class TentacleEndpointConfigurationResource : ITentacleEndpointResource
+    public abstract class KubernetesTentacleEndpointConfigurationResource : ITentacleEndpointResource
     {
-        protected TentacleEndpointConfigurationResource()
+        protected KubernetesTentacleEndpointConfigurationResource()
         {
         }
 
-        protected TentacleEndpointConfigurationResource(string thumbprint, string uri)
+        protected KubernetesTentacleEndpointConfigurationResource(string thumbprint, string uri)
         {
             Thumbprint = thumbprint;
             Uri = uri;

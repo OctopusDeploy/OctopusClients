@@ -1,14 +1,14 @@
 namespace Octopus.Client.Model.Endpoints
 {
-    public class PollingTentacleEndpointConfigurationResource : TentacleEndpointConfigurationResource, IPollingTentacleEndpointResource
+    public class PollingKubernetesTentacleEndpointConfigurationResource : KubernetesTentacleEndpointConfigurationResource, IPollingTentacleEndpointResource
     {
         public override TentacleCommunicationModeResource CommunicationMode => TentacleCommunicationModeResource.Polling;
 
-        protected PollingTentacleEndpointConfigurationResource()
+        protected PollingKubernetesTentacleEndpointConfigurationResource()
         {
         }
 
-        public PollingTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
+        public PollingKubernetesTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
         {
         }
     }

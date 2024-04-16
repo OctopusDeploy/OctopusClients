@@ -2,13 +2,13 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Endpoints
 {
-    public class ListeningTentacleEndpointConfigurationResource : TentacleEndpointConfigurationResource, IListeningTentacleEndpointResource
+    public class ListeningKubernetesTentacleEndpointConfigurationResource : KubernetesTentacleEndpointConfigurationResource, IListeningTentacleEndpointResource
     {
-        protected ListeningTentacleEndpointConfigurationResource()
+        protected ListeningKubernetesTentacleEndpointConfigurationResource()
         {
         }
 
-        public ListeningTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
+        public ListeningKubernetesTentacleEndpointConfigurationResource(string thumbprint, string uri) : base(thumbprint, uri)
         {
         }
 
