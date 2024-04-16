@@ -2,6 +2,23 @@ namespace Octopus.Client.Model.Endpoints
 {
     public class KubernetesAgentDetailsResource
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public KubernetesAgentDetailsResource()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        {
+        }
+
+        public KubernetesAgentDetailsResource(string version,
+            string tentacleVersion,
+            string helmReleaseName,
+            string @namespace)
+        {
+            Version = version;
+            TentacleVersion = tentacleVersion;
+            HelmReleaseName = helmReleaseName;
+            Namespace = @namespace;
+        }
+
         public string Version { get; set; }
 
         public string TentacleVersion { get; set; }

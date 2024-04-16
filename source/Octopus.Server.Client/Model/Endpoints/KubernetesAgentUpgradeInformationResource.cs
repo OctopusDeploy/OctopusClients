@@ -1,6 +1,6 @@
 namespace Octopus.Client.Model.Endpoints;
 
-public record KubernetesAgentUpgradeInformationResource
+public record struct KubernetesAgentUpgradeInformationResource()
 {
     public UpgradeStatusResource UpgradeStatus { get; set; } = UpgradeStatusResource.NoUpgrades;
 
