@@ -2221,6 +2221,10 @@ Octopus.Client.Model
     {
       static System.String Name
     }
+    abstract class ProcessExternalFeedTriggers
+    {
+      static System.String Name
+    }
     abstract class Retention
     {
       static System.String Name
@@ -4400,6 +4404,10 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
   abstract class PollFeedsForTriggers
+  {
+    static System.String Name
+  }
+  abstract class ProcessExternalFeedTriggers
   {
     static System.String Name
   }
