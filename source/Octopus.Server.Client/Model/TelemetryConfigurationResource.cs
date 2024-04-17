@@ -9,5 +9,7 @@ namespace Octopus.Client.Model
         public bool Enabled { get; set; }
 
         public DateTimeOffset ShowAsNewUntil { get; set; }
+        
+        public bool IsEnforceTelemetry { get; set; }
     }
 }
