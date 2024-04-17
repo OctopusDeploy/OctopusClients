@@ -6,7 +6,7 @@ namespace Octopus.Client.Model
     {
         public static string[] TasksThatCanBeQueuedByUsers()
         {
-            // Everything except "Deploy", "Delete" and "PollFeedsForTriggers"
+            // Everything except "Deploy", "Delete" and "ProcessExternalFeedTriggers"
             return new[]
             {
                 Backup.Name, Health.Name, Retention.Name, Upgrade.Name, TestEmail.Name, AdHocScript.Name, UpdateCalamari.Name, TestAzureAccount.Name, SystemIntegrityCheck.Name, SyncCommunityActionTemplates.Name,
@@ -192,9 +192,15 @@ namespace Octopus.Client.Model
             public const string Name = "SyncCommunityActionTemplates";
         }
         
+        // Replaced by ProcessExternalFeedTriggers, will be removed shortly
         public static class PollFeedsForTriggers
         {
             public const string Name = "PollFeedsForTriggers";
+        }
+        
+        public static class ProcessExternalFeedTriggers
+        {
+            public const string Name = "ProcessExternalFeedTriggers";
         }
     }
 }
