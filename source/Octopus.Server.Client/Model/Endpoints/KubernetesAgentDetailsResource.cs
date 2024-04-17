@@ -10,11 +10,13 @@ namespace Octopus.Client.Model.Endpoints
 
         public KubernetesAgentDetailsResource(string version,
             string tentacleVersion,
+            UpgradeStatusResource upgradeStatus,
             string helmReleaseName,
             string @namespace)
         {
             Version = version;
             TentacleVersion = tentacleVersion;
+            UpgradeStatus = upgradeStatus;
             HelmReleaseName = helmReleaseName;
             Namespace = @namespace;
         }
@@ -22,6 +24,8 @@ namespace Octopus.Client.Model.Endpoints
         public string Version { get; set; }
 
         public string TentacleVersion { get; set; }
+
+        public UpgradeStatusResource UpgradeStatus { get; set; }
 
         public string HelmReleaseName { get; set; }
 
