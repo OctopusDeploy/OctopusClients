@@ -2217,10 +2217,6 @@ Octopus.Client.Model
     {
       static System.String Name
     }
-    abstract class PollFeedsForTriggers
-    {
-      static System.String Name
-    }
     abstract class ProcessExternalFeedTriggers
     {
       static System.String Name
@@ -4402,10 +4398,6 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
-  }
-  abstract class PollFeedsForTriggers
-  {
-    static System.String Name
   }
   abstract class ProcessExternalFeedTriggers
   {
