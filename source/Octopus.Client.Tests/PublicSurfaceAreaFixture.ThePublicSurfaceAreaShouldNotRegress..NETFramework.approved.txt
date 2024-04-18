@@ -6670,11 +6670,11 @@ Octopus.Client.Model.Endpoints
   class KubernetesAgentDetailsResource
   {
     .ctor()
-    .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatusResource, String, String)
+    .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatus, String, String)
     String HelmReleaseName { get; set; }
     String Namespace { get; set; }
     String TentacleVersion { get; set; }
-    Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeStatus { get; set; }
+    Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeStatus { get; set; }
     String Version { get; set; }
   }
   class KubernetesAwsAuthenticationResource
@@ -6914,15 +6914,15 @@ Octopus.Client.Model.Endpoints
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
-  class UpgradeStatusResource
+  class UpgradeStatus
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
   {
     .ctor(String)
-    static Octopus.Client.Model.Endpoints.UpgradeStatusResource NoUpgrades { get; }
-    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeAvailable { get; }
-    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeRequired { get; }
-    static Octopus.Client.Model.Endpoints.UpgradeStatusResource UpgradeSuggested { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus NoUpgrades { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeAvailable { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeRequired { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeSuggested { get; }
   }
 }
 Octopus.Client.Model.EventRetention
