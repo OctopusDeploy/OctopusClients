@@ -118,8 +118,7 @@ namespace Octopus.Client.Model
                     return false;
                 }
 
-                value = environmentVariables[templateId];
-                return true;
+                return environmentVariables.TryGetValue(templateId, out value);
             }
 
             public PropertyValueResource GetVariableValue(EnvironmentResource environment, string templateName)
@@ -180,8 +179,7 @@ namespace Octopus.Client.Model
                     return false;
                 }
 
-                value = Variables[templateId];
-                return true;
+                return Variables.TryGetValue(templateId, out value);
             }
 
             public PropertyValueResource GetVariableValue(string templateName)
