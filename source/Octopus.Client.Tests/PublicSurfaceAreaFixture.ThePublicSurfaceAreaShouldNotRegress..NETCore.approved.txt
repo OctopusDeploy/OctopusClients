@@ -6647,11 +6647,11 @@ Octopus.Client.Model.Endpoints
   {
     .ctor()
     .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatus, String, String)
+    String AgentVersion { get; set; }
     String HelmReleaseName { get; set; }
-    String Namespace { get; set; }
+    String KubernetesNamespace { get; set; }
     String TentacleVersion { get; set; }
     Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeStatus { get; set; }
-    String Version { get; set; }
   }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
