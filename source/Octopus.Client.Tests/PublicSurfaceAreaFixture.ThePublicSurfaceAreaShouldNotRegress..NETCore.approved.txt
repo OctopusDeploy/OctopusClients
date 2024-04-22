@@ -2217,10 +2217,6 @@ Octopus.Client.Model
     {
       static System.String Name
     }
-    abstract class PollFeedsForTriggers
-    {
-      static System.String Name
-    }
     abstract class ProcessExternalFeedTriggers
     {
       static System.String Name
@@ -4402,10 +4398,6 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
-  }
-  abstract class PollFeedsForTriggers
-  {
-    static System.String Name
   }
   abstract class ProcessExternalFeedTriggers
   {
@@ -6648,9 +6640,18 @@ Octopus.Client.Model.Endpoints
   interface ITentacleEndpointResource
   {
     String CertificateSignatureAlgorithm { get; set; }
-    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
+  }
+  class KubernetesAgentDetailsResource
+  {
+    .ctor()
+    .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatus, String, String)
+    String AgentVersion { get; set; }
+    String HelmReleaseName { get; set; }
+    String KubernetesNamespace { get; set; }
+    String TentacleVersion { get; set; }
+    Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeStatus { get; set; }
   }
   class KubernetesAwsAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
@@ -6736,7 +6737,9 @@ Octopus.Client.Model.Endpoints
     .ctor(Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource)
     Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
     String DefaultNamespace { get; set; }
+    Octopus.Client.Model.Endpoints.KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
     Octopus.Client.Model.Endpoints.TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
+    Boolean UpgradeLocked { get; set; }
   }
   class ListeningTentacleEndpointConfigurationResource
     Octopus.Client.Model.Endpoints.ITentacleEndpointResource
@@ -6873,7 +6876,6 @@ Octopus.Client.Model.Endpoints
   {
     String CertificateSignatureAlgorithm { get; set; }
     Octopus.Client.Model.Endpoints.TentacleCommunicationModeResource CommunicationMode { get; }
-    Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
   }
@@ -6887,6 +6889,16 @@ Octopus.Client.Model.Endpoints
     Octopus.Client.Model.Endpoints.TentacleDetailsResource TentacleVersionDetails { get; set; }
     String Thumbprint { get; set; }
     String Uri { get; set; }
+  }
+  class UpgradeStatus
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.Endpoints.UpgradeStatus NoUpgrades { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeAvailable { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeRequired { get; }
+    static Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeSuggested { get; }
   }
 }
 Octopus.Client.Model.EventRetention

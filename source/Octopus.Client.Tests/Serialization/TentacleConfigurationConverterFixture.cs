@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Serialization;
 

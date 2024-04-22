@@ -192,12 +192,6 @@ namespace Octopus.Client.Model
             public const string Name = "SyncCommunityActionTemplates";
         }
         
-        // Replaced by ProcessExternalFeedTriggers, will be removed shortly
-        public static class PollFeedsForTriggers
-        {
-            public const string Name = "PollFeedsForTriggers";
-        }
-        
         public static class ProcessExternalFeedTriggers
         {
             public const string Name = "ProcessExternalFeedTriggers";
