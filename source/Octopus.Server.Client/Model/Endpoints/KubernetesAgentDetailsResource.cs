@@ -8,20 +8,20 @@ namespace Octopus.Client.Model.Endpoints
         {
         }
 
-        public KubernetesAgentDetailsResource(string version,
+        public KubernetesAgentDetailsResource(string agentVersion,
             string tentacleVersion,
             UpgradeStatus upgradeStatus,
             string helmReleaseName,
-            string @namespace)
+            string kubernetesNamespace)
         {
-            Version = version;
+            AgentVersion = agentVersion;
             TentacleVersion = tentacleVersion;
             UpgradeStatus = upgradeStatus;
             HelmReleaseName = helmReleaseName;
-            Namespace = @namespace;
+            KubernetesNamespace = kubernetesNamespace;
         }
 
-        public string Version { get; set; }
+        public string AgentVersion { get; set; }
 
         public string TentacleVersion { get; set; }
 
@@ -29,6 +29,6 @@ namespace Octopus.Client.Model.Endpoints
 
         public string HelmReleaseName { get; set; }
 
-        public string Namespace { get; set; }
+        public string KubernetesNamespace { get; set; }
     }
 }
