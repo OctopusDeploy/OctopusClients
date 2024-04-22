@@ -12,7 +12,7 @@ public class FeedFilterResource : TriggerFilterResource
     public List<DeploymentActionSlugPackageResource> Packages { get; set; } = new();
 }
 
-public record DeploymentActionSlugPackageResource
+public class DeploymentActionSlugPackageResource
 {
     [JsonConstructor]
     public DeploymentActionSlugPackageResource(string DeploymentActionSlug, string PackageReferenceId)
