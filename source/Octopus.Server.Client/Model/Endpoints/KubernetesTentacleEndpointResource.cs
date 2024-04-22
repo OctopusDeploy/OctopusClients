@@ -15,5 +15,9 @@ public class KubernetesTentacleEndpointResource : EndpointResource
 
     public TentacleEndpointConfigurationResource TentacleEndpointConfiguration { get; set; }
 
+    public KubernetesAgentDetailsResource KubernetesAgentDetails { get; set; }
+
+    public bool UpgradeLocked { get; set; }
+
     public string DefaultNamespace { get; set; }
 }

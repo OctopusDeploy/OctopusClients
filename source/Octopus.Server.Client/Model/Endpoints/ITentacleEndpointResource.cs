@@ -4,7 +4,6 @@ namespace Octopus.Client.Model.Endpoints
     {
         string Thumbprint { get; set; }
         string Uri { get; set; }
-        TentacleDetailsResource TentacleVersionDetails { get; set; }
         string CertificateSignatureAlgorithm { get; set; }
     }
 }
