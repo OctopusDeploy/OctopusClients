@@ -80,5 +80,10 @@ namespace Octopus.Client.Model
         /// One of the values from LicenseMessageDispositions
         /// </summary>
         public string Disposition { get; set; }
+    } 
+    
+    public class LicenseLimitUsageResource:LicenseLimitStatusResource
+    {
+        public string LimitUsageDescription { get; set; }
     }
 }
