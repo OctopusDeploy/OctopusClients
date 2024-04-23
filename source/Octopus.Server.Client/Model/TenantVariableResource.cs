@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Octopus.Client.Extensibility;
-
 
 namespace Octopus.Client.Model
 {
@@ -14,6 +15,78 @@ namespace Octopus.Client.Model
         
         // Token to validate that no variables for the given tenant have changed since this TenantVariableResource was last requested.
         public string ConcurrencyToken { get; set; }
+
+        public bool TryGetProjectVariableValue(
+            ProjectResource project,
+            EnvironmentResource environment,
+            string templateName,
+            out PropertyValueResource value)
+        {
+            value = null;
+            return ProjectVariables.TryGetValue(project.Id, out var projectVariables) &&
+                   projectVariables.TryGetVariableValue(environment, templateName, out value);
+        }
+
+        public PropertyValueResource GetProjectVariableValue(
+            ProjectResource projectResource,
+            EnvironmentResource environmentResource,
+            string templateName)
+        {
+            if (!ProjectVariables.TryGetValue(projectResource.Id, out var projectVariables))
+            {
+                throw new ArgumentException("Supplied project is not connected", nameof(projectResource));
+            }
+
+            return projectVariables.GetVariableValue(environmentResource, templateName);
+        }
+
+        public void SetProjectVariableValue(
+            ProjectResource projectResource,
+            EnvironmentResource environmentResource,
+            string templateName,
+            PropertyValueResource value)
+        {
+            if (!ProjectVariables.TryGetValue(projectResource.Id, out var projectVariables))
+            {
+                throw new ArgumentException("Supplied project is not connected", nameof(projectResource));
+            }
+
+            projectVariables.SetVariableValue(environmentResource, templateName, value);
+        }
+
+        public bool TryGetLibraryVariableValue(LibraryVariableSetResource libraryVariableSet, string templateName,
+            out PropertyValueResource value)
+        {
+            value = null;
+            return LibraryVariables.TryGetValue(libraryVariableSet.Id, out var libraryVariables) &&
+                   libraryVariables.TryGetVariableValue(templateName, out value);
+        }
+
+        public PropertyValueResource GetLibraryVariableValue(
+            LibraryVariableSetResource libraryVariableSet,
+            string templateName)
+        {
+            if (!LibraryVariables.TryGetValue(libraryVariableSet.Id, out var libraryVariables))
+            {
+                throw new ArgumentException("Supplied library variable set is not connected", nameof(libraryVariableSet));
+            }
+
+            return libraryVariables.GetVariableValue(templateName);
+        }
+
+        public void SetLibraryVariableValue(
+            LibraryVariableSetResource libraryVariableSetResource,
+            string templateName,
+            PropertyValueResource value)
+        {
+            if (!LibraryVariables.TryGetValue(libraryVariableSetResource.Id, out var libraryVariables))
+            {
+                throw new ArgumentException("Supplied library variable set is not connected", nameof(libraryVariableSetResource));
+            }
+
+            libraryVariables.SetVariableValue(templateName, value);
+        }
+
         public class Project
         {
             public Project(string projectId)
@@ -29,6 +102,56 @@ namespace Octopus.Client.Model
             public Dictionary<string, Dictionary<string, PropertyValueResource>> Variables { get; set; } = new Dictionary<string, Dictionary<string, PropertyValueResource>>();
 
             public LinkCollection Links { get; set; }
+
+            public bool TryGetVariableValue(EnvironmentResource environment, string templateName,
+                out PropertyValueResource value)
+            {
+                value = null;
+                if (!Variables.TryGetValue(environment.Id, out var environmentVariables))
+                {
+                    return false;
+                }
+
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    return false;
+                }
+
+                return environmentVariables.TryGetValue(templateId, out value);
+            }
+
+            public PropertyValueResource GetVariableValue(EnvironmentResource environment, string templateName)
+            {
+                if (!Variables.TryGetValue(environment.Id, out var environmentVariables))
+                {
+                    throw new ArgumentException("Supplied environment is not connected", nameof(environment));
+                }
+
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    throw new ArgumentException($"No project variable template with name '{templateName}'");
+                }
+
+                return environmentVariables[templateId];
+            }
+
+            public void SetVariableValue(EnvironmentResource environment, string templateName, PropertyValueResource value)
+            {
+                if (!Variables.TryGetValue(environment.Id, out var environmentVariables))
+                {
+                    throw new ArgumentException("Supplied environment is not connected", nameof(environment));
+                }
+
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    throw new ArgumentException($"No project variable template with name '{templateName}'");
+                }
+
+                environmentVariables[templateId] = value;
+            }
         }
 
         public class Library
@@ -46,6 +169,40 @@ namespace Octopus.Client.Model
             public Dictionary<string, PropertyValueResource> Variables { get; set; } = new Dictionary<string, PropertyValueResource>();
 
             public LinkCollection Links { get; set; }
+
+            public bool TryGetVariableValue(string templateName, out PropertyValueResource value)
+            {
+                value = null;
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    return false;
+                }
+
+                return Variables.TryGetValue(templateId, out value);
+            }
+
+            public PropertyValueResource GetVariableValue(string templateName)
+            {
+                 var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                 if (templateId is null)
+                 {
+                     throw new ArgumentException($"No project variable template with name '{templateName}'");
+                 }
+
+                 return Variables[templateId];
+            }
+
+            public void SetVariableValue(string templateName, PropertyValueResource value)
+            {
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    throw new ArgumentException($"No project variable template with name '{templateName}'");
+                }
+
+                Variables[templateId] = value;
+            }
         }
 
         public string SpaceId { get; set; }

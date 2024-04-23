@@ -35,5 +35,24 @@ namespace Octopus.Client.Editors.Async
             Instance = await repository.ModifyVariables(tenant, Instance).ConfigureAwait(false);
             return this;
         }
+
+        public TenantVariablesEditor SetProjectVariableValue(
+            ProjectResource projectResource,
+            EnvironmentResource environmentResource,
+            string templateName,
+            PropertyValueResource value)
+        {
+            Instance.SetProjectVariableValue(projectResource, environmentResource, templateName, value);
+            return this;
+        }
+
+        public TenantVariablesEditor SetLibraryVariableValue(
+            LibraryVariableSetResource libraryVariableSetResource,
+            string templateName,
+            PropertyValueResource value)
+        {
+            Instance.SetLibraryVariableValue(libraryVariableSetResource, templateName, value);
+            return this;
+        }
     }
 }
