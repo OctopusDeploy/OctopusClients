@@ -3613,6 +3613,12 @@ Octopus.Client.Model
     String Message { get; set; }
     String Name { get; set; }
   }
+  class LicenseLimitUsageResource
+    Octopus.Client.Model.LicenseLimitStatusResource
+  {
+    .ctor()
+    String LimitUsageDescription { get; set; }
+  }
   abstract class LicenseMessageDispositions
   {
     static System.String Error
@@ -3661,7 +3667,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
-    Octopus.Client.Model.LicenseLimitStatusResource[] Limits { get; set; }
+    Octopus.Client.Model.LicenseLimitUsageResource[] Limits { get; set; }
     Octopus.Client.Model.SpaceLicenseUsageResource[] SpacesUsage { get; set; }
   }
   class LifecycleProgressionResource
@@ -5611,6 +5617,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean Enabled { get; set; }
+    Boolean IsTelemetryEnforced { get; set; }
     DateTimeOffset ShowAsNewUntil { get; set; }
   }
   TenantedDeploymentMode
