@@ -7244,6 +7244,12 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     String ChannelId { get; set; }
   }
+  class DeploymentActionSlugPackageResource
+  {
+    .ctor(String, String)
+    String DeploymentActionSlug { get; set; }
+    String PackageReferenceId { get; set; }
+  }
   class FeedFilterResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -7251,7 +7257,7 @@ Octopus.Client.Model.Triggers
   {
     .ctor()
     Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
-    List<DeploymentActionPackageResource> Packages { get; set; }
+    List<DeploymentActionSlugPackageResource> Packages { get; set; }
   }
   class MachineFilterResource
     Octopus.Client.Extensibility.IResource
