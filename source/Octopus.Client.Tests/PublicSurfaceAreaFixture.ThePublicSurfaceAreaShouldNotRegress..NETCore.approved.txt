@@ -7224,7 +7224,7 @@ Octopus.Client.Model.Triggers
   {
     .ctor(String, String)
     String DeploymentActionSlug { get; set; }
-    String PackageReferenceId { get; set; }
+    String PackageReference { get; set; }
   }
   class FeedFilterResource
     Octopus.Client.Extensibility.IResource
