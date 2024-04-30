@@ -200,6 +200,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
+            
+      - name: Update Dylib Path
+        run: echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/homebrew/lib/" >> $GITHUB_ENV
 
       - name: Run unit tests 🏗
         shell: bash
