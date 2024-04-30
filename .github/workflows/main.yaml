@@ -201,6 +201,12 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Install libuv
+        run: brew install libuv
+
+      - name: Update Dylib Path
+        run: echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/homebrew/lib/" >> $GITHUB_ENV
+
       - name: Run unit tests 🏗
         shell: bash
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
