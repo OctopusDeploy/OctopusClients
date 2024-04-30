@@ -201,9 +201,7 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Install libuv
-        run: brew install libuv
-
+      # TODO(tmm): Tests were failing until homebrew library was added to libray path
       - name: Update Dylib Path
         run: echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/homebrew/lib/" >> $GITHUB_ENV
 
