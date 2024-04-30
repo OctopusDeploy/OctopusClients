@@ -15,12 +15,12 @@ public class FeedFilterResource : TriggerFilterResource
 public class DeploymentActionSlugPackageResource
 {
     [JsonConstructor]
-    public DeploymentActionSlugPackageResource(string DeploymentActionSlug, string PackageReferenceId)
+    public DeploymentActionSlugPackageResource(string deploymentActionSlug, string packageReference)
     {
-        this.DeploymentActionSlug = DeploymentActionSlug;
-        this.PackageReferenceId = PackageReferenceId;
+        DeploymentActionSlug = deploymentActionSlug;
+        PackageReference = packageReference;
     }                                                                                                                         
 
     public string DeploymentActionSlug { get; set; }
-    public string PackageReferenceId { get; set; }
+    public string PackageReference { get; set; }
 }
