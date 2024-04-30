@@ -7202,6 +7202,15 @@ Octopus.Client.Model.Migrations
 }
 Octopus.Client.Model.Triggers
 {
+  class ArcFeedFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    List<DeploymentActionPackageResource> Packages { get; set; }
+  }
   class AutoDeployActionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -7300,6 +7309,7 @@ Octopus.Client.Model.Triggers
       DailySchedule = 5
       DaysPerWeekSchedule = 6
       FeedFilter = 7
+      ArcFeedFilter = 8
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
