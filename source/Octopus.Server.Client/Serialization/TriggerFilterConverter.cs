@@ -18,7 +18,7 @@ namespace Octopus.Client.Serialization
               { TriggerFilterType.DaysPerWeekSchedule, typeof (DaysPerWeekScheduledTriggerFilterResource)},
               { TriggerFilterType.CronExpressionSchedule, typeof (CronScheduledTriggerFilterResource)},
               { TriggerFilterType.FeedFilter, typeof (FeedFilterResource)},
-              { TriggerFilterType.Arc, typeof (ArcFeedFilterResource)}
+              { TriggerFilterType.ArcFeedFilter, typeof (ArcFeedFilterResource)}
           };
 
         protected override IDictionary<TriggerFilterType, Type> DerivedTypeMappings => FilterTypes;
