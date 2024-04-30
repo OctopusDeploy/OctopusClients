@@ -59,6 +59,15 @@ jobs:
         shell: bash
         run: ./build.cmd
 
+      - name: Catch Received Files
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: received-files
+          path: ./**/*received.txt
+          retention-days: 1
+
+
       # Unit test reports
 
       - name: Windows .NET 4.6.2 unit test report
