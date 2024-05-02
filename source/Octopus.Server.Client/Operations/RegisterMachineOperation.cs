@@ -29,13 +29,13 @@ namespace Octopus.Client.Operations
         }
 
         /// <summary>
-        /// Gets or sets the environments that this machine should be added to.
+        /// Gets or sets the environments that this machine should be added to. These are environment names only.
         /// </summary>
-        [Obsolete($"Use the {nameof(Environments)} property")]
+        [Obsolete($"Use the {nameof(Environments)} property as it supports environment names, slugs and Ids.")]
         public string[] EnvironmentNames { get; set; }
 
         /// <summary>
-        /// Gets or sets the environments that this machine should be added to. These can be Environment names, slugs or Ids
+        /// Gets or sets the environments that this machine should be added to. These can be environment names, slugs or Ids
         /// </summary>
         public string[] Environments { get; set; }
 
