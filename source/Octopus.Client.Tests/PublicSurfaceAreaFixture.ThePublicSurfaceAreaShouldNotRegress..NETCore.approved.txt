@@ -3017,6 +3017,13 @@ Octopus.Client.Model
     Int32 SortOrder { get; set; }
     String SpaceId { get; set; }
     Boolean UseGuidedFailure { get; set; }
+    class IdComparer
+      IEqualityComparer<EnvironmentResource>
+    {
+      .ctor()
+      Boolean Equals(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.EnvironmentResource)
+      Int32 GetHashCode(Octopus.Client.Model.EnvironmentResource)
+    }
   }
   class EnvironmentsSummaryResource
     Octopus.Client.Model.SummaryResourcesCombined
@@ -3372,6 +3379,13 @@ Octopus.Client.Model
     .ctor(String, String)
     String Color { get; set; }
     String Id { get; set; }
+  }
+  class IdComparer
+    IEqualityComparer<EnvironmentResource>
+  {
+    .ctor()
+    Boolean Equals(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.EnvironmentResource)
+    Int32 GetHashCode(Octopus.Client.Model.EnvironmentResource)
   }
   class IdentityClaimResource
   {
@@ -7569,6 +7583,7 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     String[] EnvironmentNames { get; set; }
+    String[] Environments { get; set; }
     String[] Roles { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
@@ -7615,6 +7630,7 @@ Octopus.Client.Operations
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
     String[] EnvironmentNames { get; set; }
+    String[] Environments { get; set; }
     String[] Roles { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
     String[] Tenants { get; set; }
@@ -7871,8 +7887,9 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
   }
   interface IEnvironmentRepository
-    Octopus.Client.Repositories.IFindByName<EnvironmentResource>
+    Octopus.Client.Repositories.IFindBySlug<EnvironmentResource>
     Octopus.Client.Repositories.IPaginate<EnvironmentResource>
+    Octopus.Client.Repositories.IFindByName<EnvironmentResource>
     Octopus.Client.Repositories.IGet<EnvironmentResource>
     Octopus.Client.Repositories.ICreate<EnvironmentResource>
     Octopus.Client.Repositories.IModify<EnvironmentResource>
@@ -7922,6 +7939,12 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<TResource>
   {
     List<TResource> FindByPartialName(String, String, Object)
+  }
+  interface IFindBySlug`1
+    Octopus.Client.Repositories.IPaginate<TResource>
+  {
+    Octopus.Client.Repositories.TResource FindBySlug(String, String, Object)
+    List<TResource> FindBySlugs(IEnumerable<String>, String, Object)
   }
   interface IGetAll`1
   {
@@ -8629,8 +8652,9 @@ Octopus.Client.Repositories.Async
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String, CancellationToken)
   }
   interface IEnvironmentRepository
-    Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
+    Octopus.Client.Repositories.Async.IFindBySlug<EnvironmentResource>
     Octopus.Client.Repositories.Async.IPaginate<EnvironmentResource>
+    Octopus.Client.Repositories.Async.IFindByName<EnvironmentResource>
     Octopus.Client.Repositories.Async.IGet<EnvironmentResource>
     Octopus.Client.Repositories.Async.ICreate<EnvironmentResource>
     Octopus.Client.Repositories.Async.IModify<EnvironmentResource>
@@ -8686,6 +8710,14 @@ Octopus.Client.Repositories.Async
   {
     Task<List<TResource>> FindByPartialName(String, CancellationToken)
     Task<List<TResource>> FindByPartialName(String, String, Object, CancellationToken)
+  }
+  interface IFindBySlug`1
+    Octopus.Client.Repositories.Async.IPaginate<TResource>
+  {
+    Task<TResource> FindBySlug(String, CancellationToken)
+    Task<TResource> FindBySlug(String, String, Object, CancellationToken)
+    Task<List<TResource>> FindBySlugs(IEnumerable<String>, CancellationToken)
+    Task<List<TResource>> FindBySlugs(IEnumerable<String>, String, Object, CancellationToken)
   }
   interface IGetAll`1
   {
