@@ -13,6 +13,11 @@ namespace Octopus.Client.Operations
         /// Gets or sets the environments that this machine should be added to.
         /// </summary>
         string[] EnvironmentNames { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the environments that this machine should be added to.
+        /// </summary>
+        string[] Environments { get; set; }
 
         /// <summary>
         /// Gets or sets the roles that this machine belongs to.

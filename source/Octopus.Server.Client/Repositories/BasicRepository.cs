@@ -222,6 +222,36 @@ namespace Octopus.Client.Repositories
                 return false;
             }, path, pathParameters);
         }
+        
+        public TResource FindBySlug(string slug, string path = null, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            slug = (slug ?? string.Empty).Trim();
+            // Some endpoints allow a Slug query param which greatly increases efficiency
+            if (pathParameters == null)
+                pathParameters = new {slug = slug};
+
+            return FindOne(r =>
+            {
+                var slugd = r as IHaveSlugResource;
+                if (slugd != null) return string.Equals((slugd.Slug ?? string.Empty).Trim(), slug, StringComparison.OrdinalIgnoreCase);
+                return false;
+            }, path, pathParameters);
+        }
+
+        public List<TResource> FindBySlugs(IEnumerable<string> slugs, string path = null, object pathParameters = null)
+        {
+            ThrowIfServerVersionIsNotCompatible();
+
+            var slugSet = new HashSet<string>((slugs ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
+            return FindMany(r =>
+            {
+                var slugd = r as IHaveSlugResource;
+                if (slugd != null) return slugSet.Contains((slugd.Slug ?? string.Empty).Trim());
+                return false;
+            }, path, pathParameters);
+        }
 
         public TResource Get(string idOrHref)
         {

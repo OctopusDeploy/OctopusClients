@@ -113,7 +113,7 @@ namespace Octopus.Client.Operations
             {
                 machinePolicy = repository.MachinePolicies.FindByName(MachinePolicy);
                 if (machinePolicy == null)
-                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
+                    throw new ArgumentException(CouldNotFindByNameMessage("machine policy", MachinePolicy));
             }
             return machinePolicy;
         }
@@ -125,7 +125,7 @@ namespace Octopus.Client.Operations
             {
                 proxy = repository.Proxies.FindByName(ProxyName);
                 if (proxy == null)
-                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
+                    throw new ArgumentException(CouldNotFindByNameMessage("proxy name", ProxyName));
             }
             return proxy;
         }
@@ -173,7 +173,7 @@ namespace Octopus.Client.Operations
             {
                 machinePolicy = await repository.MachinePolicies.FindByName(MachinePolicy).ConfigureAwait(false);
                 if (machinePolicy == null)
-                    throw new ArgumentException(CouldNotFindMessage("machine policy", MachinePolicy));
+                    throw new ArgumentException(CouldNotFindByNameMessage("machine policy", MachinePolicy));
             }
             return machinePolicy;
         }
@@ -185,7 +185,7 @@ namespace Octopus.Client.Operations
             {
                 proxy = await repository.Proxies.FindByName(ProxyName).ConfigureAwait(false);
                 if (proxy == null)
-                    throw new ArgumentException(CouldNotFindMessage("proxy name", ProxyName));
+                    throw new ArgumentException(CouldNotFindByNameMessage("proxy name", ProxyName));
             }
             return proxy;
         }
@@ -226,11 +226,18 @@ namespace Octopus.Client.Operations
             return new Uri($"https://{TentacleHostname.ToLowerInvariant()}:{TentaclePort.ToString(CultureInfo.InvariantCulture)}/").ToString();
         }
 
-        protected static string CouldNotFindMessage(string modelType, params string[] missing)
+        protected static string CouldNotFindByNameMessage(string modelType, params string[] missing)
         {
             return missing.Length == 1
                 ? $"Could not find the {modelType} named {missing.Single()} on the Octopus Server. Ensure the {modelType} exists and you have permission to access it."
                 : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus Server. Ensure the {modelType}s exist and you have permission to access them.";
+        }
+        
+        protected static string CouldNotFindByMultipleMessage(string modelType, params string[] missing)
+        {
+            return missing.Length == 1
+                ? $"Could not find the {modelType} with name, slug or Id {missing.Single()} on the Octopus Server. Ensure the {modelType} exists and you have permission to access it."
+                : $"Could not find the {modelType}s with names, slugs or Ids: {string.Join(", ", missing)} on the Octopus Server. Ensure the {modelType}s exist and you have permission to access them.";
         }
     }
 }

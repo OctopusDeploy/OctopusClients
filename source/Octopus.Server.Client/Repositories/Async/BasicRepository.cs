@@ -319,6 +319,44 @@ namespace Octopus.Client.Repositories.Async
                 return false;
             }, path, pathParameters, cancellationToken).ConfigureAwait(false);
         }
+        
+        public Task<TResource> FindBySlug(string slug, CancellationToken cancellationToken)
+        {
+            return FindBySlug(slug, null, null, cancellationToken);
+        }
+        
+        public async Task<TResource> FindBySlug(string slug, string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+
+            slug = (slug ?? string.Empty).Trim();
+
+            // Some endpoints allow a Slug query param which greatly increases efficiency
+            pathParameters ??= new { slug };
+
+            return await FindOne(r =>
+            {
+                if (r is IHaveSlugResource slugResource) return string.Equals((slugResource.Slug ?? string.Empty).Trim(), slug, StringComparison.OrdinalIgnoreCase);
+                return false;
+            }, path, pathParameters, cancellationToken);
+        }
+        
+        public Task<List<TResource>> FindBySlugs(IEnumerable<string> slugs, CancellationToken cancellationToken)
+        {
+            return FindBySlugs(slugs, path: null, pathParameters: null, cancellationToken);
+        }
+        
+        public async Task<List<TResource>> FindBySlugs(IEnumerable<string> slugs, string path, object pathParameters, CancellationToken cancellationToken)
+        {
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
+
+            var slugSet = new HashSet<string>((slugs ?? Array.Empty<string>()).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
+            return await FindMany(r =>
+            {
+                if (r is IHaveSlugResource slugResource) return slugSet.Contains((slugResource.Slug ?? string.Empty).Trim());
+                return false;
+            }, path, pathParameters, cancellationToken).ConfigureAwait(false);
+        }
 
         public Task<TResource> Get(string idOrHref)
         {
