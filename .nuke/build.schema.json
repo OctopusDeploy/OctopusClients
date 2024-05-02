@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Build Schema",
   "$ref": "#/definitions/build",
+  "title": "Build Schema",
   "definitions": {
     "build": {
       "type": "object",
@@ -15,7 +15,7 @@
         },
         "AzureKeyVaultAppSecret": {
           "type": "string",
-          "default": "Secrets must be entered via 'nuke :secret [profile]'"
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "AzureKeyVaultCertificateName": {
           "type": "string"
@@ -44,6 +44,7 @@
             "AppVeyor",
             "AzurePipelines",
             "Bamboo",
+            "Bitbucket",
             "Bitrise",
             "GitHubActions",
             "GitLab",
@@ -101,7 +102,6 @@
               "CopyToLocalPackages",
               "CopyUnsignedNugetToLocalPackages",
               "Default",
-              "LocalTest",
               "Merge",
               "PackSignedMergedClientNuget",
               "PackSignedNormalClientNuget",
@@ -124,7 +124,6 @@
               "CopyToLocalPackages",
               "CopyUnsignedNugetToLocalPackages",
               "Default",
-              "LocalTest",
               "Merge",
               "PackSignedMergedClientNuget",
               "PackSignedNormalClientNuget",

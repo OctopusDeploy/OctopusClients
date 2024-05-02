@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -25,13 +26,18 @@ namespace Octopus.Client.Operations
         /// <param name="clientFactory">The client factory.</param>
         public RegisterMachineOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
         {
-
         }
 
         /// <summary>
-        /// Gets or sets the environments that this machine should be added to.
+        /// Gets or sets the environments that this machine should be added to. These are environment names only.
         /// </summary>
+        [Obsolete($"Use the {nameof(Environments)} property as it supports environment names, slugs and Ids.")]
         public string[] EnvironmentNames { get; set; }
+
+        /// <summary>
+        /// Gets or sets the environments that this machine should be added to. These can be environment names, slugs or Ids
+        /// </summary>
+        public string[] Environments { get; set; }
 
         /// <summary>
         /// Gets or sets the roles that this machine belongs to.
@@ -100,15 +106,15 @@ namespace Octopus.Client.Operations
             {
                 return new List<TenantResource>();
             }
+
             var tenantsByName = repository.Tenants.FindByNames(Tenants);
             var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
-
 
             var tenantsById = repository.Tenants.Get(missing);
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tenant", missing));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -119,22 +125,62 @@ namespace Octopus.Client.Operations
                 return;
 
             var tagSets = repository.TagSets.FindAll();
-            var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
+            var missingTags = TenantTags.Where(tt =>
+                    !tagSets.Any(ts =>
+                        ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase))))
+                .ToList();
 
             if (missingTags.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tag", missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
         List<EnvironmentResource> GetEnvironments(IOctopusSpaceRepository repository)
         {
-            var selectedEnvironments = repository.Environments.FindByNames(EnvironmentNames);
+            List<EnvironmentResource> environments = new();
+            if (EnvironmentNames is not null && EnvironmentNames.Any())
+            {
+                var envsByName = repository.Environments.FindByNames(EnvironmentNames);
+                environments.AddRange(envsByName);
 
-            var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
+                var missingByNameOnly = EnvironmentNames
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
 
-            if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("environment", missing.ToArray()));
+                if (missingByNameOnly.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
+            }
 
-            return selectedEnvironments;
+            if (Environments is not null && Environments.Any())
+            {
+                var envsByName = repository.Environments.FindByNames(EnvironmentNames);
+                environments.AddRange(envsByName);
+
+                var missing = Environments
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                //use the missing names to try and find by slug
+                var environmentsBySlug = repository.Environments.FindBySlugs(missing);
+                environments.AddRange(environmentsBySlug);
+
+                missing = missing
+                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                //any other missing slugs/names could be Id's, so looks again
+                var environmentByIds = repository.Environments.Get(missing);
+                environments.AddRange(environmentByIds);
+
+                missing = missing
+                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missing.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+            }
+
+            return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
         }
 
         MachineResource GetMachine(IOctopusSpaceRepository repository)
@@ -144,8 +190,9 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Machines.FindByName(MachineName);
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
+            catch (OctopusDeserializationException)
             {
+                // probably caused by resource incompatibility between versions
             }
 
             return existing ?? new MachineResource();
@@ -214,7 +261,7 @@ namespace Octopus.Client.Operations
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tenant", missing));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tenant", missing));
 
             return tenantsById.Concat(tenantsByName).ToList();
         }
@@ -225,28 +272,63 @@ namespace Octopus.Client.Operations
                 return;
 
             var tagSets = await repository.TagSets.FindAll().ConfigureAwait(false);
-            var missingTags = TenantTags.Where(tt => !tagSets.Any(ts => ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase)))).ToList();
+            var missingTags = TenantTags.Where(tt =>
+                    !tagSets.Any(ts =>
+                        ts.Tags.Any(t => t.CanonicalTagName.Equals(tt, StringComparison.OrdinalIgnoreCase))))
+                .ToList();
 
             if (missingTags.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("tag", missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
         async Task<List<EnvironmentResource>> GetEnvironments(IOctopusSpaceAsyncRepository repository)
         {
-            var selectedEnvironments = new List<EnvironmentResource>();
-            foreach (var environmentName in EnvironmentNames)
+            List<EnvironmentResource> environments = new();
+            if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
-                var environment = await repository.Environments.FindByName(environmentName).ConfigureAwait(false);
-                if (environment != null)
-                    selectedEnvironments.Add(environment);
+                var envsByName = await repository.Environments.FindByNames(EnvironmentNames).ConfigureAwait(false);
+                environments.AddRange(envsByName);
+
+                //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
+                var missingByNameOnly = EnvironmentNames
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missingByNameOnly.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
             }
 
-            var missing = EnvironmentNames.Except(selectedEnvironments.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToList();
+            if (Environments is not null && Environments.Any())
+            {
+                var envsByName = await repository.Environments.FindByNames(Environments).ConfigureAwait(false);
+                environments.AddRange(envsByName);
 
-            if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("environment", missing.ToArray()));
+                var missing = Environments
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
 
-            return selectedEnvironments;
+                //use the missing names to try and find by slug
+                var environmentsBySlug = await repository.Environments.FindBySlugs(missing, CancellationToken.None)
+                    .ConfigureAwait(false);
+                environments.AddRange(environmentsBySlug);
+
+                missing = missing
+                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                //any other missing slugs/names could be Id's, so looks again
+                var environmentByIds = await repository.Environments.Get(missing).ConfigureAwait(false);
+                environments.AddRange(environmentByIds);
+
+                missing = missing
+                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missing.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+            }
+
+            return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
         }
 
         async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository)
@@ -256,13 +338,16 @@ namespace Octopus.Client.Operations
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
             }
-            catch (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException)
             {
+                // probably caused by resource incompatability between versions
             }
+
             return existing ?? new MachineResource();
         }
 
-        void ApplyDeploymentTargetChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment, IEnumerable<TenantResource> tenants)
+        void ApplyDeploymentTargetChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment,
+            IEnumerable<TenantResource> tenants)
         {
             machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
             machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());

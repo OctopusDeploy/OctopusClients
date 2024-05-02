@@ -6,7 +6,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IEnvironmentRepository : IFindByName<EnvironmentResource>, IGet<EnvironmentResource>, ICreate<EnvironmentResource>, IModify<EnvironmentResource>, IDelete<EnvironmentResource>, IGetAll<EnvironmentResource>
+    public interface IEnvironmentRepository : IFindBySlug<EnvironmentResource>, IFindByName<EnvironmentResource>, IGet<EnvironmentResource>, ICreate<EnvironmentResource>, IModify<EnvironmentResource>, IDelete<EnvironmentResource>, IGetAll<EnvironmentResource>
     {
         Task<List<MachineResource>> GetMachines(EnvironmentResource environment,
             int? skip = 0,

@@ -10,9 +10,15 @@ namespace Octopus.Client.Operations
     public interface IRegisterMachineOperation : IRegisterMachineOperationBase
     {
         /// <summary>
-        /// Gets or sets the environments that this machine should be added to.
+        /// Gets or sets the environments that this machine should be added to. These are environment names only.
         /// </summary>
+        [Obsolete($"Use the {nameof(Environments)} property as it supports environment names, slugs and Ids.")]
         string[] EnvironmentNames { get; set; }
+
+        /// <summary>
+        /// Gets or sets the environments that this machine should be added to. These can be environment names, slugs or Ids
+        /// </summary>
+        string[] Environments { get; set; }
 
         /// <summary>
         /// Gets or sets the roles that this machine belongs to.
@@ -34,6 +40,5 @@ namespace Octopus.Client.Operations
         /// Allowed values are Untenanted, TenantedOrUntenanted or Tenanted
         /// </summary>
         TenantedDeploymentMode TenantedDeploymentParticipation { get; set; }
-
     }
 }

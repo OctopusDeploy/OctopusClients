@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -48,5 +49,22 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
         
         public string Slug { get; set; }
+
+        public class IdComparer : IEqualityComparer<EnvironmentResource>
+        {
+            public bool Equals(EnvironmentResource x, EnvironmentResource y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode(EnvironmentResource obj)
+            {
+                return (obj.Id != null ? obj.Id.GetHashCode() : 0);
+            }
+        }
     }
 }

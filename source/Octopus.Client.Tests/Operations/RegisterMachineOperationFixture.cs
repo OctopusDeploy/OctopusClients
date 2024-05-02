@@ -33,9 +33,9 @@ namespace Octopus.Client.Tests.Operations
             operation = new RegisterMachineOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 
-            environments = new ResourceCollection<EnvironmentResource>(new EnvironmentResource[0], LinkCollection.Self("/foo"));
-            machines = new ResourceCollection<MachineResource>(new MachineResource[0], LinkCollection.Self("/foo"));
-            machinePolicies = new ResourceCollection<MachinePolicyResource>(new MachinePolicyResource[0], LinkCollection.Self("/foo"));
+            environments = new ResourceCollection<EnvironmentResource>(Array.Empty<EnvironmentResource>(), LinkCollection.Self("/foo"));
+            machines = new ResourceCollection<MachineResource>(Array.Empty<MachineResource>(), LinkCollection.Self("/foo"));
+            machinePolicies = new ResourceCollection<MachinePolicyResource>(Array.Empty<MachinePolicyResource>(), LinkCollection.Self("/foo"));
             var rootDocument = new RootResource
             {
                 ApiVersion = "3.0.0",
@@ -61,11 +61,38 @@ namespace Octopus.Client.Tests.Operations
         }
 
         [Test]
-        public void ShouldThrowIfEnvironmentNotFound()
+        public void ShouldThrowIfEnvironmentNameNotFound()
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+        }
+        
+        [Test]
+        public void ShouldThrowIfEnvironmentNameNotFoundEvenWhenEnvironmentsHasValid()
+        {
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
+
+            operation.EnvironmentNames = new[] {"Atlantis"};
+            operation.Environments = new[] {"Production"};
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+        }
+        
+        [Test]
+        public void ShouldThrowIfEnvironmentNotFoundBySlug()
+        {
+            operation.Environments = new[] {"atlantis-slug"};
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with name, slug or Id atlantis-slug on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+        }
+        
+        [Test]
+        public void ShouldThrowIfEnvironmentNotFoundByIdOrSlug()
+        {
+            operation.Environments = new[] {"Environments-12345","atlantis-slug" };
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with names, slugs or Ids: Environments-12345, \"atlantis-slug\" on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
 
         [Test]
@@ -221,6 +248,30 @@ namespace Octopus.Client.Tests.Operations
                 && m.EnvironmentIds.First() == "environments-2"
                 && m.MachinePolicyId == "MachinePolicies-2"),
                 Arg.Any<object>(), Arg.Any<CancellationToken>()).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task ShouldDeduplicateEnvironments()
+        {
+            environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Slug="env-uat", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
+            environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
+
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "Mymachine";
+            operation.TentacleHostname = "Mymachine.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.EnvironmentNames = new[] {"UAT"};
+            operation.Environments = new[] {"env-uat", "environments-2"};
+
+            await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
+
+            await client.Received().Create("/api/machines", Arg.Is<MachineResource>(m =>
+                        m.Name == "Mymachine"
+                        && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://mymachine.test.com:10930/"
+                        && m.EnvironmentIds.SequenceEqual(new []{"environments-1","environments-2"})),
+                    Arg.Any<object>(), Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
         }
     }
 }

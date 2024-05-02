@@ -65,7 +65,7 @@ namespace Octopus.Client.Operations
             var missing = WorkerPoolNames.Except(selectedPools.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("worker pool", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missing.ToArray()));
 
             return selectedPools;
         }
@@ -116,7 +116,7 @@ namespace Octopus.Client.Operations
             var missing = WorkerPoolNames.Except(selectedPools.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
             if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindMessage("worker pool", missing.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missing.ToArray()));
 
             return selectedPools;
         }
