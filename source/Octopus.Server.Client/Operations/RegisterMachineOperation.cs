@@ -131,8 +131,7 @@ namespace Octopus.Client.Operations
                 .ToList();
 
             if (missingTags.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag",
-                    missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
         List<EnvironmentResource> GetEnvironments(IOctopusSpaceRepository repository)
@@ -145,11 +144,11 @@ namespace Octopus.Client.Operations
 
                 //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
                 var missingByNameOnly = EnvironmentNames
-                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
 
                 if (missingByNameOnly.Any())
-                    throw new InvalidRegistrationArgumentsException(
-                        CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
             }
 
             if (Environments is not null && Environments.Any())
@@ -157,27 +156,28 @@ namespace Octopus.Client.Operations
                 var envsByName = repository.Environments.FindByNames(EnvironmentNames);
                 environments.AddRange(envsByName);
 
-                //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
-                var missing = Environments.Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                var missing = Environments
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 //use the missing names to try and find by slug
                 var environmentsBySlug = repository.Environments.FindBySlugs(missing);
                 environments.AddRange(environmentsBySlug);
 
-                missing = missing.Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
+                missing = missing
+                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 //any other missing slugs/names could be Id's, so looks again
                 var environmentByIds = repository.Environments.Get(missing);
                 environments.AddRange(environmentByIds);
 
-                missing = missing.Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
+                missing = missing
+                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 if (missing.Any())
-                    throw new InvalidRegistrationArgumentsException(
-                        CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
             }
 
             return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
@@ -190,9 +190,9 @@ namespace Octopus.Client.Operations
             {
                 existing = repository.Machines.FindByName(MachineName);
             }
-            catch
-                (OctopusDeserializationException) // eat it, probably caused by resource incompatibility between versions
+            catch (OctopusDeserializationException)
             {
+                // probably caused by resource incompatibility between versions
             }
 
             return existing ?? new MachineResource();
@@ -278,8 +278,7 @@ namespace Octopus.Client.Operations
                 .ToList();
 
             if (missingTags.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag",
-                    missingTags.ToArray()));
+                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
         async Task<List<EnvironmentResource>> GetEnvironments(IOctopusSpaceAsyncRepository repository)
@@ -292,11 +291,11 @@ namespace Octopus.Client.Operations
 
                 //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
                 var missingByNameOnly = EnvironmentNames
-                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
 
                 if (missingByNameOnly.Any())
-                    throw new InvalidRegistrationArgumentsException(
-                        CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("environment", missingByNameOnly.ToArray()));
             }
 
             if (Environments is not null && Environments.Any())
@@ -304,8 +303,8 @@ namespace Octopus.Client.Operations
                 var envsByName = await repository.Environments.FindByNames(Environments).ConfigureAwait(false);
                 environments.AddRange(envsByName);
 
-                //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
-                var missing = Environments.Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                var missing = Environments
+                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 //use the missing names to try and find by slug
@@ -313,19 +312,20 @@ namespace Octopus.Client.Operations
                     .ConfigureAwait(false);
                 environments.AddRange(environmentsBySlug);
 
-                missing = missing.Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
+                missing = missing
+                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 //any other missing slugs/names could be Id's, so looks again
                 var environmentByIds = await repository.Environments.Get(missing).ConfigureAwait(false);
                 environments.AddRange(environmentByIds);
 
-                missing = missing.Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
+                missing = missing
+                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
                     .ToArray();
 
                 if (missing.Any())
-                    throw new InvalidRegistrationArgumentsException(
-                        CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
             }
 
             return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
@@ -338,9 +338,9 @@ namespace Octopus.Client.Operations
             {
                 existing = await repository.Machines.FindByName(MachineName).ConfigureAwait(false);
             }
-            catch
-                (OctopusDeserializationException) // eat it, probably caused by resource incompatability between versions
+            catch (OctopusDeserializationException)
             {
+                // probably caused by resource incompatability between versions
             }
 
             return existing ?? new MachineResource();
