@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -21,6 +22,9 @@ namespace Octopus.Client.Repositories.Async
         Task SignOut();
         Task<UserResource> GetCurrent();
         Task<SpaceResource[]> GetSpaces(UserResource user);
+
+        Task<GeneratedAccessTokenResource> GenerateAccessToken(UserResource user, CancellationToken cancellationToken);
+
         /// <summary>
         /// Creates a new API key for a user.
         /// </summary>
@@ -107,6 +111,12 @@ namespace Octopus.Client.Repositories.Async
         {
             if (user == null) throw new ArgumentNullException("user");
             return Client.Get<SpaceResource[]>(user.Link("Spaces"));
+        }
+
+        public async Task<GeneratedAccessTokenResource> GenerateAccessToken(UserResource user, CancellationToken cancellationToken)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return await Client.Post<object, GeneratedAccessTokenResource>(user.Link("AccessToken"), new object(), cancellationToken);
         }
 
         public Task<ApiKeyCreatedResource> CreateApiKey(UserResource user, string purpose = null, DateTimeOffset? expires = null)
