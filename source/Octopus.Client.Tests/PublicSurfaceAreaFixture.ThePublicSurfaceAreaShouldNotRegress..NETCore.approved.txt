@@ -3205,6 +3205,11 @@ Octopus.Client.Model
     Stream Contents { get; set; }
     String FileName { get; set; }
   }
+  class GeneratedAccessTokenResource
+  {
+    .ctor()
+    String AccessToken { get; set; }
+  }
   class GitBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -9209,6 +9214,7 @@ Octopus.Client.Repositories.Async
     Task<ApiKeyCreatedResource> CreateApiKey(Octopus.Client.Model.UserResource, String, Nullable<DateTimeOffset>)
     Task<UserResource> CreateServiceAccount(String, String)
     Task<UserResource> FindByUsername(String)
+    Task<GeneratedAccessTokenResource> GenerateAccessToken(Octopus.Client.Model.UserResource, CancellationToken)
     Task<List<ApiKeyResource>> GetApiKeys(Octopus.Client.Model.UserResource)
     Task<UserResource> GetCurrent()
     Task<SpaceResource[]> GetSpaces(Octopus.Client.Model.UserResource)
