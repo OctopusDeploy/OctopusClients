@@ -3523,6 +3523,11 @@ Octopus.Client.Model
     Octopus.Client.Model.TContainer AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.TContainer Clear()
   }
+  KubernetesAgentUpdateBehavior
+  {
+      NeverUpdate = 0
+      Update = 1
+  }
   LeadershipRank
   {
       Follower = 0
@@ -3894,6 +3899,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.CalamariUpdateBehavior CalamariUpdateBehavior { get; set; }
+    Octopus.Client.Model.KubernetesAgentUpdateBehavior KubernetesAgentUpdateBehavior { get; set; }
     String TentacleUpdateAccountId { get; set; }
     Octopus.Client.Model.TentacleUpdateBehavior TentacleUpdateBehavior { get; set; }
   }
