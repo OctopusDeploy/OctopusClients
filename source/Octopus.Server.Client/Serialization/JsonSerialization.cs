@@ -11,11 +11,6 @@ namespace Octopus.Client.Serialization
     /// </summary>
     public static class JsonSerialization
     {
-        static JsonSerialization()
-        {
-            TinyTypeConverterRegistration.RegisterTinyTypeConverters();
-        }
-
         /// <summary>
         /// The serializer settings used by Octopus when reading and writing JSON from the
         /// Octopus Deploy RESTful API.
