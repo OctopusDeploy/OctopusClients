@@ -5575,6 +5575,7 @@ Octopus.Client.Model
     Boolean IsCompleted { get; }
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
     String Name { get; set; }
+    String ProjectId { get; set; }
     DateTimeOffset QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String ServerNode { get; set; }
