@@ -163,6 +163,12 @@ namespace Octopus.Client.Model
         [JsonProperty(Order = 34)]
         public bool HasWarningsOrErrors { get; set; }
 
+        /// <summary>
+        /// If the task belongs to a project (e.g. a deployment), the ID of the project it belongs to
+        /// </summary>
+        [JsonProperty(Order = 36)]
+        public string ProjectId { get; set; }
+
         public string SpaceId { get; set; }
     }
 }
