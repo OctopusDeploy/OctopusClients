@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Octopus.Client.Extensibility;
+﻿using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 using Octopus.Client.Model.Endpoints;
 
@@ -51,5 +50,8 @@ namespace Octopus.Client.Model
         public string Architecture { get; set; }
         
         public string Slug { get; set; }
+
+        [Writeable]
+        public bool SkipInitialHealthCheck { get; set; }
     }
 }
