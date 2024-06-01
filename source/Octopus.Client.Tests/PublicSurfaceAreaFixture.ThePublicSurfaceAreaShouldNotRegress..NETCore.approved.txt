@@ -3392,6 +3392,13 @@ Octopus.Client.Model
     Boolean Equals(Octopus.Client.Model.EnvironmentResource, Octopus.Client.Model.EnvironmentResource)
     Int32 GetHashCode(Octopus.Client.Model.EnvironmentResource)
   }
+  class IdComparer
+    IEqualityComparer<TenantResource>
+  {
+    .ctor()
+    Boolean Equals(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantResource)
+    Int32 GetHashCode(Octopus.Client.Model.TenantResource)
+  }
   class IdentityClaimResource
   {
     .ctor()
@@ -5672,6 +5679,13 @@ Octopus.Client.Model
     Octopus.Client.Model.TenantResource ClearTags()
     Octopus.Client.Model.TenantResource ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.TenantResource WithTag(Octopus.Client.Model.TagResource)
+    class IdComparer
+      IEqualityComparer<TenantResource>
+    {
+      .ctor()
+      Boolean Equals(Octopus.Client.Model.TenantResource, Octopus.Client.Model.TenantResource)
+      Int32 GetHashCode(Octopus.Client.Model.TenantResource)
+    }
   }
   class TenantsMissingVariablesResource
   {
@@ -8311,12 +8325,13 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TelemetryConfigurationResource ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
   interface ITenantRepository
+    Octopus.Client.Repositories.IFindBySlug<TenantResource>
+    Octopus.Client.Repositories.IPaginate<TenantResource>
     Octopus.Client.Repositories.ICreate<TenantResource>
     Octopus.Client.Repositories.IModify<TenantResource>
     Octopus.Client.Repositories.IGet<TenantResource>
     Octopus.Client.Repositories.IDelete<TenantResource>
     Octopus.Client.Repositories.IFindByName<TenantResource>
-    Octopus.Client.Repositories.IPaginate<TenantResource>
     Octopus.Client.Repositories.IGetAll<TenantResource>
     Octopus.Client.Repositories.IFindByPartialName<TenantResource>
   {
