@@ -110,13 +110,16 @@ namespace Octopus.Client.Operations
             var tenantsByName = repository.Tenants.FindByNames(Tenants);
             var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
 
+            var tenantsBySlug = repository.Tenants.FindBySlugs(missing);
+            missing = missing.Except(tenantsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase).ToArray();
+
             var tenantsById = repository.Tenants.Get(missing);
             missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
 
             if (missing.Any())
                 throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tenant", missing));
 
-            return tenantsById.Concat(tenantsByName).ToList();
+            return tenantsById.Concat(tenantsBySlug).Concat(tenantsByName).Distinct(new TenantResource.IdComparer()).ToList();
         }
 
         void ValidateTenantTags(IOctopusSpaceRepository repository)

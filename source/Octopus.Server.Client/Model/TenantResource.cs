@@ -73,5 +73,22 @@ namespace Octopus.Client.Model
         public string Slug { get; set; }
 
         public IconResource Icon { get; set; }
+
+        public class IdComparer : IEqualityComparer<TenantResource>
+        {
+            public bool Equals(TenantResource x, TenantResource y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode(TenantResource obj)
+            {
+                return (obj.Id != null ? obj.Id.GetHashCode() : 0);
+            }
+        }
     }
 }
