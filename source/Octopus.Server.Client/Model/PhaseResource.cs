@@ -19,6 +19,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection OptionalDeploymentTargets { get; set; }
         public int MinimumEnvironmentsBeforePromotion { get; set; }
         public bool IsOptionalPhase { get; set; }
+        public bool IsPriorityPhase { get; set; }
         public RetentionPeriod ReleaseRetentionPolicy { get; set; }
         public RetentionPeriod TentacleRetentionPolicy { get; set; }
 

@@ -2840,6 +2840,7 @@ Octopus.Client.Model
     Dictionary<String, String> FormValues { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
+    Boolean Priority { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
@@ -4442,6 +4443,8 @@ Octopus.Client.Model
     Boolean Blocked { get; set; }
     List<PhaseDeploymentResource> Deployments { get; set; }
     String Id { get; set; }
+    Boolean IsOptionalPhase { get; set; }
+    Boolean IsPriorityPhase { get; set; }
     Int32 MinimumEnvironmentsBeforePromotion { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection OptionalDeploymentTargets { get; set; }
@@ -4453,6 +4456,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection AutomaticDeploymentTargets { get; set; }
     String Id { get; set; }
     Boolean IsOptionalPhase { get; set; }
+    Boolean IsPriorityPhase { get; set; }
     Int32 MinimumEnvironmentsBeforePromotion { get; set; }
     String Name { get; set; }
     Octopus.Client.Model.ReferenceCollection OptionalDeploymentTargets { get; set; }
