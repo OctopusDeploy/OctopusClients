@@ -66,10 +66,10 @@ namespace Octopus.Client.Model
         public bool UseGuidedFailure { get; set; }
 
         /// <summary>
-        /// If set to true, the deployment will be created with priority.
+        /// If priority mode is on, the deployment will be created with priority.
         /// </summary>
         [WriteableOnCreate]
-        public bool Priority { get; set; }
+        public PriorityMode Priority { get; set; }
 
         [WriteableOnCreate]
         public string Comments { get; set; }
