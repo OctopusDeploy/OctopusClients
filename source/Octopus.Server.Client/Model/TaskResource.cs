@@ -170,5 +170,7 @@ namespace Octopus.Client.Model
         public string ProjectId { get; set; }
 
         public string SpaceId { get; set; }
+
+        public int EstimatedRemainingQueueDurationSeconds { get; }
     }
 }
