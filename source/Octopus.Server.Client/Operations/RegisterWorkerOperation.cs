@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -33,7 +34,13 @@ namespace Octopus.Client.Operations
         /// <summary>
         /// Gets or sets the worker pools that this machine should be added to.
         /// </summary>
+        [Obsolete($"Use the {nameof(WorkerPools)} property as it supports worker pool names, slugs and Ids.")]
         public string[] WorkerPoolNames { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the worker pools that this machine should be added to. These can be worker pool names, slugs or Ids
+        /// </summary>
+        public string[] WorkerPools { get; set; }
 
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
@@ -111,14 +118,49 @@ namespace Octopus.Client.Operations
 
         async Task<List<WorkerPoolResource>> GetWorkerPools(IOctopusSpaceAsyncRepository repository)
         {
-            var selectedPools = await repository.WorkerPools.FindByNames(WorkerPoolNames).ConfigureAwait(false);
+            List<WorkerPoolResource> workerPools = new();
+            if (WorkerPoolNames is not null && WorkerPoolNames.Any())
+            {
+                var workerPoolsByName = await repository.WorkerPools.FindByNames(WorkerPoolNames).ConfigureAwait(false);
+                workerPools.AddRange(workerPoolsByName);
 
-            var missing = WorkerPoolNames.Except(selectedPools.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
+                var missingByNameOnly = WorkerPoolNames.Except(workerPoolsByName.Select(p => p.Name), StringComparer.OrdinalIgnoreCase).ToList();
 
-            if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missing.ToArray()));
+                if (missingByNameOnly.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missingByNameOnly.ToArray()));
+            }
+            
+            if (WorkerPools is not null && WorkerPools.Any())
+            {
+                var workerPoolsByName = await repository.WorkerPools.FindByNames(WorkerPools).ConfigureAwait(false);
+                workerPools.AddRange(workerPoolsByName);
 
-            return selectedPools;
+                var missing = WorkerPools
+                    .Except(workerPoolsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                //use the missing names to try and find by slug
+                var workerPoolsBySlug = await repository.WorkerPools.FindBySlugs(missing, CancellationToken.None)
+                    .ConfigureAwait(false);
+                workerPools.AddRange(workerPoolsBySlug);
+
+                missing = missing
+                    .Except(workerPoolsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                //any other missing slugs/names could be Id's, so looks again
+                var workerPoolsByIds = await repository.WorkerPools.Get(missing).ConfigureAwait(false);
+                workerPools.AddRange(workerPoolsByIds);
+
+                missing = missing
+                    .Except(workerPoolsByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missing.Any())
+                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("worker pool", missing.ToArray()));
+            }
+            
+            return workerPools;
         }
 
         async Task<WorkerResource> GetWorker(IOctopusSpaceAsyncRepository repository)
