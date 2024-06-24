@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Octopus.Client.Util;
+using IEnvironmentRepository = Octopus.Client.Repositories.IEnvironmentRepository;
+using IAsyncEnvironmentRepository = Octopus.Client.Repositories.Async.IEnvironmentRepository;
 
 namespace Octopus.Client.Operations
 {
@@ -156,31 +158,10 @@ namespace Octopus.Client.Operations
 
             if (Environments is not null && Environments.Any())
             {
-                var envsByName = repository.Environments.FindByNames(EnvironmentNames);
-                environments.AddRange(envsByName);
-
-                var missing = Environments
-                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                //use the missing names to try and find by slug
-                var environmentsBySlug = repository.Environments.FindBySlugs(missing);
-                environments.AddRange(environmentsBySlug);
-
-                missing = missing
-                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                //any other missing slugs/names could be Id's, so looks again
-                var environmentByIds = repository.Environments.Get(missing);
-                environments.AddRange(environmentByIds);
-
-                missing = missing
-                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                if (missing.Any())
-                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                var environmentsByNameIdOrSlug =
+                    repository.Environments.FindByNameIdOrSlugs<EnvironmentResource, IEnvironmentRepository>(
+                        Environments, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                environments.AddRange(environmentsByNameIdOrSlug);
             }
 
             return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
@@ -303,32 +284,10 @@ namespace Octopus.Client.Operations
 
             if (Environments is not null && Environments.Any())
             {
-                var envsByName = await repository.Environments.FindByNames(Environments).ConfigureAwait(false);
-                environments.AddRange(envsByName);
-
-                var missing = Environments
-                    .Except(envsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                //use the missing names to try and find by slug
-                var environmentsBySlug = await repository.Environments.FindBySlugs(missing, CancellationToken.None)
-                    .ConfigureAwait(false);
-                environments.AddRange(environmentsBySlug);
-
-                missing = missing
-                    .Except(environmentsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                //any other missing slugs/names could be Id's, so looks again
-                var environmentByIds = await repository.Environments.Get(missing).ConfigureAwait(false);
-                environments.AddRange(environmentByIds);
-
-                missing = missing
-                    .Except(environmentByIds.Select(e => e.Id), StringComparer.OrdinalIgnoreCase)
-                    .ToArray();
-
-                if (missing.Any())
-                    throw new InvalidRegistrationArgumentsException(CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                var environmentsByNameIdOrSlug =
+                    await repository.Environments.FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
+                        Environments, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()));
+                environments.AddRange(environmentsByNameIdOrSlug);
             }
 
             return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();

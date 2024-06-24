@@ -61,38 +61,38 @@ namespace Octopus.Client.Tests.Operations
         }
 
         [Test]
-        public void ShouldThrowIfEnvironmentNameNotFound()
+        public async Task ShouldThrowIfEnvironmentNameNotFound()
         {
             operation.EnvironmentNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
         
         [Test]
-        public void ShouldThrowIfEnvironmentNameNotFoundEvenWhenEnvironmentsHasValid()
+        public async Task ShouldThrowIfEnvironmentNameNotFoundEvenWhenEnvironmentsHasValid()
         {
             environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             operation.EnvironmentNames = new[] {"Atlantis"};
             operation.Environments = new[] {"Production"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment named Atlantis on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
         
         [Test]
-        public void ShouldThrowIfEnvironmentNotFoundBySlug()
+        public async Task ShouldThrowIfEnvironmentNotFoundBySlug()
         {
             operation.Environments = new[] {"atlantis-slug"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with name, slug or Id atlantis-slug on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with name, slug or Id atlantis-slug on the Octopus Server. Ensure the environment exists and you have permission to access it.");
         }
         
         [Test]
-        public void ShouldThrowIfEnvironmentNotFoundByIdOrSlug()
+        public async Task ShouldThrowIfEnvironmentNotFoundByIdOrSlug()
         {
             operation.Environments = new[] {"Environments-12345","atlantis-slug" };
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
-            exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environment with names, slugs or Ids: Environments-12345, \"atlantis-slug\" on the Octopus Server. Ensure the environment exists and you have permission to access it.");
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments with names, slugs or Ids: Environments-12345, atlantis-slug on the Octopus Server. Ensure the environments exist and you have permission to access them.");
         }
 
         [Test]

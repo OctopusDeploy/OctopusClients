@@ -17,6 +17,7 @@ namespace Octopus.Client.Tests.Operations
         RegisterWorkerOperation operation;
         IOctopusClientFactory clientFactory;
         IOctopusAsyncClient client;
+        IOctopusClient syncClient;
         OctopusServerEndpoint serverEndpoint;
         ResourceCollection<WorkerPoolResource> workerPools;
         ResourceCollection<WorkerResource> workers;
@@ -26,7 +27,9 @@ namespace Octopus.Client.Tests.Operations
         {
             clientFactory = Substitute.For<IOctopusClientFactory>();
             client = Substitute.For<IOctopusAsyncClient>();
+            syncClient = Substitute.For<IOctopusClient>();
             clientFactory.CreateAsyncClient(Arg.Any<OctopusServerEndpoint>()).Returns(client);
+            clientFactory.CreateClient(Arg.Any<OctopusServerEndpoint>()).Returns(syncClient);
             operation = new RegisterWorkerOperation(clientFactory);
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 
@@ -43,6 +46,12 @@ namespace Octopus.Client.Tests.Operations
                     .Add("SpaceHome", "/api/spaces")
             };
             
+            SetupAsyncClient(rootDocument);
+            SetupSyncClient(rootDocument);
+        }
+
+        void SetupAsyncClient(RootResource rootDocument)
+        {
             client.Get<RootResource>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(rootDocument);
             client.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
             client.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
@@ -52,6 +61,19 @@ namespace Octopus.Client.Tests.Operations
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<WorkerResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<WorkerResource>, bool>>()(workers));
         }
+        
+        // This will be removed once we stop supporting the non-async version of the Client
+        void SetupSyncClient(RootResource rootDocument)
+        {
+            syncClient.Get<RootResource>(Arg.Any<string>()).Returns(rootDocument);
+            syncClient.Repository.HasLink(Arg.Any<string>()).Returns(ci => rootDocument.HasLink(ci.Arg<string>()));
+            syncClient.Repository.Link(Arg.Any<string>()).Returns(ci => rootDocument.Link(ci.Arg<string>()));
+
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<WorkerPoolResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<WorkerPoolResource>, bool>>()(workerPools));
+            syncClient.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<WorkerResource>, bool>>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<WorkerResource>, bool>>()(workers));
+        }
 
         [Test]
         public async Task ShouldThrowIfWorkerPoolNameNotFound()
@@ -59,6 +81,14 @@ namespace Octopus.Client.Tests.Operations
             operation.WorkerPoolNames = new[] {"Atlantis"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pool named Atlantis on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
+        }
+        
+        [Test]
+        public void Sync_ShouldThrowIfWorkerPoolNameNotFound()
+        {
+            operation.WorkerPoolNames = new[] {"Atlantis"};
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the worker pool named Atlantis on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
         }
         
         [Test]
@@ -73,11 +103,30 @@ namespace Octopus.Client.Tests.Operations
         }
         
         [Test]
+        public void Sync_ShouldThrowIfWorkerPoolNameNotFoundEvenWhenWorkerPoolsHaveValid()
+        {
+            workerPools.Items.Add(new WorkerPoolResource { Id = "WorkerPools-2", Name = "MyWorkerPool", Links = LinkCollection.Self("/api/workerpools/workerpools-2") });
+        
+            operation.WorkerPoolNames = new[] {"Atlantis"};
+            operation.WorkerPools = new[] {"MyWorkerPool"};
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the worker pool named Atlantis on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
+        }
+        
+        [Test]
         public async Task ShouldThrowIfWorkerPoolNotFoundBySlug()
         {
             operation.WorkerPools = new[] {"atlantis-slug"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pool with name, slug or Id atlantis-slug on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
+        }
+        
+        [Test]
+        public void Sync_ShouldThrowIfWorkerPoolNotFoundBySlug()
+        {
+            operation.WorkerPools = new[] {"atlantis-slug"};
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the worker pool with name, slug or Id atlantis-slug on the Octopus Server. Ensure the worker pool exists and you have permission to access it.");
         }
         
         [Test]
@@ -89,6 +138,14 @@ namespace Octopus.Client.Tests.Operations
         }
         
         [Test]
+        public void Sync_ShouldThrowIfWorkerPoolNotFoundByIdOrSlug()
+        {
+            operation.WorkerPools = new[] {"WorkerPools-12345","atlantis-slug" };
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the worker pools with names, slugs or Ids: WorkerPools-12345, atlantis-slug on the Octopus Server. Ensure the worker pools exist and you have permission to access them.");
+        }
+        
+        [Test]
         public async Task ShouldThrowIfAnyWorkerPoolNotFound()
         {
             workerPools.Items.Add(new WorkerPoolResource { Id = "WorkerPools-2", Name = "MyWorkerPool", Links = LinkCollection.Self("/api/workerpools/WorkerPools-2") });
@@ -96,6 +153,16 @@ namespace Octopus.Client.Tests.Operations
             operation.WorkerPools = new[] {"WorkerPools-2", "Atlantis", "ImaginaryPool"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the worker pools with names, slugs or Ids: Atlantis, ImaginaryPool on the Octopus Server. Ensure the worker pools exist and you have permission to access them.");
+        }
+        
+        [Test]
+        public void Sync_ShouldThrowIfAnyWorkerPoolNotFound()
+        {
+            workerPools.Items.Add(new WorkerPoolResource { Id = "WorkerPools-2", Name = "MyWorkerPool", Links = LinkCollection.Self("/api/workerpools/WorkerPools-2") });
+        
+            operation.WorkerPools = new[] {"WorkerPools-2", "Atlantis", "ImaginaryPool"};
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>().WithMessage("Could not find the worker pools with names, slugs or Ids: Atlantis, ImaginaryPool on the Octopus Server. Ensure the worker pools exist and you have permission to access them.");
         }
         
         [Test]
@@ -120,6 +187,27 @@ namespace Octopus.Client.Tests.Operations
                     Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .ConfigureAwait(false);
         }
+        
+        [Test]
+        public void Sync_ShouldCreateNewWorker()
+        {
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-1", Name = "PoolA", Slug = "workerpool-1", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-1")});
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-2", Name = "PoolB", Slug = "workerpool-2", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-2")});
+
+            operation.WorkerPools = new[] { "workerpool-1", "PoolB" };
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "MyWorker";
+            operation.TentacleHostname = "myworker.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+        
+            operation.Execute(serverEndpoint);
+
+            syncClient.Received().Create("/api/workers", Arg.Is<WorkerResource>(m =>
+                    m.Name == "MyWorker"
+                    && m.WorkerPoolIds.SetEquals(new[] { "WorkerPools-1", "WorkerPools-2" })
+                    && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://myworker.test.com:10930/"));
+        }
     
         [Test]
         public async Task ShouldNotUpdateExistingWorkerWhenForceIsNotEnabled()
@@ -138,6 +226,25 @@ namespace Octopus.Client.Tests.Operations
         
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             await exec.Should().ThrowAsync<ArgumentException>();
+        }
+        
+        [Test]
+        public void Sync_ShouldNotUpdateExistingWorkerWhenForceIsNotEnabled()
+        {
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-1", Name = "PoolA", Slug = "workerpool-1", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-1")});
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-2", Name = "PoolB", Slug = "workerpool-2", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-2")});
+        
+            workers.Items.Add(new WorkerResource {Id = "Worker-1", Name = "ExistingWorker", WorkerPoolIds = new ReferenceCollection(new[] {"workerpool-2"}), Links = LinkCollection.Self("/workers/Worker-1")});
+        
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "ExistingWorker";
+            operation.TentacleHostname = "newworker.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.WorkerPools = new[] { "workerpool-1", "PoolB" };
+        
+            Action exec = () => operation.Execute(serverEndpoint);
+            exec.Should().Throw<ArgumentException>();
         }
     
         [Test]
@@ -167,6 +274,30 @@ namespace Octopus.Client.Tests.Operations
         }
         
         [Test]
+        public void Sync_ShouldUpdateExistingWorkerWhenForceIsEnabled()
+        {
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-1", Name = "PoolA", Slug = "workerpool-1", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-1")});
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-2", Name = "PoolB", Slug = "workerpool-2", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-2")});
+        
+            workers.Items.Add(new WorkerResource {Id = "Worker-1", Name = "ExistingWorker", WorkerPoolIds = new ReferenceCollection(new[] {"workerpool-2"}), Links = LinkCollection.Self("/workers/Worker-1")});
+        
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "ExistingWorker";
+            operation.TentacleHostname = "newworker.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.WorkerPools = new[] { "workerpool-1", "PoolB" };
+            operation.AllowOverwrite = true;
+        
+            operation.Execute(serverEndpoint);
+            
+            syncClient.Received().Update("/workers/Worker-1", Arg.Is<WorkerResource>(m =>
+                        m.Name == "ExistingWorker"
+                        && m.WorkerPoolIds.SetEquals(new []{ "WorkerPools-1", "WorkerPools-2" })
+                        && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://newworker.test.com:10930/"));
+        }
+        
+        [Test]
         public async Task ShouldDeduplicateWorkerPools()
         {
             workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-1", Name = "PoolA", Slug = "workerpool-slug-1", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-1")});
@@ -188,6 +319,28 @@ namespace Octopus.Client.Tests.Operations
                         && m.WorkerPoolIds.SetEquals(new []{"WorkerPools-1","WorkerPools-2"})),
                     Arg.Any<object>(), Arg.Any<CancellationToken>())
                 .ConfigureAwait(false);
+        }
+        
+        [Test]
+        public void Sync_ShouldDeduplicateWorkerPools()
+        {
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-1", Name = "PoolA", Slug = "workerpool-slug-1", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-1")});
+            workerPools.Items.Add(new WorkerPoolResource {Id = "WorkerPools-2", Name = "PoolB", Slug = "workerpool-slug-2", WorkerPoolType = WorkerPoolType.StaticWorkerPool, Links = LinkCollection.Self("/api/workerpools/WorkerPools-2")});
+    
+            operation.TentacleThumbprint = "ABCDEF";
+            operation.TentaclePort = 10930;
+            operation.MachineName = "MyWorker";
+            operation.TentacleHostname = "myworker.test.com";
+            operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
+            operation.WorkerPoolNames = new[] {"PoolA"};
+            operation.WorkerPools = new[] {"workerpool-slug-1", "workerpool-slug-2"};
+    
+            operation.Execute(serverEndpoint);
+    
+            syncClient.Received().Create("/api/workers", Arg.Is<WorkerResource>(m =>
+                        m.Name == "MyWorker"
+                        && ((ListeningTentacleEndpointResource)m.Endpoint).Uri == "https://myworker.test.com:10930/"
+                        && m.WorkerPoolIds.SetEquals(new []{"WorkerPools-1","WorkerPools-2"})));
         }
     }
 }
