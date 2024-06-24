@@ -4,7 +4,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Operations;
 
-public class RegisterKubernetesDeploymentTargetOperation : RegisterMachineOperation, IRegisterKubernetesClusterOperation
+public class RegisterKubernetesDeploymentTargetOperation : RegisterMachineOperation, IRegisterKubernetesDeploymentTargetOperation
 {
     public RegisterKubernetesDeploymentTargetOperation() : this(null)
     {
