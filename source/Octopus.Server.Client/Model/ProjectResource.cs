@@ -129,6 +129,9 @@ namespace Octopus.Client.Model
         [Writeable]
         [Obsolete("Use " + nameof(DeploymentSettingsResource) + " instead on the `deploymentsettings` API.")]
         public bool ForcePackageDownload { get; set; }
+
+        [Writeable]
+        public bool AllowIgnoreChannelRules { get; set;}
         
         public IconResource Icon { get; set; }
 
