@@ -1137,9 +1137,13 @@ Octopus.Client.Editors.Async
     .ctor(Octopus.Client.Repositories.Async.IChannelRepository)
     Octopus.Client.Model.ChannelResource Instance { get; }
     Octopus.Client.Editors.Async.ChannelEditor AddCommonRuleForAllActions(String, String, Octopus.Client.Model.DeploymentProcessResource)
+    Octopus.Client.Editors.Async.ChannelEditor AddGitReferenceRule(String)
+    Octopus.Client.Editors.Async.ChannelEditor AddGitResourceRule(Octopus.Client.Model.ChannelGitResourceRuleResource)
     Octopus.Client.Editors.Async.ChannelEditor AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
     Octopus.Client.Editors.Async.ChannelEditor AddRule(Octopus.Client.Model.ChannelVersionRuleResource)
     Octopus.Client.Editors.Async.ChannelEditor AddRule(String, String, Octopus.Client.Model.DeploymentActionResource[])
+    Octopus.Client.Editors.Async.ChannelEditor ClearGitReferenceRules()
+    Octopus.Client.Editors.Async.ChannelEditor ClearGitResourceRules()
     Octopus.Client.Editors.Async.ChannelEditor ClearRules()
     Octopus.Client.Editors.Async.ChannelEditor ClearTenantTags()
     Task<ChannelEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String)
@@ -2390,6 +2394,12 @@ Octopus.Client.Model
     ICollection<ProjectResource> ProjectUsages { get; set; }
     ICollection<TenantResource> TenantUsages { get; set; }
   }
+  class ChannelGitResourceRuleResource
+  {
+    .ctor()
+    List<DeploymentActionGitDependencyResource> GitDependencyActions { get; set; }
+    List<String> Rules { get; set; }
+  }
   class ChannelResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2401,6 +2411,8 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    List<String> GitReferenceRules { get; set; }
+    List<ChannelGitResourceRuleResource> GitResourceRules { get; set; }
     Boolean IsDefault { get; set; }
     String LifecycleId { get; set; }
     String Name { get; set; }
@@ -2410,9 +2422,13 @@ Octopus.Client.Model
     String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
     Octopus.Client.Model.ChannelResource AddCommonRuleForAllActions(String, String, Octopus.Client.Model.DeploymentProcessResource)
+    Octopus.Client.Model.ChannelResource AddGitReferenceRule(String)
+    Octopus.Client.Model.ChannelResource AddGitResourceRule(Octopus.Client.Model.ChannelGitResourceRuleResource)
     Octopus.Client.Model.ChannelResource AddOrUpdateTenantTags(Octopus.Client.Model.TagResource[])
     Octopus.Client.Model.ChannelResource AddRule(Octopus.Client.Model.ChannelVersionRuleResource)
     Octopus.Client.Model.ChannelResource AddRule(String, String, Octopus.Client.Model.DeploymentActionResource[])
+    Octopus.Client.Model.ChannelResource ClearGitReferenceRules()
+    Octopus.Client.Model.ChannelResource ClearGitResourceRules()
     Octopus.Client.Model.ChannelResource ClearRules()
     Octopus.Client.Model.ChannelResource ClearTenantTags()
     Octopus.Client.Model.ChannelResource SetAsDefaultChannel()
@@ -2706,6 +2722,13 @@ Octopus.Client.Model
     String FeedId { get; set; }
     String GitUrl { get; set; }
     String Image { get; set; }
+  }
+  class DeploymentActionGitDependencyResource
+  {
+    .ctor(String)
+    .ctor(String, String)
+    String DeploymentActionSlug { get; set; }
+    String GitDependencyName { get; set; }
   }
   class DeploymentActionPackageResource
   {
@@ -4558,6 +4581,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
+    Boolean AllowIgnoreChannelRules { get; set; }
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }
