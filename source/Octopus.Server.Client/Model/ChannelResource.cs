@@ -11,6 +11,8 @@ namespace Octopus.Client.Model
         {
             TenantTags = new ReferenceCollection();
             Rules = new List<ChannelVersionRuleResource>();
+            GitReferenceRules = new List<string>();
+            GitResourceRules = new List<ChannelGitResourceRuleResource>();
         }
 
         [Writeable]
@@ -30,6 +32,12 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public List<ChannelVersionRuleResource> Rules { get; set; }
+
+        [Writeable]
+        public List<string> GitReferenceRules { get; set; }
+
+        [Writeable]
+        public List<ChannelGitResourceRuleResource> GitResourceRules { get; set; }
 
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
@@ -80,6 +88,30 @@ namespace Octopus.Client.Model
                     ).ToList()
             });
 
+            return this;
+        }
+
+        public ChannelResource ClearGitReferenceRules()
+        {
+            GitReferenceRules.Clear();
+            return this;
+        }
+
+        public ChannelResource AddGitReferenceRule(string rule)
+        {
+            GitReferenceRules.Add(rule);
+            return this;
+        }
+
+        public ChannelResource ClearGitResourceRules()
+        {
+            GitResourceRules.Clear();
+            return this;
+        }
+
+        public ChannelResource AddGitResourceRule(ChannelGitResourceRuleResource rule)
+        {
+            GitResourceRules.Add(rule);
             return this;
         }
 
