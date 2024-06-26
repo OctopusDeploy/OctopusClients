@@ -4360,6 +4360,8 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission TagSetCreate
     static Octopus.Client.Model.Permission TagSetDelete
     static Octopus.Client.Model.Permission TagSetEdit
+    static Octopus.Client.Model.Permission TargetTagAdminister
+    static Octopus.Client.Model.Permission TargetTagView
     static Octopus.Client.Model.Permission TaskCancel
     static Octopus.Client.Model.Permission TaskCreate
     static Octopus.Client.Model.Permission TaskEdit
