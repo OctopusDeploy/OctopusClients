@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Octopus.Client.Model
 {
     public class DeploymentActionGitDependencyResource
@@ -7,6 +9,7 @@ namespace Octopus.Client.Model
         {
         }
 
+        [JsonConstructor]
         public DeploymentActionGitDependencyResource(string deploymentActionSlug, string gitDependencyName)
         {
             DeploymentActionSlug = deploymentActionSlug;
