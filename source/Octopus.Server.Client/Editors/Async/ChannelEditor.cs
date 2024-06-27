@@ -98,6 +98,30 @@ namespace Octopus.Client.Editors.Async
             return this;
         }
 
+        public ChannelEditor ClearGitReferenceRules()
+        {
+            Instance.ClearGitReferenceRules();
+            return this;
+        }
+
+        public ChannelEditor AddGitReferenceRule(string rule)
+        {
+            Instance.AddGitReferenceRule(rule);
+            return this;
+        }
+
+        public ChannelEditor ClearGitResourceRules()
+        {
+            Instance.ClearGitResourceRules();
+            return this;
+        }
+
+        public ChannelEditor AddGitResourceRule(ChannelGitResourceRuleResource rule)
+        {
+            Instance.AddGitResourceRule(rule);
+            return this;
+        }
+
         public ChannelEditor ClearTenantTags()
         {
             Instance.ClearTenantTags();
