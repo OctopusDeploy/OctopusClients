@@ -3744,6 +3744,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     String Architecture { get; set; }
@@ -3759,6 +3760,7 @@ Octopus.Client.Model
     String ShellVersion { get; set; }
     Boolean SkipInitialHealthCheck { get; set; }
     String Slug { get; set; }
+    String SpaceId { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
     String Thumbprint { get; set; }
@@ -3865,6 +3867,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
@@ -4340,6 +4343,8 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission TagSetCreate
     static Octopus.Client.Model.Permission TagSetDelete
     static Octopus.Client.Model.Permission TagSetEdit
+    static Octopus.Client.Model.Permission TargetTagAdminister
+    static Octopus.Client.Model.Permission TargetTagView
     static Octopus.Client.Model.Permission TaskCancel
     static Octopus.Client.Model.Permission TaskCreate
     static Octopus.Client.Model.Permission TaskEdit
@@ -5566,6 +5571,7 @@ Octopus.Client.Model
     String Description { get; set; }
     String Duration { get; set; }
     String ErrorMessage { get; set; }
+    Int32 EstimatedRemainingQueueDurationSeconds { get; }
     Boolean FinishedSuccessfully { get; }
     Boolean HasBeenPickedUpByProcessor { get; set; }
     Boolean HasPendingInterruptions { get; set; }
@@ -6028,7 +6034,6 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
-    String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
     Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
     Octopus.Client.Model.WorkerResource ClearWorkerPools()

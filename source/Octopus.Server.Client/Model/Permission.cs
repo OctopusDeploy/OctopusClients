@@ -271,6 +271,11 @@ namespace Octopus.Client.Model
         [Description("Delete Insights reports")] public static readonly Permission InsightsReportDelete = new("InsightsReportDelete");
 
         [Description("Create, update, delete and override deployment freezes")] public static readonly Permission DeploymentFreezeAdminister = new("DeploymentFreezeAdminister");
+        
+        [Description("View deployment target tags")] public static readonly Permission TargetTagView = new("TargetTagView");
+        
+        [Description("Create, edit, delete deployment target tags")] public static readonly Permission TargetTagAdminister = new("TargetTagAdminister");
+        
         public Permission(string id)
         {
             Id = id;
