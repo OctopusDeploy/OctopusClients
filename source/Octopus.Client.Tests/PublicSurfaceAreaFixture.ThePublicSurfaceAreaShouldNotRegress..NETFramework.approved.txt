@@ -3761,6 +3761,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     String Architecture { get; set; }
@@ -3776,6 +3777,7 @@ Octopus.Client.Model
     String ShellVersion { get; set; }
     Boolean SkipInitialHealthCheck { get; set; }
     String Slug { get; set; }
+    String SpaceId { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
     String Thumbprint { get; set; }
@@ -3882,6 +3884,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
@@ -6052,7 +6055,6 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
-    String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
     Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
     Octopus.Client.Model.WorkerResource ClearWorkerPools()

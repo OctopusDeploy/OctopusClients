@@ -4,11 +4,13 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Model
 {
-    public abstract class MachineBasedResource : Resource, INamedResource, IHaveSlugResource
+    public abstract class MachineBasedResource : Resource, INamedResource, IHaveSlugResource, IHaveSpaceResource
     {
         [Trim]
         [Writeable]
         public string Name { get; set; }
+        
+        public string SpaceId { get; set; }
 
         /// <summary>
         /// Obsoleted as Server 3.4

@@ -35,7 +35,5 @@ namespace Octopus.Client.Model
             WorkerPoolIds.Clear();
             return this;
         }
-
-        public string SpaceId { get; set; }
     }
 }
