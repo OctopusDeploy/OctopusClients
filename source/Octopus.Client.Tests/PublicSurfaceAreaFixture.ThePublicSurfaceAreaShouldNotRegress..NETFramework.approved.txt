@@ -2398,6 +2398,7 @@ Octopus.Client.Model
   {
     .ctor()
     List<DeploymentActionGitDependencyResource> GitDependencyActions { get; set; }
+    String Id { get; set; }
     List<String> Rules { get; set; }
   }
   class ChannelResource
