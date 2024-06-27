@@ -2804,6 +2804,12 @@ Octopus.Client.Model
     List<ReleaseChanges> Changes { get; set; }
     String ChangesMarkdown { get; set; }
   }
+  abstract class DeploymentPriority
+  {
+    static System.String LifecycleDefault
+    static System.String Off
+    static System.String On
+  }
   class DeploymentProcessResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2864,7 +2870,7 @@ Octopus.Client.Model
     Dictionary<String, String> FormValues { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
-    Octopus.Client.Model.PriorityMode Priority { get; set; }
+    String Priority { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
@@ -3785,6 +3791,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.Resource
   {
     String Architecture { get; set; }
@@ -3800,6 +3807,7 @@ Octopus.Client.Model
     String ShellVersion { get; set; }
     Boolean SkipInitialHealthCheck { get; set; }
     String Slug { get; set; }
+    String SpaceId { get; set; }
     Octopus.Client.Model.MachineModelStatus Status { get; set; }
     String StatusSummary { get; set; }
     String Thumbprint { get; set; }
@@ -3906,6 +3914,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
@@ -4384,6 +4393,8 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission TagSetCreate
     static Octopus.Client.Model.Permission TagSetDelete
     static Octopus.Client.Model.Permission TagSetEdit
+    static Octopus.Client.Model.Permission TargetTagAdminister
+    static Octopus.Client.Model.Permission TargetTagView
     static Octopus.Client.Model.Permission TaskCancel
     static Octopus.Client.Model.Permission TaskCreate
     static Octopus.Client.Model.Permission TaskEdit
@@ -4493,12 +4504,6 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithOptionalDeploymentTargets(Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
-  }
-  PriorityMode
-  {
-      LifecycleDefault = 0
-      On = 1
-      Off = 2
   }
   abstract class ProcessExternalFeedTriggers
   {
@@ -6077,7 +6082,6 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineBasedResource
   {
     .ctor()
-    String SpaceId { get; set; }
     Octopus.Client.Model.ReferenceCollection WorkerPoolIds { get; set; }
     Octopus.Client.Model.WorkerResource AddOrUpdateWorkerPools(Octopus.Client.Model.WorkerPoolResource[])
     Octopus.Client.Model.WorkerResource ClearWorkerPools()

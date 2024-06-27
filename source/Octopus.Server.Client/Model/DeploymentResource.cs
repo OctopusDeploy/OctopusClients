@@ -7,6 +7,13 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
+    public static class DeploymentPriority
+    {
+        public static readonly string On = "On";
+        public static readonly string Off = "Off";
+        public static readonly string LifecycleDefault = "LifecycleDefault";
+    }
+
     public class DeploymentResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public DeploymentResource()
@@ -66,10 +73,10 @@ namespace Octopus.Client.Model
         public bool UseGuidedFailure { get; set; }
 
         /// <summary>
-        /// If priority mode is on, the deployment will be created with priority.
+        /// One of the values from <see cref="DeploymentPriority"/>
         /// </summary>
         [WriteableOnCreate]
-        public PriorityMode Priority { get; set; }
+        public string Priority { get; set; }
 
         [WriteableOnCreate]
         public string Comments { get; set; }
