@@ -7,6 +7,8 @@ using Octopus.Client.Model;
 using Octopus.Client.Util;
 using IEnvironmentRepository = Octopus.Client.Repositories.IEnvironmentRepository;
 using IAsyncEnvironmentRepository = Octopus.Client.Repositories.Async.IEnvironmentRepository;
+using ITenantRepository = Octopus.Client.Repositories.ITenantRepository;
+using IAsyncTenantRepository = Octopus.Client.Repositories.Async.ITenantRepository;
 
 namespace Octopus.Client.Operations
 {
@@ -104,24 +106,15 @@ namespace Octopus.Client.Operations
 
         List<TenantResource> GetTenants(IOctopusSpaceRepository repository)
         {
-            if (Tenants == null || !Tenants.Any())
+            List<TenantResource> tenants = new();            
+            if (Tenants is not null && Tenants.Any())
             {
-                return new List<TenantResource>();
+                var tenantsByNameIdOrSlug =
+                    repository.Tenants.FindByNameIdOrSlugs<TenantResource, ITenantRepository>(
+                        Tenants, missing => CouldNotFindByMultipleMessage("tenant", missing.ToArray()));
+                tenants.AddRange(tenantsByNameIdOrSlug);
             }
-
-            var tenantsByName = repository.Tenants.FindByNames(Tenants);
-            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
-
-            var tenantsBySlug = repository.Tenants.FindBySlugs(missing);
-            missing = missing.Except(tenantsBySlug.Select(e => e.Slug), StringComparer.OrdinalIgnoreCase).ToArray();
-
-            var tenantsById = repository.Tenants.Get(missing);
-            missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
-
-            if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tenant", missing));
-
-            return tenantsById.Concat(tenantsBySlug).Concat(tenantsByName).Distinct(new TenantResource.IdComparer()).ToList();
+            return tenants;
         }
 
         void ValidateTenantTags(IOctopusSpaceRepository repository)
@@ -164,7 +157,7 @@ namespace Octopus.Client.Operations
                 environments.AddRange(environmentsByNameIdOrSlug);
             }
 
-            return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
+            return environments;
         }
 
         MachineResource GetMachine(IOctopusSpaceRepository repository)
@@ -226,28 +219,15 @@ namespace Octopus.Client.Operations
 
         async Task<List<TenantResource>> GetTenants(IOctopusSpaceAsyncRepository repository)
         {
-            if (Tenants == null || !Tenants.Any())
+            List<TenantResource> tenants = new();            
+            if (Tenants is not null && Tenants.Any())
             {
-                return new List<TenantResource>();
+                var tenantsByNameIdOrSlug =
+                    await repository.Tenants.FindByNameIdOrSlugs<TenantResource, IAsyncTenantRepository>(
+                        Tenants, missing => CouldNotFindByMultipleMessage("tenant", missing.ToArray()));
+                tenants.AddRange(tenantsByNameIdOrSlug);
             }
-
-            var tenantsByName = new List<TenantResource>();
-            foreach (var tenantName in Tenants)
-            {
-                var tenant = await repository.Tenants.FindByName(tenantName).ConfigureAwait(false);
-                if (tenant != null)
-                    tenantsByName.Add(tenant);
-            }
-
-            var missing = Tenants.Except(tenantsByName.Select(e => e.Name), StringComparer.OrdinalIgnoreCase).ToArray();
-
-            var tenantsById = await repository.Tenants.Get(missing).ConfigureAwait(false);
-            missing = missing.Except(tenantsById.Select(e => e.Id), StringComparer.OrdinalIgnoreCase).ToArray();
-
-            if (missing.Any())
-                throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tenant", missing));
-
-            return tenantsById.Concat(tenantsByName).ToList();
+            return tenants;
         }
 
         async Task ValidateTenantTags(IOctopusSpaceAsyncRepository repository)
@@ -290,7 +270,7 @@ namespace Octopus.Client.Operations
                 environments.AddRange(environmentsByNameIdOrSlug);
             }
 
-            return environments.Distinct(new EnvironmentResource.IdComparer()).ToList();
+            return environments;
         }
 
         async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository)

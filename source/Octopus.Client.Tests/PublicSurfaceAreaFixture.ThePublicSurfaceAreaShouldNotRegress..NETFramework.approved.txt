@@ -9257,12 +9257,13 @@ Octopus.Client.Repositories.Async
     Task<TelemetryConfigurationResource> ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
   interface ITenantRepository
+    Octopus.Client.Repositories.Async.IFindBySlug<TenantResource>
+    Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.ICreate<TenantResource>
     Octopus.Client.Repositories.Async.IModify<TenantResource>
     Octopus.Client.Repositories.Async.IGet<TenantResource>
     Octopus.Client.Repositories.Async.IDelete<TenantResource>
     Octopus.Client.Repositories.Async.IFindByName<TenantResource>
-    Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
     Octopus.Client.Repositories.Async.IFindByPartialName<TenantResource>
   {

@@ -21,6 +21,7 @@ namespace Octopus.Client.Tests.Operations
         IOctopusAsyncClient client;
         OctopusServerEndpoint serverEndpoint;
         ResourceCollection<EnvironmentResource> environments;
+        ResourceCollection<TenantResource> tenants;
         ResourceCollection<MachineResource> machines;
         ResourceCollection<MachinePolicyResource> machinePolicies;
 
@@ -34,6 +35,7 @@ namespace Octopus.Client.Tests.Operations
             serverEndpoint = new OctopusServerEndpoint("http://octopus", "ABC123");
 
             environments = new ResourceCollection<EnvironmentResource>(Array.Empty<EnvironmentResource>(), LinkCollection.Self("/foo"));
+            tenants = new ResourceCollection<TenantResource>(Array.Empty<TenantResource>(), LinkCollection.Self("/foo"));
             machines = new ResourceCollection<MachineResource>(Array.Empty<MachineResource>(), LinkCollection.Self("/foo"));
             machinePolicies = new ResourceCollection<MachinePolicyResource>(Array.Empty<MachinePolicyResource>(), LinkCollection.Self("/foo"));
             var rootDocument = new RootResource
@@ -42,6 +44,7 @@ namespace Octopus.Client.Tests.Operations
                 Version = "2099.0.0",
                 Links = LinkCollection.Self("/api")
                     .Add("Environments", "/api/environments")
+                    .Add("Tenants", "/api/tenants")
                     .Add("Machines", "/api/machines")
                     .Add("MachinePolicies", "/api/machinepolicies")
                     .Add("CurrentUser", "/api/users/me")
@@ -54,6 +57,8 @@ namespace Octopus.Client.Tests.Operations
 
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<EnvironmentResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<EnvironmentResource>, bool>>()(environments));
+            client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<TenantResource>, bool>>(), Arg.Any<CancellationToken>()))
+                .Do(ci => ci.Arg<Func<ResourceCollection<TenantResource>, bool>>()(tenants));
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachineResource>, bool>>(), Arg.Any<CancellationToken>()))
                 .Do(ci => ci.Arg<Func<ResourceCollection<MachineResource>, bool>>()(machines));
             client.When(x => x.Paginate(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<Func<ResourceCollection<MachinePolicyResource>, bool>>(), Arg.Any<CancellationToken>()))
@@ -103,6 +108,28 @@ namespace Octopus.Client.Tests.Operations
             operation.EnvironmentNames = new[] {"Production", "Atlantis", "Hyperborea"};
             Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
             await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the environments named: Atlantis, Hyperborea on the Octopus Server. Ensure the environments exist and you have permission to access them.");
+        }
+        
+        [Test]
+        public async Task ShouldThrowIfAnyTenantNotFoundByNameIdOrSlug()
+        {
+            tenants.Items.Add(new TenantResource { Id = "Tenants-2", Name = "MyTenant", Slug = "my-tenant", Links = LinkCollection.Self("/api/environments/tenants-2") });
+
+            operation.Tenants = new[] {"some-tenant", "Atlantis", "MyTenant"};
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            await exec.Should().ThrowAsync<ArgumentException>().WithMessage("Could not find the tenants with names, slugs or Ids: some-tenant, Atlantis on the Octopus Server. Ensure the tenants exist and you have permission to access them.");
+        }
+        
+        [Test]
+        public async Task ShouldNotThrowIfAllTenantsAreFoundByNameIdOrSlug()
+        {
+            tenants.Items.Add(new TenantResource { Id = "Tenants-1", Name = "SomeTenant", Slug = "some-tenant", Links = LinkCollection.Self("/api/environments/tenants-1") });
+            tenants.Items.Add(new TenantResource { Id = "Tenants-2", Name = "MyTenant", Slug = "my-tenant", Links = LinkCollection.Self("/api/environments/tenants-2") });
+            tenants.Items.Add(new TenantResource { Id = "Tenants-3", Name = "Atlantis", Slug = "atlantis", Links = LinkCollection.Self("/api/environments/tenants-3") });
+            
+            operation.Tenants = new[] {"Atlantis", "Tenants-1", "some-tenant"};
+            Func<Task> exec = () => operation.ExecuteAsync(serverEndpoint);
+            await exec.Should().NotThrowAsync();
         }
 
         [Test]
