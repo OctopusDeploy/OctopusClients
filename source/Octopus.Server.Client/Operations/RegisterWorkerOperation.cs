@@ -130,7 +130,7 @@ namespace Octopus.Client.Operations
             }
             return existing ?? new WorkerResource();
         }
-        
+
         List<WorkerPoolResource> GetWorkerPools(IOctopusSpaceRepository repository)
         {
             List<WorkerPoolResource> workerPools = new();
