@@ -4,24 +4,21 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Operations;
 
-[Obsolete($"Use {nameof(RegisterKubernetesDeploymentTargetOperation)} instead.")]
-public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IRegisterKubernetesClusterOperation
+public class RegisterKubernetesWorkerOperation : RegisterWorkerOperation, IRegisterKubernetesWorkerOperation
 {
-    public RegisterKubernetesClusterOperation() : this(null)
+    public RegisterKubernetesWorkerOperation() : this(null)
     {
     }
 
-    public RegisterKubernetesClusterOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
+    public RegisterKubernetesWorkerOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
     {
     }
-
-    public string DefaultNamespace { get; set; }
-
-    protected override void PrepareMachineForReRegistration(MachineResource machine, string proxyId)
+    
+    protected override void PrepareWorkerForReRegistration(WorkerResource worker, string proxyId)
     {
-        machine.Endpoint = GenerateEndpoint(proxyId);
+        worker.Endpoint = GenerateEndpoint(proxyId);
     }
-
+    
     protected override EndpointResource GenerateEndpoint(string proxyId)
     {
         var endpoint = CommunicationStyle switch
@@ -32,9 +29,7 @@ public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IReg
                 new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
             _ => throw new ArgumentOutOfRangeException(nameof(CommunicationStyle), CommunicationStyle, $"Must be either {CommunicationStyle.TentacleActive} or {CommunicationStyle.TentaclePassive} for this operation")
         };
-
-        endpoint.DefaultNamespace = DefaultNamespace;
-
+        
         return endpoint;
     }
 }

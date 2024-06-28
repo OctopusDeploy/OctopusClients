@@ -7,7 +7,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface ITenantRepository : ICreate<TenantResource>, IModify<TenantResource>, IGet<TenantResource>, IDelete<TenantResource>, IFindByName<TenantResource>, IGetAll<TenantResource>, IFindByPartialName<TenantResource>
+    public interface ITenantRepository : IFindBySlug<TenantResource>, ICreate<TenantResource>, IModify<TenantResource>, IGet<TenantResource>, IDelete<TenantResource>, IFindByName<TenantResource>, IGetAll<TenantResource>, IFindByPartialName<TenantResource>
     {
         Task<MultiTenancyStatusResource> Status();
         Task SetLogo(TenantResource tenant, string fileName, Stream contents);

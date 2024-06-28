@@ -7672,6 +7672,17 @@ Octopus.Client.Operations
   {
     String DefaultNamespace { get; set; }
   }
+  interface IRegisterKubernetesDeploymentTargetOperation
+    Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+    String DefaultNamespace { get; set; }
+  }
+  interface IRegisterKubernetesWorkerOperation
+    Octopus.Client.Operations.IRegisterWorkerOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+  {
+  }
   interface IRegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
@@ -7704,6 +7715,7 @@ Octopus.Client.Operations
     Octopus.Client.Operations.IRegisterMachineOperationBase
   {
     String[] WorkerPoolNames { get; set; }
+    String[] WorkerPools { get; set; }
   }
   class RegisterKubernetesClusterOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -7714,6 +7726,25 @@ Octopus.Client.Operations
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
     String DefaultNamespace { get; set; }
+  }
+  class RegisterKubernetesDeploymentTargetOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterMachineOperation
+    Octopus.Client.Operations.IRegisterKubernetesDeploymentTargetOperation
+    Octopus.Client.Operations.RegisterMachineOperation
+  {
+    .ctor()
+    .ctor(Octopus.Client.IOctopusClientFactory)
+    String DefaultNamespace { get; set; }
+  }
+  class RegisterKubernetesWorkerOperation
+    Octopus.Client.Operations.IRegisterMachineOperationBase
+    Octopus.Client.Operations.IRegisterWorkerOperation
+    Octopus.Client.Operations.IRegisterKubernetesWorkerOperation
+    Octopus.Client.Operations.RegisterWorkerOperation
+  {
+    .ctor()
+    .ctor(Octopus.Client.IOctopusClientFactory)
   }
   class RegisterMachineOperation
     Octopus.Client.Operations.IRegisterMachineOperationBase
@@ -7759,6 +7790,7 @@ Octopus.Client.Operations
     .ctor()
     .ctor(Octopus.Client.IOctopusClientFactory)
     String[] WorkerPoolNames { get; set; }
+    String[] WorkerPools { get; set; }
     void Execute(Octopus.Client.IOctopusSpaceRepository)
     Task ExecuteAsync(Octopus.Client.IOctopusSpaceAsyncRepository)
   }
@@ -8482,8 +8514,9 @@ Octopus.Client.Repositories
     Octopus.Client.Model.VariableSetResource GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String)
   }
   interface IWorkerPoolRepository
-    Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
+    Octopus.Client.Repositories.IFindBySlug<WorkerPoolResource>
     Octopus.Client.Repositories.IPaginate<WorkerPoolResource>
+    Octopus.Client.Repositories.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.IGet<WorkerPoolResource>
     Octopus.Client.Repositories.ICreate<WorkerPoolResource>
     Octopus.Client.Repositories.IModify<WorkerPoolResource>
@@ -9249,12 +9282,13 @@ Octopus.Client.Repositories.Async
     Task<TelemetryConfigurationResource> ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
   }
   interface ITenantRepository
+    Octopus.Client.Repositories.Async.IFindBySlug<TenantResource>
+    Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.ICreate<TenantResource>
     Octopus.Client.Repositories.Async.IModify<TenantResource>
     Octopus.Client.Repositories.Async.IGet<TenantResource>
     Octopus.Client.Repositories.Async.IDelete<TenantResource>
     Octopus.Client.Repositories.Async.IFindByName<TenantResource>
-    Octopus.Client.Repositories.Async.IPaginate<TenantResource>
     Octopus.Client.Repositories.Async.IGetAll<TenantResource>
     Octopus.Client.Repositories.Async.IFindByPartialName<TenantResource>
   {
@@ -9348,8 +9382,9 @@ Octopus.Client.Repositories.Async
     Task<VariableSetResource> GetVariablePreview(Octopus.Client.Model.ProjectResource, String, String, String, String, String, String, String, String, CancellationToken)
   }
   interface IWorkerPoolRepository
-    Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IFindBySlug<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IPaginate<WorkerPoolResource>
+    Octopus.Client.Repositories.Async.IFindByName<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IGet<WorkerPoolResource>
     Octopus.Client.Repositories.Async.ICreate<WorkerPoolResource>
     Octopus.Client.Repositories.Async.IModify<WorkerPoolResource>

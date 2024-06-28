@@ -4,14 +4,13 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Operations;
 
-[Obsolete($"Use {nameof(RegisterKubernetesDeploymentTargetOperation)} instead.")]
-public class RegisterKubernetesClusterOperation : RegisterMachineOperation, IRegisterKubernetesClusterOperation
+public class RegisterKubernetesDeploymentTargetOperation : RegisterMachineOperation, IRegisterKubernetesDeploymentTargetOperation
 {
-    public RegisterKubernetesClusterOperation() : this(null)
+    public RegisterKubernetesDeploymentTargetOperation() : this(null)
     {
     }
 
-    public RegisterKubernetesClusterOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
+    public RegisterKubernetesDeploymentTargetOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
     {
     }
 
