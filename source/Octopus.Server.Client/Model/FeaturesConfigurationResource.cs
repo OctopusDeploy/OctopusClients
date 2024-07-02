@@ -33,8 +33,5 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool IsServiceNowIntegrationEnabled { get; set; }
-
-        [Writeable]
-        public bool IsPrioritizeTaskEnabled { get; set; }
     }
 }

@@ -3212,7 +3212,6 @@ Octopus.Client.Model
     Boolean IsConfigurationAsCodeEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
     Boolean IsKubernetesEnabled { get; set; }
-    Boolean IsPrioritizeTaskEnabled { get; set; }
     Boolean IsServiceNowIntegrationEnabled { get; set; }
     Boolean IsStepUiFrameworkEnabled { get; set; }
   }
