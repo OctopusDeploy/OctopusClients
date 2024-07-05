@@ -133,6 +133,9 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool AllowIgnoreChannelRules { get; set;}
         
+        [Writeable]
+        public bool ResilientDeployment { get; set;}
+        
         public IconResource Icon { get; set; }
 
         public ProjectResource Clear()
