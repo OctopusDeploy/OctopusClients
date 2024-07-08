@@ -4576,6 +4576,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
+    Boolean ExecuteDeploymentsOnResilientPipeline { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
@@ -4588,7 +4589,6 @@ Octopus.Client.Model
     String ProjectGroupId { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
     String ReleaseNotesTemplate { get; set; }
-    Boolean ExecuteDeploymentsOnResilientPipeline { get; set; }
     String Slug { get; set; }
     String SpaceId { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
