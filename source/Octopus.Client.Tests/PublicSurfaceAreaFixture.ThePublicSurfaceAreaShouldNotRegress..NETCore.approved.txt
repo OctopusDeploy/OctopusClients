@@ -4566,7 +4566,7 @@ Octopus.Client.Model
   {
     .ctor()
     .ctor(String, String, String)
-    Boolean AllowIgnoreChannelRules { get; set; }
+    Nullable<Boolean> AllowIgnoreChannelRules { get; set; }
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }

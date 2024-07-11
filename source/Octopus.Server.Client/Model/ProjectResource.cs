@@ -131,7 +131,7 @@ namespace Octopus.Client.Model
         public bool ForcePackageDownload { get; set; }
 
         [Writeable]
-        public bool AllowIgnoreChannelRules { get; set;}
+        public bool? AllowIgnoreChannelRules { get; set;}
         
         [Writeable]
         public bool? ExecuteDeploymentsOnResilientPipeline { get; set;}
