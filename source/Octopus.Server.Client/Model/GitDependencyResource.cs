@@ -26,7 +26,6 @@ public class GitDependencyResource
         FilePathFilters = filePathFilters ?? Array.Empty<string>();
         Name = name ?? string.Empty;
         StepPackageInputsReferenceId = stepPackageInputsReferenceId;
-        Properties = new Dictionary<string, string>();
     }
 
     public string Name { get; }
@@ -36,15 +35,4 @@ public class GitDependencyResource
     public string GitCredentialType { get; }
     public string? GitCredentialId { get; }
     public string? StepPackageInputsReferenceId { get; set; }
-    
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-    public IDictionary<string, string> Properties { get; private set; }
-    
-    public GitDependencyResource Clone()
-    {
-        return new GitDependencyResource(RepositoryUri, DefaultBranch, GitCredentialType, GitCredentialId, FilePathFilters, Name, StepPackageInputsReferenceId)
-        {
-            Properties = new Dictionary<string, string>(Properties)
-        };
-    }
 }
