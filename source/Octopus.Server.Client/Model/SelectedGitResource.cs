@@ -25,4 +25,10 @@ public class SelectedGitResource
     /// The selected Git reference
     /// </summary>
     public GitReferenceResource GitReferenceResource { get; set; }
+    
+    /// <summary>
+    /// The name of the Git resource reference
+    /// </summary>
+    /// <remarks>May be empty for steps which have a primary Git resource</remarks>
+    public string GitResourceReferenceName { get; set; } = "";
 }
