@@ -185,6 +185,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
+    Octopus.Client.Repositories.Async.IDeploymentTargetTagsRepository DeploymentTargetTags { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IGitCredentialRepository GitCredentials { get; }
@@ -230,6 +231,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
+    Octopus.Client.Repositories.IDeploymentTargetTagsRepository DeploymentTargetTags { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
@@ -394,6 +396,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.Async.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.Async.IDeploymentSettingsRepository DeploymentSettings { get; }
+    Octopus.Client.Repositories.Async.IDeploymentTargetTagsRepository DeploymentTargetTags { get; }
     Octopus.Client.Repositories.Async.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.Async.IEventRepository Events { get; }
     Octopus.Client.Repositories.Async.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -537,6 +540,7 @@ Octopus.Client
     Octopus.Client.Repositories.IDeploymentProcessRepository DeploymentProcesses { get; }
     Octopus.Client.Repositories.IDeploymentRepository Deployments { get; }
     Octopus.Client.Repositories.IDeploymentSettingsRepository DeploymentSettings { get; }
+    Octopus.Client.Repositories.IDeploymentTargetTagsRepository DeploymentTargetTags { get; }
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IEventRepository Events { get; }
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
@@ -6673,6 +6677,64 @@ Octopus.Client.Model.DeploymentTargets
       RunbookRun = 1
   }
 }
+Octopus.Client.Model.DeploymentTargetTags
+{
+  class CreateDeploymentTargetTagCommand
+  {
+    .ctor()
+    String SpaceId { get; set; }
+    String Tag { get; set; }
+  }
+  class CreateDeploymentTargetTagResponse
+  {
+    .ctor()
+    String SpaceId { get; set; }
+    String Tag { get; set; }
+  }
+  class DeleteDeploymentTargetTagCommand
+  {
+    .ctor()
+    String SpaceId { get; set; }
+    String Tag { get; set; }
+  }
+  class DeleteDeploymentTargetTagResponse
+  {
+    .ctor()
+  }
+  class DeploymentTargetTagResource
+  {
+    .ctor()
+    String SpaceId { get; }
+    String Tag { get; }
+  }
+  class GetDeploymentTargetTagByTagRequest
+  {
+    .ctor()
+    String SpaceId { get; set; }
+    String Tag { get; set; }
+  }
+  class GetDeploymentTargetTagByTagResponse
+  {
+    .ctor()
+    String SpaceId { get; set; }
+    String Tag { get; set; }
+  }
+  class GetDeploymentTargetTagsRequest
+  {
+    .ctor()
+    IReadOnlyCollection<String> MachineIds { get; set; }
+    Nullable<Int32> Skip { get; set; }
+    String SpaceId { get; set; }
+    IReadOnlyCollection<String> Tags { get; set; }
+    Nullable<Int32> Take { get; set; }
+  }
+  class GetDeploymentTargetTagsResponse
+  {
+    .ctor()
+    Int32 Count { get; set; }
+    IReadOnlyCollection<DeploymentTargetTagResource> DeploymentTargetTags { get; set; }
+  }
+}
 Octopus.Client.Model.Endpoints
 {
   AzureServiceFabricCredentialType
@@ -7794,6 +7856,15 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesResponse Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest)
     Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeResponse Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand)
   }
+  class DeploymentTargetTagsRepository
+    Octopus.Client.Repositories.IDeploymentTargetTagsRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagResponse Create(Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagCommand)
+    Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagResponse Delete(Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagCommand)
+    Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse)
+    Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsResponse Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsRequest)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<AccountResource>
@@ -7985,6 +8056,13 @@ Octopus.Client.Repositories
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.DeploymentSettingsResource)
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.DeploymentSettingsResource)
     Octopus.Client.Model.DeploymentSettingsResource Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
+  }
+  interface IDeploymentTargetTagsRepository
+  {
+    Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagResponse Create(Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagCommand)
+    Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagResponse Delete(Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagCommand)
+    Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse)
+    Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsResponse Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsRequest)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.IFindBySlug<EnvironmentResource>
@@ -8547,6 +8625,15 @@ Octopus.Client.Repositories.Async
     Task<GetDeploymentFreezesResponse> Get(Octopus.Client.Model.DeploymentFreezes.GetDeploymentFreezesRequest, CancellationToken)
     Task<ModifyDeploymentFreezeResponse> Modify(Octopus.Client.Model.DeploymentFreezes.ModifyDeploymentFreezeCommand, CancellationToken)
   }
+  class DeploymentTargetTagsRepository
+    Octopus.Client.Repositories.Async.IDeploymentTargetTagsRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient)
+    Task<CreateDeploymentTargetTagResponse> Create(Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagCommand, CancellationToken)
+    Task<DeleteDeploymentTargetTagResponse> Delete(Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagCommand, CancellationToken)
+    Task<GetDeploymentTargetTagByTagResponse> Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse, CancellationToken)
+    Task<GetDeploymentTargetTagsResponse> Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsRequest, CancellationToken)
+  }
   interface IAccountRepository
     Octopus.Client.Repositories.Async.IResourceRepository
     Octopus.Client.Repositories.Async.ICreate<AccountResource>
@@ -8752,6 +8839,13 @@ Octopus.Client.Repositories.Async
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, CancellationToken)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String)
     Task<DeploymentSettingsResource> Modify(Octopus.Client.Model.DeploymentSettingsResource, String, CancellationToken)
+  }
+  interface IDeploymentTargetTagsRepository
+  {
+    Task<CreateDeploymentTargetTagResponse> Create(Octopus.Client.Model.DeploymentTargetTags.CreateDeploymentTargetTagCommand, CancellationToken)
+    Task<DeleteDeploymentTargetTagResponse> Delete(Octopus.Client.Model.DeploymentTargetTags.DeleteDeploymentTargetTagCommand, CancellationToken)
+    Task<GetDeploymentTargetTagByTagResponse> Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagByTagResponse, CancellationToken)
+    Task<GetDeploymentTargetTagsResponse> Get(Octopus.Client.Model.DeploymentTargetTags.GetDeploymentTargetTagsRequest, CancellationToken)
   }
   interface IEnvironmentRepository
     Octopus.Client.Repositories.Async.IFindBySlug<EnvironmentResource>
