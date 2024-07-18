@@ -118,6 +118,7 @@ namespace Octopus.Client
             loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
             loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
+            DeploymentTargetTags = new DeploymentTargetTagsRepository(client);
         }
 
         public IOctopusClient Client { get; }
@@ -185,6 +186,7 @@ namespace Octopus.Client
         public IUpgradeConfigurationRepository UpgradeConfiguration { get; }
         public ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
         public IDeploymentFreezeRepository DeploymentFreezes { get; }
+        public IDeploymentTargetTagsRepository DeploymentTargetTags { get; }
 
         public bool HasLink(string name)
         {
