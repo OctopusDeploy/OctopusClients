@@ -6704,8 +6704,8 @@ Octopus.Client.Model.DeploymentTargetTags
   class DeploymentTargetTagResource
   {
     .ctor()
-    String SpaceId { get; }
-    String Tag { get; }
+    String SpaceId { get; set; }
+    String Tag { get; set; }
   }
   class GetDeploymentTargetTagByTagRequest
   {
