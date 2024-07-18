@@ -15,8 +15,8 @@ public class GetDeploymentTargetTagsResponse
 public class DeploymentTargetTagResource
 {
     [Required]
-    public string Tag { get; protected set; }
+    public string Tag { get; set; }
 
     [Required]
-    public string SpaceId { get; protected set; }    
+    public string SpaceId { get; set; }    
 }
