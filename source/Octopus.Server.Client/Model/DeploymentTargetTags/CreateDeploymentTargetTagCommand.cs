@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model.DeploymentTargetTags;
 
-public class CreateDeploymentTargetTagCommand
+public class CreateDeploymentTargetTagCommand : IHaveSpaceResource
 {
     /// <summary>
     /// The name or tag of the DeploymentTargetTag

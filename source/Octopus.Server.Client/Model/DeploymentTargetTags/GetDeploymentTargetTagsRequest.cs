@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Octopus.Client.Extensibility;
 using Octopus.Server.MessageContracts.Base.Attributes;
 
 namespace Octopus.Client.Model.DeploymentTargetTags;
 
-public class GetDeploymentTargetTagsRequest
+public class GetDeploymentTargetTagsRequest : IHaveSpaceResource
 {
     /// <summary>
     /// The ID of the Space to which the DeploymentTargetTags belong. 

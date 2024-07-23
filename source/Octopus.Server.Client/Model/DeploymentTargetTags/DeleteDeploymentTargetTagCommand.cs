@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Octopus.Client.Extensibility;
 
 namespace Octopus.Client.Model.DeploymentTargetTags;
 
-public class DeleteDeploymentTargetTagCommand
+public class DeleteDeploymentTargetTagCommand : IHaveSpaceResource
 {
     /// <summary>
     /// The ID of the space containing the resource(s).
