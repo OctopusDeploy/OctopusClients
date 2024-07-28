@@ -42,5 +42,7 @@ namespace Octopus.Client.Model
     public class GitPersistenceSettingsConversionStateResource
     {
         public bool VariablesAreInGit { get; set; }
+        
+        public bool RunbooksAreInGit { get; set; }
     }
 }
