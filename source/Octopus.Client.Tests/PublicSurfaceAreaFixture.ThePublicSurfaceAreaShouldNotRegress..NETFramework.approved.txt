@@ -3331,6 +3331,7 @@ Octopus.Client.Model
   class GitPersistenceSettingsConversionStateResource
   {
     .ctor()
+    Boolean RunbooksAreInGit { get; set; }
     Boolean VariablesAreInGit { get; set; }
   }
   class GitPersistenceSettingsResource
