@@ -123,6 +123,12 @@ namespace Octopus.Client.Model
         public string AcquisitionLocation { get; set; }
 
         /// <summary>
+        ///    Specific version to use for this package. If not set, package can be 
+        ///    selected at release creation or runbook run time.
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
         /// This reference identifier is populated when a step package step contains a package reference
         /// It allows us to correlate the reference within the step package inputs to this Server package reference
         /// </summary>

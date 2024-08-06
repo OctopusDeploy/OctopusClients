@@ -4239,6 +4239,7 @@ Octopus.Client.Model
     String PackageId { get; set; }
     IDictionary<String, String> Properties { get; }
     String StepPackageInputsReferenceId { get; set; }
+    String Version { get; set; }
     Octopus.Client.Model.PackageReference Clone()
   }
   class PackageReferenceCollection
