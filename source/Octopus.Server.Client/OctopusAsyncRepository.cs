@@ -11,21 +11,11 @@ using Octopus.Client.Tasks;
 
 namespace Octopus.Client
 {
-    public static partial class OctopusRepositoryExtensions
+    public static class OctopusRepositoryExtensions
     {
         public static IOctopusAsyncRepository CreateRepository(this IOctopusAsyncClient client, RepositoryScope scope = null)
         {
             return new OctopusAsyncRepository(client, scope);
-        }
-
-        public static IOctopusSpaceAsyncRepository ForSpace(this IOctopusAsyncRepository repo, SpaceResource space)
-        {
-            return repo.Client.ForSpace(space);
-        }
-
-        public static IOctopusSystemAsyncRepository ForSystem(this IOctopusAsyncRepository repo)
-        {
-            return repo.Client.ForSystem();
         }
     }
 
@@ -50,7 +40,7 @@ namespace Octopus.Client
         private readonly Lazy<Task<SpaceRootResource>> loadSpaceRootResource;
         private static readonly string rootDocumentUri = "~/api";
 
-        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
+        private OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope, RootResource rootResource)
         {
 #if FULL_FRAMEWORK
             LocationChecker.CheckAssemblyLocation();
@@ -120,11 +110,27 @@ namespace Octopus.Client
             UserPermissions = new UserPermissionsRepository(this);
             UserTeams = new UserTeamsRepository(this);
             UpgradeConfiguration = new UpgradeConfigurationRepository(this);
-            loadRootResource = new AsyncLazy<RootResource>(LoadRootDocumentInner);
-            loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
+
+            loadRootResource = rootResource is not null
+                ? new AsyncLazy<RootResource>(_ => Task.FromResult(rootResource))
+                : new AsyncLazy<RootResource>(LoadRootDocumentInner);
+
+            loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
         }
 
+        protected OctopusAsyncRepository(OctopusAsyncRepository source, RepositoryScope repositoryScope)
+            : this(
+                source.Client,
+                repositoryScope,
+                source.loadRootResource.HasValue ? source.loadRootResource.Value(CancellationToken.None).Result : null)
+        {
+        }
+
+        public OctopusAsyncRepository(IOctopusAsyncClient client, RepositoryScope repositoryScope = null)
+            : this(client, repositoryScope, null)
+        {
+        }
 
         public IOctopusAsyncClient Client { get; }
         public RepositoryScope Scope { get; private set; }
@@ -232,6 +238,18 @@ namespace Octopus.Client
         public Task<RootResource> LoadRootDocument() => LoadRootDocument(CancellationToken.None);
         public Task<RootResource> LoadRootDocument(CancellationToken cancellationToken) => loadRootResource.Value(cancellationToken);
         public Task<SpaceRootResource> LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+
+        public virtual IOctopusSpaceAsyncRepository ForSpace(SpaceResource space)
+        {
+            if (space is null)
+            {
+                throw new ArgumentNullException(nameof(space));
+            }
+
+            return new OctopusAsyncRepository(this, RepositoryScope.ForSpace(space));
+        }
+
+        public virtual IOctopusSystemAsyncRepository ForSystem() => new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
 
         private async Task<RootResource> LoadRootDocumentInner(CancellationToken cancellationToken)
         {
