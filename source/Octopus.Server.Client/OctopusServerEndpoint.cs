@@ -1,12 +1,13 @@
 using System;
 using System.Net;
+using Octopus.Client.Model;
 
 namespace Octopus.Client
 {
     /// <summary>
     /// Specifies the location and credentials to use when communicating with an Octopus Deploy server.
     /// </summary>
-    public class OctopusServerEndpoint
+    public class OctopusServerEndpoint : IOctopusServerRootResourceCache
     {
         /// <summary>
         /// Create an instance with a Token to authenticate.
@@ -148,13 +149,30 @@ namespace Octopus.Client
         /// <returns>An endpoint with a new user.</returns>
         public OctopusServerEndpoint AsUser(string newUserApiKey)
         {
-            return new OctopusServerEndpoint(OctopusServer, newUserApiKey, Credentials);
+            return new OctopusServerEndpoint(OctopusServer, newUserApiKey, Credentials)
+            {
+                // Preserve the cached root resource as we're still working with the same server, just a different API key
+                CachedRootResourceRef = CachedRootResourceRef,
+            };
         }
 
         /// <summary>
         /// A proxy that should be used to connect to the endpoint.
         /// </summary>
         public IWebProxy Proxy { get; set; }
+
+        private class CachedRootResourceReference
+        {
+            public RootResource Value { get; set; } = null;
+        }
+
+        private CachedRootResourceReference CachedRootResourceRef { get; set; } = new();
+
+        public RootResource CachedRootResource
+        {
+            get => CachedRootResourceRef.Value;
+            set => CachedRootResourceRef.Value = value;
+        }
 
         private static DefaultLinkResolver GetLinkResolverFromServerUrl(string octopusServerAddress)
         {

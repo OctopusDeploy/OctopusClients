@@ -30,6 +30,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Task<IOctopusAsyncClient> AsUser(String, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
@@ -98,6 +99,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.IOctopusClient AsUser(String, Octopus.Client.OctopusClientOptions)
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
@@ -168,6 +170,10 @@ Octopus.Client
     Octopus.Client.IOctopusCommonRepository
     Octopus.Client.IOctopusSystemRepository
   {
+  }
+  interface IOctopusServerRootResourceCache
+  {
+    Octopus.Client.Model.RootResource CachedRootResource { get; set; }
   }
   interface IOctopusSpaceAsyncRepository
     Octopus.Client.IOctopusCommonAsyncRepository
@@ -303,6 +309,7 @@ Octopus.Client
   class OctopusAsyncClient
     Octopus.Client.IOctopusAsyncClient
     IDisposable
+    Octopus.Client.IOctopusServerRootResourceCache
   {
     event Action<HttpResponseMessage> AfterReceivedHttpResponse
     event Action<HttpRequestMessage> BeforeSendingHttpRequest
@@ -311,6 +318,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusAsyncRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Task<IOctopusAsyncClient> AsUser(String, Octopus.Client.OctopusClientOptions)
     static Task<IOctopusAsyncClient> Create(Octopus.Client.OctopusServerEndpoint, Octopus.Client.OctopusClientOptions)
     Task<TResource> Create(String, Octopus.Client.TResource, Object)
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
@@ -451,6 +459,7 @@ Octopus.Client
     Octopus.Client.IHttpOctopusClient
     Octopus.Client.IOctopusClient
     IDisposable
+    Octopus.Client.IOctopusServerRootResourceCache
   {
     event Action<WebResponse> AfterReceivingHttpResponse
     event Action<WebRequest> BeforeSendingHttpRequest
@@ -460,6 +469,7 @@ Octopus.Client
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.IOctopusRepository Repository { get; }
     Octopus.Client.Model.RootResource RootDocument { get; }
+    Octopus.Client.IOctopusClient AsUser(String, Octopus.Client.OctopusClientOptions)
     Octopus.Client.TResource Create(String, Octopus.Client.TResource, Object)
     Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
@@ -616,6 +626,7 @@ Octopus.Client
     Octopus.Client.TResponseResource ResponseResource { get; }
   }
   class OctopusServerEndpoint
+    Octopus.Client.IOctopusServerRootResourceCache
   {
     .ctor(String)
     .ctor(String, String)
@@ -623,6 +634,7 @@ Octopus.Client
     .ctor(Octopus.Client.ILinkResolver, String, ICredentials)
     String ApiKey { get; }
     String BearerToken { get; }
+    Octopus.Client.Model.RootResource CachedRootResource { get; set; }
     ICredentials Credentials { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
