@@ -1645,6 +1645,15 @@ Octopus.Client.Extensions
 }
 Octopus.Client.HttpRouting
 {
+  class HttpRouteExtractor
+    Octopus.Client.HttpRouting.IHttpRouteExtractor
+  {
+    .ctor(Func<Type[]>)
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
+    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
+  }
   interface IHttpRouteExtractor
   {
     HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
