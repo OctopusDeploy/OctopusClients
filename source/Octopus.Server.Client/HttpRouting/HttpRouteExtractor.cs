@@ -17,7 +17,7 @@ using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace Octopus.Client.HttpRouting
 {
-    internal class HttpRouteExtractor : IHttpRouteExtractor
+    public class HttpRouteExtractor : IHttpRouteExtractor
     {
         private static readonly Regex TokensRegex = new Regex("({.+?})",
             RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
