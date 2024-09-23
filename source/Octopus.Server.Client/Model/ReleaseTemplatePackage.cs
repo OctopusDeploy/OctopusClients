@@ -45,6 +45,8 @@ namespace Octopus.Client.Model
 
         public string VersionSelectedLastRelease { get; set; }
 
+        public string FixedVersion { get; set; }
+        
         /// <summary>
         /// Gets or sets a value indicating whether the <see cref="PackageId" /> or <see cref="FeedId" /> contain no
         /// references to other variables. Variables can be used to
