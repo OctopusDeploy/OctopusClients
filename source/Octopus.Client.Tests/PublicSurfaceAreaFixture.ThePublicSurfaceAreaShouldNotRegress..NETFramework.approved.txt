@@ -4825,6 +4825,7 @@ Octopus.Client.Model
     String ActionName { get; set; }
     String FeedId { get; set; }
     String FeedName { get; set; }
+    String FixedVersion { get; set; }
     Boolean IsResolvable { get; set; }
     String NuGetFeedId { get; set; }
     String NuGetFeedName { get; set; }
