@@ -2465,6 +2465,13 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.TResource Resource { get; set; }
   }
+  class CommonVariableValueResource
+  {
+    .ctor()
+    String[] Scope { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
   CommunicationStyle
   {
       None = 0
@@ -3604,6 +3611,7 @@ Octopus.Client.Model
     String LibraryVariableSetId { get; }
     String LibraryVariableSetName { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+    Octopus.Client.Model.CommonVariableValueResource[] ScopedVariables { get; set; }
     List<ActionTemplateParameterResource> Templates { get; set; }
     Dictionary<String, PropertyValueResource> Variables { get; set; }
     Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
@@ -5795,6 +5803,7 @@ Octopus.Client.Model
       String LibraryVariableSetId { get; }
       String LibraryVariableSetName { get; set; }
       Octopus.Client.Extensibility.LinkCollection Links { get; set; }
+      Octopus.Client.Model.CommonVariableValueResource[] ScopedVariables { get; set; }
       List<ActionTemplateParameterResource> Templates { get; set; }
       Dictionary<String, PropertyValueResource> Variables { get; set; }
       Octopus.Client.Model.PropertyValueResource GetVariableValue(String)
