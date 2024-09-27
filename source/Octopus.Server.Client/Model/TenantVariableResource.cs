@@ -87,6 +87,17 @@ namespace Octopus.Client.Model
             libraryVariables.SetVariableValue(templateName, value);
         }
 
+        public void SetLibraryVariableValue(LibraryVariableSetResource libraryVariableSetResource, string templateName,
+            PropertyValueResource value, string[] scope)
+        {
+            if (!LibraryVariables.TryGetValue(libraryVariableSetResource.Id, out var libraryVariables))
+            {
+                throw new ArgumentException("Supplied library variable set is not connected", nameof(libraryVariableSetResource));
+            }
+
+            libraryVariables.SetVariableValue(templateName, value, scope);
+        }
+
         public class Project
         {
             public Project(string projectId)
@@ -168,7 +179,7 @@ namespace Octopus.Client.Model
 
             public Dictionary<string, PropertyValueResource> Variables { get; set; } = new Dictionary<string, PropertyValueResource>();
 
-            public CommonVariableValueResource[] ScopedVariables { get; set; } = [];
+            public List<CommonVariableValueResource> ScopedVariables { get; set; } = [];
 
             public LinkCollection Links { get; set; }
 
@@ -204,6 +215,31 @@ namespace Octopus.Client.Model
                 }
 
                 Variables[templateId] = value;
+            }
+
+            public void SetVariableValue(string templateName, PropertyValueResource value, string[] scope)
+            {
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    throw new ArgumentException($"No project variable template with name '{templateName}'");
+                }
+
+                var existingVariable = ScopedVariables
+                    .Where(v => string.Equals(v.TemplateId, templateId, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault(v => scope.All(s => v.Scope.Contains(s, StringComparer.OrdinalIgnoreCase)));
+                if (existingVariable is not null)
+                {
+                    existingVariable.Value = value;
+                    return;
+                }
+
+                ScopedVariables.Add(new CommonVariableValueResource
+                {
+                    TemplateId = templateId,
+                    Value = value,
+                    Scope = scope
+                });
             }
         }
 
