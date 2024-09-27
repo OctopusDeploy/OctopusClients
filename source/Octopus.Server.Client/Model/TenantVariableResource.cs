@@ -168,6 +168,8 @@ namespace Octopus.Client.Model
 
             public Dictionary<string, PropertyValueResource> Variables { get; set; } = new Dictionary<string, PropertyValueResource>();
 
+            public CommonVariableValueResource[] ScopedVariables { get; set; } = [];
+
             public LinkCollection Links { get; set; }
 
             public bool TryGetVariableValue(string templateName, out PropertyValueResource value)
