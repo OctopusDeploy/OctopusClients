@@ -7797,6 +7797,11 @@ Octopus.Client.Repositories
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation)
     Octopus.Client.Model.BuildInformation.OctopusPackageVersionBuildInformationMappedResource Push(String, String, Octopus.Client.Model.BuildInformation.OctopusBuildInformation, Octopus.Client.Model.OverwriteMode)
   }
+  class CommonVariableScope
+  {
+    .ctor(String[])
+    String[] EnvironmentIds { get; set; }
+  }
   class DeploymentFreezeRepository
     Octopus.Client.Repositories.IDeploymentFreezeRepository
   {
@@ -8531,6 +8536,19 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
+  class ModifyCommonVariablesByTenantIdCommand
+  {
+    .ctor(String, String, Octopus.Client.Repositories.TenantCommonVariable[])
+    String SpaceId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Repositories.TenantCommonVariable[] Variables { get; set; }
+  }
+  class ModifyCommonVariablesByTenantIdResponse
+  {
+    .ctor(String, Octopus.Client.Repositories.TenantCommonVariable[])
+    Octopus.Client.Repositories.TenantCommonVariable[] CommonVariables { get; set; }
+    String TenantId { get; set; }
+  }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
   {
@@ -8546,6 +8564,16 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TelemetryConfigurationResource EnableTelemetry()
     Octopus.Client.Model.TelemetryConfigurationResource GetTelemetryConfiguration()
     Octopus.Client.Model.TelemetryConfigurationResource ModifyTelemetryConfiguration(Octopus.Client.Model.TelemetryConfigurationResource)
+  }
+  class TenantCommonVariable
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Repositories.CommonVariableScope)
+    .ctor(String, String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Repositories.CommonVariableScope)
+    String Id { get; set; }
+    String LibraryVariableSetId { get; set; }
+    Octopus.Client.Repositories.CommonVariableScope Scope { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
   }
 }
 Octopus.Client.Repositories.Async
