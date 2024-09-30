@@ -12,11 +12,6 @@ public class ModifyCommonVariablesByTenantIdCommand(string tenantId, string spac
 
 public class TenantCommonVariable(string libraryVariableSetId, string templateId, PropertyValueResource value, CommonVariableScope scope)
 {
-    public TenantCommonVariable(string id, string libraryVariableSetId, string templateId, PropertyValueResource value, CommonVariableScope scope) : this(libraryVariableSetId, templateId, value, scope)
-    {
-        Id = id;
-    }
-
     public string Id { get; set; } = string.Empty;
 
     public string LibraryVariableSetId { get; set; } = libraryVariableSetId;

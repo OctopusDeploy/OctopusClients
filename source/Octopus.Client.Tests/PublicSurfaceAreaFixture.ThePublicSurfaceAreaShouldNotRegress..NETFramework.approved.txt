@@ -7342,7 +7342,6 @@ Octopus.Client.Model.TenantVariables
   class TenantCommonVariable
   {
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
-    .ctor(String, String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
     String Id { get; set; }
     String LibraryVariableSetId { get; set; }
     Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
