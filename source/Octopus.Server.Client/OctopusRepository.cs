@@ -9,19 +9,6 @@ using Octopus.Client.Repositories;
 
 namespace Octopus.Client
 {
-    public static partial class OctopusRepositoryExtensions
-    {
-        public static IOctopusSpaceRepository ForSpace(this IOctopusRepository repo, SpaceResource space)
-        {
-            return repo.Client.ForSpace(space);
-        }
-
-        public static IOctopusSystemRepository ForSystem(this IOctopusRepository repo)
-        {
-            return repo.Client.ForSystem();
-        }
-    }
-
     /// <summary>
     /// A simplified interface to commonly-used parts of the API.
     /// Functionality not exposed by this interface can be accessed
@@ -46,7 +33,7 @@ namespace Octopus.Client
         {
         }
 
-        public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
+        private OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope, RootResource rootResource)
         {
 #if FULL_FRAMEWORK
             LocationChecker.CheckAssemblyLocation();
@@ -115,9 +102,26 @@ namespace Octopus.Client
             UserTeams = new UserTeamsRepository(this);
             UserInvites = new UserInvitesRepository(this);
             UpgradeConfiguration = new UpgradeConfigurationRepository(this);
-            loadRootResource = new Lazy<RootResource>(LoadRootDocumentInner, true);
-            loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
+
+            loadRootResource = rootResource is not null
+                ? new Lazy<RootResource>(() => rootResource)
+                : new Lazy<RootResource>(LoadRootDocumentInner);
+
+            loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
+        }
+
+        protected OctopusRepository(OctopusRepository source, RepositoryScope repositoryScope)
+            : this(
+                source.Client,
+                repositoryScope,
+                source.loadRootResource.IsValueCreated ? source.loadRootResource.Value : null)
+        {
+        }
+
+        public OctopusRepository(IOctopusClient client, RepositoryScope repositoryScope = null)
+            : this(client, repositoryScope, null)
+        {
         }
 
         public IOctopusClient Client { get; }
@@ -214,6 +218,18 @@ namespace Octopus.Client
 
         public RootResource LoadRootDocument() => loadRootResource.Value;
         public SpaceRootResource LoadSpaceRootDocument() => loadSpaceRootResource.Value;
+
+        public virtual IOctopusSpaceRepository ForSpace(SpaceResource space)
+        {
+            if (space is null)
+            {
+                throw new ArgumentNullException(nameof(space));
+            }
+
+            return new OctopusRepository(this, RepositoryScope.ForSpace(space));
+        }
+
+        public virtual IOctopusSystemRepository ForSystem() => new OctopusRepository(this, RepositoryScope.ForSystem());
 
         RootResource LoadRootDocumentInner()
         {
