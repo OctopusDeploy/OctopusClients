@@ -23,6 +23,16 @@ namespace Octopus.Client.Repositories
             return response;
         }
 
+        public ModifyProjectVariablesByTenantIdResponse Modify(ModifyProjectVariablesByTenantIdCommand command)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+
+            var response =
+                Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(link,
+                    command, pathParameters: new { command.SpaceId, command.TenantId });
+            return response;
+        }
+
         public List<TenantVariableResource> GetAll(ProjectResource projectResource)
         {
             return Client.Get<List<TenantVariableResource>>(Repository.Link("TenantVariables"), new
