@@ -10,6 +10,9 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource);
         Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command, CancellationToken cancellationToken);
+
+        Task<ModifyProjectVariablesByTenantIdResponse> Modify(ModifyProjectVariablesByTenantIdCommand command,
+            CancellationToken cancellationToken);
     }
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
@@ -28,6 +31,17 @@ namespace Octopus.Client.Repositories.Async
 
             var response =
                 await Client.Update<ModifyCommonVariablesByTenantIdCommand, ModifyCommonVariablesByTenantIdResponse>(link,
+                    command, pathParameters: new { command.SpaceId, command.TenantId }, cancellationToken);
+            return response;
+        }
+
+        public async Task<ModifyProjectVariablesByTenantIdResponse> Modify(
+            ModifyProjectVariablesByTenantIdCommand command, CancellationToken cancellationToken)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+
+            var response =
+                await Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(link,
                     command, pathParameters: new { command.SpaceId, command.TenantId }, cancellationToken);
             return response;
         }

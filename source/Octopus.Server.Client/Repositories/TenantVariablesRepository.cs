@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories
     {
         List<TenantVariableResource> GetAll(ProjectResource projectResource);
         ModifyCommonVariablesByTenantIdResponse Modify(ModifyCommonVariablesByTenantIdCommand command);
+        ModifyProjectVariablesByTenantIdResponse Modify(ModifyProjectVariablesByTenantIdCommand command);
     }
 
 
@@ -19,6 +20,16 @@ namespace Octopus.Client.Repositories
 
             var response =
                 Client.Update<ModifyCommonVariablesByTenantIdCommand, ModifyCommonVariablesByTenantIdResponse>(link,
+                    command, pathParameters: new { command.SpaceId, command.TenantId });
+            return response;
+        }
+
+        public ModifyProjectVariablesByTenantIdResponse Modify(ModifyProjectVariablesByTenantIdCommand command)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+
+            var response =
+                Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(link,
                     command, pathParameters: new { command.SpaceId, command.TenantId });
             return response;
         }

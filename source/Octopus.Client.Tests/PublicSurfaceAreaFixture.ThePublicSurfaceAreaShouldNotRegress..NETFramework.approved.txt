@@ -7339,12 +7339,39 @@ Octopus.Client.Model.TenantVariables
     Octopus.Client.Model.TenantVariables.TenantCommonVariable[] CommonVariables { get; set; }
     String TenantId { get; set; }
   }
+  class ModifyProjectVariablesByTenantIdCommand
+  {
+    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    String SpaceId { get; set; }
+    String TenantId { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
+  }
+  class ModifyProjectVariablesByTenantIdResponse
+  {
+    .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] ProjectVariables { get; set; }
+    String TenantId { get; set; }
+  }
+  class ProjectVariableScope
+  {
+    .ctor(String[])
+    String[] EnvironmentIds { get; set; }
+  }
   class TenantCommonVariable
   {
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
     String Id { get; set; }
     String LibraryVariableSetId { get; set; }
     Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
+  class TenantProjectVariable
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
+    String Id { get; set; }
+    String ProjectId { get; set; }
+    Octopus.Client.Model.TenantVariables.ProjectVariableScope Scope { get; set; }
     String TemplateId { get; set; }
     Octopus.Client.Model.PropertyValueResource Value { get; set; }
   }
@@ -8491,6 +8518,7 @@ Octopus.Client.Repositories
   {
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand)
+    Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand)
   }
   interface IUpgradeConfigurationRepository
     Octopus.Client.Repositories.IGet<UpgradeConfigurationResource>
@@ -9351,6 +9379,7 @@ Octopus.Client.Repositories.Async
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
     Task<ModifyCommonVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand, CancellationToken)
+    Task<ModifyProjectVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand, CancellationToken)
   }
   interface IUpgradeConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<UpgradeConfigurationResource>
