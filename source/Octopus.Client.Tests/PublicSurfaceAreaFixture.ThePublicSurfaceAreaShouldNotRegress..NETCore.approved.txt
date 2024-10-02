@@ -4582,6 +4582,7 @@ Octopus.Client.Model
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+    Octopus.Client.Model.RunbookRetentionPeriod DefaultRunbookRetentionPolicy { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
     String DeploymentProcessId { get; set; }
