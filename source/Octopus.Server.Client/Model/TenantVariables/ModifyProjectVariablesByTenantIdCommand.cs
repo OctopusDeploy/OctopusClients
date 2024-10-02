@@ -31,10 +31,11 @@ public class ProjectVariableScope(string[] environmentIds)
     public string[] EnvironmentIds { get; set; } = environmentIds;
 }
 
-public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
+
+public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] commonVariables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
+    public TenantProjectVariable[] ProjectVariables { get; set; } = commonVariables;
 }
 

@@ -60,13 +60,12 @@ namespace Octopus.Client.Repositories.Async
             const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
 
             var response =
-                await Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(
-                    link,
+                await Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(link,
                     command, pathParameters: new { command.SpaceId, command.TenantId }, cancellationToken);
             return response;
         }
 
-        public TenantVariablesRepository(IOctopusAsyncRepository repository)
+        public TenantVariablesRepository(IOctopusAsyncRepository repository) 
             : base(repository, "TenantVariables")
         {
         }
