@@ -8493,6 +8493,7 @@ Octopus.Client.Repositories
   {
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand)
+    Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand)
   }
   interface IUpgradeConfigurationRepository
     Octopus.Client.Repositories.IGet<UpgradeConfigurationResource>
@@ -9353,6 +9354,7 @@ Octopus.Client.Repositories.Async
   {
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
     Task<ModifyCommonVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand, CancellationToken)
+    Task<ModifyProjectVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand, CancellationToken)
   }
   interface IUpgradeConfigurationRepository
     Octopus.Client.Repositories.Async.IGet<UpgradeConfigurationResource>
