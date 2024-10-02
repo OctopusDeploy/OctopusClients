@@ -32,10 +32,10 @@ public class ProjectVariableScope(string[] environmentIds)
 }
 
 
-public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] commonVariables)
+public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = commonVariables;
+    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
 }
 
