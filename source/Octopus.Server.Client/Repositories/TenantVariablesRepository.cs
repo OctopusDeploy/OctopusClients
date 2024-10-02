@@ -8,6 +8,7 @@ namespace Octopus.Client.Repositories
     {
         List<TenantVariableResource> GetAll(ProjectResource projectResource);
         ModifyCommonVariablesByTenantIdResponse Modify(ModifyCommonVariablesByTenantIdCommand command);
+        ModifyProjectVariablesByTenantIdResponse Modify(ModifyProjectVariablesByTenantIdCommand command);
     }
 
 

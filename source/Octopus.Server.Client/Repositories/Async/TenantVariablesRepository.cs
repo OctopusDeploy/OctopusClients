@@ -10,6 +10,9 @@ namespace Octopus.Client.Repositories.Async
     {
         Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource);
         Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command, CancellationToken cancellationToken);
+
+        Task<ModifyProjectVariablesByTenantIdResponse> Modify(ModifyProjectVariablesByTenantIdCommand command,
+            CancellationToken cancellationToken);
     }
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
