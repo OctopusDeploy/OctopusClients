@@ -9,7 +9,12 @@ namespace Octopus.Client.Repositories.Async
     public interface ITenantVariablesRepository : IGetAll<TenantVariableResource>
     {
         Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource);
-        Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command, CancellationToken cancellationToken);
+
+        Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
+            CancellationToken cancellationToken);
+
+        Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command,
+            CancellationToken cancellationToken);
 
         Task<ModifyProjectVariablesByTenantIdResponse> Modify(ModifyProjectVariablesByTenantIdCommand command,
             CancellationToken cancellationToken);
@@ -19,18 +24,32 @@ namespace Octopus.Client.Repositories.Async
     {
         public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
         {
-            return await Client.Get<List<TenantVariableResource>>(await Repository.Link("TenantVariables").ConfigureAwait(false), new
-            {
-                projectId = projectResource?.Id
-            }).ConfigureAwait(false);
+            return await Client.Get<List<TenantVariableResource>>(
+                await Repository.Link("TenantVariables").ConfigureAwait(false), new
+                {
+                    projectId = projectResource?.Id
+                }).ConfigureAwait(false);
         }
 
-        public async Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command, CancellationToken cancellationToken)
+        public async Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
+            CancellationToken cancellationToken)
         {
             const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
 
             var response =
-                await Client.Update<ModifyCommonVariablesByTenantIdCommand, ModifyCommonVariablesByTenantIdResponse>(link,
+                await Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId },
+                    cancellationToken);
+            return response;
+        }
+
+        public async Task<ModifyCommonVariablesByTenantIdResponse> Modify(
+            ModifyCommonVariablesByTenantIdCommand command, CancellationToken cancellationToken)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
+
+            var response =
+                await Client.Update<ModifyCommonVariablesByTenantIdCommand, ModifyCommonVariablesByTenantIdResponse>(
+                    link,
                     command, pathParameters: new { command.SpaceId, command.TenantId }, cancellationToken);
             return response;
         }
@@ -41,12 +60,13 @@ namespace Octopus.Client.Repositories.Async
             const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
 
             var response =
-                await Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(link,
+                await Client.Update<ModifyProjectVariablesByTenantIdCommand, ModifyProjectVariablesByTenantIdResponse>(
+                    link,
                     command, pathParameters: new { command.SpaceId, command.TenantId }, cancellationToken);
             return response;
         }
 
-        public TenantVariablesRepository(IOctopusAsyncRepository repository) 
+        public TenantVariablesRepository(IOctopusAsyncRepository repository)
             : base(repository, "TenantVariables")
         {
         }
