@@ -7299,8 +7299,8 @@ Octopus.Client.Model.TenantVariables
 {
   class CommonVariableScope
   {
-    .ctor(String[])
-    String[] EnvironmentIds { get; set; }
+    .ctor(Octopus.Client.Model.ReferenceCollection)
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
   }
   class ModifyCommonVariablesByTenantIdCommand
   {
@@ -7330,8 +7330,8 @@ Octopus.Client.Model.TenantVariables
   }
   class ProjectVariableScope
   {
-    .ctor(String[])
-    String[] EnvironmentIds { get; set; }
+    .ctor(Octopus.Client.Model.ReferenceCollection)
+    Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
   }
   class TenantCommonVariable
   {
