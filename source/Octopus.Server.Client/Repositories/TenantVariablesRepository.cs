@@ -7,6 +7,7 @@ namespace Octopus.Client.Repositories
     public interface ITenantVariablesRepository : IGetAll<TenantVariableResource>
     {
         List<TenantVariableResource> GetAll(ProjectResource projectResource);
+        GetCommonVariablesByTenantIdResponse Get(GetCommonVariablesByTenantIdRequest request);
         ModifyCommonVariablesByTenantIdResponse Modify(ModifyCommonVariablesByTenantIdCommand command);
         ModifyProjectVariablesByTenantIdResponse Modify(ModifyProjectVariablesByTenantIdCommand command);
     }
@@ -14,6 +15,15 @@ namespace Octopus.Client.Repositories
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
     {
+        public GetCommonVariablesByTenantIdResponse Get(GetCommonVariablesByTenantIdRequest request)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
+
+            var response =
+                Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId });
+            return response;
+        }
+
         public ModifyCommonVariablesByTenantIdResponse Modify(ModifyCommonVariablesByTenantIdCommand command)
         {
             const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";

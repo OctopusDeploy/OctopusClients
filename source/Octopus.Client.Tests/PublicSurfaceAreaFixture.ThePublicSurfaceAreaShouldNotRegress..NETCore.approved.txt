@@ -7302,6 +7302,18 @@ Octopus.Client.Model.TenantVariables
     .ctor(String[])
     String[] EnvironmentIds { get; set; }
   }
+  class GetCommonVariablesByTenantIdRequest
+  {
+    .ctor(String, String)
+    String SpaceId { get; set; }
+    String TenantId { get; set; }
+  }
+  class GetCommonVariablesByTenantIdResponse
+  {
+    .ctor(String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
+    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] CommonVariables { get; set; }
+    String TenantId { get; set; }
+  }
   class ModifyCommonVariablesByTenantIdCommand
   {
     .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
@@ -8491,6 +8503,7 @@ Octopus.Client.Repositories
   interface ITenantVariablesRepository
     Octopus.Client.Repositories.IGetAll<TenantVariableResource>
   {
+    Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdResponse Get(Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdRequest)
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand)
     Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand)
@@ -9352,6 +9365,7 @@ Octopus.Client.Repositories.Async
   interface ITenantVariablesRepository
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
   {
+    Task<GetCommonVariablesByTenantIdResponse> Get(Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdRequest, CancellationToken)
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
     Task<ModifyCommonVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand, CancellationToken)
     Task<ModifyProjectVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand, CancellationToken)
