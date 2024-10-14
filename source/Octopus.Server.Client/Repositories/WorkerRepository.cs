@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories
             string ids = null,
             string name = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             string workerpoolIds = null);
@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories
             string ids = null,
             string name = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             string workerpoolIds = null)

@@ -12,14 +12,14 @@ namespace Octopus.Client.Repositories.Async
             int? skip = 0,
             int? take = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null);
         Task<WorkerPoolsSummaryResource> Summary(
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             bool? hideEmptyPools = false);
@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories.Async
             int? skip = 0,
             int? take = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null)
         {
@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             bool? hideEmptyPools = false)

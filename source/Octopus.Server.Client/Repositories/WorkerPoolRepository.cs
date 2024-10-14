@@ -10,14 +10,14 @@ namespace Octopus.Client.Repositories
             int? skip = 0,
             int? take = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null);
         WorkerPoolsSummaryResource Summary(
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             bool? hideEmptypools = false);
@@ -37,7 +37,7 @@ namespace Octopus.Client.Repositories
             int? skip = 0,
             int? take = null,
             string partialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null)
         {
@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories
             string ids = null,
             string partialName = null,
             string machinePartialName = null,
-            bool? isDisabled = false,
+            bool? isDisabled = null,
             string healthStatuses = null,
             string commStyles = null,
             bool? hideEmptyPools = false)
