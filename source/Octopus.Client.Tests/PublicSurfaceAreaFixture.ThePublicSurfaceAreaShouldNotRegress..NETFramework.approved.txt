@@ -7338,6 +7338,18 @@ Octopus.Client.Model.TenantVariables
     Octopus.Client.Model.TenantVariables.TenantCommonVariable[] CommonVariables { get; set; }
     String TenantId { get; set; }
   }
+  class GetProjectVariablesByTenantIdRequest
+  {
+    .ctor(String, String)
+    String SpaceId { get; set; }
+    String TenantId { get; set; }
+  }
+  class GetProjectVariablesByTenantIdResponse
+  {
+    .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] ProjectVariables { get; set; }
+    String TenantId { get; set; }
+  }
   class ModifyCommonVariablesByTenantIdCommand
   {
     .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
@@ -8529,6 +8541,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGetAll<TenantVariableResource>
   {
     Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdResponse Get(Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdRequest)
+    Octopus.Client.Model.TenantVariables.GetProjectVariablesByTenantIdResponse Get(Octopus.Client.Model.TenantVariables.GetProjectVariablesByTenantIdRequest)
     List<TenantVariableResource> GetAll(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand)
     Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdResponse Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand)
@@ -9391,6 +9404,7 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGetAll<TenantVariableResource>
   {
     Task<GetCommonVariablesByTenantIdResponse> Get(Octopus.Client.Model.TenantVariables.GetCommonVariablesByTenantIdRequest, CancellationToken)
+    Task<GetProjectVariablesByTenantIdResponse> Get(Octopus.Client.Model.TenantVariables.GetProjectVariablesByTenantIdRequest, CancellationToken)
     Task<List<TenantVariableResource>> GetAll(Octopus.Client.Model.ProjectResource)
     Task<ModifyCommonVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyCommonVariablesByTenantIdCommand, CancellationToken)
     Task<ModifyProjectVariablesByTenantIdResponse> Modify(Octopus.Client.Model.TenantVariables.ModifyProjectVariablesByTenantIdCommand, CancellationToken)
