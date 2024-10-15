@@ -13,6 +13,9 @@ namespace Octopus.Client.Repositories.Async
         Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
             CancellationToken cancellationToken);
 
+        Task<GetProjectVariablesByTenantIdResponse> Get(GetProjectVariablesByTenantIdRequest request,
+            CancellationToken cancellationToken);
+
         Task<ModifyCommonVariablesByTenantIdResponse> Modify(ModifyCommonVariablesByTenantIdCommand command,
             CancellationToken cancellationToken);
 
@@ -38,6 +41,17 @@ namespace Octopus.Client.Repositories.Async
 
             var response =
                 await Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId },
+                    cancellationToken);
+            return response;
+        }
+
+        public async Task<GetProjectVariablesByTenantIdResponse> Get(GetProjectVariablesByTenantIdRequest request,
+            CancellationToken cancellationToken)
+        {
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+
+            var response =
+                await Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId },
                     cancellationToken);
             return response;
         }
