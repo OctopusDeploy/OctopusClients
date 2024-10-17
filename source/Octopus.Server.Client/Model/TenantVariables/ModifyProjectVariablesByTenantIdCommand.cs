@@ -26,9 +26,9 @@ public class TenantProjectVariable(
     public ProjectVariableScope Scope { get; set; } = scope;
 }
 
-public class ProjectVariableScope(string[] environmentIds)
+public class ProjectVariableScope(ReferenceCollection environmentIds)
 {
-    public string[] EnvironmentIds { get; set; } = environmentIds;
+    public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
 
 public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)

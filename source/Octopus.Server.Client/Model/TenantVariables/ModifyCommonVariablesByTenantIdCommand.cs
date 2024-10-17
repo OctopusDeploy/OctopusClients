@@ -23,9 +23,9 @@ public class TenantCommonVariable(string libraryVariableSetId, string templateId
     public CommonVariableScope Scope { get; set; } = scope;
 }
 
-public class CommonVariableScope(string[] environmentIds)
+public class CommonVariableScope(ReferenceCollection environmentIds)
 {
-    public string[] EnvironmentIds { get; set; } = environmentIds;
+    public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
 
 public class ModifyCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)
