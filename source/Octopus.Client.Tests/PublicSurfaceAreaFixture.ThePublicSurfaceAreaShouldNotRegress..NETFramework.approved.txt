@@ -4369,6 +4369,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission MachinePolicyEdit
     static Octopus.Client.Model.Permission MachinePolicyView
     static Octopus.Client.Model.Permission MachineView
+    static Octopus.Client.Model.Permission PrioritizeTask
     static Octopus.Client.Model.Permission ProcessEdit
     static Octopus.Client.Model.Permission ProcessView
     static Octopus.Client.Model.Permission ProjectCreate

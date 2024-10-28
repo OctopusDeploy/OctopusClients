@@ -275,6 +275,8 @@ namespace Octopus.Client.Model
         [Description("View deployment target tags")] public static readonly Permission TargetTagView = new("TargetTagView");
         
         [Description("Create, edit, delete deployment target tags")] public static readonly Permission TargetTagAdminister = new("TargetTagAdminister");
+
+        [Description("Create deployments and runbooks that are prioritized")] public static readonly Permission PrioritizeTask = new("PrioritizeTask");
         
         public Permission(string id)
         {
