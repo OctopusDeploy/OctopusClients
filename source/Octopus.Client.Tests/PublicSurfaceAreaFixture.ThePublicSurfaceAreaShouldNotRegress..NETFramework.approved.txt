@@ -6402,19 +6402,45 @@ Octopus.Client.Model.Accounts.Usages
     Octopus.Client.Model.Resource
   {
     .ctor()
+    ICollection<CommonTenantVariableUsage> CommonTenantVariables { get; set; }
     ICollection<StepUsage> DeploymentProcesses { get; set; }
     ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
+    ICollection<ProjectTenantVariableUsage> ProjectTenantVariables { get; set; }
     ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
     ICollection<ReleaseUsage> Releases { get; set; }
     ICollection<RunbookStepUsage> RunbookProcesses { get; set; }
     ICollection<RunbookSnapshotUsage> RunbookSnapshots { get; set; }
     ICollection<TargetUsageEntry> Targets { get; set; }
   }
+  class CommonTenantVariableUsage
+  {
+    .ctor()
+    ICollection<CommonTenantVariableUsageEntry> LibraryVariableSets { get; set; }
+    String TenantId { get; set; }
+  }
+  class CommonTenantVariableUsageEntry
+  {
+    .ctor()
+    String LibraryVariableSetId { get; set; }
+    String TenantVariableId { get; set; }
+  }
   class LibraryVariableSetUsageEntry
   {
     .ctor()
     String LibraryVariableSetId { get; set; }
     String LibraryVariableSetName { get; set; }
+  }
+  class ProjectTenantVariableEntry
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    ICollection<String> TenantVariableIds { get; set; }
+  }
+  class ProjectTenantVariableUsage
+  {
+    .ctor()
+    ICollection<ProjectTenantVariableEntry> Projects { get; set; }
+    String TenantId { get; set; }
   }
   class ProjectVariableSetUsage
   {
