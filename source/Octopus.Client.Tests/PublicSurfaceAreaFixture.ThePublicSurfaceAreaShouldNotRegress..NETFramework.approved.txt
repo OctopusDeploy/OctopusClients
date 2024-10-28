@@ -6430,7 +6430,7 @@ Octopus.Client.Model.Accounts.Usages
     String LibraryVariableSetId { get; set; }
     String LibraryVariableSetName { get; set; }
   }
-   class ProjectTenantVariableEntry
+  class ProjectTenantVariableEntry
   {
     .ctor()
     String ProjectId { get; set; }
