@@ -6416,7 +6416,7 @@ Octopus.Client.Model.Accounts.Usages
   {
     .ctor()
     ICollection<ProjectTenantVariableEntry> Projects { get; set; }
-    String ProjectId { get; set; }
+    String TenantId { get; set; }
   }
   class ProjectVariableSetUsage
   {
