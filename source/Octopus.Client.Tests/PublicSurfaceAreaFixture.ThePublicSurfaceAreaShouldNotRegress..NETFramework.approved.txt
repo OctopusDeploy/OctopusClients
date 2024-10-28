@@ -6415,7 +6415,7 @@ Octopus.Client.Model.Accounts.Usages
   class CommonTenantVariableUsage
   {
     .ctor()
-    List<CommonTenantVariableUsageEntry> LibraryVariableSets { get; set; }
+    ICollection<CommonTenantVariableUsageEntry> LibraryVariableSets { get; set; }
     String TenantId { get; set; }
   }
   class CommonTenantVariableUsageEntry
@@ -6433,14 +6433,14 @@ Octopus.Client.Model.Accounts.Usages
   class ProjectTenantVariableUsage
   {
     .ctor()
-    List<ProjectTenantVariableEntry> Projects { get; set; }
+    ICollection<ProjectTenantVariableEntry> Projects { get; set; }
     String TenantId { get; set; }
   }
   class ProjectTenantVariableEntry
   {
     .ctor()
     String ProjectId { get; set; }
-    List<String> TenantVariableIds { get; set; }
+    ICollection<String> TenantVariableIds { get; set; }
   }
   class ProjectVariableSetUsage
   {
