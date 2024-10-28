@@ -6406,17 +6406,17 @@ Octopus.Client.Model.Accounts.Usages
     String LibraryVariableSetId { get; set; }
     String LibraryVariableSetName { get; set; }
   }
-  class ProjectTenantVariableUsage
-  {
-    .ctor()
-    ICollection<ProjectTenantVariableEntry> Projects { get; set; }
-    String TenantId { get; set; }
-  }
   class ProjectTenantVariableEntry
   {
     .ctor()
     String ProjectId { get; set; }
     ICollection<String> TenantVariableIds { get; set; }
+  }
+  class ProjectTenantVariableUsage
+  {
+    .ctor()
+    ICollection<ProjectTenantVariableEntry> Projects { get; set; }
+    String ProjectId { get; set; }
   }
   class ProjectVariableSetUsage
   {
