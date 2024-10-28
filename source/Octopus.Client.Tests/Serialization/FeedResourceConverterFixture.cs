@@ -63,6 +63,21 @@ namespace Octopus.Client.Tests.Serialization
             Assert.IsAssignableFrom(typeof(BuiltInFeedResource), result);
             Assert.AreEqual(input.DeleteUnreleasedPackagesAfterDays, result.DeleteUnreleasedPackagesAfterDays);
         }
+        
+        [Test]
+        public void BuiltInArtifactFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "Blah",
+                FeedType = FeedType.Artifact,
+            };
+
+            var result = Execute<BuiltInArtifactFeedResource>(input);
+
+            Assert.AreEqual(FeedType.Artifact, result.FeedType);
+            Assert.IsAssignableFrom(typeof(BuiltInArtifactFeedResource), result);
+        }
 
         [Test]
         public void GitHubFeedTypesDeserialize()

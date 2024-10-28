@@ -15,6 +15,7 @@
         S3,
         AzureContainerRegistry,
         GoogleContainerRegistry,
-        ArtifactoryGeneric
+        ArtifactoryGeneric,
+        Artifact
     }
 }

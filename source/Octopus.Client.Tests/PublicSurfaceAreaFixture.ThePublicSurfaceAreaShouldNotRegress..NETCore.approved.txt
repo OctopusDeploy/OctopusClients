@@ -2133,6 +2133,17 @@ Octopus.Client.Model
     Octopus.Client.Model.RetentionPeriod Retention { get; set; }
     Nullable<TimeSpan> StartingFrom { get; set; }
   }
+  class BuiltInArtifactFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Octopus.Client.Model.FeedType FeedType { get; }
+  }
   class BuiltInFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3238,6 +3249,7 @@ Octopus.Client.Model
       AzureContainerRegistry = 11
       GoogleContainerRegistry = 12
       ArtifactoryGeneric = 13
+      Artifact = 14
   }
   class FileUpload
   {
