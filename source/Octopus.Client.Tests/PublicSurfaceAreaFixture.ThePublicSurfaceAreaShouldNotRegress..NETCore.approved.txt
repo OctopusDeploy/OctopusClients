@@ -5726,7 +5726,6 @@ Octopus.Client.Model
     String ClonedFromTenantId { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
-    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     String Slug { get; set; }
