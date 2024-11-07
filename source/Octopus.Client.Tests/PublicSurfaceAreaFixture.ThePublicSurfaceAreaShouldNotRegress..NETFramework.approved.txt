@@ -4408,6 +4408,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission TaskCancel
     static Octopus.Client.Model.Permission TaskCreate
     static Octopus.Client.Model.Permission TaskEdit
+    static Octopus.Client.Model.Permission TaskPrioritize
     static Octopus.Client.Model.Permission TaskView
     static Octopus.Client.Model.Permission TaskViewLog
     static Octopus.Client.Model.Permission TeamCreate

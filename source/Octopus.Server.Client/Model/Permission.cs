@@ -127,6 +127,7 @@ namespace Octopus.Client.Model
 
         [Description("Edit server tasks")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants)] public static readonly Permission TaskEdit = new Permission("TaskEdit");
 
+        [Description("Create deployments that are prioritized")] public static readonly Permission TaskPrioritize = new("TaskPrioritize");
 
         [Description("View interruptions generated during deployments")] [SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission InterruptionView = new Permission("InterruptionView");
 
