@@ -7457,6 +7457,27 @@ Octopus.Client.Model.Triggers
       DaysPerWeekSchedule = 6
       FeedFilter = 7
       ArcFeedFilter = 8
+      GitFilter = 9
+  }
+}
+Octopus.Client.Model.Triggers.GitTriggers
+{
+  class GitFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    List<GitTriggerSourceResource> Sources { get; set; }
+  }
+  class GitTriggerSourceResource
+  {
+    .ctor(String, String, String[], String[])
+    String DeploymentActionSlug { get; set; }
+    String[] ExcludeFilePaths { get; set; }
+    String GitDependencyName { get; set; }
+    String[] IncludeFilePaths { get; set; }
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers

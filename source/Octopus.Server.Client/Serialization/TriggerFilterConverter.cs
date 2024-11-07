@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Octopus.Client.Model.Triggers;
+using Octopus.Client.Model.Triggers.GitTriggers;
 using Octopus.Client.Model.Triggers.ScheduledTriggers;
 
 namespace Octopus.Client.Serialization
@@ -18,7 +19,8 @@ namespace Octopus.Client.Serialization
               { TriggerFilterType.DaysPerWeekSchedule, typeof (DaysPerWeekScheduledTriggerFilterResource)},
               { TriggerFilterType.CronExpressionSchedule, typeof (CronScheduledTriggerFilterResource)},
               { TriggerFilterType.FeedFilter, typeof (FeedFilterResource)},
-              { TriggerFilterType.ArcFeedFilter, typeof (ArcFeedFilterResource)}
+              { TriggerFilterType.ArcFeedFilter, typeof (ArcFeedFilterResource)},
+              { TriggerFilterType.GitFilter, typeof (GitFilterResource)}
           };
 
         protected override IDictionary<TriggerFilterType, Type> DerivedTypeMappings => FilterTypes;
