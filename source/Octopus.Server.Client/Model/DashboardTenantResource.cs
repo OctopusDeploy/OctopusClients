@@ -11,5 +11,6 @@ namespace Octopus.Client.Model
         public string Name { get; set; }
         public IDictionary<string, ReferenceCollection> ProjectEnvironments { get; set; }
         public ReferenceCollection TenantTags { get; set; }
+        public bool IsDisabled { get; set; }
     }
 }

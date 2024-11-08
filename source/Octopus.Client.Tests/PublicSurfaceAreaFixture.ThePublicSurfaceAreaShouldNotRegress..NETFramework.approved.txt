@@ -2649,6 +2649,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
