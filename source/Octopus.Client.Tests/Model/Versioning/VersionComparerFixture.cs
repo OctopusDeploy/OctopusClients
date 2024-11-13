@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Versioning;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace Octopus.Client.Tests.Model.Versioning
 {

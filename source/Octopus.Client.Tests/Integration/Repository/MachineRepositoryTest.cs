@@ -9,6 +9,7 @@ using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
 using Octopus.Client.Repositories.Async;
 using Octopus.Client.Serialization;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace Octopus.Client.Tests.Integration.Repository
 {

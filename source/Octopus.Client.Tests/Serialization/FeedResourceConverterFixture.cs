@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace Octopus.Client.Tests.Serialization
 {

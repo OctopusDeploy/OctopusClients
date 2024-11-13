@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using Octopus.Client.Model;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace Octopus.Client.Tests.Model
 {
