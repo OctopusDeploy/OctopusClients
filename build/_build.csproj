@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.35">
+    <PackageReference Include="ILRepack" Version="2.0.18">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -21,8 +21,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageDownload Include="AzureSignTool" Version="[3.0.0]" />
-    <PackageDownload Include="Octopus.OctoVersion.Tool" Version="[0.3.293]" />
+    <PackageDownload Include="AzureSignTool" Version="[6.0.0]" />
+    <PackageDownload Include="Octopus.OctoVersion.Tool" Version="[1.0.1]" />
   </ItemGroup>
 
 </Project>
