@@ -66,10 +66,10 @@ namespace Octopus.Client.E2ETests
             switch (expectedVisibility)
             {
                 case Visibility.Internal:
-                    type!.IsPublic.Should().BeFalse();
+                    type!.IsPublic.Should().BeFalse($"{type} should be ILMerged as an internal type");
                     break;
                 case Visibility.Public:
-                    type!.IsPublic.Should().BeTrue();
+                    type!.IsPublic.Should().BeTrue($"{type} should be ILMerged as a public type");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expectedVisibility), expectedVisibility, null);
