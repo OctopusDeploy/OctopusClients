@@ -1,10 +1,114 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/build",
-  "title": "Build Schema",
   "definitions": {
-    "build": {
-      "type": "object",
+    "Host": {
+      "type": "string",
+      "enum": [
+        "AppVeyor",
+        "AzurePipelines",
+        "Bamboo",
+        "Bitbucket",
+        "Bitrise",
+        "GitHubActions",
+        "GitLab",
+        "Jenkins",
+        "Rider",
+        "SpaceAutomation",
+        "TeamCity",
+        "Terminal",
+        "TravisCI",
+        "VisualStudio",
+        "VSCode"
+      ]
+    },
+    "ExecutableTarget": {
+      "type": "string",
+      "enum": [
+        "Clean",
+        "Compile",
+        "CopyToLocalPackages",
+        "CopyUnsignedNugetToLocalPackages",
+        "Default",
+        "Merge",
+        "PackSignedMergedClientNuget",
+        "PackSignedNormalClientNuget",
+        "PackUnsignedNonMergedClientNuget",
+        "PackUnsignedNormalClientNuget",
+        "Restore",
+        "Test",
+        "TestClientNugetPackage"
+      ]
+    },
+    "Verbosity": {
+      "type": "string",
+      "description": "",
+      "enum": [
+        "Verbose",
+        "Normal",
+        "Minimal",
+        "Quiet"
+      ]
+    },
+    "NukeBuild": {
+      "properties": {
+        "Continue": {
+          "type": "boolean",
+          "description": "Indicates to continue a previously failed build attempt"
+        },
+        "Help": {
+          "type": "boolean",
+          "description": "Shows the help text for this build assembly"
+        },
+        "Host": {
+          "description": "Host for execution. Default is 'automatic'",
+          "$ref": "#/definitions/Host"
+        },
+        "NoLogo": {
+          "type": "boolean",
+          "description": "Disables displaying the NUKE logo"
+        },
+        "Partition": {
+          "type": "string",
+          "description": "Partition to use on CI"
+        },
+        "Plan": {
+          "type": "boolean",
+          "description": "Shows the execution plan (HTML)"
+        },
+        "Profile": {
+          "type": "array",
+          "description": "Defines the profiles to load",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Root": {
+          "type": "string",
+          "description": "Root directory during build execution"
+        },
+        "Skip": {
+          "type": "array",
+          "description": "List of targets to be skipped. Empty list skips all dependencies",
+          "items": {
+            "$ref": "#/definitions/ExecutableTarget"
+          }
+        },
+        "Target": {
+          "type": "array",
+          "description": "List of targets to be invoked. Default is '{default_target}'",
+          "items": {
+            "$ref": "#/definitions/ExecutableTarget"
+          }
+        },
+        "Verbosity": {
+          "description": "Logging verbosity during build execution. Default is 'Normal'",
+          "$ref": "#/definitions/Verbosity"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
       "properties": {
         "AutoDetectBranch": {
           "type": "boolean",
@@ -29,123 +133,20 @@
         "Configuration": {
           "type": "string"
         },
-        "Continue": {
-          "type": "boolean",
-          "description": "Indicates to continue a previously failed build attempt"
-        },
-        "Help": {
-          "type": "boolean",
-          "description": "Shows the help text for this build assembly"
-        },
-        "Host": {
-          "type": "string",
-          "description": "Host for execution. Default is 'automatic'",
-          "enum": [
-            "AppVeyor",
-            "AzurePipelines",
-            "Bamboo",
-            "Bitbucket",
-            "Bitrise",
-            "GitHubActions",
-            "GitLab",
-            "Jenkins",
-            "Rider",
-            "SpaceAutomation",
-            "TeamCity",
-            "Terminal",
-            "TravisCI",
-            "VisualStudio",
-            "VSCode"
-          ]
-        },
-        "NoLogo": {
-          "type": "boolean",
-          "description": "Disables displaying the NUKE logo"
-        },
         "OCTOVERSION_CurrentBranch": {
           "type": "string",
           "description": "Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable OCTOVERSION_CurrentBranch"
-        },
-        "Partition": {
-          "type": "string",
-          "description": "Partition to use on CI"
-        },
-        "Plan": {
-          "type": "boolean",
-          "description": "Shows the execution plan (HTML)"
-        },
-        "Profile": {
-          "type": "array",
-          "description": "Defines the profiles to load",
-          "items": {
-            "type": "string"
-          }
-        },
-        "Root": {
-          "type": "string",
-          "description": "Root directory during build execution"
         },
         "SigningCertificatePassword": {
           "type": "string"
         },
         "SigningCertificatePath": {
           "type": "string"
-        },
-        "Skip": {
-          "type": "array",
-          "description": "List of targets to be skipped. Empty list skips all dependencies",
-          "items": {
-            "type": "string",
-            "enum": [
-              "Clean",
-              "Compile",
-              "CopyToLocalPackages",
-              "CopyUnsignedNugetToLocalPackages",
-              "Default",
-              "Merge",
-              "PackSignedMergedClientNuget",
-              "PackSignedNormalClientNuget",
-              "PackUnsignedNonMergedClientNuget",
-              "PackUnsignedNormalClientNuget",
-              "Restore",
-              "Test",
-              "TestClientNugetPackage"
-            ]
-          }
-        },
-        "Target": {
-          "type": "array",
-          "description": "List of targets to be invoked. Default is '{default_target}'",
-          "items": {
-            "type": "string",
-            "enum": [
-              "Clean",
-              "Compile",
-              "CopyToLocalPackages",
-              "CopyUnsignedNugetToLocalPackages",
-              "Default",
-              "Merge",
-              "PackSignedMergedClientNuget",
-              "PackSignedNormalClientNuget",
-              "PackUnsignedNonMergedClientNuget",
-              "PackUnsignedNormalClientNuget",
-              "Restore",
-              "Test",
-              "TestClientNugetPackage"
-            ]
-          }
-        },
-        "Verbosity": {
-          "type": "string",
-          "description": "Logging verbosity during build execution. Default is 'Normal'",
-          "enum": [
-            "Minimal",
-            "Normal",
-            "Quiet",
-            "Verbose"
-          ]
         }
       }
+    },
+    {
+      "$ref": "#/definitions/NukeBuild"
     }
-  }
+  ]
 }

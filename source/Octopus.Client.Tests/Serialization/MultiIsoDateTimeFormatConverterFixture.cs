@@ -1,7 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Octopus.Client.Serialization;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace Octopus.Client.Tests.Serialization
 {

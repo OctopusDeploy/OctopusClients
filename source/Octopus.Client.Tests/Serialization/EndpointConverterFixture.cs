@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using NUnit.Framework;
 using Octopus.Client.Model;
 using Octopus.Client.Model.Endpoints;
