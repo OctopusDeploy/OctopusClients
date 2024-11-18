@@ -47,8 +47,9 @@ namespace Octopus.Client.Editors
         /// <param name="name">The Tenant's name</param>
         /// <param name="description">The Tenant's description</param>
         /// <param name="cloneId">If provided, the Id of the Tenant that you want to clone</param>
+        /// <param name="isDisabled">The Tenant's enabled/disabled state</param>
         /// <returns></returns>
-        public TenantEditor CreateOrModify(string name, string description, string cloneId = null)
+        public TenantEditor CreateOrModify(string name, string description, string cloneId = null, bool isDisabled = false)
         {
             if (!(repository as TenantRepository).Repository.HasLinkParameter("Tenants", "clone"))
                 throw new OperationNotSupportedByOctopusServerException(cloneId == null
@@ -62,12 +63,14 @@ namespace Octopus.Client.Editors
                 {
                     Name = name,
                     Description = description,
+                    IsDisabled = isDisabled,
                 }, new { clone = cloneId });
             }
             else
             {
                 existing.Name = name;
                 existing.Description = description;
+                existing.IsDisabled = isDisabled;
                 Instance = repository.Modify(existing);
             }
 
