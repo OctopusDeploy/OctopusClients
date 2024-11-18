@@ -81,7 +81,7 @@ namespace Octopus.Client.Repositories
         
         public TenantEditor CreateOrModify(string name, string description, string cloneId)
         {
-            return new TenantEditor(this).CreateOrModify(name, description, cloneId, false);
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId);
         }
         
         public TenantEditor CreateOrModify(string name, string description, string cloneId, bool isDisabled)
