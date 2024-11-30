@@ -235,6 +235,11 @@ namespace Octopus.Client
 
         private async Task<RootResource> LoadRootDocumentInner(CancellationToken cancellationToken)
         {
+            if (Client is IOctopusServerRootResourceCache { CachedRootResource: { } rootResource })
+            {
+                return rootResource;
+            }
+
             var watch = Stopwatch.StartNew();
             Exception lastError = null;
 
@@ -285,7 +290,12 @@ namespace Octopus.Client
 
             if (current < min || current > max)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({rootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
-            
+
+            if (Client is IOctopusServerRootResourceCache cache)
+            {
+                cache.CachedRootResource = rootDocument;
+            }
+
             return rootDocument;
         }
 
