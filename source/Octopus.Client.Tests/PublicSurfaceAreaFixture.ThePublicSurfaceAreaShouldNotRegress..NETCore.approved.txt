@@ -89,6 +89,8 @@ Octopus.Client
     Octopus.Client.IOctopusCommonAsyncRepository
     Octopus.Client.IOctopusSystemAsyncRepository
   {
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
+    Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
   }
   interface IOctopusClient
     IDisposable
@@ -168,6 +170,8 @@ Octopus.Client
     Octopus.Client.IOctopusCommonRepository
     Octopus.Client.IOctopusSystemRepository
   {
+    Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
+    Octopus.Client.IOctopusSystemRepository ForSystem()
   }
   interface IOctopusSpaceAsyncRepository
     Octopus.Client.IOctopusCommonAsyncRepository
@@ -440,6 +444,8 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.Async.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.Async.IWorkerRepository Workers { get; }
+    Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
+    Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<Boolean> HasLink(String)
     Task<Boolean> HasLinkParameter(String, String)
     Task<String> Link(String)
@@ -582,6 +588,8 @@ Octopus.Client
     Octopus.Client.Repositories.IVariableSetRepository VariableSets { get; }
     Octopus.Client.Repositories.IWorkerPoolRepository WorkerPools { get; }
     Octopus.Client.Repositories.IWorkerRepository Workers { get; }
+    Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
+    Octopus.Client.IOctopusSystemRepository ForSystem()
     Boolean HasLink(String)
     Boolean HasLinkParameter(String, String)
     String Link(String)
@@ -591,10 +599,6 @@ Octopus.Client
   abstract class OctopusRepositoryExtensions
   {
     static Octopus.Client.IOctopusAsyncRepository CreateRepository(Octopus.Client.IOctopusAsyncClient, Octopus.Client.RepositoryScope)
-    static Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.IOctopusAsyncRepository, Octopus.Client.Model.SpaceResource)
-    static Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.IOctopusRepository, Octopus.Client.Model.SpaceResource)
-    static Octopus.Client.IOctopusSystemAsyncRepository ForSystem(Octopus.Client.IOctopusAsyncRepository)
-    static Octopus.Client.IOctopusSystemRepository ForSystem(Octopus.Client.IOctopusRepository)
   }
   class OctopusRequest
   {
