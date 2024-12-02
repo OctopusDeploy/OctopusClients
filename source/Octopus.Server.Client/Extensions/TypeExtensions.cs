@@ -30,6 +30,8 @@ namespace Octopus.Client.Extensions
                 accountType = AccountType.Token;
             else if (type == typeof(GoogleCloudAccountResource))
                 accountType = AccountType.GoogleCloudAccount;
+            else if (type == typeof(GenericOidcAccountResource))
+                accountType = AccountType.GenericOidcAccount;
             else
                 throw new ArgumentException($"Account type {type} is not supported");
 

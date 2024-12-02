@@ -14,5 +14,6 @@ namespace Octopus.Client.Model.Accounts
         Token,
         GoogleCloudAccount,
         AzureOidc,
+        GenericOidcAccount,
     }
 }
