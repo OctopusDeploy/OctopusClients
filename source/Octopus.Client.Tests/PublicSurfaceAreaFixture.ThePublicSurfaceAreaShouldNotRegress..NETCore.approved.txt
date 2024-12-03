@@ -814,6 +814,13 @@ Octopus.Client.Editors
     Octopus.Client.Editors.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Octopus.Client.Editors.EnvironmentEditor Save()
   }
+  class GenericOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   interface IResourceBuilder
   {
   }
@@ -1177,6 +1184,13 @@ Octopus.Client.Editors.Async
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
+  }
+  class GenericOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   interface IResourceBuilder
   {
@@ -6025,6 +6039,7 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
       UsernamePasswordAccount = 6
+      GenericOidcAccount = 7
   }
   class VersioningStrategyResource
   {
@@ -6125,6 +6140,7 @@ Octopus.Client.Model.Accounts
       Token = 7
       GoogleCloudAccount = 8
       AzureOidc = 9
+      GenericOidcAccount = 10
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -6257,6 +6273,19 @@ Octopus.Client.Model.Accounts
       String ResourceGroupName { get; set; }
       String Site { get; set; }
     }
+  }
+  class GenericOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String Audience { get; set; }
+    String[] DeploymentSubjectKeys { get; set; }
   }
   class GoogleCloudAccountResource
     Octopus.Client.Extensibility.IResource
