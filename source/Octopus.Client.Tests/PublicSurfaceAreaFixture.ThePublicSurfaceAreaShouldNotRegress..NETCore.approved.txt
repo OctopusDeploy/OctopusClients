@@ -6283,11 +6283,9 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountResource
   {
     .ctor()
-    String[] AccountTestSubjectKeys { get; set; }
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     String Audience { get; set; }
     String[] DeploymentSubjectKeys { get; set; }
-    String[] HealthCheckSubjectKeys { get; set; }
   }
   class GoogleCloudAccountResource
     Octopus.Client.Extensibility.IResource

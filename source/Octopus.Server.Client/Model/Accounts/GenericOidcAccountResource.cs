@@ -13,11 +13,5 @@ namespace Octopus.Client.Model.Accounts
 
         [Writeable]
         public string[] DeploymentSubjectKeys { get; set; }
-
-        [Writeable]
-        public string[] HealthCheckSubjectKeys { get; set; }
-
-        [Writeable]
-        public string[] AccountTestSubjectKeys { get; set; }
     }
 }
