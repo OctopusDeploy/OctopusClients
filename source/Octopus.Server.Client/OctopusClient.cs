@@ -20,7 +20,7 @@ namespace Octopus.Client
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
-    public class OctopusClient : IHttpOctopusClient
+    public class OctopusClient : IHttpOctopusClient, IOctopusServerRootResourceCache
     {
         private static readonly ILog Logger = LogProvider.For<OctopusClient>();
 
@@ -53,13 +53,22 @@ namespace Octopus.Client
             Repository = new OctopusRepository(this);
         }
 
-        public RootResource RootDocument => Repository.LoadRootDocument();
+        public RootResource RootDocument => (this as IOctopusServerRootResourceCache)?.CachedRootResource ?? Repository.LoadRootDocument();
+
+        RootResource IOctopusServerRootResourceCache.CachedRootResource
+        {
+            get => serverEndpoint.CachedRootResource;
+            set => serverEndpoint.CachedRootResource = value;
+        }
+
         public IOctopusRepository Repository { get; private set; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
         public bool IsUsingSecureConnection => serverEndpoint.IsUsingSecureConnection;
+
+        public IOctopusClient AsUser(string apiKey, OctopusClientOptions options = null) => new OctopusClient(serverEndpoint.AsUser(apiKey), options);
 
         public IOctopusSpaceRepository ForSpace(SpaceResource space)
         {
