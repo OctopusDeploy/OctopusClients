@@ -34,10 +34,10 @@ Octopus.Client
     Task<TResource> Create(String, Octopus.Client.TResource, CancellationToken)
     Task<TResource> Create(String, Octopus.Client.TResource, Object, CancellationToken)
     Task<TResponse> Create(String, Octopus.Client.TCommand, Object, CancellationToken)
-    Task Delete(String, Object, Object)
-    Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
     Task<TResponse> Delete(String, Octopus.Client.TCommand, CancellationToken)
+    Task Delete(String, Object, Object)
+    Task Delete(String, CancellationToken)
     Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
@@ -348,12 +348,12 @@ Octopus.Client
     Task<TResponse> Post(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Post(String)
     Task Post(String, CancellationToken)
-    Task Put(String, Octopus.Client.TResource)
-    Task Put(String, Octopus.Client.TResource, CancellationToken)
     Task Put(String, Octopus.Client.TResource, Object)
     Task Put(String, Octopus.Client.TResource, Object, CancellationToken)
     Task Put(String)
     Task Put(String, CancellationToken)
+    Task Put(String, Octopus.Client.TResource)
+    Task Put(String, Octopus.Client.TResource, CancellationToken)
     Task PutContent(String, Stream)
     Task PutContent(String, Stream, CancellationToken)
     Uri QualifyUri(String, Object)
@@ -1305,9 +1305,14 @@ Octopus.Client.Editors.Async
     Octopus.Client.Model.RunbookResource Instance { get; }
     Task<RunbookProcessEditor> RunbookProcess { get; }
     Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
+    Task<RunbookEditor> CreateOrModifyInGit(Octopus.Client.Model.ProjectResource, String, String, String, String, String, CancellationToken)
     Octopus.Client.Editors.Async.RunbookEditor Customize(Action<RunbookResource>)
     Task<RunbookEditor> Load(String)
+    Task<RunbookEditor> Load(String, CancellationToken)
+    Task<RunbookEditor> LoadInGit(String, Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<RunbookEditor> Save()
+    Task<RunbookEditor> SaveInGit(String, String, CancellationToken)
   }
   class RunbookProcessEditor
     Octopus.Client.Editors.Async.IResourceEditor<RunbookProcessResource, RunbookProcessEditor>
@@ -1320,8 +1325,12 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.RunbookProcessEditor Customize(Action<RunbookProcessResource>)
     Octopus.Client.Model.DeploymentStepResource FindStep(String)
     Task<RunbookProcessEditor> Load(String)
+    Task<RunbookProcessEditor> Load(String, CancellationToken)
+    Task<RunbookProcessEditor> LoadInGit(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Octopus.Client.Editors.Async.RunbookProcessEditor RemoveStep(String)
     Task<RunbookProcessEditor> Save()
+    Task<RunbookProcessEditor> Save(CancellationToken)
+    Task<RunbookProcessEditor> SaveInGit(String, String, CancellationToken)
   }
   class SshKeyPairAccountEditor
     Octopus.Client.Editors.Async.IResourceEditor<SshKeyPairAccountResource, SshKeyPairAccountEditor>
@@ -4067,6 +4076,29 @@ Octopus.Client.Model
     .ctor()
     String ChangeDescription { get; set; }
   }
+  class ModifyRunbookCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.RunbookResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
+  class ModifyRunbookProcessCommand
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.IProcessResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.ICommitCommand
+    Octopus.Client.Model.RunbookProcessResource
+  {
+    .ctor()
+    String ChangeDescription { get; set; }
+  }
   MultipleAccountType
   {
       None = 0
@@ -4652,8 +4684,8 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectResource AddOrUpdateSensitiveTemplate(String, String, String, String)
     Octopus.Client.Model.ProjectResource AddOrUpdateSingleLineTextTemplate(String, String)
     Octopus.Client.Model.ProjectResource AddOrUpdateSingleLineTextTemplate(String, String, String, String)
-    Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
+    Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>, String, String)
     Octopus.Client.Model.ProjectResource Clear()
     Octopus.Client.Model.ProjectResource IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
   }
@@ -9218,7 +9250,9 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IGet<RunbookProcessResource>
     Octopus.Client.Repositories.Async.IModify<RunbookProcessResource>
   {
+    Task<RunbookProcessResource> GetInGit(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Task<RunbookSnapshotTemplateResource> GetTemplate(Octopus.Client.Model.RunbookProcessResource)
+    Task<RunbookProcessResource> ModifyInGit(String, String, Octopus.Client.Model.RunbookProcessResource, CancellationToken)
   }
   interface IRunbookRepository
     Octopus.Client.Repositories.Async.IFindByName<RunbookResource>
@@ -9228,11 +9262,15 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IModify<RunbookResource>
     Octopus.Client.Repositories.Async.IDelete<RunbookResource>
   {
+    Task<RunbookResource> CreateInGit(Octopus.Client.Model.RunbookResource, String, String, CancellationToken)
     Task<RunbookEditor> CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    Task<RunbookEditor> CreateOrModifyInGit(Octopus.Client.Model.ProjectResource, String, String, String, String, String, CancellationToken)
     Task<RunbookResource> FindByName(Octopus.Client.Model.ProjectResource, String)
+    Task<RunbookResource> GetInGit(String, Octopus.Client.Model.ProjectResource, String, CancellationToken)
     Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Task<RunbookResource> ModifyInGit(Octopus.Client.Model.RunbookResource, String, String, CancellationToken)
     Task<RunbookRunResource> Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
     Task<RunbookRunResource[]> Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunParameters)
   }
