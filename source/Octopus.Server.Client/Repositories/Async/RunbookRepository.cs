@@ -21,6 +21,8 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
         Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
+        
+        Task<RunbookRunResource[]> RunInGit(RunbookResource runbook, RunbookRunGitParameters runbookRunParameters, string gitRef, CancellationToken cancellationToken);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -35,13 +37,13 @@ namespace Octopus.Client.Repositories.Async
             versionAfterWhichRunbookRunParametersAreAvailable = SemanticVersion.Parse("2020.3.1");
         }
 
-        public Task<RunbookResource> GetInGit(string id, ProjectResource project, string gitRef, CancellationToken cancellationToken)
+        public async Task<RunbookResource> GetInGit(string id, ProjectResource project, string gitRef, CancellationToken cancellationToken)
         {
-            return GetInGit(id, project.SpaceId, project.Id, gitRef, cancellationToken);
+            return await GetInGit(id, project.SpaceId, project.Id, gitRef, cancellationToken);
         }
         
-        Task<RunbookResource> GetInGit(string id, string spaceId, string projectId, string gitRef, CancellationToken cancellationToken)
-            => Client.Get<RunbookResource>($"/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}", cancellationToken);
+        async Task<RunbookResource> GetInGit(string id, string spaceId, string projectId, string gitRef, CancellationToken cancellationToken)
+            => await Client.Get<RunbookResource>($"/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}", cancellationToken);
         
         public async Task<RunbookResource> CreateInGit(RunbookResource resource, string gitRef, string commitMessage, CancellationToken cancellationToken)
         {
@@ -63,6 +65,17 @@ namespace Octopus.Client.Repositories.Async
             
             await Client.Put<RunbookResource>($"/api/{resource.SpaceId}/projects/{resource.ProjectId}/{gitRef}/runbooks/{resource.Id}", command, cancellationToken);
             return await GetInGit(resource.Id, resource.SpaceId, resource.ProjectId, gitRef, cancellationToken);
+        }
+        
+        public async Task DeleteInGit(RunbookResource resource, string gitRef, string commitMessage)
+        {
+            // TODO: revisit/obsolete this API when we have converters
+            // until then we need a way to re-use the response from previous client calls
+            var json = Serializer.Serialize(resource);
+            var command = Serializer.Deserialize<DeleteRunbookCommand>(json);
+            command.ChangeDescription = commitMessage;
+            
+            await Client.Delete($"/api/{resource.SpaceId}/projects/{resource.ProjectId}/{gitRef}/runbooks/{resource.Id}", command);
         }
         
         public Task<RunbookResource> FindByName(ProjectResource project, string name)
@@ -89,19 +102,8 @@ namespace Octopus.Client.Repositories.Async
         {
             return Client.Get<RunbookRunTemplateResource>(runbook.Link("RunbookRunTemplate"));
         }
-        
-        public Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook, string gitRef)
-        {
-            return Client.Get<RunbookRunTemplateResource>(runbook.Link("RunbookRunTemplate"));
-        }
-
 
         public Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget)
-        {
-            return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
-        }
-
-        public Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget, string gitRef)
         {
             return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
         }
@@ -127,15 +129,7 @@ namespace Octopus.Client.Repositories.Async
                 : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
         }
 
-        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun, string gitRef)
-        {
-            var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters((await Repository.LoadRootDocument()).Version);
 
-            return serverSupportsRunbookRunParameters
-                ? (await Run(runbook, RunbookRunParameters.MapFrom(runbookRun), gitRef)).FirstOrDefault()
-                : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
-        }
-        
         public async Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
         {
             var serverVersion = (await Repository.LoadRootDocument()).Version;
@@ -147,8 +141,8 @@ namespace Octopus.Client.Repositories.Async
 
             return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
         }
-        
-        public async Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters, string gitRef)
+       
+        public async Task<RunbookRunResource[]> RunInGit(RunbookResource runbook, RunbookRunGitParameters runbookRunParameters, string gitRef, CancellationToken cancellationToken)
         {
             var serverVersion = (await Repository.LoadRootDocument()).Version;
             var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters(serverVersion);
@@ -156,13 +150,8 @@ namespace Octopus.Client.Repositories.Async
             if (serverSupportsRunbookRunParameters == false)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
                                                          $"Please update your Octopus Deploy server to 2020.3.* or newer to access this feature.");
-
-            return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
-        }
-        
-        bool ProjectHasRunbooksInGit(ProjectResource projectResource)
-        {
-            return projectResource.PersistenceSettings is GitPersistenceSettingsResource gitSettings && gitSettings.ConversionState.RunbooksAreInGit;
+            
+            return await Client.Post<object, RunbookRunResource[]>($"/api/{runbook.SpaceId}/projects/{runbook.ProjectId}/{gitRef}/runbooks/{runbook.Id}/run/v1", runbookRunParameters);
         }
     }
 }

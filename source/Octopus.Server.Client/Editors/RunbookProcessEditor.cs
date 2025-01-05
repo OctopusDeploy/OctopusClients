@@ -21,6 +21,12 @@ namespace Octopus.Client.Editors
             return this;
         }
 
+        public RunbookProcessEditor LoadInGit(ProjectResource project, string id, string gitRef)
+        {
+            Instance = repository.GetInGit(project, id, gitRef);
+            return this;
+        }
+        
         public DeploymentStepResource FindStep(string name)
         {
             return Instance.FindStep(name);
@@ -52,6 +58,12 @@ namespace Octopus.Client.Editors
         public RunbookProcessEditor Save()
         {
             Instance = repository.Modify(Instance);
+            return this;
+        }
+        
+        public RunbookProcessEditor SaveInGit(string gitRef, string commitMessage)
+        {
+            Instance = repository.ModifyInGit(gitRef, commitMessage, Instance);
             return this;
         }
     }
