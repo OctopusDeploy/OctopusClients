@@ -42,24 +42,20 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AsyncFixer" Version="1.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0" />
-    <PackageReference Include="Octopus.Octodiff" Version="2.0.100" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.1.0" />
+    <PackageReference Include="Octopus.Octodiff" Version="2.0.547" />
     <PackageReference Include="Octopus.Server.MessageContracts.Base" Version="3.2.810" />
     <PackageReference Include="Octopus.Server.MessageContracts.Base.HttpRoutes" Version="3.2.810" />
-    <PackageReference Include="Octopus.TinyTypes" Version="2.2.1008" />
-    <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.1008" />
-    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.1008" />
-    <PackageReference Include="TimeZoneConverter" Version="3.2.0" />
+    <PackageReference Include="Octopus.TinyTypes" Version="2.2.1317" />
+    <PackageReference Include="Octopus.TinyTypes.Json" Version="2.2.1317" />
+    <PackageReference Include="Octopus.TinyTypes.TypeConverters" Version="2.2.1317" />
+    <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
   </ItemGroup>
 </Project>

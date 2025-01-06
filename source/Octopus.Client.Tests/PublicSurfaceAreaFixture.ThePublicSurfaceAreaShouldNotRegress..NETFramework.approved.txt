@@ -815,6 +815,13 @@ Octopus.Client.Editors
     Octopus.Client.Editors.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Octopus.Client.Editors.EnvironmentEditor Save()
   }
+  class GenericOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   interface IResourceBuilder
   {
   }
@@ -987,7 +994,7 @@ Octopus.Client.Editors
     Octopus.Client.Editors.TenantEditor ClearTags()
     Octopus.Client.Editors.TenantEditor ConnectToProjectAndEnvironments(Octopus.Client.Model.ProjectResource, Octopus.Client.Model.EnvironmentResource[])
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
-    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String, Boolean)
     Octopus.Client.Editors.TenantEditor Customize(Action<TenantResource>)
     Octopus.Client.Editors.TenantEditor Save()
     Octopus.Client.Editors.TenantEditor SetLogo(String)
@@ -1178,6 +1185,13 @@ Octopus.Client.Editors.Async
     Task<EnvironmentEditor> CreateOrModify(String, String)
     Octopus.Client.Editors.Async.EnvironmentEditor Customize(Action<EnvironmentResource>)
     Task<EnvironmentEditor> Save()
+  }
+  class GenericOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
   interface IResourceBuilder
   {
@@ -2649,6 +2663,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
@@ -4408,6 +4423,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission TaskCancel
     static Octopus.Client.Model.Permission TaskCreate
     static Octopus.Client.Model.Permission TaskEdit
+    static Octopus.Client.Model.Permission TaskPrioritize
     static Octopus.Client.Model.Permission TaskView
     static Octopus.Client.Model.Permission TaskViewLog
     static Octopus.Client.Model.Permission TeamCreate
@@ -5746,6 +5762,7 @@ Octopus.Client.Model
     String ClonedFromTenantId { get; set; }
     String Description { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
+    Boolean IsDisabled { get; set; }
     String Name { get; set; }
     IDictionary<String, ReferenceCollection> ProjectEnvironments { get; set; }
     String Slug { get; set; }
@@ -6045,6 +6062,7 @@ Octopus.Client.Model
       AzureAccount = 4
       WorkerPool = 5
       UsernamePasswordAccount = 6
+      GenericOidcAccount = 7
   }
   class VersioningStrategyResource
   {
@@ -6145,6 +6163,7 @@ Octopus.Client.Model.Accounts
       Token = 7
       GoogleCloudAccount = 8
       AzureOidc = 9
+      GenericOidcAccount = 10
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -6278,6 +6297,19 @@ Octopus.Client.Model.Accounts
       String Site { get; set; }
     }
   }
+  class GenericOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String Audience { get; set; }
+    String[] DeploymentSubjectKeys { get; set; }
+  }
   class GoogleCloudAccountResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -6402,19 +6434,45 @@ Octopus.Client.Model.Accounts.Usages
     Octopus.Client.Model.Resource
   {
     .ctor()
+    ICollection<CommonTenantVariableUsage> CommonTenantVariables { get; set; }
     ICollection<StepUsage> DeploymentProcesses { get; set; }
     ICollection<LibraryVariableSetUsageEntry> LibraryVariableSets { get; set; }
+    ICollection<ProjectTenantVariableUsage> ProjectTenantVariables { get; set; }
     ICollection<ProjectVariableSetUsage> ProjectVariableSets { get; set; }
     ICollection<ReleaseUsage> Releases { get; set; }
     ICollection<RunbookStepUsage> RunbookProcesses { get; set; }
     ICollection<RunbookSnapshotUsage> RunbookSnapshots { get; set; }
     ICollection<TargetUsageEntry> Targets { get; set; }
   }
+  class CommonTenantVariableUsage
+  {
+    .ctor()
+    ICollection<CommonTenantVariableUsageEntry> LibraryVariableSets { get; set; }
+    String TenantId { get; set; }
+  }
+  class CommonTenantVariableUsageEntry
+  {
+    .ctor()
+    String LibraryVariableSetId { get; set; }
+    String TenantVariableId { get; set; }
+  }
   class LibraryVariableSetUsageEntry
   {
     .ctor()
     String LibraryVariableSetId { get; set; }
     String LibraryVariableSetName { get; set; }
+  }
+  class ProjectTenantVariableEntry
+  {
+    .ctor()
+    String ProjectId { get; set; }
+    ICollection<String> TenantVariableIds { get; set; }
+  }
+  class ProjectTenantVariableUsage
+  {
+    .ctor()
+    ICollection<ProjectTenantVariableEntry> Projects { get; set; }
+    String TenantId { get; set; }
   }
   class ProjectVariableSetUsage
   {
@@ -6573,6 +6631,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
   class CreateDeploymentFreezeResponse
   {
@@ -6582,6 +6641,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
   class DeleteDeploymentFreezeCommand
   {
@@ -6604,6 +6664,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
   class GetDeploymentFreezeByIdRequest
   {
@@ -6618,6 +6679,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; }
   }
   class GetDeploymentFreezesRequest
   {
@@ -6628,6 +6690,7 @@ Octopus.Client.Model.DeploymentFreezes
     IReadOnlyCollection<String> ProjectIds { get; set; }
     Int32 Skip { get; set; }
     Int32 Take { get; set; }
+    IReadOnlyCollection<String> TenantIds { get; set; }
   }
   class GetDeploymentFreezesResponse
   {
@@ -6643,6 +6706,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
   class ModifyDeploymentFreezeResponse
   {
@@ -6652,6 +6716,14 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
+    List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
+  }
+  class TenantProjectEnvironment
+  {
+    .ctor()
+    String EnvironmentId { get; set; }
+    String ProjectId { get; set; }
+    String TenantId { get; set; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -7510,6 +7582,27 @@ Octopus.Client.Model.Triggers
       DaysPerWeekSchedule = 6
       FeedFilter = 7
       ArcFeedFilter = 8
+      GitFilter = 9
+  }
+}
+Octopus.Client.Model.Triggers.GitTriggers
+{
+  class GitFilterResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.TriggerFilterResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerFilterType FilterType { get; }
+    List<GitTriggerSourceResource> Sources { get; set; }
+  }
+  class GitTriggerSourceResource
+  {
+    .ctor(String, String, String[], String[])
+    String DeploymentActionSlug { get; set; }
+    String[] ExcludeFilePaths { get; set; }
+    String GitDependencyName { get; set; }
+    String[] IncludeFilePaths { get; set; }
   }
 }
 Octopus.Client.Model.Triggers.ScheduledTriggers
@@ -8530,6 +8623,7 @@ Octopus.Client.Repositories
     Octopus.Client.Editors.TenantEditor CreateOrModify(String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String)
     Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String)
+    Octopus.Client.Editors.TenantEditor CreateOrModify(String, String, String, Boolean)
     List<TenantResource> FindAll(String, String[], Int32)
     List<TenantsMissingVariablesResource> GetMissingVariables(String, String, String)
     Octopus.Client.Model.TenantVariableResource GetVariables(Octopus.Client.Model.TenantResource)

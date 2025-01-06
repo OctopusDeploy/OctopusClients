@@ -18,6 +18,12 @@ public class GetDeploymentFreezesRequest
     /// </summary>
     [Optional]
     public IReadOnlyCollection<string> ProjectIds { get; set; } = Array.Empty<string>();
+    
+    /// <summary>
+    /// List of Tenant IDs which if specified, filters the result to only include DeploymentFreeze with matching Project IDs.
+    /// </summary>
+    [Optional]
+    public IReadOnlyCollection<string> TenantIds { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// List of Environment IDs which if specified, filters the result to only include DeploymentFreeze with matching Environment IDs.

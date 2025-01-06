@@ -17,6 +17,7 @@ namespace Octopus.Client.Repositories
         TenantEditor CreateOrModify(string name);
         TenantEditor CreateOrModify(string name, string description);
         TenantEditor CreateOrModify(string name, string description, string cloneId);
+        TenantEditor CreateOrModify(string name, string description, string cloneId, bool isDisabled);
     }
 
     class TenantRepository : BasicRepository<TenantResource>, ITenantRepository
@@ -81,6 +82,11 @@ namespace Octopus.Client.Repositories
         public TenantEditor CreateOrModify(string name, string description, string cloneId)
         {
             return new TenantEditor(this).CreateOrModify(name, description, cloneId);
+        }
+        
+        public TenantEditor CreateOrModify(string name, string description, string cloneId, bool isDisabled)
+        {
+            return new TenantEditor(this).CreateOrModify(name, description, cloneId, isDisabled);
         }
     }
 }

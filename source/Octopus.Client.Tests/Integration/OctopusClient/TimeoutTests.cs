@@ -52,7 +52,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             var cancellationTokenSource = new CancellationTokenSource();
 
             var getTask = AsyncClient.Get<string>("~/", cancellationTokenSource.Token);
-#if NETFRAMEWORK || NET6_0
+#if NETFRAMEWORK
             cancellationTokenSource.Cancel();
 #else
             await cancellationTokenSource.CancelAsync();

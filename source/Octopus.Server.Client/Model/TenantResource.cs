@@ -71,6 +71,9 @@ namespace Octopus.Client.Model
         public string ClonedFromTenantId { get; set; }
 
         public string Slug { get; set; }
+        
+        [Writeable]
+        public bool IsDisabled { get; set; }
 
         public IconResource Icon { get; set; }
 
