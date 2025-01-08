@@ -47,9 +47,42 @@ namespace Octopus.Client.Editors
             return this;
         }
 
+        public RunbookEditor CreateOrModifyInGit(ProjectResource project, string slug, string name, string description, string gitRef, string commitMessage)
+        {
+            var existing = repository.GetInGit(slug, project, gitRef);
+            
+            if (existing == null)
+            {
+                Instance = repository.CreateInGit(new RunbookResource
+                    {
+                        Slug = slug,
+                        ProjectId = project.Id,
+                        Name = name,
+                        Description = description
+                    }, 
+                    gitRef, 
+                    commitMessage);
+            }
+            else
+            {
+                existing.Name = name;
+                existing.Description = description;
+
+                Instance = repository.ModifyInGit(existing, gitRef, commitMessage);
+            }
+
+            return this;
+        }
+        
         public RunbookEditor Load(string id)
         {
             Instance = repository.Get(id);
+            return this;
+        }
+        
+        public RunbookEditor LoadInGit(string id, ProjectResource project, string gitRef)
+        { 
+            Instance = repository.GetInGit(id, project, gitRef);
             return this;
         }
 
@@ -66,6 +99,19 @@ namespace Octopus.Client.Editors
             {
                 runbookProcess.Value.Save();
             }
+            return this;
+        }
+        
+        public RunbookEditor SaveInGit(string gitRef, string commitMessage)
+        {
+            Instance = repository.ModifyInGit(Instance, gitRef,  commitMessage);
+
+            if (runbookProcess.IsValueCreated)
+            {
+                var steps = runbookProcess.Value;
+                steps.SaveInGit(gitRef, commitMessage);
+            }
+            
             return this;
         }
     }

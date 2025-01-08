@@ -19,7 +19,6 @@ namespace Octopus.Client.Repositories
         ResourceCollection<RunbookRunResource> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null);
         void Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
         void Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
-
     }
 
     class RunbookRunRepository : BasicRepository<RunbookRunResource>, IRunbookRunRepository
