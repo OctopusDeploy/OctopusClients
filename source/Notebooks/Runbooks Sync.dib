@@ -1,0 +1,21 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "..\Octopus.Server.Client\bin\Debug\netstandard2.0\Octopus.Server.Client.dll"
+
+using Octopus.Client.Repositories;
+
+var apiKey = Environment.GetEnvironmentVariable("Server__ApiKey");
+
+var endpoint = new Octopus.Client.OctopusServerEndpoint("http://localhost:8066", apiKey);
+
+var repository = new Octopus.Client.OctopusRepository(endpoint);
+var project = repository.Projects.FindByName("Git Example");
+
+var runbook = repository.Runbooks.GetInGit("mr-runbooks",  project, "main");
+runbook.Name ="New Test";
+
+repository.Runbooks.ModifyInGit(runbook, "main", "Test");

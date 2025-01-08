@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopus.Server.Client", "Oc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octopus.Client", "Octopus.Client\Octopus.Client.csproj", "{5B15F5A6-C1B3-4339-AB28-71B3309E46C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notebooks", "Notebooks\Notebooks.csproj", "{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,18 @@ Global
 		{5B15F5A6-C1B3-4339-AB28-71B3309E46C2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5B15F5A6-C1B3-4339-AB28-71B3309E46C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{5B15F5A6-C1B3-4339-AB28-71B3309E46C2}.Release|x86.Build.0 = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Debug|x86.Build.0 = Debug|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|x86.ActiveCfg = Release|Any CPU
+		{96A6FF8A-B381-4A45-AF5B-C39B7CFD4636}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -67,7 +67,7 @@ namespace Octopus.Client.Repositories.Async
             return await GetInGit(resource.Id, resource.SpaceId, resource.ProjectId, gitRef, cancellationToken);
         }
         
-        public async Task DeleteInGit(RunbookResource resource, string gitRef, string commitMessage)
+        public async Task DeleteInGit(RunbookResource resource, string gitRef, string commitMessage, CancellationToken cancellationToken)
         {
             // TODO: revisit/obsolete this API when we have converters
             // until then we need a way to re-use the response from previous client calls
@@ -75,7 +75,7 @@ namespace Octopus.Client.Repositories.Async
             var command = Serializer.Deserialize<DeleteRunbookCommand>(json);
             command.ChangeDescription = commitMessage;
             
-            await Client.Delete($"/api/{resource.SpaceId}/projects/{resource.ProjectId}/{gitRef}/runbooks/{resource.Id}", command);
+            await Client.Delete($"/api/{resource.SpaceId}/projects/{resource.ProjectId}/{gitRef}/runbooks/{resource.Id}", command, cancellationToken);
         }
         
         public Task<RunbookResource> FindByName(ProjectResource project, string name)

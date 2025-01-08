@@ -1,0 +1,43 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "..\Octopus.Server.Client\bin\Debug\netstandard2.0\Octopus.Server.Client.dll"
+
+using Octopus.Client.Repositories;
+using System.Threading;
+
+var apiKey = Environment.GetEnvironmentVariable("Server__ApiKey");
+
+var endpoint = new Octopus.Client.OctopusServerEndpoint("http://localhost:8066", apiKey);
+var client = await Octopus.Client.OctopusAsyncClient.Create(endpoint, new Octopus.Client.OctopusClientOptions());
+var repository = new Octopus.Client.OctopusAsyncRepository(client);
+
+var project = await repository.Projects.FindByName("Git Example", CancellationToken.None);
+
+var runbook = await repository.Runbooks.GetInGit("mr-runbooks",  project, "main", CancellationToken.None);
+runbook.Name ="Aync New Test";
+
+await repository.Runbooks.ModifyInGit(runbook, "main", "Test", CancellationToken.None);
+
+#!csharp
+
+#r "..\Octopus.Server.Client\bin\Debug\netstandard2.0\Octopus.Server.Client.dll"
+
+using Octopus.Client.Repositories;
+using System.Threading;
+
+var apiKey = Environment.GetEnvironmentVariable("Server__ApiKey");
+
+var endpoint = new Octopus.Client.OctopusServerEndpoint("http://localhost:8066", apiKey);
+var client = await Octopus.Client.OctopusAsyncClient.Create(endpoint, new Octopus.Client.OctopusClientOptions());
+var repository = new Octopus.Client.OctopusAsyncRepository(client);
+
+var project = await repository.Projects.FindByName("Git Example", CancellationToken.None);
+
+var runbook = await repository.Runbooks.CreateOrModifyInGit(project, "test-1", "Test One", "Allows testing", "main", "Test", CancellationToken.None);
+runbook = await repository.Runbooks.CreateOrModifyInGit(project, "test-1", "Test One", "Allows more testing", "main", "Test 2", CancellationToken.None);
+
+await repository.Runbooks.DeleteInGit(runbook, "main", "test delete", CancellationToken.None);
