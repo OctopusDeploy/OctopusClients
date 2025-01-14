@@ -62,6 +62,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public bool UseGuidedFailure { get; set; }
+        
+        /// <summary>
+        /// When enabled contributes the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to true
+        /// </summary>
+        [WriteableOnCreate]
+        public bool Debug { get; set; }
 
         [WriteableOnCreate]
         public string Comments { get; set; }

@@ -2865,6 +2865,7 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
+    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -3474,6 +3475,7 @@ Octopus.Client.Model
   {
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
+    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -5006,6 +5008,7 @@ Octopus.Client.Model
   class RunbookRunParameters
   {
     .ctor()
+    Nullable<Boolean> Debug { get; set; }
     String EnvironmentId { get; set; }
     String[] EnvironmentIds { get; set; }
     String[] ExcludedMachineIds { get; set; }
@@ -5042,6 +5045,7 @@ Octopus.Client.Model
     .ctor()
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
+    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }

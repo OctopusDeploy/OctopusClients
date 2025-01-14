@@ -14,6 +14,7 @@ namespace Octopus.Client.Model
         ReferenceCollection SpecificMachineIds { get; set; }
         ReferenceCollection ExcludedMachineIds { get; set; }
         bool UseGuidedFailure { get; set; }
+        bool Debug { get; set; }
         RetentionPeriod TentacleRetentionPeriod { get; set; }
         string EnvironmentId { get; set; }
         string TenantId { get; set; }
