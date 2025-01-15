@@ -2865,7 +2865,6 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -2876,6 +2875,7 @@ Octopus.Client.Model
     Boolean ForcePackageDownload { get; set; }
     Boolean ForcePackageRedeployment { get; set; }
     Dictionary<String, String> FormValues { get; set; }
+    Boolean IsDebugEnabled { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
     String Priority { get; set; }
@@ -3475,7 +3475,6 @@ Octopus.Client.Model
   {
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -3484,6 +3483,7 @@ Octopus.Client.Model
     Boolean FailureEncountered { get; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
+    Boolean IsDebugEnabled { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
@@ -5008,12 +5008,12 @@ Octopus.Client.Model
   class RunbookRunParameters
   {
     .ctor()
-    Nullable<Boolean> Debug { get; set; }
     String EnvironmentId { get; set; }
     String[] EnvironmentIds { get; set; }
     String[] ExcludedMachineIds { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
+    Nullable<Boolean> IsDebugEnabled { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
@@ -5045,7 +5045,6 @@ Octopus.Client.Model
     .ctor()
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Boolean Debug { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -5055,6 +5054,7 @@ Octopus.Client.Model
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String FrozenRunbookProcessId { get; set; }
+    Boolean IsDebugEnabled { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
     String ProjectId { get; set; }
