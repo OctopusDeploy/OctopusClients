@@ -61,7 +61,7 @@ namespace Octopus.Client.Repositories.Async
                 new
                 {
                     spaceId = run.SpaceId,
-                    projectId = run.Id,
+                    projectId = run.ProjectId,
                     id = run.Id
                 },
                 cancellationToken
