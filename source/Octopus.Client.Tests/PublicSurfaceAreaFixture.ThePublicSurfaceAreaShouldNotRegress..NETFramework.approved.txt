@@ -9319,6 +9319,7 @@ Octopus.Client.Repositories.Async
     Task<TaskResource> GetTask(Octopus.Client.Model.RunbookRunResource)
     Task Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     Task Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
+    Task<RunbookRunResource> Retry(Octopus.Client.Model.RunbookRunResource, CancellationToken)
   }
   interface IRunbookSnapshotRepository
     Octopus.Client.Repositories.Async.IGet<RunbookSnapshotResource>
