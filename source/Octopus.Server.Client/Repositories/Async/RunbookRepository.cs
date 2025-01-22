@@ -26,7 +26,7 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunGitResource> Run(ProjectResource project, string gitRef, string slug, RunGitRunbookParameters runbookRunParameters, CancellationToken cancellationToken);
         Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
-        Task<RunbookRunPreviewResource> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunParameters, CancellationToken cancellationToken);
+        Task<RunbookRunPreviewResource[]> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunParameters, CancellationToken cancellationToken);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
@@ -228,11 +228,11 @@ namespace Octopus.Client.Repositories.Async
             ).ConfigureAwait(false);
         }
 
-        public async Task<RunbookRunPreviewResource> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunPreviewParameters, CancellationToken cancellationToken)
+        public async Task<RunbookRunPreviewResource[]> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunPreviewParameters, CancellationToken cancellationToken)
         {
             var route = $"{baseGitUri}/runbooks/{{id}}/runbookRuns/previews";
 
-            return await Client.Post<RunbookRunPreviewParameters, RunbookRunPreviewResource>(
+            return await Client.Post<RunbookRunPreviewParameters, RunbookRunPreviewResource[]>(
                 route,
                 runbookRunPreviewParameters,
                 new

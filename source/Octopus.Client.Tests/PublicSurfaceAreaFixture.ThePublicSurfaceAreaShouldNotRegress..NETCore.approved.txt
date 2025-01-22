@@ -9274,7 +9274,7 @@ Octopus.Client.Repositories.Async
     Task<RunbookResource> FindByName(Octopus.Client.Model.ProjectResource, String)
     Task<RunbookResource> Get(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
-    Task<RunbookRunPreviewResource> GetPreview(Octopus.Client.Model.ProjectResource, String, String, Octopus.Client.Model.RunbookRunPreviewParameters, CancellationToken)
+    Task<RunbookRunPreviewResource[]> GetPreview(Octopus.Client.Model.ProjectResource, String, String, Octopus.Client.Model.RunbookRunPreviewParameters, CancellationToken)
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
     Task<RunbookRunTemplateResource> GetRunbookRunTemplate(Octopus.Client.Model.ProjectResource, String, String, CancellationToken)
     Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
