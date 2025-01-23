@@ -19,13 +19,52 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
 
         // Config as Code methods
+        /// <summary>
+        /// Returns a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookResource> Get(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates a new Runbook with an empty process for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookResource> Create(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Modifies a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookResource> Modify(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task Delete(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Runs a Runbook for a specific Git ref and slug. Multiple runs for different environments and tenant combinations are configured in the run parameters.
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookRunGitResource> Run(ProjectResource project, string gitRef, string slug, RunGitRunbookParameters runbookRunParameters, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook snapshot template for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook run template for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook run preview for a specific Git ref and slug. Multple previews for different environments and tenant combinations are configured in the run parameters.
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookRunPreviewResource[]> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunParameters, CancellationToken cancellationToken);
     }
 

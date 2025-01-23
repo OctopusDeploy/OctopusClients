@@ -21,6 +21,11 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null);
         Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
         Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
+        
+        /// <summary>
+        /// Retries a specific Runbook Run for a Config as Code Runbook
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookRunResource> Retry(RunbookRunResource run, CancellationToken cancellationToken);
     }
 

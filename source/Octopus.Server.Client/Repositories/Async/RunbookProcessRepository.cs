@@ -10,7 +10,17 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookProcessResource runbookProcess);
 
         // Config as Code methods
+
+        /// <summary>
+        /// Get a Runbook process for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookProcessResource> Get(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Modifies a Runbook process for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         Task<RunbookProcessResource> Modify(ProjectResource project, string gitRef, RunbookProcessResource runbookProcess, string commitMessage, CancellationToken cancellationToken);
     }
 
