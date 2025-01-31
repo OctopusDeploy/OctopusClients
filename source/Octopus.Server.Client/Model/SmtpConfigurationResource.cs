@@ -28,10 +28,10 @@ namespace Octopus.Client.Model
         public SensitiveValue SmtpPassword { get; set; }
         
         [Writeable]
-        public bool GoogleAudience { get; set; }
+        public string GoogleAudience { get; set; }
         
         [Writeable]
-        public int? GoogleServiceAccount { get; set; }
+        public string GoogleServiceAccount { get; set; }
 
         [NotReadable]
         [Writeable]
