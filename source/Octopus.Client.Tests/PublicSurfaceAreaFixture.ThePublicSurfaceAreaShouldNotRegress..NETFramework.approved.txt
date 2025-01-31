@@ -5467,6 +5467,8 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean EnableSsl { get; set; }
+    String GoogleAudience { get; set; }
+    String GoogleServiceAccount { get; set; }
     String NewSmtpPassword { get; set; }
     String SendEmailFrom { get; set; }
     String SmtpHost { get; set; }
