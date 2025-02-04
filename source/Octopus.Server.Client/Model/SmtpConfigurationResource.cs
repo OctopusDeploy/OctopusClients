@@ -28,6 +28,9 @@ namespace Octopus.Client.Model
         public SensitiveValue SmtpPassword { get; set; }
         
         [Writeable]
+        public string CredentialType { get; set; }
+        
+        [Writeable]
         public string GoogleAudience { get; set; }
         
         [Writeable]

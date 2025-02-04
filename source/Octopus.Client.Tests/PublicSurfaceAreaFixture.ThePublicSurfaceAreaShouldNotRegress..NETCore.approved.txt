@@ -5447,6 +5447,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String CredentialType { get; set; }
     Boolean EnableSsl { get; set; }
     String GoogleAudience { get; set; }
     String GoogleServiceAccount { get; set; }
