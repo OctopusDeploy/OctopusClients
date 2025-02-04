@@ -30,7 +30,7 @@ namespace Octopus.Client.Model
         public string[] EnvironmentIds { get; set; }
         public bool ForcePackageDownload { get; set; }
         public bool? UseGuidedFailure { get; set; }
-        public bool? IsDebugEnabled { get; set; }
+        public DebugMode? DebugMode { get; set; }
         public string[] SpecificMachineIds { get; set; }
         public string[] ExcludedMachineIds { get; set; }
         public string TenantId { get; set; }
@@ -51,7 +51,7 @@ namespace Octopus.Client.Model
                 EnvironmentId = runbookRun.EnvironmentId,
                 ForcePackageDownload = runbookRun.ForcePackageDownload,
                 UseGuidedFailure = runbookRun.UseGuidedFailure,
-                IsDebugEnabled = runbookRun.IsDebugEnabled,
+                DebugMode = runbookRun.DebugMode,
                 SpecificMachineIds = runbookRun.SpecificMachineIds != null ? runbookRun.SpecificMachineIds.ToArray() : new string[0],
                 ExcludedMachineIds = runbookRun.ExcludedMachineIds != null ? runbookRun.ExcludedMachineIds.ToArray() : new string[0],
                 TenantId = runbookRun.TenantId,
