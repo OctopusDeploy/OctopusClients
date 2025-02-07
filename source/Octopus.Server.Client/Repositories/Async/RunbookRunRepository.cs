@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -20,6 +21,12 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null);
         Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
         Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
+        
+        /// <summary>
+        /// Retries a specific Runbook Run for a Config as Code Runbook
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookRunResource> Retry(RunbookRunResource run, CancellationToken cancellationToken);
     }
 
     class RunbookRunRepository : BasicRepository<RunbookRunResource>, IRunbookRunRepository
@@ -47,6 +54,23 @@ namespace Octopus.Client.Repositories.Async
         public async Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
         {
             await Client.Paginate(await Repository.Link("RunbookRuns").ConfigureAwait(false), new { projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookRunResource> Retry(RunbookRunResource run, CancellationToken cancellationToken)
+        {
+            var route = "~/api/{spaceId}/projects/{projectId}/runbookRuns/{id}/retry/v1";
+
+            return await Client.Post<object, RunbookRunResource>(
+                route,
+                null,
+                new
+                {
+                    spaceId = run.SpaceId,
+                    projectId = run.ProjectId,
+                    id = run.Id
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
         }
     }
 }

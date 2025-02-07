@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
+using Octopus.Client.Serialization;
 
 namespace Octopus.Client.Repositories.Async
 {
@@ -15,10 +17,60 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
         Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
+
+        // Config as Code methods
+        /// <summary>
+        /// Returns a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookResource> Get(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates a new Runbook with an empty process for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookResource> Create(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Modifies a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookResource> Modify(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Deletes a Runbook for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task Delete(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Runs a Runbook for a specific Git ref and slug. Multiple runs for different environments and tenant combinations are configured in the run parameters.
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookRunGitResource> Run(ProjectResource project, string gitRef, string slug, RunGitRunbookParameters runbookRunParameters, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook snapshot template for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook run template for a specific Git ref and slug
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookRunTemplateResource> GetRunbookRunTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get a Runbook run preview for a specific Git ref and slug. Multple previews for different environments and tenant combinations are configured in the run parameters.
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        Task<RunbookRunPreviewResource[]> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunParameters, CancellationToken cancellationToken);
     }
 
     class RunbookRepository : BasicRepository<RunbookResource>, IRunbookRepository
     {
+        private readonly string baseGitUri = "~/api/{spaceId}/projects/{projectId}/{gitRef}";
         private readonly SemanticVersion integrationTestVersion;
         private readonly SemanticVersion versionAfterWhichRunbookRunParametersAreAvailable;
 
@@ -85,6 +137,161 @@ namespace Octopus.Client.Repositories.Async
                                                          $"Please update your Octopus Deploy server to 2020.3.* or newer to access this feature.");
 
             return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
+        }
+
+        // Config as Code
+        public async Task<RunbookResource> Get(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}";
+
+            return await Client.Get<RunbookResource>(
+                route,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = slug
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookResource> Create(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/v2";
+            var command = AppendCommitMessage(runbook, commitMessage);
+
+            return await Client.Create<ModifyRunbookCommand, RunbookResource>(
+                route,
+                command,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookResource> Modify(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}";
+            var command = AppendCommitMessage(runbook, commitMessage);
+
+            return await Client.Update<ModifyRunbookCommand, RunbookResource>(
+                route,
+                command,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = runbook.Id
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task Delete(ProjectResource project, string gitRef, RunbookResource runbook, string commitMessage, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}";
+
+            await Client.Delete(
+                route,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    slug = runbook.Id
+                },
+                new
+                {
+                    ChangeDescription = commitMessage
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookRunGitResource> Run(ProjectResource project, string gitRef, string slug, RunGitRunbookParameters runbookRunParameters, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}/run/v1";
+
+            return await Client.Post<RunGitRunbookParameters, RunbookRunGitResource>(
+                route,
+                runbookRunParameters,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = slug
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}/runbookSnapshotTemplate";
+
+            return await Client.Get<RunbookSnapshotTemplateResource>(
+                route,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = slug
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookRunTemplateResource> GetRunbookRunTemplate(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}/runbookRunTemplate";
+
+            return await Client.Get<RunbookRunTemplateResource>(
+                route,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = slug
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookRunPreviewResource[]> GetPreview(ProjectResource project, string gitRef, string slug, RunbookRunPreviewParameters runbookRunPreviewParameters, CancellationToken cancellationToken)
+        {
+            var route = $"{baseGitUri}/runbooks/{{id}}/runbookRuns/previews";
+
+            return await Client.Post<RunbookRunPreviewParameters, RunbookRunPreviewResource[]>(
+                route,
+                runbookRunPreviewParameters,
+                new
+                {
+                    spaceId = project.SpaceId,
+                    projectId = project.Id,
+                    gitRef = gitRef,
+                    id = slug
+                },
+                cancellationToken
+            ).ConfigureAwait(false);
+        }
+
+        ModifyRunbookCommand AppendCommitMessage(RunbookResource runbook, string commitMessage)
+        {
+            var json = Serializer.Serialize(runbook);
+            var command = Serializer.Deserialize<ModifyRunbookCommand>(json);
+
+            command.ChangeDescription = commitMessage;
+            return command;
         }
     }
 }
