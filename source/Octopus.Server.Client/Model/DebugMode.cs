@@ -2,10 +2,10 @@ using System;
 
 namespace Octopus.Client.Model
 {
-    public enum DebugMode
+    public static class DebugMode
     {
-        None = 0,
-        Log = 1,
-        Debug = 2,
+        public static readonly string None = "None";
+        public static readonly string Log = "Log";
+        public static readonly string Debug = "Debug";
     }
 }

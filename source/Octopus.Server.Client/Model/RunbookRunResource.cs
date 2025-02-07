@@ -67,7 +67,7 @@ namespace Octopus.Client.Model
         /// When enabled contributes the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to true
         /// </summary>
         [WriteableOnCreate]
-        public DebugMode DebugMode { get; set; }
+        public string DebugMode { get; set; }
 
         [WriteableOnCreate]
         public string Comments { get; set; }

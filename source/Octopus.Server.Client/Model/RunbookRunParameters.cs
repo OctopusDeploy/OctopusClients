@@ -30,7 +30,7 @@ namespace Octopus.Client.Model
         public string[] EnvironmentIds { get; set; }
         public bool ForcePackageDownload { get; set; }
         public bool? UseGuidedFailure { get; set; }
-        public DebugMode? DebugMode { get; set; }
+        public string DebugMode { get; set; }
         public string[] SpecificMachineIds { get; set; }
         public string[] ExcludedMachineIds { get; set; }
         public string TenantId { get; set; }

@@ -2675,11 +2675,11 @@ Octopus.Client.Model
     Object ReadJson(JsonReader, Type, Object, JsonSerializer)
     void WriteJson(JsonWriter, Object, JsonSerializer)
   }
-  DebugMode
+  abstract class DebugMode
   {
-      None = 0
-      Log = 1
-      Debug = 2
+    static System.String Debug
+    static System.String Log
+    static System.String None
   }
   class Defect
   {
@@ -2871,7 +2871,7 @@ Octopus.Client.Model
     String ChannelId { get; set; }
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Octopus.Client.Model.DebugMode DebugMode { get; set; }
+    String DebugMode { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -3496,7 +3496,7 @@ Octopus.Client.Model
   {
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Octopus.Client.Model.DebugMode DebugMode { get; set; }
+    String DebugMode { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
@@ -5057,7 +5057,7 @@ Octopus.Client.Model
   class RunbookRunParameters
   {
     .ctor()
-    Nullable<DebugMode> DebugMode { get; set; }
+    String DebugMode { get; set; }
     String EnvironmentId { get; set; }
     String[] EnvironmentIds { get; set; }
     String[] ExcludedMachineIds { get; set; }
@@ -5106,7 +5106,7 @@ Octopus.Client.Model
     .ctor()
     String Comments { get; set; }
     DateTimeOffset Created { get; set; }
-    Octopus.Client.Model.DebugMode DebugMode { get; set; }
+    String DebugMode { get; set; }
     String DeployedBy { get; set; }
     String DeployedById { get; set; }
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }

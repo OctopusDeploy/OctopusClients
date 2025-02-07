@@ -76,7 +76,7 @@ namespace Octopus.Client.Model
         /// When enabled sets the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to the runbook run
         /// </summary>
         [WriteableOnCreate]
-        public DebugMode DebugMode { get; set; }
+        public string DebugMode { get; set; }
 
         /// <summary>
         /// One of the values from <see cref="DeploymentPriority"/>
