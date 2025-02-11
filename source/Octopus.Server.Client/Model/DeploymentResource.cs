@@ -71,6 +71,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public bool UseGuidedFailure { get; set; }
+        
+        /// <summary>
+        /// When enabled sets the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to the runbook run
+        /// </summary>
+        [WriteableOnCreate]
+        public string DebugMode { get; set; }
 
         /// <summary>
         /// One of the values from <see cref="DeploymentPriority"/>
