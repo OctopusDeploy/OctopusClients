@@ -7461,6 +7461,7 @@ Octopus.Client.Model.TenantVariables
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
     Octopus.Client.Model.TenantVariables.TenantCommonVariable[] CommonVariables { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] MissingCommonVariables { get; set; }
     String TenantId { get; set; }
   }
   class GetProjectVariablesByTenantIdRequest
