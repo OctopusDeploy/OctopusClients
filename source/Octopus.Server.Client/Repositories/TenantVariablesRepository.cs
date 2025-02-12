@@ -21,7 +21,7 @@ namespace Octopus.Client.Repositories
             const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
 
             var response =
-                Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId });
+                Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingCommonVariables });
             return response;
         }
 
