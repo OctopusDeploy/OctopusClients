@@ -14,4 +14,5 @@ public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonV
     public string TenantId { get; set; } = tenantId;
 
     public TenantCommonVariable[] CommonVariables { get; set; } = commonVariables;
+    public TenantCommonVariable[] MissingCommonVariables { get; set; }
 }
