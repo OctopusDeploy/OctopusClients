@@ -7,9 +7,9 @@ public class GetProjectVariablesByTenantIdRequest(string tenantId, string spaceI
     public string SpaceId { get; set; } = spaceId;
 }
 
-public class GetProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
+public class GetProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
+    public TenantProjectVariable[] Variables { get; set; } = variables;
 }
