@@ -15,8 +15,12 @@ public class TenantCommonVariable(string libraryVariableSetId, string templateId
     public string Id { get; set; } = string.Empty;
 
     public string LibraryVariableSetId { get; set; } = libraryVariableSetId;
+    
+    public string LibraryVariableSetName { get; set; }
 
     public string TemplateId { get; set; } = templateId;
+
+    public ActionTemplateParameterResource Template { get; set; }
 
     public PropertyValueResource Value { get; set; } = value;
 
