@@ -28,9 +28,9 @@ public class CommonVariableScope(ReferenceCollection environmentIds)
     public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
 
-public class ModifyCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)
+public class ModifyCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
         
-    public TenantCommonVariable[] CommonVariables { get; set; } = commonVariables;
+    public TenantCommonVariable[] Variables { get; set; } = variables;
 }
