@@ -7483,8 +7483,8 @@ Octopus.Client.Model.TenantVariables
   class GetCommonVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
-    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
     String TenantId { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
   }
   class GetProjectVariablesByTenantIdRequest
   {
@@ -7495,8 +7495,8 @@ Octopus.Client.Model.TenantVariables
   class GetProjectVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
-    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
     String TenantId { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
   }
   class ModifyCommonVariablesByTenantIdCommand
   {
@@ -7508,8 +7508,8 @@ Octopus.Client.Model.TenantVariables
   class ModifyCommonVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
-    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
     String TenantId { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
   }
   class ModifyProjectVariablesByTenantIdCommand
   {
@@ -7521,8 +7521,8 @@ Octopus.Client.Model.TenantVariables
   class ModifyProjectVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
-    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
     String TenantId { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
   }
   class ProjectVariableScope
   {
