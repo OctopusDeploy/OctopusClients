@@ -7,9 +7,9 @@ public class GetCommonVariablesByTenantIdRequest(string tenantId, string spaceId
     public string SpaceId { get; set; } = spaceId;
 }
 
-public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)
+public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantCommonVariable[] CommonVariables { get; set; } = commonVariables;
+    public TenantCommonVariable[] Variables { get; set; } = variables;
 }

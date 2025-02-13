@@ -31,10 +31,10 @@ public class ProjectVariableScope(ReferenceCollection environmentIds)
     public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
 
-public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
+public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
+    public TenantProjectVariable[] Variables { get; set; } = variables;
 }
 
