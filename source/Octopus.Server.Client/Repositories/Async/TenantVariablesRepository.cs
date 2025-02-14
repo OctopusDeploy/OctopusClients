@@ -37,10 +37,10 @@ namespace Octopus.Client.Repositories.Async
         public async Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
             CancellationToken cancellationToken)
         {
-            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
+            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables?includeMissingCommonVariables={includeMissingCommonVariables}";
 
             var response =
-                await Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId },
+                await Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingCommonVariables },
                     cancellationToken);
             return response;
         }

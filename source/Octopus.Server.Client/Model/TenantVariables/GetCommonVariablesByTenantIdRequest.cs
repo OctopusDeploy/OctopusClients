@@ -5,6 +5,8 @@ public class GetCommonVariablesByTenantIdRequest(string tenantId, string spaceId
     public string TenantId { get; set; } = tenantId;
 
     public string SpaceId { get; set; } = spaceId;
+    
+    public bool IncludeMissingCommonVariables { get; set; } = false;
 }
 
 public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)
@@ -12,4 +14,5 @@ public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonV
     public string TenantId { get; set; } = tenantId;
 
     public TenantCommonVariable[] CommonVariables { get; set; } = commonVariables;
+    public TenantCommonVariable[] MissingCommonVariables { get; set; } = null;
 }
