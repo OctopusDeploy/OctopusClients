@@ -7502,10 +7502,10 @@ Octopus.Client.Model.TenantVariables
   }
   class ModifyCommonVariablesByTenantIdCommand
   {
-    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
+    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariablePayload[])
     String SpaceId { get; set; }
     String TenantId { get; set; }
-    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantCommonVariablePayload[] Variables { get; set; }
   }
   class ModifyCommonVariablesByTenantIdResponse
   {
@@ -7539,6 +7539,15 @@ Octopus.Client.Model.TenantVariables
     String LibraryVariableSetName { get; set; }
     Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
     Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
+  class TenantCommonVariablePayload
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
+    String Id { get; set; }
+    String LibraryVariableSetId { get; set; }
+    Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
     String TemplateId { get; set; }
     Octopus.Client.Model.PropertyValueResource Value { get; set; }
   }
