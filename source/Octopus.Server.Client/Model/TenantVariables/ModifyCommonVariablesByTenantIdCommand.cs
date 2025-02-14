@@ -10,7 +10,7 @@ public class ModifyCommonVariablesByTenantIdCommand(string tenantId, string spac
 }
 
 
-public class TenantCommonVariablePayload(string libraryVariableSetId, string templateId, PropertyValueResource value, TenantCommonVariable.CommonVariableScope scope)
+public class TenantCommonVariablePayload(string libraryVariableSetId, string templateId, PropertyValueResource value, CommonVariableScope scope)
 {
     public string Id { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ public class TenantCommonVariablePayload(string libraryVariableSetId, string tem
 
     public PropertyValueResource Value { get; set; } = value;
 
-    public TenantCommonVariable.CommonVariableScope Scope { get; set; } = scope;
+    public CommonVariableScope Scope { get; set; } = scope;
 }
 
 public class ModifyCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)

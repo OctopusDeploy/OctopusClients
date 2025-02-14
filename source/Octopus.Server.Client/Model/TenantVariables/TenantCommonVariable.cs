@@ -1,26 +1,23 @@
 ﻿namespace Octopus.Client.Model.TenantVariables;
 
-public class TenantCommonVariable
+public class TenantCommonVariable(string libraryVariableSetId, string templateId, PropertyValueResource value, CommonVariableScope scope)
 {
-    public class TenantCommonVariablePayload(string libraryVariableSetId, string templateId, PropertyValueResource value, CommonVariableScope scope)
-    {
-        public string Id { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
-        public string LibraryVariableSetId { get; set; } = libraryVariableSetId;
-    
-        public string LibraryVariableSetName { get; set; }
+    public string LibraryVariableSetId { get; set; } = libraryVariableSetId;
 
-        public string TemplateId { get; set; } = templateId;
+    public string LibraryVariableSetName { get; set; }
 
-        public ActionTemplateParameterResource Template { get; set; }
+    public string TemplateId { get; set; } = templateId;
 
-        public PropertyValueResource Value { get; set; } = value;
+    public ActionTemplateParameterResource Template { get; set; }
 
-        public CommonVariableScope Scope { get; set; } = scope;
-    }
-    
-    public class CommonVariableScope(ReferenceCollection environmentIds)
-    {
-        public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
-    }
+    public PropertyValueResource Value { get; set; } = value;
+
+    public CommonVariableScope Scope { get; set; } = scope;
+}
+
+public class CommonVariableScope(ReferenceCollection environmentIds)
+{
+    public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
