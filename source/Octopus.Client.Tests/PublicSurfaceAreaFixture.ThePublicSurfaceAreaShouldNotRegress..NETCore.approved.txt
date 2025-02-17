@@ -7531,17 +7531,17 @@ Octopus.Client.Model.TenantVariables
   }
   class TenantProjectVariable
   {
-      .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
-      String Id { get; set; }
-      String ProjectId { get; set; }
-      String ProjectName { get; set; }
-      Octopus.Client.Model.TenantVariables.ProjectVariableScope Scope { get; set; }
-      Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
-      String TemplateId { get; set; }
-      Octopus.Client.Model.PropertyValueResource Value { get; set; }
-    }
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
+    String Id { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    Octopus.Client.Model.TenantVariables.ProjectVariableScope Scope { get; set; }
+    Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
   class TenantProjectVariablePayload
-    {
+  {
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
     String Id { get; set; }
     String ProjectId { get; set; }
