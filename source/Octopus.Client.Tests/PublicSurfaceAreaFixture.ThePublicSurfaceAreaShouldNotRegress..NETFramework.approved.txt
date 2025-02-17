@@ -7477,7 +7477,7 @@ Octopus.Client.Model.TenantVariables
   class GetCommonVariablesByTenantIdRequest
   {
     .ctor(String, String)
-    Boolean IncludeMissingCommonVariables { get; set; }
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }
@@ -7491,7 +7491,7 @@ Octopus.Client.Model.TenantVariables
   class GetProjectVariablesByTenantIdRequest
   {
     .ctor(String, String)
-    Boolean IncludeMissingProjectVariables { get; set; }
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }

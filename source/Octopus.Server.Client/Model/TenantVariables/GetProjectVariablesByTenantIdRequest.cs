@@ -6,7 +6,7 @@ public class GetProjectVariablesByTenantIdRequest(string tenantId, string spaceI
 
     public string SpaceId { get; set; } = spaceId;
     
-    public bool IncludeMissingProjectVariables { get; set; } = false;
+    public bool IncludeMissingVariables { get; set; } = false;
 }
 
 public class GetProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)

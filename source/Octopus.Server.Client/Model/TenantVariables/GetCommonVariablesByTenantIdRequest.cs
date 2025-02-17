@@ -6,7 +6,7 @@ public class GetCommonVariablesByTenantIdRequest(string tenantId, string spaceId
 
     public string SpaceId { get; set; } = spaceId;
     
-    public bool IncludeMissingCommonVariables { get; set; } = false;
+    public bool IncludeMissingVariables { get; set; } = false;
 }
 
 public class GetCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] commonVariables)
