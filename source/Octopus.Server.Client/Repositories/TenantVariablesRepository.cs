@@ -27,10 +27,10 @@ namespace Octopus.Client.Repositories
 
         public GetProjectVariablesByTenantIdResponse Get(GetProjectVariablesByTenantIdRequest request)
         {
-            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables?includeMissingProjectVariables={includeMissingProjectVariables}";
 
             var response =
-                Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId });
+                Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingProjectVariables });
             return response;
         }
 

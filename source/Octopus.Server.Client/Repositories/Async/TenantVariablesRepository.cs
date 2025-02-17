@@ -48,10 +48,10 @@ namespace Octopus.Client.Repositories.Async
         public async Task<GetProjectVariablesByTenantIdResponse> Get(GetProjectVariablesByTenantIdRequest request,
             CancellationToken cancellationToken)
         {
-            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables?includeMissingProjectVariables={includeMissingProjectVariables}";
 
             var response =
-                await Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId },
+                await Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingProjectVariables },
                     cancellationToken);
             return response;
         }
