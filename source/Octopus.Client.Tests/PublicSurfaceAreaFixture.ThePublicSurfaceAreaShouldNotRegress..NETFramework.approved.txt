@@ -7477,7 +7477,7 @@ Octopus.Client.Model.TenantVariables
   class GetCommonVariablesByTenantIdRequest
   {
     .ctor(String, String)
-    Boolean IncludeMissingCommonVariables { get; set; }
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }
@@ -7491,12 +7491,14 @@ Octopus.Client.Model.TenantVariables
   class GetProjectVariablesByTenantIdRequest
   {
     .ctor(String, String)
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }
   class GetProjectVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] MissingProjectVariables { get; set; }
     Octopus.Client.Model.TenantVariables.TenantProjectVariable[] ProjectVariables { get; set; }
     String TenantId { get; set; }
   }
@@ -7515,10 +7517,10 @@ Octopus.Client.Model.TenantVariables
   }
   class ModifyProjectVariablesByTenantIdCommand
   {
-    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantProjectVariablePayload[])
     String SpaceId { get; set; }
     String TenantId { get; set; }
-    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantProjectVariablePayload[] Variables { get; set; }
   }
   class ModifyProjectVariablesByTenantIdResponse
   {
@@ -7552,6 +7554,17 @@ Octopus.Client.Model.TenantVariables
     Octopus.Client.Model.PropertyValueResource Value { get; set; }
   }
   class TenantProjectVariable
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
+    String Id { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    Octopus.Client.Model.TenantVariables.ProjectVariableScope Scope { get; set; }
+    Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
+  class TenantProjectVariablePayload
   {
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
     String Id { get; set; }

@@ -1,15 +1,15 @@
 ﻿namespace Octopus.Client.Model.TenantVariables;
 
-public class ModifyProjectVariablesByTenantIdCommand(string tenantId, string spaceId, TenantProjectVariable[] variables)
+public class ModifyProjectVariablesByTenantIdCommand(string tenantId, string spaceId, TenantProjectVariablePayload[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
     public string SpaceId { get; set; } = spaceId;
 
-    public TenantProjectVariable[] Variables { get; set; } = variables;
+    public TenantProjectVariablePayload[] Variables { get; set; } = variables;
 }
 
-public class TenantProjectVariable(
+public class TenantProjectVariablePayload(
     string projectId,
     string templateId,
     PropertyValueResource value,
@@ -24,11 +24,6 @@ public class TenantProjectVariable(
     public PropertyValueResource Value { get; set; } = value;
 
     public ProjectVariableScope Scope { get; set; } = scope;
-}
-
-public class ProjectVariableScope(ReferenceCollection environmentIds)
-{
-    public ReferenceCollection EnvironmentIds { get; set; } = environmentIds;
 }
 
 public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
