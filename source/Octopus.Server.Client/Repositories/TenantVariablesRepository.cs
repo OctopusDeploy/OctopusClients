@@ -18,19 +18,19 @@ namespace Octopus.Client.Repositories
     {
         public GetCommonVariablesByTenantIdResponse Get(GetCommonVariablesByTenantIdRequest request)
         {
-            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables";
+            const string link = "/api/{spaceId}/tenants/{tenantId}/commonvariables?includeMissingVariables={includeMissingVariables}";
 
             var response =
-                Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId });
+                Client.Get<GetCommonVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingVariables });
             return response;
         }
 
         public GetProjectVariablesByTenantIdResponse Get(GetProjectVariablesByTenantIdRequest request)
         {
-            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables";
+            const string link = "/api/{spaceId}/tenants/{tenantId}/projectvariables?includeMissingVariables={includeMissingVariables}";
 
             var response =
-                Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId });
+                Client.Get<GetProjectVariablesByTenantIdResponse>(link, new { request.SpaceId, request.TenantId, request.IncludeMissingVariables });
             return response;
         }
 

@@ -7453,33 +7453,37 @@ Octopus.Client.Model.TenantVariables
   class GetCommonVariablesByTenantIdRequest
   {
     .ctor(String, String)
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }
   class GetCommonVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
+    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] MissingVariables { get; set; }
     String TenantId { get; set; }
     Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
   }
   class GetProjectVariablesByTenantIdRequest
   {
     .ctor(String, String)
+    Boolean IncludeMissingVariables { get; set; }
     String SpaceId { get; set; }
     String TenantId { get; set; }
   }
   class GetProjectVariablesByTenantIdResponse
   {
     .ctor(String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] MissingVariables { get; set; }
     String TenantId { get; set; }
     Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
   }
   class ModifyCommonVariablesByTenantIdCommand
   {
-    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariable[])
+    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantCommonVariablePayload[])
     String SpaceId { get; set; }
     String TenantId { get; set; }
-    Octopus.Client.Model.TenantVariables.TenantCommonVariable[] Variables { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantCommonVariablePayload[] Variables { get; set; }
   }
   class ModifyCommonVariablesByTenantIdResponse
   {
@@ -7489,10 +7493,10 @@ Octopus.Client.Model.TenantVariables
   }
   class ModifyProjectVariablesByTenantIdCommand
   {
-    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantProjectVariable[])
+    .ctor(String, String, Octopus.Client.Model.TenantVariables.TenantProjectVariablePayload[])
     String SpaceId { get; set; }
     String TenantId { get; set; }
-    Octopus.Client.Model.TenantVariables.TenantProjectVariable[] Variables { get; set; }
+    Octopus.Client.Model.TenantVariables.TenantProjectVariablePayload[] Variables { get; set; }
   }
   class ModifyProjectVariablesByTenantIdResponse
   {
@@ -7510,11 +7514,33 @@ Octopus.Client.Model.TenantVariables
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
     String Id { get; set; }
     String LibraryVariableSetId { get; set; }
+    String LibraryVariableSetName { get; set; }
+    Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
+    Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
+  class TenantCommonVariablePayload
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.CommonVariableScope)
+    String Id { get; set; }
+    String LibraryVariableSetId { get; set; }
     Octopus.Client.Model.TenantVariables.CommonVariableScope Scope { get; set; }
     String TemplateId { get; set; }
     Octopus.Client.Model.PropertyValueResource Value { get; set; }
   }
   class TenantProjectVariable
+  {
+    .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
+    String Id { get; set; }
+    String ProjectId { get; set; }
+    String ProjectName { get; set; }
+    Octopus.Client.Model.TenantVariables.ProjectVariableScope Scope { get; set; }
+    Octopus.Client.Model.ActionTemplateParameterResource Template { get; set; }
+    String TemplateId { get; set; }
+    Octopus.Client.Model.PropertyValueResource Value { get; set; }
+  }
+  class TenantProjectVariablePayload
   {
     .ctor(String, String, Octopus.Client.Model.PropertyValueResource, Octopus.Client.Model.TenantVariables.ProjectVariableScope)
     String Id { get; set; }
