@@ -26,10 +26,10 @@ public class TenantProjectVariablePayload(
     public ProjectVariableScope Scope { get; set; } = scope;
 }
 
-public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
+public class ModifyProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
+    public TenantProjectVariable[] Variables { get; set; } = variables;
 }
 

@@ -9,10 +9,10 @@ public class GetProjectVariablesByTenantIdRequest(string tenantId, string spaceI
     public bool IncludeMissingVariables { get; set; } = false;
 }
 
-public class GetProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] projectVariables)
+public class GetProjectVariablesByTenantIdResponse(string tenantId, TenantProjectVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
 
-    public TenantProjectVariable[] ProjectVariables { get; set; } = projectVariables;
-    public TenantProjectVariable[] MissingProjectVariables { get; set; } = null;
+    public TenantProjectVariable[] Variables { get; set; } = variables;
+    public TenantProjectVariable[] MissingVariables { get; set; } = null;
 }
