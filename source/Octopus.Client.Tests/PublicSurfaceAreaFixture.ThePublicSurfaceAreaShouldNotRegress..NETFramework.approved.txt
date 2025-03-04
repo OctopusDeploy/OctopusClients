@@ -7471,27 +7471,27 @@ Octopus.Client.Model.SmtpConfiguration
     String GoogleServiceAccount { get; set; }
   }
   class SmtpConfigurationResource
-      Octopus.Client.Extensibility.IResource
-      Octopus.Client.Model.IAuditedResource
-      Octopus.Client.Model.Resource
-    {
-      .ctor()
-      String SmtpHost { get; set; }
-      Nullable<Int32> SmtpPort { get; set; }
-      String SendEmailFrom { get; set; }
-      Boolean EnableSsl { get; set; }
-      Nullable<Int32> Timeout { get; set; }
-      String CredentialType { get; set; }
-    }
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Resource
+  {
+    .ctor()
+    String CredentialType { get; set; }
+    Boolean EnableSsl { get; set; }
+    String SendEmailFrom { get; set; }
+    String SmtpHost { get; set; }
+    Nullable<Int32> SmtpPort { get; set; }
+    Nullable<Int32> Timeout { get; set; }
+  }
   class UsernamePasswordSmtpConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.SmtpConfiguration.SmtpConfigurationResource
   {
     .ctor()
-    String SmtpLogin { get; set; }
-    Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     String NewSmtpPassword { get; set; }
+    Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
+    String SmtpLogin { get; set; }
   }
 }
 Octopus.Client.Model.TenantVariables
