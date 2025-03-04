@@ -5457,6 +5457,9 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String AzureAudience { get; set; }
+    String AzureClientId { get; set; }
+    String AzureTenantId { get; set; }
     String CredentialType { get; set; }
     Boolean EnableSsl { get; set; }
     String GoogleAudience { get; set; }
