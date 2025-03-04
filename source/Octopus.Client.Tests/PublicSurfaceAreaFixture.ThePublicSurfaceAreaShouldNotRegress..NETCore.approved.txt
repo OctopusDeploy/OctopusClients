@@ -7430,7 +7430,7 @@ Octopus.Client.Model.SmtpConfiguration
   class AzureSmtpConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.SmtpConfigurationResource
+    Octopus.Client.Model.SmtpConfiguration.SmtpConfigurationResource
   {
     .ctor()
     String AzureAudience { get; set; }
@@ -7440,7 +7440,7 @@ Octopus.Client.Model.SmtpConfiguration
   class GoogleSmtpConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.SmtpConfigurationResource
+    Octopus.Client.Model.SmtpConfiguration.SmtpConfigurationResource
   {
     .ctor()
     String GoogleAudience { get; set; }
@@ -7462,7 +7462,7 @@ Octopus.Client.Model.SmtpConfiguration
   class UsernamePasswordSmtpConfigurationResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.SmtpConfigurationResource
+    Octopus.Client.Model.SmtpConfiguration.SmtpConfigurationResource
   {
     .ctor()
     String SmtpLogin { get; set; }
