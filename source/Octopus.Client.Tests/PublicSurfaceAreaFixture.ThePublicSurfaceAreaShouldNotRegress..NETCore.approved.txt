@@ -7466,8 +7466,8 @@ Octopus.Client.Model.SmtpConfiguration
   {
     .ctor()
     String NewSmtpPassword { get; set; }
-    Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
     String SmtpLogin { get; set; }
+    Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
   }
 }
 Octopus.Client.Model.TenantVariables
