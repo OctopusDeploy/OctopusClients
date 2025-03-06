@@ -7452,8 +7452,6 @@ Octopus.Client.Model.Migrations
 Octopus.Client.Model.SmtpConfiguration
 {
   class AzureSmtpConfigurationResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.SmtpConfiguration.SmtpCredentialDetailsResource
   {
     .ctor()
@@ -7462,8 +7460,6 @@ Octopus.Client.Model.SmtpConfiguration
     String AzureTenantId { get; set; }
   }
   class GoogleSmtpConfigurationResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.SmtpConfiguration.SmtpCredentialDetailsResource
   {
     .ctor()
@@ -7489,8 +7485,6 @@ Octopus.Client.Model.SmtpConfiguration
       String ClientType { get; set; }
     }
   class UsernamePasswordSmtpConfigurationResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
     Octopus.Client.Model.SmtpConfiguration.SmtpCredentialDetailsResource
   {
     .ctor()
