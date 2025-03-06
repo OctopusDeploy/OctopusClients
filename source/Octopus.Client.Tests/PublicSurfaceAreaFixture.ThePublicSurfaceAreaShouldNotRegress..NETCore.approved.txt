@@ -7456,10 +7456,10 @@ Octopus.Client.Model.SmtpConfiguration
     Nullable<Int32> Timeout { get; set; }
   }
   class SmtpCredentialDetailsResource
-    {
-      .ctor()
-      String CredentialType { get; set; }
-    }
+  {
+    .ctor()
+    String CredentialType { get; set; }
+  }
   class UsernamePasswordSmtpConfigurationResource
     Octopus.Client.Model.SmtpConfiguration.SmtpCredentialDetailsResource
   {
