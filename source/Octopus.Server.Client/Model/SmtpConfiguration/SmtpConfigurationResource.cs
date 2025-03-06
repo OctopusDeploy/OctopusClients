@@ -21,6 +21,6 @@ namespace Octopus.Client.Model.SmtpConfiguration
         public int? Timeout { get; set; }
         
         [Writeable]
-        public string CredentialType { get; set; }
+        public SmtpCredentialDetailsResource Details { get; set; }
     }
 }

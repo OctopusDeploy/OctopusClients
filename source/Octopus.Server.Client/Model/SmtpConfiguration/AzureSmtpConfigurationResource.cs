@@ -2,7 +2,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.SmtpConfiguration
 {
-    public class AzureSmtpConfigurationResource : SmtpConfigurationResource
+    public class AzureSmtpConfigurationResource : SmtpCredentialDetailsResource
     {
         [Writeable]
         public string AzureAudience { get; set; }

@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.SmtpConfiguration
 {
-    public class UsernamePasswordSmtpConfigurationResource : SmtpConfigurationResource
+    public class UsernamePasswordSmtpConfigurationResource : SmtpCredentialDetailsResource
     {
         [Writeable]
         public string SmtpLogin { get; set; }
