@@ -7482,7 +7482,7 @@ Octopus.Client.Model.SmtpConfiguration
   class SmtpCredentialDetailsResource
     {
       .ctor()
-      String ClientType { get; set; }
+      String CredentialType { get; set; }
     }
   class UsernamePasswordSmtpConfigurationResource
     Octopus.Client.Model.SmtpConfiguration.SmtpCredentialDetailsResource
