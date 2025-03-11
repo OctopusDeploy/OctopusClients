@@ -6,12 +6,12 @@ namespace Octopus.Client.Model;
 
 public class OidcFeedResource
 {
-    public OidcFeedResource(string? jwt, string? audience, IEnumerable<string> deploymentSubjectKeys, IEnumerable<string> feedTestSubjectKeys)
+    public OidcFeedResource(string? jwt, string? audience, IEnumerable<string> deploymentSubjectKeys, IEnumerable<string> searchSubjectKeys)
     {
         Jwt = jwt;
         Audience = audience;
         DeploymentSubjectKeys = deploymentSubjectKeys;
-        FeedTestSubjectKeys = feedTestSubjectKeys;
+        SearchSubjectKeys = searchSubjectKeys;
     }
 
     public string? Jwt { get; set; }
@@ -19,6 +19,6 @@ public class OidcFeedResource
     public string? Audience { get; set; }
 
     public IEnumerable<string> DeploymentSubjectKeys { get; set; }
-
-    public IEnumerable<string> FeedTestSubjectKeys { get; set; }
+    
+    public IEnumerable<string> SearchSubjectKeys { get; set; }
 }
