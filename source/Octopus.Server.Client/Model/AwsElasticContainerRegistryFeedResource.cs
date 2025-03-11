@@ -1,9 +1,15 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿#nullable enable
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class AwsElasticContainerRegistryFeedResource : FeedResource
+    public class AwsElasticContainerRegistryFeedResource : FeedResource, IOidcFeedResource
     {
+        public AwsElasticContainerRegistryFeedResource(string region)
+        {
+            Region = region;
+        }
+
         public override FeedType FeedType => FeedType.AwsElasticContainerRegistry;
 
         [Writeable]
@@ -11,9 +17,11 @@ namespace Octopus.Client.Model
 
         [Trim]
         [Writeable]
-        public string AccessKey { get; set; }
+        public string? AccessKey { get; set; }
 
         [Trim, Writeable]
-        public SensitiveValue SecretKey { get; set; }
+        public SensitiveValue? SecretKey { get; set; }
+        
+        public OidcFeedResource? OidcFeedResource { get; set; }
     }
 }
