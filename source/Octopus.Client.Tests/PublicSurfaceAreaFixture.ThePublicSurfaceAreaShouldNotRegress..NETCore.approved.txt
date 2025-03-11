@@ -6918,9 +6918,11 @@ Octopus.Client.Model.Endpoints
   class KubernetesAgentDetailsResource
   {
     .ctor()
-    .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatus, String, String)
+    .ctor(String, String, Octopus.Client.Model.Endpoints.UpgradeStatus, String, String, Boolean, Octopus.Client.Model.Endpoints.KubernetesMonitorStatus)
     String AgentVersion { get; set; }
     String HelmReleaseName { get; set; }
+    Boolean KubernetesMonitorEnabled { get; set; }
+    Octopus.Client.Model.Endpoints.KubernetesMonitorStatus KubernetesMonitorStatus { get; set; }
     String KubernetesNamespace { get; set; }
     String TentacleVersion { get; set; }
     Octopus.Client.Model.Endpoints.UpgradeStatus UpgradeStatus { get; set; }
@@ -6986,6 +6988,15 @@ Octopus.Client.Model.Endpoints
     String ServiceAccountEmails { get; set; }
     Boolean UseVmServiceAccount { get; set; }
     String Zone { get; set; }
+  }
+  class KubernetesMonitorStatus
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.Endpoints.KubernetesMonitorStatus NotRegistered { get; }
+    static Octopus.Client.Model.Endpoints.KubernetesMonitorStatus Offline { get; }
+    static Octopus.Client.Model.Endpoints.KubernetesMonitorStatus Online { get; }
   }
   class KubernetesPodServiceAuthenticationResource
     Octopus.Client.Model.Endpoints.IEndpointWithMultipleAuthenticationResource
