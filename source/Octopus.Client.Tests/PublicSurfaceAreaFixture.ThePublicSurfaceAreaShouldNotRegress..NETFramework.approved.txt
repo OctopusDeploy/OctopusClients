@@ -2115,11 +2115,12 @@ Octopus.Client.Model
       GitHubActions = 27
   }
   class AwsElasticContainerRegistryAuthDetails
+    Octopus.Client.Model.IOidcFeedResource
   {
     .ctor()
     Octopus.Client.Model.FeedAuthType AuthType { get; set; }
     Octopus.Client.Model.AwsElasticContainerRegistryKeyAuthentication KeyAuthentication { get; set; }
-    Octopus.Client.Model.OidcFeedResource OidcAuthentication { get; set; }
+    Octopus.Client.Model.OidcFeedAuthentication OidcAuthentication { get; set; }
   }
   class AwsElasticContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource
@@ -3605,7 +3606,7 @@ Octopus.Client.Model
   }
   interface IOidcFeedResource
   {
-    Octopus.Client.Model.OidcFeedResource OidcFeedResource { get; set; }
+    Octopus.Client.Model.OidcFeedAuthentication OidcAuthentication { get; set; }
   }
   interface IProcessResource
     Octopus.Client.Extensibility.IResource
@@ -4292,13 +4293,13 @@ Octopus.Client.Model
     .ctor(String)
     String OidcIssuerUrl { get; set; }
   }
-  class OidcFeedResource
+  class OidcFeedAuthentication
   {
     .ctor(String, String, IEnumerable<String>, IEnumerable<String>)
     String Audience { get; set; }
     IEnumerable<String> DeploymentSubjectKeys { get; set; }
-    IEnumerable<String> FeedTestSubjectKeys { get; set; }
     String Jwt { get; set; }
+    IEnumerable<String> SearchSubjectKeys { get; set; }
   }
   OverwriteMode
   {

@@ -4,5 +4,5 @@ namespace Octopus.Client.Model;
 
 public interface IOidcFeedResource
 {
-    public OidcFeedResource? OidcFeedResource { get; set; }
+    public OidcFeedAuthentication? OidcAuthentication { get; set; }
 }

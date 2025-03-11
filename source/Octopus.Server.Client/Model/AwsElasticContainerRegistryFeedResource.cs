@@ -37,7 +37,7 @@ namespace Octopus.Client.Model
         public SensitiveValue? SecretKey { get; set; }
     }
     
-    public class AwsElasticContainerRegistryAuthDetails
+    public class AwsElasticContainerRegistryAuthDetails : IOidcFeedResource
     {
         [Writeable]
         public FeedAuthType AuthType { get; set; }
@@ -46,6 +46,6 @@ namespace Octopus.Client.Model
         public AwsElasticContainerRegistryKeyAuthentication? KeyAuthentication { get; set; }
 
         [Writeable]
-        public OidcFeedResource? OidcAuthentication { get; set; }
+        public OidcFeedAuthentication? OidcAuthentication { get; set; }
     }
 }

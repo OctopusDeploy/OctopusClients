@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Octopus.Client.Model;
 
-public class OidcFeedResource
+public class OidcFeedAuthentication
 {
-    public OidcFeedResource(string? jwt, string? audience, IEnumerable<string> deploymentSubjectKeys, IEnumerable<string> searchSubjectKeys)
+    public OidcFeedAuthentication(string? jwt, string? audience, IEnumerable<string> deploymentSubjectKeys, IEnumerable<string> searchSubjectKeys)
     {
         Jwt = jwt;
         Audience = audience;
@@ -19,6 +19,6 @@ public class OidcFeedResource
     public string? Audience { get; set; }
 
     public IEnumerable<string> DeploymentSubjectKeys { get; set; }
-    
+
     public IEnumerable<string> SearchSubjectKeys { get; set; }
 }
