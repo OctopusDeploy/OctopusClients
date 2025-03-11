@@ -3,11 +3,12 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
-    public class AwsElasticContainerRegistryFeedResource : FeedResource, IOidcFeedResource
+    public class AwsElasticContainerRegistryFeedResource : FeedResource
     {
-        public AwsElasticContainerRegistryFeedResource(string region)
+        public AwsElasticContainerRegistryFeedResource(string region, AwsElasticContainerRegistryAuthDetails authDetails)
         {
             Region = region;
+            AuthDetails = authDetails;
         }
 
         public override FeedType FeedType => FeedType.AwsElasticContainerRegistry;
@@ -15,13 +16,36 @@ namespace Octopus.Client.Model
         [Writeable]
         public string Region { get; set; }
 
+        [Trim, Writeable]
+        AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
+    }
+
+    public enum FeedAuthType
+    {
+        Key = 0,
+        Oidc = 1,
+    }
+
+    public class AwsElasticContainerRegistryKeyAuthentication
+    {
         [Trim]
         [Writeable]
         public string? AccessKey { get; set; }
 
-        [Trim, Writeable]
+        [Trim]
+        [Writeable]
         public SensitiveValue? SecretKey { get; set; }
+    }
+    
+    public class AwsElasticContainerRegistryAuthDetails
+    {
+        [Writeable]
+        public FeedAuthType AuthType { get; set; }
         
-        public OidcFeedResource? OidcFeedResource { get; set; }
+        [Writeable]
+        public AwsElasticContainerRegistryKeyAuthentication? KeyAuthentication { get; set; }
+
+        [Writeable]
+        public OidcFeedResource? OidcAuthentication { get; set; }
     }
 }

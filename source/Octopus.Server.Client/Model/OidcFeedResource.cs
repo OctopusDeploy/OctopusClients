@@ -2,11 +2,10 @@
 
 using System.Collections.Generic;
 
-namespace Octopus.Client;
+namespace Octopus.Client.Model;
 
 public class OidcFeedResource
 {
-    
     public OidcFeedResource(string? jwt, string? audience, IEnumerable<string> deploymentSubjectKeys, IEnumerable<string> feedTestSubjectKeys)
     {
         Jwt = jwt;

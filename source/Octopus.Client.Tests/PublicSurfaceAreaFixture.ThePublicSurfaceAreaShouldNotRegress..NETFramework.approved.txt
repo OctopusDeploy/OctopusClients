@@ -2114,6 +2114,13 @@ Octopus.Client.Model
       StriderCD = 26
       GitHubActions = 27
   }
+  class AwsElasticContainerRegistryAuthDetails
+  {
+    .ctor()
+    Octopus.Client.Model.FeedAuthType AuthType { get; set; }
+    Octopus.Client.Model.AwsElasticContainerRegistryKeyAuthentication KeyAuthentication { get; set; }
+    Octopus.Client.Model.OidcFeedResource OidcAuthentication { get; set; }
+  }
   class AwsElasticContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2122,10 +2129,14 @@ Octopus.Client.Model
     Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.FeedResource
   {
-    .ctor()
-    String AccessKey { get; set; }
+    .ctor(String, Octopus.Client.Model.AwsElasticContainerRegistryAuthDetails)
     Octopus.Client.Model.FeedType FeedType { get; }
     String Region { get; set; }
+  }
+  class AwsElasticContainerRegistryKeyAuthentication
+  {
+    .ctor()
+    String AccessKey { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
   class AzureContainerRegistryFeedResource
@@ -3246,6 +3257,11 @@ Octopus.Client.Model
     Boolean IsServiceNowIntegrationEnabled { get; set; }
     Boolean IsStepUiFrameworkEnabled { get; set; }
   }
+  FeedAuthType
+  {
+      Key = 0
+      Oidc = 1
+  }
   class FeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3586,6 +3602,10 @@ Octopus.Client.Model
     DateTimeOffset Expires { get; set; }
     String InvitationCode { get; set; }
     String SpaceId { get; set; }
+  }
+  interface IOidcFeedResource
+  {
+    Octopus.Client.Model.OidcFeedResource OidcFeedResource { get; set; }
   }
   interface IProcessResource
     Octopus.Client.Extensibility.IResource
@@ -4271,6 +4291,14 @@ Octopus.Client.Model
     .ctor()
     .ctor(String)
     String OidcIssuerUrl { get; set; }
+  }
+  class OidcFeedResource
+  {
+    .ctor(String, String, IEnumerable<String>, IEnumerable<String>)
+    String Audience { get; set; }
+    IEnumerable<String> DeploymentSubjectKeys { get; set; }
+    IEnumerable<String> FeedTestSubjectKeys { get; set; }
+    String Jwt { get; set; }
   }
   OverwriteMode
   {
