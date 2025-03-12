@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
         public string Region { get; set; }
 
         [Trim, Writeable]
-        AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
+        public AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
     }
 
     public enum FeedAuthType
