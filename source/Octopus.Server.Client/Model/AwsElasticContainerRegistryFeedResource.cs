@@ -39,8 +39,7 @@ namespace Octopus.Client.Model
     
     public class AwsElasticContainerRegistryAuthDetails : IOidcFeedResource
     {
-        [Writeable]
-        public FeedAuthType AuthType { get; set; }
+        [Writeable] public FeedAuthType AuthType { get; set; } = FeedAuthType.Key;
         
         [Writeable]
         public AwsElasticContainerRegistryKeyAuthentication? KeyAuthentication { get; set; }
