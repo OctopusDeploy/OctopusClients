@@ -32,6 +32,7 @@ namespace Octopus.Client
         readonly OctopusCustomHeaders octopusCustomHeaders;
         private string antiforgeryCookieName = null;
         private readonly IHttpRouteExtractor httpRouteExtractor;
+        private readonly SemaphoreSlim requestSemaphore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -50,6 +51,8 @@ namespace Octopus.Client
             httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
+            requestSemaphore = new SemaphoreSlim(options.MaxSimultaneousRequests, options.MaxSimultaneousRequests);
+            
             Repository = new OctopusRepository(this);
         }
 
@@ -522,6 +525,7 @@ namespace Octopus.Client
 
             HttpWebResponse webResponse = null;
 
+            requestSemaphore.Wait();
             try
             {
                 if (request.RequestResource == null)
@@ -642,6 +646,7 @@ namespace Octopus.Client
             }
             finally
             {
+                requestSemaphore.Release();
                 if (webResponse != null)
                 {
                     try
@@ -661,6 +666,7 @@ namespace Octopus.Client
         /// </summary>
         public void Dispose()
         {
+            requestSemaphore?.Dispose();
         }
 
         private void ValidateSpaceId(SpaceResource space)

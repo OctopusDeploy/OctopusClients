@@ -498,6 +498,7 @@ Octopus.Client
   }
   class OctopusClientOptions
   {
+    System.Int32 MaxSimultaneousRequests
     .ctor()
     Boolean AllowDefaultProxy { get; set; }
     Boolean IgnoreSslErrors { get; set; }

@@ -39,6 +39,7 @@ namespace Octopus.Client
         private bool ignoreSslErrorMessageLogged;
         private string antiforgeryCookieName;
         private readonly IHttpRouteExtractor httpRouteExtractor;
+        private readonly SemaphoreSlim requestSemaphore;
 
         // Use the Create method to instantiate
         protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool, IHttpRouteExtractor httpRouteExtractor)
@@ -47,6 +48,8 @@ namespace Octopus.Client
             this.serverEndpoint = serverEndpoint;
             this.httpRouteExtractor = httpRouteExtractor;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
+            requestSemaphore = new SemaphoreSlim(clientOptions.MaxSimultaneousRequests, clientOptions.MaxSimultaneousRequests);
+
             var handler = new HttpClientHandler
             {
                 CookieContainer = cookieContainer,
@@ -647,7 +650,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             Logger.Trace($"DispatchRequest: {request.Method} {message.RequestUri}");
 
             var completionOption = readResponse ? HttpCompletionOption.ResponseContentRead : HttpCompletionOption.ResponseHeadersRead;
-            
+
+            await requestSemaphore.WaitAsync(cancellationToken);
             try
             {
                 using var response = await client.SendAsync(message, completionOption, cancellationToken).ConfigureAwait(false);
@@ -674,6 +678,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested && exception.InnerException is TimeoutException)
             {
                 throw new TimeoutException($"Timeout getting response from {request.Uri} (client timeout is set to {client.Timeout}).", exception);
+            }
+            finally
+            {
+                requestSemaphore.Release();
             }
         }
 
@@ -747,6 +755,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// </summary>
         public void Dispose()
         {
+            requestSemaphore?.Dispose();
             client?.Dispose();
         }
     }
