@@ -75,6 +75,8 @@ namespace Octopus.Client
                 handler.Proxy = serverEndpoint.Proxy;
             }
 
+            clientOptions.ConfigureHttpClientHandler?.Invoke(handler);
+
             client = new HttpClient(handler, true);
             client.Timeout = clientOptions.Timeout;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

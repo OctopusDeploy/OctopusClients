@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Security.Authentication;
 using Octopus.Client.Model;
 
@@ -50,5 +51,11 @@ namespace Octopus.Client
         ///     into the appdomain, so a reasonably-well-filtered collection is recommended.
         /// </remarks>
         public Func<Type[]> ScanForHttpRouteTypes { get; set; } = AppDomainScanner.ScanForAllTypes;
+
+        /// <summary>
+        /// Configures the HTTP client handler that is used to create the HttpClient used by the client. Only applies to OctopusAsyncClient and
+        /// cannot be configured for OctopusClient (sync client).
+        /// </summary>
+        public Action<HttpClientHandler> ConfigureHttpClientHandler { get; set; } = null;
     }
 }

@@ -46,7 +46,12 @@ namespace Octopus.Client
         {
             this.serverEndpoint = serverEndpoint;
             options ??= new OctopusClientOptions();
-
+            
+            if(options.ConfigureHttpClientHandler != null)
+            {
+                throw new ArgumentException("The option ConfigureHttpClientHandler is only supported when using OctopusAsyncClient."); 
+            }
+            
             httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
