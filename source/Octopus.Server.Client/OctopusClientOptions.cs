@@ -50,5 +50,10 @@ namespace Octopus.Client
         ///     into the appdomain, so a reasonably-well-filtered collection is recommended.
         /// </remarks>
         public Func<Type[]> ScanForHttpRouteTypes { get; set; } = AppDomainScanner.ScanForAllTypes;
+
+        /// <summary>
+        /// Maximum number of simultaneous requests to make to the server
+        /// </summary>
+        public int MaxSimultaneousRequests = int.MaxValue;
     }
 }
