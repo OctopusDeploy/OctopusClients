@@ -25,10 +25,10 @@ namespace Octopus.Client.Model
         public AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
     }
 
-    public enum FeedAuthType
+    public static class FeedAuthType
     {
-        Key = 0,
-        Oidc = 1,
+        public static readonly string Key = "Key";
+        public static readonly string Oidc = "Oidc";
     }
 
     public class AwsElasticContainerRegistryKeyAuthentication
@@ -41,10 +41,10 @@ namespace Octopus.Client.Model
         [Writeable]
         public SensitiveValue? SecretKey { get; set; }
     }
-    
+
     public class AwsElasticContainerRegistryAuthDetails
     {
-        [Writeable] public FeedAuthType AuthType { get; set; } = FeedAuthType.Key;
+        [Writeable] public string AuthType { get; set; } = FeedAuthType.Key;
         
         [Writeable]
         public AwsElasticContainerRegistryKeyAuthentication? KeyAuthentication { get; set; }
