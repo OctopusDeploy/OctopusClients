@@ -3067,8 +3067,8 @@ Octopus.Client.Model
   {
     .ctor()
     String Audience { get; set; }
-    IEnumerable<String> SubjectKeys { get; set; }
     String SessionDuration { get; set; }
+    IEnumerable<String> SubjectKeys { get; set; }
   }
   EmailPriority
   {
