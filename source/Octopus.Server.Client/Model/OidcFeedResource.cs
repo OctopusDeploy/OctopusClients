@@ -8,8 +8,5 @@ public interface IOidcFeedAuthentication
 {
     public string? Audience { get; set; }
 
-    public IEnumerable<string> DeploymentSubjectKeys { get; set; }
-
-    public IEnumerable<string> SearchSubjectKeys { get; set; }
-
+    public IEnumerable<string> SubjectKeys { get; set; }
 }

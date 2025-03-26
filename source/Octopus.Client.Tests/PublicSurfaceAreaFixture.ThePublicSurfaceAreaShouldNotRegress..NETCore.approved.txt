@@ -3067,8 +3067,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Audience { get; set; }
-    IEnumerable<String> DeploymentSubjectKeys { get; set; }
-    IEnumerable<String> SearchSubjectKeys { get; set; }
+    IEnumerable<String> SubjectKeys { get; set; }
     String SessionDuration { get; set; }
   }
   EmailPriority
@@ -3600,8 +3599,7 @@ Octopus.Client.Model
   interface IOidcFeedAuthentication
   {
     String Audience { get; set; }
-    IEnumerable<String> DeploymentSubjectKeys { get; set; }
-    IEnumerable<String> SearchSubjectKeys { get; set; }
+    IEnumerable<String> SubjectKeys { get; set; }
   }
   interface IProcessResource
     Octopus.Client.Extensibility.IResource

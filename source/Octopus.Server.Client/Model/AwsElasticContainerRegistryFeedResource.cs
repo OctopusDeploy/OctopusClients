@@ -57,7 +57,6 @@ namespace Octopus.Client.Model
     {
         public string? SessionDuration { get; set; } = "3600";
         public string? Audience { get; set; }
-        public IEnumerable<string> DeploymentSubjectKeys { get; set; } = [];
-        public IEnumerable<string> SearchSubjectKeys { get; set; } = [];
+        public IEnumerable<string> SubjectKeys { get; set; } = [];
     }
 }
