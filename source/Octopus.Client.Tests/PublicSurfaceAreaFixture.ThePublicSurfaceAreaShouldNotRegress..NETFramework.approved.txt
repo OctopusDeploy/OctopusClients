@@ -2122,7 +2122,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.FeedResource
   {
-    .ctor(String, String, Octopus.Client.Model.AwsElasticContainerRegistryAuthDetails)
+    .ctor(String, String)
     String AccessKey { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
     Octopus.Client.Model.EcrOidcFeedAuthentication OidcAuthentication { get; set; }
