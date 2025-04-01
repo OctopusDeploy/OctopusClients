@@ -2097,13 +2097,6 @@ Octopus.Client.Model
       StriderCD = 26
       GitHubActions = 27
   }
-  class AwsElasticContainerRegistryAuthDetails
-  {
-    .ctor()
-    String AuthType { get; set; }
-    Octopus.Client.Model.AwsElasticContainerRegistryKeyAuthentication KeyAuthentication { get; set; }
-    Octopus.Client.Model.EcrOidcFeedAuthentication OidcAuthentication { get; set; }
-  }
   class AwsElasticContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2112,16 +2105,12 @@ Octopus.Client.Model
     Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.FeedResource
   {
-    .ctor(String, String, Octopus.Client.Model.AwsElasticContainerRegistryAuthDetails)
-    Octopus.Client.Model.AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
+    .ctor(String, String)
+    String AccessKey { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.EcrOidcFeedAuthentication OidcAuthentication { get; set; }
     String Region { get; set; }
     String RoleArn { get; set; }
-  }
-  class AwsElasticContainerRegistryKeyAuthentication
-  {
-    .ctor()
-    String AccessKey { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
   class AzureContainerRegistryFeedResource
@@ -3249,11 +3238,6 @@ Octopus.Client.Model
     Boolean IsKubernetesEnabled { get; set; }
     Boolean IsServiceNowIntegrationEnabled { get; set; }
     Boolean IsStepUiFrameworkEnabled { get; set; }
-  }
-  abstract class FeedAuthType
-  {
-    static System.String Key
-    static System.String Oidc
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
