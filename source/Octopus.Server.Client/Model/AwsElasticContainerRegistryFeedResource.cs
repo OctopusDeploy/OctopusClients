@@ -6,48 +6,21 @@ namespace Octopus.Client.Model
 {
     public class AwsElasticContainerRegistryFeedResource : FeedResource
     {
-        public AwsElasticContainerRegistryFeedResource(string region, string? roleArn, AwsElasticContainerRegistryAuthDetails authDetails)
+        public AwsElasticContainerRegistryFeedResource(string region, string? roleArn)
         {
             Region = region;
             RoleArn = roleArn;
-            AuthDetails = authDetails;
         }
 
         public override FeedType FeedType => FeedType.AwsElasticContainerRegistry;
 
-        [Writeable]
-        public string Region { get; set; }
-        
-        [Writeable]
-        public string? RoleArn { get; set; }
+        [Writeable] public string Region { get; set; }
 
-        [Trim, Writeable]
-        public AwsElasticContainerRegistryAuthDetails AuthDetails { get; set; }
-    }
+        [Writeable] public string? RoleArn { get; set; }
 
-    public static class FeedAuthType
-    {
-        public static readonly string Key = "Key";
-        public static readonly string Oidc = "Oidc";
-    }
+        [Trim] [Writeable] public string? AccessKey { get; set; }
 
-    public class AwsElasticContainerRegistryKeyAuthentication
-    {
-        [Trim]
-        [Writeable]
-        public string? AccessKey { get; set; }
-
-        [Trim]
-        [Writeable]
-        public SensitiveValue? SecretKey { get; set; }
-    }
-
-    public class AwsElasticContainerRegistryAuthDetails
-    {
-        [Writeable] public string AuthType { get; set; } = FeedAuthType.Key;
-        
-        [Writeable]
-        public AwsElasticContainerRegistryKeyAuthentication? KeyAuthentication { get; set; }
+        [Trim] [Writeable] public SensitiveValue? SecretKey { get; set; }
 
         [Writeable]
         public EcrOidcFeedAuthentication? OidcAuthentication { get; set; }
