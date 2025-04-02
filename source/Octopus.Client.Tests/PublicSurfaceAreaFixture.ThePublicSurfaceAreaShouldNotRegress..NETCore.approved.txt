@@ -2105,12 +2105,11 @@ Octopus.Client.Model
     Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.FeedResource
   {
-    .ctor(String, String)
+    .ctor(String)
     String AccessKey { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
     Octopus.Client.Model.EcrOidcFeedAuthentication OidcAuthentication { get; set; }
     String Region { get; set; }
-    String RoleArn { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
   }
   class AzureContainerRegistryFeedResource
@@ -3056,6 +3055,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Audience { get; set; }
+    String RoleArn { get; set; }
     String SessionDuration { get; set; }
     IEnumerable<String> SubjectKeys { get; set; }
   }

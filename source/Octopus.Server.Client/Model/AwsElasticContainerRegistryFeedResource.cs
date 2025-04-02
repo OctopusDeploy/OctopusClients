@@ -6,17 +6,14 @@ namespace Octopus.Client.Model
 {
     public class AwsElasticContainerRegistryFeedResource : FeedResource
     {
-        public AwsElasticContainerRegistryFeedResource(string region, string? roleArn)
+        public AwsElasticContainerRegistryFeedResource(string region)
         {
             Region = region;
-            RoleArn = roleArn;
         }
 
         public override FeedType FeedType => FeedType.AwsElasticContainerRegistry;
 
         [Writeable] public string Region { get; set; }
-
-        [Writeable] public string? RoleArn { get; set; }
 
         [Trim] [Writeable] public string? AccessKey { get; set; }
 
@@ -29,6 +26,7 @@ namespace Octopus.Client.Model
     public class EcrOidcFeedAuthentication : IOidcFeedAuthentication
     {
         public string? SessionDuration { get; set; } = "3600";
+        public string? RoleArn { get; set; }
         public string? Audience { get; set; }
         public IEnumerable<string> SubjectKeys { get; set; } = [];
     }
