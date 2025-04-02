@@ -25,8 +25,13 @@ namespace Octopus.Client.Model
 
     public class EcrOidcFeedAuthentication : IOidcFeedAuthentication
     {
+        public EcrOidcFeedAuthentication(string roleArn)
+        {
+            RoleArn = roleArn;
+        }
+
         public string? SessionDuration { get; set; } = "3600";
-        public string? RoleArn { get; set; }
+        public string RoleArn { get; set; }
         public string? Audience { get; set; }
         public IEnumerable<string> SubjectKeys { get; set; } = [];
     }

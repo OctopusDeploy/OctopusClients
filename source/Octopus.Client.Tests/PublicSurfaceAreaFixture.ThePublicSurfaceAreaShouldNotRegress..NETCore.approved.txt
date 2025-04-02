@@ -3053,7 +3053,7 @@ Octopus.Client.Model
   class EcrOidcFeedAuthentication
     Octopus.Client.Model.IOidcFeedAuthentication
   {
-    .ctor()
+    .ctor(String)
     String Audience { get; set; }
     String RoleArn { get; set; }
     String SessionDuration { get; set; }
