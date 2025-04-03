@@ -24,5 +24,8 @@ public class GetDeploymentFreezeByIdResponse
 
     [Optional]
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; protected set; } 
+    
+    [Optional]
+    public string OwnerId { get; set;}
 
 }
