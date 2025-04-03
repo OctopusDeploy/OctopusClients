@@ -25,4 +25,6 @@ public class DeploymentFreezeResource
     [Optional] public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; set; }
 
     [Optional] public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
+    
+    [Optional] public string OwnerId { get; set; }
 }

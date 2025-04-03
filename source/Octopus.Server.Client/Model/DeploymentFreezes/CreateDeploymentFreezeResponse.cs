@@ -25,4 +25,7 @@ public class CreateDeploymentFreezeResponse
     [Optional]
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope  { get; set; }
 
+    [Optional] 
+    public string OwnerId { get; set; }
+
 }
