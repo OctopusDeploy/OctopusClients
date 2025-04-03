@@ -6664,6 +6664,7 @@ Octopus.Client.Model.DeploymentFreezes
     .ctor()
     DateTimeOffset End { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6674,6 +6675,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6697,6 +6699,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6712,6 +6715,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; }
@@ -6739,6 +6743,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6749,6 +6754,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
