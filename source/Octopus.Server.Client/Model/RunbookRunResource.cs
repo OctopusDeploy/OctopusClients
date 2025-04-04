@@ -7,6 +7,12 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
+    public static class RunbookRunPriority
+    {
+        public static readonly string On = "On";
+        public static readonly string Off = "Off";
+    }
+
     public class RunbookRunResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public RunbookRunResource()
@@ -69,6 +75,12 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public string DebugMode { get; set; }
 
+        /// <summary>
+        /// One of the values from <see cref="RunbookRunPriority"/>
+        /// </summary>
+        [WriteableOnCreate]
+        public string Priority { get; set; }
+        
         [WriteableOnCreate]
         public string Comments { get; set; }
 
