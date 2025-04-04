@@ -410,6 +410,7 @@ namespace Octopus.Client
         /// Sign out
         /// </summary>
         void SignOut();
+        IOctopusClient AsUser(string apiKey, OctopusClientOptions options = null);
         IOctopusSpaceRepository ForSpace(SpaceResource space);
         IOctopusSystemRepository ForSystem();
 
