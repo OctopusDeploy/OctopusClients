@@ -23,4 +23,7 @@ public class CreateDeploymentFreezeCommand
 
     [Optional]
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
+    
+    [Optional]
+    public string OwnerId { get; set; }
 }

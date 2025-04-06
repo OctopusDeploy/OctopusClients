@@ -498,6 +498,7 @@ Octopus.Client
   }
   class OctopusClientOptions
   {
+    System.Int32 MaxSimultaneousRequests
     .ctor()
     Boolean AllowDefaultProxy { get; set; }
     String Proxy { get; set; }
@@ -5130,6 +5131,11 @@ Octopus.Client.Model
     String EnvironmentId { get; set; }
     String TenantId { get; set; }
   }
+  abstract class RunbookRunPriority
+  {
+    static System.String Off
+    static System.String On
+  }
   class RunbookRunResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5152,6 +5158,7 @@ Octopus.Client.Model
     String FrozenRunbookProcessId { get; set; }
     String ManifestVariableSetId { get; set; }
     String Name { get; set; }
+    String Priority { get; set; }
     String ProjectId { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
@@ -6702,6 +6709,7 @@ Octopus.Client.Model.DeploymentFreezes
     .ctor()
     DateTimeOffset End { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6712,6 +6720,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6735,6 +6744,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6750,6 +6760,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; }
@@ -6777,6 +6788,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
@@ -6787,6 +6799,7 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
+    String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }

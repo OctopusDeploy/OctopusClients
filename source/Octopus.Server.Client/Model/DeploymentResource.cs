@@ -13,7 +13,7 @@ namespace Octopus.Client.Model
         public static readonly string Off = "Off";
         public static readonly string LifecycleDefault = "LifecycleDefault";
     }
-
+    
     public class DeploymentResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public DeploymentResource()
