@@ -1721,6 +1721,16 @@ Octopus.Client.Logging
 }
 Octopus.Client.Model
 {
+  class AcrOidcFeedAuthentication
+    Octopus.Client.Model.IOidcFeedAuthentication
+  {
+    .ctor(String, String)
+    String Audience { get; set; }
+    String ClientId { get; set; }
+    String SessionDuration { get; set; }
+    IEnumerable<String> SubjectKeys { get; set; }
+    String TenantId { get; set; }
+  }
   class ActionsUpdateProcessResource
     Octopus.Client.Extensibility.IResource
   {
@@ -2140,6 +2150,7 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.AcrOidcFeedAuthentication OidcAuthentication { get; set; }
   }
   class AzureRootResource
     Octopus.Client.Extensibility.IResource
