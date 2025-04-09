@@ -24,7 +24,7 @@ namespace Octopus.Client
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
-    public class OctopusAsyncClient : IOctopusAsyncClient
+    public class OctopusAsyncClient : IOctopusAsyncClient, IOctopusServerRootResourceCache
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
      
@@ -127,6 +127,8 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             Logger.Error(warning);
             return false;
         }
+
+        public async Task<IOctopusAsyncClient> AsUser(string apiKey, OctopusClientOptions options = null) => await Create(serverEndpoint.AsUser(apiKey), options);
 
         public IOctopusSpaceAsyncRepository ForSpace(SpaceResource space)
         {
@@ -274,7 +276,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         /// that it is only requested once for
         /// the current <see cref="IOctopusAsyncClient" />.
         /// </summary>
-        public RootResource RootDocument => Repository.LoadRootDocument().GetAwaiter().GetResult();
+        public RootResource RootDocument => (this as IOctopusServerRootResourceCache)?.CachedRootResource ?? Repository.LoadRootDocument().GetAwaiter().GetResult();
+
+        RootResource IOctopusServerRootResourceCache.CachedRootResource
+        {
+            get => serverEndpoint.CachedRootResource;
+            set => serverEndpoint.CachedRootResource = value;
+        }
 
         /// <summary>
         /// Occurs when a request is about to be sent.
