@@ -14,7 +14,6 @@ namespace Octopus.Client.Model
     
     public class GoogleOidcFeedAuthentication : IOidcFeedAuthentication
     {
-            
         public string? Audience { get; set; }
         public IEnumerable<string> SubjectKeys { get; set; } = [];
     }
