@@ -3421,7 +3421,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IOidcFeedAuthentication
   {
     .ctor()
-    String SessionDuration { get; set; }
+    String Audience { get; set; }
     IEnumerable<String> SubjectKeys { get; set; }
   }
   GuidedFailureMode
