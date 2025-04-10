@@ -3415,6 +3415,14 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.GoogleOidcFeedAuthentication OidcAuthentication { get; set; }
+  }
+  class GoogleOidcFeedAuthentication
+    Octopus.Client.Model.IOidcFeedAuthentication
+  {
+    .ctor()
+    String SessionDuration { get; set; }
+    IEnumerable<String> SubjectKeys { get; set; }
   }
   GuidedFailureMode
   {
