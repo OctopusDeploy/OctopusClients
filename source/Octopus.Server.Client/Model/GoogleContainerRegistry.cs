@@ -10,12 +10,12 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public GoogleOidcFeedAuthentication? OidcAuthentication { get; set; }
-        
-        public class GoogleOidcFeedAuthentication : IOidcFeedAuthentication
-        {
+    }
+    
+    public class GoogleOidcFeedAuthentication : IOidcFeedAuthentication
+    {
             
-            public string? Audience { get; set; }
-            public IEnumerable<string> SubjectKeys { get; set; } = [];
-        }
+        public string? Audience { get; set; }
+        public IEnumerable<string> SubjectKeys { get; set; } = [];
     }
 }
