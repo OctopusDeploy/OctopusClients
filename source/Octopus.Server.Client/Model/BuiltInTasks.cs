@@ -162,6 +162,16 @@ namespace Octopus.Client.Model
             }
         }
 
+        public static class RunbookRun
+        {
+            public const string Name = "RunbookRun";
+
+            public static class Arguments
+            {
+                public static string RunbookRunId = "RunbookRunId";
+            }
+        }
+
         public static class TestEmail
         {
             public const string Name = "TestEmail";
