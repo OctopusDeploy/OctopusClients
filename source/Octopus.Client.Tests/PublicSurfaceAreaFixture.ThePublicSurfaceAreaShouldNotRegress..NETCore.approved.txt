@@ -2008,6 +2008,10 @@ Octopus.Client.Model
   }
   abstract class Arguments
   {
+    static System.String RunbookRunId
+  }
+  abstract class Arguments
+  {
     static System.String EmailAddress
   }
   abstract class Arguments
@@ -2268,6 +2272,14 @@ Octopus.Client.Model
     abstract class Retention
     {
       static System.String Name
+    }
+    abstract class RunbookRun
+    {
+      static System.String Name
+      abstract class Arguments
+      {
+        static System.String RunbookRunId
+      }
     }
     abstract class SyncCommunityActionTemplates
     {
@@ -5083,6 +5095,14 @@ Octopus.Client.Model
     .ctor()
     Int32 QuantityToKeep { get; set; }
     Boolean ShouldKeepForever { get; set; }
+  }
+  abstract class RunbookRun
+  {
+    static System.String Name
+    abstract class Arguments
+    {
+      static System.String RunbookRunId
+    }
   }
   class RunbookRunGitResource
   {
