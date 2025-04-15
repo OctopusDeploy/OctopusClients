@@ -3232,6 +3232,12 @@ Octopus.Client.Model
       Release = 2
       Deployment = 3
   }
+  ExecuteDeploymentsOnResilientPipelineMode
+  {
+      V1 = 0
+      V2Resilient = 1
+      Dynamic = 2
+  }
   class ExtensionSettingsValues
   {
     .ctor()
@@ -4696,7 +4702,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String Description { get; set; }
     Boolean DiscreteChannelRelease { get; set; }
-    Nullable<Boolean> ExecuteDeploymentsOnResilientPipeline { get; set; }
+    Octopus.Client.Model.ExecuteDeploymentsOnResilientPipelineMode ExecuteDeploymentsOnResilientPipeline { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.IconResource Icon { get; set; }
     List<String> IncludedLibraryVariableSetIds { get; set; }
