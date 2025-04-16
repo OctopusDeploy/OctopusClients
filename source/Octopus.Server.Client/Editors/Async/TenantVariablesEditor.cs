@@ -54,5 +54,12 @@ namespace Octopus.Client.Editors.Async
             Instance.SetLibraryVariableValue(libraryVariableSetResource, templateName, value);
             return this;
         }
+
+        public TenantVariablesEditor SetLibraryVariableValue(LibraryVariableSetResource libraryVariableSetResource,
+            string templateName, PropertyValueResource value, string[] scope)
+        {
+            Instance.SetLibraryVariableValue(libraryVariableSetResource, templateName, value, scope);
+            return this;
+        }
     }
 }
