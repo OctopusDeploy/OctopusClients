@@ -5270,6 +5270,7 @@ Octopus.Client.Model
     .ctor()
     String AccessKey { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
+    String Region { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
     Boolean UseMachineCredentials { get; set; }
   }
