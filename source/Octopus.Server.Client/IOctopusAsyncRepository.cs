@@ -1,5 +1,4 @@
-using System.Threading.Tasks;
-using Octopus.Client.Repositories.Async;
+using Octopus.Client.Model;
 
 namespace Octopus.Client
 {
@@ -10,5 +9,7 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusAsyncRepository: IOctopusSpaceAsyncRepository, IOctopusSystemAsyncRepository
     {
+        IOctopusSpaceAsyncRepository ForSpace(SpaceResource space);
+        IOctopusSystemAsyncRepository ForSystem();
     }
 }
