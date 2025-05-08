@@ -2126,6 +2126,7 @@ Octopus.Client.Model
     Octopus.Client.Model.EcrOidcFeedAuthentication OidcAuthentication { get; set; }
     String Region { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+    Boolean UseMachineCredentials { get; set; }
   }
   class AzureContainerRegistryFeedResource
     Octopus.Client.Extensibility.IResource

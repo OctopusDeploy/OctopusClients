@@ -21,6 +21,10 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public EcrOidcFeedAuthentication? OidcAuthentication { get; set; }
+        
+        [Writeable]
+        public bool UseMachineCredentials { get; set; }
+
     }
 
     public class EcrOidcFeedAuthentication : IOidcFeedAuthentication
