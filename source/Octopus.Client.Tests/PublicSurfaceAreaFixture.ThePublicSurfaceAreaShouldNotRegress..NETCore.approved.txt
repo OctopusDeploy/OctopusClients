@@ -6731,6 +6731,18 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
+  class CreateDeploymentFreezeOverrideCommand
+  {
+    .ctor(Octopus.Client.Model.DeploymentResource, IReadOnlyCollection<String>, String)
+    Octopus.Client.Model.DeploymentResource CreateDeploymentCommand { get; set; }
+    IReadOnlyCollection<String> FreezeIds { get; set; }
+    String Reason { get; set; }
+  }
+  class CreateDeploymentFreezeOverrideResponse
+  {
+    .ctor()
+    Octopus.Client.Model.DeploymentResource Deployment { get; set; }
+  }
   class CreateDeploymentFreezeResponse
   {
     .ctor()
@@ -8356,6 +8368,7 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<DeploymentResource>
     Octopus.Client.Repositories.IDelete<DeploymentResource>
   {
+    Octopus.Client.Model.DeploymentResource Create(Octopus.Client.Model.DeploymentFreezes.CreateDeploymentFreezeOverrideCommand, String)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> FindAll(String[], String[], Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> FindBy(String[], String[], Int32, Nullable<Int32>)
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.DeploymentResource)

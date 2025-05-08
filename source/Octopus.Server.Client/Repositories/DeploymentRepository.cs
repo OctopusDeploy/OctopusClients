@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Octopus.Client.Model;
+using Octopus.Client.Model.DeploymentFreezes;
 
 namespace Octopus.Client.Repositories
 {
@@ -21,7 +23,7 @@ namespace Octopus.Client.Repositories
         ResourceCollection<DeploymentResource> FindAll(string[] projects, string[] environments, int skip = 0, int? take = null);
         void Paginate(string[] projects, string[] environments, Func<ResourceCollection<DeploymentResource>, bool> getNextPage);
         void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage);
-
+        DeploymentResource Create(CreateDeploymentFreezeOverrideCommand command, string spaceId);
     }
 
     class DeploymentRepository : BasicRepository<DeploymentResource>, IDeploymentRepository
@@ -55,6 +57,13 @@ namespace Octopus.Client.Repositories
         public void Paginate(string[] projects, string[] environments, string[] tenants, Func<ResourceCollection<DeploymentResource>, bool> getNextPage)
         {
             Client.Paginate(Repository.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
+        }
+        
+        public DeploymentResource Create(CreateDeploymentFreezeOverrideCommand command, string spaceId)
+        {
+            var route = "~/api/{spaceId}/deployments/override";
+            var deploymentOverrideResponse = Client.Create<CreateDeploymentFreezeOverrideCommand, CreateDeploymentFreezeOverrideResponse>(route, command, new{ spaceId});
+            return deploymentOverrideResponse.Deployment;
         }
     }
 }
