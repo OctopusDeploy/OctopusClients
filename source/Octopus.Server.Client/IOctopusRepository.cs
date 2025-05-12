@@ -1,3 +1,5 @@
+using Octopus.Client.Model;
+
 namespace Octopus.Client
 {
     /// <summary>
@@ -7,5 +9,7 @@ namespace Octopus.Client
     /// </summary>
     public interface IOctopusRepository: IOctopusSpaceRepository, IOctopusSystemRepository
     {
+        IOctopusSpaceRepository ForSpace(SpaceResource space);
+        IOctopusSystemRepository ForSystem();
     }
 }
