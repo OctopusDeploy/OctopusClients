@@ -4691,6 +4691,7 @@ Octopus.Client.Model
     Boolean AutoCreateRelease { get; set; }
     ISet<AutoDeployReleaseOverrideResource> AutoDeployReleaseOverrides { get; }
     String ClonedFromProjectId { get; set; }
+    Nullable<Boolean> CombineHealthAndSyncStatusInDashboardLiveStatus { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }

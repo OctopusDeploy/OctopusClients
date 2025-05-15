@@ -135,6 +135,9 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public bool? ExecuteDeploymentsOnResilientPipeline { get; set;}
+
+        [Writeable]
+        public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set;}
         
         public IconResource Icon { get; set; }
 
