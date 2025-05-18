@@ -59,6 +59,10 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release);
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release, CancellationToken cancellationToken);
+
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request);
+        Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request, CancellationToken cancellationToken);
     }
 
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
@@ -147,6 +151,19 @@ namespace Octopus.Client.Repositories.Async
         public Task<LifecycleProgressionResource> GetProgression(ReleaseResource release, CancellationToken cancellationToken)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"], null, cancellationToken);
+        }
+
+        public Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request)
+        {
+            return GetMissingPackagesForRelease(request, CancellationToken.None);
+        }
+
+        public Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(
+            GetMissingPackagesForReleaseRequest request,
+            CancellationToken cancellationToken)
+        {
+            const string link  = "/api/{spaceId}/releases/{releaseId}/missingpackages";
+            return Client.Get<GetMissingPackagesForReleaseResponse>(link, new { request.SpaceId, request.ReleaseId }, cancellationToken);
         }
     }
 }
