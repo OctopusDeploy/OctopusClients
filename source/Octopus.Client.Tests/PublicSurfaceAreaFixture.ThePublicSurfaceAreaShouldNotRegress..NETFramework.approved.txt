@@ -9511,7 +9511,6 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
-    Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(Octopus.Client.Model.GetMissingPackagesForReleaseRequest)
     Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(Octopus.Client.Model.GetMissingPackagesForReleaseRequest, CancellationToken)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget, CancellationToken)
