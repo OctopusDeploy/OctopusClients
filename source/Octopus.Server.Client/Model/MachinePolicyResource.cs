@@ -14,7 +14,6 @@ namespace Octopus.Client.Model
             MachineCleanupPolicy = new MachineCleanupPolicy();
             MachineUpdatePolicy = new MachineUpdatePolicy();
             MachineRpcCallRetryPolicy = new MachineRpcCallRetryPolicy();
-            MachinePackageCacheRetentionPolicy = new MachinePackageCacheRetentionPolicy();
         }
 
         [Writeable]
@@ -51,7 +50,7 @@ namespace Octopus.Client.Model
         
         [Writeable]
         [JsonProperty(Order=58, ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public MachinePackageCacheRetentionPolicy MachinePackageCacheRetentionPolicy { get; set; }
+        public RetentionPeriod MachinePackageCacheRetentionPolicy { get; set; }
         
         [Writeable]
         [JsonProperty(Order = 60)]

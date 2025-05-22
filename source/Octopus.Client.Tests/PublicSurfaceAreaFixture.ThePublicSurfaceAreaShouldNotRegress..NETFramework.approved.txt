@@ -3973,16 +3973,6 @@ Octopus.Client.Model
       CalamariNeedsUpgrade = 4
       Disabled = 5
   }
-  class MachinePackageCacheRetentionPolicy
-  {
-    .ctor()
-    Int32 QuantityToKeep { get; set; }
-    Octopus.Client.Model.MachinePackageCacheRetentionUnit Unit { get; set; }
-  }
-  MachinePackageCacheRetentionUnit
-  {
-      Items = 0
-  }
   class MachinePolicyResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4000,7 +3990,7 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineCleanupPolicy MachineCleanupPolicy { get; set; }
     Octopus.Client.Model.MachineConnectivityPolicy MachineConnectivityPolicy { get; set; }
     Octopus.Client.Model.MachineHealthCheckPolicy MachineHealthCheckPolicy { get; set; }
-    Octopus.Client.Model.MachinePackageCacheRetentionPolicy MachinePackageCacheRetentionPolicy { get; set; }
+    Octopus.Client.Model.RetentionPeriod MachinePackageCacheRetentionPolicy { get; set; }
     Octopus.Client.Model.MachineRpcCallRetryPolicy MachineRpcCallRetryPolicy { get; set; }
     Octopus.Client.Model.MachineUpdatePolicy MachineUpdatePolicy { get; set; }
     String Name { get; set; }
