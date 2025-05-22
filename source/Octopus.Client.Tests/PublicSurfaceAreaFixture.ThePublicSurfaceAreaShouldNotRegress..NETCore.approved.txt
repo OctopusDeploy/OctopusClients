@@ -3307,6 +3307,17 @@ Octopus.Client.Model
     .ctor()
     String AccessToken { get; set; }
   }
+  class GetMissingPackagesForReleaseRequest
+  {
+    .ctor()
+    String ReleaseId { get; set; }
+    String SpaceId { get; set; }
+  }
+  class GetMissingPackagesForReleaseResponse
+  {
+    .ctor()
+    IReadOnlyCollection<MissingPackageInfo> Packages { get; set; }
+  }
   class GitBranchResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -4076,6 +4087,12 @@ Octopus.Client.Model
   abstract class MigrationPartialExport
   {
     static System.String Name
+  }
+  class MissingPackageInfo
+  {
+    .ctor()
+    String Id { get; set; }
+    String Version { get; set; }
   }
   class MissingVariableResource
   {
@@ -8630,6 +8647,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ReleaseResource Create(Octopus.Client.Model.ReleaseResource, Boolean)
     Octopus.Client.Model.ResourceCollection<ArtifactResource> GetArtifacts(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.ResourceCollection<DeploymentResource> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
+    Octopus.Client.Model.GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(Octopus.Client.Model.GetMissingPackagesForReleaseRequest)
     Octopus.Client.Model.DeploymentPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
@@ -9468,6 +9486,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ResourceCollection<DeploymentResource>> GetDeployments(Octopus.Client.Model.ReleaseResource, Int32, Nullable<Int32>, CancellationToken)
+    Task<GetMissingPackagesForReleaseResponse> GetMissingPackagesForRelease(Octopus.Client.Model.GetMissingPackagesForReleaseRequest, CancellationToken)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
     Task<DeploymentPreviewResource> GetPreview(Octopus.Client.Model.DeploymentPromotionTarget, CancellationToken)
     Task<LifecycleProgressionResource> GetProgression(Octopus.Client.Model.ReleaseResource)
