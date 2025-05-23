@@ -26,6 +26,7 @@ namespace Octopus.Client.Repositories
         ReleaseResource SnapshotVariables(ReleaseResource release);    
         ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
+        GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request);
     }
     
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
@@ -69,6 +70,13 @@ namespace Octopus.Client.Repositories
         public LifecycleProgressionResource GetProgression(ReleaseResource release)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"]);
+        }
+
+        public GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(
+            GetMissingPackagesForReleaseRequest request)
+        {
+            const string link  = "/api/{spaceId}/releases/{releaseId}/missingpackages";
+            return Client.Get<GetMissingPackagesForReleaseResponse>(link, new { request.SpaceId, request.ReleaseId });
         }
     }
 }
