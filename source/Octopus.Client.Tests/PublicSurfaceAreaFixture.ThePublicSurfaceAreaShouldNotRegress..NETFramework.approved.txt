@@ -2191,6 +2191,7 @@ Octopus.Client.Model
     Octopus.Client.Model.FeedResource
   {
     .ctor()
+    Boolean DeletePackagesAssociatedWithReleases { get; set; }
     Nullable<Int32> DeleteUnreleasedPackagesAfterDays { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
     Boolean IsBuiltInRepoSyncEnabled { get; set; }
