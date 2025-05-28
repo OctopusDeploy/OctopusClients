@@ -3970,10 +3970,16 @@ Octopus.Client.Model
   class MachinePackageCacheRetentionPolicy
   {
     .ctor()
-    Octopus.Client.Model.MachinePackageCacheRetentionUnit PackageUnit { get; set; }
-    Int32 QuantityOfPackagesToKeep { get; set; }
-    Int32 QuantityOfVersionsToKeep { get; set; }
-    Octopus.Client.Model.MachinePackageCacheRetentionUnit VersionUnit { get; set; }
+    Nullable<MachinePackageCacheRetentionUnit> PackageUnit { get; set; }
+    Nullable<Int32> QuantityOfPackagesToKeep { get; set; }
+    Nullable<Int32> QuantityOfVersionsToKeep { get; set; }
+    Octopus.Client.Model.MachinePackageCacheRetentionStrategy Strategy { get; set; }
+    Nullable<MachinePackageCacheRetentionUnit> VersionUnit { get; set; }
+  }
+  MachinePackageCacheRetentionStrategy
+  {
+      FreeSpace = 0
+      Quantities = 1
   }
   MachinePackageCacheRetentionUnit
   {
