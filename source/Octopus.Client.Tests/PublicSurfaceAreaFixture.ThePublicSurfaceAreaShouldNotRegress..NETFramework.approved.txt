@@ -3995,7 +3995,7 @@ Octopus.Client.Model
   }
   MachinePackageCacheRetentionStrategy
   {
-      FreeSpace = 0
+      Default = 0
       Quantities = 1
   }
   MachinePackageCacheRetentionUnit

@@ -2,7 +2,7 @@ namespace Octopus.Client.Model;
 
 public enum MachinePackageCacheRetentionStrategy
 {
-    FreeSpace,
+    Default,
     Quantities,
 }
 
@@ -13,7 +13,7 @@ public enum MachinePackageCacheRetentionUnit
 
 public class MachinePackageCacheRetentionPolicy
 {
-    public MachinePackageCacheRetentionStrategy Strategy { get; set; } = MachinePackageCacheRetentionStrategy.FreeSpace;
+    public MachinePackageCacheRetentionStrategy Strategy { get; set; } = MachinePackageCacheRetentionStrategy.Default;
     public int? QuantityOfPackagesToKeep { get; set; }
     public MachinePackageCacheRetentionUnit? PackageUnit { get; set; }
     public int? QuantityOfVersionsToKeep { get; set; }
