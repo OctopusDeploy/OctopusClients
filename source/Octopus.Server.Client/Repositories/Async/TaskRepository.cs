@@ -239,7 +239,7 @@ namespace Octopus.Client.Repositories.Async
                     {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
                     {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax},
                     {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
-                    {BuiltInTasks.AdHocScript.Arguments.WorkerPoolsIds, workerPoolIds}
+                    {BuiltInTasks.AdHocScript.Arguments.WorkerPoolIds, workerPoolIds}
                 }
             };
             return await Create(resource, cancellationToken).ConfigureAwait(false);

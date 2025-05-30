@@ -87,7 +87,7 @@ namespace Octopus.Client.Model
                 public const string ActionTemplateId = "ActionTemplateId";
                 public const string Properties = "Properties";
                 public const string TargetType = "TargetType";
-                public const string WorkerPoolsIds = "WorkerPoolsIds";
+                public const string WorkerPoolIds = "WorkerPoolIds";
             }
             
             public enum TargetType	
