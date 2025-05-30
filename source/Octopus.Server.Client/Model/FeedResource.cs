@@ -25,6 +25,6 @@ namespace Octopus.Client.Model
         /// The package-acquisition locations supported by the feed.
         /// The first is considered the default.
         /// </summary>
-        public IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; } = new List<PackageAcquisitionLocation>();
+        public IList<PackageAcquisitionLocationResource> PackageAcquisitionLocationOptions { get; } = new List<PackageAcquisitionLocationResource>();
     }
 }

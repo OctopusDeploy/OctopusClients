@@ -25,7 +25,7 @@ namespace Octopus.Client.Model
         /// <param name="packageId">The package ID or a variable-expression</param>
         /// <param name="feedId">The feed ID or a variable-expression</param>
         /// <param name="acquisitionLocation">The location the package should be acquired</param>
-        public PackageReference(string name, string packageId, string feedId, PackageAcquisitionLocation acquisitionLocation)
+        public PackageReference(string name, string packageId, string feedId, PackageAcquisitionLocationResource acquisitionLocation)
             :this(name, packageId, feedId, acquisitionLocation.ToString())
         {
         }
@@ -37,7 +37,7 @@ namespace Octopus.Client.Model
         /// <param name="packageId">The package ID or a variable-expression</param>
         /// <param name="feedId">The feed ID or a variable-expression</param>
         /// <param name="acquisitionLocation">The location the package should be acquired.
-        /// May be one <see cref="PackageAcquisitionLocation"/> or a variable-expression.</param>
+        /// May be one <see cref="PackageAcquisitionLocationResource"/> or a variable-expression.</param>
         public PackageReference(string name, string packageId, string feedId, string acquisitionLocation)
             :this(null, name, packageId, feedId, acquisitionLocation)
         {
@@ -46,7 +46,7 @@ namespace Octopus.Client.Model
         /// <summary>
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
-        public PackageReference(string packageId, string feedId, PackageAcquisitionLocation acquisitionLocation)
+        public PackageReference(string packageId, string feedId, PackageAcquisitionLocationResource acquisitionLocation)
         :this(null, packageId, feedId, acquisitionLocation)
         {
         }
@@ -63,7 +63,7 @@ namespace Octopus.Client.Model
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
         public PackageReference(string packageId, string feedId)
-        :this(packageId, feedId, PackageAcquisitionLocation.Server)
+        :this(packageId, feedId, PackageAcquisitionLocationResource.Server)
         { }
 
         public PackageReference()
@@ -118,7 +118,7 @@ namespace Octopus.Client.Model
 
         /// <summary>
         /// The package-acquisition location.
-        /// One of <see cref="PackageAcquisitionLocation"/> or a variable-expression
+        /// One of <see cref="PackageAcquisitionLocationResource"/> or a variable-expression
         /// </summary>
         public string AcquisitionLocation { get; set; }
 
