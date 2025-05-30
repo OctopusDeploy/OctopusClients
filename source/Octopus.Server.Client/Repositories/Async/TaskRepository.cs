@@ -26,7 +26,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TaskResource> ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
         Task<TaskResource> ExecuteTentacleUpgrade(CancellationToken cancellationToken, string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpooltId = null, string[] workerIds = null);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
-        Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null);
         Task<TaskResource> ExecuteAdHocScript(string scriptBody, CancellationToken cancellationToken, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null);
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskDetailsResource> GetDetails(TaskResource resource, bool? includeVerboseOutput = null, int? tail = null);
@@ -220,8 +220,8 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, string[] machineIds = null,
             string[] environmentIds = null, string[] targetRoles = null, string description = null,
-            string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null)
-            => await ExecuteAdHocScript(scriptBody, CancellationToken.None, machineIds, environmentIds, targetRoles, description, syntax, targetType);
+            string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null)
+            => await ExecuteAdHocScript(scriptBody, CancellationToken.None, machineIds, environmentIds, targetRoles, description, syntax, targetType, workerPoolIds);
         
         public async Task<TaskResource> ExecuteAdHocScript(string scriptBody, CancellationToken cancellationToken, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null)
         {

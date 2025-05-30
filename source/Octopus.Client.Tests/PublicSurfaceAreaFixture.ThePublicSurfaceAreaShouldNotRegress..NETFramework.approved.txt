@@ -8803,7 +8803,7 @@ Octopus.Client.Repositories
   {
     void Cancel(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
-    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
     Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
@@ -9659,7 +9659,7 @@ Octopus.Client.Repositories.Async
     Task Cancel(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[], String[], String[], String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
+    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteBackup(CancellationToken, String)
