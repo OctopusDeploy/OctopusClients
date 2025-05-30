@@ -1,4 +1,5 @@
-﻿using Octopus.TinyTypes;
+﻿using System;
+using Octopus.TinyTypes;
 
 namespace Octopus.Client.Model
 {
@@ -20,4 +21,7 @@ namespace Octopus.Client.Model
         /// </summary>
         public static PackageAcquisitionLocationResource NotAcquired => new("NotAcquired");
     }
+
+    [Obsolete("Replaced by PackageAcquisitionLocationResource, this will be removed in a future version.")]
+    public class PackageAcquisitionLocation(string value) : PackageAcquisitionLocationResource(value);
 }

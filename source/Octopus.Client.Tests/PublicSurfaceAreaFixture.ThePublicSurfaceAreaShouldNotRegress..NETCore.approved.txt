@@ -4323,6 +4323,12 @@ Octopus.Client.Model
       OverwriteExisting = 1
       IgnoreIfExists = 2
   }
+  class PackageAcquisitionLocation
+    IComparable
+    Octopus.Client.Model.PackageAcquisitionLocationResource
+  {
+    .ctor(String)
+  }
   class PackageAcquisitionLocationResource
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
