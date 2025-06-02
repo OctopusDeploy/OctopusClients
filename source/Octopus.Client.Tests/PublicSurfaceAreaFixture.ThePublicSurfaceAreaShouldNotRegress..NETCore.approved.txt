@@ -3278,7 +3278,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
     String Name { get; set; }
-    IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; }
+    IList<PackageAcquisitionLocationResource> PackageAcquisitionLocationOptions { get; }
     String Slug { get; set; }
     String SpaceId { get; set; }
   }
@@ -4326,11 +4326,20 @@ Octopus.Client.Model
       OverwriteExisting = 1
       IgnoreIfExists = 2
   }
-  PackageAcquisitionLocation
+  class PackageAcquisitionLocation
+    IComparable
+    Octopus.Client.Model.PackageAcquisitionLocationResource
   {
-      Server = 0
-      ExecutionTarget = 1
-      NotAcquired = 2
+    .ctor(String)
+  }
+  class PackageAcquisitionLocationResource
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.PackageAcquisitionLocationResource ExecutionTarget { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource NotAcquired { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource Server { get; }
   }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
@@ -4343,9 +4352,9 @@ Octopus.Client.Model
   }
   class PackageReference
   {
-    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String, String)
-    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String)
     .ctor(String, String)
     .ctor()
