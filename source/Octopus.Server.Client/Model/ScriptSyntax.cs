@@ -5,7 +5,6 @@
         PowerShell,
         Bash,
         CSharp,
-        FSharp,
         Python
     }
 }
