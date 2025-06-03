@@ -135,8 +135,7 @@ class Build : NukeBuild
                 // Stage 1: Merge all the Octopus assemblies whose contracts we want to not internalize.
                 var stage1Assemblies = inputFolder.GlobFiles(
                         "Octopus.Server.Client.dll",
-                        "Octopus.Server.MessageContracts.Base.dll",
-                        "Octopus.Server.MessageContracts.Base.HttpRoutes.dll"
+                        "Octopus.Server.MessageContracts.Base.dll"
                     )
                     .Select(x => x.ToString())
                     .OrderBy(x => x)
