@@ -1920,6 +1920,7 @@ Octopus.Client.Model
       static System.String Syntax
       static System.String TargetRoles
       static System.String TargetType
+      static System.String WorkerPoolIds
     }
     TargetType
     {
@@ -2007,6 +2008,7 @@ Octopus.Client.Model
     static System.String Syntax
     static System.String TargetRoles
     static System.String TargetType
+    static System.String WorkerPoolIds
   }
   abstract class Arguments
   {
@@ -2219,6 +2221,7 @@ Octopus.Client.Model
         static System.String Syntax
         static System.String TargetRoles
         static System.String TargetType
+        static System.String WorkerPoolIds
       }
       TargetType
       {
@@ -3292,7 +3295,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
     String Name { get; set; }
-    IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; }
+    IList<PackageAcquisitionLocationResource> PackageAcquisitionLocationOptions { get; }
     String Slug { get; set; }
     String SpaceId { get; set; }
   }
@@ -4362,11 +4365,20 @@ Octopus.Client.Model
       OverwriteExisting = 1
       IgnoreIfExists = 2
   }
-  PackageAcquisitionLocation
+  class PackageAcquisitionLocation
+    IComparable
+    Octopus.Client.Model.PackageAcquisitionLocationResource
   {
-      Server = 0
-      ExecutionTarget = 1
-      NotAcquired = 2
+    .ctor(String)
+  }
+  class PackageAcquisitionLocationResource
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.PackageAcquisitionLocationResource ExecutionTarget { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource NotAcquired { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource Server { get; }
   }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
@@ -4379,9 +4391,9 @@ Octopus.Client.Model
   }
   class PackageReference
   {
-    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String, String)
-    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String)
     .ctor(String, String)
     .ctor()
@@ -8819,7 +8831,7 @@ Octopus.Client.Repositories
   {
     void Cancel(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
-    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
     Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
@@ -9675,8 +9687,8 @@ Octopus.Client.Repositories.Async
     Task Cancel(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[], String[], String[], String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>)
+    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
+    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteBackup(CancellationToken, String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])
