@@ -13,6 +13,6 @@ namespace Octopus.Client.Model
         public bool IsBuiltInRepoSyncEnabled { get; set; } = true;
 
         [Writeable] 
-        public bool DeletePackagesAssociatedWithReleases { get; set; } = false;
+        public bool? DeletePackagesAssociatedWithReleases { get; set; } = false;
     }
 }
