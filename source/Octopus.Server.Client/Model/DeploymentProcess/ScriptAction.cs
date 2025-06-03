@@ -14,7 +14,6 @@ namespace Octopus.Client.Model.DeploymentProcess
             if (string.Equals(Path.GetExtension(scriptFileName), ".ps1", StringComparison.OrdinalIgnoreCase)) return ScriptSyntax.PowerShell;
             if (string.Equals(Path.GetExtension(scriptFileName), ".csx", StringComparison.OrdinalIgnoreCase)) return ScriptSyntax.CSharp;
             if (string.Equals(Path.GetExtension(scriptFileName), ".sh", StringComparison.OrdinalIgnoreCase)) return ScriptSyntax.Bash;
-            if (string.Equals(Path.GetExtension(scriptFileName), ".fsx", StringComparison.OrdinalIgnoreCase)) return ScriptSyntax.FSharp;
             throw new NotSupportedException($"{scriptFileName} is not one of the well known script types supported by Octopus Deploy.");
         }
 

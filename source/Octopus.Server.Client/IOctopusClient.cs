@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
-using Octopus.Server.MessageContracts.Base;
 
 namespace Octopus.Client
 {
@@ -412,13 +409,5 @@ namespace Octopus.Client
         void SignOut();
         IOctopusSpaceRepository ForSpace(SpaceResource space);
         IOctopusSystemRepository ForSystem();
-
-        TResponse Do<TCommand, TResponse>(ICommand<TCommand, TResponse> command, CancellationToken cancellationToken)
-            where TCommand : ICommand<TCommand, TResponse>
-            where TResponse : IResponse;
-
-        TResponse Request<TRequest, TResponse>(IRequest<TRequest, TResponse> request, CancellationToken cancellationToken)
-            where TRequest : IRequest<TRequest, TResponse>
-            where TResponse : IResponse;
     }
 }

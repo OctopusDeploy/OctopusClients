@@ -14,8 +14,6 @@ namespace Octopus.Client.Model
                     return "sh";
                 case ScriptSyntax.CSharp:
                     return "csx";
-                case ScriptSyntax.FSharp:
-                    return "fsx";
                 case ScriptSyntax.Python:
                     return "py";
                 default:
