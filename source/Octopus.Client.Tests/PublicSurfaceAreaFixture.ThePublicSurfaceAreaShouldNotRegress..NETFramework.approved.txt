@@ -5349,8 +5349,7 @@ Octopus.Client.Model
       PowerShell = 0
       Bash = 1
       CSharp = 2
-      FSharp = 3
-      Python = 4
+      Python = 3
   }
   abstract class ScriptSyntaxExtension
   {
@@ -5362,7 +5361,6 @@ Octopus.Client.Model
     static Octopus.Client.Model.ScriptSyntaxMeta Bash
     static Octopus.Client.Model.ScriptSyntaxMeta CSharp
     System.String Extension
-    static Octopus.Client.Model.ScriptSyntaxMeta FSharp
     System.String Name
     static Octopus.Client.Model.ScriptSyntaxMeta PowerShell
     static Octopus.Client.Model.ScriptSyntaxMeta Python

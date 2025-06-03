@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Octopus.Client.Model
 {
@@ -30,8 +29,7 @@ namespace Octopus.Client.Model
         public static readonly ScriptSyntaxMeta PowerShell = new ScriptSyntaxMeta(ScriptSyntax.PowerShell, "ps1", "PowerShell");
         public static readonly ScriptSyntaxMeta Bash = new ScriptSyntaxMeta(ScriptSyntax.Bash, "sh", "Bash");
         public static readonly ScriptSyntaxMeta CSharp = new ScriptSyntaxMeta(ScriptSyntax.CSharp, "csx", "CSharp");
-        public static readonly ScriptSyntaxMeta FSharp = new ScriptSyntaxMeta(ScriptSyntax.FSharp, "fsx", "FSharp");
         public static readonly ScriptSyntaxMeta Python = new ScriptSyntaxMeta(ScriptSyntax.Python, "py", "Python");
-        public static ScriptSyntaxMeta[] All = {PowerShell, Bash, CSharp, FSharp, Python};
+        public static ScriptSyntaxMeta[] All = [PowerShell, Bash, CSharp, Python];
     }
 }
