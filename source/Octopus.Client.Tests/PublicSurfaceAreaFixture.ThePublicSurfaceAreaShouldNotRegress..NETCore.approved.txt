@@ -38,7 +38,6 @@ Octopus.Client
     Task Delete(String, CancellationToken)
     Task Delete(String, Object, Object, CancellationToken)
     Task<TResponse> Delete(String, Octopus.Client.TCommand, CancellationToken)
-    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -74,7 +73,6 @@ Octopus.Client
     Task PutContent(String, Stream)
     Task PutContent(String, Stream, CancellationToken)
     Uri QualifyUri(String, Object)
-    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
@@ -102,7 +100,6 @@ Octopus.Client
     Octopus.Client.TResponse Create(String, Octopus.Client.TCommand, Object)
     void Delete(String, Object, Object)
     Octopus.Client.TResponse Delete(String, Octopus.Client.TCommand, Object)
-    Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
@@ -119,7 +116,6 @@ Octopus.Client
     void Put(String, Octopus.Client.TResource, Object)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
-    Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
@@ -321,7 +317,6 @@ Octopus.Client
     Task Delete(String, Object, Object, CancellationToken)
     Task<TResponse> Delete(String, Octopus.Client.TCommand, CancellationToken)
     void Dispose()
-    Task<TResponse> Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceAsyncRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemAsyncRepository ForSystem()
     Task<TResource> Get(String, Object)
@@ -357,7 +352,6 @@ Octopus.Client
     Task PutContent(String, Stream)
     Task PutContent(String, Stream, CancellationToken)
     Uri QualifyUri(String, Object)
-    Task<TResponse> Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     Task SignIn(Octopus.Client.Model.LoginCommand)
     Task SignIn(Octopus.Client.Model.LoginCommand, CancellationToken)
     Task SignOut()
@@ -465,7 +459,6 @@ Octopus.Client
     void Delete(String, Object, Object)
     Octopus.Client.TResponse Delete(String, Octopus.Client.TCommand, Object)
     void Dispose()
-    Octopus.Client.TResponse Do(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>, CancellationToken)
     Octopus.Client.IOctopusSpaceRepository ForSpace(Octopus.Client.Model.SpaceResource)
     Octopus.Client.IOctopusSystemRepository ForSystem()
     Octopus.Client.TResource Get(String, Object)
@@ -483,7 +476,6 @@ Octopus.Client
     void Put(String, Octopus.Client.TResource, Object)
     void PutContent(String, Stream)
     Uri QualifyUri(String, Object)
-    Octopus.Client.TResponse Request(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>, CancellationToken)
     void SignIn(Octopus.Client.Model.LoginCommand)
     void SignOut()
     Octopus.Client.TResource Update(String, Octopus.Client.TResource, Object)
@@ -505,7 +497,6 @@ Octopus.Client
     String Proxy { get; set; }
     String ProxyPassword { get; set; }
     String ProxyUsername { get; set; }
-    Func<Type[]> ScanForHttpRouteTypes { get; set; }
     SslProtocols SslProtocols { get; set; }
     TimeSpan Timeout { get; set; }
   }
@@ -1643,32 +1634,6 @@ Octopus.Client.Extensions
     static String HexEscape(Char)
   }
 }
-Octopus.Client.HttpRouting
-{
-  class HttpRouteExtractor
-    Octopus.Client.HttpRouting.IHttpRouteExtractor
-  {
-    .ctor(Func<Type[]>)
-    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
-    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
-    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
-    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
-  }
-  interface IHttpRouteExtractor
-  {
-    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
-    HttpMethod ExtractHttpMethod(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
-    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.ICommand<TCommand, TResponse>)
-    Uri ExtractHttpRoute(Octopus.Server.MessageContracts.Base.IRequest<TRequest, TResponse>)
-  }
-  class PayloadRoutingException
-    ISerializable
-    Octopus.Client.Exceptions.OctopusException
-  {
-    .ctor(String)
-    .ctor(String, Exception)
-  }
-}
 Octopus.Client.Logging
 {
   interface ILogProvider
@@ -1904,6 +1869,7 @@ Octopus.Client.Model
       static System.String Syntax
       static System.String TargetRoles
       static System.String TargetType
+      static System.String WorkerPoolIds
     }
     TargetType
     {
@@ -1990,6 +1956,7 @@ Octopus.Client.Model
     static System.String Syntax
     static System.String TargetRoles
     static System.String TargetType
+    static System.String WorkerPoolIds
   }
   abstract class Arguments
   {
@@ -2203,6 +2170,7 @@ Octopus.Client.Model
         static System.String Syntax
         static System.String TargetRoles
         static System.String TargetType
+        static System.String WorkerPoolIds
       }
       TargetType
       {
@@ -2552,19 +2520,6 @@ Octopus.Client.Model
     static System.String StepName
     static System.String UsernamePasswordAccount
     static Dictionary<String, String> AsDisplaySettings(String)
-  }
-  class CreateChannelCommand
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.IHaveProject
-    Octopus.Client.Model.IHaveSlugResource
-    Octopus.Client.Model.ICommitCommand
-    Octopus.Client.Model.ChannelResource
-  {
-    .ctor()
-    String ChangeDescription { get; set; }
   }
   class DashboardConfigurationResource
     Octopus.Client.Extensibility.IResource
@@ -3276,7 +3231,7 @@ Octopus.Client.Model
     .ctor()
     Octopus.Client.Model.FeedType FeedType { get; }
     String Name { get; set; }
-    IList<PackageAcquisitionLocation> PackageAcquisitionLocationOptions { get; }
+    IList<PackageAcquisitionLocationResource> PackageAcquisitionLocationOptions { get; }
     String Slug { get; set; }
     String SpaceId { get; set; }
   }
@@ -3968,6 +3923,24 @@ Octopus.Client.Model
       CalamariNeedsUpgrade = 4
       Disabled = 5
   }
+  class MachinePackageCacheRetentionPolicy
+  {
+    .ctor()
+    Nullable<MachinePackageCacheRetentionUnit> PackageUnit { get; set; }
+    Nullable<Int32> QuantityOfPackagesToKeep { get; set; }
+    Nullable<Int32> QuantityOfVersionsToKeep { get; set; }
+    Octopus.Client.Model.MachinePackageCacheRetentionStrategy Strategy { get; set; }
+    Nullable<MachinePackageCacheRetentionUnit> VersionUnit { get; set; }
+  }
+  MachinePackageCacheRetentionStrategy
+  {
+      Default = 0
+      Quantities = 1
+  }
+  MachinePackageCacheRetentionUnit
+  {
+      Items = 0
+  }
   class MachinePolicyResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3985,6 +3958,7 @@ Octopus.Client.Model
     Octopus.Client.Model.MachineCleanupPolicy MachineCleanupPolicy { get; set; }
     Octopus.Client.Model.MachineConnectivityPolicy MachineConnectivityPolicy { get; set; }
     Octopus.Client.Model.MachineHealthCheckPolicy MachineHealthCheckPolicy { get; set; }
+    Octopus.Client.Model.MachinePackageCacheRetentionPolicy MachinePackageCacheRetentionPolicy { get; set; }
     Octopus.Client.Model.MachineRpcCallRetryPolicy MachineRpcCallRetryPolicy { get; set; }
     Octopus.Client.Model.MachineUpdatePolicy MachineUpdatePolicy { get; set; }
     String Name { get; set; }
@@ -4104,19 +4078,6 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String VariableTemplateId { get; set; }
     String VariableTemplateName { get; set; }
-  }
-  class ModifyChannelCommand
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Extensibility.INamedResource
-    Octopus.Client.Extensibility.IHaveSpaceResource
-    Octopus.Client.Model.IHaveProject
-    Octopus.Client.Model.IHaveSlugResource
-    Octopus.Client.Model.ICommitCommand
-    Octopus.Client.Model.ChannelResource
-  {
-    .ctor()
-    String ChangeDescription { get; set; }
   }
   class ModifyDeploymentProcessCommand
     Octopus.Client.Extensibility.IResource
@@ -4324,11 +4285,20 @@ Octopus.Client.Model
       OverwriteExisting = 1
       IgnoreIfExists = 2
   }
-  PackageAcquisitionLocation
+  class PackageAcquisitionLocation
+    IComparable
+    Octopus.Client.Model.PackageAcquisitionLocationResource
   {
-      Server = 0
-      ExecutionTarget = 1
-      NotAcquired = 2
+    .ctor(String)
+  }
+  class PackageAcquisitionLocationResource
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.PackageAcquisitionLocationResource ExecutionTarget { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource NotAcquired { get; }
+    static Octopus.Client.Model.PackageAcquisitionLocationResource Server { get; }
   }
   class PackageFromBuiltInFeedResource
     Octopus.Client.Extensibility.IResource
@@ -4341,9 +4311,9 @@ Octopus.Client.Model
   }
   class PackageReference
   {
-    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String, String)
-    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocation)
+    .ctor(String, String, Octopus.Client.Model.PackageAcquisitionLocationResource)
     .ctor(String, String, String)
     .ctor(String, String)
     .ctor()
@@ -5381,8 +5351,7 @@ Octopus.Client.Model
       PowerShell = 0
       Bash = 1
       CSharp = 2
-      FSharp = 3
-      Python = 4
+      Python = 3
   }
   abstract class ScriptSyntaxExtension
   {
@@ -5394,7 +5363,6 @@ Octopus.Client.Model
     static Octopus.Client.Model.ScriptSyntaxMeta Bash
     static Octopus.Client.Model.ScriptSyntaxMeta CSharp
     System.String Extension
-    static Octopus.Client.Model.ScriptSyntaxMeta FSharp
     System.String Name
     static Octopus.Client.Model.ScriptSyntaxMeta PowerShell
     static Octopus.Client.Model.ScriptSyntaxMeta Python
@@ -8776,7 +8744,7 @@ Octopus.Client.Repositories
   {
     void Cancel(Octopus.Client.Model.TaskResource)
     Octopus.Client.Model.TaskResource ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
-    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
+    Octopus.Client.Model.TaskResource ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Octopus.Client.Model.TaskResource ExecuteBackup(String)
     Octopus.Client.Model.TaskResource ExecuteCalamariUpdate(String, String[])
     Octopus.Client.Model.TaskResource ExecuteCommunityActionTemplatesSynchronisation(String)
@@ -9632,8 +9600,8 @@ Octopus.Client.Repositories.Async
     Task Cancel(Octopus.Client.Model.TaskResource, CancellationToken)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, String[], String[], String[], String, Nullable<TargetType>)
     Task<TaskResource> ExecuteActionTemplate(Octopus.Client.Model.ActionTemplateResource, Dictionary<String, PropertyValueResource>, CancellationToken, String[], String[], String[], String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>)
-    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>)
+    Task<TaskResource> ExecuteAdHocScript(String, String[], String[], String[], String, String, Nullable<TargetType>, String[])
+    Task<TaskResource> ExecuteAdHocScript(String, CancellationToken, String[], String[], String[], String, String, Nullable<TargetType>, String[])
     Task<TaskResource> ExecuteBackup(String)
     Task<TaskResource> ExecuteBackup(CancellationToken, String)
     Task<TaskResource> ExecuteCalamariUpdate(String, String[])

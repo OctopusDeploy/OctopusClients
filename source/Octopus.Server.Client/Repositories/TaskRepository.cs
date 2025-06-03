@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteCalamariUpdate(string description = null, string[] machineIds = null);
         TaskResource ExecuteBackup(string description = null);
         TaskResource ExecuteTentacleUpgrade(string description = null, string environmentId = null, string[] machineIds = null, string restrictTo = null, string workerpoolId = null, string[] workerIds = null);
-        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null);
+        TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null);
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
         
@@ -147,7 +147,8 @@ namespace Octopus.Client.Repositories
             string[] targetRoles = null,
             string description = null,
             string syntax = "PowerShell",
-            BuiltInTasks.AdHocScript.TargetType? targetType = null)
+            BuiltInTasks.AdHocScript.TargetType? targetType = null,
+            string[] workerPoolIds = null)
         {
             EnsureSingleSpaceContext();
             EnsureValidTargetType(targetType);
@@ -163,6 +164,7 @@ namespace Octopus.Client.Repositories
                     {BuiltInTasks.AdHocScript.Arguments.ScriptBody, scriptBody},
                     {BuiltInTasks.AdHocScript.Arguments.Syntax, syntax},
                     {BuiltInTasks.AdHocScript.Arguments.TargetType, targetType},
+                    {BuiltInTasks.AdHocScript.Arguments.WorkerPoolIds, workerPoolIds},
                 }
             };
             return Create(resource);

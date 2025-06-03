@@ -14,10 +14,8 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Octopus.Client.HttpRouting;
 using Octopus.Client.Logging;
 using Octopus.Client.Util;
-using Octopus.Server.MessageContracts.Base;
 
 namespace Octopus.Client
 {   
@@ -38,15 +36,13 @@ namespace Octopus.Client
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged;
         private string antiforgeryCookieName;
-        private readonly IHttpRouteExtractor httpRouteExtractor;
         private readonly SemaphoreSlim requestSemaphore;
 
         // Use the Create method to instantiate
-        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool, IHttpRouteExtractor httpRouteExtractor)
+        protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
         {
             var clientOptions = options ?? new OctopusClientOptions();
             this.serverEndpoint = serverEndpoint;
-            this.httpRouteExtractor = httpRouteExtractor;
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             requestSemaphore = new SemaphoreSlim(clientOptions.MaxSimultaneousRequests, clientOptions.MaxSimultaneousRequests);
 
@@ -139,36 +135,6 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             return new OctopusAsyncRepository(this, RepositoryScope.ForSystem());
         }
 
-        public async Task<TResponse> Do<TCommand, TResponse>(ICommand<TCommand, TResponse> command, CancellationToken cancellationToken)
-            where TCommand : ICommand<TCommand, TResponse>
-            where TResponse : IResponse
-        {
-            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(command);
-            var method = httpRouteExtractor.ExtractHttpMethod(command);
-
-            var response = await Send<TResponse>(method, relativeRoute, command, cancellationToken);
-            return response;
-        }
-
-        public async Task<TResponse> Request<TRequest, TResponse>(IRequest<TRequest, TResponse> request, CancellationToken cancellationToken)
-            where TRequest : IRequest<TRequest, TResponse>
-            where TResponse : IResponse
-        {
-            var relativeRoute = httpRouteExtractor.ExtractHttpRoute(request);
-            var method = httpRouteExtractor.ExtractHttpMethod(request);
-
-            var response = await Send<TResponse>(method, relativeRoute, request, cancellationToken);
-            return response;
-        }
-
-        private async Task<TResponse> Send<TResponse>(HttpMethod method, Uri relativeRoute, object payload, CancellationToken cancellationToken)
-        {
-            var uri = serverEndpoint.OctopusServer.Resolve(relativeRoute.ToString());
-            var octopusRequest = new OctopusRequest(method.Method.ToUpperInvariant(), uri, payload);
-            var response = await DispatchRequest<TResponse>(octopusRequest, true, cancellationToken);
-            return response.ResponseResource;
-        }
-
         public static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = null)
         {
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
@@ -208,8 +174,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         private static async Task<IOctopusAsyncClient> Create(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addHandler, string requestingTool = null)
         {
             options ??= new OctopusClientOptions();
-            var httpRouteExtractor = new HttpRouteExtractor(options.ScanForHttpRouteTypes);
-            var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool, httpRouteExtractor);
+            var client = new OctopusAsyncClient(serverEndpoint, options, addHandler, requestingTool);
             // User used to see this exception 
             // System.PlatformNotSupportedException: The handler does not support custom handling of certificates with this combination of libcurl (7.29.0) and its SSL backend
             await client.Repository.LoadRootDocument().ConfigureAwait(false);
