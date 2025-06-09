@@ -127,41 +127,20 @@ class Build : NukeBuild
                 // internalize those, but we also don't want to hide any Octopus contracts.
                 //
                 // WARNING: There's an apparent bug in il-repack which ignores all types from subsequent assemblies, even
-                // if a set of exclusion regular expressions is provided. To work around this, we do a two-stage merge:
-                // 1) all of the Octopus assemblies into a temporary assembly, with internalization disabled entirely (leaving everything Octopus.* public); and
-                // 2) that temporary assembly plus all of the third-party assemblies, leaving only the types from the first (Octopus temporary) assembly as public.
-                // --andrewh 14/2/2022.
+                // if a set of exclusion regular expressions is provided. At this point in time there are no other assemblies where
+                // we want to keep internalization disabled entirely. If this occurs again, see this file's history on how to achieve that.
 
-                // Stage 1: Merge all the Octopus assemblies whose contracts we want to not internalize.
-                var stage1Assemblies = inputFolder.GlobFiles(
-                        "Octopus.Server.Client.dll",
-                        "Octopus.Server.MessageContracts.Base.dll"
-                    )
+                // Merge all the assemblies whose innards will be marked as internal if they're currently public.
+                var assemblies = inputFolder.GlobFiles("*.dll", "*.exe")
                     .Select(x => x.ToString())
-                    .OrderBy(x => x)
-                    .ToArray();
-
-                var temporaryDllPath = inputFolder / "Octopus.Client.ILMerge.Temporary.dll";
-
-                ILRepackTasks.ILRepack(_ => _
-                    .SetAssemblies(stage1Assemblies)
-                    .SetOutput(temporaryDllPath)
-                    .DisableParallel()
-                    .EnableXmldocs()
-                    .SetLib(inputFolder));
-
-                // Step 2: Merge all the remaining assemblies whose innards will be marked as internal if they're currently public.
-                var stage2Assemblies = inputFolder.GlobFiles("*.dll", "*.exe")
-                    .Select(x => x.ToString())
-                    .Except(stage1Assemblies)
-                    .OrderByDescending(x => x.Contains("Octopus.Client.ILMerge.Temporary.dll"))
+                    .OrderByDescending(x => x.Contains("Octopus.Server.Client.dll")) // Makes sure that the main client assembly is first as it'll be the one that contains the public API.
                     .ThenBy(x => x)
                     .ToArray();
 
                 var outputDllPath = outputFolder / "Octopus.Client.dll";
 
                 ILRepackTasks.ILRepack(_ => _
-                    .SetAssemblies(stage2Assemblies)
+                    .SetAssemblies(assemblies)
                     .SetOutput(outputDllPath)
                     .EnableInternalize()
                     .DisableParallel()
