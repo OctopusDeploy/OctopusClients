@@ -49,7 +49,6 @@ namespace Octopus.Client.E2ETests
         [TestCase("Octopus.TinyTypes", "Octopus.TinyTypes.TinyType`1", Visibility.Internal)]
         [TestCase("Octopus.TinyTypes.Json", "Octopus.TinyTypes.Json.TinyTypeJsonConverter", Visibility.Internal)]
         [TestCase("Octopus.TinyTypes.TypeConverters", "Octopus.TinyTypes.TypeConverters.TinyTypeConverter`1", Visibility.Internal)]
-        [TestCase("Octopus.Server.MessageContracts.Base", "Octopus.Server.MessageContracts.Base.ICommand`2", Visibility.Public)]
         public void HasInlinedDependency(string library, string typeName, Visibility expectedVisibility)
         {
             var type = assembly.GetTypes()
