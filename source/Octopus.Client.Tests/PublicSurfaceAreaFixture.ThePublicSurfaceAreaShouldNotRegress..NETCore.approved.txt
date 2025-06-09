@@ -7670,6 +7670,48 @@ Octopus.Client.Model.IssueTrackers.Jira
     String Username { get; set; }
   }
 }
+Octopus.Client.Model.Itsm.Jira
+{
+  class JiraServiceManagementIntegrationConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+    List<JiraServiceManagementIntegrationConnectionResource> Connections { get; }
+    Boolean WorkNotesIsEnabled { get; set; }
+  }
+  class JiraServiceManagementIntegrationConnectionResource
+  {
+    .ctor()
+    String BaseUrl { get; set; }
+    String ConnectionName { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.SensitiveValue Token { get; set; }
+    String Username { get; set; }
+  }
+}
+Octopus.Client.Model.Itsm.ServiceNow
+{
+  class ServiceNowIntegrationConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+    List<ServiceNowIntegrationConnectionResource> Connections { get; set; }
+    Boolean WorkNotesIsEnabled { get; set; }
+  }
+  class ServiceNowIntegrationConnectionResource
+  {
+    .ctor()
+    String BaseUrl { get; set; }
+    String ConnectionName { get; set; }
+    String Id { get; set; }
+    String OAuthClientId { get; set; }
+    Octopus.Client.Model.SensitiveValue OAuthClientSecret { get; set; }
+    String Username { get; set; }
+    Octopus.Client.Model.SensitiveValue UserPassword { get; set; }
+  }
+}
 Octopus.Client.Model.Migrations
 {
   class MigrationImportResource
