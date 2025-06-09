@@ -9,6 +9,11 @@ namespace Octopus.Client.Model.Itsm.Jira;
 [Description("Integrate Jira Service Management Change Requests into your deployments. [Learn more](https://oc.to/JiraServiceManagementIntegration).")]
 public class JiraServiceManagementIntegrationConfigurationResource : ExtensionConfigurationResource
 {
+    public JiraServiceManagementIntegrationConfigurationResource()
+    {
+        Id = "jiraservicemanagement-integration";
+    }
+    
     [Description("Connect your Octopus instance to one or more Jira Service Management instances")]
     [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
     [DisplayName("Connection")]

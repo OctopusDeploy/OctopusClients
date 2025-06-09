@@ -9,6 +9,11 @@ namespace Octopus.Client.Model.Itsm.ServiceNow;
 [Description("Integrate ServiceNow Change Requests into your deployments. [Learn more](https://oc.to/ServiceNowIntegration).</br></br>This feature **requires** an enterprise license")]
 public class ServiceNowIntegrationConfigurationResource : ExtensionConfigurationResource
 {
+    public ServiceNowIntegrationConfigurationResource()
+    {
+        Id = "servicenow-integration";
+    }
+    
     [Description("Connect your Octopus instance to one or more ServiceNow instances")]
     [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
     [DisplayName("Connection")]
