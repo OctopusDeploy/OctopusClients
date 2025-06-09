@@ -6642,6 +6642,159 @@ Octopus.Client.Model.ArchiveLimits
     Int64 OctopusServerGigabytes { get; set; }
   }
 }
+Octopus.Client.Model.Authentication.DirectoryServices
+{
+  class DirectoryServicesConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+    String ActiveDirectoryContainer { get; set; }
+    Nullable<Boolean> AllowAutoUserCreation { get; set; }
+    Boolean AllowFormsAuthenticationForDomainUsers { get; set; }
+    Boolean AreSecurityGroupsEnabled { get; set; }
+    AuthenticationSchemes AuthenticationScheme { get; set; }
+  }
+}
+Octopus.Client.Model.Authentication.Guest
+{
+  class GuestConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+  }
+}
+Octopus.Client.Model.Authentication.Ldap
+{
+  class LdapConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    static System.String AllowAutoUserCreationDescription
+    static System.String ConstraintTimeLimitDescription
+    static System.String DefaultDomainDescription
+    static System.String GroupBaseDnDescription
+    static System.String GroupFilterDescription
+    static System.String IgnoreSslErrorsDescription
+    static System.String NestedGroupFilterDescription
+    static System.String NestedGroupSearchDepthDescription
+    static System.String PasswordDescription
+    static System.String PortDescription
+    static System.String ReferralFollowingEnabledDescription
+    static System.String ReferralHopLimitDescription
+    static System.String SecurityProtocolDescription
+    static System.String ServerDescription
+    static System.String UserBaseDnDescription
+    static System.String UserFilterDescription
+    static System.String UsernameDescription
+    .ctor()
+    Boolean AllowAutoUserCreation { get; set; }
+    Octopus.Client.Model.Authentication.Ldap.LdapMappingConfigurationResource AttributeMapping { get; set; }
+    Octopus.Client.Model.SensitiveValue ConnectPassword { get; set; }
+    String ConnectUsername { get; set; }
+    Int32 ConstraintTimeLimit { get; set; }
+    String DefaultDomain { get; set; }
+    String GroupBaseDN { get; set; }
+    String GroupFilter { get; set; }
+    Boolean IgnoreSslErrors { get; set; }
+    String NestedGroupFilter { get; set; }
+    Int32 NestedGroupSearchDepth { get; set; }
+    Int32 Port { get; set; }
+    Boolean ReferralFollowingEnabled { get; set; }
+    Int32 ReferralHopLimit { get; set; }
+    Octopus.Client.Model.Authentication.Ldap.SecurityProtocol SecurityProtocol { get; set; }
+    String Server { get; set; }
+    String UserBaseDN { get; set; }
+    String UserFilter { get; set; }
+  }
+  class LdapMappingConfigurationResource
+  {
+    static System.String GroupNameAttributeDescription
+    static System.String UniqueAccountNameAttributeDescription
+    static System.String UserDisplayNameAttributeDescription
+    static System.String UserEmailAttributeDescription
+    static System.String UserMembershipAttributeDescription
+    static System.String UserPrincipalNameAttributeDescription
+    .ctor()
+    String GroupNameAttribute { get; set; }
+    String UniqueAccountNameAttribute { get; set; }
+    String UserDisplayNameAttribute { get; set; }
+    String UserEmailAttribute { get; set; }
+    String UserMembershipAttribute { get; set; }
+    String UserPrincipalNameAttribute { get; set; }
+  }
+  SecurityProtocol
+  {
+      None = 0
+      StartTLS = 1
+      SSL = 2
+  }
+}
+Octopus.Client.Model.Authentication.OpenIDConnect
+{
+  class OpenIDConnectConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+    Nullable<Boolean> AllowAutoUserCreation { get; set; }
+    String ClientId { get; set; }
+    Octopus.Client.Model.SensitiveValue ClientSecret { get; set; }
+    String Issuer { get; set; }
+    String NameClaimType { get; set; }
+    String Scope { get; set; }
+  }
+}
+Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
+{
+  class AzureADConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
+  {
+    .ctor()
+    String RoleClaimType { get; set; }
+  }
+}
+Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
+{
+  class GoogleAppsConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
+  {
+    .ctor()
+    String HostedDomain { get; set; }
+  }
+}
+Octopus.Client.Model.Authentication.OpenIDConnect.OctopusID
+{
+  class OctopusIDConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
+  {
+    .ctor()
+  }
+}
+Octopus.Client.Model.Authentication.OpenIDConnect.Okta
+{
+  class OktaConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
+  {
+    .ctor()
+    String RoleClaimType { get; set; }
+    String UsernameClaimType { get; set; }
+  }
+}
+Octopus.Client.Model.Authentication.UsernamePassword
+{
+  class UsernamePasswordConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+  }
+}
 Octopus.Client.Model.BuildInformation
 {
   class OctopusBuildInformation
@@ -7446,6 +7599,75 @@ Octopus.Client.Model.IssueTrackers
     String Id { get; set; }
     String LinkUrl { get; set; }
     String Source { get; set; }
+  }
+}
+Octopus.Client.Model.IssueTrackers.AzureDevOps
+{
+  class AzureDevOpsConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    .ctor()
+    IList<AzureDevOpsConnectionResource> Connections { get; }
+  }
+  class AzureDevOpsConnectionResource
+  {
+    .ctor()
+    String BaseUrl { get; set; }
+    String Id { get; set; }
+    Octopus.Client.Model.SensitiveValue PersonalAccessToken { get; set; }
+    Octopus.Client.Model.IssueTrackers.AzureDevOps.ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; }
+  }
+  class ReleaseNoteOptionsResource
+  {
+    .ctor()
+    String ReleaseNotePrefix { get; set; }
+  }
+}
+Octopus.Client.Model.IssueTrackers.GitHub
+{
+  class GitHubConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    static System.String GitHubBaseUrlDescription
+    .ctor()
+    String BaseUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.GitHub.ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; }
+  }
+  class ReleaseNoteOptionsResource
+  {
+    static System.String PasswordDescription
+    static System.String ReleaseNotePrefixDescription
+    static System.String UsernameDescription
+    .ctor()
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String ReleaseNotePrefix { get; set; }
+    String Username { get; set; }
+  }
+}
+Octopus.Client.Model.IssueTrackers.Jira
+{
+  class JiraConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration.ExtensionConfigurationResource
+  {
+    static System.String JiraBaseUrlDescription
+    .ctor()
+    String BaseUrl { get; set; }
+    String OctopusInstallationId { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    Octopus.Client.Model.IssueTrackers.Jira.ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; }
+  }
+  class ReleaseNoteOptionsResource
+  {
+    static System.String PasswordDescription
+    static System.String ReleaseNotePrefixDescription
+    static System.String UsernameDescription
+    .ctor()
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String ReleaseNotePrefix { get; set; }
+    String Username { get; set; }
   }
 }
 Octopus.Client.Model.Migrations
