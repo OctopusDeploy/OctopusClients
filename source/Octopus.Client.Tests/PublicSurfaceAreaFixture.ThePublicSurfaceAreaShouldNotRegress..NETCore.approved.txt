@@ -6742,8 +6742,6 @@ Octopus.Client.Model.Authentication.OpenIDConnect
     String ClientId { get; set; }
     Octopus.Client.Model.SensitiveValue ClientSecret { get; set; }
     String Issuer { get; set; }
-    String NameClaimType { get; set; }
-    String Scope { get; set; }
   }
 }
 Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
@@ -7656,6 +7654,7 @@ Octopus.Client.Model.IssueTrackers.Jira
     .ctor()
     String BaseUrl { get; set; }
     String OctopusInstallationId { get; set; }
+    String OctopusServerUrl { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     Octopus.Client.Model.IssueTrackers.Jira.ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; }
   }
