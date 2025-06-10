@@ -57,7 +57,7 @@ jobs:
       # Unit test reports
 
       - name: Windows .NET 4.6.2 unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows .Net 4.6.2 unit test results
@@ -66,7 +66,7 @@ jobs:
           fail-on-error: true
 
       - name: Windows .NET 4.8 unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows.Net 4.8 unit test results
@@ -75,7 +75,7 @@ jobs:
           fail-on-error: true
 
       - name: Windows .NET 8.0 unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows .Net 8.0 unit test results
@@ -86,7 +86,7 @@ jobs:
       # E2E test reports
 
       - name: Windows .NET 4.6.2 E2E test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows .NET 4.6.2 E2E test results
@@ -95,7 +95,7 @@ jobs:
           fail-on-error: true
 
       - name: Windows .NET 4.8 E2E test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows .NET 4.8 E2E test results
@@ -104,7 +104,7 @@ jobs:
           fail-on-error: true
 
       - name: Windows .NET 8.0 E2E test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Windows .NET 8.0 E2E test results
@@ -148,7 +148,7 @@ jobs:
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
 
       - name: Linux unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Linux unit tests results
@@ -180,7 +180,7 @@ jobs:
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
 
       - name: Mac OS unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Mac OS unit test results
