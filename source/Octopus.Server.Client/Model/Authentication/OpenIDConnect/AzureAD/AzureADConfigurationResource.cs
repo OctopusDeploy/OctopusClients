@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#nullable enable
+using System.ComponentModel;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
@@ -14,6 +15,6 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
         [DisplayName("Role Claim Type")]
         [Description("Tell Octopus how to find the roles/groups in the security token from Azure Active Directory (usually \"roles\" or \"groups\")")]
         [Writeable]
-        public string RoleClaimType { get; set; }
+        public string? RoleClaimType { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+#nullable enable
 using System.ComponentModel;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -12,15 +13,15 @@ public class ReleaseNoteOptionsResource
     [DisplayName("Jira Username")]
     [Description(UsernameDescription)]
     [Writeable]
-    public string Username { get; set; }
+    public string? Username { get; set; }
 
     [DisplayName("Jira Password")]
     [Description(PasswordDescription)]
     [Writeable]
-    public SensitiveValue Password { get; set; }
+    public SensitiveValue? Password { get; set; }
 
     [DisplayName("Release Note Prefix")]
     [Description(ReleaseNotePrefixDescription)]
     [Writeable]
-    public string ReleaseNotePrefix { get; set; }
+    public string? ReleaseNotePrefix { get; set; }
 }

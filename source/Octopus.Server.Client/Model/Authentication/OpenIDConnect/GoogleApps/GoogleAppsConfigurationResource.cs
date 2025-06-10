@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#nullable enable
+using System.ComponentModel;
 using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
@@ -14,6 +15,6 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
         [DisplayName("Hosted Domain")]
         [Description("Tell Octopus which Google Apps domain to trust")]
         [Writeable]
-        public string HostedDomain { get; set; }
+        public string? HostedDomain { get; set; }
     }
 }
