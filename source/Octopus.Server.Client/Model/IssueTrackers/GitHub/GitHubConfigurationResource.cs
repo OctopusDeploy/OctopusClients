@@ -1,3 +1,4 @@
+#nullable enable
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Octopus.Client.Extensibility.Attributes;
@@ -17,9 +18,8 @@ namespace Octopus.Client.Model.IssueTrackers.GitHub
 
         [DisplayName("GitHub Base Url")]
         [Description(GitHubBaseUrlDescription)]
-        [Required]
         [Writeable]
-        public string BaseUrl { get; set; }
+        public string? BaseUrl { get; set; }
 
         public ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; } = new ReleaseNoteOptionsResource();
     }

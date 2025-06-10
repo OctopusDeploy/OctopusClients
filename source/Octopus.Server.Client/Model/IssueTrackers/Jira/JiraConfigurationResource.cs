@@ -16,6 +16,10 @@ namespace Octopus.Client.Model.IssueTrackers.Jira
             Id = "jira-integration";
         }
 
+        [Description("Set whether you are using a cloud or server instance of Jira")]
+        [DisplayName("Jira Instance Type")]
+        public JiraInstanceType JiraInstanceType { get; set; }
+        
         [DisplayName("Jira Base Url")]
         [Description(JiraBaseUrlDescription)]
         [Writeable]

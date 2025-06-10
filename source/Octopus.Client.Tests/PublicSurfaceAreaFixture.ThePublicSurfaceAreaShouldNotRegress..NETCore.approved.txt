@@ -7653,10 +7653,16 @@ Octopus.Client.Model.IssueTrackers.Jira
     static System.String JiraBaseUrlDescription
     .ctor()
     String BaseUrl { get; set; }
+    Octopus.Client.Model.IssueTrackers.Jira.JiraInstanceType JiraInstanceType { get; set; }
     String OctopusInstallationId { get; set; }
     String OctopusServerUrl { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     Octopus.Client.Model.IssueTrackers.Jira.ReleaseNoteOptionsResource ReleaseNoteOptions { get; set; }
+  }
+  JiraInstanceType
+  {
+      Cloud = 0
+      Server = 1
   }
   class ReleaseNoteOptionsResource
   {
