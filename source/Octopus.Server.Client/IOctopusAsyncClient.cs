@@ -937,6 +937,8 @@ namespace Octopus.Client
         /// <returns></returns>
         Task SignOut(CancellationToken cancellationToken);
 
+        Task<IOctopusAsyncClient> AsUser(string apiKey, OctopusClientOptions options = null);
+
         /// <summary>
         /// Get a repository for the given space
         /// </summary>
