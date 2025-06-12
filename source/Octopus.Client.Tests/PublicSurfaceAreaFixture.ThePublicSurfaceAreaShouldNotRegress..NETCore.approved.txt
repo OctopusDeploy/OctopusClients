@@ -5085,6 +5085,15 @@ Octopus.Client.Model
     .ctor()
     Int32 QuantityToKeep { get; set; }
     Boolean ShouldKeepForever { get; set; }
+    Octopus.Client.Model.RunbookRetentionUnit Unit { get; set; }
+  }
+  class RunbookRetentionUnit
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    static Octopus.Client.Model.RunbookRetentionUnit Days { get; }
+    static Octopus.Client.Model.RunbookRetentionUnit Items { get; }
   }
   abstract class RunbookRun
   {
