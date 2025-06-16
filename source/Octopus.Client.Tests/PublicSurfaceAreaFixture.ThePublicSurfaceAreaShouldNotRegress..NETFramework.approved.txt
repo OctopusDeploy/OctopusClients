@@ -7568,6 +7568,12 @@ Octopus.Client.Model.GitCredentials
   {
     Octopus.Client.Model.GitCredentials.GitCredentialType Type { get; }
   }
+  class GitCredentialRepositoryRestrictions
+  {
+    .ctor()
+    String[] AllowedRepositories { get; set; }
+    Boolean Enabled { get; set; }
+  }
   class GitCredentialResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -7579,6 +7585,7 @@ Octopus.Client.Model.GitCredentials
     String Description { get; set; }
     Octopus.Client.Model.GitCredentials.GitCredentialDetails Details { get; set; }
     String Name { get; set; }
+    Octopus.Client.Model.GitCredentials.GitCredentialRepositoryRestrictions RepositoryRestrictions { get; set; }
     String SpaceId { get; set; }
   }
   GitCredentialType
