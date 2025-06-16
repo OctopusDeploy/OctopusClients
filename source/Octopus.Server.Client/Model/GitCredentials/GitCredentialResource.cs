@@ -16,5 +16,9 @@ namespace Octopus.Client.Model.GitCredentials
 
         [Writeable]
         public GitCredentialDetails Details { get; set; }
+        
+        [Writeable]
+        public GitCredentialRepositoryRestrictions RepositoryRestrictions { get; set; }
+
     }
 }
