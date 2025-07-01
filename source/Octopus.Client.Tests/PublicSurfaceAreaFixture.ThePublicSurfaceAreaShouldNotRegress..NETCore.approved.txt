@@ -2890,6 +2890,7 @@ Octopus.Client.Model
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
+    Boolean FailTargetDiscovery { get; set; }
     Boolean ForcePackageDownload { get; set; }
     String ProjectId { get; set; }
     String ReleaseNotesTemplate { get; set; }
@@ -5171,6 +5172,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
     String EnvironmentId { get; set; }
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailTargetDiscovery { get; set; }
     Boolean FailureEncountered { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
