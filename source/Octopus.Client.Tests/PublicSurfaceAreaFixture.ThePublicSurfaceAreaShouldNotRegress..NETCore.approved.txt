@@ -2860,6 +2860,7 @@ Octopus.Client.Model
     String DeploymentProcessId { get; set; }
     String EnvironmentId { get; set; }
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Boolean FailTargetDiscovery { get; set; }
     Boolean FailureEncountered { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Boolean ForcePackageRedeployment { get; set; }
