@@ -79,7 +79,7 @@ namespace Octopus.Client.Model
         public string DebugMode { get; set; }
         
         /// <summary>
-        /// When enabled, fails target discovery steps when no matching targets are found
+        /// If set to true, target discovery steps that find no matching targets will fail. If false, steps with no matching targets will be skipped.
         /// </summary>
         [WriteableOnCreate]
         public bool FailTargetDiscovery { get; set; }

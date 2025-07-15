@@ -50,5 +50,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool ForcePackageDownload { get; set; }
+     
+        [Writeable]
+        public bool FailTargetDiscovery { get; set; }
     }
 }
