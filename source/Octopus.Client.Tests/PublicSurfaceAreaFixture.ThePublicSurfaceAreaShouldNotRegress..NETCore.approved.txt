@@ -5072,6 +5072,7 @@ Octopus.Client.Model
     String Description { get; set; }
     Octopus.Client.Model.ReferenceCollection Environments { get; }
     Octopus.Client.Model.RunbookEnvironmentScope EnvironmentScope { get; set; }
+    Boolean FailTargetDiscovery { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Octopus.Client.Model.TenantedDeploymentMode MultiTenancyMode { get; set; }
     String Name { get; set; }
