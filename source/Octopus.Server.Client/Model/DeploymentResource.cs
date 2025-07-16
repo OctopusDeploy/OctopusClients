@@ -77,6 +77,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public string DebugMode { get; set; }
+        
+        /// <summary>
+        /// If set to true, target discovery steps that find no matching targets will fail. If false, steps with no matching targets will be skipped.
+        /// </summary>
+        [WriteableOnCreate]
+        public bool FailTargetDiscovery { get; set; }
 
         /// <summary>
         /// One of the values from <see cref="DeploymentPriority"/>
