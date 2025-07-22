@@ -4675,6 +4675,7 @@ Octopus.Client.Model
     Octopus.Client.Model.IAuditedResource
     Octopus.Client.Extensibility.INamedResource
     Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
     Octopus.Client.Model.Resource
   {
     .ctor()
@@ -4682,6 +4683,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     String Name { get; set; }
     String RetentionPolicyId { get; set; }
+    String Slug { get; set; }
     String SpaceId { get; set; }
   }
   class ProjectResource

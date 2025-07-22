@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
     /// group named
     /// "Corporate Website" containing three seperate projects. Project groups affect retention policies and permissions.
     /// </summary>
-    public class ProjectGroupResource : Resource, INamedResource, IHaveSpaceResource
+    public class ProjectGroupResource : Resource, INamedResource, IHaveSpaceResource, IHaveSlugResource
     {
         public ProjectGroupResource()
         {
@@ -41,5 +41,7 @@ namespace Octopus.Client.Model
         public string RetentionPolicyId { get; set; }
 
         public string SpaceId { get; set; }
+        
+        public string Slug { get; set; }
     }
 }
