@@ -12,13 +12,15 @@ namespace Octopus.Client.Model.Endpoints
             string tentacleVersion,
             UpgradeStatus upgradeStatus,
             string helmReleaseName,
-            string kubernetesNamespace)
+            string kubernetesNamespace, bool kubernetesMonitorEnabled, KubernetesMonitorStatus kubernetesMonitorStatus)
         {
             AgentVersion = agentVersion;
             TentacleVersion = tentacleVersion;
             UpgradeStatus = upgradeStatus;
             HelmReleaseName = helmReleaseName;
             KubernetesNamespace = kubernetesNamespace;
+            KubernetesMonitorEnabled = kubernetesMonitorEnabled;
+            KubernetesMonitorStatus = kubernetesMonitorStatus;
         }
 
         public string AgentVersion { get; set; }
@@ -30,5 +32,9 @@ namespace Octopus.Client.Model.Endpoints
         public string HelmReleaseName { get; set; }
 
         public string KubernetesNamespace { get; set; }
+        
+        public bool KubernetesMonitorEnabled { get; set; }
+
+        public KubernetesMonitorStatus KubernetesMonitorStatus { get; set; }
     }
 }
