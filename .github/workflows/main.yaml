@@ -13,12 +13,17 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-  schedule:
+  #schedule:
     # Daily 5am australian/brisbane time
-    - cron: '0 19 * * *'
+    # Disable for fork - cron: '0 19 * * *'
 
    # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      releaseNotes:
+        description: 'Custom release notes to prepend to the release body'
+        required: false
+        type: string
  
 # Pass branch and patch number to Nuke OctoVersion
 # (for pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch)
@@ -200,39 +205,93 @@ jobs:
             || contains(needs.*.result, 'cancelled')
           }}
         run: exit 1
+# Commented out for fork
+  # deploy_nuget:
+  #   name: Upload nuget packages to Octopus Deploy
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write # Required to obtain the ID token from GitHub Actions
+  #     actions: read # Required to download artifact
+  #   env:
+  #     OCTOPUS_SPACE: "Core Platform"
+  #   needs: [ build, test-linux, test-macos ]
+  #   steps:
+  #     - name: Download nuget package artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: OctoClientsNuget
+  #         path: ./artifacts/
 
-  deploy_nuget:
-    name: Upload nuget packages to Octopus Deploy
+  #     - name: Login to Octopus Deploy 🐙
+  #       uses: OctopusDeploy/login@v1
+  #       with: 
+  #         server: ${{ secrets.OCTOPUS_URL }}
+  #         service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
+
+  #     - name: Push to Octopus 🐙
+  #       uses: OctopusDeploy/push-package-action@v3
+  #       with:
+  #         packages: |
+  #           ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+  #           ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
+
+  #     - name: Create Release in Octopus 🐙
+  #       uses: OctopusDeploy/create-release-action@v3
+  #       with:
+  #         project: "Octopus.Client"
+  #         packages: |
+  #           Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
+
+  create_github_release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
+    if: ${{ !contains( needs.build.outputs.octoversion_fullsemver, '-' ) && github.ref == 'refs/heads/master' && github.event.inputs.releaseNotes != '' }}
     permissions:
-      id-token: write # Required to obtain the ID token from GitHub Actions
-      actions: read # Required to download artifact
-    env:
-      OCTOPUS_SPACE: "Core Platform"
+      contents: write # Required to create releases
     needs: [ build, test-linux, test-macos ]
     steps:
-      - name: Download nuget package artifact
-        uses: actions/download-artifact@v4
+      - name: Create GitHub Release 🚀
+        uses: actions/github-script@v7
         with:
-          name: OctoClientsNuget
-          path: ./artifacts/
-
-      - name: Login to Octopus Deploy 🐙
-        uses: OctopusDeploy/login@v1
-        with: 
-          server: ${{ secrets.OCTOPUS_URL }}
-          service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
-
-      - name: Push to Octopus 🐙
-        uses: OctopusDeploy/push-package-action@v3
-        with:
-          packages: |
-            ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
-            ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
-
-      - name: Create Release in Octopus 🐙
-        uses: OctopusDeploy/create-release-action@v3
-        with:
-          project: "Octopus.Client"
-          packages: |
-            Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
+          script: |
+            const tagName = '${{ needs.build.outputs.octoversion_fullsemver }}';
+            const releaseNotes = '${{ github.event.inputs.releaseNotes }}';
+            
+            // Build release body sections
+            const sections = [
+              `## Octopus Client Libraries Release ${tagName}`,
+              `This release contains the Octopus Client libraries for .NET.`
+            ];
+            
+            // Add custom release notes if provided
+            if (releaseNotes && releaseNotes.trim() !== '') {
+              sections.push(releaseNotes.trim());
+            }
+            
+            // Add NuGet packages section
+            sections.push(
+              `### NuGet Packages`,
+              `- [Octopus.Client.${tagName}](https://www.nuget.org/packages/Octopus.Client/${tagName})`,
+              `- [Octopus.Server.Client.${tagName}](https://www.nuget.org/packages/Octopus.Server.Client/${tagName})`
+            );
+            
+            const body = sections.join('\n\n');
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `Release ${tagName}`,
+                body: body,
+                draft: false,
+                prerelease: false
+              });
+              console.log(`Release ${tagName} created successfully`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`Release for tag ${tagName} already exists, skipping creation`);
+              } else {
+                throw error;
+              }
+            }
