@@ -19,6 +19,11 @@ on:
 
    # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      releaseNotes:
+        description: 'Custom release notes to prepend to the release body, release notes are only created if this is not empty.'
+        required: false
+        type: string
  
 # Pass branch and patch number to Nuke OctoVersion
 # (for pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch)
@@ -236,3 +241,57 @@ jobs:
           project: "Octopus.Client"
           packages: |
             Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
+
+  create_github_release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    # Only create release if it's not a pre-release, on the master branch, and release notes are provided.
+    if: ${{ !contains( needs.build.outputs.octoversion_fullsemver, '-' ) && github.ref == 'refs/heads/master' && github.event.inputs.releaseNotes != '' }}
+    permissions:
+      contents: write # Required to create releases
+    needs: [ build, deploy_nuget ]
+    steps:
+      - name: Create GitHub Release 🚀
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tagName = '${{ needs.build.outputs.octoversion_fullsemver }}';
+            const releaseNotes = '${{ github.event.inputs.releaseNotes }}';
+            
+            // Build release body sections
+            const sections = [
+              `This release contains the Octopus Client libraries for .NET.`
+            ];
+            
+            // Add custom release notes if provided
+            if (releaseNotes && releaseNotes.trim() !== '') {
+              sections.push(releaseNotes.trim());
+            }
+            
+            // Add NuGet packages section
+            sections.push(
+              `### NuGet Packages`,
+              `- [Octopus.Client.${tagName}](https://www.nuget.org/packages/Octopus.Client/${tagName})`,
+              `- [Octopus.Server.Client.${tagName}](https://www.nuget.org/packages/Octopus.Server.Client/${tagName})`
+            );
+            
+            const body = sections.join('\n\n');
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `Octopus Client Release ${tagName}`,
+                body: body,
+                draft: false,
+                prerelease: false
+              });
+              console.log(`Release ${tagName} created successfully`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`Release for tag ${tagName} already exists, skipping creation`);
+              } else {
+                throw error;
+              }
+            }
