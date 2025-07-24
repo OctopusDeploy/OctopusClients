@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       releaseNotes:
-        description: 'Custom release notes to prepend to the release body, release notes are only created if this is not empty.'
+        description: '(Optional) To create a Github Release, provide the release notes here. If not provided, the release will not be created.'
         required: false
         type: string
  
