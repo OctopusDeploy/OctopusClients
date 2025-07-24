@@ -259,7 +259,6 @@ jobs:
             
             // Build release body sections
             const sections = [
-              `## Octopus Client Libraries Release ${tagName}`,
               `This release contains the Octopus Client libraries for .NET.`
             ];
             
@@ -282,7 +281,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 tag_name: tagName,
-                name: `Release ${tagName}`,
+                name: `Octopus Client Libraries Release ${tagName}`,
                 body: body,
                 draft: false,
                 prerelease: false
