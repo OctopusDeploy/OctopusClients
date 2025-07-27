@@ -26,6 +26,7 @@ namespace Octopus.Client.Model
         public bool ShouldKeepForever => QuantityToKeep == 0;
 
         public static RetentionPeriod Default() => new(RetentionPeriodStrategy.Default, 0, RetentionUnit.Items);
+        public static RetentionPeriod KeepForever() => new(RetentionPeriodStrategy.Forever, 0, RetentionUnit.Items);
 
         RetentionPeriodStrategy SelectStrategyBasedOnSettings(int quantityToKeep, RetentionUnit unit)
         {
@@ -72,5 +73,6 @@ namespace Octopus.Client.Model
     {
         public static readonly RetentionPeriodStrategy Default = new("Default");
         public static readonly RetentionPeriodStrategy Count = new("Count");
+        public static readonly RetentionPeriodStrategy Forever = new("Forever");
     }
 }
