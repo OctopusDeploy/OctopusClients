@@ -1,43 +1,44 @@
 using System;
+using Newtonsoft.Json;
+using Octopus.TinyTypes;
 
 namespace Octopus.Client.Model
 {
     public class RetentionPeriod : IEquatable<RetentionPeriod>
     {
-        readonly int quantityToKeep;
-        readonly RetentionUnit unit;
-
-        public RetentionPeriod(int quantityToKeep, RetentionUnit unit)
+        [JsonConstructor]
+        public RetentionPeriod(RetentionPeriodStrategy strategy, int quantityToKeep, RetentionUnit unit)
         {
-            this.quantityToKeep = quantityToKeep;
-            this.unit = unit;
+            Strategy = strategy ?? SelectStrategyBasedOnSettings(quantityToKeep, unit);
+            QuantityToKeep = quantityToKeep;
+            Unit = unit;
         }
 
-        public RetentionUnit Unit
-        {
-            get { return unit; }
-        }
+        public RetentionPeriod(int quantityToKeep, RetentionUnit unit) : this(null, quantityToKeep, unit)
+        {}
 
-        public int QuantityToKeep
-        {
-            get { return quantityToKeep; }
-        }
+        public RetentionPeriodStrategy Strategy { get; protected set; }
 
-        public bool ShouldKeepForever
-        {
-            get { return QuantityToKeep == 0; }
-        }
+        public RetentionUnit Unit { get; protected set; }
 
-        public static RetentionPeriod KeepForever()
+        public int QuantityToKeep { get; protected set; }
+
+        public bool ShouldKeepForever => QuantityToKeep == 0;
+
+        public static RetentionPeriod Default() => new(RetentionPeriodStrategy.Default, 0, RetentionUnit.Items);
+
+        RetentionPeriodStrategy SelectStrategyBasedOnSettings(int quantityToKeep, RetentionUnit unit)
         {
-            return new RetentionPeriod(0, RetentionUnit.Items);
+            return quantityToKeep == 0 && unit == RetentionUnit.Items
+                ? Strategy = RetentionPeriodStrategy.Default
+                : Strategy = RetentionPeriodStrategy.Count;
         }
 
         public bool Equals(RetentionPeriod other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return quantityToKeep == other.quantityToKeep && unit.Equals(other.unit);
+            return Strategy.Equals(other.Strategy) && QuantityToKeep == other.QuantityToKeep && Unit.Equals(other.Unit);
         }
 
         public override bool Equals(object obj)
@@ -52,23 +53,24 @@ namespace Octopus.Client.Model
         {
             unchecked
             {
-                return (quantityToKeep*397) ^ unit.GetHashCode();
+                var hashCode = Strategy.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)Unit;
+                hashCode = (hashCode * 397) ^ QuantityToKeep;
+                return hashCode;
             }
         }
 
-        public static bool operator ==(RetentionPeriod left, RetentionPeriod right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(RetentionPeriod left, RetentionPeriod right) => Equals(left, right);
 
-        public static bool operator !=(RetentionPeriod left, RetentionPeriod right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(RetentionPeriod left, RetentionPeriod right) => !Equals(left, right);
 
-        public override string ToString()
-        {
-            return ShouldKeepForever ? "Forever" : "Last " + quantityToKeep + " " + (unit == RetentionUnit.Days ? "day" + (quantityToKeep == 1 ? "" : "s") : "item" + (quantityToKeep == 1 ? "" : "s"));
-        }
+        public override string ToString() => ShouldKeepForever ? "Forever" : "Last " + QuantityToKeep + " " + (Unit == RetentionUnit.Days ? "day" + (QuantityToKeep == 1 ? "" : "s") : "item" + (QuantityToKeep == 1 ? "" : "s"));
+
+    }
+
+    public class RetentionPeriodStrategy(string value) : CaseInsensitiveStringTinyType(value)
+    {
+        public static readonly RetentionPeriodStrategy Default = new("Default");
+        public static readonly RetentionPeriodStrategy Count = new("Count");
     }
 }
