@@ -19,7 +19,7 @@ on:
 
    # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
- 
+
 # Pass branch and patch number to Nuke OctoVersion
 # (for pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch)
 env:
@@ -125,12 +125,23 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha
-            })
+            const tagName = '${{ steps.build.outputs.octoversion_fullsemver }}';
+            try {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${tagName}`,
+                sha: context.sha
+              });
+              console.log(`Tag ${tagName} created successfully`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`Tag ${tagName} already exists, skipping creation`);
+              } else {
+                console.error(`Failed to create tag ${tagName}:`, error.message);
+                throw error;
+              }
+            }
 
   test-linux:
     needs: build
@@ -236,3 +247,72 @@ jobs:
           project: "Octopus.Client"
           packages: |
             Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
+
+  create_github_release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    # Only create release if it's not a pre-release and on the master branch.
+    if: ${{ !contains( needs.build.outputs.octoversion_fullsemver, '-' ) && github.ref == 'refs/heads/master' }}
+    permissions:
+      contents: write # Required to create releases
+    needs: [ build, deploy_nuget ]
+    steps:
+      - name: Create GitHub Release 🚀
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tagName = '${{ needs.build.outputs.octoversion_fullsemver }}';
+            
+            // Get commit message from GitHub Actions context (no API call needed)
+            const commitMessage = context.payload.head_commit?.message || '';
+            console.log(`Latest commit message: ${commitMessage}`);
+            
+            // Extract release notes from commit message if it contains "release notes:"
+            let releaseNotes = '';
+            const releaseNoteMarker = 'release notes:';
+            const releaseNoteIndex = commitMessage.toLowerCase().indexOf(releaseNoteMarker);
+            
+            if (releaseNoteIndex !== -1) {
+              releaseNotes = commitMessage.substring(releaseNoteIndex + releaseNoteMarker.length).trim();
+              console.log(`Extracted release notes: ${releaseNotes}`);
+            }
+            
+            // Only create release if release notes are present
+            if (!releaseNotes || releaseNotes.trim() === '') {
+              console.log(`No "release notes:" found in commit message. Skipping GitHub release creation.`);
+              return;
+            }
+            
+            // Build release body sections
+            const sections = [
+              `This release contains the Octopus Client libraries for .NET.`,
+              releaseNotes.trim()
+            ];
+            
+            // Add NuGet packages section
+            sections.push(
+              `### NuGet Packages`,
+              `- [Octopus.Client.${tagName}](https://www.nuget.org/packages/Octopus.Client/${tagName})`,
+              `- [Octopus.Server.Client.${tagName}](https://www.nuget.org/packages/Octopus.Server.Client/${tagName})`
+            );
+            
+            const body = sections.join('\n\n');
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `Octopus Client Release ${tagName}`,
+                body: body,
+                draft: false,
+                prerelease: false
+              });
+              console.log(`Release ${tagName} created successfully`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`Release for tag ${tagName} already exists, skipping creation`);
+              } else {
+                throw error;
+              }
+            }
