@@ -277,6 +277,10 @@ namespace Octopus.Client.Model
         
         [Description("Create, edit, delete deployment target tags")] public static readonly Permission TargetTagAdminister = new("TargetTagAdminister");
         
+        [Description("View resources in the Platform Hub")] public static readonly Permission PlatformHubView = new("PlatformHubView");
+        
+        [Description("Create, edit, delete resources in the Platform Hub")] public static readonly Permission PlatformHubEdit = new("PlatformHubEdit");
+        
         public Permission(string id)
         {
             Id = id;
