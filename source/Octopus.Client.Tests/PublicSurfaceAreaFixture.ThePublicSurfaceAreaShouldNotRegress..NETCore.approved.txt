@@ -4988,15 +4988,27 @@ Octopus.Client.Model
   class RetentionPeriod
     IEquatable<RetentionPeriod>
   {
+    .ctor(Octopus.Client.Model.RetentionPeriodStrategy, Int32, Octopus.Client.Model.RetentionUnit)
     .ctor(Int32, Octopus.Client.Model.RetentionUnit)
     Int32 QuantityToKeep { get; }
     Boolean ShouldKeepForever { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; }
     Octopus.Client.Model.RetentionUnit Unit { get; }
+    static Octopus.Client.Model.RetentionPeriod Default()
     Boolean Equals(Octopus.Client.Model.RetentionPeriod)
     Boolean Equals(Object)
     Int32 GetHashCode()
     static Octopus.Client.Model.RetentionPeriod KeepForever()
     String ToString()
+  }
+  class RetentionPeriodStrategy
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.RetentionPeriodStrategy Count
+    static Octopus.Client.Model.RetentionPeriodStrategy Default
+    static Octopus.Client.Model.RetentionPeriodStrategy Forever
+    .ctor(String)
   }
   class RetentionPoliciesConfigurationResource
     Octopus.Client.Extensibility.IResource

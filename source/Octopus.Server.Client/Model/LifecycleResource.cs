@@ -12,8 +12,8 @@ namespace Octopus.Client.Model
         public LifecycleResource()
         {
             Phases = new List<PhaseResource>();
-            ReleaseRetentionPolicy = RetentionPeriod.KeepForever();
-            TentacleRetentionPolicy = RetentionPeriod.KeepForever();
+            ReleaseRetentionPolicy = RetentionPeriod.Default();
+            TentacleRetentionPolicy = RetentionPeriod.Default();
         }
 
         [Writeable]
