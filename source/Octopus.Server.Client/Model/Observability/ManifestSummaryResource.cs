@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Octopus.Client.Model.Observability;
 
-public class KubernetesLiveStatusManifestDetailsResource
+public class ManifestSummaryResource
 {
     [Required]
     public Dictionary<string, string> Labels { get; set; }
@@ -14,7 +14,10 @@ public class KubernetesLiveStatusManifestDetailsResource
 
     [Required]
     public DateTimeOffset CreationTimestamp { get; set; }
+}
 
+public class PodManifestSummaryResource : ManifestSummaryResource
+{
     [Required]
     public IReadOnlyCollection<string> Containers { get; set; }
 }

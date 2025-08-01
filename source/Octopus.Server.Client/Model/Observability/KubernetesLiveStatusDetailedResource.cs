@@ -26,7 +26,7 @@ public class KubernetesLiveStatusDetailedResource
     [Required]
     public Instant LastUpdated { get; set; }
 
-    public KubernetesLiveStatusManifestDetailsResource Details { get; set; }
+    public ManifestSummaryResource ManifestSummary { get; set; }
 
     [Required]
     public IReadOnlyCollection<KubernetesLiveStatusDetailedResource> Children { get; set; }
