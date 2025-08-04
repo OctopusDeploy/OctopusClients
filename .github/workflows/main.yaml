@@ -145,7 +145,7 @@ jobs:
 
       - name: Run unit tests 🏗
         shell: bash
-        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
 
       - name: Linux unit test report
         uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
@@ -177,7 +177,7 @@ jobs:
 
       - name: Run unit tests 🏗
         shell: bash
-        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
 
       - name: Mac OS unit test report
         uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
