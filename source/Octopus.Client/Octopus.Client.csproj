@@ -19,17 +19,24 @@
 		<LangVersion>8</LangVersion>
 
 	</PropertyGroup>
-
-	<PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-		<TargetFrameworks>net462;net48;netstandard2.0</TargetFrameworks>
+	<!-- `dotnet publish` can only build one target at at time. -->
+	<PropertyGroup Condition="'$(_IsPublishing)' == 'True'">
+		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+	<!-- `dotnet build` can build all targets -->
+	<PropertyGroup Condition="'$(_IsPublishing)' != 'True'">
+		<TargetFrameworks>netstandard2.0;net462;net48</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Octopus.Server.Client\Octopus.Server.Client.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>
