@@ -7928,23 +7928,15 @@ Octopus.Client.Model.Observability
     .ctor()
     IReadOnlyCollection<KubernetesLiveStatusDetailedResource> Children { get; set; }
     Nullable<Guid> DesiredResourceId { get; set; }
-    Octopus.Client.Model.Observability.KubernetesLiveStatusManifestDetailsResource Details { get; set; }
     String HealthStatus { get; set; }
     String Kind { get; set; }
     Instant LastUpdated { get; set; }
     String MachineId { get; set; }
+    Octopus.Client.Model.Observability.ManifestSummaryResource ManifestSummary { get; set; }
     String Name { get; set; }
     String Namespace { get; set; }
     Nullable<Guid> ResourceId { get; set; }
     String SyncStatus { get; set; }
-  }
-  class KubernetesLiveStatusManifestDetailsResource
-  {
-    .ctor()
-    Dictionary<String, String> Annotations { get; set; }
-    IReadOnlyCollection<String> Containers { get; set; }
-    DateTimeOffset CreationTimestamp { get; set; }
-    Dictionary<String, String> Labels { get; set; }
   }
   class KubernetesLiveStatusResource
   {
@@ -7986,11 +7978,24 @@ Octopus.Client.Model.Observability
     Instant LastUpdated { get; set; }
     String Status { get; set; }
   }
+  class ManifestSummaryResource
+  {
+    .ctor()
+    Dictionary<String, String> Annotations { get; set; }
+    DateTimeOffset CreationTimestamp { get; set; }
+    Dictionary<String, String> Labels { get; set; }
+  }
   class MonitorErrorResource
   {
     .ctor()
     String ErrorCode { get; set; }
     String ErrorMessage { get; set; }
+  }
+  class PodManifestSummaryResource
+    Octopus.Client.Model.Observability.ManifestSummaryResource
+  {
+    .ctor()
+    IReadOnlyCollection<String> Containers { get; set; }
   }
   class RegisterKubernetesMonitorCommand
   {
