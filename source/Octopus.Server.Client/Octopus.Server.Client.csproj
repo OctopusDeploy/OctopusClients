@@ -19,12 +19,16 @@ This package contains the non-ILmerged client library for the HTTP API in Octopu
     <RootNamespace>Octopus.Client</RootNamespace>
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>net462;net48;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
+
+  <!-- `dotnet publish` can only build one target at at time. -->
+  <PropertyGroup Condition="'$(_IsPublishing)' == 'True'">
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  <!-- `dotnet build` can build all targets -->
+  <PropertyGroup Condition="'$(_IsPublishing)' != 'True'">
+    <TargetFrameworks>netstandard2.0;net462;net48</TargetFrameworks>
+  </PropertyGroup>
+  
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net48' ">
     <DebugType>embedded</DebugType>
     <DefineConstants>$(DefineConstants);FULL_FRAMEWORK</DefineConstants>

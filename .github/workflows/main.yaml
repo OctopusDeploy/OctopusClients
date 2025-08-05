@@ -3,15 +3,11 @@ name: "Build Octopus Clients"
 # Controls when the action will run.
 on:
   push:
-    # Triggers the workflow on pull request events and merges/pushes to master
+    # Triggers the workflow on pushes to master
     branches:
       - master
-      - release/*
     tags-ignore:
       - '**'
-
-  pull_request:
-    types: [opened, synchronize, reopened]
 
   schedule:
     # Daily 5am australian/brisbane time
@@ -19,9 +15,8 @@ on:
 
    # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
- 
+
 # Pass branch and patch number to Nuke OctoVersion
-# (for pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch)
 env:
   OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }}
   OCTOVERSION_Patch: ${{ github.run_number }}
@@ -34,6 +29,7 @@ jobs:
     runs-on: windows-latest
     outputs:
       octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
+      skip-release-and-release-note: ${{ steps.github-tag.outputs.skip-release-and-release-note }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -125,12 +121,21 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.git.createRef({
+            const commitMessage = context.payload.head_commit?.message?.trim() || '';
+            const skipReleaseAndReleaseNote = /^skip-release-and-release-note:\s*true\s*$/mi.test(commitMessage);
+            core.setOutput('skip-release-and-release-note', skipReleaseAndReleaseNote);
+            if (skipReleaseAndReleaseNote) {
+              // Abort early: the commit is marked as not significant enough to trigger a release or be included in
+              // release notes, so we don't need a tag either
+              return;
+            }
+
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "refs/tags/${{ steps.build.outputs.octoversion_fullsemver }}",
-              sha: context.sha
-            })
+              sha: context.sha,
+            });
 
   test-linux:
     needs: build
@@ -145,7 +150,7 @@ jobs:
 
       - name: Run unit tests 🏗
         shell: bash
-        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
 
       - name: Linux unit test report
         uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
@@ -177,7 +182,7 @@ jobs:
 
       - name: Run unit tests 🏗
         shell: bash
-        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj  --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
+        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
 
       - name: Mac OS unit test report
         uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
@@ -188,29 +193,24 @@ jobs:
           reporter: dotnet-trx
           fail-on-error: true
 
-  outcome:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    name: Build and test outcome
-    needs: [ build, test-linux, test-macos ]
-    steps:
-      - if: >-
-          ${{
-               contains(needs.*.result, 'failure')
-            || contains(needs.*.result, 'cancelled')
-          }}
-        run: exit 1
-
   deploy_nuget:
-    name: Upload nuget packages to Octopus Deploy
+    name: Upload nuget packages to Octopus Deploy and create release if required
     runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.skip-release-and-release-note == 'false' }}
     permissions:
       id-token: write # Required to obtain the ID token from GitHub Actions
       actions: read # Required to download artifact
+      contents: write # Required to create releases
     env:
       OCTOPUS_SPACE: "Core Platform"
+      SHOULD_CREATE_RELEASE: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') }}
     needs: [ build, test-linux, test-macos ]
     steps:
+      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetching everything is unfortunately required to get tags
+
       - name: Download nuget package artifact
         uses: actions/download-artifact@v4
         with:
@@ -236,3 +236,72 @@ jobs:
           project: "Octopus.Client"
           packages: |
             Octopus.Client:${{ needs.build.outputs.octoversion_fullsemver }}
+
+      # We use jc to convert git log output into something machine readable, as git can't natively do so.
+      # jq is preinstalled in GitHub actions, but jc (https://github.com/kellyjonbrazil/jc) is not.
+      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+        name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+        name: Install jc
+        run: pip3 install jc==1.25.5
+
+      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+        name: Create GitHub Release 🚀
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const tagName = '${{ needs.build.outputs.octoversion_fullsemver }}';
+
+            // TODO: Initially we don't have any releases, so we just want the release note to come from the last commit.
+            // Once we've created that first release, we can uncomment this to use all commits since the last release.
+            // let lastReleaseTag = null;
+            // try {
+            //   lastReleaseTag = (await github.rest.repos.getLatestRelease({ owner, repo })).data.tag_name;
+            // } catch (error) {
+            //   if (error.status !== 404) throw error;
+            //   console.log('No previous release found');
+            // }
+            // console.log('Last release tag:', lastReleaseTag);
+
+            // Use jc to convert git log output into JSON we can reliably parse
+            // const gitLogArgs = lastReleaseTag ? [`${lastReleaseTag}..`] : [];
+            const gitLogArgs = ['HEAD~1..'];
+            const { stdout: gitCommitsJson } = await exec.getExecOutput('jc', ['--raw', 'git', 'log', '--reverse', ...gitLogArgs]);
+            const commitsSinceLastRelease = JSON.parse(gitCommitsJson);
+
+            // Of the commits since the last release, get the first line of each message that doesn't opt out of release notes
+            const releaseNotes = commitsSinceLastRelease
+              .map(commit => commit.message)
+              .filter(message => !/^\s*skip-release-and-release-note:\s*true\s*$/mi.test(message))
+              .map(message => `- ${message.split('\n')[0]}`);
+
+            // Build release body
+            const body = `## Release Notes:
+            ${releaseNotes.join('\n')}
+
+            ## NuGet Packages:
+            - [Octopus.Server.Client.${tagName}](https://www.nuget.org/packages/Octopus.Server.Client/${tagName})
+            - [Octopus.Client.${tagName}](https://www.nuget.org/packages/Octopus.Client/${tagName})`;
+
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tagName,
+              name: `Octopus Client Release ${tagName}`,
+              body: body,
+              draft: false,
+              prerelease: false
+            });
+            console.log(`Release ${tagName} created successfully`);
+
+      - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+        name: Attach NuGet packages to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload '${{ needs.build.outputs.octoversion_fullsemver }}' ./artifacts/*.nupkg

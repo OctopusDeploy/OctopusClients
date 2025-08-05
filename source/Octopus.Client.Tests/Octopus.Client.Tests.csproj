@@ -11,13 +11,16 @@
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Octopus.ruleset</CodeAnalysisRuleSet>
     <LangVersion>8</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="!$([MSBuild]::IsOSUnixLike())">
-    <TargetFrameworks>net462;net48;net8.0</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::IsOSUnixLike())">
+
+  <!-- `dotnet publish` can only build one target at at time. -->
+  <PropertyGroup Condition="'$(_IsPublishing)' == 'True'">
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-
+  <!-- `dotnet build` can build all targets -->
+  <PropertyGroup Condition="'$(_IsPublishing)' != 'True'">
+    <TargetFrameworks>net8.0;net462;net48</TargetFrameworks>
+  </PropertyGroup>
+  
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net48' ">
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier> <!-- So that libuv is copied correctly -->
     <BaseNuGetRuntimeIdentifier>win7-x86</BaseNuGetRuntimeIdentifier> <!-- So that libuv is copied correctly -->
@@ -38,8 +41,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.41" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
+    <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.41" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
     <PackageReference Include="Assent" Version="1.9.3" />
     <PackageReference Include="Autofac" Version="8.1.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
