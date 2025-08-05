@@ -257,20 +257,18 @@ jobs:
             const { owner, repo } = context.repo;
             const tagName = '${{ needs.build.outputs.octoversion_fullsemver }}';
 
-            // TODO: Initially we don't have any releases, so we just want the release note to come from the last commit.
-            // Once we've created that first release, we can uncomment this to use all commits since the last release.
-            // let lastReleaseTag = null;
-            // try {
-            //   lastReleaseTag = (await github.rest.repos.getLatestRelease({ owner, repo })).data.tag_name;
-            // } catch (error) {
-            //   if (error.status !== 404) throw error;
-            //   console.log('No previous release found');
-            // }
-            // console.log('Last release tag:', lastReleaseTag);
+            // Look up the tag associated with the last release in order to get commit messages since then, for release notes.
+            let lastReleaseTag = null;
+            try {
+              lastReleaseTag = (await github.rest.repos.getLatestRelease({ owner, repo })).data.tag_name;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              console.log('No previous release found');
+            }
+            console.log('Last release tag:', lastReleaseTag);
 
             // Use jc to convert git log output into JSON we can reliably parse
-            // const gitLogArgs = lastReleaseTag ? [`${lastReleaseTag}..`] : [];
-            const gitLogArgs = ['HEAD~1..'];
+            const gitLogArgs = lastReleaseTag ? [`${lastReleaseTag}..`] : [];
             const { stdout: gitCommitsJson } = await exec.getExecOutput('jc', ['--raw', 'git', 'log', '--reverse', ...gitLogArgs]);
             const commitsSinceLastRelease = JSON.parse(gitCommitsJson);
 
