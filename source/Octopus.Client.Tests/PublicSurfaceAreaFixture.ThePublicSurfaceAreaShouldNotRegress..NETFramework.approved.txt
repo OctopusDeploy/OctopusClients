@@ -4487,6 +4487,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission ReleaseDelete
     static Octopus.Client.Model.Permission ReleaseEdit
     static Octopus.Client.Model.Permission ReleaseView
+    static Octopus.Client.Model.Permission RetentionAdminister
     static Octopus.Client.Model.Permission RunbookEdit
     static Octopus.Client.Model.Permission RunbookRunCreate
     static Octopus.Client.Model.Permission RunbookRunDelete
