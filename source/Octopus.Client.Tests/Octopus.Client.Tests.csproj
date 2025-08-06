@@ -39,7 +39,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
     <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.41" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
