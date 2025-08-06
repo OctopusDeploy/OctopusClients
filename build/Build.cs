@@ -210,11 +210,7 @@ class Build : NukeBuild
 
                 DotNetPack(_ => _
                     .SetProject(OctopusClientFolder)
-                    .SetProcessArgumentConfigurator(args =>
-                    {
-                        args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
-                        return args;
-                    })
+                    .SetProcessAdditionalArguments("/p:NuspecFile=Octopus.Client.nuspec")
                     .SetVersion(FullSemVer)
                     .SetConfiguration(Configuration)
                     .SetOutputDirectory(ArtifactsDir)
@@ -365,9 +361,8 @@ class Build : NukeBuild
     {
         Log.Information("Signing files using signtool.");
 
-        SignToolLogger = LogStdErrAsWarning;
-
         SignTool(_ => _
+            .SetProcessLogger(LogStdErrAsWarning)
             .SetFile(SigningCertificatePath)
             .SetPassword(SigningCertificatePassword)
             .SetFiles(files.Select(x => x.ToString()).ToArray())
