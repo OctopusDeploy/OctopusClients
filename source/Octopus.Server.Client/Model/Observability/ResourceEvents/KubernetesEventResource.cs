@@ -1,16 +1,15 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using NodaTime;
 
 namespace Octopus.Client.Model.Observability.ResourceEvents;
 
 public class KubernetesEventResource
 {
     [Required]
-    public Instant FirstObservedTime { get; set; }
+    public DateTimeOffset FirstObservedTime { get; set; }
 
     [Required]
-    public Instant LastObservedTime { get; set; }
+    public DateTimeOffset LastObservedTime { get; set; }
 
     [Required]
     public int Count { get; set; }

@@ -7833,7 +7833,7 @@ Octopus.Client.Model.Observability.ContainerLogs
   {
     .ctor()
     String Message { get; set; }
-    Instant Timestamp { get; set; }
+    DateTimeOffset Timestamp { get; set; }
   }
   class GetContainerLogsRequest
   {
@@ -7936,7 +7936,7 @@ Octopus.Client.Model.Observability.LiveStatus
     Nullable<Guid> DesiredResourceId { get; set; }
     String HealthStatus { get; set; }
     String Kind { get; set; }
-    Instant LastUpdated { get; set; }
+    DateTimeOffset LastUpdated { get; set; }
     String MachineId { get; set; }
     Octopus.Client.Model.Observability.LiveStatus.ManifestSummaryResource ManifestSummary { get; set; }
     String Name { get; set; }
@@ -7982,7 +7982,7 @@ Octopus.Client.Model.Observability.LiveStatus
   class LiveStatusSummaryResource
   {
     .ctor()
-    Instant LastUpdated { get; set; }
+    DateTimeOffset LastUpdated { get; set; }
     String Status { get; set; }
   }
   class ManifestSummaryResource
@@ -8033,8 +8033,8 @@ Octopus.Client.Model.Observability.ResourceEvents
     .ctor()
     String Action { get; set; }
     Int32 Count { get; set; }
-    Instant FirstObservedTime { get; set; }
-    Instant LastObservedTime { get; set; }
+    DateTimeOffset FirstObservedTime { get; set; }
+    DateTimeOffset LastObservedTime { get; set; }
     String Manifest { get; set; }
     String Note { get; set; }
     String Reason { get; set; }

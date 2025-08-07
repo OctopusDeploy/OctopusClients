@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NodaTime;
 
 namespace Octopus.Client.Model.Observability.LiveStatus;
 
@@ -24,7 +23,7 @@ public class KubernetesLiveStatusDetailedResource
     public string MachineId { get; set; }
 
     [Required]
-    public Instant LastUpdated { get; set; }
+    public DateTimeOffset LastUpdated { get; set; }
 
     public ManifestSummaryResource ManifestSummary { get; set; }
 
