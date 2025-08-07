@@ -185,11 +185,13 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IGitCredentialRepository GitCredentials { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.Async.IKubernetesMonitorRepository KubernetesMonitors { get; }
     Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
     Octopus.Client.Repositories.Async.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.Async.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -229,11 +231,13 @@ Octopus.Client
     Octopus.Client.Repositories.IEnvironmentRepository Environments { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.IKubernetesMonitorRepository KubernetesMonitors { get; }
     Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.ILifecyclesRepository Lifecycles { get; }
     Octopus.Client.Repositories.IMachinePolicyRepository MachinePolicies { get; }
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
+    Octopus.Client.Repositories.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -394,6 +398,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.Async.IGitCredentialRepository GitCredentials { get; }
     Octopus.Client.Repositories.Async.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.Async.IKubernetesMonitorRepository KubernetesMonitors { get; }
     Octopus.Client.Repositories.Async.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.Async.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.Async.ILifecyclesRepository Lifecycles { get; }
@@ -401,6 +406,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.Async.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.Async.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
@@ -534,6 +540,7 @@ Octopus.Client
     Octopus.Client.Repositories.IFeaturesConfigurationRepository FeaturesConfiguration { get; }
     Octopus.Client.Repositories.IFeedRepository Feeds { get; }
     Octopus.Client.Repositories.IInterruptionRepository Interruptions { get; }
+    Octopus.Client.Repositories.IKubernetesMonitorRepository KubernetesMonitors { get; }
     Octopus.Client.Repositories.ILibraryVariableSetRepository LibraryVariableSets { get; }
     Octopus.Client.Repositories.ILicensesRepository Licenses { get; }
     Octopus.Client.Repositories.ILifecyclesRepository Lifecycles { get; }
@@ -541,6 +548,7 @@ Octopus.Client
     Octopus.Client.Repositories.IMachineRoleRepository MachineRoles { get; }
     Octopus.Client.Repositories.IMachineRepository Machines { get; }
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
+    Octopus.Client.Repositories.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
@@ -7799,6 +7807,248 @@ Octopus.Client.Model.Migrations
     String TaskId { get; set; }
   }
 }
+Octopus.Client.Model.Observability
+{
+  class MonitorErrorResource
+  {
+    .ctor()
+    String ErrorCode { get; set; }
+    String ErrorMessage { get; set; }
+  }
+}
+Octopus.Client.Model.Observability.ContainerLogs
+{
+  class BeginContainerLogsSessionCommand
+  {
+    .ctor()
+    String ContainerName { get; set; }
+    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
+    String EnvironmentId { get; set; }
+    String MachineId { get; set; }
+    String PodName { get; set; }
+    String ProjectId { get; set; }
+    Boolean ShowPreviousContainer { get; set; }
+    String TenantId { get; set; }
+  }
+  class BeginContainerLogsSessionResponse
+  {
+    .ctor()
+    String SessionId { get; set; }
+  }
+  class ContainerLogLineResource
+  {
+    .ctor()
+    String Message { get; set; }
+    Instant Timestamp { get; set; }
+  }
+  class GetContainerLogsRequest
+  {
+    .ctor()
+    String SessionId { get; set; }
+  }
+  class GetContainerLogsResponse
+  {
+    .ctor()
+    Octopus.Client.Model.Observability.MonitorErrorResource Error { get; set; }
+    Boolean IsSessionCompleted { get; set; }
+    ICollection<ContainerLogLineResource> Logs { get; set; }
+  }
+}
+Octopus.Client.Model.Observability.KubernetesMonitor
+{
+  class DeleteKubernetesMonitorByIdCommand
+  {
+    .ctor()
+    String Id { get; set; }
+  }
+  class DeleteKubernetesMonitorByIdResponse
+  {
+    .ctor()
+  }
+  class GetKubernetesMonitorByIdRequest
+  {
+    .ctor()
+    String Id { get; set; }
+  }
+  class GetKubernetesMonitorByIdResponse
+  {
+    .ctor()
+    Octopus.Client.Model.Observability.LiveStatus.KubernetesMonitorResource Resource { get; set; }
+  }
+  class RegisterKubernetesMonitorCommand
+  {
+    .ctor()
+    Guid InstallationId { get; set; }
+    String MachineId { get; set; }
+  }
+  class RegisterKubernetesMonitorResponse
+  {
+    .ctor()
+    String AuthenticationToken { get; set; }
+    String CertificateThumbprint { get; set; }
+    Octopus.Client.Model.Observability.LiveStatus.KubernetesMonitorResource Resource { get; set; }
+  }
+}
+Octopus.Client.Model.Observability.LiveStatus
+{
+  class GetLiveStatusRequest
+  {
+    .ctor()
+    String EnvironmentId { get; set; }
+    String ProjectId { get; set; }
+    Boolean SummaryOnly { get; set; }
+    String TenantId { get; set; }
+  }
+  class GetLiveStatusResponse
+  {
+    .ctor()
+    IReadOnlyCollection<KubernetesMachineLiveStatusResource> MachineStatuses { get; set; }
+    Octopus.Client.Model.Observability.LiveStatus.LiveStatusSummaryResource Summary { get; set; }
+  }
+  class GetResourceManifestRequest
+  {
+    .ctor()
+    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
+    String EnvironmentId { get; set; }
+    String MachineId { get; set; }
+    String ProjectId { get; set; }
+    String TenantId { get; set; }
+  }
+  class GetResourceManifestResponse
+  {
+    .ctor()
+    String DesiredManifest { get; set; }
+    Octopus.Client.Model.Observability.LiveStatus.LiveResourceDiff Diff { get; set; }
+    String LiveManifest { get; set; }
+  }
+  class GetResourceRequest
+  {
+    .ctor()
+    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
+    String EnvironmentId { get; set; }
+    String MachineId { get; set; }
+    String ProjectId { get; set; }
+    String TenantId { get; set; }
+  }
+  class GetResourceResponse
+  {
+    .ctor()
+    Octopus.Client.Model.Observability.LiveStatus.KubernetesLiveStatusDetailedResource Resource { get; set; }
+  }
+  class KubernetesLiveStatusDetailedResource
+  {
+    .ctor()
+    IReadOnlyCollection<KubernetesLiveStatusDetailedResource> Children { get; set; }
+    Nullable<Guid> DesiredResourceId { get; set; }
+    String HealthStatus { get; set; }
+    String Kind { get; set; }
+    Instant LastUpdated { get; set; }
+    String MachineId { get; set; }
+    Octopus.Client.Model.Observability.LiveStatus.ManifestSummaryResource ManifestSummary { get; set; }
+    String Name { get; set; }
+    String Namespace { get; set; }
+    Nullable<Guid> ResourceId { get; set; }
+    String SyncStatus { get; set; }
+  }
+  class KubernetesLiveStatusResource
+  {
+    .ctor()
+    IReadOnlyCollection<KubernetesLiveStatusResource> Children { get; set; }
+    Nullable<Guid> DesiredResourceId { get; set; }
+    String HealthStatus { get; set; }
+    String Kind { get; set; }
+    String MachineId { get; set; }
+    String Name { get; set; }
+    String Namespace { get; set; }
+    Nullable<Guid> ResourceId { get; set; }
+    String SyncStatus { get; set; }
+  }
+  class KubernetesMachineLiveStatusResource
+  {
+    .ctor()
+    String MachineId { get; set; }
+    IReadOnlyCollection<KubernetesLiveStatusResource> Resources { get; set; }
+    String Status { get; set; }
+  }
+  class KubernetesMonitorResource
+  {
+    .ctor()
+    String Id { get; set; }
+    Guid InstallationId { get; set; }
+    String MachineId { get; set; }
+    String SpaceId { get; set; }
+  }
+  class LiveResourceDiff
+  {
+    .ctor()
+    String Diff { get; set; }
+    String Left { get; set; }
+    String Right { get; set; }
+  }
+  class LiveStatusSummaryResource
+  {
+    .ctor()
+    Instant LastUpdated { get; set; }
+    String Status { get; set; }
+  }
+  class ManifestSummaryResource
+  {
+    .ctor()
+    Dictionary<String, String> Annotations { get; set; }
+    DateTimeOffset CreationTimestamp { get; set; }
+    String Kind { get; set; }
+    Dictionary<String, String> Labels { get; set; }
+  }
+  class PodManifestSummaryResource
+    Octopus.Client.Model.Observability.LiveStatus.ManifestSummaryResource
+  {
+    .ctor()
+    IReadOnlyCollection<String> Containers { get; set; }
+  }
+}
+Octopus.Client.Model.Observability.ResourceEvents
+{
+  class BeginResourceEventsSessionCommand
+  {
+    .ctor()
+    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
+    String EnvironmentId { get; set; }
+    String MachineId { get; set; }
+    String ProjectId { get; set; }
+    String TenantId { get; set; }
+  }
+  class BeginResourceEventsSessionResponse
+  {
+    .ctor()
+    String SessionId { get; set; }
+  }
+  class GetResourceEventsRequest
+  {
+    .ctor()
+    String SessionId { get; set; }
+  }
+  class GetResourceEventsResponse
+  {
+    .ctor()
+    Octopus.Client.Model.Observability.MonitorErrorResource Error { get; set; }
+    ICollection<KubernetesEventResource> Events { get; set; }
+    Boolean IsSessionCompleted { get; set; }
+  }
+  class KubernetesEventResource
+  {
+    .ctor()
+    String Action { get; set; }
+    Int32 Count { get; set; }
+    Instant FirstObservedTime { get; set; }
+    Instant LastObservedTime { get; set; }
+    String Manifest { get; set; }
+    String Note { get; set; }
+    String Reason { get; set; }
+    String ReportingController { get; set; }
+    String ReportingInstance { get; set; }
+    String Type { get; set; }
+  }
+}
 Octopus.Client.Model.SmtpConfiguration
 {
   class AzureSmtpConfigurationResource
@@ -8754,6 +9004,12 @@ Octopus.Client.Repositories
     void Submit(Octopus.Client.Model.InterruptionResource)
     void TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
+  interface IKubernetesMonitorRepository
+  {
+    void Delete(Octopus.Client.Model.Observability.KubernetesMonitor.DeleteKubernetesMonitorByIdCommand)
+    Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdResponse Get(Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdRequest)
+    Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorResponse RegisterKubernetesMonitor(Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorCommand)
+  }
   interface ILibraryVariableSetRepository
     Octopus.Client.Repositories.IResourceRepository
     Octopus.Client.Repositories.ICreate<LibraryVariableSetResource>
@@ -8824,6 +9080,16 @@ Octopus.Client.Repositories
   interface IModify`1
   {
     Octopus.Client.Repositories.TResource Modify(Octopus.Client.Repositories.TResource)
+  }
+  interface IObservabilityRepository
+  {
+    Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionResponse BeginContainerLogsSession(Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionCommand)
+    Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionResponse BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand)
+    Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusResponse Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest)
+    Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsResponse GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest)
+    Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsResponse GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestResponse GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest)
   }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.IModify<OctopusServerNodeResource>
@@ -9214,6 +9480,26 @@ Octopus.Client.Repositories
     Octopus.Client.Model.MachineConnectionStatus GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Octopus.Client.Model.ResourceCollection<WorkerResource> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
+  class KubernetesMonitorRepository
+    Octopus.Client.Repositories.IKubernetesMonitorRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository)
+    void Delete(Octopus.Client.Model.Observability.KubernetesMonitor.DeleteKubernetesMonitorByIdCommand)
+    Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdResponse Get(Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdRequest)
+    Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorResponse RegisterKubernetesMonitor(Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorCommand)
+  }
+  class ObservabilityRepository
+    Octopus.Client.Repositories.IObservabilityRepository
+  {
+    .ctor(Octopus.Client.IOctopusRepository)
+    Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionResponse BeginContainerLogsSession(Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionCommand)
+    Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionResponse BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand)
+    Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusResponse Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest)
+    Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsResponse GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest)
+    Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsResponse GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestResponse GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest)
+  }
   class PerformanceConfigurationRepository
     Octopus.Client.Repositories.IPerformanceConfigurationRepository
   {
@@ -9549,6 +9835,12 @@ Octopus.Client.Repositories.Async
     Task Submit(Octopus.Client.Model.InterruptionResource)
     Task TakeResponsibility(Octopus.Client.Model.InterruptionResource)
   }
+  interface IKubernetesMonitorRepository
+  {
+    Task Delete(Octopus.Client.Model.Observability.KubernetesMonitor.DeleteKubernetesMonitorByIdCommand, CancellationToken)
+    Task<GetKubernetesMonitorByIdResponse> Get(Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdRequest, CancellationToken)
+    Task<RegisterKubernetesMonitorResponse> RegisterKubernetesMonitor(Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorCommand, CancellationToken)
+  }
   interface ILibraryVariableSetRepository
     Octopus.Client.Repositories.Async.ICreate<LibraryVariableSetResource>
     Octopus.Client.Repositories.Async.IGet<LibraryVariableSetResource>
@@ -9619,6 +9911,16 @@ Octopus.Client.Repositories.Async
   {
     Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource)
     Task<TResource> Modify(Octopus.Client.Repositories.Async.TResource, CancellationToken)
+  }
+  interface IObservabilityRepository
+  {
+    Task<BeginContainerLogsSessionResponse> BeginContainerLogsSession(Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionCommand, CancellationToken)
+    Task<BeginResourceEventsSessionResponse> BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand, CancellationToken)
+    Task<GetLiveStatusResponse> Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest, CancellationToken)
+    Task<GetContainerLogsResponse> GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest, CancellationToken)
+    Task<GetResourceResponse> GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest, CancellationToken)
+    Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
+    Task<GetResourceManifestResponse> GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest, CancellationToken)
   }
   interface IOctopusServerNodeRepository
     Octopus.Client.Repositories.Async.IModify<OctopusServerNodeResource>
@@ -10098,6 +10400,26 @@ Octopus.Client.Repositories.Async
     Task<MachineConnectionStatus> GetConnectionStatus(Octopus.Client.Model.WorkerResource)
     Task<ResourceCollection<WorkerResource>> List(Int32, Nullable<Int32>, String, String, String, Nullable<Boolean>, String, String, String)
   }
+  class KubernetesMonitorRepository
+    Octopus.Client.Repositories.Async.IKubernetesMonitorRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository)
+    Task Delete(Octopus.Client.Model.Observability.KubernetesMonitor.DeleteKubernetesMonitorByIdCommand, CancellationToken)
+    Task<GetKubernetesMonitorByIdResponse> Get(Octopus.Client.Model.Observability.KubernetesMonitor.GetKubernetesMonitorByIdRequest, CancellationToken)
+    Task<RegisterKubernetesMonitorResponse> RegisterKubernetesMonitor(Octopus.Client.Model.Observability.KubernetesMonitor.RegisterKubernetesMonitorCommand, CancellationToken)
+  }
+  class ObservabilityRepository
+    Octopus.Client.Repositories.Async.IObservabilityRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncRepository)
+    Task<BeginContainerLogsSessionResponse> BeginContainerLogsSession(Octopus.Client.Model.Observability.ContainerLogs.BeginContainerLogsSessionCommand, CancellationToken)
+    Task<BeginResourceEventsSessionResponse> BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand, CancellationToken)
+    Task<GetLiveStatusResponse> Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest, CancellationToken)
+    Task<GetContainerLogsResponse> GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest, CancellationToken)
+    Task<GetResourceResponse> GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest, CancellationToken)
+    Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
+    Task<GetResourceManifestResponse> GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest, CancellationToken)
+  }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
     Exception
@@ -10186,6 +10508,11 @@ Octopus.Client.Serialization
     static Octopus.Client.Serialization.T DeserializeObject(String)
     static JsonSerializerSettings GetDefaultSerializerSettings()
     static String SerializeObject(Object)
+  }
+  class ManifestSummaryConverter
+    Octopus.Client.Serialization.InheritedClassConverter<ManifestSummaryResource, String>
+  {
+    .ctor()
   }
   class MultiIsoDateTimeFormatConverter
     JsonConverter

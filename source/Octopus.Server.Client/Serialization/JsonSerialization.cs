@@ -33,6 +33,7 @@ namespace Octopus.Client.Serialization
                     new TentacleConfigurationConverter(),
                     new AccountConverter(),
                     new FeedConverter(),
+                    new ManifestSummaryConverter(),
                     new HrefConverter(null),
                     new PropertyValueResource.PropertyValueJsonConverter(),
                     new TriggerActionConverter(),

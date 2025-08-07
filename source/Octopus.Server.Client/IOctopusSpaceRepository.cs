@@ -27,11 +27,13 @@ namespace Octopus.Client
         IEnvironmentRepository Environments { get; }
         IFeedRepository Feeds { get; }
         IInterruptionRepository Interruptions { get; }
+        IKubernetesMonitorRepository KubernetesMonitors { get; }
         ILibraryVariableSetRepository LibraryVariableSets { get; }
         ILifecyclesRepository Lifecycles { get; }
         IMachinePolicyRepository MachinePolicies { get; }
         IMachineRepository Machines { get; }
         IMachineRoleRepository MachineRoles { get; }
+        IObservabilityRepository Observability { get; }
         IProjectGroupRepository ProjectGroups { get; }
         IProjectRepository Projects { get; }
         IRunbookRepository Runbooks { get; }
