@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using NodaTime.Serialization.JsonNet;
 using Octopus.Client.Model;
 using Octopus.TinyTypes.Json;
 
@@ -43,9 +42,6 @@ namespace Octopus.Client.Serialization
                     new PersistenceSettingsConverter(),
                     new GitSettingsConverter(),
                     new GitCredentialDetailsConverter(),
-                    new PermissiveInstantJsonConverter(),
-                    new CrossPlatformDateTimeZoneJsonConverter(),
-                    NodaConverters.DurationConverter
                 }
             };
         }
