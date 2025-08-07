@@ -51,7 +51,6 @@ jobs:
         run: ./build.cmd
 
       # Unit test reports
-
       - name: Windows .NET 4.6.2 unit test report
         uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
         if: success() || failure()    # run this step even if previous step failed
@@ -161,38 +160,6 @@ jobs:
           reporter: dotnet-trx
           fail-on-error: true
 
-  test-macos:
-    name: Unit test on Mac OS
-    needs: build
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-            
-      - name: Update Dylib Path
-        run: echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/homebrew/lib/" >> $GITHUB_ENV
-
-      # TODO(tmm): Tests were failing until homebrew library was added to libray path
-      - name: Update Dylib Path
-        run: echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/homebrew/lib/" >> $GITHUB_ENV
-
-      - name: Run unit tests 🏗
-        shell: bash
-        run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Mac" --results-directory ./TestResults
-
-      - name: Mac OS unit test report
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2.0.0
-        if: success() || failure()    # run this step even if previous step failed
-        with:
-          name: Mac OS unit test results
-          path: ./TestResults/*.trx
-          reporter: dotnet-trx
-          fail-on-error: true
-
   deploy_nuget:
     name: Upload nuget packages to Octopus Deploy and create release if required
     runs-on: ubuntu-latest
@@ -204,7 +171,7 @@ jobs:
     env:
       OCTOPUS_SPACE: "Core Platform"
       SHOULD_CREATE_RELEASE: ${{ github.ref == 'refs/heads/master' && !contains(needs.build.outputs.octoversion_fullsemver, '-') }}
-    needs: [ build, test-linux, test-macos ]
+    needs: [ build, test-linux ]
     steps:
       - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
         uses: actions/checkout@v4

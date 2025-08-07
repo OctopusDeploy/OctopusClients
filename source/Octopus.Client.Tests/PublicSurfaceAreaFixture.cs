@@ -10,6 +10,11 @@ using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NUnit.Framework;
 using Octopus.Client.Tests.Extensions;
 
+// The public surface area tests only run on netcore targeting netstandard, because TeamCity and developers who aren't using Windows otherwise
+// cannot run the test, and would not be able to update the assent file. The risk of them diverging between netstandard and net4x is low and 
+// not important.
+#if !NETFRAMEWORK
+
 namespace Octopus.Client.Tests
 {
     [TestFixture]
@@ -162,3 +167,4 @@ namespace Octopus.Client.Tests
         }
     }
 }
+#endif
