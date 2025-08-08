@@ -185,20 +185,20 @@ jobs:
           path: ./artifacts/
 
       - name: Login to Octopus Deploy 🐙
-        uses: OctopusDeploy/login@v1
+        uses: OctopusDeploy/login@e485a40e4b47a154bdf59cc79e57894b0769a760 # v1
         with: 
           server: ${{ secrets.OCTOPUS_URL }}
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
 
       - name: Push to Octopus 🐙
-        uses: OctopusDeploy/push-package-action@v3
+        uses: OctopusDeploy/push-package-action@e2050621dbc1f83e223b6a5ca7ff2ec3dd6809e8 # v3
         with:
           packages: |
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
             ./artifacts/Octopus.Server.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
 
       - name: Create Release in Octopus 🐙
-        uses: OctopusDeploy/create-release-action@v3
+        uses: OctopusDeploy/create-release-action@1c58525ed52e1af84afa68eb495486a52661d6da # v3
         with:
           project: "Octopus.Client"
           packages: |
