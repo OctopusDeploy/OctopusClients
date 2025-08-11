@@ -163,7 +163,11 @@ jobs:
   deploy_nuget:
     name: Upload nuget packages to Octopus Deploy and create release if required
     runs-on: ubuntu-latest
-    if: ${{ needs.build.outputs.skip-release-and-release-note == 'false' }}
+    if: >- # Only run if we want a release or if it's a nightly build (nightly pushes to Octopus to exercise the pipeline, but no actual release gets created)
+      ${{
+        needs.build.outputs.skip-release-and-release-note == 'false' ||
+        github.event_name == 'schedule'
+      }}
     permissions:
       id-token: write # Required to obtain the ID token from GitHub Actions
       actions: read # Required to download artifact
