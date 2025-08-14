@@ -120,8 +120,8 @@ namespace Octopus.Client.Repositories.Async
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            var link = await ResolveLink(cancellationToken).ConfigureAwait(false);
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
+            var link = await ResolveLink(cancellationToken).ConfigureAwait(false);
             await EnrichSpaceId(resource).ConfigureAwait(false);
             return await Client.Create(link, resource, pathParameters, cancellationToken).ConfigureAwait(false);
         }
