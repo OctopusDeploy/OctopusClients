@@ -27,6 +27,13 @@ jobs:
   build:
     name: Build Octopus Clients
     runs-on: windows-latest
+    env:
+      # These codesigning env vars must match the parameter names in Build.cs
+      AzureKeyVaultUrl: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AzureKeyVaultAppId: ${{ secrets.AZURE_KEYVAULT_APPID }}
+      AzureKeyVaultAppSecret: ${{ secrets.AZURE_KEYVAULT_APPSECRET }}
+      AzureKeyVaultCertificateName: ${{ secrets.AZURE_KEYVAULT_CERTIFICATENAME }}
+      AzureKeyVaultTenantId: ${{ secrets.AZURE_KEYVAULT_TENANTID }}
     outputs:
       octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
       skip-release-and-release-note: ${{ steps.github-tag.outputs.skip-release-and-release-note }}
