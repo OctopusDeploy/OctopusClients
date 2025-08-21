@@ -1,3 +1,11 @@
+---
+name: Do not create new Issues in this repository
+about: This repository is a read-only mirror and is not monitored.
+title: ''
+labels: 
+assignees: ''
+
+---
 # Do not create new Issues in this repository.
 
 Please send bug reports or enhancement requests to the Octopus Deploy [support team](https://octopus.com/support).
