@@ -1,4 +1,5 @@
-This repository contains the .NET Client Library (`Octopus.Client`) for [Octopus Deploy](https://octopus.com), an automated deployment server for professional .NET developers. You can use it to create and deploy releases, create and push packages, and manage environments.
+This repository contains the .NET Client Library (`Octopus.Client`) for [Octopus Deploy](https://octopus.com).  
+You can use it to create and deploy releases, push packages, manage environments, and perform many other administrative functions.
 
 `Octopus.Client` is [available on nuget.org](https://www.nuget.org/packages/Octopus.Client)
 
