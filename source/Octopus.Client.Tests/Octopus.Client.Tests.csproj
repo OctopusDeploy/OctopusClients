@@ -50,6 +50,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.8" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.8" />
     <PackageReference Include="Best.Conventional" Version="12.0.0" />
+    <PackageReference Include="Assent" Version="1.9.3" /> <!-- IMPORTANT: Renovate will try and update this to 2.x, but you must not let it. Assent 2.x dropped netframework support and OctopusClients builds for net462 and net48 -->
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net48' ">
@@ -57,10 +58,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
-    <PackageReference Include="Assent" Version="1.9.3" /> <!-- IMPORTANT: Renovate will try and update this to 2.x, but you must not let it. Assent 2.x dropped netframework support and OctopusClients builds for net462 and net48 -->
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-    <PackageReference Include="Assent" Version="2.4.2" />
   </ItemGroup>
 
   <ItemGroup>
