@@ -205,7 +205,7 @@ namespace Octopus.Client.Repositories.Async
                     spaceId = project.SpaceId,
                     projectId = project.Id,
                     gitRef = gitRef,
-                    slug = runbook.Id
+                    id = runbook.Id
                 },
                 new
                 {

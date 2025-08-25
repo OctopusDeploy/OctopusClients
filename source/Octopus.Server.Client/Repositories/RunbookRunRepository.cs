@@ -20,6 +20,11 @@ namespace Octopus.Client.Repositories
         void Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
         void Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
 
+        /// <summary>
+        /// Retries a specific Runbook Run for a Config as Code Runbook
+        /// </summary>
+        /// <remarks>This operation is for Config as Code Runbooks only</remarks>
+        RunbookRunResource Retry(RunbookRunResource run);
     }
 
     class RunbookRunRepository : BasicRepository<RunbookRunResource>, IRunbookRunRepository
@@ -47,6 +52,22 @@ namespace Octopus.Client.Repositories
         public void Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
         {
             Client.Paginate(Repository.Link("RunbookRuns"), new { projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
+        }
+
+        public RunbookRunResource Retry(RunbookRunResource run)
+        {
+            var route = "~/api/{spaceId}/projects/{projectId}/runbookRuns/{id}/retry/v1";
+
+            return Client.Post<object, RunbookRunResource>(
+                route,
+                null,
+                new
+                {
+                    spaceId = run.SpaceId,
+                    projectId = run.ProjectId,
+                    id = run.Id
+                }
+            );
         }
     }
 }

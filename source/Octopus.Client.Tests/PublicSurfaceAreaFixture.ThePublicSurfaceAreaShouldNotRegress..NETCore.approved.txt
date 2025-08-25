@@ -9200,7 +9200,9 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IGet<RunbookProcessResource>
     Octopus.Client.Repositories.IModify<RunbookProcessResource>
   {
+    Octopus.Client.Model.RunbookProcessResource Get(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetTemplate(Octopus.Client.Model.RunbookProcessResource)
+    Octopus.Client.Model.RunbookProcessResource Modify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.RunbookProcessResource, String)
   }
   interface IRunbookRepository
     Octopus.Client.Repositories.IFindByName<RunbookResource>
@@ -9210,13 +9212,21 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IModify<RunbookResource>
     Octopus.Client.Repositories.IDelete<RunbookResource>
   {
+    Octopus.Client.Model.RunbookResource Create(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.RunbookResource, String)
     Octopus.Client.Editors.RunbookEditor CreateOrModify(Octopus.Client.Model.ProjectResource, String, String)
+    void Delete(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.RunbookResource, String)
     Octopus.Client.Model.RunbookResource FindByName(Octopus.Client.Model.ProjectResource, String)
+    Octopus.Client.Model.RunbookResource Get(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.RunbookRunPreviewResource GetPreview(Octopus.Client.Model.DeploymentPromotionTarget)
+    Octopus.Client.Model.RunbookRunPreviewResource[] GetPreview(Octopus.Client.Model.ProjectResource, String, String, Octopus.Client.Model.RunbookRunPreviewParameters)
     Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookRunTemplateResource GetRunbookRunTemplate(Octopus.Client.Model.ProjectResource, String, String)
     Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.RunbookResource)
+    Octopus.Client.Model.RunbookSnapshotTemplateResource GetRunbookSnapshotTemplate(Octopus.Client.Model.ProjectResource, String, String)
+    Octopus.Client.Model.RunbookResource Modify(Octopus.Client.Model.ProjectResource, String, Octopus.Client.Model.RunbookResource, String)
     Octopus.Client.Model.RunbookRunResource Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunResource)
     Octopus.Client.Model.RunbookRunResource[] Run(Octopus.Client.Model.RunbookResource, Octopus.Client.Model.RunbookRunParameters)
+    Octopus.Client.Model.RunbookRunGitResource Run(Octopus.Client.Model.ProjectResource, String, String, Octopus.Client.Model.RunGitRunbookParameters)
   }
   interface IRunbookRunRepository
     Octopus.Client.Repositories.IGet<RunbookRunResource>
@@ -9228,6 +9238,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.TaskResource GetTask(Octopus.Client.Model.RunbookRunResource)
     void Paginate(String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
     void Paginate(String[], String[], String[], String[], Func<ResourceCollection<RunbookRunResource>, Boolean>)
+    Octopus.Client.Model.RunbookRunResource Retry(Octopus.Client.Model.RunbookRunResource)
   }
   interface IRunbookSnapshotRepository
     Octopus.Client.Repositories.IGet<RunbookSnapshotResource>
