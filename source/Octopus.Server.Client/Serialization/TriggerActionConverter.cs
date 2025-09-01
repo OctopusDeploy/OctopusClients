@@ -14,7 +14,8 @@ namespace Octopus.Client.Serialization
                 {TriggerActionType.DeployLatestRelease, typeof(DeployLatestReleaseActionResource)},
                 {TriggerActionType.DeployNewRelease, typeof(DeployNewReleaseActionResource)},
                 {TriggerActionType.RunRunbook, typeof(RunRunbookActionResource)},
-                {TriggerActionType.CreateRelease, typeof(CreateReleaseActionResource)}
+                {TriggerActionType.CreateRelease, typeof(CreateReleaseActionResource)},
+                {TriggerActionType.DeployLatestReleaseToEnvironment, typeof(DeployLatestReleaseToEnvironmentActionResource)}
             };
 
         protected override IDictionary<TriggerActionType, Type> DerivedTypeMappings => ActionTypes;

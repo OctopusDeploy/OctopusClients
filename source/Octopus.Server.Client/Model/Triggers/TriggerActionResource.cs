@@ -6,7 +6,8 @@
         DeployLatestRelease,
         DeployNewRelease,
         RunRunbook,
-        CreateRelease
+        CreateRelease,
+        DeployLatestReleaseToEnvironment
     }
 
     public abstract class TriggerActionResource : Resource

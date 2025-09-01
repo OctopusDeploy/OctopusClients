@@ -8285,6 +8285,7 @@ Octopus.Client.Model.Triggers
       DeployNewRelease = 2
       RunRunbook = 3
       CreateRelease = 4
+      DeployLatestReleaseToEnvironment = 5
   }
   abstract class TriggerFilterResource
     Octopus.Client.Extensibility.IResource
@@ -8419,6 +8420,17 @@ Octopus.Client.Model.Triggers.ScheduledTriggers
     String DestinationEnvironmentId { get; set; }
     Boolean ShouldRedeployWhenReleaseIsCurrent { get; set; }
     Octopus.Client.Model.ReferenceCollection SourceEnvironmentIds { get; set; }
+    String Variables { get; set; }
+  }
+  class DeployLatestReleaseToEnvironmentActionResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Triggers.ScopedDeploymentActionResource
+  {
+    .ctor()
+    Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
+    String EnvironmentId { get; set; }
+    Boolean ShouldRedeployWhenReleaseIsCurrent { get; set; }
     String Variables { get; set; }
   }
   class DeployNewReleaseActionResource
