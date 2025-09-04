@@ -5335,6 +5335,7 @@ Octopus.Client.Model
       TenantTag = 11
       Tenant = 12
       ProcessOwner = 13
+      ProjectTemplate = 14
   }
   class ScopeSpecification
     IDictionary<ScopeField, ScopeValue>

@@ -19,6 +19,7 @@ namespace Octopus.Client.Model
         Channel,
         TenantTag,
         Tenant,
-        ProcessOwner
+        ProcessOwner,
+        ProjectTemplate,
     }
 }
