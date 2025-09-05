@@ -5852,7 +5852,7 @@ Octopus.Client.Model
   {
     .ctor()
     Boolean Enabled { get; set; }
-    Boolean EnforceTelemetry { get; set; }
+    Boolean IsTelemetryEnforced { get; set; }
     DateTimeOffset ShowAsNewUntil { get; set; }
   }
   TenantedDeploymentMode
