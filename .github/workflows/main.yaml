@@ -219,7 +219,7 @@ jobs:
       # jq is preinstalled in GitHub actions, but jc (https://github.com/kellyjonbrazil/jc) is not.
       - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
