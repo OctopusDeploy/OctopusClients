@@ -45,6 +45,7 @@ namespace Octopus.Client
         IProxyRepository Proxies { get; }
         IReleaseRepository Releases { get; }
         IRetentionPolicyRepository RetentionPolicies { get; }
+        ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
         ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }

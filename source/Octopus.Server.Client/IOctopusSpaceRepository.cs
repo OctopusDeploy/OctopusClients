@@ -47,6 +47,7 @@ namespace Octopus.Client
         ISubscriptionRepository Subscriptions { get; }
         ITagSetRepository TagSets { get; }
         ITenantRepository Tenants { get; }
+        ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
         ITenantVariablesRepository TenantVariables { get; }
         IVariableSetRepository VariableSets { get; }
         IWorkerPoolRepository WorkerPools { get; }

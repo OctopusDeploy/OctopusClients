@@ -202,6 +202,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.Async.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.Async.IRunbookSnapshotRepository RunbookSnapshots { get; }
+    Octopus.Client.Repositories.Async.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITenantRepository Tenants { get; }
@@ -248,6 +249,7 @@ Octopus.Client
     Octopus.Client.Repositories.IRunbookRunRepository RunbookRuns { get; }
     Octopus.Client.Repositories.IRunbookRepository Runbooks { get; }
     Octopus.Client.Repositories.IRunbookSnapshotRepository RunbookSnapshots { get; }
+    Octopus.Client.Repositories.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITenantRepository Tenants { get; }
@@ -423,6 +425,7 @@ Octopus.Client
     Octopus.Client.RepositoryScope Scope { get; }
     Octopus.Client.Repositories.Async.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.Async.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
@@ -565,6 +568,7 @@ Octopus.Client
     Octopus.Client.RepositoryScope Scope { get; }
     Octopus.Client.Repositories.IScopedUserRoleRepository ScopedUserRoles { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
+    Octopus.Client.Repositories.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
@@ -8088,6 +8092,99 @@ Octopus.Client.Model.SmtpConfiguration
     Octopus.Client.Model.SensitiveValue SmtpPassword { get; set; }
   }
 }
+Octopus.Client.Model.SpaceDefaultRetentionPolicies
+{
+  class GetDefaultRetentionPolicyByTypeRequest
+  {
+    .ctor()
+    .ctor(String, Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType)
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; set; }
+    String SpaceId { get; set; }
+  }
+  class LifecycleReleaseRetentionUnit
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Days
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Items
+    .ctor(String)
+  }
+  class ModifyDefaultLifecycleReleaseRetentionPolicyCommand
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand
+  {
+    .ctor(String, String)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Unit { get; set; }
+  }
+  class ModifyDefaultLifecycleTentacleRetentionPolicyCommand
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand
+  {
+    .ctor(String, String)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Unit { get; set; }
+  }
+  abstract class ModifyDefaultRetentionPolicyCommand
+  {
+    String Id { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    String SpaceId { get; set; }
+  }
+  class ReleaseRetentionPolicyType
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.ReleaseRetentionPolicyType Count
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.ReleaseRetentionPolicyType Forever
+    .ctor(String)
+  }
+  class RetentionType
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType LifecycleRelease
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType LifecycleTentacle
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType MachinePackageCache
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RunbookRetention
+    .ctor(String)
+  }
+  class SpaceDefaultLifecycleReleaseRetentionPolicyResource
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource
+  {
+    .ctor(Octopus.Client.Model.RetentionPeriodStrategy)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Unit { get; set; }
+  }
+  class SpaceDefaultLifecycleTentacleRetentionPolicyResource
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource
+  {
+    .ctor(Octopus.Client.Model.RetentionPeriodStrategy)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.LifecycleReleaseRetentionUnit Unit { get; set; }
+  }
+  abstract class SpaceDefaultRetentionPolicyResource
+  {
+    String Id { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    String SpaceId { get; set; }
+  }
+  class TentacleRetentionPolicyType
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.TentacleRetentionPolicyType Count
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.TentacleRetentionPolicyType Forever
+    .ctor(String)
+  }
+}
 Octopus.Client.Model.TenantVariables
 {
   class CommonVariableScope
@@ -9292,6 +9389,11 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ServerStatusResource GetServerStatus()
     Octopus.Client.Model.SystemInfoResource GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
+  interface ISpaceDefaultRetentionPolicyRepository
+  {
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource Get(Octopus.Client.Model.SpaceDefaultRetentionPolicies.GetDefaultRetentionPolicyByTypeRequest)
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource Modify(Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand)
+  }
   interface ISpaceRepository
     Octopus.Client.Repositories.ICreate<SpaceResource>
     Octopus.Client.Repositories.IModify<SpaceResource>
@@ -9524,6 +9626,13 @@ Octopus.Client.Repositories
     .ctor(Octopus.Client.IOctopusRepository)
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
+  class SpaceDefaultRetentionPolicyRepository
+    Octopus.Client.Repositories.ISpaceDefaultRetentionPolicyRepository
+  {
+    .ctor(Octopus.Client.IOctopusClient)
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource Get(Octopus.Client.Model.SpaceDefaultRetentionPolicies.GetDefaultRetentionPolicyByTypeRequest)
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource Modify(Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand)
   }
   class TelemetryConfigurationRepository
     Octopus.Client.Repositories.ITelemetryConfigurationRepository
@@ -10182,6 +10291,11 @@ Octopus.Client.Repositories.Async
     Task<ServerStatusResource> GetServerStatus()
     Task<SystemInfoResource> GetSystemInfo(Octopus.Client.Model.ServerStatusResource)
   }
+  interface ISpaceDefaultRetentionPolicyRepository
+  {
+    Task<SpaceDefaultRetentionPolicyResource> Get(Octopus.Client.Model.SpaceDefaultRetentionPolicies.GetDefaultRetentionPolicyByTypeRequest, CancellationToken)
+    Task<SpaceDefaultRetentionPolicyResource> Modify(Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand, CancellationToken)
+  }
   interface ISpaceRepository
     Octopus.Client.Repositories.Async.ICreate<SpaceResource>
     Octopus.Client.Repositories.Async.IModify<SpaceResource>
@@ -10438,6 +10552,13 @@ Octopus.Client.Repositories.Async
     Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
     Task<GetResourceManifestResponse> GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest, CancellationToken)
   }
+  class SpaceDefaultRetentionPolicyRepository
+    Octopus.Client.Repositories.Async.ISpaceDefaultRetentionPolicyRepository
+  {
+    .ctor(Octopus.Client.IOctopusAsyncClient)
+    Task<SpaceDefaultRetentionPolicyResource> Get(Octopus.Client.Model.SpaceDefaultRetentionPolicies.GetDefaultRetentionPolicyByTypeRequest, CancellationToken)
+    Task<SpaceDefaultRetentionPolicyResource> Modify(Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand, CancellationToken)
+  }
   class SpaceScopedOperationOutsideOfCurrentSpaceContextException
     ISerializable
     Exception
@@ -10557,6 +10678,11 @@ Octopus.Client.Serialization
     static Octopus.Client.Serialization.T Deserialize(String)
     static String Serialize(Object, Octopus.Client.Serialization.T)
     static String Serialize(Object)
+  }
+  class SpaceDefaultRetentionPolicyResourceConverter
+    Octopus.Client.Serialization.InheritedClassConverter<SpaceDefaultRetentionPolicyResource, RetentionType>
+  {
+    .ctor()
   }
   class TentacleConfigurationConverter
     Octopus.Client.Serialization.InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>

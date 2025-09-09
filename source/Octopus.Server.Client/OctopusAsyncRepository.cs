@@ -125,6 +125,7 @@ namespace Octopus.Client
             loadRootResource = new AsyncLazy<RootResource>(LoadRootDocumentInner);
             loadSpaceRootResource = new Lazy<Task<SpaceRootResource>>(LoadSpaceRootDocumentInner, true);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
+            SpaceDefaultRetentionPolicies = new SpaceDefaultRetentionPolicyRepository(client);
         }
 
 
@@ -175,6 +176,7 @@ namespace Octopus.Client
         public IProxyRepository Proxies { get; }
         public IReleaseRepository Releases { get; }
         public IRetentionPolicyRepository RetentionPolicies { get; }
+        public ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
         public ISchedulerRepository Schedulers { get; }
         public IServerStatusRepository ServerStatus { get; }
         public ISpaceRepository Spaces { get; }
