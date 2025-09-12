@@ -23,5 +23,7 @@ public class GetDeploymentFreezeByIdResponse
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; protected set; } 
     
     public string OwnerId { get; set;}
+    
+    public RecurringSchedule RecurringSchedule { get; set; }
 
 }

@@ -6903,6 +6903,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule RecurringSchedule { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
@@ -6950,6 +6951,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule RecurringSchedule { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
@@ -6966,6 +6968,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule RecurringSchedule { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; }
   }
@@ -6994,6 +6997,7 @@ Octopus.Client.Model.DeploymentFreezes
     String Name { get; set; }
     String OwnerId { get; set; }
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule RecurringSchedule { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
@@ -7007,6 +7011,18 @@ Octopus.Client.Model.DeploymentFreezes
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
+  }
+  class RecurringSchedule
+  {
+    .ctor()
+    Nullable<Int32> EndAfterOccurrences { get; set; }
+    Nullable<DateTimeOffset> EndDate { get; set; }
+    Nullable<DateTimeOffset> EndOnDate { get; set; }
+    String EndType { get; set; }
+    Nullable<DateTimeOffset> StartDate { get; set; }
+    String Type { get; set; }
+    Int32 Unit { get; set; }
+    Int32 UserUtcOffsetInMinutes { get; set; }
   }
   class TenantProjectEnvironment
   {
