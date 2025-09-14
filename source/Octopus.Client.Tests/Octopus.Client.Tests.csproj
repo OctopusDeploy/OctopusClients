@@ -47,8 +47,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.8" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.9" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.9" />
     <PackageReference Include="Best.Conventional" Version="12.0.0" />
     <PackageReference Include="Assent" Version="1.9.3" /> <!-- IMPORTANT: Renovate will try and update this to 2.x, but you must not let it. Assent 2.x dropped netframework support and OctopusClients builds for net462 and net48 -->
   </ItemGroup>
