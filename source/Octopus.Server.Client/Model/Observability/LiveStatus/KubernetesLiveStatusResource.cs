@@ -13,6 +13,9 @@ public class KubernetesLiveStatusResource
 
     [Required]
     public string Kind { get; set; }
+    
+    [Required]
+    public string Group { get; set; }
 
     [Required]
     public string HealthStatus { get; set; }

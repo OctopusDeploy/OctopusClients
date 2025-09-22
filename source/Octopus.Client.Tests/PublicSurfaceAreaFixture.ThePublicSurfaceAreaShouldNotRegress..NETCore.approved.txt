@@ -7970,6 +7970,7 @@ Octopus.Client.Model.Observability.LiveStatus
     .ctor()
     IReadOnlyCollection<KubernetesLiveStatusResource> Children { get; set; }
     Nullable<Guid> DesiredResourceId { get; set; }
+    String Group { get; set; }
     String HealthStatus { get; set; }
     String Kind { get; set; }
     String MachineId { get; set; }
