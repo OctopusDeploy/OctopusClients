@@ -11,6 +11,8 @@ namespace Octopus.Client.Model
         public TagSetResource()
         {
             Tags = new List<TagResource>();
+            Scopes = new List<string> { "Tenant" };
+            Type = "MultiSelect";
         }
 
         /// <summary>
@@ -72,5 +74,17 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
+
+        /// <summary>
+        /// The resource types this tag set applies to.
+        /// </summary>
+        [Writeable]
+        public IList<string> Scopes { get; set; }
+
+        /// <summary>
+        /// The type of this tag set.
+        /// </summary>
+        [Writeable]
+        public string Type { get; set; }
     }
 }

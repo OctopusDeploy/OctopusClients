@@ -5724,9 +5724,11 @@ Octopus.Client.Model
     .ctor()
     String Description { get; set; }
     String Name { get; set; }
+    IList<String> Scopes { get; set; }
     Int32 SortOrder { get; set; }
     String SpaceId { get; set; }
     IList<TagResource> Tags { get; set; }
+    String Type { get; set; }
     Octopus.Client.Model.TagSetResource AddOrUpdateTag(String, String, String)
     Octopus.Client.Model.TagSetResource RemoveTag(String)
   }
