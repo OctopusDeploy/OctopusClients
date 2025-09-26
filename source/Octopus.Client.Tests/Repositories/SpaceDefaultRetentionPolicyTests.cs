@@ -84,7 +84,7 @@ namespace Octopus.Client.Tests.Repositories
         }
         
         [Test]
-        public async Task AsyncModify_ThrowsWhenNotCompatible()
+        public void AsyncModify_ThrowsWhenNotCompatible()
         {
             var asyncClient = SetupAsyncClient("2025.2.0");
             var asyncRepository = new SpaceDefaultRetentionPolicyRepository(asyncClient);
@@ -103,9 +103,8 @@ namespace Octopus.Client.Tests.Repositories
             Assert.Throws<NotSupportedException>(() => repository.Modify(new ModifyDefaultLifecycleTentacleRetentionPolicyCommand("Any-Id", "Any-SpaceId")));
         }
         
-                
         [Test]
-        public async Task AsyncGet_ThrowsWhenNotCompatible()
+        public void AsyncGet_ThrowsWhenNotCompatible()
         {
             var asyncClient = SetupAsyncClient("2025.2.0");
             var asyncRepository = new SpaceDefaultRetentionPolicyRepository(asyncClient);
