@@ -72,6 +72,10 @@ namespace Octopus.Client.Model
         public bool IsVersionControlled { get; set; }
         [JsonProperty(Order = 27)]
         public PersistenceSettingsResource PersistenceSettings { get; set; }
+ 
+        [Writeable]
+        [JsonProperty(Order = 28)]
+        public ProjectTemplateDetailsResource ProjectTemplateDetails { get; set; }
 
         /// <summary>
         /// Treats releases of different channels to the same environment as a 

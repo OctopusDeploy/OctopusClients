@@ -4710,6 +4710,7 @@ Octopus.Client.Model
     Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
     Octopus.Client.Model.DeploymentConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
+    Octopus.Client.Model.ProjectTemplateDetailsResource ProjectTemplateDetails { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
     String ReleaseNotesTemplate { get; set; }
     String Slug { get; set; }
@@ -4732,6 +4733,13 @@ Octopus.Client.Model
     Octopus.Client.Model.ProjectResource AddOrUpdateVariableTemplate(String, String, IDictionary<String, String>)
     Octopus.Client.Model.ProjectResource Clear()
     Octopus.Client.Model.ProjectResource IncludingLibraryVariableSets(Octopus.Client.Model.LibraryVariableSetResource[])
+  }
+  class ProjectTemplateDetailsResource
+  {
+    .ctor(String, String, String)
+    String CurrentVersion { get; set; }
+    String Slug { get; set; }
+    String VersionMask { get; set; }
   }
   class ProjectTriggerResource
     Octopus.Client.Extensibility.IResource
