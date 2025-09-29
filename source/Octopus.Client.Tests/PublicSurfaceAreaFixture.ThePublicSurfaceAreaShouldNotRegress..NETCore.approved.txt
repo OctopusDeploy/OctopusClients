@@ -1772,6 +1772,7 @@ Octopus.Client.Model
     String Keywords { get; set; }
     Octopus.Client.Extensibility.LinkCollection Links { get; set; }
     String Name { get; set; }
+    String SpaceId { get; set; }
     String Type { get; set; }
     String Website { get; set; }
   }
