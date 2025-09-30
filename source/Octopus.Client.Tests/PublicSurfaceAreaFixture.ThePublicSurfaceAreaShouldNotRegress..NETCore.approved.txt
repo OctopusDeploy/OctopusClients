@@ -3074,6 +3074,7 @@ Octopus.Client.Model
     .ctor()
     Boolean AllowDynamicInfrastructure { get; set; }
     String Description { get; set; }
+    List<String> EnvironmentTags { get; set; }
     String Name { get; set; }
     String Slug { get; set; }
     Int32 SortOrder { get; set; }

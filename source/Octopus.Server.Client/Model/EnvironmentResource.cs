@@ -47,8 +47,14 @@ namespace Octopus.Client.Model
         public bool AllowDynamicInfrastructure { get; set; }
 
         public string SpaceId { get; set; }
-        
+
         public string Slug { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of tags assigned to this environment.
+        /// </summary>
+        [Writeable]
+        public List<string> EnvironmentTags { get; set; } = new List<string>();
 
         public class IdComparer : IEqualityComparer<EnvironmentResource>
         {
