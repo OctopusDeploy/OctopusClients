@@ -2026,6 +2026,8 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.IResource
   {
     .ctor()
+    Nullable<Int32> ApiKeyDefaultExpiryDays { get; set; }
+    Nullable<Int32> ApiKeyMaxExpiryDays { get; set; }
     Boolean AutoLoginEnabled { get; set; }
     String CookieDomain { get; set; }
     String Id { get; set; }
