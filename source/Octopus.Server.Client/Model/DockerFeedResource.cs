@@ -7,6 +7,12 @@ namespace Octopus.Client.Model
         public override FeedType FeedType => FeedType.Docker;
 
         [Writeable]
+        public int DownloadAttempts { get; set; } = 5;
+
+        [Writeable]
+        public int DownloadRetryBackoffSeconds { get; set; } = 10;
+
+        [Writeable]
         public string ApiVersion { get; set; }
 
         [Writeable]

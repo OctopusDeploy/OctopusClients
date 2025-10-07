@@ -3028,6 +3028,8 @@ Octopus.Client.Model
   {
     .ctor()
     String ApiVersion { get; set; }
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
     Octopus.Client.Model.FeedType FeedType { get; }
     String FeedUri { get; set; }
     Octopus.Client.Model.SensitiveValue Password { get; set; }

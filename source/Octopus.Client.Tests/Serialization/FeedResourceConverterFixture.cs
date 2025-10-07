@@ -17,7 +17,9 @@ namespace Octopus.Client.Tests.Serialization
             {
                 Name = "Blah",
                 FeedType = FeedType.Docker,
-                ApiVersion = "Cat"
+                ApiVersion = "Cat",
+                DownloadAttempts = 10,
+                DownloadRetryBackoffSeconds = 30,
             };
 
             var result = Execute<DockerFeedResource>(input);
