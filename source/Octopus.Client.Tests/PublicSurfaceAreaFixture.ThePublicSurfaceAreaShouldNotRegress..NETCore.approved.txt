@@ -3331,6 +3331,7 @@ Octopus.Client.Model
     String[] FilePathFilters { get; }
     String GitCredentialId { get; }
     String GitCredentialType { get; }
+    String GitHubConnectionId { get; }
     String Name { get; }
     String RepositoryUri { get; }
     String StepPackageInputsReferenceId { get; set; }

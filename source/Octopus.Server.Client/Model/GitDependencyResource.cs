@@ -32,5 +32,6 @@ public class GitDependencyResource
     public string[] FilePathFilters { get; }
     public string GitCredentialType { get; }
     public string? GitCredentialId { get; }
+    public string? GitHubConnectionId { get; }
     public string? StepPackageInputsReferenceId { get; set; }
 }
