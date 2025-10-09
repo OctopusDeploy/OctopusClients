@@ -9279,6 +9279,7 @@ Octopus.Client.Repositories
     IReadOnlyList<ChannelResource> GetAllChannels(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ReleaseResource> GetAllReleases(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<RunbookResource> GetAllRunbooks(Octopus.Client.Model.ProjectResource)
+    IReadOnlyList<RunbookResource> GetAllRunbooks(Octopus.Client.Model.ProjectResource, String)
     IReadOnlyList<RunbookSnapshotResource> GetAllRunbookSnapshots(Octopus.Client.Model.ProjectResource)
     IReadOnlyList<ProjectTriggerResource> GetAllTriggers(Octopus.Client.Model.ProjectResource)
     Octopus.Client.Model.ResourceCollection<ChannelResource> GetChannels(Octopus.Client.Model.ProjectResource)

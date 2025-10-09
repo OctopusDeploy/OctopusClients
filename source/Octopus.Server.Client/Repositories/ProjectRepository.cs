@@ -33,6 +33,7 @@ namespace Octopus.Client.Repositories
         RunbookSnapshotResource GetRunbookSnapshotByName(ProjectResource project, string name);
         ResourceCollection<RunbookResource> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
         IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project);
+        IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project, string gitRef);
     }
 
     class ProjectRepository : BasicRepository<ProjectResource>, IProjectRepository
@@ -185,5 +186,7 @@ namespace Octopus.Client.Repositories
         {
             return Client.ListAll<RunbookResource>(project.Link("Runbooks"));
         }
+
+        public IReadOnlyList<RunbookResource> GetAllRunbooks(ProjectResource project, string gitRef) => Client.ListAll<RunbookResource>(project.Link("Runbooks"), new { gitRef });
     }
 }
