@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="NUnit" Version="4.4.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
     <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.41" NoWarn="NU1701" /> <!-- This package only targets legacy .NET desktop, but it still works on netcore so we force past the warning -->
