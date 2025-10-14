@@ -221,7 +221,7 @@ jobs:
         name: Set up python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.14'
 
       - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Install jc
