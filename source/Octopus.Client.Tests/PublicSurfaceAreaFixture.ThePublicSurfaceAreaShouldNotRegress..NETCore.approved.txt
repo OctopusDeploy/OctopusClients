@@ -6808,6 +6808,17 @@ Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
     String RoleClaimType { get; set; }
   }
 }
+Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
+{
+  class GenericOidcConfigurationResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
+  {
+    .ctor()
+    String RoleClaimType { get; set; }
+    String UsernameClaimType { get; set; }
+  }
+}
 Octopus.Client.Model.Authentication.OpenIDConnect.GoogleApps
 {
   class GoogleAppsConfigurationResource
