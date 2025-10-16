@@ -4717,6 +4717,7 @@ Octopus.Client.Model
     Octopus.Client.Model.PersistenceSettingsResource PersistenceSettings { get; set; }
     Octopus.Client.Model.DeploymentConnectivityPolicy ProjectConnectivityPolicy { get; set; }
     String ProjectGroupId { get; set; }
+    List<TagCanonicalIdOrName> ProjectTags { get; set; }
     Octopus.Client.Model.ProjectTemplateDetailsResource ProjectTemplateDetails { get; set; }
     Octopus.Client.Model.ReleaseCreationStrategyResource ReleaseCreationStrategy { get; set; }
     String ReleaseNotesTemplate { get; set; }
@@ -5700,6 +5701,14 @@ Octopus.Client.Model
   {
     static System.String Name
   }
+  class TagCanonicalIdOrName
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
+    String TagIdOrName { get; }
+    Octopus.Client.Model.TagSetIdOrName TagSetIdOrName { get; }
+  }
   class TagResource
     Octopus.Client.Extensibility.INamedResource
   {
@@ -5728,6 +5737,12 @@ Octopus.Client.Model
       static System.String LightYellow
       .ctor()
     }
+  }
+  class TagSetIdOrName
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    .ctor(String)
   }
   class TagSetResource
     Octopus.Client.Extensibility.IResource

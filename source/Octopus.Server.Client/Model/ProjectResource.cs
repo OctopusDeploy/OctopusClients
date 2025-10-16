@@ -27,6 +27,7 @@ namespace Octopus.Client.Model
             AutoDeployReleaseOverrides = new HashSet<AutoDeployReleaseOverrideResource>(AutoDeployReleaseOverrideResource.EnvironmentIdTenantIdComparer);
             variableTemplateEditor = new VariableTemplateContainerEditor<ProjectResource>(this);
             PersistenceSettings = new DatabasePersistenceSettingsResource();
+            ProjectTags = new List<TagCanonicalIdOrName>();
         }
 
         public ProjectResource(string id, string name, string slug) : this()
@@ -142,8 +143,14 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set;}
-        
+
         public IconResource Icon { get; set; }
+
+        /// <summary>
+        /// List of tags assigned to this project
+        /// </summary>
+        [Writeable]
+        public List<TagCanonicalIdOrName> ProjectTags { get; set; } = new List<TagCanonicalIdOrName>();
 
         public ProjectResource Clear()
         {
