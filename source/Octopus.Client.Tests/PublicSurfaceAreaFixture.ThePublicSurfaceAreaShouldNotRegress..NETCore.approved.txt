@@ -2538,8 +2538,10 @@ Octopus.Client.Model
   {
     .ctor()
     Octopus.Client.Model.ReferenceCollection IncludedEnvironmentIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection IncludedEnvironmentTags { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedProjectGroupIds { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedProjectIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection IncludedProjectTags { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedTenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection IncludedTenantTags { get; set; }
     Nullable<Int32> ProjectLimit { get; set; }

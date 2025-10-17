@@ -10,7 +10,9 @@ namespace Octopus.Client.Model
         {
             IncludedProjectGroupIds = new ReferenceCollection();
             IncludedProjectIds = new ReferenceCollection();
+            IncludedProjectTags = new ReferenceCollection();
             IncludedEnvironmentIds = new ReferenceCollection();
+            IncludedEnvironmentTags = new ReferenceCollection();
             IncludedTenantIds = new ReferenceCollection();
             IncludedTenantTags = new ReferenceCollection();
         }
@@ -22,7 +24,13 @@ namespace Octopus.Client.Model
         public ReferenceCollection IncludedProjectIds { get; set; }
 
         [Writeable]
+        public ReferenceCollection IncludedProjectTags { get; set; }
+
+        [Writeable]
         public ReferenceCollection IncludedEnvironmentIds { get; set; }
+
+        [Writeable]
+        public ReferenceCollection IncludedEnvironmentTags { get; set; }
 
         [Writeable]
         public ReferenceCollection IncludedTenantIds { get; set; }
