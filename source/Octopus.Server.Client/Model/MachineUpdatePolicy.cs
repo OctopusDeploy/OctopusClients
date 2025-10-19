@@ -12,11 +12,12 @@
         NeverUpdate,
         Update
     }
-    
+
     public enum KubernetesAgentUpdateBehavior
     {
-        NeverUpdate,
-        Update
+        NeverUpdate = 0,
+        Update = 1,
+        Block = 2
     }
 
     public class MachineUpdatePolicy

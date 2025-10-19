@@ -3645,6 +3645,7 @@ Octopus.Client.Model
   {
       NeverUpdate = 0
       Update = 1
+      Block = 2
   }
   LeadershipRank
   {
