@@ -4927,6 +4927,7 @@ Octopus.Client.Model
     String DefaultBranch { get; }
     String[] FilePathFilters { get; }
     String GitCredentialId { get; set; }
+    String GitHubConnectionId { get; set; }
     Octopus.Client.Model.Git.GitReferenceResource GitResourceSelectedLastRelease { get; set; }
     Boolean IsResolvable { get; }
     String Name { get; set; }

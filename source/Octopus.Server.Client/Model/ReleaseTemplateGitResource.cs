@@ -22,5 +22,6 @@ public class ReleaseTemplateGitResource
     public bool IsResolvable { get; }
     public string[] FilePathFilters { get; }
     public string? GitCredentialId { get; set; }
+    public string? GitHubConnectionId { get; set; }
     public GitReferenceResource? GitResourceSelectedLastRelease { get; set; }
 }
