@@ -22,5 +22,15 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         [Description("Tell Octopus how to find the value for the Octopus Username in the OIDC token. Defaults to \"preferred_username\" if left blank.")]
         [Writeable]
         public string? UsernameClaimType { get; set; }
+
+        [DisplayName("Resource")]
+        [Description("0Auth 2.0 resource parameter. Typically the absolute URI of the target resource where the access token will be used. Optional.")]
+        [Writeable]
+        public string? Resource { get; set; }
+
+        [DisplayName("Scopes")]
+        [Description("OAuth 2.0 scopes to request during authentication. Must include 'openid', 'profile', and 'email'.")]
+        [Writeable]
+        public string[]? Scopes { get; set; }
     }
 }
