@@ -32,5 +32,10 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         [Description("OAuth 2.0 scopes to request during authentication. Must include 'openid', 'profile', and 'email'.")]
         [Writeable]
         public string[]? Scopes { get; set; }
+        
+        [DisplayName("Display Name")]
+        [Description("The name to show on the login page. May contain only be letters, numbers, hyphens or spaces. Defaults to \"OpenID Connect\" if left blank.")]
+        [Writeable]
+        public string? DisplayName { get; set; }
     }
 }

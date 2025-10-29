@@ -6835,6 +6835,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
     Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
   {
     .ctor()
+    String DisplayName { get; set; }
     String Resource { get; set; }
     String RoleClaimType { get; set; }
     String[] Scopes { get; set; }
