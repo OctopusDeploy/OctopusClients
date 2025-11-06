@@ -20,7 +20,10 @@ public class KubernetesLiveStatusDetailedResource
     public string SyncStatus { get; set; }
 
     [Required]
-    public string MachineId { get; set; }
+    public string ResourceSourceId { get; set; }
+    
+    [Required]
+    public string SourceType { get; set; }
 
     [Required]
     public DateTimeOffset LastUpdated { get; set; }
@@ -33,4 +36,6 @@ public class KubernetesLiveStatusDetailedResource
     public Guid? DesiredResourceId { get; set; }
 
     public Guid? ResourceId { get; set; }
+    
+    public ExternalLinkResource ExternalLink { get; set; }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Octopus.Client.Model.Observability.LiveStatus;
 
-public class GetResourceRequest
+public class GetLiveKubernetesResourceRequest
 {
     [Required]
     public string ProjectId { get; set; }
@@ -14,7 +14,7 @@ public class GetResourceRequest
     public string TenantId { get; set; }
 
     [Required]
-    public string MachineId { get; set; }
+    public string SourceId { get; set; }
 
     [Required]
     public Guid DesiredOrKubernetesMonitoredResourceId { get; set; }

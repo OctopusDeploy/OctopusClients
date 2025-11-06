@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories.Async;
 public interface IObservabilityRepository
 {
     Task<GetLiveStatusResponse> Get(GetLiveStatusRequest request, CancellationToken cancellationToken);
-    Task<GetResourceResponse> GetResource(GetResourceRequest request, CancellationToken cancellationToken);
+    Task<GetResourceResponse> GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request, CancellationToken cancellationToken);
 
     Task<GetResourceManifestResponse> GetResourceManifest(
         GetResourceManifestRequest request,
@@ -45,11 +45,12 @@ public class ObservabilityRepository(IOctopusAsyncRepository repository) : IObse
             .ConfigureAwait(false);
     }
 
-    public async Task<GetResourceResponse> GetResource(GetResourceRequest request, CancellationToken cancellationToken)
+    public async Task<GetResourceResponse> GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request, CancellationToken cancellationToken)
     {
         var link = string.IsNullOrWhiteSpace(request.TenantId)
-            ? await repository.Link("Resource").ConfigureAwait(false)
-            : await repository.Link("TenantedResource").ConfigureAwait(false);
+            ? await repository.Link("KubernetesResource").ConfigureAwait(false)
+            : await repository.Link("TenantedKubernetesResource").ConfigureAwait(false);
+
 
         return await repository.Client.Get<GetResourceResponse>(link, request, cancellationToken).ConfigureAwait(false);
     }

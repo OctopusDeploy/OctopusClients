@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories;
 public interface IObservabilityRepository
 {
     GetLiveStatusResponse Get(GetLiveStatusRequest request);
-    GetResourceResponse GetResource(GetResourceRequest request);
+    GetResourceResponse GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request);
     GetResourceManifestResponse GetResourceManifest(GetResourceManifestRequest request);
     BeginContainerLogsSessionResponse BeginContainerLogsSession(BeginContainerLogsSessionCommand command);
     GetContainerLogsResponse GetContainerLogs(GetContainerLogsRequest request);
@@ -28,11 +28,12 @@ public class ObservabilityRepository(IOctopusRepository repository) : IObservabi
         return repository.Client.Get<GetLiveStatusResponse>(link, request);
     }
 
-    public GetResourceResponse GetResource(GetResourceRequest request)
+    public GetResourceResponse GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request)
     {
         var link = string.IsNullOrWhiteSpace(request.TenantId)
-            ? repository.Link("Resource")
-            : repository.Link("TenantedResource");
+            ? repository.Link("KubernetesResource")
+            : repository.Link("TenantedKubernetesResource");
+
 
         return repository.Client.Get<GetResourceResponse>(link, request);
     }

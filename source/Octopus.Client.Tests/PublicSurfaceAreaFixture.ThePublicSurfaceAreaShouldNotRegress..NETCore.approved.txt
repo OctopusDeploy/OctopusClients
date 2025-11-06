@@ -7957,6 +7957,21 @@ Octopus.Client.Model.Observability.KubernetesMonitor
 }
 Octopus.Client.Model.Observability.LiveStatus
 {
+  class ExternalLinkResource
+  {
+    .ctor()
+    String Label { get; set; }
+    String Uri { get; set; }
+  }
+  class GetLiveKubernetesResourceRequest
+  {
+    .ctor()
+    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
+    String EnvironmentId { get; set; }
+    String ProjectId { get; set; }
+    String SourceId { get; set; }
+    String TenantId { get; set; }
+  }
   class GetLiveStatusRequest
   {
     .ctor()
@@ -7987,15 +8002,6 @@ Octopus.Client.Model.Observability.LiveStatus
     Octopus.Client.Model.Observability.LiveStatus.LiveResourceDiff Diff { get; set; }
     String LiveManifest { get; set; }
   }
-  class GetResourceRequest
-  {
-    .ctor()
-    Guid DesiredOrKubernetesMonitoredResourceId { get; set; }
-    String EnvironmentId { get; set; }
-    String MachineId { get; set; }
-    String ProjectId { get; set; }
-    String TenantId { get; set; }
-  }
   class GetResourceResponse
   {
     .ctor()
@@ -8006,14 +8012,16 @@ Octopus.Client.Model.Observability.LiveStatus
     .ctor()
     IReadOnlyCollection<KubernetesLiveStatusDetailedResource> Children { get; set; }
     Nullable<Guid> DesiredResourceId { get; set; }
+    Octopus.Client.Model.Observability.LiveStatus.ExternalLinkResource ExternalLink { get; set; }
     String HealthStatus { get; set; }
     String Kind { get; set; }
     DateTimeOffset LastUpdated { get; set; }
-    String MachineId { get; set; }
     Octopus.Client.Model.Observability.LiveStatus.ManifestSummaryResource ManifestSummary { get; set; }
     String Name { get; set; }
     String Namespace { get; set; }
     Nullable<Guid> ResourceId { get; set; }
+    String ResourceSourceId { get; set; }
+    String SourceType { get; set; }
     String SyncStatus { get; set; }
   }
   class KubernetesLiveStatusResource
@@ -9259,7 +9267,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionResponse BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand)
     Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusResponse Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest)
     Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsResponse GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest)
-    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetLiveKubernetesResource(Octopus.Client.Model.Observability.LiveStatus.GetLiveKubernetesResourceRequest)
     Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsResponse GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest)
     Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestResponse GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest)
   }
@@ -9685,7 +9693,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionResponse BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand)
     Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusResponse Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest)
     Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsResponse GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest)
-    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest)
+    Octopus.Client.Model.Observability.LiveStatus.GetResourceResponse GetLiveKubernetesResource(Octopus.Client.Model.Observability.LiveStatus.GetLiveKubernetesResourceRequest)
     Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsResponse GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest)
     Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestResponse GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest)
   }
@@ -10114,7 +10122,7 @@ Octopus.Client.Repositories.Async
     Task<BeginResourceEventsSessionResponse> BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand, CancellationToken)
     Task<GetLiveStatusResponse> Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest, CancellationToken)
     Task<GetContainerLogsResponse> GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest, CancellationToken)
-    Task<GetResourceResponse> GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest, CancellationToken)
+    Task<GetResourceResponse> GetLiveKubernetesResource(Octopus.Client.Model.Observability.LiveStatus.GetLiveKubernetesResourceRequest, CancellationToken)
     Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
     Task<GetResourceManifestResponse> GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest, CancellationToken)
   }
@@ -10617,7 +10625,7 @@ Octopus.Client.Repositories.Async
     Task<BeginResourceEventsSessionResponse> BeginResourceEventsSession(Octopus.Client.Model.Observability.ResourceEvents.BeginResourceEventsSessionCommand, CancellationToken)
     Task<GetLiveStatusResponse> Get(Octopus.Client.Model.Observability.LiveStatus.GetLiveStatusRequest, CancellationToken)
     Task<GetContainerLogsResponse> GetContainerLogs(Octopus.Client.Model.Observability.ContainerLogs.GetContainerLogsRequest, CancellationToken)
-    Task<GetResourceResponse> GetResource(Octopus.Client.Model.Observability.LiveStatus.GetResourceRequest, CancellationToken)
+    Task<GetResourceResponse> GetLiveKubernetesResource(Octopus.Client.Model.Observability.LiveStatus.GetLiveKubernetesResourceRequest, CancellationToken)
     Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
     Task<GetResourceManifestResponse> GetResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetResourceManifestRequest, CancellationToken)
   }
