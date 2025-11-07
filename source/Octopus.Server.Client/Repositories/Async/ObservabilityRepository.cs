@@ -12,8 +12,8 @@ public interface IObservabilityRepository
     Task<GetLiveStatusResponse> Get(GetLiveStatusRequest request, CancellationToken cancellationToken);
     Task<GetResourceResponse> GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request, CancellationToken cancellationToken);
 
-    Task<GetResourceManifestResponse> GetResourceManifest(
-        GetResourceManifestRequest request,
+    Task<GetResourceManifestResponse> GetLiveKubernetesResourceManifest(
+        GetLiveKubernetesResourceManifestRequest request,
         CancellationToken cancellationToken);
 
     Task<BeginContainerLogsSessionResponse> BeginContainerLogsSession(
@@ -55,13 +55,13 @@ public class ObservabilityRepository(IOctopusAsyncRepository repository) : IObse
         return await repository.Client.Get<GetResourceResponse>(link, request, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<GetResourceManifestResponse> GetResourceManifest(
-        GetResourceManifestRequest request,
+    public async Task<GetResourceManifestResponse> GetLiveKubernetesResourceManifest(
+        GetLiveKubernetesResourceManifestRequest request,
         CancellationToken cancellationToken)
     {
         var link = string.IsNullOrWhiteSpace(request.TenantId)
-            ? await repository.Link("ResourceManifest").ConfigureAwait(false)
-            : await repository.Link("TenantedResourceManifest").ConfigureAwait(false);
+            ? await repository.Link("KubernetesResourceManifest").ConfigureAwait(false)
+            : await repository.Link("TenantedKubernetesResourceManifest").ConfigureAwait(false);
 
         return await repository.Client.Get<GetResourceManifestResponse>(link, request, cancellationToken);
     }

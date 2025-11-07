@@ -10,7 +10,7 @@ public interface IObservabilityRepository
 {
     GetLiveStatusResponse Get(GetLiveStatusRequest request);
     GetResourceResponse GetLiveKubernetesResource(GetLiveKubernetesResourceRequest request);
-    GetResourceManifestResponse GetResourceManifest(GetResourceManifestRequest request);
+    GetResourceManifestResponse GetLiveKubernetesResourceManifest(GetLiveKubernetesResourceManifestRequest request);
     BeginContainerLogsSessionResponse BeginContainerLogsSession(BeginContainerLogsSessionCommand command);
     GetContainerLogsResponse GetContainerLogs(GetContainerLogsRequest request);
     BeginResourceEventsSessionResponse BeginResourceEventsSession(BeginResourceEventsSessionCommand command);
@@ -38,11 +38,11 @@ public class ObservabilityRepository(IOctopusRepository repository) : IObservabi
         return repository.Client.Get<GetResourceResponse>(link, request);
     }
 
-    public GetResourceManifestResponse GetResourceManifest(GetResourceManifestRequest request)
+    public GetResourceManifestResponse GetLiveKubernetesResourceManifest(GetLiveKubernetesResourceManifestRequest request)
     {
         var link = string.IsNullOrWhiteSpace(request.TenantId)
-            ? repository.Link("ResourceManifest")
-            : repository.Link("TenantedResourceManifest");
+            ? repository.Link("KubernetesResourceManifest")
+            : repository.Link("TenantedKubernetesResourceManifest");
 
         return repository.Client.Get<GetResourceManifestResponse>(link, request);
     }
