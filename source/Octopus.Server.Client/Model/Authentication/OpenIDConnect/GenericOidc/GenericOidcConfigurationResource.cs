@@ -14,12 +14,12 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc
         }
 
         [DisplayName("Role Claim Type")]
-        [Description("Tell Octopus how to find the roles in the security token from the OIDC provider")]
+        [Description("Tell Octopus how to find the roles in the security token from the OIDC provider. Defaults to \"groups\".")]
         [Writeable]
         public string? RoleClaimType { get; set; }
 
         [DisplayName("Username Claim Type")]
-        [Description("Tell Octopus how to find the value for the Octopus Username in the OIDC token. Defaults to \"preferred_username\" if left blank.")]
+        [Description("Tell Octopus how to find the value for the Octopus Username in the OIDC token. Defaults to \"preferred_username\".")]
         [Writeable]
         public string? UsernameClaimType { get; set; }
 
