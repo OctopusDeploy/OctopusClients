@@ -1,15 +1,29 @@
 using System;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.DeploymentFreezes
 {
-    public class RecurringSchedule
+    public abstract class RecurringSchedule
     {
-        
-        public string Type { get; set; }
+        protected RecurringSchedule()
+        {
+        }
+
+        public abstract RecurringScheduleType Type { get; }
+
+        [Writeable]
         public int Unit { get; set; }
-        public string EndType { get; set; } = "Never";
+
+        [Writeable]
+        public RecurringScheduleEndType EndType { get; set; } = RecurringScheduleEndType.Never;
+
+        [Writeable]
         public int UserUtcOffsetInMinutes { get; set; }
+
+        [Writeable]
         public DateTimeOffset? EndOnDate { get; set; }
+
+        [Writeable]
         public int? EndAfterOccurrences { get; set; }
 
         public DateTimeOffset? StartDate { get; set; }

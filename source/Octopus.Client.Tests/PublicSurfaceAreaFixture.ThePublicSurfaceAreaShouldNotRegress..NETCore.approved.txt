@@ -6947,6 +6947,12 @@ Octopus.Client.Model.BuildInformation
 }
 Octopus.Client.Model.DeploymentFreezes
 {
+  class AnnuallyRecurringSchedule
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule
+  {
+    .ctor()
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleType Type { get; }
+  }
   class CreateDeploymentFreezeCommand
   {
     .ctor()
@@ -6980,6 +6986,12 @@ Octopus.Client.Model.DeploymentFreezes
     Dictionary<String, ReferenceCollection> ProjectEnvironmentScope { get; set; }
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
+  }
+  class DailyRecurringSchedule
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule
+  {
+    .ctor()
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleType Type { get; }
   }
   class DeleteDeploymentFreezeCommand
   {
@@ -7063,17 +7075,39 @@ Octopus.Client.Model.DeploymentFreezes
     DateTimeOffset Start { get; set; }
     List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
   }
-  class RecurringSchedule
+  class MonthlyRecurringSchedule
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule
   {
     .ctor()
+    String DateOfMonth { get; set; }
+    String DayNumberOfMonth { get; set; }
+    Nullable<DayOfWeek> DayOfWeek { get; set; }
+    Octopus.Client.Model.Triggers.ScheduledTriggers.MonthlyScheduleType MonthlyScheduleType { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleType Type { get; }
+  }
+  abstract class RecurringSchedule
+  {
     Nullable<Int32> EndAfterOccurrences { get; set; }
     Nullable<DateTimeOffset> EndDate { get; set; }
     Nullable<DateTimeOffset> EndOnDate { get; set; }
-    String EndType { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleEndType EndType { get; set; }
     Nullable<DateTimeOffset> StartDate { get; set; }
-    String Type { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleType Type { get; }
     Int32 Unit { get; set; }
     Int32 UserUtcOffsetInMinutes { get; set; }
+  }
+  RecurringScheduleEndType
+  {
+      Never = 0
+      OnDate = 1
+      AfterOccurrences = 2
+  }
+  RecurringScheduleType
+  {
+      Daily = 0
+      Weekly = 1
+      Monthly = 2
+      Annually = 3
   }
   class TenantProjectEnvironment
   {
@@ -7081,6 +7115,13 @@ Octopus.Client.Model.DeploymentFreezes
     String EnvironmentId { get; set; }
     String ProjectId { get; set; }
     String TenantId { get; set; }
+  }
+  class WeeklyRecurringSchedule
+    Octopus.Client.Model.DeploymentFreezes.RecurringSchedule
+  {
+    .ctor()
+    Octopus.Client.Model.DaysOfWeek DaysOfWeek { get; set; }
+    Octopus.Client.Model.DeploymentFreezes.RecurringScheduleType Type { get; }
   }
 }
 Octopus.Client.Model.DeploymentProcess
@@ -10747,6 +10788,11 @@ Octopus.Client.Serialization
   class PrivateMemberContractResolver
     IContractResolver
     DefaultContractResolver
+  {
+    .ctor()
+  }
+  class RecurringScheduleConverter
+    Octopus.Client.Serialization.InheritedClassConverter<RecurringSchedule, RecurringScheduleType>
   {
     .ctor()
   }

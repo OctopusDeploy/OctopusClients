@@ -68,8 +68,8 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
         CancellationToken cancellationToken)
     {
         var link = await client.Repository.Link("DeploymentFreezes");
-
-        return await client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(link, command,
+        var pathWithId = $"{link}/{command.Id}";
+        return await client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(pathWithId, command,
             cancellationToken);
     }
 }
