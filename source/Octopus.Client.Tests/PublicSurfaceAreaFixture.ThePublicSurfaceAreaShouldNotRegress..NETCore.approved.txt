@@ -6826,6 +6826,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
   {
     .ctor()
     String RoleClaimType { get; set; }
+    Nullable<Boolean> ScimEnabled { get; set; }
   }
 }
 Octopus.Client.Model.Authentication.OpenIDConnect.GenericOidc

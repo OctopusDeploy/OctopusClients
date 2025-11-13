@@ -16,5 +16,11 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.AzureAD
         [Description("Tell Octopus how to find the roles/groups in the security token from Azure Active Directory (usually \"roles\" or \"groups\")")]
         [Writeable]
         public string? RoleClaimType { get; set; }
+
+        [DisplayName("Enable SCIM")]
+        [Description("Enable System for Cross-domain Identity Management (SCIM) to allow Azure AD to manage users and groups in Octopus Deploy. Cannot be enabled if 'Allow Auto User Creation' is enabled.")]
+        [Category("SCIM")]
+        [Writeable]
+        public bool? ScimEnabled { get; set; }
     }
 }
