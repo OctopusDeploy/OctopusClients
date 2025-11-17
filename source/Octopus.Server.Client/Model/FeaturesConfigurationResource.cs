@@ -1,4 +1,5 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿using System;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model
 {
@@ -11,9 +12,6 @@ namespace Octopus.Client.Model
         public bool IsCommunityActionTemplatesEnabled { get; set; }
 
         [Writeable]
-        public bool IsKubernetesEnabled { get; set; }
-
-        [Writeable]
         public bool IsHelpSidebarEnabled { get; set; }
 
         [Writeable]
@@ -23,15 +21,24 @@ namespace Octopus.Client.Model
         public string HelpSidebarSupportLinkLabel { get; set; }
 
         [Writeable]
-        public bool IsActionContainersEnabled { get; set; }
-
-        [Writeable]
-        public bool IsConfigurationAsCodeEnabled { get; set; }
+        public bool IsAutomaticStepUpdatesEnabled { get; set; }
         
         [Writeable]
-        public bool IsStepUiFrameworkEnabled { get; set; }
+        public bool IsKubernetesCloudTargetDiscoveryEnabled { get; set; }
+        
+        [Writeable]
+        public bool IsCompositeDockerHubRegistryFeedEnabled { get; set; }
 
         [Writeable]
-        public bool IsServiceNowIntegrationEnabled { get; set; }
+        public bool IsConfigureFeedsWithLocalOrSmbPathsEnabled { get; set; }
+        
+        [Writeable]
+        public bool IsNavigationVisualUpliftEnabled { get; set; }
+        
+        [Writeable]
+        public bool IsBulkDeploymentCreationEnabled { get; set; }
+        
+        [Writeable]
+        public bool IsProjectsPageOptimizationEnabled { get; set; }
     }
 }

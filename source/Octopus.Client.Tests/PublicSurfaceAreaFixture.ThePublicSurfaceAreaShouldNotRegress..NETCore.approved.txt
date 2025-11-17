@@ -3228,14 +3228,16 @@ Octopus.Client.Model
     .ctor()
     String HelpSidebarSupportLink { get; set; }
     String HelpSidebarSupportLinkLabel { get; set; }
-    Boolean IsActionContainersEnabled { get; set; }
+    Boolean IsAutomaticStepUpdatesEnabled { get; set; }
     Boolean IsBuiltInWorkerEnabled { get; set; }
+    Boolean IsBulkDeploymentCreationEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
-    Boolean IsConfigurationAsCodeEnabled { get; set; }
+    Boolean IsCompositeDockerHubRegistryFeedEnabled { get; set; }
+    Boolean IsConfigureFeedsWithLocalOrSmbPathsEnabled { get; set; }
     Boolean IsHelpSidebarEnabled { get; set; }
-    Boolean IsKubernetesEnabled { get; set; }
-    Boolean IsServiceNowIntegrationEnabled { get; set; }
-    Boolean IsStepUiFrameworkEnabled { get; set; }
+    Boolean IsKubernetesCloudTargetDiscoveryEnabled { get; set; }
+    Boolean IsNavigationVisualUpliftEnabled { get; set; }
+    Boolean IsProjectsPageOptimizationEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource
