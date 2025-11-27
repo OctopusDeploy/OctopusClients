@@ -38,7 +38,7 @@ jobs:
       octoversion_fullsemver: ${{ steps.build.outputs.octoversion_fullsemver }}
       skip-release-and-release-note: ${{ steps.github-tag.outputs.skip-release-and-release-note }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # all
 
@@ -147,7 +147,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v5
@@ -185,7 +185,7 @@ jobs:
     needs: [ build, test-linux ]
     steps:
       - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # fetching everything is unfortunately required to get tags
 
