@@ -251,10 +251,25 @@ jobs:
             const commitsSinceLastRelease = JSON.parse(gitCommitsJson);
 
             // Of the commits since the last release, get the first line of each message that doesn't opt out of release notes
+            // Also extract GitHub issue URL from the second line if present
             const releaseNotes = commitsSinceLastRelease
               .map(commit => commit.message)
               .filter(message => !/^\s*skip-release-and-release-note:\s*true\s*$/mi.test(message))
-              .map(message => `- ${message.split('\n')[0]}`);
+              .map(message => {
+                const lines = message.split('\n');
+                const commitTitle = lines[0];
+
+                // Check if the second line (if present and non-empty) contains a GitHub issue URL
+                const secondLine = lines.length > 1 ? lines[1].trim() : '';
+                const isGitHubIssueUrl = secondLine && /^https:\/\/github\.com\/octopusdeploy\/issues\/issues\/\d+/i.test(secondLine);
+
+                // If second line contains a GitHub issue URL from OctopusDeploy/Issues, format it as a clickable link
+                // GitHub will automatically convert URLs like "https://github.com/OctopusDeploy/Issues/issues/1" to "OctopusDeploy/Issues#1"
+                if (isGitHubIssueUrl) {
+                  return `- ${secondLine} - ${commitTitle}`;
+                }
+                return `- ${commitTitle}`;
+              });
 
             // Build release body
             const body = `## Release Notes:
