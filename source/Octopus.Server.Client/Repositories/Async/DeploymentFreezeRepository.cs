@@ -47,9 +47,7 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
     {
         var link = await client.Repository.Link("DeploymentFreezes");
 
-        var response =
-            await client.Create<CreateDeploymentFreezeCommand, CreateDeploymentFreezeResponse>(link, command, null,
-                cancellationToken);
+        var response =  await client.Create<CreateDeploymentFreezeCommand, CreateDeploymentFreezeResponse>(link, command, null, cancellationToken);
         return response;
     }
 
@@ -57,10 +55,7 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
         CancellationToken cancellationToken)
     {
         var link = await client.Repository.Link("DeploymentFreezes");
-
-        var response =
-            await client.Update<ModifyDeploymentFreezeCommand, ModifyDeploymentFreezeResponse>(link, command, null,
-                cancellationToken);
+        var response = await client.Update<ModifyDeploymentFreezeCommand, ModifyDeploymentFreezeResponse>(link, command, new { id = command.Id }, cancellationToken);
         return response;
     }
 
@@ -69,7 +64,6 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
     {
         var link = await client.Repository.Link("DeploymentFreezes");
         var pathWithId = $"{link}/{command.Id}";
-        return await client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(pathWithId, command,
-            cancellationToken);
+        return await client.Delete<DeleteDeploymentFreezeCommand, DeleteDeploymentFreezeResponse>(pathWithId, command, cancellationToken);
     }
 }
