@@ -8253,6 +8253,15 @@ Octopus.Client.Model.SpaceDefaultRetentionPolicies
     Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
     String SpaceId { get; set; }
   }
+  class ModifyDefaultRunbookRetentionPolicyCommand
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.ModifyDefaultRetentionPolicyCommand
+  {
+    .ctor(String, String)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RunbookRetentionPolicyType Strategy { get; set; }
+    Octopus.Client.Model.RunbookRetentionUnit Unit { get; set; }
+  }
   class ReleaseRetentionPolicyType
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
@@ -8269,6 +8278,14 @@ Octopus.Client.Model.SpaceDefaultRetentionPolicies
     static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType LifecycleTentacle
     static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType MachinePackageCache
     static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RunbookRetention
+    .ctor(String)
+  }
+  class RunbookRetentionPolicyType
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RunbookRetentionPolicyType Count
+    static Octopus.Client.Model.SpaceDefaultRetentionPolicies.RunbookRetentionPolicyType Forever
     .ctor(String)
   }
   class SpaceDefaultLifecycleReleaseRetentionPolicyResource
@@ -8295,6 +8312,15 @@ Octopus.Client.Model.SpaceDefaultRetentionPolicies
     String Name { get; set; }
     Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
     String SpaceId { get; set; }
+  }
+  class SpaceDefaultRunbookRetentionPolicyResource
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.SpaceDefaultRetentionPolicyResource
+  {
+    .ctor(Octopus.Client.Model.SpaceDefaultRetentionPolicies.RunbookRetentionPolicyType)
+    Nullable<Int32> QuantityToKeep { get; set; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RetentionType RetentionType { get; }
+    Octopus.Client.Model.SpaceDefaultRetentionPolicies.RunbookRetentionPolicyType Strategy { get; set; }
+    Octopus.Client.Model.RunbookRetentionUnit Unit { get; set; }
   }
   class TentacleRetentionPolicyType
     IComparable

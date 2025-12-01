@@ -1,3 +1,4 @@
+using System;
 using Octopus.TinyTypes;
 
 namespace Octopus.Client.Model.SpaceDefaultRetentionPolicies
@@ -15,10 +16,16 @@ namespace Octopus.Client.Model.SpaceDefaultRetentionPolicies
         public static readonly ReleaseRetentionPolicyType Count = new(nameof(Count));
         public static readonly ReleaseRetentionPolicyType Forever = new(nameof(Forever));
     }
-    
+
     public class TentacleRetentionPolicyType(string value) : CaseInsensitiveStringTinyType(value)
     {
         public static readonly TentacleRetentionPolicyType Count = new(nameof(Count));
         public static readonly TentacleRetentionPolicyType Forever = new(nameof(Forever));
+    }
+
+    public class RunbookRetentionPolicyType(string value) : CaseInsensitiveStringTinyType(value)
+    {
+        public static readonly RunbookRetentionPolicyType Count = new(nameof(Count));
+        public static readonly RunbookRetentionPolicyType Forever = new(nameof(Forever));
     }
 }

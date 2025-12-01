@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using Octopus.Client.Model;
@@ -17,7 +18,7 @@ namespace Octopus.Client.Tests.Model
             result.RetentionType.Should().Be(RetentionType.LifecycleRelease);
             result.SpaceId.Should().Be("Spaces-9");
             result.GetType().Should().Be(typeof(SpaceDefaultLifecycleReleaseRetentionPolicyResource));
-            
+
             var lifecycleResult = result as SpaceDefaultLifecycleReleaseRetentionPolicyResource;
             lifecycleResult?.Strategy.Should().Be(RetentionPeriodStrategy.Count);
             lifecycleResult?.QuantityToKeep.HasValue.Should().BeFalse();
@@ -33,9 +34,23 @@ namespace Octopus.Client.Tests.Model
             result.RetentionType.Should().Be(RetentionType.LifecycleTentacle);
             result.SpaceId.Should().Be("Spaces-9");
             result.GetType().Should().Be(typeof(SpaceDefaultLifecycleTentacleRetentionPolicyResource));
-            
+
             var tentacleResult = result as SpaceDefaultLifecycleTentacleRetentionPolicyResource;
             tentacleResult?.Strategy.Should().Be(RetentionPeriodStrategy.Forever);
+        }
+
+        [Test]
+        public void RunbookRetentionPolicyTypeCanBeDeserialized()
+        {
+            var payload = @"{ ""Id"": ""RunbookRetentionDefault-Spaces-9"", ""Name"": ""Default Runbook Retention Policy"", ""RetentionType"": ""RunbookRetention"", ""SpaceId"": ""Spaces-9"", ""Strategy"":""Forever"" }";
+
+            var result = JsonSerialization.DeserializeObject<SpaceDefaultRetentionPolicyResource>(payload);
+            result.RetentionType.Should().Be(RetentionType.RunbookRetention);
+            result.SpaceId.Should().Be("Spaces-9");
+            result.GetType().Should().Be(typeof(SpaceDefaultRunbookRetentionPolicyResource));
+
+            var runbookResult = result as SpaceDefaultRunbookRetentionPolicyResource;
+            runbookResult?.Strategy.Should().Be(RunbookRetentionPolicyType.Forever);
         }
     }
 }
