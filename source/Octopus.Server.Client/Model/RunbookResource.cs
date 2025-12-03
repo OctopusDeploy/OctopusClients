@@ -46,7 +46,7 @@ namespace Octopus.Client.Model
         public GuidedFailureMode DefaultGuidedFailureMode { get; set; }
 
         [Writeable]
-        public RunbookRetentionPeriod RunRetentionPolicy { get; set; }
+        public RunbookRetentionPolicy RunRetentionPolicy { get; set; }
 
         [Writeable]
         public bool ForcePackageDownload { get; set; }

@@ -33,7 +33,7 @@ namespace Octopus.Client.Editors
                     Description = description,
                     EnvironmentScope = RunbookEnvironmentScope.All,
                     DefaultGuidedFailureMode = GuidedFailureMode.EnvironmentDefault,
-                    RunRetentionPolicy = new RunbookRetentionPeriod { QuantityToKeep = 100 }
+                    RunRetentionPolicy = RunbookRetentionPolicy.Default(),
                 });
             }
             else

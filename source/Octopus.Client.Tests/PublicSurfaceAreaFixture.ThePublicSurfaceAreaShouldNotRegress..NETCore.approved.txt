@@ -5126,22 +5126,24 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
-    Octopus.Client.Model.RunbookRetentionPeriod RunRetentionPolicy { get; set; }
+    Octopus.Client.Model.RunbookRetentionPolicy RunRetentionPolicy { get; set; }
     String Slug { get; set; }
     String SpaceId { get; set; }
   }
-  class RunbookRetentionPeriod
+  class RunbookRetentionPolicy
   {
-    .ctor()
-    Int32 QuantityToKeep { get; set; }
-    Boolean ShouldKeepForever { get; set; }
-    Octopus.Client.Model.RunbookRetentionUnit Unit { get; set; }
+    Int32 QuantityToKeep { get; }
+    Boolean ShouldKeepForever { get; }
+    Octopus.Client.Model.RetentionPeriodStrategy Strategy { get; }
+    Octopus.Client.Model.RunbookRetentionUnit Unit { get; }
+    static Octopus.Client.Model.RunbookRetentionPolicy Count(Int32, Octopus.Client.Model.RunbookRetentionUnit)
+    static Octopus.Client.Model.RunbookRetentionPolicy Default()
+    static Octopus.Client.Model.RunbookRetentionPolicy Forever()
   }
   class RunbookRetentionUnit
     IComparable
     Octopus.TinyTypes.CaseInsensitiveStringTinyType
   {
-    .ctor(String)
     static Octopus.Client.Model.RunbookRetentionUnit Days { get; }
     static Octopus.Client.Model.RunbookRetentionUnit Items { get; }
   }
