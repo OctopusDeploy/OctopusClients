@@ -4707,6 +4707,7 @@ Octopus.Client.Model
     String ClonedFromProjectId { get; set; }
     Nullable<Boolean> CombineHealthAndSyncStatusInDashboardLiveStatus { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
+    String DefaultPowerShellEdition { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
     String DeploymentChangesTemplate { get; set; }
     String DeploymentProcessId { get; set; }

@@ -144,6 +144,9 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set;}
 
+        [Writeable]
+        public string DefaultPowerShellEdition { get; set;}
+
         public IconResource Icon { get; set; }
 
         /// <summary>
