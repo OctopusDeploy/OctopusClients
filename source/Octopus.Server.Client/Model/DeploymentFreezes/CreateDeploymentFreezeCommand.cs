@@ -11,6 +11,8 @@ public class CreateDeploymentFreezeCommand
     [MaxLength(200)]
     public string Name { get; set; }
 
+    public string Description { get; set; }
+
     [Required(ErrorMessage = "Please provide a start time.")]
     public DateTimeOffset Start { get; set; }
 

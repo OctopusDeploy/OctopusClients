@@ -6962,6 +6962,7 @@ Octopus.Client.Model.DeploymentFreezes
   class CreateDeploymentFreezeCommand
   {
     .ctor()
+    String Description { get; set; }
     DateTimeOffset End { get; set; }
     String Name { get; set; }
     String OwnerId { get; set; }
@@ -7061,6 +7062,7 @@ Octopus.Client.Model.DeploymentFreezes
   class ModifyDeploymentFreezeCommand
   {
     .ctor()
+    String Description { get; set; }
     DateTimeOffset End { get; set; }
     String Id { get; set; }
     String Name { get; set; }
