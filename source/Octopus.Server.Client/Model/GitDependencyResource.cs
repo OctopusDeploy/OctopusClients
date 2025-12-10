@@ -15,12 +15,15 @@ public class GitDependencyResource
         string? gitCredentialId = null, 
         string[]? filePathFilters = null, 
         string? name = null,
-        string? stepPackageInputsReferenceId = null)
+        string? stepPackageInputsReferenceId = null,
+        string? gitHubConnectionId = null
+    )
     {
         RepositoryUri = repositoryUri;
         DefaultBranch = defaultBranch;
         GitCredentialType = gitCredentialType;
         GitCredentialId = gitCredentialId;
+        GitHubConnectionId = gitHubConnectionId;
         FilePathFilters = filePathFilters ?? Array.Empty<string>();
         Name = name ?? string.Empty;
         StepPackageInputsReferenceId = stepPackageInputsReferenceId;

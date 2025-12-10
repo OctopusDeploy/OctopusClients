@@ -11,14 +11,14 @@ Please see the [Octopus.Client](https://octopus.com/docs/api-and-integration/oct
 
 If you believe you have found a problem, or have a suggested enhancement, please raise it with the Octopus [Support Team](https://octopus.com/support)
 
-While this library is licensed under the Apache 2.0 license and you are welcome to fork the it, this repository does not accept GitHub issues or Pull Requests. For more information please see the Octopus Deploy Blog: [Changes to the Octopus C# client library open source repository](https://octopus.com/blog/changes-to-octopus-csharp-client-repository)
+While this library is licensed under the Apache 2.0 license, and you are welcome to fork it, this repository does not accept GitHub issues or Pull Requests. For more information please see the Octopus Deploy Blog: [Changes to the Octopus C# client library open source repository](https://octopus.com/blog/changes-to-octopus-csharp-client-repository)
 
 ## Versioning
 We use [Semantic Versioning](http://semver.org/) for our open source libraries and tools. This breaks with our older practice of keeping version numbers in sync with Octopus Server. 
 
-Within a major version of `Octopus.Client` we will maintain backwards compatibility to a set version of Octopus Server, allowing worry free minor and patch upgrades.
+Within a major version of `Octopus.Client` we will maintain backwards compatibility to a set version of Octopus Server, allowing worry-free minor and patch upgrades.
 
-Conversely we also maintain backwards compatibility in our Server API as much as possible while still being able to add new features. This means that an older version of `Octopus.Client` will work with newer versions of Octopus Server.
+Conversely, we also maintain backwards compatibility in our Server API as much as possible while still being able to add new features. This means that an older version of `Octopus.Client` will work with newer versions of Octopus Server.
 
 ## Compatibility
 
