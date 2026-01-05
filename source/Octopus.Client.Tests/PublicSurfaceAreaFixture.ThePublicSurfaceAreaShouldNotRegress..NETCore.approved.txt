@@ -3226,6 +3226,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    String DefaultPowerShellEdition { get; set; }
     String HelpSidebarSupportLink { get; set; }
     String HelpSidebarSupportLinkLabel { get; set; }
     Boolean IsAutomaticStepUpdatesEnabled { get; set; }

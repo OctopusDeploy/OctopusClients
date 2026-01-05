@@ -40,5 +40,8 @@ namespace Octopus.Client.Model
         
         [Writeable]
         public bool IsProjectsPageOptimizationEnabled { get; set; }
+
+        [Writeable]
+        public string DefaultPowerShellEdition { get; set; }
     }
 }
