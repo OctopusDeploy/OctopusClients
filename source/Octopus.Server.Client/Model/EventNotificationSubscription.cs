@@ -34,7 +34,7 @@ namespace Octopus.Client.Model
 
         public TimeSpan WebhookTimeout { get; set; } = TimeSpan.FromSeconds(10);
         public string WebhookHeaderKey { get; set; }
-        public string WebhookHeaderValue { get; set; }
+        public PropertyValueResource WebhookHeaderValue { get; set; }
 
         public DateTimeOffset? WebhookLastProcessed { get; set; }
 

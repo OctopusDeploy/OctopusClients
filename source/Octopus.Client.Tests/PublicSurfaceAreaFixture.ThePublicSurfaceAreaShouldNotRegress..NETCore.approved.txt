@@ -3148,7 +3148,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
     String WebhookHeaderKey { get; set; }
-    String WebhookHeaderValue { get; set; }
+    Octopus.Client.Model.PropertyValueResource WebhookHeaderValue { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
     Nullable<Int64> WebhookLastProcessedEventAutoId { get; set; }
     Octopus.Client.Model.ReferenceCollection WebhookTeams { get; set; }
