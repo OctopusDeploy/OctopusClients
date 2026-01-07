@@ -4441,6 +4441,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission EventRetentionDelete
     static Octopus.Client.Model.Permission EventRetentionView
     static Octopus.Client.Model.Permission EventView
+    static Octopus.Client.Model.Permission FeatureToggleEdit
     static Octopus.Client.Model.Permission FeedEdit
     static Octopus.Client.Model.Permission FeedView
     static Octopus.Client.Model.Permission GitCredentialEdit

@@ -282,6 +282,8 @@ namespace Octopus.Client.Model
         [Description("Create, edit, delete resources in the Platform Hub")] public static readonly Permission PlatformHubEdit = new("PlatformHubEdit");
         
         [Description("Administer retention policies")] public static readonly Permission RetentionAdminister = new("RetentionAdminister");
+        
+        [Description("Create, edit, and delete feature toggles")] public static readonly Permission FeatureToggleEdit = new("FeatureToggleEdit");
 
         public Permission(string id)
         {
