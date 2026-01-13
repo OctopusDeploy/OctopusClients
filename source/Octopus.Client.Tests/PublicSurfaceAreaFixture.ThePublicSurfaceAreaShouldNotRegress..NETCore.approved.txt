@@ -3238,6 +3238,7 @@ Octopus.Client.Model
     Boolean IsHelpSidebarEnabled { get; set; }
     Boolean IsKubernetesCloudTargetDiscoveryEnabled { get; set; }
     Boolean IsNavigationVisualUpliftEnabled { get; set; }
+    Boolean IsProjectsPageOnboardingEnabled { get; set; }
     Boolean IsProjectsPageOptimizationEnabled { get; set; }
   }
   class FeedResource
