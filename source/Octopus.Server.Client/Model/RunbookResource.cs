@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Octopus.Client.Extensibility;
 using Octopus.Client.Extensibility.Attributes;
 
@@ -53,5 +54,11 @@ namespace Octopus.Client.Model
      
         [Writeable]
         public bool FailTargetDiscovery { get; set; }
+        
+        /// <summary>  
+        /// List of tags assigned to this runbook  
+        /// </summary>  
+        [Writeable]  
+        public List<TagCanonicalIdOrName> RunbookTags { get; set; } = new List<TagCanonicalIdOrName>();
     }
 }

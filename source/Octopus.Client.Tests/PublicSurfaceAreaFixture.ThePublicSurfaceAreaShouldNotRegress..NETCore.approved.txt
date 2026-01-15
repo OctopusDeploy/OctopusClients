@@ -5129,6 +5129,7 @@ Octopus.Client.Model
     String ProjectId { get; set; }
     String PublishedRunbookSnapshotId { get; set; }
     String RunbookProcessId { get; set; }
+    List<TagCanonicalIdOrName> RunbookTags { get; set; }
     Octopus.Client.Model.RunbookRetentionPolicy RunRetentionPolicy { get; set; }
     String Slug { get; set; }
     String SpaceId { get; set; }
