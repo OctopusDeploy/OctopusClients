@@ -190,7 +190,7 @@ jobs:
           fetch-depth: 0 # fetching everything is unfortunately required to get tags
 
       - name: Download nuget package artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: OctoClientsNuget
           path: ./artifacts/
