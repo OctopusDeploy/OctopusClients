@@ -46,9 +46,9 @@ namespace Octopus.Client.Repositories.Async
                 {
                     if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
                         throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
-                    return Task.FromResult(0);
+                    return Task.CompletedTask;
                 },
-                whenSystemScoped: () => Task.FromResult(0),
+                whenSystemScoped: () => Task.CompletedTask,
                 whenUnspecifiedScope: async () =>
                 {
                     var spaceRoot = await Repository.LoadSpaceRootDocument().ConfigureAwait((false));
