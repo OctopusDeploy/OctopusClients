@@ -26,7 +26,7 @@ namespace Octopus.Client.Model
         public string DisplayName { get; set; }
 
         [Writeable]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [WriteableOnCreate]
         public bool IsService { get; set; }
