@@ -3272,6 +3272,7 @@ Octopus.Client.Model
       AzureContainerRegistry = 11
       GoogleContainerRegistry = 12
       ArtifactoryGeneric = 13
+      Npm = 14
   }
   class FileUpload
   {
@@ -4198,6 +4199,22 @@ Octopus.Client.Model
     Octopus.Client.Extensibility.Attributes.ApiPropertyAttribute
   {
     .ctor()
+  }
+  class NpmFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
+    String Username { get; set; }
   }
   class NuGetFeedResource
     Octopus.Client.Extensibility.IResource

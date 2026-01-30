@@ -104,6 +104,29 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void NpmFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "NPM Feed",
+                FeedType = FeedType.Npm,
+                DownloadAttempts = 5,
+                DownloadRetryBackoffSeconds = 10,
+                FeedUri = "https://registry.npmjs.org",
+                Username = "testuser"
+            };
+
+            var result = Execute<NpmFeedResource>(input);
+
+            Assert.AreEqual(FeedType.Npm, result.FeedType);
+            Assert.IsAssignableFrom(typeof(NpmFeedResource), result);
+            Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
+            Assert.AreEqual(input.DownloadRetryBackoffSeconds, result.DownloadRetryBackoffSeconds);
+            Assert.AreEqual(input.FeedUri, result.FeedUri);
+            Assert.AreEqual(input.Username, result.Username);
+        }
+
+        [Test]
         public void NuGetFeedTypesDeserialize()
         {
             var input = new
