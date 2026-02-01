@@ -87,9 +87,9 @@ namespace Octopus.Client.Tests.Integration
             using (var ms = new MemoryStream())
             {
                 s.CopyTo(ms);
-#pragma warning disable PC001
+#pragma warning disable SYSLIB0057 // Use X509CertificateLoader instead of new X509Certificate2
                 return new X509Certificate2(ms.ToArray(), "password");
-#pragma warning restore PC001
+#pragma warning restore SYSLIB0057
             }
         }
 
