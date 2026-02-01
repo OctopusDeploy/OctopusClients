@@ -8,8 +8,6 @@
     <NukeRootDirectory>..</NukeRootDirectory>
     <NukeScriptDirectory>..</NukeScriptDirectory>
     <NukeTelemetryVersion>1</NukeTelemetryVersion>
-    <!-- NET8: Remove this when Nuke releases a new version which sets it for us -->
-    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Nuke.Common" Version="8.1.4" />
+    <PackageReference Include="Nuke.Common" Version="10.1.0" />
   </ItemGroup>
   
   <ItemGroup>
