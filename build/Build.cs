@@ -163,6 +163,7 @@ class Build : NukeBuild
                     .SetProjectFile(testProjectFile)
                     .SetConfiguration(Configuration)
                     .EnableNoBuild()
+                    .AddProcessAdditionalArguments("/m:1") // force msbuild to only spawn one process at a time, which stops the tests running in parallel (HttpIntegrationTestBase hardcodes a TCP port number so must run sequentially)
                     .SetLoggers("trx;LogFilePrefix=Win")
                     .SetResultsDirectory("./TestResults/"));
             });
