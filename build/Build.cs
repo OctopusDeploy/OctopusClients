@@ -55,7 +55,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(Framework = "net8.0", BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net10.0", BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     static readonly string Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
