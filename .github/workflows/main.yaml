@@ -42,10 +42,15 @@ jobs:
         with:
           fetch-depth: 0 # all
 
-      - name: Setup .NET 8.0
+      # At the moment we build using the net10 toolchain but test on net462, net48 and net80.
+      # We publish packages for net462, net48 and net80
+      # The Tests run on net10 as part of the Octopus Server build pipeline separately.
+      - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: | 
+            8.0.x
+            10.0.x
 
       - name: Append OCTOVERSION_CurrentBranch with -nightly (for scheduled)
         if: github.event_name == 'schedule'
@@ -149,12 +154,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: | 
+            8.0.x
+            10.0.x
 
-      - name: Run unit tests 🏗
+      - name: Run unit tests (net8.0) 🏗
         shell: bash
         run: dotnet test ./source/Octopus.Client.Tests/Octopus.Client.Tests.csproj --framework net8.0 --configuration:Release --logger:"trx;LogFilePrefix=Linux" --results-directory ./TestResults
 

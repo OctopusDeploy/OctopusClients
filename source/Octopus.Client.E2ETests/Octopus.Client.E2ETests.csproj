@@ -11,11 +11,11 @@
     </PropertyGroup>
     <!-- `dotnet publish` can only build one target at at time. -->
     <PropertyGroup Condition="'$(_IsPublishing)' == 'True'">
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <!-- `dotnet build` can build all targets -->
     <PropertyGroup Condition="'$(_IsPublishing)' != 'True'">
-        <TargetFrameworks>net8.0;net462;net48</TargetFrameworks>
+        <TargetFrameworks>net10.0;net8.0;net462;net48</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Octopus.Client\Octopus.Client.csproj" />

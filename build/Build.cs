@@ -55,7 +55,7 @@ class Build : NukeBuild
     [Parameter("Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable " + CiBranchNameEnvVariable + ".", Name = CiBranchNameEnvVariable)]
     string BranchName { get; set; }
 
-    [OctoVersion(Framework = "net8.0", BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch))]
+    [OctoVersion(Framework = "net10.0", BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch))]
     public OctoVersionInfo OctoVersionInfo;
 
     static readonly string Timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -163,6 +163,7 @@ class Build : NukeBuild
                     .SetProjectFile(testProjectFile)
                     .SetConfiguration(Configuration)
                     .EnableNoBuild()
+                    .AddProcessAdditionalArguments("/m:1") // force msbuild to only spawn one process at a time, which stops the tests running in parallel (HttpIntegrationTestBase hardcodes a TCP port number so must run sequentially)
                     .SetLoggers("trx;LogFilePrefix=Win")
                     .SetResultsDirectory("./TestResults/"));
             });
@@ -210,11 +211,7 @@ class Build : NukeBuild
 
                 DotNetPack(_ => _
                     .SetProject(OctopusClientFolder)
-                    .SetProcessArgumentConfigurator(args =>
-                    {
-                        args.Add($"/p:NuspecFile=Octopus.Client.nuspec");
-                        return args;
-                    })
+                    .SetProcessAdditionalArguments("/p:NuspecFile=Octopus.Client.nuspec")
                     .SetVersion(FullSemVer)
                     .SetConfiguration(Configuration)
                     .SetOutputDirectory(ArtifactsDir)
@@ -361,11 +358,10 @@ class Build : NukeBuild
             .SetFiles(files.Select(x => x.ToString())));
     }
 
+    // Note: this only works on Windows
     void SignWithSignTool(AbsolutePath[] files, string url)
     {
         Log.Information("Signing files using signtool.");
-
-        SignToolLogger = LogStdErrAsWarning;
 
         SignTool(_ => _
             .SetFile(SigningCertificatePath)
