@@ -31,4 +31,7 @@ public class KubernetesLiveStatusResource
     public Guid? DesiredResourceId { get; set; }
 
     public Guid? ResourceId { get; set; }
+    
+    [Required]
+    public DateTimeOffset LastUpdated { get; set; }
 }
