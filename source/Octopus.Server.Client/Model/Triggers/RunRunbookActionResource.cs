@@ -1,4 +1,6 @@
-﻿using Octopus.Client.Extensibility.Attributes;
+﻿#nullable enable
+using System.Collections.Generic;
+using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.Triggers
 {
@@ -13,8 +15,11 @@ namespace Octopus.Client.Model.Triggers
             TenantIds = new ReferenceCollection();
         }
 
-        [Writeable] 
-        public string RunbookId { get; set; }
+        [Writeable]
+        public string? RunbookId { get; set; }
+
+        [Writeable]
+        public List<TagCanonicalIdOrName>? RunbookTags { get; set; }
         
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; }

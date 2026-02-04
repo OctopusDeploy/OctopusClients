@@ -8530,6 +8530,7 @@ Octopus.Client.Model.Triggers
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
     String RunbookId { get; set; }
+    List<TagCanonicalIdOrName> RunbookTags { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantTags { get; set; }
   }
