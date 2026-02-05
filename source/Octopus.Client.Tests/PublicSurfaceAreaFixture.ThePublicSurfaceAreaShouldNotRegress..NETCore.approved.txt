@@ -3231,7 +3231,6 @@ Octopus.Client.Model
     String HelpSidebarSupportLinkLabel { get; set; }
     Boolean IsAutomaticStepUpdatesEnabled { get; set; }
     Boolean IsBuiltInWorkerEnabled { get; set; }
-    Boolean IsBulkDeploymentCreationEnabled { get; set; }
     Boolean IsCommunityActionTemplatesEnabled { get; set; }
     Boolean IsCompositeDockerHubRegistryFeedEnabled { get; set; }
     Boolean IsConfigureFeedsWithLocalOrSmbPathsEnabled { get; set; }
