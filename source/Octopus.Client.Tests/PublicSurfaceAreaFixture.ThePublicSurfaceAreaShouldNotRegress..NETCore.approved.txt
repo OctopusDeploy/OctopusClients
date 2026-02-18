@@ -3582,8 +3582,10 @@ Octopus.Client.Model
   class InterruptionType
     IEquatable<InterruptionType>
   {
+    static Octopus.Client.Model.InterruptionType ArgoCDApplicationSync
     static Octopus.Client.Model.InterruptionType GuidedFailure
     static Octopus.Client.Model.InterruptionType ManualIntervention
+    static Octopus.Client.Model.InterruptionType PullRequestCompletion
     .ctor(String)
     Boolean Equals(Octopus.Client.Model.InterruptionType)
     Boolean Equals(Object)

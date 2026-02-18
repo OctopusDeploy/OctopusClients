@@ -7,6 +7,8 @@ namespace Octopus.Client.Model
     {
         public static readonly InterruptionType ManualIntervention = new("ManualIntervention");
         public static readonly InterruptionType GuidedFailure = new("GuidedFailure");
+        public static readonly InterruptionType PullRequestCompletion = new("PullRequestCompletion");
+        public static readonly InterruptionType ArgoCDApplicationSync = new("ArgoCDApplicationSync");
 
         public InterruptionType(string id)
         {
