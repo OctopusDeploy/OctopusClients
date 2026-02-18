@@ -5785,6 +5785,7 @@ Octopus.Client.Model
   {
     .ctor()
     String Description { get; set; }
+    Boolean IsSystem { get; set; }
     String Name { get; set; }
     IList<String> Scopes { get; set; }
     Int32 SortOrder { get; set; }

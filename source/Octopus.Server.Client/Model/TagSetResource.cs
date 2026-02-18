@@ -86,5 +86,10 @@ namespace Octopus.Client.Model
         /// </summary>
         [Writeable]
         public string Type { get; set; }
+
+        /// <summary>
+        /// Whether this tag set is a system-managed tag set.
+        /// </summary>
+        public bool IsSystem { get; set; }
     }
 }
