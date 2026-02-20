@@ -3272,12 +3272,30 @@ Octopus.Client.Model
       GoogleContainerRegistry = 12
       ArtifactoryGeneric = 13
       Npm = 14
+      GcsStorage = 15
   }
   class FileUpload
   {
     .ctor()
     Stream Contents { get; set; }
     String FileName { get; set; }
+  }
+  class GcsStorageFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    Octopus.Client.Model.GoogleOidcFeedAuthentication OidcAuthentication { get; set; }
+    String Project { get; set; }
+    Octopus.Client.Model.SensitiveValue ServiceAccountJsonKey { get; set; }
+    Boolean UseServiceAccountKey { get; set; }
   }
   class GeneratedAccessTokenResource
   {

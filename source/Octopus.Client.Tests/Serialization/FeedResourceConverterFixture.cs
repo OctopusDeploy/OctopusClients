@@ -142,6 +142,29 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void GcsStorageFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "GCS Storage Feed",
+                FeedType = FeedType.GcsStorage,
+                DownloadAttempts = 3,
+                DownloadRetryBackoffSeconds = 5,
+                UseServiceAccountKey = false,
+                Project = "my-gcp-project"
+            };
+
+            var result = Execute<GcsStorageFeedResource>(input);
+
+            Assert.AreEqual(FeedType.GcsStorage, result.FeedType);
+            Assert.IsAssignableFrom(typeof(GcsStorageFeedResource), result);
+            Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
+            Assert.AreEqual(input.DownloadRetryBackoffSeconds, result.DownloadRetryBackoffSeconds);
+            Assert.AreEqual(input.UseServiceAccountKey, result.UseServiceAccountKey);
+            Assert.AreEqual(input.Project, result.Project);
+        }
+
+        [Test]
         public void MissingFeedTypeDeserializesAsFeedNuGet()
         {
             var input = new

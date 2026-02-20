@@ -16,6 +16,7 @@
         AzureContainerRegistry,
         GoogleContainerRegistry,
         ArtifactoryGeneric,
-        Npm
+        Npm,
+        GcsStorage
     }
 }
