@@ -10,4 +10,7 @@ public class LiveStatusSummaryResource
 
     [Required]
     public DateTimeOffset LastUpdated { get; set; }
+
+    [Required]
+    public string SyncStatus { get; set; }
 }
