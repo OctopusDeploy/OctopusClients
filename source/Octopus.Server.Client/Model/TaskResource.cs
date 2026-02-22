@@ -135,7 +135,7 @@ namespace Octopus.Client.Model
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the task ran to completion successfully.
+        /// Gets a value indicating whether the task ran to completion successfully.
         /// </summary>
         [JsonProperty(Order = 31)]
         public bool FinishedSuccessfully
@@ -147,7 +147,7 @@ namespace Octopus.Client.Model
         /// True if the task is waiting for manual intervention.
         /// </summary>
         [JsonProperty(Order = 32)]
-        public bool HasPendingInterruptions { get; set; }
+        public bool HasPendingInterruptions => PendingInterruptionTypes.Count > 0;
 
         /// <summary>
         /// If true, then the task can be used as the basis for a
@@ -172,5 +172,11 @@ namespace Octopus.Client.Model
         public string SpaceId { get; set; }
 
         public int EstimatedRemainingQueueDurationSeconds { get; }
+
+        /// <summary>
+        /// Contains a list of the types of any pending interruptions.
+        /// </summary>
+        [JsonProperty(Order = 37)]
+        public List<InterruptionType> PendingInterruptionTypes { get; set; } = new();
     }
 }

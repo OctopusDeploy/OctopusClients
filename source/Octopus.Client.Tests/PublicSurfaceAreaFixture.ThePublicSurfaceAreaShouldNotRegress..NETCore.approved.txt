@@ -5856,11 +5856,12 @@ Octopus.Client.Model
     Int32 EstimatedRemainingQueueDurationSeconds { get; }
     Boolean FinishedSuccessfully { get; }
     Boolean HasBeenPickedUpByProcessor { get; set; }
-    Boolean HasPendingInterruptions { get; set; }
+    Boolean HasPendingInterruptions { get; }
     Boolean HasWarningsOrErrors { get; set; }
     Boolean IsCompleted { get; }
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
     String Name { get; set; }
+    List<InterruptionType> PendingInterruptionTypes { get; set; }
     String ProjectId { get; set; }
     DateTimeOffset QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
