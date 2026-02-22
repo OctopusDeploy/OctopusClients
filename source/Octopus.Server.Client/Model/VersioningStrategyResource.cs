@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
         
         public DeploymentActionPackageResource DonorPackage { get; set; }
         
-        #region Backward Compatibiity
+        //Backward Compatibiity
         
         /* Before support for multiple packages per deployment-action was added, VersioningStrategyResource contained
          * a property named 'DonorPackageStepId' which contained the Id of the deployment action, as this was sufficient
@@ -53,6 +53,6 @@ namespace Octopus.Client.Model
             }
         }
         
-        #endregion 
+         
     }
 }

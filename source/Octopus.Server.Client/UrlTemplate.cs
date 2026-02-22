@@ -541,7 +541,7 @@ namespace Octopus.Client
             return template.Resolve();
         }
 
-        #region Nested type: OperatorInfo
+        //Nested type: OperatorInfo
 
         class OperatorInfo
         {
@@ -553,9 +553,9 @@ namespace Octopus.Client
             public bool AllowReserved { get; set; }
         }
 
-        #endregion
+        
 
-        #region Nested type: States
+        //Nested type: States
 
         enum States
         {
@@ -563,9 +563,9 @@ namespace Octopus.Client
             ParsingExpression
         }
 
-        #endregion
+        
 
-        #region Nested type: VarSpec
+        //Nested type: VarSpec
 
         class VarSpec
         {
@@ -586,6 +586,6 @@ namespace Octopus.Client
             }
         }
 
-        #endregion
+        
     }
 }

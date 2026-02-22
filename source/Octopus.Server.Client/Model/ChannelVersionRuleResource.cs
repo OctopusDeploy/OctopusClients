@@ -27,7 +27,7 @@ namespace Octopus.Client.Model
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
 
-        #region Backward Compatibility
+        //Backward Compatibility
         
         /* Before support for multiple packages per deployment-action was added, ChannelVersionRuleResource contained
          * a property named 'Actions' which contained the name of the deployment action, as this was sufficient
@@ -63,6 +63,6 @@ namespace Octopus.Client.Model
                    .Select(ap => ap.ToLegacyStringFormat())
                    .Distinct().ToList());
         }
-        #endregion
+        
     }
 }

@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
 
         public string ChannelId { get; set; }
         
-        #region Backward Compatibility
+        //Backward Compatibility
         
         /* Before support for multiple packages per deployment-action was added, ReleaseCreationStrategyResource contained
          * a property named 'ReleaseCreationPackageStepId' which contained the Id of the deployment action, as this was sufficient
@@ -52,6 +52,6 @@ namespace Octopus.Client.Model
                 additionalData["ReleaseCreationPackageStepId"] = ReleaseCreationPackage.ToLegacyStringFormat();
             }
         }
-        #endregion
+        
     }
 }

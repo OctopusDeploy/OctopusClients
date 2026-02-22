@@ -34,7 +34,7 @@ namespace Octopus.Client.Model.Endpoints
         [Writeable]
         public string OctopusWorkingDirectory { get; set; }
 
-        #region Backward Compatibility
+        //Backward Compatibility
         
        /* In 2018.9 offline-drop targets were modifed to support writing to an Octopus artifact.
         * But we still need to support talking to older servers, where the DropFolderPath property
@@ -74,6 +74,6 @@ namespace Octopus.Client.Model.Endpoints
             }
         }
         
-        #endregion
+        
     }
 }

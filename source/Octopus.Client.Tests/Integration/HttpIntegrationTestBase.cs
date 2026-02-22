@@ -240,7 +240,7 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-#region Nancy JSON Serializers
+//Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
             private readonly JsonSerializer serializer;
@@ -408,6 +408,6 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-#endregion
+
     }
 }
