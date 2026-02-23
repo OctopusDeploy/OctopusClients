@@ -2569,11 +2569,12 @@ Octopus.Client.Model
     String Duration { get; set; }
     String EnvironmentId { get; set; }
     String ErrorMessage { get; set; }
-    Boolean HasPendingInterruptions { get; set; }
+    Boolean HasPendingInterruptions { get; }
     Boolean HasWarningsOrErrors { get; set; }
     Boolean IsCompleted { get; set; }
     Boolean IsCurrent { get; set; }
     Boolean IsPrevious { get; set; }
+    List<InterruptionType> PendingInterruptionTypes { get; set; }
     String ProjectId { get; set; }
     DateTimeOffset QueueTime { get; set; }
     String ReleaseId { get; set; }

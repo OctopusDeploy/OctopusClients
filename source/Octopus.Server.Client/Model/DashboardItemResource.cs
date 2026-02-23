@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Octopus.Client.Model
 {
@@ -22,12 +23,13 @@ namespace Octopus.Client.Model
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? CompletedTime { get; set; }
         public TaskState State { get; set; }
-        public bool HasPendingInterruptions { get; set; }
+        public bool HasPendingInterruptions => PendingInterruptionTypes.Count > 0;
         public bool HasWarningsOrErrors { get; set; }
         public string ErrorMessage { get; set; }
         public string Duration { get; set; }
         public bool IsCurrent { get; set; }
         public bool IsPrevious { get; set; }
         public bool IsCompleted { get; set; }
+        public List<InterruptionType> PendingInterruptionTypes { get; set; } = new();
     }
 }
