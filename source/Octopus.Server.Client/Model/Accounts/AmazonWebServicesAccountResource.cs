@@ -16,5 +16,9 @@ namespace Octopus.Client.Model.Accounts
         [Writeable]
         [Required]
         public SensitiveValue SecretKey { get; set; }
+
+        [Trim]
+        [Writeable]
+        public string Region { get; set; }
     }
 }
