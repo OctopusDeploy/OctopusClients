@@ -186,5 +186,19 @@ namespace Octopus.Client.Tests.Serialization
             return JsonConvert.DeserializeObject<EndpointResource>(json, settings)
                 .Should().BeOfType<T>().Subject;
         }
+
+        [Test]
+        public void AwsEcsTarget()
+        {
+            var input = new
+            {
+                CommunicationStyle = nameof(CommunicationStyle.AwsEcsCluster),
+                ClusterName = "my-cluster"
+            };
+
+            var result = Execute<AwsEcsClusterEndpointResource>(input);
+
+            result.ClusterName.Should().Be(input.ClusterName);
+        }
     }
 }

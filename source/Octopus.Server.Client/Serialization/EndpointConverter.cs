@@ -23,7 +23,8 @@ namespace Octopus.Client.Serialization
                 {CommunicationStyle.Kubernetes, typeof (KubernetesEndpointResource)},
                 {CommunicationStyle.AzureServiceFabricCluster, typeof(ServiceFabricEndpointResource)},
                 {CommunicationStyle.StepPackage, typeof(StepPackageEndpointResource)},
-                {CommunicationStyle.KubernetesTentacle, typeof(KubernetesTentacleEndpointResource)}
+                {CommunicationStyle.KubernetesTentacle, typeof(KubernetesTentacleEndpointResource)},
+                {CommunicationStyle.AwsEcsCluster, typeof(AwsEcsClusterEndpointResource) }
           };
 
         protected override IDictionary<CommunicationStyle, Type> DerivedTypeMappings => EndpointTypes;

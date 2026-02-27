@@ -2480,6 +2480,7 @@ Octopus.Client.Model
       Kubernetes = 9
       StepPackage = 10
       KubernetesTentacle = 11
+      AwsEcsCluster = 12
   }
   class CommunityActionTemplateResource
     Octopus.Client.Extensibility.IResource
@@ -7234,6 +7235,24 @@ Octopus.Client.Model.DeploymentTargets
 }
 Octopus.Client.Model.Endpoints
 {
+  class AwsEcsClusterEndpointResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Model.Endpoints.EndpointResource
+  {
+    .ctor()
+    String AccountId { get; set; }
+    String AssumedRoleArn { get; set; }
+    String AssumedRoleSession { get; set; }
+    Boolean AssumeRole { get; set; }
+    String AssumeRoleExternalId { get; set; }
+    Nullable<Int32> AssumeRoleSessionDurationSeconds { get; set; }
+    String ClusterName { get; set; }
+    Octopus.Client.Model.CommunicationStyle CommunicationStyle { get; }
+    String DefaultWorkerPoolId { get; set; }
+    String Region { get; set; }
+    Boolean UseInstanceRole { get; set; }
+  }
   AzureServiceFabricCredentialType
   {
       ClientCredential = 0

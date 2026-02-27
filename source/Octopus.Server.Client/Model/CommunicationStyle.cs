@@ -33,6 +33,8 @@ namespace Octopus.Client.Model
         
         StepPackage = 10,
 
-        [ScriptConsoleSupported] KubernetesTentacle = 11
+        [ScriptConsoleSupported] KubernetesTentacle = 11,
+        
+        AwsEcsCluster = 12
     }
 }
