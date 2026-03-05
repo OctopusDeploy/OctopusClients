@@ -22,6 +22,10 @@ public class KubernetesLiveStatusResource
 
     public string SyncStatus { get; set; }
 
+    public string HealthStatusMessage { get; set; }
+
+    public string SyncStatusMessage { get; set; }
+
     [Required]
     public string MachineId { get; set; }
 
