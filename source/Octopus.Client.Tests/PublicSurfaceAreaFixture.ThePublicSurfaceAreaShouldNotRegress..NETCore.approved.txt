@@ -3578,6 +3578,31 @@ Octopus.Client.Model
   {
     String Slug { get; set; }
   }
+  class InterruptionPullRequestResource
+  {
+    .ctor()
+    String Id { get; set; }
+    String InterruptionId { get; set; }
+    Int64 Number { get; set; }
+    String RepositoryUrl { get; set; }
+    Octopus.Client.Model.InterruptionPullRequestStatus Status { get; set; }
+    String Title { get; set; }
+    String Url { get; set; }
+  }
+  class InterruptionPullRequestStatus
+    IEquatable<InterruptionPullRequestStatus>
+  {
+    static Octopus.Client.Model.InterruptionPullRequestStatus Closed
+    static Octopus.Client.Model.InterruptionPullRequestStatus Merged
+    static Octopus.Client.Model.InterruptionPullRequestStatus Open
+    static Octopus.Client.Model.InterruptionPullRequestStatus Unknown
+    static Octopus.Client.Model.InterruptionPullRequestStatus UnknownGitVendor
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.InterruptionPullRequestStatus)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
+  }
   class InterruptionResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3592,6 +3617,7 @@ Octopus.Client.Model
     Boolean HasResponsibility { get; set; }
     Boolean IsLinkedToOtherInterruption { get; set; }
     Boolean IsPending { get; set; }
+    List<InterruptionPullRequestResource> PullRequests { get; set; }
     Octopus.Client.Model.ReferenceCollection RelatedDocumentIds { get; set; }
     Octopus.Client.Model.ReferenceCollection ResponsibleTeamIds { get; set; }
     String ResponsibleUserId { get; set; }
