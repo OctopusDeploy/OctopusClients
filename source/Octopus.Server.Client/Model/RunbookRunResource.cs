@@ -57,6 +57,13 @@ namespace Octopus.Client.Model
         [WriteableOnCreate]
         public ReferenceCollection ExcludedMachineIds { get; set; }
 
+        /// <summary>
+        /// A collection of target tag identifiers that should be included in the deployment.
+        /// Only deployment targets that have at least one of these tags will be deployed to.
+        /// </summary>
+        [WriteableOnCreate]
+        public ReferenceCollection SpecificTargetTagIds { get; set; }
+
         public string ManifestVariableSetId { get; set; }
         public string TaskId { get; set; }
         public string ProjectId { get; set; }
