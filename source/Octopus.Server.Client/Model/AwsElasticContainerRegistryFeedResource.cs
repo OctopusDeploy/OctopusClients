@@ -15,13 +15,13 @@ namespace Octopus.Client.Model
 
         [Writeable] public string Region { get; set; }
 
-        [Trim] [Writeable] public string? AccessKey { get; set; }
+        [Trim][Writeable] public string? AccessKey { get; set; }
 
-        [Trim] [Writeable] public SensitiveValue? SecretKey { get; set; }
+        [Trim][Writeable] public SensitiveValue? SecretKey { get; set; }
 
         [Writeable]
         public EcrOidcFeedAuthentication? OidcAuthentication { get; set; }
-        
+
         [Writeable]
         public bool UseMachineCredentials { get; set; }
 

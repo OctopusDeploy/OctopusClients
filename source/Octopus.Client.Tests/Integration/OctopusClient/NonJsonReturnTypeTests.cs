@@ -14,7 +14,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public NonJsonReturnTypeTests()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
-            Get(TestRootPath, p => Response.AsJson(new TestDto() {Value = "42"}));
+            Get(TestRootPath, p => Response.AsJson(new TestDto() { Value = "42" }));
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             using var s = await AsyncClient.GetContent("~/").ConfigureAwait(false);
             using var ms = new MemoryStream();
-            
+
             await s.CopyToAsync(ms);
 
             var content = Encoding.UTF8.GetString(ms.ToArray());

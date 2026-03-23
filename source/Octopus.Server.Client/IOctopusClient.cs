@@ -32,7 +32,7 @@ namespace Octopus.Client
         [Obsolete("Access the root document through the IOctopusSystemRepository instead: client.Repository.LoadRootDocument()", false)]
         RootResource RootDocument { get; }
         IOctopusRepository Repository { get; }
-    
+
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
         /// </summary>
@@ -308,7 +308,7 @@ namespace Octopus.Client
         /// <param name="pathParameters">If the <c>path</c> is a URI template, parameters to use for substitution.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
         TResource Update<TResource>(string path, TResource resource, object pathParameters = null);
-        
+
         /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
@@ -350,7 +350,7 @@ namespace Octopus.Client
         /// <param name="resource">An optional resource to pass as the body of the request.</param>
         /// <returns>A task resource that provides details about the background task that deletes the specified resource.</returns>
         void Delete(string path, object pathParameters = null, object resource = null);
-        
+
         /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb.
         /// </summary>

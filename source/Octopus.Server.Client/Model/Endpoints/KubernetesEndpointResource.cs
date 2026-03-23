@@ -9,7 +9,7 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string ClusterCertificate { get; set; }
-        
+
         [Trim]
         [Writeable]
         public string ClusterCertificatePath { get; set; }
@@ -29,7 +29,7 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string ProxyId { get; set; }
-        
+
         [Trim]
         [Writeable]
         public string ContainerOptions { get; set; }

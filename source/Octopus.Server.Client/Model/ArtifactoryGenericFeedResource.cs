@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         [Trim]
         [Writeable]
         public string LayoutRegex { get; set; }
-        
+
         [Trim]
         [Writeable]
         public string Repository { get; set; }

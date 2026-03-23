@@ -1,6 +1,6 @@
 using System.Linq;
 using Octopus.Client.Model;
-    
+
 namespace Octopus.Client.Validation
 {
     internal static class ServerVersionCheck
@@ -9,7 +9,7 @@ namespace Octopus.Client.Validation
 
         public static bool IsOlderThanClient(string currentServerVersion, SemanticVersion minimumRequiredVersion)
         {
-            if (WhitelistOfServerVersionsSafeToIgnore.Contains(currentServerVersion)) 
+            if (WhitelistOfServerVersionsSafeToIgnore.Contains(currentServerVersion))
                 return false;
 
             var currentVersion = Normalize(SemanticVersion.Parse(currentServerVersion));

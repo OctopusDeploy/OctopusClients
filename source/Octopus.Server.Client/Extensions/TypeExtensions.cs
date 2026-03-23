@@ -62,9 +62,9 @@ namespace Octopus.Client.Extensions
 
         internal static IEnumerable<Type> CompleteTypeHierarchy(this Type type)
         {
-            var hierarchy = new[] {type}
+            var hierarchy = new[] { type }
                 .DepthFirst(t => t.GetInterfaces()
-                    .Union(new[] {t.BaseType})
+                    .Union(new[] { t.BaseType })
                     .Where(u => !(u is null))
                 )
                 .Distinct()

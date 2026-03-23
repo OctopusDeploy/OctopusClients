@@ -16,7 +16,7 @@ namespace Octopus.Client.Tests.Integration.Repository
     public class MachineRepositoryTest : HttpIntegrationTestBase
     {
         private static ConcurrentDictionary<string, MachineResource> machines = new ConcurrentDictionary<string, MachineResource>();
-        
+
         public MachineRepositoryTest()
             : base(UrlPathPrefixBehaviour.UseNoPrefix) //as the canned responses have no prefix, it falls over if we try and isolate the tests with a different prefix
         {
@@ -25,18 +25,18 @@ namespace Octopus.Client.Tests.Integration.Repository
                 string content = GetCannedResponse(parameters);
                 return Response.AsText(content, "application/json");
             });
-            
+
             Get($"{TestRootPath}api/machines", parameters =>
             {
                 var machinesArray = machines.ToArray().Select(x => x.Value).ToArray();
                 if (machinesArray.Length == 1)
                     return Response.AsText(JsonConvert.SerializeObject(machinesArray[0],
-                        JsonSerialization.GetDefaultSerializerSettings()), "application/json"); 
-                
+                        JsonSerialization.GetDefaultSerializerSettings()), "application/json");
+
                 return Response.AsText(JsonConvert.SerializeObject(machinesArray,
-                    JsonSerialization.GetDefaultSerializerSettings()), "application/json"); 
+                    JsonSerialization.GetDefaultSerializerSettings()), "application/json");
             });
-            
+
             Post($"{TestRootPath}api/machines", parameters =>
             {
                 string requestAsString = Context.Request.Body.AsString();
@@ -50,7 +50,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void AsyncGetTasksReturnsAllPages()
         {
-            var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}"} } };
+            var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
             var repository = new MachineRepository(new OctopusAsyncRepository(AsyncClient));
             var tasks = repository.GetTasks(machine).Result;
 
@@ -60,7 +60,7 @@ namespace Octopus.Client.Tests.Integration.Repository
         [Test]
         public void SyncGetTasksReturnsAllPages()
         {
-            var machine = new MachineResource { Links = new LinkCollection {{"TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}"}} };
+            var machine = new MachineResource { Links = new LinkCollection { { "TasksTemplate", $"{TestRootPath}api/machines/Machines-1/tasks{{?skip}}" } } };
             var repository = new Client.Repositories.MachineRepository(SyncClient.Repository);
             var tasks = repository.GetTasks(machine);
 
@@ -78,11 +78,11 @@ namespace Octopus.Client.Tests.Integration.Repository
                     Id = "test-target",
                     Inputs = new { structureInput = "a", structuredInputB = new { accountId = "2" } }
                 },
-                Links = new LinkCollection {{"Machines", $"{TestRootPath}api/machines"}}
+                Links = new LinkCollection { { "Machines", $"{TestRootPath}api/machines" } }
             };
             var repository = new Client.Repositories.MachineRepository(SyncClient.Repository);
             var result = repository.Create(machine);
-            
+
             var stepPackageEndpoint = result.Endpoint as StepPackageEndpointResource;
             Assert.NotNull(stepPackageEndpoint);
             Assert.NotNull(stepPackageEndpoint.Inputs);

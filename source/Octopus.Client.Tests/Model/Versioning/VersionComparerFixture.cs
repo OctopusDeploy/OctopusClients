@@ -9,7 +9,7 @@ namespace Octopus.Client.Tests.Model.Versioning
     [TestFixture]
     public class VersionComparerFixture
     {
-        
+
         [Test]
         [TestCase("1.0.0", "1.0.0")]
         [TestCase("1.0.0-BETA", "1.0.0-beta")]
@@ -68,7 +68,7 @@ namespace Octopus.Client.Tests.Model.Versioning
             var y = CompareOneWay(comparer, version2, version1) * -1;
 
             // Assert
-            Assert.AreEqual(x,y);
+            Assert.AreEqual(x, y);
 
             return x;
         }

@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
         void RaiseDefect(ReleaseResource release, string description);
         void ResolveDefect(ReleaseResource release);
     }
-    
+
     class DefectsRepository : BasicRepository<DefectResource>, IDefectsRepository
     {
         public DefectsRepository(IOctopusRepository repository)

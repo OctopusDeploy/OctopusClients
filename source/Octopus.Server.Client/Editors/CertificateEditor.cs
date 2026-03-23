@@ -22,9 +22,9 @@ namespace Octopus.Client.Editors
             {
                 throw new ArgumentException($"A certificate with the name {name} already exists");
             }
-            
+
             Instance = repository.Create(new CertificateResource(name, certificateData));
-            
+
             return this;
         }
 

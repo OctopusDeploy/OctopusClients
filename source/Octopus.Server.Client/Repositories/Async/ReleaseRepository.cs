@@ -43,19 +43,19 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release);
         Task<DeploymentTemplateResource> GetTemplate(ReleaseResource release, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<DeploymentPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release);
-        Task<ReleaseResource> SnapshotVariables(ReleaseResource release, CancellationToken cancellationToken);    
-        
+        Task<ReleaseResource> SnapshotVariables(ReleaseResource release, CancellationToken cancellationToken);
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules = false);
         Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release);
         Task<LifecycleProgressionResource> GetProgression(ReleaseResource release, CancellationToken cancellationToken);
@@ -124,7 +124,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return await SnapshotVariables(release, CancellationToken.None);
         }
-        
+
         public async Task<ReleaseResource> SnapshotVariables(ReleaseResource release, CancellationToken cancellationToken)
         {
             await Client.Post(release.Link("SnapshotVariables"), cancellationToken).ConfigureAwait(false);
@@ -145,7 +145,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetProgression(release, CancellationToken.None);
         }
-        
+
         public Task<LifecycleProgressionResource> GetProgression(ReleaseResource release, CancellationToken cancellationToken)
         {
             return Client.Get<LifecycleProgressionResource>(release.Links["Progression"], null, cancellationToken);
@@ -155,7 +155,7 @@ namespace Octopus.Client.Repositories.Async
             GetMissingPackagesForReleaseRequest request,
             CancellationToken cancellationToken)
         {
-            const string link  = "/api/{spaceId}/releases/{releaseId}/missingpackages";
+            const string link = "/api/{spaceId}/releases/{releaseId}/missingpackages";
             return Client.Get<GetMissingPackagesForReleaseResponse>(link, new { request.SpaceId, request.ReleaseId }, cancellationToken);
         }
     }

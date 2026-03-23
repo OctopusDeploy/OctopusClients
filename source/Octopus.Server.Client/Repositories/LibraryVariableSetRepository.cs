@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
         LibraryVariableSetEditor CreateOrModify(string name);
         LibraryVariableSetEditor CreateOrModify(string name, string description);
     }
-    
+
     class LibraryVariableSetRepository : BasicRepository<LibraryVariableSetResource>, ILibraryVariableSetRepository
     {
         public LibraryVariableSetRepository(IOctopusRepository repository)

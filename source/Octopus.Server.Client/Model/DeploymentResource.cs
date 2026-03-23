@@ -13,7 +13,7 @@ namespace Octopus.Client.Model
         public static readonly string Off = "Off";
         public static readonly string LifecycleDefault = "LifecycleDefault";
     }
-    
+
     public class DeploymentResource : Resource, IExecutionResource, IHaveSpaceResource
     {
         public DeploymentResource()
@@ -78,13 +78,13 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public bool UseGuidedFailure { get; set; }
-        
+
         /// <summary>
         /// When enabled sets the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to the runbook run
         /// </summary>
         [WriteableOnCreate]
         public string DebugMode { get; set; }
-        
+
         /// <summary>
         /// If set to true, target discovery steps that find no matching targets will fail. If false, steps with no matching targets will be skipped.
         /// </summary>

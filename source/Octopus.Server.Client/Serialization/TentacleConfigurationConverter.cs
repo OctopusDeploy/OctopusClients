@@ -4,7 +4,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Octopus.Client.Serialization;
 
-public class TentacleConfigurationConverter: InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
+public class TentacleConfigurationConverter : InheritedClassConverter<TentacleEndpointConfigurationResource, TentacleCommunicationModeResource>
 {
     static readonly IDictionary<TentacleCommunicationModeResource, Type> EndpointTypes =
         new Dictionary<TentacleCommunicationModeResource, Type>

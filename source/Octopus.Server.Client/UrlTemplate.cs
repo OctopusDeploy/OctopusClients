@@ -204,7 +204,7 @@ namespace Octopus.Client
         /// </exception>
         public string Resolve()
         {
-            if(template == null)
+            if (template == null)
                 throw new ArgumentException("template is null");
 
             var currentState = States.CopyingLiterals;
@@ -456,7 +456,7 @@ namespace Octopus.Client
                     || UriUnreservedSymbols.IndexOf(c) != -1
                     // Unreserved symbols  - These should never be percent encoded
                     || (allowReserved && UriReservedSymbols.IndexOf(c) != -1))
-                    // Reserved symbols - should be included if requested (+)
+                // Reserved symbols - should be included if requested (+)
                 {
                     result.Append(c);
                 }
@@ -553,7 +553,7 @@ namespace Octopus.Client
             public bool AllowReserved { get; set; }
         }
 
-        
+
 
         //Nested type: States
 
@@ -563,7 +563,7 @@ namespace Octopus.Client
             ParsingExpression
         }
 
-        
+
 
         //Nested type: VarSpec
 
@@ -586,6 +586,6 @@ namespace Octopus.Client
             }
         }
 
-        
+
     }
 }

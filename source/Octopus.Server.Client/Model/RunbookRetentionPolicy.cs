@@ -9,9 +9,9 @@ public class RunbookRetentionPolicy
 
     public bool ShouldKeepForever => Strategy == RetentionPeriodStrategy.Forever || QuantityToKeep == 0;
 
-    public RunbookRetentionUnit Unit { get; } 
+    public RunbookRetentionUnit Unit { get; }
 
-    public RetentionPeriodStrategy Strategy { get;}
+    public RetentionPeriodStrategy Strategy { get; }
 
     [JsonConstructor]
     RunbookRetentionPolicy(RetentionPeriodStrategy strategy, int quantityToKeep, RunbookRetentionUnit unit)
@@ -20,11 +20,11 @@ public class RunbookRetentionPolicy
         QuantityToKeep = quantityToKeep;
         Unit = unit;
     }
-    
+
     public static RunbookRetentionPolicy Forever() => new(RetentionPeriodStrategy.Forever, 0, RunbookRetentionUnit.Items);
-    public static RunbookRetentionPolicy Default() => new(RetentionPeriodStrategy.Default,  0, RunbookRetentionUnit.Items);
+    public static RunbookRetentionPolicy Default() => new(RetentionPeriodStrategy.Default, 0, RunbookRetentionUnit.Items);
     public static RunbookRetentionPolicy Count(int quantity, RunbookRetentionUnit unit) => new(RetentionPeriodStrategy.Count, quantity, unit);
-    
+
     static RetentionPeriodStrategy SelectStrategyBasedOnSettings(int quantityToKeep, RunbookRetentionUnit unit) => quantityToKeep switch
     {
         0 => RetentionPeriodStrategy.Forever,

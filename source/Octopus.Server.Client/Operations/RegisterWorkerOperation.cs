@@ -36,7 +36,7 @@ namespace Octopus.Client.Operations
         /// </summary>
         [Obsolete($"Use the {nameof(WorkerPools)} property as it supports worker pool names, slugs and Ids.")]
         public string[] WorkerPoolNames { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the worker pools that this machine should be added to. These can be worker pool names, slugs or Ids
         /// </summary>
@@ -64,10 +64,10 @@ namespace Octopus.Client.Operations
             {
                 PrepareWorkerForReRegistration(worker, proxy?.Id);
             }
-            
+
             ModifyOrCreateWorker(repository, worker);
         }
-        
+
         /// <summary>
         /// Executes the operation against the specified Octopus Deploy server.
         /// </summary>
@@ -93,7 +93,7 @@ namespace Octopus.Client.Operations
 
             await ModifyOrCreateWorker(repository, worker);
         }
-        
+
         static bool IsExistingWorker(WorkerResource worker)
         {
             return worker.Id != null;
@@ -104,7 +104,7 @@ namespace Octopus.Client.Operations
             throw new InvalidRegistrationArgumentsException(
                 $"A worker named '{MachineName}' already exists in the environment. Use the 'force' parameter if you intended to update the existing worker.");
         }
-        
+
         WorkerResource GetWorker(IOctopusSpaceRepository repository)
         {
             var existing = default(WorkerResource);
@@ -117,7 +117,7 @@ namespace Octopus.Client.Operations
             }
             return existing ?? new WorkerResource();
         }
-        
+
         async Task<WorkerResource> GetWorker(IOctopusSpaceAsyncRepository repository)
         {
             var existing = default(WorkerResource);
@@ -144,14 +144,14 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missingByNameOnly.ToArray()));
             }
-            
+
             if (WorkerPools is not null && WorkerPools.Any())
             {
                 var workerPoolsByNameIdOrSlug =
                     repository.WorkerPools.FindByNameIdOrSlugs<WorkerPoolResource, IWorkerPoolRepository>(WorkerPools, missing => CouldNotFindByMultipleMessage("worker pool", missing.ToArray()));
                 workerPools.AddRange(workerPoolsByNameIdOrSlug);
             }
-            
+
             return workerPools;
         }
 
@@ -168,7 +168,7 @@ namespace Octopus.Client.Operations
                 if (missingByNameOnly.Any())
                     throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("worker pool", missingByNameOnly.ToArray()));
             }
-            
+
             if (WorkerPools is not null && WorkerPools.Any())
             {
                 var workerPoolsByNameIdOrSlug =
@@ -176,10 +176,10 @@ namespace Octopus.Client.Operations
                         WorkerPools, missing => CouldNotFindByMultipleMessage("worker pool", missing.ToArray()));
                 workerPools.AddRange(workerPoolsByNameIdOrSlug);
             }
-            
+
             return workerPools;
         }
-        
+
         static void ModifyOrCreateWorker(IOctopusSpaceRepository repository, WorkerResource worker)
         {
             if (IsExistingWorker(worker))
@@ -187,7 +187,7 @@ namespace Octopus.Client.Operations
             else
                 repository.Workers.Create(worker);
         }
-        
+
         static async Task ModifyOrCreateWorker(IOctopusSpaceAsyncRepository repository, WorkerResource worker)
         {
             if (IsExistingWorker(worker))

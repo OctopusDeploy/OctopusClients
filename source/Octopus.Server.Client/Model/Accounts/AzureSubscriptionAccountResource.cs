@@ -36,7 +36,7 @@ namespace Octopus.Client.Model.Accounts
         [Trim]
         [Writeable]
         public string ServiceManagementEndpointBaseUri { get; set; }
-        
+
         [Trim]
         [Writeable]
         public string ServiceManagementEndpointSuffix { get; set; }

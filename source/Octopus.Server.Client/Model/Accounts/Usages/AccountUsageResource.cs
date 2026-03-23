@@ -35,15 +35,15 @@ namespace Octopus.Client.Model.Accounts.Usages
         {
             Steps = new List<StepUsageEntry>();
         }
-            
+
         public string ProjectName { get; set; }
         public string ProjectId { get; set; }
         public string ProjectSlug { get; set; }
-            
+
         public ICollection<StepUsageEntry> Steps { get; set; }
     }
-    
-    public class RunbookStepUsage: StepUsageBase
+
+    public class RunbookStepUsage : StepUsageBase
     {
         public string ProcessId { get; set; }
         public string RunbookId { get; set; }
@@ -96,14 +96,14 @@ namespace Octopus.Client.Model.Accounts.Usages
         public string ReleaseVersion { get; set; }
     }
 
-    public class StepUsage: StepUsageBase { }
+    public class StepUsage : StepUsageBase { }
 
     public class StepUsageEntry
     {
         public string StepName { get; set; }
         public string StepId { get; set; }
     }
-    
+
     public class RunbookSnapshotUsage
     {
         public RunbookSnapshotUsage()
@@ -123,7 +123,7 @@ namespace Octopus.Client.Model.Accounts.Usages
         public string SnapshotId { get; set; }
         public string SnapshotName { get; set; }
     }
-    
+
     public class ProjectTenantVariableUsage
     {
         public ProjectTenantVariableUsage()
@@ -133,7 +133,7 @@ namespace Octopus.Client.Model.Accounts.Usages
         public string TenantId { get; set; }
         public ICollection<ProjectTenantVariableEntry> Projects { get; set; }
     }
-    
+
     public class ProjectTenantVariableEntry
     {
         public ProjectTenantVariableEntry()
@@ -143,7 +143,7 @@ namespace Octopus.Client.Model.Accounts.Usages
         public string ProjectId { get; set; }
         public ICollection<string> TenantVariableIds { get; set; }
     }
-    
+
     public class CommonTenantVariableUsage
     {
         public CommonTenantVariableUsage()
@@ -152,9 +152,9 @@ namespace Octopus.Client.Model.Accounts.Usages
         }
         public string TenantId { get; set; }
         public ICollection<CommonTenantVariableUsageEntry> LibraryVariableSets { get; set; }
-        
+
     }
-    
+
     public class CommonTenantVariableUsageEntry
     {
         public string LibraryVariableSetId { get; set; }

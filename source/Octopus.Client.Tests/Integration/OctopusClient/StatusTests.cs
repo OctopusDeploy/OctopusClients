@@ -20,8 +20,8 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 
             Get(TestRootPath + "/{code:int}", p =>
             {
-                var response = CreateErrorResponse($"Status {(int) p.code} as requested");
-                response.StatusCode = (HttpStatusCode) (int) p.code;
+                var response = CreateErrorResponse($"Status {(int)p.code} as requested");
+                response.StatusCode = (HttpStatusCode)(int)p.code;
                 return response;
             });
         }

@@ -7,7 +7,7 @@ namespace Octopus.Client.Serialization
 {
     public class InterruptionTypeConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) 
+        public override bool CanConvert(Type objectType)
             => objectType == typeof(InterruptionType);
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)

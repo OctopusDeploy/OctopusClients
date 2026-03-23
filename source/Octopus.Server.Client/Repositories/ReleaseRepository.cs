@@ -23,12 +23,12 @@ namespace Octopus.Client.Repositories
         ResourceCollection<ArtifactResource> GetArtifacts(ReleaseResource release, int skip = 0, int? take = null);
         DeploymentTemplateResource GetTemplate(ReleaseResource release);
         DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        ReleaseResource SnapshotVariables(ReleaseResource release);    
+        ReleaseResource SnapshotVariables(ReleaseResource release);
         ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
         GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request);
     }
-    
+
     class ReleaseRepository : BasicRepository<ReleaseResource>, IReleaseRepository
     {
         public ReleaseRepository(IOctopusRepository repository)
@@ -75,7 +75,7 @@ namespace Octopus.Client.Repositories
         public GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(
             GetMissingPackagesForReleaseRequest request)
         {
-            const string link  = "/api/{spaceId}/releases/{releaseId}/missingpackages";
+            const string link = "/api/{spaceId}/releases/{releaseId}/missingpackages";
             return Client.Get<GetMissingPackagesForReleaseResponse>(link, new { request.SpaceId, request.ReleaseId });
         }
     }

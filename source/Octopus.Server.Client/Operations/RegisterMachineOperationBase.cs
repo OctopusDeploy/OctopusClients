@@ -10,7 +10,7 @@ namespace Octopus.Client.Operations
     /// <summary>
     /// Encapsulates the operation for registering machines.
     /// </summary>
-    public abstract  class RegisterMachineOperationBase : IRegisterMachineOperationBase
+    public abstract class RegisterMachineOperationBase : IRegisterMachineOperationBase
     {
         readonly IOctopusClientFactory clientFactory;
 
@@ -95,7 +95,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public void Execute(OctopusRepository repository)
         {
-            Execute((IOctopusSpaceRepository) repository);
+            Execute((IOctopusSpaceRepository)repository);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Octopus.Client.Operations
         /// </exception>
         public async Task ExecuteAsync(OctopusAsyncRepository repository)
         {
-            await ExecuteAsync((IOctopusSpaceAsyncRepository) repository).ConfigureAwait(false);
+            await ExecuteAsync((IOctopusSpaceAsyncRepository)repository).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace Octopus.Client.Operations
                 ? $"Could not find the {modelType} named {missing.Single()} on the Octopus Server. Ensure the {modelType} exists and you have permission to access it."
                 : $"Could not find the {modelType}s named: {string.Join(", ", missing)} on the Octopus Server. Ensure the {modelType}s exist and you have permission to access them.";
         }
-        
+
         protected static string CouldNotFindByMultipleMessage(string modelType, params string[] missing)
         {
             return missing.Length == 1

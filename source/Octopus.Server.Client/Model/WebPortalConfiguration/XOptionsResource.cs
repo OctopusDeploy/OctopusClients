@@ -10,7 +10,7 @@ public class XOptionsResource
 
     [Writeable]
     public string XFrameOptionAllowFrom { get; set; }
-        
+
     [Writeable]
     public string XFrameOptions { get; set; }
 }

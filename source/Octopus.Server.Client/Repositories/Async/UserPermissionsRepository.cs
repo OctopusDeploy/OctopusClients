@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories.Async
         Task<IReadOnlyDictionary<Permission, PermissionDescription>> GetDescriptions(UserResource user);
         Task<Stream> Export(UserPermissionSetResource userPermissions);
     }
-    
+
     class UserPermissionsRepository : MixedScopeBaseRepository<UserPermissionSetResource>, IUserPermissionsRepository
     {
         public UserPermissionsRepository(IOctopusAsyncRepository repository)

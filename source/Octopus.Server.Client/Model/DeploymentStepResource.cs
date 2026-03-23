@@ -19,7 +19,8 @@ namespace Octopus.Client.Model
         /// will be scheduled after acquisition regardless of the value of this flag.
         /// </summary>
         [Obsolete("This method was deprecated in https://github.com/OctopusDeploy/Issues/issues/3974.  Please use the PackageRequirement property instead.")]
-        public bool RequiresPackagesToBeAcquired {
+        public bool RequiresPackagesToBeAcquired
+        {
             get => PackageRequirement == DeploymentStepPackageRequirement.AfterPackageAcquisition;
             set => RequirePackagesToBeAcquired(value);
         }
@@ -158,7 +159,7 @@ namespace Octopus.Client.Model
                     break;
 
                 case ScriptSource.Package:
-                    var packageScript = (ScriptActionFromFileInPackage) scriptAction;
+                    var packageScript = (ScriptActionFromFileInPackage)scriptAction;
                     action.Properties.Add("Octopus.Action.Package.PackageId", packageScript.PackageId);
                     action.Properties.Add("Octopus.Action.Package.FeedId", packageScript.PackageFeedId);
                     action.Properties.Add("Octopus.Action.Script.ScriptFileName", packageScript.ScriptFilePath);

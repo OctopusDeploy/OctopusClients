@@ -30,7 +30,7 @@ namespace Octopus.Client.Editors.Async
             AzureSubscriptionAccountResource.WebSite site)
         {
             return Repository.Client.Get<List<AzureSubscriptionAccountResource.WebSlot>>(account.Link("WebSlots"),
-                new { resourceGroupName = site.ResourceGroup, webSiteName = site.WebSpace});
+                new { resourceGroupName = site.ResourceGroup, webSiteName = site.WebSpace });
         }
 
         public Task<List<AzureSubscriptionAccountResource.WebSlot>> WebSlots(AzureSubscriptionAccountResource.WebSite site)

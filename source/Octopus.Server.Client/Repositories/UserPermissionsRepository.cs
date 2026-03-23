@@ -13,7 +13,7 @@ namespace Octopus.Client.Repositories
         UserPermissionSetResource GetConfiguration(UserResource user);
         Stream Export(UserPermissionSetResource userPermissions);
     }
-    
+
     class UserPermissionsRepository : MixedScopeBaseRepository<UserPermissionSetResource>, IUserPermissionsRepository
     {
         public UserPermissionsRepository(IOctopusRepository repository)

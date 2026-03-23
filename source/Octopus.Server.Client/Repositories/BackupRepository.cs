@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
         BackupConfigurationResource GetConfiguration();
         BackupConfigurationResource ModifyConfiguration(BackupConfigurationResource backupConfiguration);
     }
-    
+
     class BackupRepository : IBackupRepository
     {
         private readonly IOctopusRepository repository;

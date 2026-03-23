@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string RegistryPath { get; set; }
-        
+
         [Writeable]
         public string FeedUri { get; set; }
 

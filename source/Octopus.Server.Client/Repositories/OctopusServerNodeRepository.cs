@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
         OctopusServerNodeDetailsResource Details(OctopusServerNodeResource node);
         OctopusServerClusterSummaryResource Summary();
     }
-    
+
     class OctopusServerNodeRepository : BasicRepository<OctopusServerNodeResource>, IOctopusServerNodeRepository
     {
         private readonly IOctopusRepository repository;

@@ -25,7 +25,7 @@ public class SelectedGitResource
     /// The selected Git reference
     /// </summary>
     public GitReferenceResource GitReferenceResource { get; set; }
-    
+
     /// <summary>
     /// The name of the Git resource reference
     /// </summary>

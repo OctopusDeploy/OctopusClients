@@ -40,7 +40,7 @@ $apiKey = $null
 $endpoint = New-Object Octopus.Client.OctopusServerEndpoint($server, $apiKey)
 $repository = New-Object Octopus.Client.OctopusRepository($endpoint)
 $repository.LoadRootDocument().Application";
-            
+
             var powerShellFile = Path.Combine(tempFolder, "Octopus.Client.Test.ps1");
             File.WriteAllText(powerShellFile, powerShellFileContent);
             return powerShellFile;

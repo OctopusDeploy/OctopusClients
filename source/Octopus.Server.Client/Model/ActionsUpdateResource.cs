@@ -23,12 +23,12 @@ namespace Octopus.Client.Model
         public IDictionary<string, PropertyValueResource> DefaultPropertyValues { get; set; }
         public IDictionary<string, PropertyValueResource> Overrides { get; set; }
         public LinkCollection Links { get; set; }
-        
+
         [Obsolete("Use" + nameof(ActionsToUpdate) + " instead")]
         public IDictionary<string, string[]> ActionIdsByProcessId { get; set; }
-        
+
         [Required]
-        public ActionsUpdateProcessResource[] ActionsToUpdate { get; set; } = {};
+        public ActionsUpdateProcessResource[] ActionsToUpdate { get; set; } = { };
     }
 
     public class ActionsUpdateProcessResource : IResource
@@ -36,7 +36,7 @@ namespace Octopus.Client.Model
         public ProcessType ProcessType { get; set; }
         public string ProcessId { get; set; }
         public string[] ActionIds { get; set; }
-        
+
         public string Id { get; set; }
         public LinkCollection Links { get; set; }
         public string GitRef { get; set; }

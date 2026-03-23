@@ -37,7 +37,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public string Id { get; set; }
     }
-    
+
     public class GitHubProjectGitCredentialResource : ProjectGitCredentialResource
     {
         public override ProjectGitCredentialType Type { get; } = ProjectGitCredentialType.GitHub;

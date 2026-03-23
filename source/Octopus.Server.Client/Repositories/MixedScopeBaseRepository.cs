@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
         {
         }
 
-        protected MixedScopeBaseRepository(IOctopusRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext) 
+        protected MixedScopeBaseRepository(IOctopusRepository repository, string collectionLinkName, SpaceContext userDefinedSpaceContext)
             : base(repository, collectionLinkName)
         {
             ValidateThatICanUseACustomSpaceContext();
@@ -30,7 +30,7 @@ namespace Octopus.Client.Repositories
                 return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
                     [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces.Select(s => s.Id).ToArray(), 
+                    [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces.Select(s => s.Id).ToArray(),
                         () => MixedScopeConstants.AllSpacesQueryStringParameterValue)
                 };
 
@@ -39,20 +39,20 @@ namespace Octopus.Client.Repositories
 
         protected override void CheckSpaceResource(IHaveSpaceResource spaceResource)
         {
-                Repository.Scope.Apply(
-                    whenSpaceScoped: space =>
-                    {
-                        if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
-                            throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
-                    },
-                    whenSystemScoped: () => { },
-                    whenUnspecifiedScope: () => { });
+            Repository.Scope.Apply(
+                whenSpaceScoped: space =>
+                {
+                    if (spaceResource.SpaceId != null && spaceResource.SpaceId != space.Id)
+                        throw new ResourceSpaceDoesNotMatchRepositorySpaceException(spaceResource, space);
+                },
+                whenSystemScoped: () => { },
+                whenUnspecifiedScope: () => { });
         }
 
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
-                       SpaceContext.SystemOnly, 
+            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace,
+                       SpaceContext.SystemOnly,
                        SpaceContext.AllSpacesAndSystem);
         }
 
@@ -69,7 +69,7 @@ namespace Octopus.Client.Repositories
         {
             base.EnrichSpaceId(resource);
 
-            if (resource is IHaveSpaceResource spaceResource 
+            if (resource is IHaveSpaceResource spaceResource
                 && userDefinedSpaceContext != null)
             {
                 spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaces =>
@@ -95,9 +95,9 @@ namespace Octopus.Client.Repositories
 
         protected void EnsureSingleSpaceContext()
         {
-            Repository.Scope.Apply(_ => {},
+            Repository.Scope.Apply(_ => { },
                 () => throw new SpaceScopedOperationInSystemContextException(),
-                () => 
+                () =>
                 {
                     if (userDefinedSpaceContext == null)
                     {
@@ -126,7 +126,7 @@ namespace Octopus.Client.Repositories
             var exception = new InvalidOperationException("Attempted to perform a system operation in a space scoped context. Ensure you are in system context first by using client.ForSystem()");
             Repository.Scope.Apply(_ => throw exception,
                 () => { },
-                () => 
+                () =>
                 {
                     if (userDefinedSpaceContext == null || userDefinedSpaceContext.IncludeSystem)
                     {

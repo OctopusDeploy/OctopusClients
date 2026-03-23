@@ -23,13 +23,13 @@ namespace Octopus.Client.Tests.Repositories.Async
         public void Setup()
         {
             mockRepo = Substitute.For<IOctopusAsyncRepository>();
-            
+
             repoForSpaceScopedResource = new TestSpaceResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
             repoForMixedScopedResource = new TestMixedResourceAsyncRepository(mockRepo, "");
             repoForSystemScopedResource = new TestSystemResourceAsyncRepository(mockRepo, "", async repo => await Task.FromResult(""));
-            
+
             mockRepo.LoadRootDocument().Returns(GetRootResource());
-            
+
             someSpace = new SpaceResource
             {
                 Id = "Spaces-1",
@@ -43,9 +43,9 @@ namespace Octopus.Client.Tests.Repositories.Async
                 Name = "Another space",
                 IsDefault = false
             };
-            
+
             mockRepo.Scope.Returns(RepositoryScope.ForSpace(someSpace));
-            
+
             RootResource GetRootResource()
             {
                 return new RootResource
@@ -55,19 +55,19 @@ namespace Octopus.Client.Tests.Repositories.Async
                 };
             }
         }
-        
+
         [Test]
         public void SpaceRepo_ResourceWithSpaceIdSet_NonMatchingSpaceIdThrows()
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateSpaceResourceForSpace(otherSpace.Id);
-            Action activityUnderTest= () => repoForSpaceScopedResource.Create(resource).Wait();
+            Action activityUnderTest = () => repoForSpaceScopedResource.Create(resource).Wait();
 
             activityUnderTest
                 .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
         }
-        
+
         [Test]
         public void SpaceRepo_ResourceWithSpaceIdSet_MatchingSpaceIdOk()
         {
@@ -77,7 +77,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             resource.SpaceId.Should()
                 .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
         }
-        
+
         [Test]
         public void SpaceRepo_ResourceWithNoSpaceId_Ok()
         {
@@ -86,13 +86,13 @@ namespace Octopus.Client.Tests.Repositories.Async
             resource.SpaceId
                 .Should().Be(someSpace.Id, $"the repository scope will be used to enrich the spaceResource's {nameof(IHaveSpaceResource.SpaceId)} property");
         }
-        
+
         [Test]
         public void SpaceRepo_MixedResourceWithSpaceIdSet_MatchingSpaceIdOk()
         {
             mockRepo.SetupScopeForSpace(someSpace.Id);
             var resource = CreateMixedResourceForSpace(someSpace.Id);
-            
+
             Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
             resource.SpaceId.Should()
                 .Be(someSpace.Id, $"the space resource {nameof(IHaveSpaceResource.SpaceId)} shouldn't have changed");
@@ -108,7 +108,7 @@ namespace Octopus.Client.Tests.Repositories.Async
                 .Should().Throw<ResourceSpaceDoesNotMatchRepositorySpaceException>()
                 .WithMessage("The resource has a different space specified than the one specified by the repository. Either change the SpaceId on the resource to Spaces-1, or use a repository that is scoped to Spaces-2.");
         }
-        
+
         [Test]
         public void SpaceRepo_MixedResourceWithNoSpaceId_Ok()
         {
@@ -132,7 +132,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             mockRepo.SetupScopeForSystem();
             Assert.DoesNotThrow(() => repoForSystemScopedResource.GetAll().Wait());
         }
-       
+
         [Test]
         public void SystemRepo_MixedResourceNoSpaceId_Ok()
         {
@@ -156,7 +156,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateSpaceResourceForSpace(someSpace.Id);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
         }
-        
+
         [Test]
         public void UnspecifiedRepo_SpaceResourceNoSpaceId_Ok()
         {
@@ -164,7 +164,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateSpaceResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForSpaceScopedResource.Create(resource).Wait());
         }
-        
+
         [Test]
         public void UnspecifiedRepo_SpaceResourceNoSpaceIdServerVersionBeforeSpaces_Ok()
         {
@@ -180,7 +180,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateMixedResourceForSpace(someSpace.Id);
             Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
         }
-        
+
         [Test]
         public void UnspecifiedRepo_MixedResourceNoSpaceId_Ok()
         {
@@ -188,7 +188,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             var resource = CreateMixedResourceForSpace(null);
             Assert.DoesNotThrow(() => repoForMixedScopedResource.Create(resource).Wait());
         }
-        
+
         [Test]
         public void UnspecifiedRepo_SystemResource_Ok()
         {
@@ -201,28 +201,28 @@ namespace Octopus.Client.Tests.Repositories.Async
         {
             return new ProjectResource
             {
-                Name = nameof(ProjectResource), 
-                SpaceId = spaceId, 
-                Links = new LinkCollection { {"Self", ""} }
+                Name = nameof(ProjectResource),
+                SpaceId = spaceId,
+                Links = new LinkCollection { { "Self", "" } }
             };
         }
-        
+
         private TeamResource CreateMixedResourceForSpace(string spaceId)
         {
             return new TeamResource
             {
-                Name = nameof(TeamResource), 
-                SpaceId = spaceId, 
-                Links = new LinkCollection { {"Self", ""} }
+                Name = nameof(TeamResource),
+                SpaceId = spaceId,
+                Links = new LinkCollection { { "Self", "" } }
             };
         }
-        
+
         private UserRoleResource CreateSystemResource()
         {
             return new UserRoleResource
             {
-                Name = nameof(UserRoleResource), 
-                Links = new LinkCollection { {"Self", ""} }
+                Name = nameof(UserRoleResource),
+                Links = new LinkCollection { { "Self", "" } }
             };
         }
 
@@ -232,14 +232,14 @@ namespace Octopus.Client.Tests.Repositories.Async
             {
             }
         }
-        
+
         private class TestMixedResourceAsyncRepository : Client.Repositories.Async.MixedScopeBaseRepository<TeamResource>
         {
             public TestMixedResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName) : base(repository, collectionLinkName)
             {
             }
         }
-        
+
         private class TestSystemResourceAsyncRepository : Client.Repositories.Async.BasicRepository<UserRoleResource>
         {
             public TestSystemResourceAsyncRepository(IOctopusAsyncRepository repository, string collectionLinkName, Func<IOctopusAsyncRepository, Task<string>> getCollectionLinkName = null) : base(repository, collectionLinkName, getCollectionLinkName)
@@ -247,25 +247,25 @@ namespace Octopus.Client.Tests.Repositories.Async
             }
         }
     }
-    
+
     public static class TestExtensions
     {
         public static void SetupScopeForSpace(this IOctopusAsyncRepository repo, string space)
         {
-            repo.Scope.Returns(RepositoryScope.ForSpace(new SpaceResource {Id = space, IsDefault = false}));
+            repo.Scope.Returns(RepositoryScope.ForSpace(new SpaceResource { Id = space, IsDefault = false }));
         }
 
         public static void SetupScopeForSystem(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.ForSystem());
         }
-        
+
         public static void SetupScopeAsUnspecified(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());
             repo.LoadSpaceRootDocument().Returns(new SpaceRootResource());
         }
-        
+
         public static void SetupScopeAsUnspecifiedWithDefaultSpaceDisabled(this IOctopusAsyncRepository repo)
         {
             repo.Scope.Returns(RepositoryScope.Unspecified());

@@ -99,7 +99,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 return await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                     link,
-                    new FileUpload() {Contents = contents, FileName = fileName},
+                    new FileUpload() { Contents = contents, FileName = fileName },
                     pathParameters).ConfigureAwait(false);
             }
             catch (TimeoutException)
@@ -141,7 +141,7 @@ namespace Octopus.Client.Repositories.Async
 
         private async Task<PackageFromBuiltInFeedResource> AttemptDeltaPush(string fileName, Stream contents, OverwriteMode overwriteMode)
         {
-            if (! await repository.HasLink("PackageDeltaSignature").ConfigureAwait(false))
+            if (!await repository.HasLink("PackageDeltaSignature").ConfigureAwait(false))
             {
                 Logger.Info("Server does not support delta compression for package push");
                 return null;
@@ -157,7 +157,7 @@ namespace Octopus.Client.Repositories.Async
             try
             {
                 Logger.Info($"Requesting signature for delta compression from the server for upload of a package with id '{packageId}' and version '{version}'");
-                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature").ConfigureAwait(false), new {packageId, version}).ConfigureAwait(false);
+                signatureResult = await repository.Client.Get<PackageSignatureResource>(await repository.Link("PackageDeltaSignature").ConfigureAwait(false), new { packageId, version }).ConfigureAwait(false);
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -165,7 +165,7 @@ namespace Octopus.Client.Repositories.Async
                 return null;
             }
 
-            using(var deltaTempFile = new TemporaryFile())
+            using (var deltaTempFile = new TemporaryFile())
             {
                 var shouldUpload = DeltaCompression.CreateDelta(contents, signatureResult, deltaTempFile.FileName);
                 if (!shouldUpload)
@@ -188,7 +188,7 @@ namespace Octopus.Client.Repositories.Async
 
                     var result = await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                         link,
-                        new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
+                        new FileUpload() { Contents = delta, FileName = Path.GetFileName(fileName) },
                         pathParameters).ConfigureAwait(false);
 
                     Logger.Info("Delta transfer completed");

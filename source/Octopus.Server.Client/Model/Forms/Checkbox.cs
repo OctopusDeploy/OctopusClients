@@ -22,7 +22,7 @@ namespace Octopus.Client.Model.Forms
 
         public override Type GetNativeValueType()
         {
-            return typeof (bool);
+            return typeof(bool);
         }
     }
 }

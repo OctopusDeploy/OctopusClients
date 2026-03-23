@@ -15,7 +15,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             Post(TestRootPath, p => Response.AsJson(new OctopusExceptionFactory.OctopusErrorsContract()
             {
                 ErrorMessage = "ErrorMessage",
-                Errors = new []{ "Error" }, 
+                Errors = new[] { "Error" },
                 Details = new[] { "Details" }
             }, HttpStatusCode.BadRequest));
         }

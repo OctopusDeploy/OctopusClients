@@ -10,7 +10,7 @@ namespace Octopus.Client.Model
         [Writeable]
         [Trim]
         public string Name { get; set; }
-        
+
         [Writeable]
         [Trim]
         public string Slug { get; set; }
@@ -35,7 +35,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public DeploymentConnectivityPolicy ConnectivityPolicy { get; set; } = new DeploymentConnectivityPolicy() { AllowDeploymentsToNoTargets = true};
+        public DeploymentConnectivityPolicy ConnectivityPolicy { get; set; } = new DeploymentConnectivityPolicy() { AllowDeploymentsToNoTargets = true };
 
         [Writeable]
         public RunbookEnvironmentScope EnvironmentScope { get; set; }
@@ -51,14 +51,14 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool ForcePackageDownload { get; set; }
-     
+
         [Writeable]
         public bool FailTargetDiscovery { get; set; }
-        
+
         /// <summary>  
         /// List of tags assigned to this runbook  
         /// </summary>  
-        [Writeable]  
+        [Writeable]
         public List<TagCanonicalIdOrName> RunbookTags { get; set; } = new List<TagCanonicalIdOrName>();
     }
 }

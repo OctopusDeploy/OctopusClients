@@ -1202,7 +1202,7 @@ namespace Octopus.Client.Logging.LogProviders
                             }
                         }
 #else
-                        s_callerStackBoundaryType = typeof (LoggerExecutionWrapper);
+                        s_callerStackBoundaryType = typeof(LoggerExecutionWrapper);
 #endif
                     }
                 }

@@ -6,13 +6,13 @@ namespace Octopus.Client.Model
     {
         public override FeedType FeedType => FeedType.OciRegistry;
 
-        [Writeable] 
+        [Writeable]
         public string FeedUri { get; set; }
 
-        [Writeable] 
+        [Writeable]
         public string Username { get; set; }
 
-        [Writeable] 
+        [Writeable]
         public SensitiveValue Password { get; set; }
     }
 }

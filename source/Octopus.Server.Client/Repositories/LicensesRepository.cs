@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
         LicenseResource UpdateCurrent(LicenseResource resource);
         LicenseStatusResource GetStatus();
     }
-    
+
     class LicensesRepository : BasicRepository<LicenseResource>, ILicensesRepository
     {
         public LicensesRepository(IOctopusRepository repository)

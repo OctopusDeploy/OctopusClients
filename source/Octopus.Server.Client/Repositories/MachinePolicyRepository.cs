@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
         List<MachineResource> GetMachines(MachinePolicyResource machinePolicy);
         MachinePolicyResource GetTemplate();
     }
-    
+
     class MachinePolicyRepository : BasicRepository<MachinePolicyResource>, IMachinePolicyRepository
     {
         public MachinePolicyRepository(IOctopusRepository repository) : base(repository, "MachinePolicies")

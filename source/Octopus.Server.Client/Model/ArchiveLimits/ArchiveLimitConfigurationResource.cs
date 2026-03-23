@@ -11,7 +11,7 @@ namespace Octopus.Client.Model.ArchiveLimits
         }
 
         public string Id { get; set; }
-        
+
         [Writeable]
         public long OctopusServerGigabytes { get; set; }
 

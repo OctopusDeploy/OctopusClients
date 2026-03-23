@@ -35,7 +35,7 @@ namespace Octopus.Client
         public string Proxy { get; set; }
         public string ProxyUsername { get; set; }
         public string ProxyPassword { get; set; }
-        
+
         /// <summary>
         /// Whether or not the default proxy can be used if the proxy is not set.
         /// </summary>

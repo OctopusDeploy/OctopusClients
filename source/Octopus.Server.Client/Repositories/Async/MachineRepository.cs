@@ -84,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
         /// </summary>
         /// <param name="machine"></param>
         /// <returns></returns>
-        public Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine) => GetTasks(machine, new {  skip = 0 });
+        public Task<IReadOnlyList<TaskResource>> GetTasks(MachineResource machine) => GetTasks(machine, new { skip = 0 });
 
         /// <summary>
         /// Gets all tasks associated with this machine

@@ -64,7 +64,7 @@ namespace Octopus.Client.Editors
 
             return this;
         }
-        
+
         public LibraryVariableSetEditor Load(string id)
         {
             Instance = repository.Get(id);
@@ -86,7 +86,7 @@ namespace Octopus.Client.Editors
             }
             return this;
         }
-        
+
         public LibraryVariableSetUsageResource Usages()
         {
             return repository.Client.Get<LibraryVariableSetUsageResource>(Instance.Link("Usages"));

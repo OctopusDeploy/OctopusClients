@@ -23,7 +23,7 @@ namespace Octopus.Client.Editors
         public List<AzureOidcAccountResource.WebSlot> WebSiteSlots(AzureOidcAccountResource.WebSite site)
         {
             return Repository.Client.Get<List<AzureOidcAccountResource.WebSlot>>(Instance.Link("WebSiteSlots"),
-                new {resourceGroupName = site.ResourceGroup, webSiteName = site.Name});
+                new { resourceGroupName = site.ResourceGroup, webSiteName = site.Name });
         }
 
         public List<AzureStorageAccount> StorageAccounts()

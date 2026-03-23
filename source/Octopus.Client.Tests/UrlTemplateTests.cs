@@ -102,7 +102,7 @@ namespace Octopus.Client.Tests
             // Arrange
             var urlTemplateResolver = new UrlTemplate("/api/subscriptions{/id}{?skip,take,ids}");
             urlTemplateResolver.SetParameter("skip", 10);
-            
+
             // Act
             var url = urlTemplateResolver.Resolve();
 
@@ -146,7 +146,7 @@ namespace Octopus.Client.Tests
             // Arrange
             var urlTemplateResolver = new UrlTemplate(@"/api/projects{/id}{?name,skip,ids,clone,take}");
             urlTemplateResolver.SetParameter("name", "KPP.Bastjänster");
-            
+
             // Act
             var url = urlTemplateResolver.Resolve();
 

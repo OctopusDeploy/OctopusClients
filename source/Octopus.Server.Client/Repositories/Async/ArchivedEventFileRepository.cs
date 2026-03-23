@@ -9,7 +9,7 @@ using Octopus.Client.Model.EventRetention;
 
 namespace Octopus.Client.Repositories.Async
 {
-    public interface IArchivedEventFileRepository : 
+    public interface IArchivedEventFileRepository :
         IDelete<ArchivedEventFileResource>
     {
         Task<Stream> GetContent(ArchivedEventFileResource archiveEventFile);

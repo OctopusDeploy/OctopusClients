@@ -20,7 +20,7 @@ namespace Octopus.Client.Repositories.Async
         public Task<TaskResource> ApplyNow(string spaceId = null)
         {
             var tasks = new TaskRepository(Repository);
-            var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API", SpaceId = spaceId};
+            var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API", SpaceId = spaceId };
             return tasks.Create(task);
         }
     }

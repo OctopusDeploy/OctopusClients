@@ -63,7 +63,7 @@ public class GitDependencyCollectionResource : ICollection<GitDependencyResource
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public GitDependencyResource GetByName(string name = "") => nameMap[name];
-    
+
     public bool TryGetByName(string name, out GitDependencyResource? gitDependency)
     {
         var key = name ?? "";

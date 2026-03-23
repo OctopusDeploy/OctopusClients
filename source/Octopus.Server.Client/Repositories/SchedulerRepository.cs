@@ -14,7 +14,7 @@ namespace Octopus.Client.Repositories
         Stream GetRawLogs(string taskName);
         SchedulerStatusResource Status();
     }
-    
+
     class SchedulerRepository : ISchedulerRepository
     {
         private readonly IOctopusRepository repository;

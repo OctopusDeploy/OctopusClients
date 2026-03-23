@@ -40,7 +40,7 @@ namespace Octopus.Client.Tests.Repositories
 
             // Assert
             getUrlUsed.Should().Be(variableLink);
-            getParamsUsed.Should().BeEquivalentTo(new {gitRef = "branchy"});
+            getParamsUsed.Should().BeEquivalentTo(new { gitRef = "branchy" });
         }
 
 
@@ -92,7 +92,7 @@ namespace Octopus.Client.Tests.Repositories
 
         ProjectResource TestProject(bool gitProject, bool variablesAreInGit, string linkKey, string link)
         {
-            var linkCollection = new LinkCollection {{linkKey, link}};
+            var linkCollection = new LinkCollection { { linkKey, link } };
 
             PersistenceSettingsResource persistence = new DatabasePersistenceSettingsResource();
 

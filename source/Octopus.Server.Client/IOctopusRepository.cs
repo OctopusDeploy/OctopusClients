@@ -5,7 +5,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusCommonRepository.Client" />.
     /// </summary>
-    public interface IOctopusRepository: IOctopusSpaceRepository, IOctopusSystemRepository
+    public interface IOctopusRepository : IOctopusSpaceRepository, IOctopusSystemRepository
     {
     }
 }

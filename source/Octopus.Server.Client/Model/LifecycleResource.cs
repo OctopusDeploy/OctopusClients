@@ -84,7 +84,7 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
-        
+
         public string Slug { get; set; }
     }
 }

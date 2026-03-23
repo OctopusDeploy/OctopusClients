@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.Triggers.GitTriggers;
 public class GitFilterResource : TriggerFilterResource
 {
     public override TriggerFilterType FilterType => TriggerFilterType.GitFilter;
-    
+
     public List<GitTriggerSourceResource> Sources { get; set; } = [];
 }
 

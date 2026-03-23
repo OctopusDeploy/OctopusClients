@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories
 
         public ActionTemplateResource GetVersion(ActionTemplateResource resource, int version)
         {
-            return Client.Get<ActionTemplateResource>(resource.Links["Versions"], new {version});
+            return Client.Get<ActionTemplateResource>(resource.Links["Versions"], new { version });
         }
 
         public ActionUpdateResultResource[] UpdateActions(ActionTemplateResource actionTemplate, ActionsUpdateResource update)

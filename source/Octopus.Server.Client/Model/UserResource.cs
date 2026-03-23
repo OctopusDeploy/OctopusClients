@@ -49,10 +49,10 @@ namespace Octopus.Client.Model
         [NotReadable]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
-    
+
         [Writeable]
         public IdentityResource[] Identities { get; set; }
-        
+
         [WriteableOnCreate]
         public DateTimeOffset Created { get; set; }
     }

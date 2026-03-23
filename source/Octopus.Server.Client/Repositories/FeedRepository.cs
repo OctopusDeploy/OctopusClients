@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
     {
         List<PackageResource> GetVersions(FeedResource feed, string[] packageIds);
     }
-    
+
     class FeedRepository : BasicRepository<FeedResource>, IFeedRepository
     {
         public FeedRepository(IOctopusRepository repository) : base(repository, "Feeds")

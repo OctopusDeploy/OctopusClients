@@ -15,6 +15,6 @@ namespace Octopus.Client.Editors.Async
 
     public interface IResourceBuilder
     {
-        
+
     }
 }

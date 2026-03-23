@@ -20,9 +20,9 @@ namespace Octopus.Client.Tests.Repositories
             });
             var repository = new OctopusAsyncRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusAsyncRepository).GetTypeInfo().GetProperties()
-                where !delayInitialisedProperties.Contains(p.Name)
+                                  where !delayInitialisedProperties.Contains(p.Name)
                                   where p.GetMethod.Invoke(repository, new object[0]) == null
-                select p.Name;
+                                  select p.Name;
 
             var nullProperties = nullPropertiesQ.ToArray();
             if (nullProperties.Any())

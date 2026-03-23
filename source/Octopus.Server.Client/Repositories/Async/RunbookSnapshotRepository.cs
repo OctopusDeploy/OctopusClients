@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories.Async
         Task<ResourceCollection<ArtifactResource>> GetArtifacts(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null);
         Task<RunbookRunTemplateResource> GetTemplate(RunbookSnapshotResource runbookSnapshot);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
-        Task<RunbookSnapshotResource> SnapshotVariables(RunbookSnapshotResource runbookSnapshot);    
+        Task<RunbookSnapshotResource> SnapshotVariables(RunbookSnapshotResource runbookSnapshot);
         Task<RunbookSnapshotResource> Create(RunbookSnapshotResource runbookSnapshot);
     }
 

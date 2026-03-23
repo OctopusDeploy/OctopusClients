@@ -20,7 +20,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var userAgentHeaderValue = Request.Headers["User-Agent"]?.FirstOrDefault();
 
-                return Response.AsJson(new TestDto {UserAgentValue = userAgentHeaderValue})
+                return Response.AsJson(new TestDto { UserAgentValue = userAgentHeaderValue })
                     .WithStatusCode(HttpStatusCode.OK);
             });
         }
@@ -35,7 +35,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         {
             public string[] SafelyGetEnvironmentInformation()
             {
-                return new[] {"TestOS", "x64"};
+                return new[] { "TestOS", "x64" };
             }
         }
 

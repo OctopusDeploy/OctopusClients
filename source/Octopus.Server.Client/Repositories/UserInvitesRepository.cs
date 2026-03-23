@@ -8,13 +8,13 @@ namespace Octopus.Client.Repositories
         InvitationResource Invite(string addToTeamId);
         InvitationResource Invite(ReferenceCollection addToTeamIds);
     }
-    
+
     class UserInvitesRepository : MixedScopeBaseRepository<InvitationResource>, IUserInvitesRepository
     {
         public UserInvitesRepository(IOctopusRepository octopusRepository) : base(octopusRepository, "Invitations")
         {
         }
-        
+
         public InvitationResource Invite(string addToTeamId)
         {
             if (addToTeamId == null) throw new ArgumentNullException(nameof(addToTeamId));

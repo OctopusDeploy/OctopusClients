@@ -26,10 +26,10 @@ namespace Octopus.Client.Features
                     new AggregateCopyOperationsDecorator(new BinaryDeltaWriter(deltaStream))
                 );
             }
-                
+
             var originalFileSize = contents.Length;
             var deltaFileSize = new FileInfo(deltaTempFile).Length;
-            var ratio = deltaFileSize / (double) originalFileSize;
+            var ratio = deltaFileSize / (double)originalFileSize;
 
             if (ratio > 0.95)
             {

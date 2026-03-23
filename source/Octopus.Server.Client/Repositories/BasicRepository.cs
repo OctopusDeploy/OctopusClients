@@ -75,10 +75,10 @@ namespace Octopus.Client.Repositories
         {
             if (!hasMinimumRequiredVersion) return;
 
-            EnsureServerIsMinimumVersion(minimumRequiredVersion, currentServerVersion => 
+            EnsureServerIsMinimumVersion(minimumRequiredVersion, currentServerVersion =>
                     $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{minimumRequiredVersion}'");
         }
-        
+
         protected void EnsureServerIsMinimumVersion(SemanticVersion requiredVersion, Func<string, string> messageGenerator)
         {
             var currentServerVersion = Repository.LoadRootDocument().Version;
@@ -184,7 +184,7 @@ namespace Octopus.Client.Repositories
 
             partialName = (partialName ?? string.Empty).Trim();
             if (pathParameters == null)
-                pathParameters = new { partialName = partialName};
+                pathParameters = new { partialName = partialName };
 
             return FindMany(r =>
             {
@@ -200,7 +200,7 @@ namespace Octopus.Client.Repositories
             name = (name ?? string.Empty).Trim();
             // Some endpoints allow a Name query param which greatly increases efficiency
             if (pathParameters == null)
-                pathParameters = new {name = name};
+                pathParameters = new { name = name };
 
             return FindOne(r =>
             {
@@ -222,7 +222,7 @@ namespace Octopus.Client.Repositories
                 return false;
             }, path, pathParameters);
         }
-        
+
         public TResource FindBySlug(string slug, string path = null, object pathParameters = null)
         {
             ThrowIfServerVersionIsNotCompatible();
@@ -230,7 +230,7 @@ namespace Octopus.Client.Repositories
             slug = (slug ?? string.Empty).Trim();
             // Some endpoints allow a Slug query param which greatly increases efficiency
             if (pathParameters == null)
-                pathParameters = new {slug = slug};
+                pathParameters = new { slug = slug };
 
             return FindOne(r =>
             {

@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
         Database,
         VersionControlled
     }
-    
+
     public abstract class PersistenceSettingsResource
     {
         public abstract PersistenceSettingsType Type { get; }
@@ -38,11 +38,11 @@ namespace Octopus.Client.Model
 
         public GitPersistenceSettingsConversionStateResource ConversionState { get; set; }
     }
-    
+
     public class GitPersistenceSettingsConversionStateResource
     {
         public bool VariablesAreInGit { get; set; }
-        
+
         public bool RunbooksAreInGit { get; set; }
     }
 }

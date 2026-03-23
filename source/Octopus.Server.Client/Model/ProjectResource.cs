@@ -73,7 +73,7 @@ namespace Octopus.Client.Model
         public bool IsVersionControlled { get; set; }
         [JsonProperty(Order = 27)]
         public PersistenceSettingsResource PersistenceSettings { get; set; }
- 
+
         [Writeable]
         [JsonProperty(Order = 28)]
         public ProjectTemplateDetailsResource ProjectTemplateDetails { get; set; }
@@ -136,16 +136,16 @@ namespace Octopus.Client.Model
         public bool ForcePackageDownload { get; set; }
 
         [Writeable]
-        public bool? AllowIgnoreChannelRules { get; set;}
-        
-        [Writeable]
-        public bool? ExecuteDeploymentsOnResilientPipeline { get; set;}
+        public bool? AllowIgnoreChannelRules { get; set; }
 
         [Writeable]
-        public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set;}
+        public bool? ExecuteDeploymentsOnResilientPipeline { get; set; }
 
         [Writeable]
-        public string DefaultPowerShellEdition { get; set;}
+        public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set; }
+
+        [Writeable]
+        public string DefaultPowerShellEdition { get; set; }
 
         public IconResource Icon { get; set; }
 

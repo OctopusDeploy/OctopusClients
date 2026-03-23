@@ -12,7 +12,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusCommonAsyncRepository.Client" />.
     /// </summary>
-    public interface IOctopusSystemAsyncRepository: IOctopusCommonAsyncRepository
+    public interface IOctopusSystemAsyncRepository : IOctopusCommonAsyncRepository
     {
         ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }
@@ -50,7 +50,7 @@ namespace Octopus.Client
         /// <exception cref="OctopusResourceNotFoundException">HTTP 404: If the specified resource does not exist on the server.</exception>
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RootResource> LoadRootDocument();
-        
+
         /// <inheritdoc cref="IOctopusSystemAsyncRepository.LoadRootDocument()"/>
         /// <param name="cancellationToken">Cancellation token for the request</param>
         Task<RootResource> LoadRootDocument(CancellationToken cancellationToken);

@@ -27,7 +27,7 @@ namespace Octopus.Client
         /// <c>true</c> if the specified link is defined; otherwise, <c>false</c>.
         /// </returns>
         bool HasLink(string name);
-        
+
         /// <summary>
         /// Determines whether the link with the specified name contains a specified parameter.
         /// </summary>

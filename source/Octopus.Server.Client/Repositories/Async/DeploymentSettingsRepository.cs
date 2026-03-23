@@ -12,16 +12,16 @@ namespace Octopus.Client.Repositories.Async
         Task<DeploymentSettingsResource> Get(ProjectResource project);
         Task<DeploymentSettingsResource> Get(ProjectResource project, CancellationToken cancellationToken);
 
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitRef);
         Task<DeploymentSettingsResource> Get(ProjectResource projectResource, string gitRef, CancellationToken cancellationToken);
-        
+
         [Obsolete("ProjectResource is no longer required to be passed in")]
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
         [Obsolete("ProjectResource is no longer required to be passed in")]
         Task<DeploymentSettingsResource> Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings);
         Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings, CancellationToken cancellationToken);
@@ -54,7 +54,7 @@ namespace Octopus.Client.Repositories.Async
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new {gitRef}, cancellationToken);
+            return await client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new { gitRef }, cancellationToken);
         }
 
         public Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource resource, string commitMessage)
@@ -66,9 +66,9 @@ namespace Octopus.Client.Repositories.Async
             // until then we need a way to re-use the response from previous client calls
             var json = Serializer.Serialize(resource);
             var command = Serializer.Deserialize<ModifyDeploymentSettingsCommand>(json);
-            
+
             command.ChangeDescription = commitMessage;
-            
+
             await client.Update(command.Link("Self"), command, cancellationToken);
             return await client.Get<DeploymentSettingsResource>(command.Link("Self"), cancellationToken);
         }
@@ -94,7 +94,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings)
             => Modify(deploymentSettings, CancellationToken.None);
-        
+
         public async Task<DeploymentSettingsResource> Modify(DeploymentSettingsResource deploymentSettings, CancellationToken cancellationToken)
         {
             await client.Put(deploymentSettings.Link("Self"), deploymentSettings, cancellationToken);

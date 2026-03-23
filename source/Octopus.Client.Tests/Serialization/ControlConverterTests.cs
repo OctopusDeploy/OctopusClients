@@ -16,7 +16,7 @@ namespace Octopus.Client.Tests.Serialization
             {
                 Name = "name",
                 Label = "lbl",
-                Type= "VariableValue",
+                Type = "VariableValue",
                 Description = "desc",
                 IsSecure = true
             };
@@ -34,7 +34,7 @@ namespace Octopus.Client.Tests.Serialization
             var input = new
             {
                 Label = "lbl",
-                Type= "VariableValue",
+                Type = "VariableValue",
                 Description = "desc",
                 IsSecure = true
             };

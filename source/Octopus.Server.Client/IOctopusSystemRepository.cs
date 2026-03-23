@@ -9,7 +9,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusCommonRepository.Client" />.
     /// </summary>
-    public interface IOctopusSystemRepository: IOctopusCommonRepository
+    public interface IOctopusSystemRepository : IOctopusCommonRepository
     {
         ISchedulerRepository Schedulers { get; }
         IBackupRepository Backups { get; }

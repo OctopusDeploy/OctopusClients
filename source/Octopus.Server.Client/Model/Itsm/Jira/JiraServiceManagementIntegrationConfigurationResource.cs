@@ -13,7 +13,7 @@ public class JiraServiceManagementIntegrationConfigurationResource : ExtensionCo
     {
         Id = "jiraservicemanagement-integration";
     }
-    
+
     [Description("Connect your Octopus instance to one or more Jira Service Management instances")]
     [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
     [DisplayName("Connection")]

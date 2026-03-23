@@ -42,7 +42,7 @@ namespace Octopus.Client.Repositories.Async
 
         bool ProjectHasVariablesInGit(ProjectResource projectResource)
         {
-            return projectResource.PersistenceSettings is GitPersistenceSettingsResource {ConversionState: {VariablesAreInGit: true}};
+            return projectResource.PersistenceSettings is GitPersistenceSettingsResource { ConversionState: { VariablesAreInGit: true } };
         }
     }
 }

@@ -16,10 +16,10 @@ namespace Octopus.Client.Model.SmtpConfiguration
 
         [Writeable]
         public bool EnableSsl { get; set; }
-        
+
         [Writeable]
         public int? Timeout { get; set; }
-        
+
         [Writeable]
         public SmtpCredentialDetailsResource Details { get; set; }
     }

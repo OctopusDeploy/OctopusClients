@@ -55,7 +55,7 @@ namespace Octopus.Client.Repositories
         /// </summary>
         CertificateConfigurationResource GetOctopusCertificate();
     }
-    
+
     class CertificateRepository : BasicRepository<CertificateResource>, ICertificateRepository
     {
         public CertificateRepository(IOctopusRepository repository)
@@ -65,10 +65,10 @@ namespace Octopus.Client.Repositories
 
         public Stream Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false)
         {
-            var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
+            var pathParameters = format.HasValue ? new { format = format.Value, password = password, includePrivateKey = includePrivateKey } : null;
             return Client.GetContent(certificate.Link("Export"), pathParameters);
         }
-        
+
         public Stream ExportAsPem(CertificateResource certificate, bool includePrivateKey = false,
             CertificateExportPemOptions pemOptions = CertificateExportPemOptions.PrimaryOnly)
         {
@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories
 
         public CertificateResource Replace(CertificateResource certificate, string certificateData, string password)
         {
-            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new {certificateData = certificateData, password = password});
+            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new { certificateData = certificateData, password = password });
         }
 
         public void Archive(CertificateResource certificate)

@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
         public TaskResourceCollection(IEnumerable<TaskResource> items, LinkCollection links) : base(items, links)
         {
         }
-        
+
         public Dictionary<string, int> TotalCounts { get; set; }
         public Dictionary<string, int> TotalCountsInOtherSpaces { get; set; }
     }

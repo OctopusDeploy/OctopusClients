@@ -7,7 +7,7 @@ namespace Octopus.Client.Model
     public class AzureContainerRegistryFeedResource : DockerFeedResource
     {
         public override FeedType FeedType => FeedType.AzureContainerRegistry;
-        
+
         [Writeable]
         public AcrOidcFeedAuthentication? OidcAuthentication { get; set; }
     }

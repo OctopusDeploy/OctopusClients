@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
     {
         List<string> GetAllRoleNames();
     }
-    
+
     class MachineRoleRepository : IMachineRoleRepository
     {
         private readonly IOctopusRepository repository;

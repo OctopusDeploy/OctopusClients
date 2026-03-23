@@ -56,7 +56,7 @@ namespace Octopus.Client.Model
         /// <summary>
         /// Gets or sets the current state of the task.
         /// </summary>
-        [JsonConverter(typeof (StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(Order = 5)]
         public TaskState State { get; set; }
 

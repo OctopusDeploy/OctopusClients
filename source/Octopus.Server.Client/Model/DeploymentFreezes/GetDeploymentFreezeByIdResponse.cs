@@ -17,13 +17,13 @@ public class GetDeploymentFreezeByIdResponse
 
     [Required]
     public DateTimeOffset End { get; set; }
-    
+
     public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; protected set; }
 
-    public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; protected set; } 
-    
-    public string OwnerId { get; set;}
-    
+    public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; protected set; }
+
+    public string OwnerId { get; set; }
+
     public RecurringSchedule RecurringSchedule { get; set; }
 
 }

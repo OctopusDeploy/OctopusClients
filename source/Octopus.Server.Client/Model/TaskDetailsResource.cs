@@ -25,7 +25,7 @@ namespace Octopus.Client.Model
             {
                 activityLog = value;
                 if (ActivityLogs == null && activityLog != null)
-                    ActivityLogs = new List<ActivityElement>() {activityLog};
+                    ActivityLogs = new List<ActivityElement>() { activityLog };
             }
         }
 

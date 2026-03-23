@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
         FeaturesConfigurationResource GetFeaturesConfiguration();
         FeaturesConfigurationResource ModifyFeaturesConfiguration(FeaturesConfigurationResource resource);
     }
-    
+
     class FeaturesConfigurationRepository : IFeaturesConfigurationRepository
     {
         private readonly IOctopusRepository repository;

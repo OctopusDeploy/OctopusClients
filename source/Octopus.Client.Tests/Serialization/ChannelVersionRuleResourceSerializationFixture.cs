@@ -9,7 +9,7 @@ using Assert = NUnit.Framework.Legacy.ClassicAssert;
 namespace Octopus.Client.Tests.Serialization
 {
     [TestFixture]
-    public class ChannelVersionRuleResourceSerializationFixture 
+    public class ChannelVersionRuleResourceSerializationFixture
     {
         [Test]
         public void ActionPackagesAreSerializedIntoLegacyActionsCollection()
@@ -39,13 +39,13 @@ namespace Octopus.Client.Tests.Serialization
                     new {DeploymentAction = "Action 2", PackageReference = ""},
                     new {DeploymentAction = "Action 3", PackageReference = "Package 1"}
                 },
-                Links = new {},
-                
+                Links = new { },
+
                 // This is the key part of this test: we are expecting the serialized object to contain an "Actions"
                 // collection.  This maintains compatibility with older server 
-                Actions = new[] {"Action 1", "Action 1:Package 1", "Action 2", "Action 3:Package 1"}
+                Actions = new[] { "Action 1", "Action 1:Package 1", "Action 2", "Action 3:Package 1" }
             });
-            
+
             Assert.True(JToken.DeepEquals(expected, result));
         }
 
@@ -54,16 +54,16 @@ namespace Octopus.Client.Tests.Serialization
         {
             var incoming = new
             {
-                VersionRange = "[1.0]", 
-                Actions = new[] {"Action 1", "Action 2", "Action 2:Package 1"}
+                VersionRange = "[1.0]",
+                Actions = new[] { "Action 1", "Action 2", "Action 2:Package 1" }
             };
 
             var result =
                 JsonSerialization.DeserializeObject<ChannelVersionRuleResource>(JObject.FromObject(incoming).ToString());
-            
+
             Assert.AreEqual(incoming.VersionRange, result.VersionRange);
             Assert.AreEqual(3, result.ActionPackages.Count);
-            
+
             Assert.True(result.ActionPackages.Any(ap => ap.DeploymentAction == "Action 1" && string.IsNullOrEmpty(ap.PackageReference)));
             Assert.True(result.ActionPackages.Any(ap => ap.DeploymentAction == "Action 2" && string.IsNullOrEmpty(ap.PackageReference)));
             Assert.True(result.ActionPackages.Any(ap => ap.DeploymentAction == "Action 2" && ap.PackageReference == "Package 1"));

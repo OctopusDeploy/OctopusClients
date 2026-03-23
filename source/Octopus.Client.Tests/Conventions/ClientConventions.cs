@@ -72,7 +72,7 @@ namespace Octopus.Client.Tests.Conventions
         public void AllSyncRepositoriesShouldBeAvailableViaIOctopusRepository()
         {
             var exposedTypes = GetRepoTypesReachableFrom(typeof(IOctopusRepository));
-            
+
             var missingTypes = SyncRepositoryInterfaceTypes.Except(exposedTypes).ToArray();
             if (missingTypes.Any())
             {
@@ -86,21 +86,21 @@ namespace Octopus.Client.Tests.Conventions
             RecursivelyCollectRepositoryTypes(root, visitedSoFar);
             return visitedSoFar;
         }
-        
+
         private static void RecursivelyCollectRepositoryTypes(Type root, ISet<Type> visitedSoFar)
         {
             var repoAssembly = typeof(IOctopusRepository).Assembly;
-            
+
             var interfaces = root.GetInterfaces()
-                .Concat(new[] {root})
+                .Concat(new[] { root })
                 .ToArray();
-            
+
             var newTypesExposedViaProperty = interfaces
                 .SelectMany(i => i.GetProperties())
                 .Select(p => p.PropertyType.GetTypeInfo())
                 .Where(p => p.Assembly == repoAssembly)
                 .ToArray();
-            
+
             var newTypesExposedViaMethod = interfaces
                 .SelectMany(i => i.GetMethods())
                 .Select(p => p.ReturnType.GetTypeInfo())
@@ -123,7 +123,7 @@ namespace Octopus.Client.Tests.Conventions
                 RecursivelyCollectRepositoryTypes(type, visitedSoFar);
             }
         }
-        
+
         [Test]
         public void AllRepositoriesShouldImplementNonGenericSimpleInterface()
         {
@@ -374,7 +374,7 @@ namespace Octopus.Client.Tests.Conventions
         [Test]
         public void AsyncRepositoriesThatImplementCreateShouldAlsoImplementModify()
         {
-            var ignored = new []
+            var ignored = new[]
             {
                 typeof(IDeploymentRepository).GetTypeInfo(),
                 typeof(IRunbookRunRepository).GetTypeInfo(),

@@ -9,11 +9,11 @@ namespace Octopus.Client.Model
         {
             DisplaySettings = new Dictionary<string, string>();
         }
-        
+
         public string Label { get; set; }
         public string Description { get; set; }
         public bool Required { get; set; }
-        
+
         /// <summary>
         /// Display options for the prompted-variable input UI.
         /// Use key "Octopus.ControlType" to set the control-type <see cref="Octopus.Client.Model.ControlType"/>

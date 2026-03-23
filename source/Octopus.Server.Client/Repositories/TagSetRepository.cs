@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
         TagSetEditor CreateOrModify(string name);
         TagSetEditor CreateOrModify(string name, string description);
     }
-    
+
     class TagSetRepository : BasicRepository<TagSetResource>, ITagSetRepository
     {
         public TagSetRepository(IOctopusRepository repository) : base(repository, "TagSets")

@@ -17,7 +17,7 @@ namespace Octopus.Client.Exceptions
         /// <param name="message">The message.</param>
         /// <param name="errors">The errors.</param>
         public OctopusValidationException(string message, ICollection<string> errors)
-            :this((int)System.Net.HttpStatusCode.BadRequest, message, errors)
+            : this((int)System.Net.HttpStatusCode.BadRequest, message, errors)
         {
         }
 
@@ -54,7 +54,7 @@ namespace Octopus.Client.Exceptions
         /// <returns></returns>
         public TDetails DetailsAs<TDetails>()
         {
-            return Details == null ? default(TDetails) : ((JToken) Details).ToObject<TDetails>();
+            return Details == null ? default(TDetails) : ((JToken)Details).ToObject<TDetails>();
         }
 
         /// <summary>

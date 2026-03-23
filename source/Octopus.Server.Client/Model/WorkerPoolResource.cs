@@ -50,7 +50,8 @@ namespace Octopus.Client.Model
         public WorkerPoolType WorkerPoolType { get; set; }
     }
 
-    public class StaticWorkerPoolResource : WorkerPoolResource {
+    public class StaticWorkerPoolResource : WorkerPoolResource
+    {
         public StaticWorkerPoolResource()
         {
             WorkerPoolType = WorkerPoolType.StaticWorkerPool;

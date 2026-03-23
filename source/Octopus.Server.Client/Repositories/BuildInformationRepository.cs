@@ -43,7 +43,7 @@ namespace Octopus.Client.Repositories
                     OctopusBuildInformation.BuildInformationRequiresOctopusVersion);
             }
             var link = repository.Link("BuildInformation");
-                    
+
             var resource = new OctopusPackageVersionBuildInformationResource
             {
                 PackageId = packageId,
@@ -71,7 +71,7 @@ namespace Octopus.Client.Repositories
 
         public void DeleteBuilds(IReadOnlyList<OctopusPackageVersionBuildInformationMappedResource> builds)
         {
-            repository.Client.Delete(repository.Link("BuildInformationBulk"), new {ids = builds.Select(p => p.Id).ToArray()});
+            repository.Client.Delete(repository.Link("BuildInformationBulk"), new { ids = builds.Select(p => p.Id).ToArray() });
         }
     }
 

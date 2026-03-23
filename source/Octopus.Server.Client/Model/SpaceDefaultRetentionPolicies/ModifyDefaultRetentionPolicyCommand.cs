@@ -16,12 +16,12 @@ namespace Octopus.Client.Model.SpaceDefaultRetentionPolicies
         [Writeable]
         [Required]
         public string Id { get; set; }
-        
+
         [Description("SpaceId of the space default retention policy.")]
         [Writeable]
         [Required]
         public string SpaceId { get; set; }
-        
+
         [Description("Type of the space default retention policy. ['MachinePackageCache', 'LifecycleRelease', 'LifecycleTentacle', 'RunbookRetention']")]
         public abstract RetentionType RetentionType { get; }
     }

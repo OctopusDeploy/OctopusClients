@@ -22,10 +22,10 @@ public class ModifyDeploymentFreezeCommand
     public DateTimeOffset End { get; set; }
 
     public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; set; }
-    
+
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
-    
+
     public string OwnerId { get; set; }
-    
+
     public RecurringSchedule RecurringSchedule { get; set; }
 }

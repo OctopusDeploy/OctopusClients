@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
         DashboardConfigurationResource GetDashboardConfiguration();
         DashboardConfigurationResource ModifyDashboardConfiguration(DashboardConfigurationResource resource);
     }
-    
+
     class DashboardConfigurationRepository : IDashboardConfigurationRepository
     {
         private readonly IOctopusRepository repository;

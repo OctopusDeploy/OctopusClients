@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Octopus.Client.Model.DeploymentFreezes;
 
-public class CreateDeploymentFreezeOverrideCommand 
+public class CreateDeploymentFreezeOverrideCommand
 {
     public CreateDeploymentFreezeOverrideCommand(DeploymentResource createDeploymentCommand, IReadOnlyCollection<string> freezeIds, string reason)
     {
@@ -14,10 +14,10 @@ public class CreateDeploymentFreezeOverrideCommand
 
     [Required]
     public DeploymentResource CreateDeploymentCommand { get; set; }
-    
+
     [Required]
     public IReadOnlyCollection<string> FreezeIds { get; set; }
-    
+
     [Required]
     public string Reason { get; set; }
 }

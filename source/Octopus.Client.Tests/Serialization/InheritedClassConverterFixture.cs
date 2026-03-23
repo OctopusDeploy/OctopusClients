@@ -49,12 +49,12 @@ namespace Octopus.Client.Tests.Serialization
 
             result.Should().BeOfType<TinyTypeDiscriminatorClass1>();
         }
-        
+
         private static T Execute<T>(object input, JsonConverter customJsonConverter)
         {
             //Serialize anonymous object to JSON
             var json = JsonConvert.SerializeObject(input);
-            
+
             var settings = JsonSerialization.GetDefaultSerializerSettings();
             settings.Converters.Add(customJsonConverter);
             return JsonConvert.DeserializeObject<T>(json, settings);
@@ -70,7 +70,7 @@ namespace Octopus.Client.Tests.Serialization
             public const string DiscriminatorName = "Class1";
             public override string Discriminator => DiscriminatorName;
         }
-        
+
         class StringDiscriminatorClassConverter : InheritedClassConverter<StringDiscriminatorBaseClass, string>
         {
             static readonly IDictionary<string, Type> TypeMappings =
@@ -99,7 +99,7 @@ namespace Octopus.Client.Tests.Serialization
             public const DiscriminatorEnum DiscriminatorName = DiscriminatorEnum.Class1;
             public override DiscriminatorEnum Discriminator => DiscriminatorName;
         }
-        
+
         class EnumDiscriminatorClassConverter : InheritedClassConverter<EnumDiscriminatorBaseClass, DiscriminatorEnum>
         {
             static readonly IDictionary<DiscriminatorEnum, Type> TypeMappings =
@@ -111,7 +111,7 @@ namespace Octopus.Client.Tests.Serialization
             protected override IDictionary<DiscriminatorEnum, Type> DerivedTypeMappings => TypeMappings;
             protected override string TypeDesignatingPropertyName => "Discriminator";
         }
-        
+
         class DiscriminatorTinyType : CaseInsensitiveStringTinyType
         {
             public static readonly DiscriminatorTinyType Class1Name = new DiscriminatorTinyType("Class1");
@@ -130,7 +130,7 @@ namespace Octopus.Client.Tests.Serialization
             public static readonly DiscriminatorTinyType DiscriminatorName = DiscriminatorTinyType.Class1Name;
             public override DiscriminatorTinyType Discriminator => DiscriminatorName;
         }
-        
+
         class TinyTypeDiscriminatorClassConverter : InheritedClassConverter<TinyTypeDiscriminatorBaseClass, DiscriminatorTinyType>
         {
             static readonly IDictionary<DiscriminatorTinyType, Type> TypeMappings =

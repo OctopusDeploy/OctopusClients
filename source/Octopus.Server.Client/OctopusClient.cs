@@ -35,7 +35,7 @@ namespace Octopus.Client
         /// </summary>
         /// <param name="serverEndpoint">The server endpoint.</param>
         /// <param name="options">The configuration options for this client instance.</param>
-        public OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default) :this(serverEndpoint, null, options)
+        public OctopusClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options = default) : this(serverEndpoint, null, options)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Octopus.Client
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
             requestSemaphore = new SemaphoreSlim(options.MaxSimultaneousRequests, options.MaxSimultaneousRequests);
-            
+
             Repository = new OctopusRepository(this);
         }
 
@@ -354,7 +354,7 @@ namespace Octopus.Client
 
             DispatchRequest<string>(new OctopusRequest("DELETE", uri, resource), true);
         }
-        
+
         /// <inheritdoc/>
         public TResponse Delete<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
         {
@@ -384,7 +384,7 @@ namespace Octopus.Client
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             return Get<TResource>(getUrl);
         }
-        
+
         /// <inheritdoc/>
         public TResponse Update<TCommand, TResponse>(string path, TCommand command, object pathParameters = null)
         {
@@ -528,8 +528,8 @@ namespace Octopus.Client
                             var headerbytes = Encoding.UTF8.GetBytes(header);
                             requestStream.Write(headerbytes, 0, headerbytes.Length);
                             fileUploadContent.Contents.CopyTo(requestStream);
-                                                        
-                            var boundarybytesTrailer = Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n"); 
+
+                            var boundarybytesTrailer = Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
                             requestStream.Write(boundarybytesTrailer, 0, boundarybytesTrailer.Length);
                             requestStream.Flush();
                             requestStream.Close();

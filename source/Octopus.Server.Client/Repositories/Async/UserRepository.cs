@@ -55,8 +55,8 @@ namespace Octopus.Client.Repositories.Async
             invitations = new LegacyInvitationRepository(Repository);
         }
 
-        public Task<UserResource> FindByUsername(string username) 
-            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
+        public Task<UserResource> FindByUsername(string username)
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new { filter = username });
 
         public Task<UserResource> Create(string username, string displayName, string password = null, string emailAddress = null)
         {
@@ -84,7 +84,7 @@ namespace Octopus.Client.Repositories.Async
 
         public async Task<UserResource> Register(RegisterCommand registerCommand)
         {
-            return await Client.Post<UserResource,UserResource>(await Repository.Link("Register").ConfigureAwait(false), registerCommand).ConfigureAwait(false);
+            return await Client.Post<UserResource, UserResource>(await Repository.Link("Register").ConfigureAwait(false), registerCommand).ConfigureAwait(false);
         }
 
         public async Task SignIn(LoginCommand loginCommand)
@@ -94,7 +94,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task SignIn(string username, string password, bool rememberMe = false)
         {
-            return SignIn(new LoginCommand() {Username = username, Password = password, RememberMe = rememberMe});
+            return SignIn(new LoginCommand() { Username = username, Password = password, RememberMe = rememberMe });
         }
 
         public Task SignOut()

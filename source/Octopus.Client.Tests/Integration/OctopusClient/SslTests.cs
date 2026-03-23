@@ -43,7 +43,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             {
                 var client = await OctopusAsyncClient.Create(
                     new OctopusServerEndpoint(HostBaseSslUri + TestRootPath),
-                    new OctopusClientOptions() {IgnoreSslErrors = true}
+                    new OctopusClientOptions() { IgnoreSslErrors = true }
                 ).ConfigureAwait(false);
                 var result = await client.Get<string>("~/").ConfigureAwait(false);
 

@@ -106,7 +106,7 @@ namespace Octopus.Client.Model
         public bool IsLinkedToOtherInterruption { get; set; }
 
         public string SpaceId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a list of pull requests associated with this interruption. This will only be populated when <see cref="Type"/> is <see cref="InterruptionType.PullRequestCompletion"/>.
         /// </summary>

@@ -39,7 +39,7 @@ namespace Octopus.Client.Repositories
         [Obsolete("Use the " + nameof(IUserInvitesRepository) + " instead", false)]
         InvitationResource Invite(ReferenceCollection addToTeamIds);
     }
-    
+
     class UserRepository : BasicRepository<UserResource>, IUserRepository
     {
         readonly BasicRepository<InvitationResource> invitations;
@@ -50,8 +50,8 @@ namespace Octopus.Client.Repositories
             invitations = new LegacyInvitationRepository(repository);
         }
 
-        public UserResource FindByUsername(string username) 
-            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new {filter = username});
+        public UserResource FindByUsername(string username)
+            => FindOne(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase), pathParameters: new { filter = username });
 
         public UserResource Create(string username, string displayName, string password = null, string emailAddress = null)
         {
@@ -83,7 +83,7 @@ namespace Octopus.Client.Repositories
 
         public void SignIn(LoginCommand loginCommand)
         {
-           Client.SignIn(loginCommand);
+            Client.SignIn(loginCommand);
         }
 
         public void SignIn(string username, string password, bool rememberMe = false)
@@ -100,7 +100,7 @@ namespace Octopus.Client.Repositories
         {
             return Client.Get<UserResource>(Repository.Link("CurrentUser"));
         }
-        
+
         public SpaceResource[] GetSpaces(UserResource user)
         {
             if (user == null) throw new ArgumentNullException("user");

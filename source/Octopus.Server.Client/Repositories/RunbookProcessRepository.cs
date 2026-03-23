@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
         /// <remarks>This operation is for Config as Code Runbooks only</remarks>
         RunbookProcessResource Modify(ProjectResource project, string gitRef, RunbookProcessResource runbookProcess, string commitMessage);
     }
-    
+
     class RunbookProcessRepository : BasicRepository<RunbookProcessResource>, IRunbookProcessRepository
     {
         private readonly string baseGitUri = "~/api/{spaceId}/projects/{projectId}/{gitRef}";

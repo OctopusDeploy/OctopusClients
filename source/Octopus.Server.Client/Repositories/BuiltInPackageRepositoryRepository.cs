@@ -162,7 +162,7 @@ namespace Octopus.Client.Repositories
             try
             {
                 Logger.Info($"Requesting signature for delta compression from the server for upload of a package with id '{packageId}' and version '{version}'");
-                signatureResult = repository.Client.Get<PackageSignatureResource>(repository.Link("PackageDeltaSignature"), new {packageId, version});
+                signatureResult = repository.Client.Get<PackageSignatureResource>(repository.Link("PackageDeltaSignature"), new { packageId, version });
             }
             catch (OctopusResourceNotFoundException)
             {
@@ -170,7 +170,7 @@ namespace Octopus.Client.Repositories
                 return null;
             }
 
-            using(var deltaTempFile = new TemporaryFile())
+            using (var deltaTempFile = new TemporaryFile())
             {
                 var shouldUpload = DeltaCompression.CreateDelta(contents, signatureResult, deltaTempFile.FileName);
                 if (!shouldUpload)
@@ -193,7 +193,7 @@ namespace Octopus.Client.Repositories
 
                     var result = repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                         link,
-                        new FileUpload() {Contents = delta, FileName = Path.GetFileName(fileName)},
+                        new FileUpload() { Contents = delta, FileName = Path.GetFileName(fileName) },
                         pathParameters);
 
                     Logger.Info($"Delta transfer completed");

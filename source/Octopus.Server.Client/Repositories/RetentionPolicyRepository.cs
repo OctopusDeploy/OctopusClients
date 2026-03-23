@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
     {
         TaskResource ApplyNow(string spaceId);
     }
-    
+
     class RetentionPolicyRepository : BasicRepository<RetentionPolicyResource>, IRetentionPolicyRepository
     {
         public RetentionPolicyRepository(IOctopusRepository repository)
@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
         public TaskResource ApplyNow(string spaceId = null)
         {
             var tasks = new TaskRepository(Repository);
-            var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API", SpaceId = spaceId};
+            var task = new TaskResource { Name = "Retention", Description = "Request to apply retention policies via the API", SpaceId = spaceId };
             return tasks.Create(task);
         }
     }

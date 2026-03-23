@@ -37,13 +37,13 @@ namespace Octopus.Client.Model
         /// The name of the deployment action
         /// </summary>
         public string ActionName { get; set; }
-        
+
         /// <summary>
         /// The name of the package reference <see cref="PackageReference.Name"/> 
         /// </summary>
         /// <remarks>May be empty for steps which have a primary package</remarks>
         public string PackageReferenceName { get; set; }
-        
+
         /// <summary>
         ///  The selected package version
         /// </summary>

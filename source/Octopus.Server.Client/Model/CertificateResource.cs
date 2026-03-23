@@ -14,20 +14,20 @@ namespace Octopus.Client.Model
         [JsonConstructor]
         protected CertificateResource()
         {
-            EnvironmentIds = new ReferenceCollection();            
+            EnvironmentIds = new ReferenceCollection();
             TenantIds = new ReferenceCollection();
             TenantTags = new ReferenceCollection();
         }
 
         public CertificateResource(string name, string certificateData)
-            :this()
+            : this()
         {
             Name = name;
             CertificateData = certificateData;
         }
 
         public CertificateResource(string name, string certificateData, string password)
-            :this()
+            : this()
         {
             Name = name;
             CertificateData = certificateData;
@@ -56,7 +56,7 @@ namespace Octopus.Client.Model
         public TenantedDeploymentMode TenantedDeploymentParticipation
         {
             set => tenantedDeploymentParticipation = value;
-            
+
             get
             {
                 if (tenantedDeploymentParticipation.HasValue)
@@ -77,13 +77,13 @@ namespace Octopus.Client.Model
         public ReferenceCollection TenantTags { get; set; }
 
         [JsonProperty]
-        public DateTimeOffset? Archived { get; private set; } 
+        public DateTimeOffset? Archived { get; private set; }
 
         [JsonProperty]
         public string ReplacedBy { get; private set; }
 
         [JsonProperty]
-        public CertificateFormat CertificateDataFormat { get; private set; }  
+        public CertificateFormat CertificateDataFormat { get; private set; }
 
         [JsonProperty]
         public string SubjectDistinguishedName { get; private set; }
@@ -110,10 +110,10 @@ namespace Octopus.Client.Model
         public string Thumbprint { get; private set; }
 
         [JsonProperty]
-        public DateTimeOffset NotAfter { get; private set; } 
+        public DateTimeOffset NotAfter { get; private set; }
 
         [JsonProperty]
-        public DateTimeOffset NotBefore { get; private set; } 
+        public DateTimeOffset NotBefore { get; private set; }
 
         [JsonProperty]
         public bool IsExpired { get; private set; }

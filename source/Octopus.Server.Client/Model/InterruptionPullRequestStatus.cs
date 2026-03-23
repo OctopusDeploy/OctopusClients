@@ -5,12 +5,12 @@ namespace Octopus.Client.Model;
 
 public class InterruptionPullRequestStatus(string value) : IEquatable<InterruptionPullRequestStatus>
 {
-    public static readonly InterruptionPullRequestStatus Unknown = new ("Unknown");
-    public static readonly InterruptionPullRequestStatus Open = new ("Open");
-    public static readonly InterruptionPullRequestStatus Merged = new ("Merged");
-    public static readonly InterruptionPullRequestStatus Closed = new ("Closed");
-    public static readonly InterruptionPullRequestStatus UnknownGitVendor = new ("UnknownGitVendor");
-    
+    public static readonly InterruptionPullRequestStatus Unknown = new("Unknown");
+    public static readonly InterruptionPullRequestStatus Open = new("Open");
+    public static readonly InterruptionPullRequestStatus Merged = new("Merged");
+    public static readonly InterruptionPullRequestStatus Closed = new("Closed");
+    public static readonly InterruptionPullRequestStatus UnknownGitVendor = new("UnknownGitVendor");
+
     string Value { get; } = value;
 
     public bool Equals(InterruptionPullRequestStatus? other)
@@ -47,5 +47,5 @@ public class InterruptionPullRequestStatus(string value) : IEquatable<Interrupti
 
     public override int GetHashCode() => (Value != null ? Value.GetHashCode() : 0);
 
-    public override string ToString() =>  Value;
+    public override string ToString() => Value;
 }

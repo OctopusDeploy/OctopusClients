@@ -39,7 +39,7 @@ namespace Octopus.Client.Editors
 
             return this;
         }
-        
+
         /// <summary>
         /// Checks to see if a Tenant exists with the specified name, and if not, creates it.
         /// Otherwise, modifies the name and the description.
@@ -55,7 +55,7 @@ namespace Octopus.Client.Editors
                 throw new OperationNotSupportedByOctopusServerException(cloneId == null
                     ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
                     : "Cloning Tenants requires Octopus version 2019.8.0 or newer.", "2019.8.0");
-            
+
             var existing = repository.FindByName(name);
             if (existing == null)
             {

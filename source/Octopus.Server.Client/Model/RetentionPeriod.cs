@@ -15,7 +15,7 @@ namespace Octopus.Client.Model
         }
 
         public RetentionPeriod(int quantityToKeep, RetentionUnit unit) : this(null, quantityToKeep, unit)
-        {}
+        { }
 
         public RetentionPeriodStrategy Strategy { get; protected set; }
 

@@ -10,7 +10,7 @@ namespace Octopus.Client.Model
         public DeploymentActionPackageResource(string deploymentAction)
             : this(deploymentAction, "")
         { }
-        
+
         /// <param name="deploymentAction">The name (or id) of the deployment action from the deployment process</param>
         /// <param name="packageReference">The name (or id) of the package-reference. This can be null or empty if it is the primary (un-named) package reference on an action.</param>
         [JsonConstructor]
@@ -19,12 +19,12 @@ namespace Octopus.Client.Model
             DeploymentAction = deploymentAction;
             PackageReference = packageReference;
         }
-        
+
         /// <summary>
         /// The name (or ID) of the deployment-action containing the package reference.
         /// </summary>
         public string DeploymentAction { get; set; }
-        
+
         /// <summary>
         /// The name of the package-reference.  This can be an empty string in the case of the 
         /// </summary>
@@ -44,8 +44,8 @@ namespace Octopus.Client.Model
         /// </summary>
         public bool PackageReferenceNameMatches(string name)
         {
-            return string.IsNullOrEmpty(PackageReference)  
-                ? string.IsNullOrEmpty(name) 
+            return string.IsNullOrEmpty(PackageReference)
+                ? string.IsNullOrEmpty(name)
                 : PackageReference.Equals(name, StringComparison.OrdinalIgnoreCase);
         }
 

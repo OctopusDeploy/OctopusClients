@@ -19,7 +19,7 @@ public class DeploymentActionSlugPackageResource
     {
         DeploymentActionSlug = deploymentActionSlug;
         PackageReference = packageReference;
-    }                                                                                                                         
+    }
 
     public string DeploymentActionSlug { get; set; }
     public string PackageReference { get; set; }

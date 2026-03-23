@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
         public ICollection<LibraryVariableSetResource> LibraryVariableSetUsages { get; set; } = new List<LibraryVariableSetResource>();
 
         public ICollection<TenantResource> TenantUsages { get; set; } = new List<TenantResource>();
-        
-        public ICollection<MachineResource>  DeploymentTargetUsages { get; set; } = new List<MachineResource>();
+
+        public ICollection<MachineResource> DeploymentTargetUsages { get; set; } = new List<MachineResource>();
     }
 }

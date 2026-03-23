@@ -15,7 +15,7 @@ namespace Octopus.Client.Tests.Model
             var result = JsonSerialization.DeserializeObject<InterruptionResource>(payload);
             result.Type.Should().Be(new InterruptionType("Foo"));
         }
-        
+
         [TestCase("Stop, drop and roll", "ManualIntervention")]
         [TestCase("The deployment requires failure guidance", "GuidedFailure")]
         public void InterruptionTypeIsDerivedFromTheTitleWhenItIsNotSupplied(string title, string expectedType)
@@ -34,6 +34,6 @@ namespace Octopus.Client.Tests.Model
                 .Should()
                 .Be(InterruptionType.ManualIntervention);
         }
-        
+
     }
 }

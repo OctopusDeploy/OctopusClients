@@ -79,8 +79,8 @@ namespace Octopus.Client.Tests.Serialization
             Assert.IsAssignableFrom(typeof(GitHubFeedResource), result);
             Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
         }
-        
-        
+
+
         [Test]
         public void ArtifactoryGenericFeedTypesDeserialize()
         {

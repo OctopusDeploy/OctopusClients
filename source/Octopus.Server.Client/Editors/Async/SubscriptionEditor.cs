@@ -24,12 +24,12 @@ namespace Octopus.Client.Editors.Async
             if (existing == null)
             {
                 Instance = await repository.Create(new SubscriptionResource
-                    {
-                        Name = name,
-                        Type = SubscriptionType.Event,
-                        IsDisabled = isDisabled,
-                        EventNotificationSubscription = eventNotificationSubscription,
-                    })
+                {
+                    Name = name,
+                    Type = SubscriptionType.Event,
+                    IsDisabled = isDisabled,
+                    EventNotificationSubscription = eventNotificationSubscription,
+                })
                     .ConfigureAwait(false);
             }
             else

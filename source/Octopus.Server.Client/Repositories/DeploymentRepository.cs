@@ -58,11 +58,11 @@ namespace Octopus.Client.Repositories
         {
             Client.Paginate(Repository.Link("Deployments"), new { projects = projects ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage);
         }
-        
+
         public DeploymentResource Create(CreateDeploymentFreezeOverrideCommand command, string spaceId)
         {
             var route = "~/api/{spaceId}/deployments/override";
-            var deploymentOverrideResponse = Client.Create<CreateDeploymentFreezeOverrideCommand, CreateDeploymentFreezeOverrideResponse>(route, command, new{ spaceId});
+            var deploymentOverrideResponse = Client.Create<CreateDeploymentFreezeOverrideCommand, CreateDeploymentFreezeOverrideResponse>(route, command, new { spaceId });
             return deploymentOverrideResponse.Deployment;
         }
     }

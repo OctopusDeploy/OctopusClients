@@ -6,7 +6,7 @@ namespace Octopus.Client.Model
     public class MachineHealthCheckPolicy
     {
         private const string UtcTimezone = "UTC";
-            
+
         [Obsolete("Use " + nameof(PowerShellHealthCheckPolicy) + " instead.")]
         public MachineScriptPolicy TentacleEndpointHealthCheckPolicy => PowerShellHealthCheckPolicy;
         public MachineScriptPolicy PowerShellHealthCheckPolicy { get; set; }

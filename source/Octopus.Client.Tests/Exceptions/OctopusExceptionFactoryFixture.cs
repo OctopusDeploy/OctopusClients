@@ -73,7 +73,7 @@ namespace Octopus.Client.Tests.Exceptions
 
             jObject.Remove("HelpText");
             yield return new TestCaseData(jObject.ToString(), new OctopusValidationException(httpStatusCode, errorMessageValue, Array.Empty<string>()) { HelpText = string.Empty });
-            
+
             yield return new TestCaseData(string.Empty, new OctopusValidationException(httpStatusCode, string.Empty, Array.Empty<string>()) { HelpText = string.Empty });
         }
 
@@ -114,7 +114,7 @@ namespace Octopus.Client.Tests.Exceptions
                 createdException.HelpText.Should().Be(expectedResult.HelpText);
             }
         }
-        
+
         public static IEnumerable<TestCaseData> CreatedOctopusSecurityExceptionTestData()
         {
             const int httpStatusCode = (int)HttpStatusCode.Unauthorized;
@@ -130,9 +130,9 @@ namespace Octopus.Client.Tests.Exceptions
             yield return new TestCaseData(jObject.ToString(), new OctopusSecurityException(httpStatusCode, errorMessageValue) { HelpText = helpTextValue });
 
             jObject.Remove("HelpText");
-            yield return new TestCaseData(jObject.ToString(), new OctopusSecurityException(httpStatusCode, errorMessageValue) { HelpText = string.Empty});
-            
-            yield return new TestCaseData(string.Empty, new OctopusSecurityException(httpStatusCode, string.Empty) { HelpText = string.Empty});
+            yield return new TestCaseData(jObject.ToString(), new OctopusSecurityException(httpStatusCode, errorMessageValue) { HelpText = string.Empty });
+
+            yield return new TestCaseData(string.Empty, new OctopusSecurityException(httpStatusCode, string.Empty) { HelpText = string.Empty });
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace Octopus.Client.Tests.Exceptions
         public async Task CreatedOctopusResourceNotFoundException_ShouldContainPayloadInformation(string payload, OctopusResourceNotFoundException expectedResult)
         {
             var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-            
+
             if (!string.IsNullOrWhiteSpace(payload))
             {
                 httpResponseMessage.Content = new StringContent(payload);
@@ -166,7 +166,7 @@ namespace Octopus.Client.Tests.Exceptions
             // ReSharper disable once PossibleNullReferenceException
             createdException.Message.Should().Be(expectedResult.Message);
         }
-        
+
         public static IEnumerable<TestCaseData> CreatedOctopusResourceNotFoundExceptionTestData()
         {
             const string errorMessageValue = "Error Message";
@@ -288,11 +288,11 @@ namespace Octopus.Client.Tests.Exceptions
                     // Using contain as message could be altered when FullException is not empty.
                     createdException.Message.Should().Contain(expectedResult.Message);
                 }
-                
+
                 createdException.HelpText.Should().Be(expectedResult.HelpText);
             }
         }
-        
+
         public static IEnumerable<TestCaseData> CreatedOctopusServerExceptionTestData()
         {
             const int httpStatusCode = (int)HttpStatusCode.Ambiguous;
@@ -311,10 +311,10 @@ namespace Octopus.Client.Tests.Exceptions
 
             jObject.Remove("FullException");
             yield return new TestCaseData(jObject.ToString(), new OctopusServerException(httpStatusCode, errorMessageValue) { HelpText = helpTextValue });
-            
+
             jObject.Remove("HelpText");
             yield return new TestCaseData(jObject.ToString(), new OctopusServerException(httpStatusCode, errorMessageValue) { HelpText = string.Empty });
-            
+
             yield return new TestCaseData(string.Empty, new OctopusServerException(httpStatusCode, string.Empty) { HelpText = string.Empty });
         }
     }

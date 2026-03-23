@@ -19,7 +19,7 @@ namespace Octopus.Client.Repositories
         TaskResource ExecuteAdHocScript(string scriptBody, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, string syntax = "PowerShell", BuiltInTasks.AdHocScript.TargetType? targetType = null, string[] workerPoolIds = null);
         TaskResource ExecuteActionTemplate(ActionTemplateResource resource, Dictionary<string, PropertyValueResource> properties, string[] machineIds = null, string[] environmentIds = null, string[] targetRoles = null, string description = null, BuiltInTasks.AdHocScript.TargetType? targetType = null);
         TaskResource ExecuteCommunityActionTemplatesSynchronisation(string description = null);
-        
+
         /// <summary>
         /// Gets all the active tasks (optionally limited to pageSize)
         /// </summary>
@@ -182,7 +182,7 @@ namespace Octopus.Client.Repositories
             if (string.IsNullOrEmpty(template?.Id)) throw new ArgumentException("The step template was either null, or has no ID");
             EnsureValidTargetType(targetType);
 
-            var resource = new TaskResource() {SpaceId = template.SpaceId};
+            var resource = new TaskResource() { SpaceId = template.SpaceId };
             resource.Name = BuiltInTasks.AdHocScript.Name;
             resource.Description = string.IsNullOrWhiteSpace(description) ? "Run step template: " + template.Name : description;
             resource.Arguments = new Dictionary<string, object>
@@ -247,25 +247,25 @@ namespace Octopus.Client.Repositories
         public void Prioritize(TaskResource resource)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            Client.Post(resource.Link("Prioritize"), (TaskResource) null);
+            Client.Post(resource.Link("Prioritize"), (TaskResource)null);
         }
 
         public void Rerun(TaskResource resource)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            Client.Post(resource.Link("Rerun"), (TaskResource) null);
+            Client.Post(resource.Link("Rerun"), (TaskResource)null);
         }
 
         public void Cancel(TaskResource resource)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            Client.Post(resource.Link("Cancel"), (TaskResource) null);
+            Client.Post(resource.Link("Cancel"), (TaskResource)null);
         }
 
         public void ModifyState(TaskResource resource, TaskState newState, string reason)
         {
             EnsureTaskCanRunInTheCurrentContext(resource);
-            Client.Post(resource.Link("State"), new {state = newState, reason = reason});
+            Client.Post(resource.Link("State"), new { state = newState, reason = reason });
         }
 
         public IReadOnlyList<TaskResource> GetQueuedBehindTasks(TaskResource resource)
@@ -275,7 +275,7 @@ namespace Octopus.Client.Repositories
 
         public void WaitForCompletion(TaskResource task, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
         {
-            WaitForCompletion(new[] {task}, pollIntervalSeconds, timeoutAfterMinutes, interval);
+            WaitForCompletion(new[] { task }, pollIntervalSeconds, timeoutAfterMinutes, interval);
         }
 
         public void WaitForCompletion(TaskResource[] tasks, int pollIntervalSeconds = 4, int timeoutAfterMinutes = 0, Action<TaskResource[]> interval = null)
@@ -291,8 +291,8 @@ namespace Octopus.Client.Repositories
             {
                 var stillRunning =
                     (from task in tasks
-                        let currentStatus = Client.Get<TaskResource>(task.Link("Self"), AdditionalQueryParameters)
-                        select currentStatus).ToArray();
+                     let currentStatus = Client.Get<TaskResource>(task.Link("Self"), AdditionalQueryParameters)
+                     select currentStatus).ToArray();
 
                 interval?.Invoke(stillRunning);
 
@@ -308,13 +308,13 @@ namespace Octopus.Client.Repositories
             }
         }
 
-        public List<TaskResource> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new {active = true, take = pageSize});
+        public List<TaskResource> GetAllActive(int pageSize = int.MaxValue) => FindAll(pathParameters: new { active = true, take = pageSize });
 
         public TaskResourceCollection GetActiveWithSummary(int pageSize = int.MaxValue, int skip = 0)
-            => Client.Get<TaskResourceCollection>(ResolveLink(), new {active = true, take = pageSize, skip});
+            => Client.Get<TaskResourceCollection>(ResolveLink(), new { active = true, take = pageSize, skip });
 
         public TaskResourceCollection GetAllWithSummary(int pageSize = int.MaxValue, int skip = 0)
-            => Client.Get<TaskResourceCollection>(ResolveLink(), new {take = pageSize, skip});
+            => Client.Get<TaskResourceCollection>(ResolveLink(), new { take = pageSize, skip });
 
         public ITaskRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {

@@ -96,7 +96,7 @@ namespace Octopus.Client.Serialization
             {
                 return (TDiscriminator)(object)derivedType;
             }
-            
+
             throw new Exception("Discriminator type not supported: " + typeof(TDiscriminator));
         }
 

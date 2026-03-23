@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories.Async
         Task<TelemetryConfigurationResource> EnableTelemetry();
         Task<TelemetryConfigurationResource> DisableTelemetry();
     }
-    
+
     public class TelemetryConfigurationRepository : ITelemetryConfigurationRepository
     {
         private readonly IOctopusAsyncRepository repository;

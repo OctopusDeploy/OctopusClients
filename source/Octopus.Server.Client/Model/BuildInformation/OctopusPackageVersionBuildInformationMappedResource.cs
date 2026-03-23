@@ -22,7 +22,7 @@ namespace Octopus.Client.Model.BuildInformation
         public CommitDetails[] Commits { get; set; }
 
         public string IncompleteDataWarning { get; set; }
-        
+
         public DateTimeOffset? Created { get; set; }
     }
 }

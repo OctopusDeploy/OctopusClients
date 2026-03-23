@@ -89,14 +89,14 @@ namespace Octopus.Client.Model
                 public const string TargetType = "TargetType";
                 public const string WorkerPoolIds = "WorkerPoolIds";
             }
-            
-            public enum TargetType	
-            {	
-                Machines,	
-                Environments,	
-                Workers,	
-                WorkerPools,	
-                OctopusServer,	
+
+            public enum TargetType
+            {
+                Machines,
+                Environments,
+                Workers,
+                WorkerPools,
+                OctopusServer,
             }
         }
 
@@ -202,7 +202,7 @@ namespace Octopus.Client.Model
         {
             public const string Name = "SyncCommunityActionTemplates";
         }
-        
+
         public static class ProcessExternalFeedTriggers
         {
             public const string Name = "ProcessExternalFeedTriggers";

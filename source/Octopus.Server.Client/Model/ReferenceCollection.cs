@@ -16,7 +16,7 @@ namespace Octopus.Client.Model
         public ReferenceCollection(string singleValue)
             : this()
         {
-            ReplaceAll(new[] {singleValue});
+            ReplaceAll(new[] { singleValue });
         }
 
         public ReferenceCollection(IEnumerable<string> values)
@@ -49,7 +49,7 @@ namespace Octopus.Client.Model
 
         public static ReferenceCollection One(string item)
         {
-            return new ReferenceCollection {item};
+            return new ReferenceCollection { item };
         }
     }
 }

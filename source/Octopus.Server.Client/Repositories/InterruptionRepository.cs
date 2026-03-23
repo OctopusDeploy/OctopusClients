@@ -18,7 +18,7 @@ namespace Octopus.Client.Repositories
         void TakeResponsibility(InterruptionResource interruption);
         UserResource GetResponsibleUser(InterruptionResource interruption);
     }
-    
+
     class InterruptionRepository : BasicRepository<InterruptionResource>, IInterruptionRepository
     {
         public InterruptionRepository(IOctopusRepository repository)
@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories
 
         public ResourceCollection<InterruptionResource> List(int skip = 0, int? take = null, bool pendingOnly = false, string regardingDocumentId = null)
         {
-            return Client.List<InterruptionResource>(Repository.Link("Interruptions"), new { skip,take, pendingOnly, regarding = regardingDocumentId });
+            return Client.List<InterruptionResource>(Repository.Link("Interruptions"), new { skip, take, pendingOnly, regarding = regardingDocumentId });
         }
 
         public void Submit(InterruptionResource interruption)

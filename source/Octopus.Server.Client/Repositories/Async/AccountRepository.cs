@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories.Async
                 if (r is INamedResource named)
                     return string.Equals((named.Name ?? string.Empty).Trim(), name, StringComparison.OrdinalIgnoreCase);
                 return false;
-            }, pathParameters: new {accountType, name});
+            }, pathParameters: new { accountType, name });
         }
 
         public Task<List<TAccount>> FindByNamesOfType<TAccount>(IEnumerable<string> names) where TAccount : AccountResource
@@ -72,7 +72,7 @@ namespace Octopus.Client.Repositories.Async
             var nameSet = new HashSet<string>((names ?? new string[0]).Select(n => (n ?? string.Empty).Trim()), StringComparer.OrdinalIgnoreCase);
             return FindManyOfType<TAccount>(r =>
             {
-                if (r is INamedResource named) 
+                if (r is INamedResource named)
                     return nameSet.Contains((named.Name ?? string.Empty).Trim());
                 return false;
             }, pathParameters: DetermineAccountType<TAccount>());
@@ -83,7 +83,7 @@ namespace Octopus.Client.Repositories.Async
             if (pathParameters != null)
                 return pathParameters;
             var accountType = DetermineAccountType<TAccount>();
-            return new {accountType};
+            return new { accountType };
         }
 
         public async Task PaginateOfType<TAccount>(Func<ResourceCollection<TAccount>, bool> getNextPage, object pathParameters = null) where TAccount : AccountResource

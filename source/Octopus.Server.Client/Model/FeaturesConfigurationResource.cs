@@ -16,31 +16,31 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string HelpSidebarSupportLink { get; set; }
-        
+
         [Writeable]
         public string HelpSidebarSupportLinkLabel { get; set; }
 
         [Writeable]
         public bool IsAutomaticStepUpdatesEnabled { get; set; }
-        
+
         [Writeable]
         public bool IsKubernetesCloudTargetDiscoveryEnabled { get; set; }
-        
+
         [Writeable]
         public bool IsCompositeDockerHubRegistryFeedEnabled { get; set; }
 
         [Writeable]
         public bool IsConfigureFeedsWithLocalOrSmbPathsEnabled { get; set; }
-        
+
         [Writeable]
         public bool IsNavigationVisualUpliftEnabled { get; set; }
-        
+
         [Writeable]
         public bool IsProjectsPageOptimizationEnabled { get; set; }
 
         [Writeable]
         public bool IsProjectsPageOnboardingEnabled { get; set; }
-        
+
         [Writeable]
         public string DefaultPowerShellEdition { get; set; }
     }

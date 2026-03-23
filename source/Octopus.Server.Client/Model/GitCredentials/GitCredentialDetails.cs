@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.GitCredentials
         UsernamePassword
     }
 
-    public abstract class GitCredentialDetails 
+    public abstract class GitCredentialDetails
     {
         public abstract GitCredentialType Type { get; }
     }

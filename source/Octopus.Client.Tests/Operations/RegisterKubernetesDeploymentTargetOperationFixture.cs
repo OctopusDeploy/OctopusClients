@@ -72,15 +72,15 @@ namespace Octopus.Client.Tests.Operations
             var machineResources = new List<MachineResource>();
             await client.Create("/api/machines", Arg.Do<MachineResource>(m => machineResources.Add(m)), Arg.Any<object>(), Arg.Any<CancellationToken>());
 
-            environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
-            environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             operation.TentacleThumbprint = "ABCDEF";
             operation.TentaclePort = 10930;
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] {"Production"};
+            operation.EnvironmentNames = new[] { "Production" };
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
 
@@ -93,15 +93,15 @@ namespace Octopus.Client.Tests.Operations
             var machineResources = new List<MachineResource>();
             await client.Create("/api/machines", Arg.Do<MachineResource>(m => machineResources.Add(m)), Arg.Any<object>(), Arg.Any<CancellationToken>());
 
-            environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
-            environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             operation.TentacleThumbprint = "ABCDEF";
             operation.TentaclePort = 10930;
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentacleActive;
-            operation.EnvironmentNames = new[] {"Production"};
+            operation.EnvironmentNames = new[] { "Production" };
             operation.SubscriptionId = new Uri("poll://ckyhfyfkcbmzjl8sfgch/");
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
@@ -115,12 +115,15 @@ namespace Octopus.Client.Tests.Operations
             var updatedMachines = new List<MachineResource>();
             await client.Update("/machines/whatever/1", Arg.Do<MachineResource>(m => updatedMachines.Add(m)), Arg.Any<object>(), Arg.Any<CancellationToken>());
 
-            environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
-            environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             machines.Items.Add(new MachineResource
             {
-                Id = "machines/84", EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1"),
+                Id = "machines/84",
+                EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }),
+                Name = "Mymachine",
+                Links = LinkCollection.Self("/machines/whatever/1"),
                 Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("123456", "myMachine.test.com") { ProxyId = "proxy-2" })
             });
 
@@ -131,7 +134,7 @@ namespace Octopus.Client.Tests.Operations
             operation.TentacleThumbprint = "ABCDEF";
             operation.TentacleHostname = "my-new-machine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] {"Production"};
+            operation.EnvironmentNames = new[] { "Production" };
             operation.ProxyName = "MyNewProxy";
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
@@ -143,7 +146,7 @@ namespace Octopus.Client.Tests.Operations
                 Id = "machines/84",
                 Name = "Mymachine",
                 EnvironmentIds = new ReferenceCollection("environments-1"),
-                Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://my-new-machine.test.com:10930/") {ProxyId = "proxy-1"}),
+                Endpoint = new KubernetesTentacleEndpointResource(new ListeningTentacleEndpointConfigurationResource("ABCDEF", "https://my-new-machine.test.com:10930/") { ProxyId = "proxy-1" }),
                 Links = LinkCollection.Self("/machines/whatever/1")
             });
         }
@@ -151,17 +154,17 @@ namespace Octopus.Client.Tests.Operations
         [Test]
         public async Task ShouldUpdateExistingMachineWhenForceIsEnabled()
         {
-            environments.Items.Add(new EnvironmentResource {Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines")});
-            environments.Items.Add(new EnvironmentResource {Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines")});
+            environments.Items.Add(new EnvironmentResource { Id = "environments-1", Name = "UAT", Links = LinkCollection.Self("/api/environments/environments-1").Add("Machines", "/api/environments/environments-1/machines") });
+            environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
-            machines.Items.Add(new MachineResource {Id = "machines/84", EnvironmentIds = new ReferenceCollection(new[] {"environments-1"}), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1")});
+            machines.Items.Add(new MachineResource { Id = "machines/84", EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1") });
 
             operation.TentacleThumbprint = "ABCDEF";
             operation.TentaclePort = 10930;
             operation.MachineName = "Mymachine";
             operation.TentacleHostname = "Mymachine.test.com";
             operation.CommunicationStyle = CommunicationStyle.TentaclePassive;
-            operation.EnvironmentNames = new[] {"Production"};
+            operation.EnvironmentNames = new[] { "Production" };
             operation.AllowOverwrite = true;
 
             await operation.ExecuteAsync(serverEndpoint).ConfigureAwait(false);
@@ -231,7 +234,7 @@ namespace Octopus.Client.Tests.Operations
             environments.Items.Add(new EnvironmentResource { Id = "environments-2", Name = "Production", Links = LinkCollection.Self("/api/environments/environments-2").Add("Machines", "/api/environments/environments-2/machines") });
 
             machines.Items.Add(new MachineResource { Id = "machines/84", MachinePolicyId = "MachinePolicies-1", EnvironmentIds = new ReferenceCollection(new[] { "environments-1" }), Name = "Mymachine", Links = LinkCollection.Self("/machines/whatever/1") });
-            machinePolicies.Items.Add(new MachinePolicyResource {Id = "MachinePolicies-2", Name = "Machine Policy 2"});
+            machinePolicies.Items.Add(new MachinePolicyResource { Id = "MachinePolicies-2", Name = "Machine Policy 2" });
             operation.TentacleThumbprint = "ABCDEF";
             operation.TentaclePort = 10930;
             operation.MachineName = "Mymachine";

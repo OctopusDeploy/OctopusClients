@@ -17,13 +17,13 @@ namespace Octopus.Client.Serialization
         public MultiIsoDateTimeFormatConverter(string defaultFormat, params string[] additionalReadFormats)
         {
             converters = new List<JsonConverter>();
-            converters.Add(new IsoDateTimeConverter(){ DateTimeFormat = defaultFormat });
-            converters.AddRange(additionalReadFormats.Select(format => new IsoDateTimeConverter() {DateTimeFormat = format}));
+            converters.Add(new IsoDateTimeConverter() { DateTimeFormat = defaultFormat });
+            converters.AddRange(additionalReadFormats.Select(format => new IsoDateTimeConverter() { DateTimeFormat = format }));
         }
         private readonly List<JsonConverter> converters;
-            
+
         private JsonConverter DefaultConverter => converters[0];
-            
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             DefaultConverter.WriteJson(writer, value, serializer);

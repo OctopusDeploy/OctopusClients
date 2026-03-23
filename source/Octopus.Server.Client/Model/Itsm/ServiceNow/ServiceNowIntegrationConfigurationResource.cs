@@ -13,7 +13,7 @@ public class ServiceNowIntegrationConfigurationResource : ExtensionConfiguration
     {
         Id = "servicenow-integration";
     }
-    
+
     [Description("Connect your Octopus instance to one or more ServiceNow instances")]
     [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
     [DisplayName("Connection")]

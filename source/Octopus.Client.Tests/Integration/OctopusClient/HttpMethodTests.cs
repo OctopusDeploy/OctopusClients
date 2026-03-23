@@ -39,7 +39,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
             });
 
             Delete(TestRootPath, p => _lastMethod = "Delete");
-            
+
         }
 
         [Test]

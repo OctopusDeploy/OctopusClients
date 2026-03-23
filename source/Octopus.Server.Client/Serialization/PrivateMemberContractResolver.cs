@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Octopus.Client.Serialization
 {
-    public class PrivateMemberContractResolver: DefaultContractResolver
+    public class PrivateMemberContractResolver : DefaultContractResolver
     {
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {

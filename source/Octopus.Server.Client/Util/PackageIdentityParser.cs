@@ -3,7 +3,7 @@ using Octopus.Client.Model;
 
 namespace Octopus.Client.Util
 {
-    
+
     // From OctopusServer's PackageIdentity class
     public class PackageIdentityParser
     {

@@ -9,7 +9,7 @@ namespace Octopus.Client.Editors
     {
         private readonly IChannelRepository repository;
         private readonly ProjectResource owner;
-        private readonly List<ChannelEditor> trackedChannelBuilders = new List<ChannelEditor>(); 
+        private readonly List<ChannelEditor> trackedChannelBuilders = new List<ChannelEditor>();
 
         public ProjectChannelsEditor(IChannelRepository repository, ProjectResource owner)
         {

@@ -19,7 +19,7 @@ namespace Octopus.Client.Model.IssueTrackers.Jira
         [Description("Set whether you are using a cloud or server instance of Jira")]
         [DisplayName("Jira Instance Type")]
         public JiraInstanceType JiraInstanceType { get; set; }
-        
+
         [DisplayName("Jira Base Url")]
         [Description(JiraBaseUrlDescription)]
         [Writeable]
@@ -34,7 +34,7 @@ namespace Octopus.Client.Model.IssueTrackers.Jira
         [Description("Use this Id when configuring the Jira connect application")]
         [ReadOnly(true)]
         public string OctopusInstallationId { get; set; }
-        
+
         [Description("This Url is required in order to push deployment data to Jira. If it is blank please set it in [Configuration/Nodes](/configuration/nodes)")]
         [DisplayName("Octopus Server Url")]
         [ReadOnly(true)]

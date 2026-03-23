@@ -44,12 +44,12 @@ namespace Octopus.Client.Tests.Serialization
             result.Uri.Should().Be(input.Uri);
             result.Thumbprint.Should().Be(input.Thumbprint);
         }
-        
+
         private static T Execute<T>(object input)
         {
             //Serialize anonymous object to JSON
             var json = JsonConvert.SerializeObject(input);
-            
+
             var settings = JsonSerialization.GetDefaultSerializerSettings();
             return JsonConvert.DeserializeObject<TentacleEndpointConfigurationResource>(json, settings)
                 .Should().BeOfType<T>().Subject;

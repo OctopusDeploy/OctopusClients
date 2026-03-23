@@ -23,9 +23,9 @@ namespace Octopus.Client.Editors.Async
             {
                 throw new ArgumentException($"A certificate with the name {name} already exists");
             }
-            
+
             Instance = await repository.Create(new CertificateResource(name, certificateData)).ConfigureAwait(false);
-            
+
             return this;
         }
 

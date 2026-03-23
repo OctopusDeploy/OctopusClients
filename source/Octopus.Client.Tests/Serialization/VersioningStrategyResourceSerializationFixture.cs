@@ -12,23 +12,23 @@ namespace Octopus.Client.Tests.Serialization
         [Test]
         [TestCase("Action 1", "", "Action 1")]
         [TestCase("Action 1", "Package 1", "Action 1:Package 1")]
-        public void DonorPackageIsSerializedIntoLegacyDonorPackageStepId_ForPrimaryPackage(string deploymentActionName, 
+        public void DonorPackageIsSerializedIntoLegacyDonorPackageStepId_ForPrimaryPackage(string deploymentActionName,
             string packageReferenceName, string expectedDonorPackageStepId)
         {
             var subject = new VersioningStrategyResource
             {
                 DonorPackage = new DeploymentActionPackageResource(deploymentActionName, packageReferenceName)
             };
-            
+
             var result = JObject.Parse(JsonSerialization.SerializeObject(subject));
 
             var expected = JObject.FromObject(new
             {
-                Template = (string) null,
-                DonorPackage = new {DeploymentAction = deploymentActionName, PackageReference = packageReferenceName},
-                DonorPackageStepId = expectedDonorPackageStepId 
+                Template = (string)null,
+                DonorPackage = new { DeploymentAction = deploymentActionName, PackageReference = packageReferenceName },
+                DonorPackageStepId = expectedDonorPackageStepId
             });
-            
+
             Assert.True(JToken.DeepEquals(expected, result));
         }
 
@@ -41,12 +41,12 @@ namespace Octopus.Client.Tests.Serialization
             var incoming = new
             {
                 Template = (string)null,
-                DonorPackageStepId = donorPackageStepId 
+                DonorPackageStepId = donorPackageStepId
             };
-            
+
             var result =
                 JsonSerialization.DeserializeObject<VersioningStrategyResource>(JObject.FromObject(incoming).ToString());
-            
+
             Assert.IsNull(result.Template);
             Assert.AreEqual(expectedDeploymentAction, result.DonorPackage.DeploymentAction);
             Assert.AreEqual(expectedPackageReference, result.DonorPackage.PackageReference);

@@ -10,14 +10,14 @@ namespace Octopus.Client.Model
         /// <summary>
         /// Listening
         /// </summary>
-        [ScriptConsoleSupported] [TentacleUpgradeSupported] TentaclePassive = 1,
+        [ScriptConsoleSupported][TentacleUpgradeSupported] TentaclePassive = 1,
 
         /// <summary>
         /// Polling
         /// </summary>
-        [ScriptConsoleSupported] [TentacleUpgradeSupported] TentacleActive = 2,
+        [ScriptConsoleSupported][TentacleUpgradeSupported] TentacleActive = 2,
 
-        [ScriptConsoleSupported] [SupportedAccountTypes(AccountType.SshKeyPair, AccountType.UsernamePassword)] Ssh = 3,
+        [ScriptConsoleSupported][SupportedAccountTypes(AccountType.SshKeyPair, AccountType.UsernamePassword)] Ssh = 3,
 
         OfflineDrop = 4,
 
@@ -25,16 +25,16 @@ namespace Octopus.Client.Model
 
         [SupportedAccountTypes(AccountType.UsernamePassword)] Ftp = 6,
 
-        [SupportedAccountTypes(AccountType.AzureSubscription)] [ScriptConsoleSupported] AzureCloudService = 7,
+        [SupportedAccountTypes(AccountType.AzureSubscription)][ScriptConsoleSupported] AzureCloudService = 7,
 
         AzureServiceFabricCluster = 8,
 
-        [SupportedAccountTypes(AccountType.UsernamePassword)] [ScriptConsoleSupported] Kubernetes = 9,
-        
+        [SupportedAccountTypes(AccountType.UsernamePassword)][ScriptConsoleSupported] Kubernetes = 9,
+
         StepPackage = 10,
 
         [ScriptConsoleSupported] KubernetesTentacle = 11,
-        
+
         AwsEcsCluster = 12
     }
 }

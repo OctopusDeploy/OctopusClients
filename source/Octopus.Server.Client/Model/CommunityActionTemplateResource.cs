@@ -18,8 +18,8 @@ namespace Octopus.Client.Model
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>(StringComparer.OrdinalIgnoreCase);
-        
-        public PackageReferenceCollection Packages { get; } = new(); 
+
+        public PackageReferenceCollection Packages { get; } = new();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
@@ -30,6 +30,6 @@ namespace Octopus.Client.Model
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public object Inputs { get; set; }
 
-        public LinkCollection Links { get; set; }        
+        public LinkCollection Links { get; set; }
     }
 }

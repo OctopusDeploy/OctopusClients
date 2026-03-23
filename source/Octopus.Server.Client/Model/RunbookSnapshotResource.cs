@@ -45,8 +45,8 @@ namespace Octopus.Client.Model
         public List<string> LibraryVariableSetSnapshotIds { get; set; }
 
         public List<SelectedPackage> SelectedPackages { get; set; }
-        
-        public List<SelectedGitResource> SelectedGitResources {get; set; }
+
+        public List<SelectedGitResource> SelectedGitResources { get; set; }
 
         public SnapshotGitReferenceResource GitReference { get; set; }
 

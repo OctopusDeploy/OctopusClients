@@ -27,7 +27,7 @@ namespace Octopus.Client.Model.Forms
 
         public override Type GetNativeValueType()
         {
-            return typeof (string);
+            return typeof(string);
         }
     }
 }

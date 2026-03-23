@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
 {
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
-        
+
         ResourceCollection<GitTagResource> GetGitTags(ProjectResource projectResource);
         GitTagResource GetGitTag(ProjectResource projectResource, string tag);
         ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource);
@@ -43,20 +43,20 @@ namespace Octopus.Client.Repositories
             : base(repository, "Projects")
         {
         }
-        
+
         public ResourceCollection<GitBranchResource> GetGitBranches(ProjectResource projectResource)
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
-            
+
             return Client.Get<ResourceCollection<GitBranchResource>>(projectResource.Link("Branches"));
         }
-        
+
         public ResourceCollection<GitTagResource> GetGitTags(ProjectResource projectResource)
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support tags");
-            
+
             return Client.Get<ResourceCollection<GitTagResource>>(projectResource.Link("Tags"));
         }
 
@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
 
-            return Client.Get<GitBranchResource>(projectResource.Link("Branches"), new {name = branch});
+            return Client.Get<GitBranchResource>(projectResource.Link("Branches"), new { name = branch });
         }
 
         public GitCommitResource GetGitCommit(ProjectResource projectResource, string hash)
@@ -81,7 +81,7 @@ namespace Octopus.Client.Repositories
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support tags");
 
-            return Client.Get<GitTagResource>(projectResource.Link("Tags"), new {name = tag});
+            return Client.Get<GitTagResource>(projectResource.Link("Tags"), new { name = tag });
         }
 
         public ConvertProjectToGitResponse ConvertToGit(ProjectResource project,
@@ -106,7 +106,7 @@ namespace Octopus.Client.Repositories
                     payload);
             return response;
         }
-        
+
         public ResourceCollection<ReleaseResource> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null)
         {
             return Client.List<ReleaseResource>(project.Link("Releases"), new { skip, take, searchByVersion });

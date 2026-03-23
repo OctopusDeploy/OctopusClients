@@ -37,7 +37,7 @@ namespace Octopus.Client.Tests.Serialization
 
             result.DefaultWorkerPoolId.Should().Be(input.DefaultWorkerPoolId);
         }
-        
+
         [Test]
         public void AzureCloudService()
         {
@@ -51,7 +51,7 @@ namespace Octopus.Client.Tests.Serialization
 
             result.AccountId.Should().Be(input.AccountId);
         }
-        
+
         [Test]
         public void KubernetesApi()
         {
@@ -176,12 +176,12 @@ namespace Octopus.Client.Tests.Serialization
 
             result.Thumbprint.Should().Be(input.Thumbprint);
         }
-        
+
         private static T Execute<T>(object input)
         {
             //Serialize anonymous object to JSON
             var json = JsonConvert.SerializeObject(input);
-            
+
             var settings = JsonSerialization.GetDefaultSerializerSettings();
             return JsonConvert.DeserializeObject<EndpointResource>(json, settings)
                 .Should().BeOfType<T>().Subject;

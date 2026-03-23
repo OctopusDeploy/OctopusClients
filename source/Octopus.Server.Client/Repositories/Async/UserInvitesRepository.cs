@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Octopus.Client.Model;
 
 namespace Octopus.Client.Repositories.Async
-{ 
+{
     public interface IUserInvitesRepository
     {
         Task<InvitationResource> Invite(string addToTeamId);
         Task<InvitationResource> Invite(ReferenceCollection addToTeamIds);
     }
-    
+
     class UserInvitesRepository : MixedScopeBaseRepository<InvitationResource>, IUserInvitesRepository
     {
         public UserInvitesRepository(IOctopusAsyncRepository repository) : base(repository, "Invitations")

@@ -22,7 +22,7 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public override async Task<UserRoleResource> Create(UserRoleResource resource, object pathParameters = null)
             => await Create(resource, pathParameters, CancellationToken.None);
-        
+
         public override async Task<UserRoleResource> Create(UserRoleResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken);
@@ -34,7 +34,7 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         public override async Task<UserRoleResource> Modify(UserRoleResource resource)
             => await Modify(resource, CancellationToken.None);
-        
+
         public override async Task<UserRoleResource> Modify(UserRoleResource resource, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken);

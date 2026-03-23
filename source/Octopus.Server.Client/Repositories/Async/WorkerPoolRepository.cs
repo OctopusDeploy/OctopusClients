@@ -45,7 +45,8 @@ namespace Octopus.Client.Repositories.Async
         {
             var resources = new List<WorkerResource>();
 
-            await Client.Paginate<WorkerResource>(workerPool.Link("Workers"), new {
+            await Client.Paginate<WorkerResource>(workerPool.Link("Workers"), new
+            {
                 skip,
                 take,
                 partialName,

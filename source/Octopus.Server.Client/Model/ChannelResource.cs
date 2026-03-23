@@ -81,10 +81,10 @@ namespace Octopus.Client.Model
             {
                 VersionRange = versionRange,
                 Tag = tagRegex,
-                ActionPackages = ( 
-                    from action in actions 
+                ActionPackages = (
+                    from action in actions
                     from package in action.Packages
-                    select new DeploymentActionPackageResource(action.Name, package.Name) 
+                    select new DeploymentActionPackageResource(action.Name, package.Name)
                     ).ToList()
             });
 
@@ -132,7 +132,7 @@ namespace Octopus.Client.Model
         }
 
         public string SpaceId { get; set; }
-        
+
         public string Slug { get; set; }
     }
 }

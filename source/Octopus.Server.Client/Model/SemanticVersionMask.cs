@@ -68,7 +68,7 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
                 if (maskMatch.Revision.IsSubstitute)
                     return true;
-                
+
                 if (v.Version.Revision != maskRevision)
                     return false;
 
@@ -115,7 +115,7 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
             public MaskMatchedVersion(string version)
             {
                 var maskMatch = FormatRegex.Match(version);
-                
+
                 IsValid = maskMatch.Success;
                 Major = new Component(maskMatch.Groups["Major"]);
                 Minor = new Component(maskMatch.Groups["Minor"]);
@@ -130,7 +130,7 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
             public Component Build { get; private set; }
             public Component Revision { get; private set; }
             public TagComponent Tag { get; private set; }
-          
+
             public class Component
             {
                 protected readonly Group matchGroup;
@@ -173,10 +173,10 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
                 {
                     if (IsPresent)
                     {
-                        if(prevMaskComponent.Value != PatternIncrement)
+                        if (prevMaskComponent.Value != PatternIncrement)
                             return $".{Substitute(current)}";
 
-                        if(IsSubstitute)
+                        if (IsSubstitute)
                             return ".0";
 
                         return $".{Substitute(current)}";
@@ -235,10 +235,10 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
                     for (var i = 0; i < identifiers.Length; i++)
                     {
-                        if (i > 0 && identifiers[i-1] == PatternIncrement && IsSubstitute)
+                        if (i > 0 && identifiers[i - 1] == PatternIncrement && IsSubstitute)
                         {
-                                substitutedIdentifiers.Add("0");
-                                continue;
+                            substitutedIdentifiers.Add("0");
+                            continue;
                         }
 
                         var currentIdentifierValue = 0;
@@ -248,7 +248,7 @@ $", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
                         switch (identifiers[i])
                         {
                             case PatternIncrement:
-                                substitutedIdentifiers.Add((currentIdentifierValue+1).ToString(CultureInfo.InvariantCulture)); 
+                                substitutedIdentifiers.Add((currentIdentifierValue + 1).ToString(CultureInfo.InvariantCulture));
                                 break;
                             case PatternCurrent:
                                 substitutedIdentifiers.Add(currentIdentifierValue.ToString(CultureInfo.InvariantCulture));

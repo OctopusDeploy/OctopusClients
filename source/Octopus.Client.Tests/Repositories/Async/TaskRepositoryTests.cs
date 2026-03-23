@@ -88,7 +88,7 @@ namespace Octopus.Client.Tests.Repositories.Async
             {
                 try
                 {
-                    var wait = repository.WaitForCompletion(new[] {taskResource}, pollIntervalSeconds: 1,
+                    var wait = repository.WaitForCompletion(new[] { taskResource }, pollIntervalSeconds: 1,
                         timeoutAfter: TimeSpan.FromSeconds(3));
                     wait.Wait(TimeSpan.FromSeconds(30));
                 }

@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
         DeploymentProcessResource Get(ProjectResource projectResource, string gitRef);
         DeploymentProcessResource Modify(DeploymentProcessResource deploymentSettings, string commitMessage);
     }
-    
+
 
     class DeploymentProcessRepository : BasicRepository<DeploymentProcessResource>, IDeploymentProcessRepository
     {
@@ -23,16 +23,16 @@ namespace Octopus.Client.Repositories
 
         public ReleaseTemplateResource GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel)
         {
-            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new {channel = channel?.Id});
+            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id });
         }
 
         public DeploymentProcessResource Get(ProjectResource projectResource)
         {
             if (projectResource.PersistenceSettings is GitPersistenceSettingsResource vcsResource)
             {
-               return Get(projectResource, vcsResource.DefaultBranch);
+                return Get(projectResource, vcsResource.DefaultBranch);
             }
-            
+
             return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"));
         }
 

@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         /// Returns the primary (un-named) package reference, or null if it does not exist. 
         /// </summary>
         public PackageReference PrimaryPackage => nameMap.ContainsKey("") ? nameMap[""] : null;
-        
+
         public void Add(PackageReference item)
         {
             if (item == null)
@@ -23,13 +23,13 @@ namespace Octopus.Client.Model
 
             nameMap.Add(item.Name, item);
         }
-        
+
         public PackageReference GetByName(string name)
         {
             var key = name ?? "";
             return nameMap[key];
         }
-        
+
         public bool TryGetByName(string name, out PackageReference package)
         {
             var key = name ?? "";
@@ -42,7 +42,7 @@ namespace Octopus.Client.Model
             package = null;
             return false;
         }
-        
+
         /// <summary>
         /// Returns true if a PackageReference with the same name exists; otherwise false. 
         /// </summary>
@@ -64,20 +64,20 @@ namespace Octopus.Client.Model
             return nameMap.Remove(item.Name);
         }
 
-        public int Count => nameMap.Count; 
-        
+        public int Count => nameMap.Count;
+
         public void Clear()
         {
             nameMap.Clear();
         }
 
         public bool IsReadOnly => false;
-        
+
         public IEnumerator<PackageReference> GetEnumerator()
         {
             return nameMap.Values.GetEnumerator();
         }
-        
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

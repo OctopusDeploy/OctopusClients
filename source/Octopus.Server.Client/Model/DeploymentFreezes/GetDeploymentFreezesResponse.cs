@@ -24,8 +24,8 @@ public class DeploymentFreezeResource
     public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; set; }
 
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
-    
+
     public string OwnerId { get; set; }
-    
+
     public RecurringSchedule RecurringSchedule { get; set; }
 }

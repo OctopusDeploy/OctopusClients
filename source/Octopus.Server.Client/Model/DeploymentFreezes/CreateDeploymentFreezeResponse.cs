@@ -11,16 +11,16 @@ public class CreateDeploymentFreezeResponse
 
     [Required]
     public string Name { get; set; }
-        
+
     [Required]
     public DateTimeOffset Start { get; set; }
-        
+
     [Required]
     public DateTimeOffset End { get; set; }
-        
-    public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope  { get; set; }
 
-    public List<TenantProjectEnvironment> TenantProjectEnvironmentScope  { get; set; }
+    public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; set; }
+
+    public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
 
     public string OwnerId { get; set; }
 

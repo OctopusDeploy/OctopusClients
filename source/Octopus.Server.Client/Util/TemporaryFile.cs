@@ -7,7 +7,7 @@ namespace Octopus.Client.Util
     internal class TemporaryFile : IDisposable
     {
         private static readonly ILog Logger = LogProvider.For<TemporaryFile>();
-        
+
         public TemporaryFile()
         {
             FileName = Path.GetTempFileName();

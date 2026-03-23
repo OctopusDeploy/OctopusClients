@@ -9,13 +9,13 @@ namespace Octopus.Client.Model
         /// Package is acquired on the Octopus Server
         /// </summary>
         public static PackageAcquisitionLocationResource Server => new("Server");
-        
+
         /// <summary>
         /// Package is acquired on the execution-target, which may be a deployment-target
         /// or a Worker
         /// </summary>
         public static PackageAcquisitionLocationResource ExecutionTarget => new("ExecutionTarget");
-          
+
         /// <summary>
         /// Package is not acquired
         /// </summary>

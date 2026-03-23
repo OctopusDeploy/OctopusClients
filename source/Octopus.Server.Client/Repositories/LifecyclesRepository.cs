@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
         LifecycleEditor CreateOrModify(string name);
         LifecycleEditor CreateOrModify(string name, string description);
     }
-    
+
     class LifecyclesRepository : BasicRepository<LifecycleResource>, ILifecyclesRepository
     {
         public LifecyclesRepository(IOctopusRepository repository)

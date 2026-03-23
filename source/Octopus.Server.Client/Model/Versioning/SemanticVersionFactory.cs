@@ -75,8 +75,8 @@ namespace Octopus.Client.Model
                             return false;
                         }
 
-                        var ver = preserveMissingComponents  
-                            ? systemVersion 
+                        var ver = preserveMissingComponents
+                            ? systemVersion
                             : NormalizeVersionValue(systemVersion);
 
                         var originalVersion = value;

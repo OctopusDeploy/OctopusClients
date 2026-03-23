@@ -9,7 +9,7 @@ namespace Octopus.Client.Model
         [Trim]
         [Writeable]
         public string Name { get; set; }
-        
+
         public string SpaceId { get; set; }
 
         /// <summary>
@@ -45,12 +45,12 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public EndpointResource Endpoint { get; set; }
-        
+
         public string OperatingSystem { get; set; }
         public string ShellName { get; set; }
         public string ShellVersion { get; set; }
         public string Architecture { get; set; }
-        
+
         public string Slug { get; set; }
 
         [Writeable]

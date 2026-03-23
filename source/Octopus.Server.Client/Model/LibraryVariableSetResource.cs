@@ -43,12 +43,12 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public VariableSetContentType ContentType { get; set; }
-        
+
         /// <summary>
         /// Gets the variable templates.
         /// </summary>
         public List<ActionTemplateParameterResource> Templates { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the version number.
         /// </summary>
@@ -139,13 +139,13 @@ namespace Octopus.Client.Model
         public ICollection<LibraryVariableSetReleaseUsageEntry> Releases { get; set; }
         public bool IsCurrentlyBeingUsedInProject { get; set; }
     }
-    
+
     public class LibraryVariableSetRunbookSnapshotUsageEntry
     {
         public string SnapshotId { get; set; }
         public string SnapshotName { get; set; }
     }
-    
+
     public class LibraryVariableSetReleaseUsageEntry
     {
         public string ReleaseId { get; set; }

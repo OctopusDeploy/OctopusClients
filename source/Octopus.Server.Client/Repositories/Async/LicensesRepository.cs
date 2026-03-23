@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories.Async
         Task<LicenseResource> UpdateCurrent(LicenseResource resource);
         Task<LicenseStatusResource> GetStatus();
     }
-    
+
     class LicensesRepository : BasicRepository<LicenseResource>, ILicensesRepository
     {
         public LicensesRepository(IOctopusAsyncRepository repository)

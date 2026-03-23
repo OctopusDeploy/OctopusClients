@@ -8,7 +8,7 @@ namespace Octopus.Client.Repositories
         void Install(CommunityActionTemplateResource resource);
         void UpdateInstallation(CommunityActionTemplateResource resource);
     }
-    
+
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
     {
         public CommunityActionTemplateRepository(IOctopusRepository repository) : base(repository, "CommunityActionTemplates")
@@ -18,7 +18,7 @@ namespace Octopus.Client.Repositories
         public void Install(CommunityActionTemplateResource resource)
         {
             var baseLink = resource.Links["Installation"];
-            
+
             var spaceResource = Repository.Scope.Apply(space => space,
                 () => throw new SpaceScopedOperationInSystemContextException(),
                 () => null); // Link without a space id acts on the default space
@@ -29,7 +29,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                Client.Post<string>(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
+                Client.Post<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
             }
         }
 
@@ -46,7 +46,7 @@ namespace Octopus.Client.Repositories
             }
             else
             {
-                Client.Put<string>(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
+                Client.Put<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
             }
         }
 
@@ -63,7 +63,7 @@ namespace Octopus.Client.Repositories
                 return Client.Get<ActionTemplateResource>(baseLink.ToString());
             }
 
-            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new {spaceId = spaceResource.Id});
+            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new { spaceId = spaceResource.Id });
         }
     }
 }

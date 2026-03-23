@@ -13,7 +13,7 @@ public class KubernetesLiveStatusResource
 
     [Required]
     public string Kind { get; set; }
-    
+
     [Required]
     public string Group { get; set; }
 
@@ -35,7 +35,7 @@ public class KubernetesLiveStatusResource
     public Guid? DesiredResourceId { get; set; }
 
     public Guid? ResourceId { get; set; }
-    
+
     [Required]
     public DateTimeOffset LastUpdated { get; set; }
 }

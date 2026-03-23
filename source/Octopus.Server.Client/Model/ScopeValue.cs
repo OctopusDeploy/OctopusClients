@@ -6,18 +6,18 @@ namespace Octopus.Client.Model
 {
     public class ScopeValue : ReferenceCollection
     {
-        [Obsolete("For serialization only")] 
+        [Obsolete("For serialization only")]
         public ScopeValue()
         {
         }
 
         public ScopeValue(string value)
-            : this(new[] {value})
+            : this(new[] { value })
         {
         }
 
         public ScopeValue(string value, params string[] additionalValues)
-            : this(new[] {value}.Union(additionalValues ?? new string[0]))
+            : this(new[] { value }.Union(additionalValues ?? new string[0]))
         {
         }
 

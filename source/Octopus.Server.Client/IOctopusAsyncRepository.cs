@@ -8,7 +8,7 @@ namespace Octopus.Client
     /// Functionality not exposed by this interface can be accessed
     /// using <see cref="IOctopusCommonAsyncRepository.Client" />.
     /// </summary>
-    public interface IOctopusAsyncRepository: IOctopusSpaceAsyncRepository, IOctopusSystemAsyncRepository
+    public interface IOctopusAsyncRepository : IOctopusSpaceAsyncRepository, IOctopusSystemAsyncRepository
     {
     }
 }

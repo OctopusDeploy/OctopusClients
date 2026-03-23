@@ -26,7 +26,7 @@ namespace Octopus.Client.Model
         /// <param name="feedId">The feed ID or a variable-expression</param>
         /// <param name="acquisitionLocation">The location the package should be acquired</param>
         public PackageReference(string name, string packageId, string feedId, PackageAcquisitionLocationResource acquisitionLocation)
-            :this(name, packageId, feedId, acquisitionLocation.ToString())
+            : this(name, packageId, feedId, acquisitionLocation.ToString())
         {
         }
 
@@ -39,7 +39,7 @@ namespace Octopus.Client.Model
         /// <param name="acquisitionLocation">The location the package should be acquired.
         /// May be one <see cref="PackageAcquisitionLocationResource"/> or a variable-expression.</param>
         public PackageReference(string name, string packageId, string feedId, string acquisitionLocation)
-            :this(null, name, packageId, feedId, acquisitionLocation)
+            : this(null, name, packageId, feedId, acquisitionLocation)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Octopus.Client.Model
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
         public PackageReference(string packageId, string feedId, PackageAcquisitionLocationResource acquisitionLocation)
-        :this(null, packageId, feedId, acquisitionLocation)
+        : this(null, packageId, feedId, acquisitionLocation)
         {
         }
 
@@ -55,7 +55,7 @@ namespace Octopus.Client.Model
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
         public PackageReference(string packageId, string feedId, string acquisitionLocation)
-        :this(null, packageId, feedId, acquisitionLocation)
+        : this(null, packageId, feedId, acquisitionLocation)
         {
         }
 
@@ -63,12 +63,12 @@ namespace Octopus.Client.Model
         /// Constructs a primary package (an un-named package reference)
         /// </summary>
         public PackageReference(string packageId, string feedId)
-        :this(packageId, feedId, PackageAcquisitionLocationResource.Server)
+        : this(packageId, feedId, PackageAcquisitionLocationResource.Server)
         { }
 
         public PackageReference()
         {
-           Properties = new Dictionary<string, string>();
+            Properties = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonConstructor]
         protected PackageReference(string id, string name, string packageId, string feedId, string acquisitionLocation)
-            :this()
+            : this()
         {
             Id = id;
             PackageId = packageId;

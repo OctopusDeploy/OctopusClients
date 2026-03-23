@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories
     {
         List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team);
     }
-    
+
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
     {
         public TeamsRepository(IOctopusRepository repository)
@@ -33,7 +33,7 @@ namespace Octopus.Client.Repositories
         public List<ScopedUserRoleResource> GetScopedUserRoles(TeamResource team)
         {
             ThrowIfServerVersionIsNotCompatible();
-            
+
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
 
@@ -49,7 +49,7 @@ namespace Octopus.Client.Repositories
         public ITeamsRepository UsingContext(SpaceContext userDefinedSpaceContext)
         {
             ThrowIfServerVersionIsNotCompatible();
-            
+
             return new TeamsRepository(Repository, userDefinedSpaceContext);
         }
     }

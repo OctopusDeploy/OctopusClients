@@ -8,7 +8,7 @@ namespace Octopus.Client.Model
     {
         public SupportsRestrictionAttribute(params string[] scopes)
         {
-            this.Scopes = (IList<string>) scopes ?? new List<string>();
+            this.Scopes = (IList<string>)scopes ?? new List<string>();
         }
 
         public IList<string> Scopes { get; }

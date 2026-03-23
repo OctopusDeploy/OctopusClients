@@ -41,7 +41,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
 #else
             await get.Should().ThrowAsync<TimeoutException>();
 #endif
-            
+
             sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
         }
 

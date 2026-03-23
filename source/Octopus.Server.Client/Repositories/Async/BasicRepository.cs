@@ -110,13 +110,13 @@ namespace Octopus.Client.Repositories.Async
         {
             return Create(resource, pathParameters, CancellationToken.None);
         }
-        
+
         public virtual Task<TResource> Create(TResource resource, CancellationToken cancellationToken)
         {
             return Create(resource, null, cancellationToken);
         }
 
-        public virtual async Task<TResource> Create(TResource resource,  object pathParameters, CancellationToken cancellationToken)
+        public virtual async Task<TResource> Create(TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
@@ -135,7 +135,7 @@ namespace Octopus.Client.Repositories.Async
         public virtual async Task<TResource> Modify(TResource resource, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
-            
+
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
             return await Client.Update(resource.Links["Self"], resource, null, cancellationToken).ConfigureAwait(false);
         }
@@ -144,13 +144,13 @@ namespace Octopus.Client.Repositories.Async
         {
             return Delete(resource, CancellationToken.None);
         }
-        
+
         public async Task Delete(TResource resource, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
             await AssertSpaceIdMatchesResource(resource).ConfigureAwait(false);
-            
+
             await Client.Delete(resource.Links["Self"], cancellationToken).ConfigureAwait(false);
         }
 
@@ -177,12 +177,12 @@ namespace Octopus.Client.Repositories.Async
         {
             return FindOne(search, path, pathParameters, CancellationToken.None);
         }
-        
+
         public Task<TResource> FindOne(Func<TResource, bool> search, CancellationToken cancellationToken)
         {
             return FindOne(search, path: null, pathParameters: null, cancellationToken);
         }
-        
+
         public async Task<TResource> FindOne(Func<TResource, bool> search, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -194,7 +194,7 @@ namespace Octopus.Client.Repositories.Async
                     return resource == null;
                 }, path, pathParameters, cancellationToken)
                 .ConfigureAwait(false);
-            
+
             return resource;
         }
 
@@ -202,12 +202,12 @@ namespace Octopus.Client.Repositories.Async
         {
             return FindMany(search, path, pathParameters, CancellationToken.None);
         }
-        
+
         public Task<List<TResource>> FindMany(Func<TResource, bool> search, CancellationToken cancellationToken)
         {
             return FindMany(search, path: null, pathParameters: null, cancellationToken);
         }
-        
+
         public async Task<List<TResource>> FindMany(Func<TResource, bool> search, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -218,7 +218,7 @@ namespace Octopus.Client.Repositories.Async
                 resources.AddRange(page.Items.Where(search));
                 return true;
             }, path, pathParameters, cancellationToken).ConfigureAwait(false);
-            
+
             return resources;
         }
 
@@ -226,12 +226,12 @@ namespace Octopus.Client.Repositories.Async
         {
             return FindAll(path, pathParameters, CancellationToken.None);
         }
-        
+
         public Task<List<TResource>> FindAll(CancellationToken cancellationToken)
         {
             return FindAll(path: null, pathParameters: null, cancellationToken);
         }
-        
+
         public Task<List<TResource>> FindAll(string path, object pathParameters, CancellationToken cancellationToken)
         {
             ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -243,7 +243,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetAll(CancellationToken.None);
         }
-        
+
         public async Task<List<TResource>> GetAll(CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -266,7 +266,7 @@ namespace Octopus.Client.Repositories.Async
                 return named != null && named.Name.Contains(partialName, StringComparison.OrdinalIgnoreCase);
             }, path, pathParameters).ConfigureAwait(false);
         }
-        
+
         public Task<List<TResource>> FindByPartialName(string partialName, CancellationToken cancellationToken)
         {
             return FindByPartialName(partialName, null, null, cancellationToken);
@@ -281,7 +281,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return FindByName(name, null, null, cancellationToken);
         }
-        
+
         public async Task<TResource> FindByName(string name, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -297,17 +297,17 @@ namespace Octopus.Client.Repositories.Async
                 return false;
             }, path, pathParameters, cancellationToken);
         }
-        
+
         public Task<List<TResource>> FindByNames(IEnumerable<string> names, string path = null, object pathParameters = null)
         {
             return FindByNames(names, path, pathParameters, CancellationToken.None);
         }
-        
+
         public Task<List<TResource>> FindByNames(IEnumerable<string> names, CancellationToken cancellationToken)
         {
             return FindByNames(names, path: null, pathParameters: null, cancellationToken);
         }
-        
+
         public async Task<List<TResource>> FindByNames(IEnumerable<string> names, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -319,12 +319,12 @@ namespace Octopus.Client.Repositories.Async
                 return false;
             }, path, pathParameters, cancellationToken).ConfigureAwait(false);
         }
-        
+
         public Task<TResource> FindBySlug(string slug, CancellationToken cancellationToken)
         {
             return FindBySlug(slug, null, null, cancellationToken);
         }
-        
+
         public async Task<TResource> FindBySlug(string slug, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -340,12 +340,12 @@ namespace Octopus.Client.Repositories.Async
                 return false;
             }, path, pathParameters, cancellationToken);
         }
-        
+
         public Task<List<TResource>> FindBySlugs(IEnumerable<string> slugs, CancellationToken cancellationToken)
         {
             return FindBySlugs(slugs, path: null, pathParameters: null, cancellationToken);
         }
-        
+
         public async Task<List<TResource>> FindBySlugs(IEnumerable<string> slugs, string path, object pathParameters, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -362,7 +362,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Get(idOrHref, CancellationToken.None);
         }
-        
+
         public async Task<TResource> Get(string idOrHref, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -376,7 +376,7 @@ namespace Octopus.Client.Repositories.Async
             var getTask = idOrHref.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                 ? Client.Get<TResource>(idOrHref, additionalQueryParameters, cancellationToken).ConfigureAwait(false)
                 : Client.Get<TResource>(link, parameters, cancellationToken).ConfigureAwait(false);
-            
+
             return await getTask;
         }
 
@@ -384,7 +384,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Get(CancellationToken.None, ids);
         }
-        
+
         public virtual async Task<List<TResource>> Get(CancellationToken cancellationToken, params string[] ids)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -419,7 +419,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return Refresh(resource, CancellationToken.None);
         }
-        
+
         public async Task<TResource> Refresh(TResource resource, CancellationToken cancellationToken)
         {
             await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
@@ -446,7 +446,7 @@ namespace Octopus.Client.Repositories.Async
 
             if (CollectionLinkName == null && getCollectionLinkName != null)
                 CollectionLinkName = await getCollectionLinkName(Repository).ConfigureAwait(false);
-            
+
             // TODO: Add cancellation token support to IOctopusCommonAsyncRepository
             return await Repository.Link(CollectionLinkName).ConfigureAwait(false);
         }

@@ -10,7 +10,7 @@ namespace Octopus.Client.Tests.Model.Authentication.OpenIDConnect
         public void ConfigurationResource_HasCorrectId()
         {
             new GenericOidcConfigurationResource().Id.Should().Be(
-                "authentication-generic-oidc", 
+                "authentication-generic-oidc",
                 "customers' database configuration will be stored against this value, changing it would cause that configuration to 'disappear'");
         }
     }

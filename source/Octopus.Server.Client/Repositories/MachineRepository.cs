@@ -31,7 +31,7 @@ namespace Octopus.Client.Repositories
             EndpointResource endpoint,
             EnvironmentResource[] environments,
             string[] roles);
-        
+
         ResourceCollection<MachineResource> List(int skip = 0,
             int? take = null,
             string ids = null,
@@ -45,7 +45,7 @@ namespace Octopus.Client.Repositories
             string tenantTags = null,
             string environmentIds = null);
     }
-    
+
     class MachineRepository : BasicRepository<MachineResource>, IMachineRepository
     {
         public MachineRepository(IOctopusRepository repository) : base(repository, "Machines")
@@ -87,7 +87,7 @@ namespace Octopus.Client.Repositories
         /// <param name="machine"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine, DeploymentTargetTaskType? type = null) => GetTasks(machine, new {skip = 0, type});
+        public IReadOnlyList<TaskResource> GetTasks(MachineResource machine, DeploymentTargetTaskType? type = null) => GetTasks(machine, new { skip = 0, type });
 
         /// <summary>
         /// Gets tasks involving the specified machine. If `type` is specified, only gets tasks of the specified type.

@@ -26,6 +26,6 @@ public class TenantCommonVariablePayload(string libraryVariableSetId, string tem
 public class ModifyCommonVariablesByTenantIdResponse(string tenantId, TenantCommonVariable[] variables)
 {
     public string TenantId { get; set; } = tenantId;
-        
+
     public TenantCommonVariable[] Variables { get; set; } = variables;
 }

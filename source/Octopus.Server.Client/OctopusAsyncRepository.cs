@@ -248,7 +248,7 @@ namespace Octopus.Client
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 if (watch.Elapsed > TimeSpan.FromSeconds(SecondsToWaitForServerToStart))
                 {
                     if (lastError == null)
@@ -291,7 +291,7 @@ namespace Octopus.Client
 
             if (current < min || current > max)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server uses a newer API specification ({rootDocument.ApiVersion}) than this tool can handle ({ApiConstants.SupportedApiSchemaVersionMin} to {ApiConstants.SupportedApiSchemaVersionMax}). Please check for updates to this tool.");
-            
+
             return rootDocument;
         }
 
@@ -309,7 +309,7 @@ namespace Octopus.Client
 
             async Task<SpaceRootResource> LoadSpaceRootResourceFor(SpaceResource space)
             {
-                return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new {space.Id}).ConfigureAwait(false);
+                return await Client.Get<SpaceRootResource>(space.Link("SpaceHome"), new { space.Id }).ConfigureAwait(false);
             }
 
             async Task<SpaceResource> TryGetDefaultSpace()

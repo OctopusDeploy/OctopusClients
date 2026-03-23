@@ -24,17 +24,17 @@ namespace Octopus.Client.Repositories.Async
         public async Task<SpaceDefaultRetentionPolicyResource> Get(GetDefaultRetentionPolicyByTypeRequest request, CancellationToken cancellationToken)
         {
             await EnsureServerCompatability(cancellationToken);
-            
+
             var response = await client.Get<SpaceDefaultRetentionPolicyResource>(
                 GetApiRoute, request, cancellationToken);
 
             return response;
         }
-        
+
         public async Task<SpaceDefaultRetentionPolicyResource> Modify(ModifyDefaultRetentionPolicyCommand command, CancellationToken cancellationToken)
         {
             await EnsureServerCompatability(cancellationToken);
-            
+
             var response = await client.Update<ModifyDefaultRetentionPolicyCommand, SpaceDefaultRetentionPolicyResource>(
                 ModifyApiRoute, command, pathParameters: new { command.SpaceId, command.Id }, cancellationToken);
 

@@ -23,7 +23,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetVersions(feed, packageIds, CancellationToken.None);
         }
-        
+
         public Task<List<PackageResource>> GetVersions(FeedResource feed, string[] packageIds, CancellationToken cancellationToken)
         {
             return Client.Get<List<PackageResource>>(feed.Link("VersionsTemplate"), new { packageIds = packageIds }, cancellationToken);

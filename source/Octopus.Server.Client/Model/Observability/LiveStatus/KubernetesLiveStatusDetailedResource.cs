@@ -25,7 +25,7 @@ public class KubernetesLiveStatusDetailedResource
 
     [Required]
     public string ResourceSourceId { get; set; }
-    
+
     [Required]
     public string SourceType { get; set; }
 
@@ -40,6 +40,6 @@ public class KubernetesLiveStatusDetailedResource
     public Guid? DesiredResourceId { get; set; }
 
     public Guid? ResourceId { get; set; }
-    
+
     public ExternalLinkResource ExternalLink { get; set; }
 }

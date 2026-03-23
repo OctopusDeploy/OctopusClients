@@ -28,10 +28,10 @@ namespace Octopus.Client.Model
         public IDictionary<string, PropertyValueResource> Properties { get; } = new Dictionary<string, PropertyValueResource>();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public GitDependencyCollectionResource GitDependencies { get; } = new(); 
+        public GitDependencyCollectionResource GitDependencies { get; } = new();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
-        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection(); 
+        public PackageReferenceCollection Packages { get; } = new PackageReferenceCollection();
 
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public IList<ActionTemplateParameterResource> Parameters { get; } = new List<ActionTemplateParameterResource>();
@@ -42,6 +42,6 @@ namespace Octopus.Client.Model
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public object Inputs { get; set; }
 
-        public string SpaceId { get; set; }        
+        public string SpaceId { get; set; }
     }
 }

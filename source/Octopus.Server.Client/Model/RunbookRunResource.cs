@@ -75,25 +75,25 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public bool UseGuidedFailure { get; set; }
-        
+
         /// <summary>
         /// When enabled contributes the OctopusPrintVariables and OctopusPrintEvaluatedVariables variables to true
         /// </summary>
         [WriteableOnCreate]
         public string DebugMode { get; set; }
-        
+
         /// <summary>
         /// If set to true, target discovery steps that find no matching targets will fail. If false, steps with no matching targets will be skipped.
         /// </summary>
         [WriteableOnCreate]
         public bool FailTargetDiscovery { get; set; }
-        
+
         /// <summary>
         /// One of the values from <see cref="RunbookRunPriority"/>
         /// </summary>
         [WriteableOnCreate]
         public string Priority { get; set; }
-        
+
         [WriteableOnCreate]
         public string Comments { get; set; }
 

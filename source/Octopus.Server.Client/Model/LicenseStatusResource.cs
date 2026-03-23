@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
         public static readonly string CommunityEdition = "CommunityEdition";
         public static readonly string CommercialLicense = "CommercialLicense";
     }
-    
+
     public static class LicenseMessageDispositions
     {
         public static readonly string Information = "Information";
@@ -37,7 +37,7 @@ namespace Octopus.Client.Model
         public bool IsCompliant { get; set; }
         public string HostingEnvironment { get; set; }
         public string ComplianceSummary { get; set; }
-        
+
         [JsonConverter(typeof(DateConverter))]
         public DateTime EffectiveExpiryDate { get; set; }
         public int DaysToEffectiveExpiryDate { get; set; }
@@ -48,23 +48,23 @@ namespace Octopus.Client.Model
         public int EffectiveClusterTaskLimit { get; set; }
         public bool IsClusterTaskLimitControlledByLicense { get; set; }
         public bool IsNodeTaskLimitControlledByLicense { get; set; }
-        
+
         /// <summary>
         /// One of the values from <see cref="PermissionModes"/>
         /// </summary>
         public string PermissionsMode { get; set; }
     }
-    
+
     public class LicenseMessageResource
     {
         public string Message { get; set; }
-        
+
         /// <summary>
         /// One of the values from LicenseMessageDispositions
         /// </summary>
         public string Disposition { get; set; }
     }
-    
+
     public class LicenseLimitStatusResource
     {
         public string Name { get; set; }
@@ -75,14 +75,14 @@ namespace Octopus.Client.Model
         public bool IsUnlimited { get; set; }
         public int CurrentUsage { get; set; }
         public string Message { get; set; }
-        
+
         /// <summary>
         /// One of the values from LicenseMessageDispositions
         /// </summary>
         public string Disposition { get; set; }
-    } 
-    
-    public class LicenseLimitUsageResource:LicenseLimitStatusResource
+    }
+
+    public class LicenseLimitUsageResource : LicenseLimitStatusResource
     {
         public string LimitUsageDescription { get; set; }
     }

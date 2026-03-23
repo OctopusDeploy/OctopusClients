@@ -32,7 +32,7 @@ namespace Octopus.Client.Model.Accounts
         public TenantedDeploymentMode TenantedDeploymentParticipation
         {
             set => tenantedDeploymentParticipation = value;
-            
+
             get
             {
                 if (tenantedDeploymentParticipation.HasValue)
@@ -41,7 +41,7 @@ namespace Octopus.Client.Model.Accounts
                 // Responses from server versions before TenantedDeploymentParticipation was implemented will default
                 // to pre-existing behaviour 
                 return TenantIds.Any() || TenantTags.Any()
-                    ? TenantedDeploymentMode.Tenanted 
+                    ? TenantedDeploymentMode.Tenanted
                     : TenantedDeploymentMode.Untenanted;
             }
         }
@@ -56,7 +56,7 @@ namespace Octopus.Client.Model.Accounts
         public abstract AccountType AccountType { get; }
 
         public string SpaceId { get; set; }
-        
+
         public string Slug { get; set; }
     }
 }

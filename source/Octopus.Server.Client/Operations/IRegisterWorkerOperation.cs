@@ -12,7 +12,7 @@ namespace Octopus.Client.Operations
         /// </summary>
         [Obsolete($"Use the {nameof(WorkerPools)} property as it supports worker pool names, slugs and Ids.")]
         string[] WorkerPoolNames { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the worker pools that this machine should be added to. These can be worker pool names, slugs or Ids
         /// </summary>

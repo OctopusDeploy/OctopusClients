@@ -15,11 +15,11 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef);
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentProcessResource> Get(ProjectResource projectResource);
         Task<DeploymentProcessResource> Get(ProjectResource projectResource, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings, string commitMessage);
         Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings, string commitMessage, CancellationToken cancellationToken);
@@ -37,17 +37,17 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetTemplate(deploymentProcess, channel, CancellationToken.None);
         }
-        
+
         public Task<ReleaseTemplateResource> GetTemplate(DeploymentProcessResource deploymentProcess, ChannelResource channel, CancellationToken cancellationToken)
         {
-            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new {channel = channel?.Id}, cancellationToken);
+            return Client.Get<ReleaseTemplateResource>(deploymentProcess.Link("Template"), new { channel = channel?.Id }, cancellationToken);
         }
 
         public Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef)
         {
             return Get(projectResource, gitRef, CancellationToken.None);
         }
-        
+
         public Task<DeploymentProcessResource> Get(ProjectResource projectResource, string gitRef, CancellationToken cancellationToken)
         {
             if (!projectResource.IsVersionControlled)
@@ -56,14 +56,14 @@ namespace Octopus.Client.Repositories.Async
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new {gitRef}, cancellationToken);
+            return Client.Get<DeploymentProcessResource>(projectResource.Link("DeploymentProcess"), new { gitRef }, cancellationToken);
         }
 
         public Task<DeploymentProcessResource> Get(ProjectResource projectResource)
         {
             return Get(projectResource, CancellationToken.None);
         }
-        
+
         public Task<DeploymentProcessResource> Get(ProjectResource projectResource, CancellationToken cancellationToken)
         {
             if (projectResource.PersistenceSettings is GitPersistenceSettingsResource vcsResource)
@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return await Modify(deploymentSettings, CancellationToken.None);
         }
-        
+
         public async Task<DeploymentProcessResource> Modify(DeploymentProcessResource deploymentSettings, string commitMessage, CancellationToken cancellationToken)
         {
             var firstCaCVersion = new SemanticVersion(2021, 3, 2066);
@@ -87,8 +87,8 @@ namespace Octopus.Client.Repositories.Async
                 currentServerVersion => $"The version of the Octopus Server ('{currentServerVersion}') you are connecting to is not compatible with this version of Octopus.Client for this API call. Please upgrade your Octopus Server to a version greater than '{firstCaCVersion}'",
                 cancellationToken
             );
-            
-            
+
+
             // TODO: revisit/obsolete this API when we have converters
             // until then we need a way to re-use the response from previous client calls
             var json = Serializer.Serialize(deploymentSettings);

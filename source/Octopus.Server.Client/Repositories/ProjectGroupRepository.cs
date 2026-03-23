@@ -11,7 +11,7 @@ namespace Octopus.Client.Repositories
         ProjectGroupEditor CreateOrModify(string name);
         ProjectGroupEditor CreateOrModify(string name, string description);
     }
-    
+
     class ProjectGroupRepository : BasicRepository<ProjectGroupResource>, IProjectGroupRepository
     {
         public ProjectGroupRepository(IOctopusRepository repository)

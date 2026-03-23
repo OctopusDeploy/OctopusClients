@@ -37,7 +37,7 @@ namespace Octopus.Client.Model
             {
                 unchecked
                 {
-                    return ((obj.EnvironmentId?.GetHashCode() ?? 0)*397) ^ (obj.TenantId?.GetHashCode() ?? 0);
+                    return ((obj.EnvironmentId?.GetHashCode() ?? 0) * 397) ^ (obj.TenantId?.GetHashCode() ?? 0);
                 }
             }
         }

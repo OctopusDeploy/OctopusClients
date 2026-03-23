@@ -32,7 +32,7 @@ namespace Octopus.Client.Repositories.Async
                 return Client.Post(baseLink.ToString());
             }
 
-            return Client.Post<string>(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
+            return Client.Post<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
         }
 
         public Task UpdateInstallation(CommunityActionTemplateResource resource)
@@ -47,7 +47,7 @@ namespace Octopus.Client.Repositories.Async
                 return Client.Put(baseLink.ToString());
             }
 
-            return Client.Put<string>(baseLink.ToString(), null, new {spaceId = spaceResource.Id});
+            return Client.Put<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
         }
 
         public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource)
@@ -62,7 +62,7 @@ namespace Octopus.Client.Repositories.Async
                 return Client.Get<ActionTemplateResource>(baseLink.ToString());
             }
 
-            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new {spaceId = spaceResource.Id});
+            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new { spaceId = spaceResource.Id });
         }
     }
 }

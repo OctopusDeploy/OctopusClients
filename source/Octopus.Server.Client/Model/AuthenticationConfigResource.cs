@@ -38,10 +38,10 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool UserApiKeysEnabled { get; set; }
-        
+
         // Servers before 2025.4 do not have this property
         [Writeable]
-        public int? ApiKeyDefaultExpiryDays { get; set; } 
+        public int? ApiKeyDefaultExpiryDays { get; set; }
 
         // Servers before 2025.4 do not have this property
         [Writeable]
@@ -50,7 +50,7 @@ namespace Octopus.Client.Model
         [Writeable]
         public OidcConfigResource OidcConfigurationSettings { get; set; }
     }
-    
+
     public class OidcConfigResource
     {
         public OidcConfigResource()

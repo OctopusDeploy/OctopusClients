@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.Endpoints
     public class AwsEcsClusterEndpointResource : EndpointResource
     {
         public override CommunicationStyle CommunicationStyle => CommunicationStyle.AwsEcsCluster;
-        
+
         [Trim]
         [Writeable]
         public string DefaultWorkerPoolId { get; set; }
@@ -19,7 +19,7 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string Region { get; set; } = string.Empty;
-    
+
         [Trim]
         [Writeable]
         public string AccountId { get; set; } = string.Empty;
@@ -39,11 +39,11 @@ namespace Octopus.Client.Model.Endpoints
         [Trim]
         [Writeable]
         public string AssumedRoleSession { get; set; }
-    
+
         [Trim]
         [Writeable]
         public int? AssumeRoleSessionDurationSeconds { get; set; }
-    
+
         [Trim]
         [Writeable]
         public string AssumeRoleExternalId { get; set; }

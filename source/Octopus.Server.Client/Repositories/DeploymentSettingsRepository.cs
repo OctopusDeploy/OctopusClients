@@ -15,12 +15,12 @@ namespace Octopus.Client.Repositories
         DeploymentSettingsResource Get(ProjectResource projectResource, string gitRef);
 
         DeploymentSettingsResource Get(ProjectResource project);
-        
+
         [Obsolete("ProjectResource is no longer required to be passed in")]
         DeploymentSettingsResource Modify(ProjectResource project, DeploymentSettingsResource deploymentSettings);
 
         DeploymentSettingsResource Modify(DeploymentSettingsResource deploymentSettings);
-        
+
         /// <summary>
         /// This overload is only relevant for VCS Projects. If passed a database backed deployment setting, the commit message will be ignored.
         /// </summary>
@@ -44,7 +44,7 @@ namespace Octopus.Client.Repositories
                     $"Database backed projects require using the overload that does not include a gitRef parameter.");
             }
 
-            return client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new {gitRef});
+            return client.Get<DeploymentSettingsResource>(projectResource.Link("DeploymentSettings"), new { gitRef });
         }
 
         public DeploymentSettingsResource Get(ProjectResource project)
@@ -54,9 +54,9 @@ namespace Octopus.Client.Repositories
             {
                 gitRef = vcsResource.DefaultBranch;
             }
-            return client.Get<DeploymentSettingsResource>(project.Link("DeploymentSettings"),new {gitRef});
+            return client.Get<DeploymentSettingsResource>(project.Link("DeploymentSettings"), new { gitRef });
         }
-        
+
         public DeploymentSettingsResource Modify(ProjectResource project,
             DeploymentSettingsResource deploymentSettings)
         {
@@ -75,9 +75,9 @@ namespace Octopus.Client.Repositories
             // until then we need a way to re-use the response from previous client calls
             var json = Serializer.Serialize(deploymentSettings);
             var command = Serializer.Deserialize<ModifyDeploymentSettingsCommand>(json);
-            
+
             command.ChangeDescription = commitMessage;
-            
+
             return Modify(command);
         }
     }

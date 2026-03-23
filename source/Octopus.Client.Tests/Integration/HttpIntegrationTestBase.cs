@@ -77,7 +77,7 @@ namespace Octopus.Client.Tests.Integration
                     Console.Error.WriteLine(ex);
                 }
             });
-            var applicationLifetime = (IApplicationLifetime) currentHost.Services.GetService(typeof(IApplicationLifetime));
+            var applicationLifetime = (IApplicationLifetime)currentHost.Services.GetService(typeof(IApplicationLifetime));
             applicationLifetime.ApplicationStarted.WaitHandle.WaitOne();
         }
 
@@ -106,7 +106,7 @@ namespace Octopus.Client.Tests.Integration
             TestRootPath = "/";
             if (pathPrefixBehaviour == UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
                 TestRootPath = $"/{GetType().Name}";
-            
+
             Get($"{TestRootPath}/api", p => Response.AsJson(
                  new RootResource()
                  {
@@ -158,7 +158,7 @@ namespace Octopus.Client.Tests.Integration
         }
 
         protected virtual OctopusClientOptions GetClientOptions() => null;
-        
+
         [TearDown]
         public virtual void TearDown()
         {
@@ -216,7 +216,7 @@ namespace Octopus.Client.Tests.Integration
                 }
             }
         }
- 
+
         private dynamic GetResourceNameFromRequestUri(dynamic parameters)
         {
             var escapedUri = "/" + parameters.uri;
@@ -240,7 +240,7 @@ namespace Octopus.Client.Tests.Integration
             }
         }
 
-//Nancy JSON Serializers
+        //Nancy JSON Serializers
         public class JsonNetBodyDeserializer : IBodyDeserializer
         {
             private readonly JsonSerializer serializer;

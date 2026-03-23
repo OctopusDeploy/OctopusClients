@@ -81,7 +81,7 @@ namespace Octopus.Client.Model.Versioning
                 }
             }
 
-            if (_mode == VersionComparison.Default ||_mode == VersionComparison.VersionReleaseMetadata)
+            if (_mode == VersionComparison.Default || _mode == VersionComparison.VersionReleaseMetadata)
             {
                 if (version.HasMetadata)
                 {

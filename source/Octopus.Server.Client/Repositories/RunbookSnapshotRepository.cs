@@ -23,10 +23,10 @@ namespace Octopus.Client.Repositories
         ResourceCollection<ArtifactResource> GetArtifacts(RunbookSnapshotResource runbookSnapshot, int skip = 0, int? take = null);
         RunbookRunTemplateResource GetTemplate(RunbookSnapshotResource runbookSnapshot);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
-        RunbookSnapshotResource SnapshotVariables(RunbookSnapshotResource runbookSnapshot);    
+        RunbookSnapshotResource SnapshotVariables(RunbookSnapshotResource runbookSnapshot);
         RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot);
     }
-    
+
     class RunbookSnapshotRepository : BasicRepository<RunbookSnapshotResource>, IRunbookSnapshotRepository
     {
         public RunbookSnapshotRepository(IOctopusRepository repository)

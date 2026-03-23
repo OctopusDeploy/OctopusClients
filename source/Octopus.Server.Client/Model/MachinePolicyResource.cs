@@ -42,17 +42,17 @@ namespace Octopus.Client.Model
         public MachineCleanupPolicy MachineCleanupPolicy { get; set; }
 
         [Writeable]
-        [JsonProperty(Order=50, ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [JsonProperty(Order = 50, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachineUpdatePolicy MachineUpdatePolicy { get; set; }
 
         [Writeable]
-        [JsonProperty(Order=55, ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [JsonProperty(Order = 55, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachineRpcCallRetryPolicy MachineRpcCallRetryPolicy { get; set; }
-        
+
         [Writeable]
-        [JsonProperty(Order=58, ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [JsonProperty(Order = 58, ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public MachinePackageCacheRetentionPolicy MachinePackageCacheRetentionPolicy { get; set; }
-        
+
         [Writeable]
         [JsonProperty(Order = 60)]
         public TimeSpan PollingRequestQueueTimeout { get; set; }

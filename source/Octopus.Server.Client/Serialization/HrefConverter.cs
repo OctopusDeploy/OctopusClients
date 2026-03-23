@@ -70,7 +70,7 @@ namespace Octopus.Client.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof (Href);
+            return objectType == typeof(Href);
         }
     }
 }

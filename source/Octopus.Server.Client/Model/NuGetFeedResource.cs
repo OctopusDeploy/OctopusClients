@@ -18,7 +18,7 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public bool EnhancedMode { get; set; } = DefaultEnhancedMode;
-        
+
         [Writeable]
         public string FeedUri { get; set; }
 

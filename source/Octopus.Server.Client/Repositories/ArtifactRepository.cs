@@ -16,7 +16,7 @@ namespace Octopus.Client.Repositories
         void PutContent(ArtifactResource artifact, Stream contentStream);
         ResourceCollection<ArtifactResource> FindRegarding(IResource resource);
     }
-    
+
     class ArtifactRepository : BasicRepository<ArtifactResource>, IArtifactRepository
     {
         public ArtifactRepository(IOctopusRepository repository)

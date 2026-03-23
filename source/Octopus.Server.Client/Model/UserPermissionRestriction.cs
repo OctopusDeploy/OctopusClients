@@ -32,7 +32,7 @@ namespace Octopus.Client.Model
         /// if any.
         /// </summary>
         public ReferenceCollection RestrictedToProjectGroupIds { get; set; }
-        
+
         public string SpaceId { get; set; }
 
         public static IEqualityComparer<UserPermissionRestriction> UserPermissionRestrictionComparer { get; } = new Comparer();

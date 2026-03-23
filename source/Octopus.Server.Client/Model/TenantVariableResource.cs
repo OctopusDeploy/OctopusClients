@@ -12,7 +12,7 @@ namespace Octopus.Client.Model
 
         public Dictionary<string, Project> ProjectVariables { get; set; } = new Dictionary<string, Project>();
         public Dictionary<string, Library> LibraryVariables { get; set; } = new Dictionary<string, Library>();
-        
+
         // Token to validate that no variables for the given tenant have changed since this TenantVariableResource was last requested.
         public string ConcurrencyToken { get; set; }
 
@@ -161,7 +161,7 @@ namespace Octopus.Client.Model
                 LibraryVariableSetId = libraryVariableSetId;
             }
 
-            public string LibraryVariableSetId { get;  }
+            public string LibraryVariableSetId { get; }
             public string LibraryVariableSetName { get; set; }
 
             public List<ActionTemplateParameterResource> Templates { get; set; } = new List<ActionTemplateParameterResource>();
@@ -184,13 +184,13 @@ namespace Octopus.Client.Model
 
             public PropertyValueResource GetVariableValue(string templateName)
             {
-                 var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
-                 if (templateId is null)
-                 {
-                     throw new ArgumentException($"No project variable template with name '{templateName}'");
-                 }
+                var templateId = Templates.SingleOrDefault(t => t.Name == templateName)?.Id;
+                if (templateId is null)
+                {
+                    throw new ArgumentException($"No project variable template with name '{templateName}'");
+                }
 
-                 return Variables[templateId];
+                return Variables[templateId];
             }
 
             public void SetVariableValue(string templateName, PropertyValueResource value)

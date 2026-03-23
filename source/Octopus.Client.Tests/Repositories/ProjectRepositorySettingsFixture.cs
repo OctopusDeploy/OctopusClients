@@ -25,7 +25,7 @@ namespace Octopus.Client.Tests.Repositories
             project.ExtensionSettings.Add(new ExtensionSettingsValues
             {
                 ExtensionId = "test-id",
-                Values = new TestSettings {  SomeSetting = "foo" }
+                Values = new TestSettings { SomeSetting = "foo" }
             });
 
             var serialized = JsonConvert.SerializeObject(project);

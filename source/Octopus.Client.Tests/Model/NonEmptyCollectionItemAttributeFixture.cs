@@ -19,14 +19,14 @@ namespace Octopus.Client.Tests.Model
         public void CollectionWithBlankStringShouldFail()
         {
             var attribute = new NonEmptyCollectionItemAttribute();
-            Assert.IsFalse(attribute.IsValid(new ReferenceCollection(new[] {""})));
+            Assert.IsFalse(attribute.IsValid(new ReferenceCollection(new[] { "" })));
         }
 
         [Test]
         public void CollectionWithSomethingInItShouldPass()
         {
             var attribute = new NonEmptyCollectionItemAttribute();
-            Assert.IsTrue(attribute.IsValid(new ReferenceCollection(new[] {"project-1"})));
+            Assert.IsTrue(attribute.IsValid(new ReferenceCollection(new[] { "project-1" })));
         }
     }
 }

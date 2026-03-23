@@ -3,7 +3,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Model.GitCredentials
 {
-    public class GitCredentialResource : Resource, INamedResource, IHaveSpaceResource 
+    public class GitCredentialResource : Resource, INamedResource, IHaveSpaceResource
     {
         [Writeable]
         public string Name { get; set; }
@@ -16,7 +16,7 @@ namespace Octopus.Client.Model.GitCredentials
 
         [Writeable]
         public GitCredentialDetails Details { get; set; }
-        
+
         [Writeable]
         public GitCredentialRepositoryRestrictions RepositoryRestrictions { get; set; }
 

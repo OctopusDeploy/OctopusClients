@@ -55,7 +55,8 @@ namespace Octopus.Client.Repositories.Async
         {
             var resources = new List<MachineResource>();
 
-            await Client.Paginate<MachineResource>(environment.Link("Machines"), new {
+            await Client.Paginate<MachineResource>(environment.Link("Machines"), new
+            {
                 skip,
                 take,
                 partialName,

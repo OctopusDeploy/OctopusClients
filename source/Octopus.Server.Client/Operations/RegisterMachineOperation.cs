@@ -106,7 +106,7 @@ namespace Octopus.Client.Operations
 
         List<TenantResource> GetTenants(IOctopusSpaceRepository repository)
         {
-            List<TenantResource> tenants = new();            
+            List<TenantResource> tenants = new();
             if (Tenants is not null && Tenants.Any())
             {
                 var tenantsByNameIdOrSlug =
@@ -219,7 +219,7 @@ namespace Octopus.Client.Operations
 
         async Task<List<TenantResource>> GetTenants(IOctopusSpaceAsyncRepository repository)
         {
-            List<TenantResource> tenants = new();            
+            List<TenantResource> tenants = new();
             if (Tenants is not null && Tenants.Any())
             {
                 var tenantsByNameIdOrSlug =

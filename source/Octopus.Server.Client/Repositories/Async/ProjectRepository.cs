@@ -12,96 +12,96 @@ namespace Octopus.Client.Repositories.Async
     public interface IProjectRepository : IFindByName<ProjectResource>, IGet<ProjectResource>, ICreate<ProjectResource>, IModify<ProjectResource>, IDelete<ProjectResource>, IGetAll<ProjectResource>
     {
         IProjectBetaRepository Beta();
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<GitBranchResource>> GetGitBranches(ProjectResource projectResource);
         Task<ResourceCollection<GitBranchResource>> GetGitBranches(ProjectResource projectResource, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<GitBranchResource> GetGitBranch(ProjectResource projectResource, string branch);
         Task<GitBranchResource> GetGitBranch(ProjectResource projectResource, string branch, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<GitTagResource>> GetGitTags(ProjectResource projectResource);
         Task<ResourceCollection<GitTagResource>> GetGitTags(ProjectResource projectResource, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<GitTagResource> GetGitTag(ProjectResource projectResource, string tag);
         Task<GitTagResource> GetGitTag(ProjectResource projectResource, string tag, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<GitCommitResource> GetGitCommit(ProjectResource projectResource, string hash);
         Task<GitCommitResource> GetGitCommit(ProjectResource projectResource, string hash, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage);
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, CancellationToken cancellationToken);
         Task<ConvertProjectToGitResponse> ConvertToGit(ProjectResource project, GitPersistenceSettingsResource gitPersistenceSettings, string commitMessage, string initialCommitBranch, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip = 0, int? take = null, string searchByVersion = null);
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, CancellationToken cancellationToken);
         Task<ResourceCollection<ReleaseResource>> GetReleases(ProjectResource project, int skip, int? take, string searchByVersion, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project);
         Task<IReadOnlyList<ReleaseResource>> GetAllReleases(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version);
         Task<ReleaseResource> GetReleaseByVersion(ProjectResource project, string version, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project);
         Task<ResourceCollection<ChannelResource>> GetChannels(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project);
         Task<IReadOnlyList<ChannelResource>> GetAllChannels(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProgressionResource> GetProgression(ProjectResource project, int? releaseHistoryCount = null);
         Task<ProgressionResource> GetProgression(ProjectResource project, CancellationToken cancellationToken, int? releaseHistoryCount = null);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project);
         Task<ResourceCollection<ProjectTriggerResource>> GetTriggers(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project);
         Task<IReadOnlyList<ProjectTriggerResource>> GetAllTriggers(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task SetLogo(ProjectResource project, string fileName, Stream contents);
         Task SetLogo(ProjectResource project, string fileName, Stream contents, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, CancellationToken cancellationToken);
         Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
         Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(ProjectResource project, CancellationToken cancellationToken);
         Task<ResourceCollection<RunbookSnapshotResource>> GetRunbookSnapshots(ProjectResource project, int skip, int? take, string searchByName, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<RunbookSnapshotResource>> GetAllRunbookSnapshots(ProjectResource project);
         Task<IReadOnlyList<RunbookSnapshotResource>> GetAllRunbookSnapshots(ProjectResource project, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookSnapshotResource> GetRunbookSnapshotByName(ProjectResource project, string name);
         Task<RunbookSnapshotResource> GetRunbookSnapshotByName(ProjectResource project, string name, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<RunbookResource>> GetRunbooks(ProjectResource project, int skip = 0, int? take = null, string searchByName = null);
         Task<ResourceCollection<RunbookResource>> GetRunbooks(ProjectResource project, CancellationToken cancellationToken);
         Task<ResourceCollection<RunbookResource>> GetRunbooks(ProjectResource project, int skip, int? take, string searchByName, CancellationToken cancellationToken);
-        
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project);
         Task<IReadOnlyList<RunbookResource>> GetAllRunbooks(ProjectResource project, CancellationToken cancellationToken);
@@ -123,12 +123,12 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetGitBranches(projectResource, CancellationToken.None);
         }
-        
+
         public Task<ResourceCollection<GitBranchResource>> GetGitBranches(ProjectResource projectResource, CancellationToken cancellationToken)
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
-            
+
             return Client.Get<ResourceCollection<GitBranchResource>>(projectResource.Link("Branches"), cancellationToken);
         }
 
@@ -136,7 +136,7 @@ namespace Octopus.Client.Repositories.Async
         {
             return GetGitBranch(projectResource, branch, CancellationToken.None);
         }
-        
+
         public Task<GitBranchResource> GetGitBranch(ProjectResource projectResource, string branch, CancellationToken cancellationToken)
         {
             if (!projectResource.IsVersionControlled)
@@ -154,10 +154,10 @@ namespace Octopus.Client.Repositories.Async
         {
             if (!projectResource.IsVersionControlled)
                 throw new NotSupportedException($"Database backed projects do not support branches");
-            
+
             return Client.Get<ResourceCollection<GitTagResource>>(projectResource.Link("Tags"), cancellationToken);
         }
-        
+
         public Task<GitTagResource> GetGitTag(ProjectResource projectResource, string branch)
         {
             return GetGitTag(projectResource, branch, CancellationToken.None);
@@ -204,7 +204,7 @@ namespace Octopus.Client.Repositories.Async
             };
 
             var url = project.HasLink("ConvertToGit") ? project.Link("ConvertToGit") : project.Link("ConvertToVcs");
-            var response = await Client.Post<ConvertProjectToGitCommand,ConvertProjectToGitResponse>(url, payload, cancellationToken);
+            var response = await Client.Post<ConvertProjectToGitCommand, ConvertProjectToGitResponse>(url, payload, cancellationToken);
             return response;
         }
 

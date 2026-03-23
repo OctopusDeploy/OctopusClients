@@ -20,7 +20,7 @@ namespace Octopus.Client.Model
         [JsonProperty(Order = 1)]
         public string ItemType
         {
-            get { return typeof (TResource).Name.Replace("Resource", ""); }
+            get { return typeof(TResource).Name.Replace("Resource", ""); }
         }
 
         [JsonProperty(Order = 3)]

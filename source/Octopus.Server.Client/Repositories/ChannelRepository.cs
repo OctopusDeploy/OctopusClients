@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories
         ChannelEditor CreateOrModify(ProjectResource project, string name);
         ChannelEditor CreateOrModify(ProjectResource project, string name, string description);
     }
-    
+
     class ChannelRepository : BasicRepository<ChannelResource>, IChannelRepository
     {
         public ChannelRepository(IOctopusRepository repository)

@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
         ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action);
         ResourceCollection<ProjectTriggerResource> FindByRunbook(params string[] runbookIds);
     }
-    
+
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
     {
         public ProjectTriggerRepository(IOctopusRepository repository)
@@ -28,13 +28,13 @@ namespace Octopus.Client.Repositories
 
         public ProjectTriggerEditor CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            
+
             return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
         }
 
         public ResourceCollection<ProjectTriggerResource> FindByRunbook(params string[] runbookIds)
         {
-            return Client.List<ProjectTriggerResource>(Repository.Link("ProjectTriggers"), new {runbooks = runbookIds});
+            return Client.List<ProjectTriggerResource>(Repository.Link("ProjectTriggers"), new { runbooks = runbookIds });
         }
     }
 }

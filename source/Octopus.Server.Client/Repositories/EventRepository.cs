@@ -9,7 +9,7 @@ namespace Octopus.Client.Repositories
     public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
-        ResourceCollection<EventResource> List(int skip = 0, 
+        ResourceCollection<EventResource> List(int skip = 0,
             string filterByUserId = null,
             string regardingDocumentId = null,
             bool includeInternalEvents = false);
@@ -38,7 +38,7 @@ namespace Octopus.Client.Repositories
         /// <param name="eventAgents"></param>
         /// <param name="projectGroups"></param>
         /// <returns></returns>
-        ResourceCollection<EventResource> List(int skip = 0, 
+        ResourceCollection<EventResource> List(int skip = 0,
             int? take = null,
             string from = null,
             string to = null,
@@ -64,7 +64,7 @@ namespace Octopus.Client.Repositories
         IReadOnlyList<EventCategoryResource> GetCategories();
         IReadOnlyList<EventGroupResource> GetGroups();
     }
-    
+
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
     {
         public EventRepository(IOctopusRepository repository)
@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
-        public ResourceCollection<EventResource> List(int skip = 0, 
+        public ResourceCollection<EventResource> List(int skip = 0,
             string filterByUserId = null,
             string regardingDocumentId = null,
             bool includeInternalEvents = false)
@@ -92,7 +92,7 @@ namespace Octopus.Client.Repositories
             });
         }
 
-        public ResourceCollection<EventResource> List(int skip = 0, 
+        public ResourceCollection<EventResource> List(int skip = 0,
             int? take = null,
             string from = null,
             string to = null,
@@ -138,25 +138,25 @@ namespace Octopus.Client.Repositories
             });
             return Client.List<EventResource>(Repository.Link("Events"), parameters);
         }
-        
+
         public IReadOnlyList<DocumentTypeResource> GetDocumentTypes()
         {
             var link = Repository.Link("EventDocumentTypes");
             return Client.Get<List<DocumentTypeResource>>(link);
         }
-        
+
         public IReadOnlyList<EventAgentResource> GetAgents()
         {
             var link = Repository.Link("EventAgents");
             return Client.Get<List<EventAgentResource>>(link);
         }
-        
-        public IReadOnlyList<EventCategoryResource> GetCategories()        
+
+        public IReadOnlyList<EventCategoryResource> GetCategories()
         {
             var link = Repository.Link("EventCategories");
             return Client.Get<List<EventCategoryResource>>(link);
         }
-        
+
         public IReadOnlyList<EventGroupResource> GetGroups()
         {
             var link = Repository.Link("EventGroups");

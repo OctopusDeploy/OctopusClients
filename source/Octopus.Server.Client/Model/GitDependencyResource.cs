@@ -9,11 +9,11 @@ namespace Octopus.Client.Model;
 public class GitDependencyResource
 {
     public GitDependencyResource(
-        string repositoryUri, 
-        string defaultBranch, 
+        string repositoryUri,
+        string defaultBranch,
         string gitCredentialType,
-        string? gitCredentialId = null, 
-        string[]? filePathFilters = null, 
+        string? gitCredentialId = null,
+        string[]? filePathFilters = null,
         string? name = null,
         string? stepPackageInputsReferenceId = null,
         string? gitHubConnectionId = null

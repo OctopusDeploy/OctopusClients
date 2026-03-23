@@ -14,7 +14,7 @@ namespace Octopus.Client.Model
             additionalData = new Dictionary<string, JToken>();
             ActionPackages = new List<DeploymentActionPackageResource>();
         }
-        
+
         [Writeable]
         [Trim]
         public string VersionRange { get; set; }
@@ -22,13 +22,13 @@ namespace Octopus.Client.Model
         [Writeable]
         [Trim]
         public string Tag { get; set; }
-        
+
         [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
 
         //Backward Compatibility
-        
+
         /* Before support for multiple packages per deployment-action was added, ChannelVersionRuleResource contained
          * a property named 'Actions' which contained the name of the deployment action, as this was sufficient
          * to uniquely identify a package reference.
@@ -37,16 +37,16 @@ namespace Octopus.Client.Model
          * In 2018.9 the DeploymentActionPackageResource class was added to better represent this relationship, but
          * we still need to maintain backward-compatibility with older server versions. 
          */
-        
+
         [JsonExtensionData]
         private IDictionary<string, JToken> additionalData;
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            if (additionalData.TryGetValue("Actions", out var actionsToken) && 
-                !ActionPackages.Any() && 
-                actionsToken is JArray actionsJArray && 
+            if (additionalData.TryGetValue("Actions", out var actionsToken) &&
+                !ActionPackages.Any() &&
+                actionsToken is JArray actionsJArray &&
                 actionsJArray.HasValues)
             {
                 ActionPackages = actionsJArray.Values<string>()
@@ -58,11 +58,11 @@ namespace Octopus.Client.Model
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
-           additionalData["Actions"] = JArray.FromObject(
-               ActionPackages
-                   .Select(ap => ap.ToLegacyStringFormat())
-                   .Distinct().ToList());
+            additionalData["Actions"] = JArray.FromObject(
+                ActionPackages
+                    .Select(ap => ap.ToLegacyStringFormat())
+                    .Distinct().ToList());
         }
-        
+
     }
 }

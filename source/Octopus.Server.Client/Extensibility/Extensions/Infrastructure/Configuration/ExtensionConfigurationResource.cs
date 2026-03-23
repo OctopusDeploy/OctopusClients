@@ -4,7 +4,7 @@ using Octopus.Client.Extensibility.Attributes;
 
 namespace Octopus.Client.Extensibility.Extensions.Infrastructure.Configuration
 {
-    public abstract class ExtensionConfigurationResource: IResource
+    public abstract class ExtensionConfigurationResource : IResource
     {
         public string Id { get; set; }
 

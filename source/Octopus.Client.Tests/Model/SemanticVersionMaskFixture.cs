@@ -82,12 +82,12 @@ namespace Octopus.Client.Tests.Model
         }
 
         [Test]
-        [TestCase("2.2.i", new string[] {"1.1.1", "2.2.1", "2.2.3", "2.2"}, "2.2.3", Description = "Trailing substitute")]
+        [TestCase("2.2.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.2" }, "2.2.3", Description = "Trailing substitute")]
         [TestCase("2.2.c", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.2" }, "2.2.3", Description = "Substituion 'current' character")]
-        [TestCase("2.3.i", new string[] {"1.1.1", "2.2.1", "2.2.3", "2.3"}, "2.3", Description = "Version without build")]
+        [TestCase("2.3.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" }, "2.3", Description = "Version without build")]
         [TestCase("2.i.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" }, "2.3", Description = "Multiple substitutions")]
-        [TestCase("1.i.i", new string[] {"1.1.1", "2.2.1", "2.2.3", "2.3"}, "1.1.1", Description = "Non global max")]
-        [TestCase("2.19.i-channel", new string[] {"2.19.30-baz", "2.19.31", "2.20.0"}, "2.19.31", Description = "Tag in mask")]
+        [TestCase("1.i.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" }, "1.1.1", Description = "Non global max")]
+        [TestCase("2.19.i-channel", new string[] { "2.19.30-baz", "2.19.31", "2.20.0" }, "2.19.31", Description = "Tag in mask")]
         [TestCase("2.19.i", new string[] { "2.19.30-baz", "2.19.29", "2.20.0" }, "2.19.30-baz", Description = "Tag in match")]
         [TestCase("4.i.1-tagx", new string[] { "4.0.1-tagx", "4.1", "5.0.0" }, "4.1", Description = "Tag in match")]
         [TestCase("2.i", new string[] { "2.19.2" }, "2.19.2")]
@@ -100,8 +100,8 @@ namespace Octopus.Client.Tests.Model
         }
 
         [Test]
-        [TestCase("0.1.1", new string[] {"1.1.1", "2.2.1", "2.2.3", "2.3"})]
-        [TestCase("4.1.1", new string[] {"1.1.1", "2.2.1", "2.2.3", "2.3"})]
+        [TestCase("0.1.1", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" })]
+        [TestCase("4.1.1", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" })]
         [TestCase("1.2.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" })]
         [TestCase("2.2.4.i", new string[] { "1.1.1", "2.2.1", "2.2.3", "2.3" })]
         [TestCase("2.19", new string[] { "2.19.2" })]

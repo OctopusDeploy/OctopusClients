@@ -19,7 +19,7 @@ namespace Octopus.Client.Model.Endpoints
         {
             get { return CommunicationStyle.OfflineDrop; }
         }
-        
+
         [Writeable]
         public OfflineDropDestinationResource Destination { get; set; }
 
@@ -35,16 +35,16 @@ namespace Octopus.Client.Model.Endpoints
         public string OctopusWorkingDirectory { get; set; }
 
         //Backward Compatibility
-        
-       /* In 2018.9 offline-drop targets were modifed to support writing to an Octopus artifact.
-        * But we still need to support talking to older servers, where the DropFolderPath property
-        * was directly on the OfflineDropEndpointResource.
-        */
+
+        /* In 2018.9 offline-drop targets were modifed to support writing to an Octopus artifact.
+         * But we still need to support talking to older servers, where the DropFolderPath property
+         * was directly on the OfflineDropEndpointResource.
+         */
 
         [JsonExtensionData]
         private IDictionary<string, JToken> additionalData;
-        
-         [OnSerializing]
+
+        [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
             if (Destination != null && Destination.DestinationType == OfflineDropDestinationType.FileSystem)
@@ -55,7 +55,7 @@ namespace Octopus.Client.Model.Endpoints
 
             additionalData["DropFolderPath"] = null;
         }
-        
+
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
@@ -73,7 +73,7 @@ namespace Octopus.Client.Model.Endpoints
                 };
             }
         }
-        
-        
+
+
     }
 }

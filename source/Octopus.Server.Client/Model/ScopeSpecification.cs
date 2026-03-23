@@ -22,17 +22,17 @@ namespace Octopus.Client.Model
         public int Rank()
         {
             var score = 0;
-            score += Score(ScopeField.Private,      1000000000);
-            score += Score(ScopeField.User,         100000000);
-            score += Score(ScopeField.Action,       10000000);
-            score += Score(ScopeField.Machine,      1000000);
-            score += Score(ScopeField.TargetRole,   100000);
-            score += Score(ScopeField.Role,         10000);
-            score += Score(ScopeField.Tenant,       1001);
-            score += Score(ScopeField.TenantTag,    1000);
-            score += Score(ScopeField.Environment,  100);
-            score += Score(ScopeField.Channel,      10);
-            score += Score(ScopeField.Project,      1);
+            score += Score(ScopeField.Private, 1000000000);
+            score += Score(ScopeField.User, 100000000);
+            score += Score(ScopeField.Action, 10000000);
+            score += Score(ScopeField.Machine, 1000000);
+            score += Score(ScopeField.TargetRole, 100000);
+            score += Score(ScopeField.Role, 10000);
+            score += Score(ScopeField.Tenant, 1001);
+            score += Score(ScopeField.TenantTag, 1000);
+            score += Score(ScopeField.Environment, 100);
+            score += Score(ScopeField.Channel, 10);
+            score += Score(ScopeField.Project, 1);
             return score;
         }
 

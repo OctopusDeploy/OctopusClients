@@ -7,7 +7,7 @@ namespace Octopus.Client.Model.Triggers
     public class RunRunbookActionResource : TriggerActionResource
     {
         public override TriggerActionType ActionType => TriggerActionType.RunRunbook;
-        
+
         public RunRunbookActionResource()
         {
             EnvironmentIds = new ReferenceCollection();
@@ -20,15 +20,15 @@ namespace Octopus.Client.Model.Triggers
 
         [Writeable]
         public List<TagCanonicalIdOrName>? RunbookTags { get; set; }
-        
+
         [Writeable]
         public ReferenceCollection EnvironmentIds { get; set; }
-        
+
         [Writeable]
         public ReferenceCollection TenantIds { get; set; }
 
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
-        
+
     }
 }

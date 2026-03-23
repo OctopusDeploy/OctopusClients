@@ -19,7 +19,7 @@ namespace Octopus.Client.Tests.Repositories
         {
             var client = Substitute.For<IOctopusClient>();
             client.Get<UserResource>(Arg.Any<string>()).Returns(new UserResource() { Links = { { "Spaces", "" } } });
-            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true} });
+            client.Get<SpaceResource[]>(Arg.Any<string>()).Returns(new[] { new SpaceResource() { Id = "Spaces-1", IsDefault = true } });
             client.Get<SpaceRootResource>(Arg.Any<string>(), Arg.Any<object>()).Returns(new SpaceRootResource());
             client.Get<RootResource>(Arg.Any<string>()).Returns(new RootResource()
             {
@@ -53,9 +53,9 @@ namespace Octopus.Client.Tests.Repositories
         {
             var repository = new OctopusRepository(client);
             var nullPropertiesQ = from p in typeof(OctopusRepository).GetProperties()
-                where !delayInitialisedProperties.Contains(p.Name)
-                where p.GetMethod.Invoke(repository, new object[0]) == null
-                select p.Name;
+                                  where !delayInitialisedProperties.Contains(p.Name)
+                                  where p.GetMethod.Invoke(repository, new object[0]) == null
+                                  select p.Name;
 
             var nullProperties = nullPropertiesQ.ToArray();
             if (nullProperties.Any())

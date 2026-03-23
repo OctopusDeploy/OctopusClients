@@ -10,7 +10,7 @@ namespace Octopus.Client
         public string GetSelfUrlOrNull<TResource>(TResource resource)
         {
             const string self = "Self";
-            if (resource is IResource res && 
+            if (resource is IResource res &&
                 res.Links != null &&
                 res.Links.ContainsKey(self))
             {

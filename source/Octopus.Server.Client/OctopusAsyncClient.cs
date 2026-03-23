@@ -18,14 +18,14 @@ using Octopus.Client.Logging;
 using Octopus.Client.Util;
 
 namespace Octopus.Client
-{   
+{
     /// <summary>
     /// The Octopus Deploy RESTful HTTP API client.
     /// </summary>
     public class OctopusAsyncClient : IOctopusAsyncClient
     {
         private static readonly ILog Logger = LogProvider.For<OctopusAsyncClient>();
-     
+
         private readonly OctopusServerEndpoint serverEndpoint;
         private readonly JsonSerializerSettings defaultJsonSerializerSettings = JsonSerialization.GetDefaultSerializerSettings();
         private readonly ResourceSelfLinkExtractor resourceSelfLinkExtractor = new ResourceSelfLinkExtractor();
@@ -61,7 +61,7 @@ namespace Octopus.Client
 
 #if HTTP_CLIENT_SUPPORTS_SSL_OPTIONS
             handler.SslProtocols = clientOptions.SslProtocols;
-            if(addCertificateCallback)
+            if (addCertificateCallback)
             {
                 ignoreSslErrors = clientOptions.IgnoreSslErrors;
                 handler.ServerCertificateCustomValidationCallback = IgnoreServerCertificateCallback;
@@ -94,7 +94,7 @@ namespace Octopus.Client
             // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
             // From what I can see it uses the Uri.Authority value - which contains the port number
             // We need to clear the port in order to successfully get cookies for the same origin
-            var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) {Port = 0};
+            var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) { Port = 0 };
             return uriBuilder.Uri;
         }
 
@@ -268,7 +268,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResource>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
-            
+
             return response.ResponseResource;
         }
 
@@ -279,7 +279,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await List<TResource>(path, pathParameters, CancellationToken.None);
         }
-        
+
         /// <inheritdoc/>
         public async Task<ResourceCollection<TResource>> List<TResource>(string path, CancellationToken cancellationToken)
         {
@@ -303,7 +303,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await ListAll<TResource>(path, null, cancellationToken);
         }
-        
+
         /// <inheritdoc />
         public async Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, object pathParameters, CancellationToken cancellationToken)
         {
@@ -315,7 +315,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             },
                 cancellationToken
             ).ConfigureAwait(false);
-            
+
             return resources;
         }
 
@@ -359,7 +359,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await Create(path, resource, null, cancellationToken);
         }
-        
+
         /// <inheritdoc/>
         public async Task<TResource> Create<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
@@ -367,7 +367,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var response = await DispatchRequest<TResource>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
-            
+
             return result;
         }
 
@@ -384,7 +384,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return Post(path, resource, pathParameters, CancellationToken.None);
         }
-        
+
         /// <inheritdoc />
         public Task Post<TResource>(string path, TResource resource, CancellationToken cancellationToken)
         {
@@ -410,13 +410,13 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await Post<TResource, TResponse>(path, resource, null, cancellationToken);
         }
-        
+
         /// <inheritdoc />
         public async Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<TResponse>(new OctopusRequest("POST", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
-            
+
             return response.ResponseResource;
         }
 
@@ -478,7 +478,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return Delete(path, pathParameters, resource, CancellationToken.None);
         }
-        
+
         /// <inheritdoc />
         public Task Delete(string path, CancellationToken cancellationToken)
         {
@@ -512,7 +512,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await Update(path, resource, null, cancellationToken);
         }
-        
+
         /// <inheritdoc/>
         public async Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters, CancellationToken cancellationToken)
         {
@@ -520,10 +520,10 @@ Certificate thumbprint:   {certificate.Thumbprint}";
             var response = await DispatchRequest<TResource>(new OctopusRequest("PUT", uri, requestResource: resource), true, cancellationToken).ConfigureAwait(false);
             var getUrl = resourceSelfLinkExtractor.GetSelfUrlOrNull(response.ResponseResource) ?? path;
             var result = await Get<TResource>(getUrl, null, cancellationToken).ConfigureAwait(false);
-            
+
             return result;
         }
-        
+
         /// <inheritdoc/>
         public async Task<TResponse> Update<TCommand, TResponse>(string path, TCommand resource, object pathParameters, CancellationToken cancellationToken)
         {
@@ -537,7 +537,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             return await GetContent(path, pathParameters, CancellationToken.None);
         }
-        
+
         /// <inheritdoc />
         public async Task<Stream> GetContent(string path, CancellationToken cancellationToken)
         {
@@ -549,7 +549,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             var uri = QualifyUri(path, pathParameters);
             var response = await DispatchRequest<Stream>(new OctopusRequest("GET", uri), true, cancellationToken).ConfigureAwait(false);
-            
+
             return response.ResponseResource;
         }
 
@@ -564,7 +564,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         {
             if (contentStream == null) throw new ArgumentNullException("contentStream");
             var uri = QualifyUri(path);
-            
+
             return DispatchRequest<Stream>(new OctopusRequest("PUT", uri, requestResource: contentStream), false, cancellationToken);
         }
 
@@ -580,11 +580,11 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         protected async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(
             OctopusRequest request, bool readResponse)
             => await DispatchRequest<TResponseResource>(request, readResponse, CancellationToken.None);
-        
+
         protected virtual async Task<OctopusResponse<TResponseResource>> DispatchRequest<TResponseResource>(OctopusRequest request, bool readResponse, CancellationToken cancellationToken)
         {
             using var message = new HttpRequestMessage();
-            
+
             message.RequestUri = request.Uri;
             message.Method = new HttpMethod(request.Method);
 

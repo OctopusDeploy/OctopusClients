@@ -10,7 +10,7 @@ namespace Octopus.Client.Model.IssueTrackers.AzureDevOps
             Id = "issuetracker-azuredevops-v2";
             Connections = new List<AzureDevOpsConnectionResource>();
         }
-        
+
         public IList<AzureDevOpsConnectionResource> Connections { get; }
     }
 }

@@ -12,7 +12,7 @@ namespace Octopus.Client.Editors.Async
     {
         private readonly IProjectTriggerRepository repository;
         private readonly ProjectResource owner;
-        private readonly List<ProjectTriggerEditor> trackedProjectTriggerBuilders = new List<ProjectTriggerEditor>(); 
+        private readonly List<ProjectTriggerEditor> trackedProjectTriggerBuilders = new List<ProjectTriggerEditor>();
 
         public ProjectTriggersEditor(IProjectTriggerRepository repository, ProjectResource owner)
         {

@@ -12,7 +12,7 @@ namespace Octopus.Client.Repositories
         ICanExtendSpaceContext<IScopedUserRoleRepository>
     {
     }
-    
+
     class ScopedUserRoleRepository : MixedScopeBaseRepository<ScopedUserRoleResource>, IScopedUserRoleRepository
     {
         public ScopedUserRoleRepository(IOctopusRepository repository)

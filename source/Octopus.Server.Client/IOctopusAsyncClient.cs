@@ -35,7 +35,7 @@ namespace Octopus.Client
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This call is a blocking call. For a non-blocking call, access the root document through the IOctopusSystemAsyncRepository instead: client.Repository.LoadRootDocument()", false)]
         RootResource RootDocument { get; }
-        
+
         /// <summary>
         /// Occurs when a request is about to be sent.
         /// </summary>
@@ -59,7 +59,7 @@ namespace Octopus.Client
         /// <summary>
         /// A simplified interface to commonly-used parts of the API.
         /// </summary>
-        IOctopusAsyncRepository Repository { get;}
+        IOctopusAsyncRepository Repository { get; }
 
         /// <summary>
         /// Indicates whether a secure (SSL) connection is being used to communicate with the server.
@@ -106,7 +106,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The collection of resources from the server.</returns>
         Task<ResourceCollection<TResource>> List<TResource>(string path, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. The collection itself will usually be
         /// limited in size (pagination) and links to the next page of data is available in the <see cref="Resource.Links" />
@@ -127,7 +127,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The collection of resources from the server.</returns>
         Task<ResourceCollection<TResource>> List<TResource>(string path, object pathParameters, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. All result pages will be retrieved.
         /// </summary>
@@ -164,7 +164,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The collection of resources from the server.</returns>
         Task<IReadOnlyList<TResource>> ListAll<TResource>(string path, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Fetches a collection of resources from the server using the HTTP GET verb. All result pages will be retrieved.
         /// </summary>
@@ -310,7 +310,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The resource from the server.</returns>
         Task<TResource> Get<TResource>(string path, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Fetches a single resource from the server using the HTTP GET verb.
         /// </summary>
@@ -370,7 +370,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
         Task<TResource> Create<TResource>(string path, TResource resource, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Creates a resource at the given URI on the server using the POST verb, then performs a fresh GET request to fetch
         /// the created item.
@@ -448,7 +448,7 @@ namespace Octopus.Client
         /// <param name="resource">The resource to create.</param>
         /// <param name="cancellationToken">The request cancellation token.</param>
         Task Post<TResource>(string path, TResource resource, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb.
         /// </summary>
@@ -504,7 +504,7 @@ namespace Octopus.Client
         /// <param name="resource">The resource to create.</param>
         /// <param name="cancellationToken">The request cancellation token.</param>
         Task<TResponse> Post<TResource, TResponse>(string path, TResource resource, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Sends a command to a resource at the given URI on the server using the POST verb, and retrieve the response.
         /// </summary>
@@ -687,7 +687,7 @@ namespace Octopus.Client
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TResource> Update<TResource>(string path, TResource resource, object pathParameters = null);
 
-        
+
         /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
@@ -707,7 +707,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>The latest copy of the resource from the server.</returns>
         Task<TResource> Update<TResource>(string path, TResource resource, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Updates the resource at the given URI on the server using the PUT verb, then performs a fresh GET request to reload
         /// the data.
@@ -791,7 +791,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>A task resource that provides details about the background task that deletes the specified resource.</returns>
         Task Delete(string path, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Deletes the resource at the given URI from the server using a the DELETE verb. Deletes in Octopus happen
         /// asynchronously via a background task
@@ -870,7 +870,7 @@ namespace Octopus.Client
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>A stream containing the content of the resource.</returns>
         Task<Stream> GetContent(string path, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Fetches raw content from the resource at the specified path, using the GET verb.
         /// </summary>
@@ -930,7 +930,7 @@ namespace Octopus.Client
         /// <returns></returns>
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task SignOut();
-        
+
         /// <summary>
         /// Sign out
         /// </summary>

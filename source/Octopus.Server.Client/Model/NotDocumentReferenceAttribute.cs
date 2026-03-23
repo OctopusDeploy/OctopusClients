@@ -9,6 +9,6 @@ namespace Octopus.Client.Model
     [AttributeUsage(AttributeTargets.Property)]
     public class NotDocumentReferenceAttribute : Attribute
     {
-         
+
     }
 }

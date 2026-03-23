@@ -5,7 +5,7 @@ namespace Octopus.Client.Model.Accounts
 {
     public class AzureServicePrincipalAccountResource : AccountResource
     {
-        public override AccountType AccountType { get {return AccountType.AzureServicePrincipal;} }
+        public override AccountType AccountType { get { return AccountType.AzureServicePrincipal; } }
 
         [Trim]
         [Writeable]
@@ -15,12 +15,12 @@ namespace Octopus.Client.Model.Accounts
         [Trim]
         [Writeable]
         [NotDocumentReference]
-        public string ClientId { get; set; } 
+        public string ClientId { get; set; }
 
         [Trim]
         [Writeable]
         [NotDocumentReference]
-        public string TenantId { get; set; } 
+        public string TenantId { get; set; }
 
         [Trim]
         [Writeable]

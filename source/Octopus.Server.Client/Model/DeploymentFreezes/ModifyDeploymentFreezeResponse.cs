@@ -15,8 +15,8 @@ public class ModifyDeploymentFreezeResponse
     [Required] public DateTimeOffset End { get; set; }
 
     public Dictionary<string, ReferenceCollection> ProjectEnvironmentScope { get; set; }
-    
+
     public List<TenantProjectEnvironment> TenantProjectEnvironmentScope { get; set; }
-    
+
     public string OwnerId { get; set; }
 }

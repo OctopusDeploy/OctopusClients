@@ -11,7 +11,7 @@ namespace Octopus.Client.Model
     public class PropertyValueResource
     {
         public PropertyValueResource(string value)
-            :this(value, false)
+            : this(value, false)
         { }
 
         public PropertyValueResource(string value, bool isSensitive)

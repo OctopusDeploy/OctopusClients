@@ -10,7 +10,7 @@ namespace Octopus.Client.Repositories.Async
     public interface IEventRepository : IGet<EventResource>, ICanExtendSpaceContext<IEventRepository>
     {
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
-        Task<ResourceCollection<EventResource>> List(int skip = 0, 
+        Task<ResourceCollection<EventResource>> List(int skip = 0,
             string filterByUserId = null,
             string regardingDocumentId = null,
             bool includeInternalEvents = false);
@@ -79,7 +79,7 @@ namespace Octopus.Client.Repositories.Async
         }
 
         [Obsolete("This method was deprecated in Octopus 3.4.  Please use the other List method by providing named arguments.")]
-        public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
+        public async Task<ResourceCollection<EventResource>> List(int skip = 0,
                 string filterByUserId = null,
                 string regardingDocumentId = null,
                 bool includeInternalEvents = false)
@@ -93,7 +93,7 @@ namespace Octopus.Client.Repositories.Async
             })).ConfigureAwait(false);
         }
 
-        public async Task<ResourceCollection<EventResource>> List(int skip = 0, 
+        public async Task<ResourceCollection<EventResource>> List(int skip = 0,
             int? take = null,
             string from = null,
             string to = null,
@@ -146,19 +146,19 @@ namespace Octopus.Client.Repositories.Async
             var link = await Repository.Link("EventDocumentTypes").ConfigureAwait(false);
             return await Client.Get<List<DocumentTypeResource>>(link).ConfigureAwait(false);
         }
-        
+
         public async Task<IReadOnlyList<EventAgentResource>> GetAgents()
         {
             var link = await Repository.Link("EventAgents").ConfigureAwait(false);
             return await Client.Get<List<EventAgentResource>>(link).ConfigureAwait(false);
         }
-        
-        public async Task<IReadOnlyList<EventCategoryResource>> GetCategories()        
+
+        public async Task<IReadOnlyList<EventCategoryResource>> GetCategories()
         {
             var link = await Repository.Link("EventCategories").ConfigureAwait(false);
             return await Client.Get<List<EventCategoryResource>>(link).ConfigureAwait(false);
         }
-        
+
         public async Task<IReadOnlyList<EventGroupResource>> GetGroups()
         {
             var link = await Repository.Link("EventGroups").ConfigureAwait(false);

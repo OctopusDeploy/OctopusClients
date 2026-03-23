@@ -24,7 +24,7 @@ namespace Octopus.Client.Repositories
 
         public MigrationImportResource Import(MigrationImportResource resource)
         {
-            return repository.Client.Post< MigrationImportResource, MigrationImportResource>(repository.Link("MigrationsImport"), resource);
+            return repository.Client.Post<MigrationImportResource, MigrationImportResource>(repository.Link("MigrationsImport"), resource);
         }
     }
 }

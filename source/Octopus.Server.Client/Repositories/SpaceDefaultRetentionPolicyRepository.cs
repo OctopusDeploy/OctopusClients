@@ -16,23 +16,23 @@ public class SpaceDefaultRetentionPolicyRepository(IOctopusClient client) : ISpa
 {
     const string GetApiRoute = "/api/{spaceId}/retentionpolicies?retentionType={retentionType}";
     const string ModifyApiRoute = "/api/{spaceId}/retentionpolicies/{id}";
-    
+
     static readonly SemanticVersion RequiredVersion = new SemanticVersion(2025, 3, 13969);
 
     public SpaceDefaultRetentionPolicyResource Get(GetDefaultRetentionPolicyByTypeRequest request)
     {
         EnsureServerCompatability();
-        
+
         return client.Get<SpaceDefaultRetentionPolicyResource>(GetApiRoute, request);
     }
 
     public SpaceDefaultRetentionPolicyResource Modify(ModifyDefaultRetentionPolicyCommand command)
     {
         EnsureServerCompatability();
-        
+
         return client.Update<ModifyDefaultRetentionPolicyCommand, SpaceDefaultRetentionPolicyResource>(ModifyApiRoute, command, pathParameters: new { command.SpaceId, command.Id });
     }
-    
+
     void EnsureServerCompatability()
     {
         var rootDocument = client.Repository.LoadRootDocument();

@@ -29,10 +29,10 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public ReferenceCollection SpaceManagersTeams { get; set; }
-        
+
         [Writeable]
         public ReferenceCollection SpaceManagersTeamMembers { get; set; }
-		
+
         public IconResource Icon { get; set; }
     }
 }

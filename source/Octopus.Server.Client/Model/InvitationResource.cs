@@ -12,6 +12,6 @@ namespace Octopus.Client.Model
         public ReferenceCollection AddToTeamIds { get; set; }
         public string InvitationCode { get; set; }
         public DateTimeOffset Expires { get; set; }
-        public string SpaceId { get; set; } 
+        public string SpaceId { get; set; }
     }
 }

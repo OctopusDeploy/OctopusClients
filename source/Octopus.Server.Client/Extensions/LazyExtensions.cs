@@ -8,7 +8,7 @@ namespace Octopus.Client.Extensions
     /// Extension methods for <see cref="Lazy{T}" /> instances.
     /// </summary>
     static class LazyExtensions
-// ReSharper restore CheckNamespace
+    // ReSharper restore CheckNamespace
     {
         /// <summary>
         /// Forces the Lazy value to be loaded.

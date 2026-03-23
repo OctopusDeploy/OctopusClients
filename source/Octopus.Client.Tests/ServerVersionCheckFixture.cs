@@ -25,7 +25,7 @@ namespace Octopus.Client.Tests
             ServerVersionCheck.IsOlderThanClient(currentVersion, SemanticVersion.Parse(minimumVersion))
                 .Should().BeFalse();
         }
-        
+
         [TestCase("2019.10.9")]
         [TestCase("2018.12.0")]
         public void IsOlderThanClient_LowerVersion_True(string currentVersion)

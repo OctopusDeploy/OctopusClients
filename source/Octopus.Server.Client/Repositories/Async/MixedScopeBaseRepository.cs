@@ -28,7 +28,7 @@ namespace Octopus.Client.Repositories.Async
             return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 [MixedScopeConstants.QueryStringParameterIncludeSystem] = spaceContext.IncludeSystem,
-                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces.Select(s => s.Id).ToArray(), 
+                [MixedScopeConstants.QueryStringParameterSpaces] = spaceContext.ApplySpaceSelection<object>(spaces => spaces.Select(s => s.Id).ToArray(),
                     () => MixedScopeConstants.AllSpacesQueryStringParameterValue)
             };
         }
@@ -54,11 +54,11 @@ namespace Octopus.Client.Repositories.Async
 
             return Task.FromResult(0);
         }
-        
+
         protected SpaceContext GetCurrentSpaceContext()
         {
-            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace, 
-                       SpaceContext.SystemOnly, 
+            return userDefinedSpaceContext ?? Repository.Scope.Apply(SpaceContext.SpecificSpace,
+                       SpaceContext.SystemOnly,
                        SpaceContext.AllSpacesAndSystem);
         }
 
@@ -66,7 +66,7 @@ namespace Octopus.Client.Repositories.Async
         {
             await base.EnrichSpaceId(resource).ConfigureAwait(false);
 
-            if (resource is IHaveSpaceResource spaceResource 
+            if (resource is IHaveSpaceResource spaceResource
                 && userDefinedSpaceContext != null)
             {
                 spaceResource.SpaceId = userDefinedSpaceContext.ApplySpaceSelection(spaces =>
@@ -92,9 +92,9 @@ namespace Octopus.Client.Repositories.Async
 
         protected void EnsureSingleSpaceContext()
         {
-            Repository.Scope.Apply(_ => {},
+            Repository.Scope.Apply(_ => { },
                 () => throw new SpaceScopedOperationInSystemContextException(),
-                () => 
+                () =>
                 {
                     if (userDefinedSpaceContext == null)
                     {
@@ -123,7 +123,7 @@ namespace Octopus.Client.Repositories.Async
             var exception = new InvalidOperationException("Attempted to perform a system operation in a space scoped context. Ensure you are in system context first by using client.ForSystem()");
             Repository.Scope.Apply(_ => throw exception,
                 () => { },
-                () => 
+                () =>
                 {
                     if (userDefinedSpaceContext == null || userDefinedSpaceContext.IncludeSystem)
                     {

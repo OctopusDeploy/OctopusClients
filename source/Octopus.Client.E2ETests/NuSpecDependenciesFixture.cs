@@ -31,7 +31,7 @@ namespace Octopus.Client.E2ETests
             var artifactsFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "artifacts"));
             var package = Directory.EnumerateFiles(artifactsFolder, "Octopus.Client.*.nupkg").FirstOrDefault();
             if (package == null)
-                Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder }'");
+                Assert.Fail($"Couldn't find built nuget package with name 'Octopus.Client.*.nupkg' at '{artifactsFolder}'");
             using (var zipFile = ZipFile.OpenRead(package))
             {
                 nuSpecFile = new XmlDocument();
@@ -53,7 +53,7 @@ namespace Octopus.Client.E2ETests
             var sourceFolder = Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", "..", "source", "Octopus.Server.Client"));
             var projectFile = Directory.EnumerateFiles(sourceFolder, "Octopus.Server.Client.csproj").FirstOrDefault();
             if (projectFile == null)
-                Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Server.Client.csproj' at '{artifactsFolder }'");
+                Assert.Fail($"Couldn't find built c# project file with name 'Octopus.Server.Client.csproj' at '{artifactsFolder}'");
             csProjFile = new XmlDocument();
             csProjFile.Load(projectFile);
         }

@@ -15,7 +15,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="includePrivateKey">Specifies whether the certificate private-key (if present) should be included in the exported file.  This value is only be used when exporting to PEM format.</param>
         /// <returns>The exported certificate data.</returns>
         Task<Stream> Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false);
-        
+
         /// <summary>
         /// Exports the certificate in PEM format 
         /// </summary>
@@ -65,7 +65,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<Stream> Export(CertificateResource certificate, CertificateFormat? format = null, string password = null, bool includePrivateKey = false)
         {
-            var pathParameters = format.HasValue ? new { format= format.Value, password = password, includePrivateKey = includePrivateKey} : null; 
+            var pathParameters = format.HasValue ? new { format = format.Value, password = password, includePrivateKey = includePrivateKey } : null;
             return Client.GetContent(certificate.Link("Export"), pathParameters);
         }
 
@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<CertificateResource> Replace(CertificateResource certificate, string certificateData, string password)
         {
-            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new {certificateData = certificateData, password = password});
+            return Client.Post<object, CertificateResource>(certificate.Link("Replace"), new { certificateData = certificateData, password = password });
         }
 
         public Task Archive(CertificateResource certificate)

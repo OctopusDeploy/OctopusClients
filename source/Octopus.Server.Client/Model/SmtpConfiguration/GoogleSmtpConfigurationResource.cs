@@ -6,9 +6,9 @@ namespace Octopus.Client.Model.SmtpConfiguration
     {
         [Writeable]
         public string GoogleAudience { get; set; }
-        
+
         [Writeable]
         public string GoogleServiceAccount { get; set; }
-    
-    }  
+
+    }
 }

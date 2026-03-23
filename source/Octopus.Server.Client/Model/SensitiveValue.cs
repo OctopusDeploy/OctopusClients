@@ -17,7 +17,7 @@ namespace Octopus.Client.Model
 
         public static implicit operator SensitiveValue(string newValue)
         {
-            return new SensitiveValue {HasValue = newValue != null, NewValue = newValue };
+            return new SensitiveValue { HasValue = newValue != null, NewValue = newValue };
         }
 
         public bool Equals(SensitiveValue other)

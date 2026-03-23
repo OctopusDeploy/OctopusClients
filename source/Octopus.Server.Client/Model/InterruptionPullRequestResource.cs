@@ -3,7 +3,7 @@
 public class InterruptionPullRequestResource
 {
     public string Id { get; set; }
-    
+
     public string InterruptionId { get; set; }
     public string RepositoryUrl { get; set; }
     public string Url { get; set; }

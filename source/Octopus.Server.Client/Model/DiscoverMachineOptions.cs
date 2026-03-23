@@ -6,7 +6,7 @@
         {
             Host = host;
         }
-        
+
         public string Host { get; }
         public int Port { get; set; } = 10933;
         public DiscoverableEndpointType? Type { get; set; }

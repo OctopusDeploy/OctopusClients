@@ -13,8 +13,8 @@ namespace Octopus.Client.Model
 
         [JsonIgnore]
         [Obsolete("Use " + nameof(TenantedDeploymentMode) + " instead. This property wasn't populated correctly anyway.")]
-        public TenantedDeploymentMode TenantDeploymentMode{get;set;}
-        
+        public TenantedDeploymentMode TenantDeploymentMode { get; set; }
+
         public TenantedDeploymentMode TenantedDeploymentMode { get; set; }
         public bool CanPerformUntenantedDeployment { get; set; }
 

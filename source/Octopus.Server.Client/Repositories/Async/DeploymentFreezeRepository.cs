@@ -47,7 +47,7 @@ public class DeploymentFreezeRepository(IOctopusAsyncClient client) : IDeploymen
     {
         var link = await client.Repository.Link("DeploymentFreezes");
 
-        var response =  await client.Create<CreateDeploymentFreezeCommand, CreateDeploymentFreezeResponse>(link, command, null, cancellationToken);
+        var response = await client.Create<CreateDeploymentFreezeCommand, CreateDeploymentFreezeResponse>(link, command, null, cancellationToken);
         return response;
     }
 

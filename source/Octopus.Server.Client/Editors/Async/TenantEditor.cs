@@ -40,10 +40,10 @@ namespace Octopus.Client.Editors.Async
 
             return this;
         }
-        
+
         public async Task<TenantEditor> CreateOrModify(string name, string description, string cloneId = null)
         {
-            var baseRepository = ((TenantRepository) repository).Repository;
+            var baseRepository = ((TenantRepository)repository).Repository;
             if (!await baseRepository.HasLinkParameter("Tenants", "clone"))
                 throw new OperationNotSupportedByOctopusServerException(cloneId == null
                     ? "Tenant Descriptions requires Octopus version 2019.8.0 or newer."
@@ -53,10 +53,10 @@ namespace Octopus.Client.Editors.Async
             if (existing == null)
             {
                 Instance = await repository.Create(new TenantResource
-                    {
-                        Name = name,
-                        Description = description,
-                    }, new { clone = cloneId }
+                {
+                    Name = name,
+                    Description = description,
+                }, new { clone = cloneId }
                 ).ConfigureAwait(false);
             }
             else

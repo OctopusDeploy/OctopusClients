@@ -23,7 +23,7 @@ namespace Octopus.Client.Editors
             var existing = Repository.FindByName(name);
             if (existing == null)
             {
-                Instance = (TAccountResource) Repository.Create(new TAccountResource
+                Instance = (TAccountResource)Repository.Create(new TAccountResource
                 {
                     Name = name
                 });
@@ -36,12 +36,12 @@ namespace Octopus.Client.Editors
                         $"An account with that name exists but is not of type {typeof(TAccountResource).Name}");
                 }
 
-                Instance = (TAccountResource) existing;
+                Instance = (TAccountResource)existing;
             }
 
-            return (TAccountEditor) this;
+            return (TAccountEditor)this;
         }
-        
+
         public TAccountEditor FindByName(string name)
         {
             var existing = Repository.FindByName(name);

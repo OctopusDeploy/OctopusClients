@@ -14,7 +14,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         private static readonly string AuthCookieValue = "54321";
         private static readonly string AntiforgeryCookieValue = "12345";
 
-        public AntiforgeryTokenTests() 
+        public AntiforgeryTokenTests()
             : base(UrlPathPrefixBehaviour.UseClassNameAsUrlPathPrefix)
         {
             Get(TestRootPath, p =>
@@ -61,7 +61,7 @@ namespace Octopus.Client.Tests.Integration.OctopusClient
         public void SyncClient_ShouldCopyAntiforgeryCookieToHeader()
         {
             var client = new Client.OctopusClient(new OctopusServerEndpoint(HostBaseUri + TestRootPath));
-            
+
             // Simulate getting the auth and antiforgery cookies
             client.SignIn(new LoginCommand());
 

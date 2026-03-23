@@ -13,12 +13,12 @@ public class RegisterKubernetesWorkerOperation : RegisterWorkerOperation, IRegis
     public RegisterKubernetesWorkerOperation(IOctopusClientFactory clientFactory) : base(clientFactory)
     {
     }
-    
+
     protected override void PrepareWorkerForReRegistration(WorkerResource worker, string proxyId)
     {
         worker.Endpoint = GenerateEndpoint(proxyId);
     }
-    
+
     protected override EndpointResource GenerateEndpoint(string proxyId)
     {
         var endpoint = CommunicationStyle switch
@@ -29,7 +29,7 @@ public class RegisterKubernetesWorkerOperation : RegisterWorkerOperation, IRegis
                 new PollingTentacleEndpointConfigurationResource(TentacleThumbprint, SubscriptionId.ToString())),
             _ => throw new ArgumentOutOfRangeException(nameof(CommunicationStyle), CommunicationStyle, $"Must be either {CommunicationStyle.TentacleActive} or {CommunicationStyle.TentaclePassive} for this operation")
         };
-        
+
         return endpoint;
     }
 }

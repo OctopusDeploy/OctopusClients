@@ -11,7 +11,7 @@ namespace Octopus.Client.Model.BuildInformation
         {
             Commits = new Commit[0];
         }
-        
+
         public string BuildEnvironment { get; set; }
         public string BuildNumber { get; set; }
         public string BuildUrl { get; set; }

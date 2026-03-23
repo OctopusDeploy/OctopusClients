@@ -2,9 +2,10 @@
 
 namespace Octopus.Client.Model
 {
-    public class HelmFeedResource: FeedResource  {
+    public class HelmFeedResource : FeedResource
+    {
         public override FeedType FeedType => FeedType.Helm;
-        
+
         [Writeable]
         public string FeedUri { get; set; }
 
