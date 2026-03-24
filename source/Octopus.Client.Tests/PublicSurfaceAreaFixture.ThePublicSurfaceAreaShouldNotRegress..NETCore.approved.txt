@@ -4284,18 +4284,6 @@ Octopus.Client.Model
     Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
-  class NumericReportData
-  {
-    .ctor()
-    String[] Labels { get; set; }
-    Octopus.Client.Model.NumericReportSeries[] Series { get; set; }
-  }
-  class NumericReportSeries
-  {
-    .ctor()
-    Double[] Data { get; set; }
-    String Label { get; set; }
-  }
   class OciRegistryFeedResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -5031,15 +5019,6 @@ Octopus.Client.Model
     String NextVersionIncrement { get; set; }
     String VersioningPackageReferenceName { get; set; }
     String VersioningPackageStepName { get; set; }
-  }
-  class ReportDeploymentCountOverTimeResource
-    Octopus.Client.Extensibility.IResource
-    Octopus.Client.Model.IAuditedResource
-    Octopus.Client.Model.Resource
-  {
-    .ctor()
-    String ProjectId { get; set; }
-    Octopus.Client.Model.NumericReportData ReportData { get; set; }
   }
   abstract class Resource
     Octopus.Client.Extensibility.IResource
