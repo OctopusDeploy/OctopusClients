@@ -14,7 +14,8 @@ namespace Octopus.Client.Model.Triggers
         DaysPerWeekSchedule,
         FeedFilter,
         ArcFeedFilter,
-        GitFilter
+        GitFilter,
+        WebhookFilter
     }
 
     public abstract class TriggerFilterResource : Resource

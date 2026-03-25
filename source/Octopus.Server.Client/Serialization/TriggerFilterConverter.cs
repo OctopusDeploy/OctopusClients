@@ -20,7 +20,8 @@ namespace Octopus.Client.Serialization
               { TriggerFilterType.CronExpressionSchedule, typeof (CronScheduledTriggerFilterResource)},
               { TriggerFilterType.FeedFilter, typeof (FeedFilterResource)},
               { TriggerFilterType.ArcFeedFilter, typeof (ArcFeedFilterResource)},
-              { TriggerFilterType.GitFilter, typeof (GitFilterResource)}
+              { TriggerFilterType.GitFilter, typeof (GitFilterResource)},
+              { TriggerFilterType.WebhookFilter, typeof (WebhookFilterResource)},
           };
 
         protected override IDictionary<TriggerFilterType, Type> DerivedTypeMappings => FilterTypes;
