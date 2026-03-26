@@ -63,9 +63,18 @@ namespace Octopus.Client.Model
         /// <summary>
         /// A collection of target tag identifiers that should be included in the deployment.
         /// Only deployment targets that have at least one of these tags will be deployed to.
+        /// Tag IDs are in the format "TagSets-{id}/Tags-{id}".
         /// </summary>
         [WriteableOnCreate]
         public ReferenceCollection SpecificTargetTagIds { get; set; }
+        
+        /// <summary>
+        /// A collection of target tag identifiers that should be excluded from the deployment.
+        /// Only deployment targets that have none of these tags will be deployed to.
+        /// Tag IDs are in the format "TagSets-{id}/Tags-{id}".
+        /// </summary>
+        [WriteableOnCreate]
+        public ReferenceCollection ExcludedTargetTagIds { get; set; }
 
         public string ManifestVariableSetId { get; set; }
         public string TaskId { get; set; }
