@@ -42,6 +42,9 @@ namespace Octopus.Client.Model
         public bool IsProjectsPageOnboardingEnabled { get; set; }
 
         [Writeable]
+        public bool IsGitHubAppEnabled { get; set; }
+
+        [Writeable]
         public string DefaultPowerShellEdition { get; set; }
     }
 }
