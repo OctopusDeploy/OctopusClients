@@ -6920,6 +6920,7 @@ Octopus.Client.Model.Authentication.OpenIDConnect.OctopusID
     Octopus.Client.Model.Authentication.OpenIDConnect.OpenIDConnectConfigurationResource
   {
     .ctor()
+    Nullable<Boolean> AllowDynamicRegistration { get; set; }
   }
 }
 Octopus.Client.Model.Authentication.OpenIDConnect.Okta
