@@ -92,6 +92,7 @@ namespace Octopus.Client
             Observability = new ObservabilityRepository(this);
             OctopusServerNodes = new OctopusServerNodeRepository(this);
             PerformanceConfiguration = new PerformanceConfigurationRepository(this);
+            PlatformHubPolicies = new PlatformHubPolicyRepository(client);
             ProjectGroups = new ProjectGroupRepository(this);
             Projects = new ProjectRepository(this);
             Runbooks = new RunbookRepository(this);
@@ -166,6 +167,7 @@ namespace Octopus.Client
         public IObservabilityRepository Observability { get; }
         public IOctopusServerNodeRepository OctopusServerNodes { get; }
         public IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+        public IPlatformHubPolicyRepository PlatformHubPolicies { get; }
         public IProjectGroupRepository ProjectGroups { get; }
         public IProjectRepository Projects { get; }
         public IRunbookRepository Runbooks { get; }

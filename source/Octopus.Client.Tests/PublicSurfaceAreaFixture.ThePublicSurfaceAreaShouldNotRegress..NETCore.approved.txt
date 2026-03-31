@@ -271,6 +271,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.Async.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
@@ -293,6 +294,7 @@ Octopus.Client
     Octopus.Client.Repositories.IMigrationRepository Migrations { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
@@ -411,6 +413,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.Async.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
     Octopus.Client.Repositories.Async.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
@@ -554,6 +557,7 @@ Octopus.Client
     Octopus.Client.Repositories.IObservabilityRepository Observability { get; }
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
+    Octopus.Client.Repositories.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
     Octopus.Client.Repositories.IProjectGroupRepository ProjectGroups { get; }
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
@@ -2508,6 +2512,35 @@ Octopus.Client.Model
     Boolean Equals(Octopus.Client.Model.UserPermissionRestriction, Octopus.Client.Model.UserPermissionRestriction)
     Int32 GetHashCode(Octopus.Client.Model.UserPermissionRestriction)
   }
+  class CompliancePolicyResource
+  {
+    .ctor(String, String)
+    String ConditionsRego { get; set; }
+    String Description { get; set; }
+    String GitRef { get; }
+    String Name { get; set; }
+    String ScopeRego { get; set; }
+    String Slug { get; }
+    String ViolationAction { get; set; }
+    String ViolationReason { get; set; }
+  }
+  class CompliancePolicyVersionResource
+  {
+    .ctor(String, String, String, DateTimeOffset, String, String, String, String, String, String, String, String, Boolean)
+    String Description { get; }
+    String GitCommit { get; }
+    String GitRef { get; }
+    String Id { get; }
+    Boolean IsActive { get; }
+    String Name { get; }
+    DateTimeOffset PublishedDate { get; }
+    String RegoConditions { get; }
+    String RegoScope { get; }
+    String Slug { get; }
+    String Version { get; }
+    String ViolationAction { get; }
+    String ViolationReason { get; }
+  }
   class ConfigurationItemResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -3306,6 +3339,37 @@ Octopus.Client.Model
   {
     .ctor()
     String AccessToken { get; set; }
+  }
+  class GetCompliancePoliciesRequest
+  {
+    .ctor()
+    String GitRef { get; set; }
+    String PartialName { get; set; }
+    Nullable<Int32> Skip { get; set; }
+    Nullable<Int32> Take { get; set; }
+  }
+  class GetCompliancePoliciesResponse
+  {
+    .ctor()
+    Int32 FilteredItemsCount { get; set; }
+    Int32 ItemsPerPage { get; set; }
+    Octopus.Client.Model.CompliancePolicyResource[] Policies { get; set; }
+    Int32 TotalItemsCount { get; set; }
+  }
+  class GetCompliancePolicyVersionsRequest
+  {
+    .ctor()
+    Nullable<Int32> Skip { get; set; }
+    String Slug { get; set; }
+    Nullable<Int32> Take { get; set; }
+  }
+  class GetCompliancePolicyVersionsResponse
+  {
+    .ctor(String, Int32, Int32, Octopus.Client.Model.CompliancePolicyVersionResource[])
+    Octopus.Client.Model.CompliancePolicyVersionResource[] Items { get; }
+    Int32 ItemsPerPage { get; }
+    String ItemType { get; }
+    Int32 TotalResults { get; }
   }
   class GetMissingPackagesForReleaseRequest
   {
@@ -9459,6 +9523,17 @@ Octopus.Client.Repositories
     Octopus.Client.Model.PerformanceConfigurationResource Get()
     Octopus.Client.Model.PerformanceConfigurationResource Modify(Octopus.Client.Model.PerformanceConfigurationResource)
   }
+  interface IPlatformHubPolicyRepository
+  {
+    Octopus.Client.Model.CompliancePolicyVersionResource ActivateVersion(Octopus.Client.Model.CompliancePolicyVersionResource)
+    Octopus.Client.Model.CompliancePolicyResource Create(Octopus.Client.Model.CompliancePolicyResource, String)
+    Octopus.Client.Model.CompliancePolicyVersionResource DeactivateVersion(Octopus.Client.Model.CompliancePolicyVersionResource)
+    Octopus.Client.Model.GetCompliancePoliciesResponse Get(Octopus.Client.Model.GetCompliancePoliciesRequest)
+    Octopus.Client.Model.CompliancePolicyResource GetBySlug(String, String)
+    Octopus.Client.Model.GetCompliancePolicyVersionsResponse GetVersions(Octopus.Client.Model.GetCompliancePolicyVersionsRequest)
+    Octopus.Client.Model.CompliancePolicyResource Modify(Octopus.Client.Model.CompliancePolicyResource, String)
+    Octopus.Client.Model.CompliancePolicyVersionResource Publish(String, String, String)
+  }
   interface IProjectGroupRepository
     Octopus.Client.Repositories.IFindByName<ProjectGroupResource>
     Octopus.Client.Repositories.IPaginate<ProjectGroupResource>
@@ -10321,6 +10396,17 @@ Octopus.Client.Repositories.Async
   {
     Task<PerformanceConfigurationResource> Get()
     Task<PerformanceConfigurationResource> Modify(Octopus.Client.Model.PerformanceConfigurationResource)
+  }
+  interface IPlatformHubPolicyRepository
+  {
+    Task<CompliancePolicyVersionResource> ActivateVersion(Octopus.Client.Model.CompliancePolicyVersionResource, CancellationToken)
+    Task<CompliancePolicyResource> Create(Octopus.Client.Model.CompliancePolicyResource, String, CancellationToken)
+    Task<CompliancePolicyVersionResource> DeactivateVersion(Octopus.Client.Model.CompliancePolicyVersionResource, CancellationToken)
+    Task<GetCompliancePoliciesResponse> Get(Octopus.Client.Model.GetCompliancePoliciesRequest, CancellationToken)
+    Task<CompliancePolicyResource> GetBySlug(String, String, CancellationToken)
+    Task<GetCompliancePolicyVersionsResponse> GetVersions(Octopus.Client.Model.GetCompliancePolicyVersionsRequest, CancellationToken)
+    Task<CompliancePolicyResource> Modify(Octopus.Client.Model.CompliancePolicyResource, String, CancellationToken)
+    Task<CompliancePolicyVersionResource> Publish(String, String, String, CancellationToken)
   }
   interface IProjectBetaRepository
   {
