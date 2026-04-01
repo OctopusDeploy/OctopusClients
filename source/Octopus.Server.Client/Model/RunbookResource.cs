@@ -55,6 +55,12 @@ namespace Octopus.Client.Model
         [Writeable]
         public bool FailTargetDiscovery { get; set; }
 
+        [Writeable]
+        public bool CancelQueuedTasks { get; set; }
+
+        [Writeable]
+        public bool CancelRunningTasks { get; set; }
+
         /// <summary>  
         /// List of tags assigned to this runbook  
         /// </summary>  

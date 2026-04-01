@@ -2936,6 +2936,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean CancelQueuedTasks { get; set; }
+    Boolean CancelRunningTasks { get; set; }
     Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     Boolean DefaultToSkipIfAlreadyInstalled { get; set; }
@@ -5227,6 +5229,8 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean CancelQueuedTasks { get; set; }
+    Boolean CancelRunningTasks { get; set; }
     Octopus.Client.Model.DeploymentConnectivityPolicy ConnectivityPolicy { get; set; }
     Octopus.Client.Model.GuidedFailureMode DefaultGuidedFailureMode { get; set; }
     String Description { get; set; }
