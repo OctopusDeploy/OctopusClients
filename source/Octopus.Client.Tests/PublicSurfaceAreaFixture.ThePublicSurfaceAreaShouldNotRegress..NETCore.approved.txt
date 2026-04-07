@@ -4741,6 +4741,16 @@ Octopus.Client.Model
     Octopus.Client.Model.PhaseResource WithReleaseRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
     Octopus.Client.Model.PhaseResource WithTentacleRetentionPolicy(Octopus.Client.Model.RetentionPeriod)
   }
+  class PreconditionType
+    IEquatable<PreconditionType>
+  {
+    static Octopus.Client.Model.PreconditionType ApprovalPrecondition
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.PreconditionType)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
+  }
   abstract class ProcessExternalFeedTriggers
   {
     static System.String Name
@@ -5937,11 +5947,13 @@ Octopus.Client.Model
     Boolean FinishedSuccessfully { get; }
     Boolean HasBeenPickedUpByProcessor { get; set; }
     Boolean HasPendingInterruptions { get; }
+    Boolean HasPendingPreconditions { get; }
     Boolean HasWarningsOrErrors { get; set; }
     Boolean IsCompleted { get; }
     Nullable<DateTimeOffset> LastUpdatedTime { get; set; }
     String Name { get; set; }
     List<InterruptionType> PendingInterruptionTypes { get; set; }
+    List<PreconditionType> PendingPreconditionTypes { get; set; }
     String ProjectId { get; set; }
     DateTimeOffset QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
@@ -10999,6 +11011,14 @@ Octopus.Client.Serialization
     Octopus.Client.Serialization.InheritedClassConverter<PersistenceSettingsResource, PersistenceSettingsType>
   {
     .ctor()
+  }
+  class PreconditionTypeConverter
+    JsonConverter
+  {
+    .ctor()
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
   }
   class PrivateMemberContractResolver
     IContractResolver

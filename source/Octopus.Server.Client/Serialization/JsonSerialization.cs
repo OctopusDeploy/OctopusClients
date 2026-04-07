@@ -39,6 +39,7 @@ namespace Octopus.Client.Serialization
                     new TriggerFilterConverter(),
                     new EndpointWithMultipleAuthenticationConverter(),
                     new InterruptionTypeConverter(),
+                    new PreconditionTypeConverter(),
                     new PersistenceSettingsConverter(),
                     new GitSettingsConverter(),
                     new GitCredentialDetailsConverter(),

@@ -178,5 +178,14 @@ namespace Octopus.Client.Model
         /// </summary>
         [JsonProperty(Order = 37)]
         public List<InterruptionType> PendingInterruptionTypes { get; set; } = new();
+
+        /// <summary>
+        /// Contains a list of the types of any pending preconditions.
+        /// </summary>
+        [JsonProperty(Order = 38)]
+        public List<PreconditionType> PendingPreconditionTypes { get; set; } = new();
+        
+        [JsonProperty(Order = 39)]
+        public bool HasPendingPreconditions => PendingPreconditionTypes.Count > 0;
     }
 }
