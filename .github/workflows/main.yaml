@@ -128,7 +128,7 @@ jobs:
       - name: Tag release (when not pre-release) 🏷️
         id: github-tag
         if: ${{ !contains( steps.build.outputs.octoversion_fullsemver, '-' ) }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -236,7 +236,7 @@ jobs:
 
       - if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
         name: Create GitHub Release 🚀
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
