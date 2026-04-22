@@ -284,6 +284,8 @@ namespace Octopus.Client.Model
         [Description("Administer retention policies")] public static readonly Permission RetentionAdminister = new("RetentionAdminister");
 
         [Description("Create, edit, and delete feature toggles")] public static readonly Permission FeatureToggleEdit = new("FeatureToggleEdit");
+        
+        [Description("Create, edit, delete Approval Policies")] public static readonly Permission ApprovalPolicyAdminister =  new("ApprovalPolicyAdminister");
 
         public Permission(string id)
         {
