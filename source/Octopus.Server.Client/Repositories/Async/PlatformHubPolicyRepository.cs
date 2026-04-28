@@ -30,7 +30,7 @@ internal class PlatformHubPolicyRepository : IPlatformHubPolicyRepository
     {
         var command = new CreateOrModifyCompliancePolicyCommand(resource, commitMessage);
         var (path, parameters) = PlatformHubPolicyRepositoryPathResolver.ForCreate(command.GitRef);
-        
+
         return await client
             .Post<CreateOrModifyCompliancePolicyCommand, CompliancePolicyResource>(
                 path: path,
@@ -93,7 +93,7 @@ internal class PlatformHubPolicyRepository : IPlatformHubPolicyRepository
             )
             .ConfigureAwait(false);
     }
-    
+
     public async Task<GetCompliancePolicyVersionsResponse> GetVersions(GetCompliancePolicyVersionsRequest request, CancellationToken cancellationToken)
     {
         var (path, parameters) = PlatformHubPolicyRepositoryPathResolver.ForGetVersions(request);

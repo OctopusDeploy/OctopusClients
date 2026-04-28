@@ -27,7 +27,7 @@ internal class PlatformHubPolicyRepository : IPlatformHubPolicyRepository
     {
         var command = new CreateOrModifyCompliancePolicyCommand(resource, commitMessage);
         var (path, parameters) = PlatformHubPolicyRepositoryPathResolver.ForCreate(command.GitRef);
-        
+
         return client.Post<CreateOrModifyCompliancePolicyCommand, CompliancePolicyResource>(
             path: path,
             pathParameters: parameters,
@@ -79,9 +79,9 @@ internal class PlatformHubPolicyRepository : IPlatformHubPolicyRepository
     public GetCompliancePolicyVersionsResponse GetVersions(GetCompliancePolicyVersionsRequest request)
     {
         var (path, parameters) = PlatformHubPolicyRepositoryPathResolver.ForGetVersions(request);
-        
+
         return client.Get<GetCompliancePolicyVersionsResponse>(
-            path: path, 
+            path: path,
             pathParameters: parameters
         );
     }
@@ -137,7 +137,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
 {
     public static (string, object) ForCreate(string gitRef)
     {
-       return ("~/api/platformhub/{gitRef}/policies", new { gitRef });  
+        return ("~/api/platformhub/{gitRef}/policies", new { gitRef });
     }
 
     public static (string, object) ForGet(GetCompliancePoliciesRequest request)
@@ -147,7 +147,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             request
         );
     }
-    
+
     public static (string, object) ForGetBySlug(string gitRef, string slug)
     {
         return (
@@ -155,7 +155,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             new { gitRef, slug }
         );
     }
-    
+
     public static (string, object) ForModify(string gitRef, string slug)
     {
         return (
@@ -163,7 +163,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             new { gitRef, slug }
         );
     }
-    
+
     public static (string, object) ForPublish(string gitRef, string slug)
     {
         return (
@@ -171,7 +171,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             new { gitRef, slug }
         );
     }
-    
+
     public static (string, object) ForGetVersions(GetCompliancePolicyVersionsRequest request)
     {
         return (
@@ -179,7 +179,7 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             request
         );
     }
-    
+
     public static (string, object) ForVersionActivationStatus(CompliancePolicyVersionResource version)
     {
         return (
@@ -187,4 +187,4 @@ internal static class PlatformHubPolicyRepositoryPathResolver
             new { version.Slug, version.Version }
         );
     }
-} 
+}

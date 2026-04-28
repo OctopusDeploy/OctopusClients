@@ -6,25 +6,25 @@ public class CompliancePolicyResource
 {
     [WriteableOnCreate]
     public string GitRef { get; }
-    
+
     [WriteableOnCreate]
     public string Slug { get; }
-    
+
     [Writeable]
     public string Name { get; set; }
-    
+
     [Writeable]
     public string Description { get; set; }
-    
+
     [Writeable]
     public string ScopeRego { get; set; }
-    
+
     [Writeable]
     public string ConditionsRego { get; set; }
-    
+
     [Writeable]
     public string ViolationReason { get; set; }
-    
+
     [Writeable]
     public string ViolationAction { get; set; }
 

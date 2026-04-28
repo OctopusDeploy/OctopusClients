@@ -67,7 +67,7 @@ namespace Octopus.Client.Model
         /// </summary>
         [WriteableOnCreate]
         public ReferenceCollection SpecificTargetTagIds { get; set; }
-        
+
         /// <summary>
         /// A collection of target tag identifiers that should be excluded from the deployment.
         /// Only deployment targets that have none of these tags will be deployed to.
