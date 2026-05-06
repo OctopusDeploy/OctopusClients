@@ -66,6 +66,9 @@ namespace Octopus.Client.Editors
         }
 
         public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId = null)
+            => CreateOrModify(name, projectGroup, lifecycle, description, cloneId, retainTenantConnections: false);
+
+        public ProjectEditor CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId, bool retainTenantConnections)
         {
             var existing = repository.FindByName(name);
 
@@ -76,7 +79,8 @@ namespace Octopus.Client.Editors
                     Name = name,
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
-                    Description = description
+                    Description = description,
+                    RetainTenantConnections = retainTenantConnections
                 }, new { clone = cloneId });
             }
             else

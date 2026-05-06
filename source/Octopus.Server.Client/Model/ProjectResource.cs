@@ -61,6 +61,13 @@ namespace Octopus.Client.Model
         public string DeploymentProcessId { get; set; }
         public string ClonedFromProjectId { get; set; }
 
+        /// <summary>
+        /// When creating a cloned project, copies the source project's tenant connections
+        /// onto the new project. Only honoured at create time when cloning; not persisted.
+        /// </summary>
+        [Writeable]
+        public bool RetainTenantConnections { get; set; }
+
         [Writeable]
         [JsonProperty(Order = 24)]
         public string LifecycleId { get; set; }

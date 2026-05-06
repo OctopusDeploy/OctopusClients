@@ -70,6 +70,9 @@ namespace Octopus.Client.Editors.Async
         public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, CancellationToken cancellationToken) => await CreateOrModify(name, projectGroup, lifecycle, description, cloneId: null, cancellationToken);
 
         public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId, CancellationToken cancellationToken)
+            => await CreateOrModify(name, projectGroup, lifecycle, description, cloneId, retainTenantConnections: false, cancellationToken).ConfigureAwait(false);
+
+        public async Task<ProjectEditor> CreateOrModify(string name, ProjectGroupResource projectGroup, LifecycleResource lifecycle, string description, string cloneId, bool retainTenantConnections, CancellationToken cancellationToken)
         {
             var existing = await repository.FindByName(name).ConfigureAwait(false);
 
@@ -80,7 +83,8 @@ namespace Octopus.Client.Editors.Async
                     Name = name,
                     ProjectGroupId = projectGroup.Id,
                     LifecycleId = lifecycle.Id,
-                    Description = description
+                    Description = description,
+                    RetainTenantConnections = retainTenantConnections
                 }, new { clone = cloneId }, cancellationToken).ConfigureAwait(false);
             }
             else
