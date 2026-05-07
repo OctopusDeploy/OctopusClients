@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.Client.Model;
@@ -19,10 +20,10 @@ namespace Octopus.Client.Tests.Repositories.Async
             SetupAsyncClient(asyncClient);
 
             var asyncRepository = new Client.Repositories.Async.ProjectTriggerRepository(asyncClient.Repository);
-            Assert.ThrowsAsync<NotSupportedException>(async () => await asyncRepository.FindByName("fake trigger"));
+            Assert.ThrowsAsync<NotSupportedException>((Func<Task>)(async () => await asyncRepository.FindByName("fake trigger")));
 
             var repository = new Client.Repositories.ProjectTriggerRepository(client.Repository);
-            Assert.Throws<NotSupportedException>(() => repository.FindByName("fake trigger"));
+            Assert.Throws<NotSupportedException>((Action)(() => repository.FindByName("fake trigger")));
         }
 
         void SetupAsyncClient(IOctopusAsyncClient client)

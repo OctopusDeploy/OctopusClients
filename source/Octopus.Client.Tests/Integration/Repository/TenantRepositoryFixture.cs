@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Nancy;
 using NUnit.Framework;
 using Octopus.Client.Exceptions;
@@ -27,10 +28,10 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var repository = new TenantRepository(new OctopusAsyncRepository(AsyncClient));
             Assert.ThrowsAsync<OperationNotSupportedByOctopusServerException>(
-                async () => await repository.CreateOrModify("My Tenant", "Tenant Description"),
+                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description")),
             "Tenant Descriptions requires Octopus version 2019.8.0 or newer.");
             Assert.ThrowsAsync<OperationNotSupportedByOctopusServerException>(
-                async () => await repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123"),
+                (Func<Task>)(async () => await repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123")),
             "Cloning Tenants requires Octopus version 2019.8.0 or newer.");
         }
 
@@ -39,10 +40,10 @@ namespace Octopus.Client.Tests.Integration.Repository
         {
             var repository = new Client.Repositories.TenantRepository(SyncClient.Repository);
             Assert.Throws<OperationNotSupportedByOctopusServerException>(
-                () => repository.CreateOrModify("My Tenant", "Tenant Description"),
+                (Action)(() => repository.CreateOrModify("My Tenant", "Tenant Description")),
                 "Tenant Descriptions requires Octopus version 2019.8.0 or newer.");
             Assert.Throws<OperationNotSupportedByOctopusServerException>(
-                () => repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123"),
+                (Action)(() => repository.CreateOrModify("My Tenant", "Tenant Description", "Tenant-123")),
                 "Cloning Tenants requires Octopus version 2019.8.0 or newer.");
         }
     }

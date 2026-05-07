@@ -123,7 +123,7 @@ namespace Octopus.Client.Tests.Repositories
             var asyncClient = SetupAsyncClient("2025.2.0");
             var asyncRepository = new Client.Repositories.Async.SpaceDefaultRetentionPolicyRepository(asyncClient);
 
-            Assert.ThrowsAsync<NotSupportedException>(async () => await asyncRepository.Modify(new ModifyDefaultLifecycleReleaseRetentionPolicyCommand("Any-Id", "Any-SpaceId"), CancellationToken.None));
+            Assert.ThrowsAsync<NotSupportedException>((Func<Task>)(async () => await asyncRepository.Modify(new ModifyDefaultLifecycleReleaseRetentionPolicyCommand("Any-Id", "Any-SpaceId"), CancellationToken.None)));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Octopus.Client.Tests.Repositories
             var client = SetupClient("2025.2.0");
             var repository = new SpaceDefaultRetentionPolicyRepository(client);
 
-            Assert.Throws<NotSupportedException>(() => repository.Modify(new ModifyDefaultLifecycleTentacleRetentionPolicyCommand("Any-Id", "Any-SpaceId")));
+            Assert.Throws<NotSupportedException>((Action)(() => repository.Modify(new ModifyDefaultLifecycleTentacleRetentionPolicyCommand("Any-Id", "Any-SpaceId"))));
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace Octopus.Client.Tests.Repositories
             var asyncClient = SetupAsyncClient("2025.2.0");
             var asyncRepository = new Client.Repositories.Async.SpaceDefaultRetentionPolicyRepository(asyncClient);
 
-            Assert.ThrowsAsync<NotSupportedException>(async () => await asyncRepository.Get(new GetDefaultRetentionPolicyByTypeRequest(), CancellationToken.None));
+            Assert.ThrowsAsync<NotSupportedException>((Func<Task>)(async () => await asyncRepository.Get(new GetDefaultRetentionPolicyByTypeRequest(), CancellationToken.None)));
         }
 
         [Test]
@@ -154,7 +154,7 @@ namespace Octopus.Client.Tests.Repositories
             var client = SetupClient("2025.2.0");
             var repository = new SpaceDefaultRetentionPolicyRepository(client);
 
-            Assert.Throws<NotSupportedException>(() => repository.Get(new GetDefaultRetentionPolicyByTypeRequest()));
+            Assert.Throws<NotSupportedException>((Action)(() => repository.Get(new GetDefaultRetentionPolicyByTypeRequest())));
         }
 
         private ModifyDefaultLifecycleReleaseRetentionPolicyCommand CreateModifyLifecycleReleaseCommand()
