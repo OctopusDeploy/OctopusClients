@@ -7005,6 +7005,10 @@ Octopus.Client.Model.Authentication.OpenIDConnect.OctopusID
   {
     .ctor()
     Nullable<Boolean> AllowDynamicRegistration { get; set; }
+    Nullable<Boolean> AllowM2MDynamicRegistration { get; set; }
+    String M2MClientId { get; set; }
+    Nullable<DateTimeOffset> M2MRegisteredAt { get; set; }
+    String M2MResourceServerIdentifier { get; set; }
   }
 }
 Octopus.Client.Model.Authentication.OpenIDConnect.Okta
