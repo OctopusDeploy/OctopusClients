@@ -17,6 +17,7 @@
         GoogleContainerRegistry,
         ArtifactoryGeneric,
         Npm,
-        GcsStorage
+        GcsStorage,
+        PyPi
     }
 }

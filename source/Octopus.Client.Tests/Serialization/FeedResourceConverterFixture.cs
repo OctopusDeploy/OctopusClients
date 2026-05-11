@@ -127,6 +127,29 @@ namespace Octopus.Client.Tests.Serialization
         }
 
         [Test]
+        public void PyPiFeedTypesDeserialize()
+        {
+            var input = new
+            {
+                Name = "PyPI Feed",
+                FeedType = FeedType.PyPi,
+                DownloadAttempts = 5,
+                DownloadRetryBackoffSeconds = 10,
+                FeedUri = "https://pypi.org/simple/",
+                Username = "testuser"
+            };
+
+            var result = Execute<PyPiFeedResource>(input);
+
+            Assert.AreEqual(FeedType.PyPi, result.FeedType);
+            Assert.IsAssignableFrom(typeof(PyPiFeedResource), result);
+            Assert.AreEqual(input.DownloadAttempts, result.DownloadAttempts);
+            Assert.AreEqual(input.DownloadRetryBackoffSeconds, result.DownloadRetryBackoffSeconds);
+            Assert.AreEqual(input.FeedUri, result.FeedUri);
+            Assert.AreEqual(input.Username, result.Username);
+        }
+
+        [Test]
         public void NuGetFeedTypesDeserialize()
         {
             var input = new

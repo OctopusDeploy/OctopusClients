@@ -3315,6 +3315,7 @@ Octopus.Client.Model
       ArtifactoryGeneric = 13
       Npm = 14
       GcsStorage = 15
+      PyPi = 16
   }
   class FileUpload
   {
@@ -4949,6 +4950,22 @@ Octopus.Client.Model
     Int32 Port { get; set; }
     String ProxyType { get; set; }
     String SpaceId { get; set; }
+    String Username { get; set; }
+  }
+  class PyPiFeedResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.FeedResource
+  {
+    .ctor()
+    Int32 DownloadAttempts { get; set; }
+    Int32 DownloadRetryBackoffSeconds { get; set; }
+    Octopus.Client.Model.FeedType FeedType { get; }
+    String FeedUri { get; set; }
+    Octopus.Client.Model.SensitiveValue Password { get; set; }
     String Username { get; set; }
   }
   class ReferenceCollection

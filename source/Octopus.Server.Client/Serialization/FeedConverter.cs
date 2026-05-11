@@ -23,7 +23,8 @@ namespace Octopus.Client.Serialization
                 {FeedType.GoogleContainerRegistry, typeof(GoogleContainerRegistryFeedResource)},
                 {FeedType.ArtifactoryGeneric, typeof(ArtifactoryGenericFeedResource)},
                 {FeedType.Npm, typeof(NpmFeedResource)},
-                {FeedType.GcsStorage, typeof(GcsStorageFeedResource)}
+                {FeedType.GcsStorage, typeof(GcsStorageFeedResource)},
+                {FeedType.PyPi, typeof(PyPiFeedResource)}
             };
 
         static readonly Type defaultType = typeof(NuGetFeedResource);
