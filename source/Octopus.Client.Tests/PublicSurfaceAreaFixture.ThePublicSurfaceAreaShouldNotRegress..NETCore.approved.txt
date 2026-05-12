@@ -4625,6 +4625,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission SpaceDelete
     static Octopus.Client.Model.Permission SpaceEdit
     static Octopus.Client.Model.Permission SpaceView
+    static Octopus.Client.Model.Permission SshKnownHostsAdminister
     static Octopus.Client.Model.Permission SubscriptionCreate
     static Octopus.Client.Model.Permission SubscriptionDelete
     static Octopus.Client.Model.Permission SubscriptionEdit

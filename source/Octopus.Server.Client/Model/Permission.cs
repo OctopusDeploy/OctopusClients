@@ -287,6 +287,8 @@ namespace Octopus.Client.Model
 
         [Description("Create, edit, delete Approval Policies")] public static readonly Permission ApprovalPolicyAdminister = new("ApprovalPolicyAdminister");
 
+        [Description("Create, edit, delete SSH Known Hosts")] public static readonly Permission SshKnownHostsAdminister = new("SshKnownHostsAdminister");
+
         public Permission(string id)
         {
             Id = id;
