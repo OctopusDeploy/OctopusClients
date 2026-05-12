@@ -11,5 +11,6 @@ namespace Octopus.Client.Model
         public string MaintenanceExpires { get; set; }
         public bool IsInMaintenanceMode { get; set; }
         public bool IsMajorMinorUpgrade { get; set; }
+        public bool IsPotentialClone { get; set; }
     }
 }

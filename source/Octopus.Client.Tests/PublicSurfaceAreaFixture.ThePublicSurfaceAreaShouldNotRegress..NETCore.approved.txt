@@ -5706,6 +5706,7 @@ Octopus.Client.Model
     Boolean IsDatabaseEncrypted { get; set; }
     Boolean IsInMaintenanceMode { get; set; }
     Boolean IsMajorMinorUpgrade { get; set; }
+    Boolean IsPotentialClone { get; set; }
     Boolean IsUpgradeAvailable { get; set; }
     String MaintenanceExpires { get; set; }
     String MaximumAvailableVersion { get; set; }
