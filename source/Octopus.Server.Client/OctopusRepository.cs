@@ -122,6 +122,7 @@ namespace Octopus.Client
             loadSpaceRootResource = new Lazy<SpaceRootResource>(LoadSpaceRootDocumentInner, true);
             DeploymentFreezes = new DeploymentFreezeRepository(client);
             SpaceDefaultRetentionPolicies = new SpaceDefaultRetentionPolicyRepository(client);
+            SshKnownHosts = new SshKnownHostRepository(this);
         }
 
         public IOctopusClient Client { get; }
@@ -193,6 +194,8 @@ namespace Octopus.Client
         public ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
         public IDeploymentFreezeRepository DeploymentFreezes { get; }
         public ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
+        public ISshKnownHostRepository SshKnownHosts { get; }
+        
 
         public bool HasLink(string name)
         {

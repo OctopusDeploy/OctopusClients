@@ -275,6 +275,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.Async.ISshKnownHostRepository SshKnownHosts { get; }
     Octopus.Client.Repositories.Async.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.Async.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.Async.IUserRolesRepository UserRoles { get; }
@@ -298,6 +299,7 @@ Octopus.Client
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.ISshKnownHostRepository SshKnownHosts { get; }
     Octopus.Client.Repositories.ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
     Octopus.Client.Repositories.IUpgradeConfigurationRepository UpgradeConfiguration { get; }
     Octopus.Client.Repositories.IUserRolesRepository UserRoles { get; }
@@ -430,6 +432,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.Async.ISshKnownHostRepository SshKnownHosts { get; }
     Octopus.Client.Repositories.Async.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.Async.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.Async.ITaskRepository Tasks { get; }
@@ -574,6 +577,7 @@ Octopus.Client
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
+    Octopus.Client.Repositories.ISshKnownHostRepository SshKnownHosts { get; }
     Octopus.Client.Repositories.ISubscriptionRepository Subscriptions { get; }
     Octopus.Client.Repositories.ITagSetRepository TagSets { get; }
     Octopus.Client.Repositories.ITaskRepository Tasks { get; }
@@ -5774,6 +5778,14 @@ Octopus.Client.Model
   {
     .ctor()
   }
+  class SshKnownHostResource
+  {
+    .ctor()
+    String Host { get; set; }
+    String Id { get; set; }
+    String KeyType { get; set; }
+    String PublicKey { get; set; }
+  }
   class StandardColor
   {
     static System.String DarkBlue
@@ -8529,6 +8541,42 @@ Octopus.Client.Model.SpaceDefaultRetentionPolicies
     .ctor(String)
   }
 }
+Octopus.Client.Model.SshKnownHosts
+{
+  class AddSshKnownHostsCommand
+  {
+    .ctor()
+    String[] KnownHostEntries { get; set; }
+  }
+  class AddSshKnownHostsResponse
+  {
+    .ctor()
+    Octopus.Client.Model.SshKnownHostResource[] AddedResources { get; set; }
+  }
+  class DeleteSshKnownHostCommand
+  {
+    .ctor()
+    String Id { get; set; }
+  }
+  class DeleteSshKnownHostResponse
+  {
+    .ctor()
+  }
+  class GetSshKnownHostsRequest
+  {
+    .ctor()
+    String PartialHost { get; set; }
+    Int32 Skip { get; set; }
+    Int32 Take { get; set; }
+  }
+  class GetSshKnownHostsResponse
+  {
+    .ctor()
+    Int32 FilteredCount { get; set; }
+    Octopus.Client.Model.SshKnownHostResource[] Resources { get; set; }
+    Int32 TotalCount { get; set; }
+  }
+}
 Octopus.Client.Model.TenantVariables
 {
   class CommonVariableScope
@@ -9773,6 +9821,12 @@ Octopus.Client.Repositories
     Octopus.Client.Model.SpaceSearchResult[] Search(String, String)
     void SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
   }
+  interface ISshKnownHostRepository
+  {
+    Octopus.Client.Model.SshKnownHosts.AddSshKnownHostsResponse Add(Octopus.Client.Model.SshKnownHosts.AddSshKnownHostsCommand)
+    Octopus.Client.Model.SshKnownHosts.DeleteSshKnownHostResponse Delete(Octopus.Client.Model.SshKnownHosts.DeleteSshKnownHostCommand)
+    Octopus.Client.Model.SshKnownHosts.GetSshKnownHostsResponse Get(Octopus.Client.Model.SshKnownHosts.GetSshKnownHostsRequest)
+  }
   interface ISubscriptionRepository
     Octopus.Client.Repositories.IFindByName<SubscriptionResource>
     Octopus.Client.Repositories.IPaginate<SubscriptionResource>
@@ -10686,6 +10740,12 @@ Octopus.Client.Repositories.Async
   {
     Task<SpaceSearchResult[]> Search(String, String)
     Task SetLogo(Octopus.Client.Model.SpaceResource, String, Stream)
+  }
+  interface ISshKnownHostRepository
+  {
+    Task<AddSshKnownHostsResponse> Add(Octopus.Client.Model.SshKnownHosts.AddSshKnownHostsCommand, CancellationToken)
+    Task<DeleteSshKnownHostResponse> Delete(Octopus.Client.Model.SshKnownHosts.DeleteSshKnownHostCommand, CancellationToken)
+    Task<GetSshKnownHostsResponse> Get(Octopus.Client.Model.SshKnownHosts.GetSshKnownHostsRequest, CancellationToken)
   }
   interface ISubscriptionRepository
     Octopus.Client.Repositories.Async.IFindByName<SubscriptionResource>
