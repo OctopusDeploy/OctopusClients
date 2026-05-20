@@ -4895,8 +4895,8 @@ Octopus.Client.Model
   }
   class ProjectTemplateDetailsResource
   {
-    .ctor(String, String, String)
-    String CurrentVersion { get; set; }
+    .ctor(String, String)
+    Boolean IsShared { get; set; }
     String Slug { get; set; }
     String VersionMask { get; set; }
   }
