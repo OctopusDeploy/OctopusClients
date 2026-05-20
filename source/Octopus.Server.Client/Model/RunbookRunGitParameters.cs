@@ -26,6 +26,10 @@ namespace Octopus.Client.Model
 
         public string[] ExcludedMachineIds { get; set; } = [];
 
+        public string[] SpecificTargetTagIds { get; set; } = [];
+
+        public string[] ExcludedTargetTagIds { get; set; } = [];
+
         public bool UseGuidedFailure { get; set; } = false;
 
         public Dictionary<string, string> FormValues { get; set; } = new();

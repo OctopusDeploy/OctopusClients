@@ -15,6 +15,8 @@ namespace Octopus.Client.Model
             FormValues = new Dictionary<string, string>();
             SpecificMachineIds = new string[0];
             ExcludedMachineIds = new string[0];
+            SpecificTargetTagIds = new string[0];
+            ExcludedTargetTagIds = new string[0];
             EnvironmentIds = new string[0];
             TenantTagNames = new string[0];
             TenantIds = new string[0];
@@ -33,6 +35,8 @@ namespace Octopus.Client.Model
         public string DebugMode { get; set; }
         public string[] SpecificMachineIds { get; set; }
         public string[] ExcludedMachineIds { get; set; }
+        public string[] SpecificTargetTagIds { get; set; }
+        public string[] ExcludedTargetTagIds { get; set; }
         public string TenantId { get; set; }
         public string[] TenantIds { get; set; }
         public string[] TenantTagNames { get; set; }
@@ -54,6 +58,8 @@ namespace Octopus.Client.Model
                 DebugMode = runbookRun.DebugMode,
                 SpecificMachineIds = runbookRun.SpecificMachineIds != null ? runbookRun.SpecificMachineIds.ToArray() : new string[0],
                 ExcludedMachineIds = runbookRun.ExcludedMachineIds != null ? runbookRun.ExcludedMachineIds.ToArray() : new string[0],
+                SpecificTargetTagIds = runbookRun.SpecificTargetTagIds != null ? runbookRun.SpecificTargetTagIds.ToArray() : new string[0],
+                ExcludedTargetTagIds = runbookRun.ExcludedTargetTagIds != null ? runbookRun.ExcludedTargetTagIds.ToArray() : new string[0],
                 TenantId = runbookRun.TenantId,
                 SkipActions = runbookRun.SkipActions != null ? runbookRun.SkipActions.ToArray() : new string[0],
                 QueueTime = runbookRun.QueueTime,

@@ -3483,12 +3483,14 @@ Octopus.Client.Model
     String Comments { get; set; }
     String EnvironmentId { get; set; }
     String[] ExcludedMachineIds { get; set; }
+    String[] ExcludedTargetTagIds { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     Nullable<DateTimeOffset> QueueTime { get; set; }
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     String[] SkipActions { get; set; }
     String[] SpecificMachineIds { get; set; }
+    String[] SpecificTargetTagIds { get; set; }
     String TenantId { get; set; }
     Boolean UseGuidedFailure { get; set; }
   }
@@ -3626,6 +3628,7 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection DeployedToMachineIds { get; set; }
     String EnvironmentId { get; set; }
     Octopus.Client.Model.ReferenceCollection ExcludedMachineIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection ExcludedTargetTagIds { get; set; }
     Boolean FailureEncountered { get; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
@@ -3636,6 +3639,7 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> QueueTimeExpiry { get; set; }
     Octopus.Client.Model.ReferenceCollection SkipActions { get; set; }
     Octopus.Client.Model.ReferenceCollection SpecificMachineIds { get; set; }
+    Octopus.Client.Model.ReferenceCollection SpecificTargetTagIds { get; set; }
     String TaskId { get; set; }
     String TenantId { get; set; }
     Octopus.Client.Model.RetentionPeriod TentacleRetentionPeriod { get; set; }
@@ -5317,6 +5321,7 @@ Octopus.Client.Model
     String EnvironmentId { get; set; }
     String[] EnvironmentIds { get; set; }
     String[] ExcludedMachineIds { get; set; }
+    String[] ExcludedTargetTagIds { get; set; }
     Boolean ForcePackageDownload { get; set; }
     Dictionary<String, String> FormValues { get; set; }
     String ProjectId { get; set; }
@@ -5326,6 +5331,7 @@ Octopus.Client.Model
     String RunbookSnapshotNameOrId { get; set; }
     String[] SkipActions { get; set; }
     String[] SpecificMachineIds { get; set; }
+    String[] SpecificTargetTagIds { get; set; }
     String TenantId { get; set; }
     String[] TenantIds { get; set; }
     String[] TenantTagNames { get; set; }

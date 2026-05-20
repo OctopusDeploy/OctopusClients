@@ -13,6 +13,8 @@ namespace Octopus.Client.Model
         ReferenceCollection SkipActions { get; set; }
         ReferenceCollection SpecificMachineIds { get; set; }
         ReferenceCollection ExcludedMachineIds { get; set; }
+        ReferenceCollection SpecificTargetTagIds { get; set; }
+        ReferenceCollection ExcludedTargetTagIds { get; set; }
         bool UseGuidedFailure { get; set; }
         string DebugMode { get; set; }
         RetentionPeriod TentacleRetentionPeriod { get; set; }
