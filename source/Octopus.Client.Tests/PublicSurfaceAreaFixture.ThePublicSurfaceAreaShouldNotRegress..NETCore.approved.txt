@@ -8748,6 +8748,7 @@ Octopus.Client.Model.Triggers
     .ctor()
     Octopus.Client.Model.Triggers.TriggerActionType ActionType { get; }
     Octopus.Client.Model.ReferenceCollection EnvironmentIds { get; set; }
+    Dictionary<String, String> FormValues { get; set; }
     String RunbookId { get; set; }
     List<TagCanonicalIdOrName> RunbookTags { get; set; }
     Octopus.Client.Model.ReferenceCollection TenantIds { get; set; }

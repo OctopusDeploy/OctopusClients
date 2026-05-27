@@ -30,5 +30,8 @@ namespace Octopus.Client.Model.Triggers
         [Writeable]
         public ReferenceCollection TenantTags { get; set; }
 
+        [Writeable]
+        public Dictionary<string, string> FormValues { get; set; } = new();
+
     }
 }
