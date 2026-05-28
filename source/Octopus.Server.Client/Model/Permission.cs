@@ -289,6 +289,8 @@ namespace Octopus.Client.Model
 
         [Description("Create, edit, delete SSH Known Hosts")] public static readonly Permission SshKnownHostsAdminister = new("SshKnownHostsAdminister");
 
+        [Description("View SSH Known Hosts")] public static readonly Permission SshKnownHostsView = new("SshKnownHostsView");
+
         public Permission(string id)
         {
             Id = id;
