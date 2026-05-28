@@ -1,7 +1,10 @@
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
+using Octopus.Client.Model;
 
 namespace Octopus.Client
 {
@@ -36,6 +39,18 @@ namespace Octopus.Client
             return OctopusAsyncClient.Create(serverEndpoint, options, requestingTool);
         }
 
+        internal static HttpClient BuildHttpClient(HttpMessageHandler handler, OctopusClientOptions clientOptions, string requestingTool, bool disposeHandler = true) 
+            => BuildHttpClient(handler, clientOptions, new OctopusCustomHeaders(requestingTool), disposeHandler);
+
+        internal static HttpClient BuildHttpClient(HttpMessageHandler handler, OctopusClientOptions clientOptions, OctopusCustomHeaders octopusCustomHeaders, bool disposeHandler = true)
+        {
+            var httpClient = new HttpClient(handler, disposeHandler);
+            httpClient.Timeout = clientOptions.Timeout;
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Add("User-Agent", octopusCustomHeaders.UserAgent);
+            return httpClient;
+        }
+        
         private string DetermineRequestingTool()
         {
             var launchAssembly = Assembly.GetEntryAssembly();

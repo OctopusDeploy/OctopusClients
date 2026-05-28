@@ -32,11 +32,12 @@ namespace Octopus.Client
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer = new CookieContainer();
         private readonly Uri cookieOriginUri;
-        // ReSharper disable once RedundantDefaultMemberInitializer. Mandatory assigment to prevent compiler error CS0649. 
+        // ReSharper disable once RedundantDefaultMemberInitializer. Mandatory assignment to prevent compiler error CS0649.
         private readonly bool ignoreSslErrors = false;
         private bool ignoreSslErrorMessageLogged;
         private string antiforgeryCookieName;
         private readonly SemaphoreSlim requestSemaphore;
+        private readonly OidcAccessTokenCache oidcCache;
 
         // Use the Create method to instantiate
         protected OctopusAsyncClient(OctopusServerEndpoint serverEndpoint, OctopusClientOptions options, bool addCertificateCallback, string requestingTool)
@@ -74,24 +75,35 @@ namespace Octopus.Client
                 handler.Proxy = serverEndpoint.Proxy;
             }
 
-            client = new HttpClient(handler, true);
-            client.Timeout = clientOptions.Timeout;
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (serverEndpoint.ApiKey != null)
+            HttpMessageHandler handlerChain = handler;
+            if (serverEndpoint.OidcCredentials != null)
             {
-                client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+                var openIdConfigUri = serverEndpoint.OctopusServer.Resolve(OidcAccessTokenCache.WellKnownOpenIdConfigurationUrl);
+                // disposeHandler: false — the main HttpClient owns and disposes the handler
+                var oidcHttpClient = OctopusClientFactory.BuildHttpClient(handler, clientOptions, requestingTool, disposeHandler: false);
+                oidcCache = new OidcAccessTokenCache(serverEndpoint.OidcCredentials, openIdConfigUri, oidcHttpClient);
+                handlerChain = new OidcAuthenticationHandler(oidcCache, handler);
             }
-            if (serverEndpoint.BearerToken != null)
+
+            client = OctopusClientFactory.BuildHttpClient(handlerChain, clientOptions, requestingTool);
+            if (serverEndpoint.OidcCredentials == null)
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serverEndpoint.BearerToken);
+                if (serverEndpoint.ApiKey != null)
+                {
+                    client.DefaultRequestHeaders.Add(ApiConstants.ApiKeyHttpHeaderName, serverEndpoint.ApiKey);
+                }
+                if (serverEndpoint.BearerToken != null)
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serverEndpoint.BearerToken);
+                }
             }
-            client.DefaultRequestHeaders.Add("User-Agent", new OctopusCustomHeaders(requestingTool).UserAgent);
             Repository = new OctopusAsyncRepository(this);
         }
 
+
         private Uri BuildCookieUri(OctopusServerEndpoint octopusServerEndpoint)
         {
-            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retreiving cookies
+            // The CookieContainer is a bit funny - it sets the cookie without the port, but doesn't ignore the port when retrieving cookies
             // From what I can see it uses the Uri.Authority value - which contains the port number
             // We need to clear the port in order to successfully get cookies for the same origin
             var uriBuilder = new UriBuilder(octopusServerEndpoint.OctopusServer.Resolve("/")) { Port = 0 };
@@ -721,6 +733,7 @@ Certificate thumbprint:   {certificate.Thumbprint}";
         public void Dispose()
         {
             requestSemaphore?.Dispose();
+            oidcCache?.Dispose();
             client?.Dispose();
         }
     }

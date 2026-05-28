@@ -640,10 +640,18 @@ Octopus.Client
     ICredentials Credentials { get; }
     Boolean IsUsingSecureConnection { get; }
     Octopus.Client.ILinkResolver OctopusServer { get; }
+    Octopus.Client.OidcTokenExchangeCredentials OidcCredentials { get; }
     IWebProxy Proxy { get; set; }
     Octopus.Client.OctopusServerEndpoint AsUser(String)
     static Octopus.Client.OctopusServerEndpoint CreateWithApiKey(String, String, ICredentials)
     static Octopus.Client.OctopusServerEndpoint CreateWithBearerToken(String, String, ICredentials)
+    static Octopus.Client.OctopusServerEndpoint CreateWithOidcTokenExchange(String, String, Func<CancellationToken, Task<String>>, ICredentials)
+  }
+  class OidcTokenExchangeCredentials
+  {
+    .ctor(String, Func<CancellationToken, Task<String>>)
+    String Audience { get; }
+    Func<CancellationToken, Task<String>> OidcTokenProvider { get; }
   }
   class RepositoryScope
   {

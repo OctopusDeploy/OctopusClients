@@ -1,5 +1,7 @@
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Octopus.Client
 {
@@ -24,6 +26,38 @@ namespace Octopus.Client
             return new OctopusServerEndpoint(octopusServerAddress, apiKey, credentials);
         }
 
+        /// <summary>
+        /// Creates an endpoint that authenticates via OIDC token exchange. The client will call
+        /// <paramref name="oidcTokenProvider"/> to obtain an OIDC JWT, exchange it for an Octopus
+        /// access token at <c>POST /token/v1</c>, and use the result as a Bearer token.
+        /// The access token is cached and refreshed automatically before expiry.
+        /// </summary>
+        /// <param name="octopusServerAddress">
+        /// The URI of the Octopus Server. Ideally this should end with <c>/api</c>. If it ends with any other segment, the
+        /// client will assume Octopus runs under a virtual directory.
+        /// </param>
+        /// <param name="audience">
+        /// The service account identification token (a UUID). This must match the <c>aud</c> claim
+        /// in the OIDC JWT and is used to identify the Octopus service account to authenticate as.
+        /// </param>
+        /// <param name="oidcTokenProvider">
+        /// A delegate that returns a fresh OIDC JWT when invoked. The client calls this whenever
+        /// a token exchange or refresh is needed.
+        /// </param>
+        /// <param name="credentials">
+        /// Additional credentials to use when communicating to servers that require integrated/basic
+        /// authentication.
+        /// </param>
+        public static OctopusServerEndpoint CreateWithOidcTokenExchange(
+            string octopusServerAddress,
+            string audience,
+            Func<CancellationToken, Task<string>> oidcTokenProvider,
+            ICredentials credentials = null)
+        {
+            var oidcCredentials = new OidcTokenExchangeCredentials(audience, oidcTokenProvider);
+            return new OctopusServerEndpoint(octopusServerAddress, oidcCredentials, credentials);
+        }
+
         private OctopusServerEndpoint(string octopusServerAddress, BearerTokenValue bearerTokenValue, ICredentials credentials)
         {
             if (string.IsNullOrWhiteSpace(bearerTokenValue.Value))
@@ -31,6 +65,13 @@ namespace Octopus.Client
 
             OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
             BearerToken = bearerTokenValue.Value;
+            Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
+        }
+
+        private OctopusServerEndpoint(string octopusServerAddress, OidcTokenExchangeCredentials oidcCredentials, ICredentials credentials)
+        {
+            OctopusServer = GetLinkResolverFromServerUrl(octopusServerAddress);
+            OidcCredentials = oidcCredentials ?? throw new ArgumentNullException(nameof(oidcCredentials));
             Credentials = credentials ?? CredentialCache.DefaultNetworkCredentials;
         }
 
@@ -135,6 +176,12 @@ namespace Octopus.Client
         /// A Bearer Token that can be used to authenticate calls to the Server.
         /// </summary>
         public string BearerToken { get; }
+
+        /// <summary>
+        /// OIDC token exchange credentials. Non-null when the endpoint was created
+        /// via <see cref="CreateWithOidcTokenExchange"/>.
+        /// </summary>
+        public OidcTokenExchangeCredentials OidcCredentials { get; }
 
         /// <summary>
         /// Gets the additional credentials to use when communicating to servers that require integrated/basic authentication.

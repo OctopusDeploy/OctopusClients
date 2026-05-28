@@ -9,6 +9,7 @@ using Octopus.Client.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using Octopus.Client.Logging;
 
@@ -29,6 +30,7 @@ namespace Octopus.Client
         readonly OctopusCustomHeaders octopusCustomHeaders;
         private string antiforgeryCookieName = null;
         private readonly SemaphoreSlim requestSemaphore;
+        private readonly OidcAccessTokenCache oidcTokenCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OctopusClient" /> class.
@@ -47,6 +49,25 @@ namespace Octopus.Client
             cookieOriginUri = BuildCookieUri(serverEndpoint);
             octopusCustomHeaders = new OctopusCustomHeaders(requestingTool);
             requestSemaphore = new SemaphoreSlim(options.MaxSimultaneousRequests, options.MaxSimultaneousRequests);
+
+            if (serverEndpoint.OidcCredentials != null)
+            {
+                var openIdConfigUri = serverEndpoint.OctopusServer.Resolve(OidcAccessTokenCache.WellKnownOpenIdConfigurationUrl);
+                var oidcHandler = new HttpClientHandler
+                {
+                    CookieContainer =  cookieContainer,
+                    Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
+                    UseProxy = options.AllowDefaultProxy
+                };
+                if (serverEndpoint.Proxy != null)
+                {
+                    oidcHandler.UseProxy = true;
+                    oidcHandler.Proxy = serverEndpoint.Proxy;
+                }
+
+                var oidcHttpClient = OctopusClientFactory.BuildHttpClient(oidcHandler, options, octopusCustomHeaders);
+                oidcTokenCache = new OidcAccessTokenCache(serverEndpoint.OidcCredentials, openIdConfigUri, oidcHttpClient);
+            }
 
             Repository = new OctopusRepository(this);
         }
@@ -459,6 +480,10 @@ namespace Octopus.Client
             {
                 webRequest.Headers["Authorization"] = $"Bearer {serverEndpoint.BearerToken}";
             }
+            if (oidcTokenCache != null)
+            {
+                webRequest.Headers["Authorization"] = $"Bearer {oidcTokenCache.GetAccessToken()}";
+            }
             webRequest.UserAgent = octopusCustomHeaders.UserAgent;
 
             if (webRequest.Method == "PUT")
@@ -632,6 +657,7 @@ namespace Octopus.Client
         public void Dispose()
         {
             requestSemaphore?.Dispose();
+            oidcTokenCache?.Dispose();
         }
 
         private void ValidateSpaceId(SpaceResource space)
