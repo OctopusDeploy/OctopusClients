@@ -10,21 +10,21 @@ public class SshKnownHostResource
     /// </summary>
     [JsonProperty(Order = -100, NullValueHandling = NullValueHandling.Ignore)]
     public string Id { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the host.
     /// </summary>
     [Writeable]
     [Trim]
     public string Host { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the key type.
     /// </summary>
     [Writeable]
     [Trim]
     public string KeyType { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the public key.
     /// </summary>

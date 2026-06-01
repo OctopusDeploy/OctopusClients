@@ -195,7 +195,7 @@ namespace Octopus.Client
         public IDeploymentFreezeRepository DeploymentFreezes { get; }
         public ISpaceDefaultRetentionPolicyRepository SpaceDefaultRetentionPolicies { get; }
         public ISshKnownHostRepository SshKnownHosts { get; }
-        
+
 
         public bool HasLink(string name)
         {

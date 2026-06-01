@@ -29,7 +29,7 @@ namespace Octopus.Client
         ITelemetryConfigurationRepository TelemetryConfigurationRepository { get; }
 
         IDeploymentFreezeRepository DeploymentFreezes { get; }
-        
+
         ISshKnownHostRepository SshKnownHosts { get; }
 
         /// <summary>

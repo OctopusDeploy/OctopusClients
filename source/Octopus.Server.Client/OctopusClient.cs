@@ -55,7 +55,7 @@ namespace Octopus.Client
                 var openIdConfigUri = serverEndpoint.OctopusServer.Resolve(OidcAccessTokenCache.WellKnownOpenIdConfigurationUrl);
                 var oidcHandler = new HttpClientHandler
                 {
-                    CookieContainer =  cookieContainer,
+                    CookieContainer = cookieContainer,
                     Credentials = serverEndpoint.Credentials ?? CredentialCache.DefaultNetworkCredentials,
                     UseProxy = options.AllowDefaultProxy
                 };
