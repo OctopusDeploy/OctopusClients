@@ -18,11 +18,6 @@ namespace Octopus.Client.Model.Authentication.OpenIDConnect.OctopusID
         [Writeable]
         public bool? AllowDynamicRegistration { get; set; }
 
-        [DisplayName("Allow M2M Dynamic Registration")]
-        [Description("Allow Octopus Server to register itself automatically as an M2M client for Octopus ID")]
-        [Writeable]
-        public bool? AllowM2MDynamicRegistration { get; set; }
-
         [DisplayName("M2M Client ID")]
         [Description("The client ID issued by Octopus ID via the M2M dynamic-registration flow.")]
         [Writeable]
