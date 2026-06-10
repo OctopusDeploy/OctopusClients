@@ -8336,10 +8336,17 @@ Octopus.Client.Model.Observability.LiveStatus
     String Kind { get; set; }
     Dictionary<String, String> Labels { get; set; }
   }
+  class PodContainerResource
+  {
+    .ctor()
+    String Image { get; set; }
+    String Name { get; set; }
+  }
   class PodManifestSummaryResource
     Octopus.Client.Model.Observability.LiveStatus.ManifestSummaryResource
   {
     .ctor()
+    IReadOnlyCollection<PodContainerResource> ContainerDetails { get; set; }
     IReadOnlyCollection<String> Containers { get; set; }
   }
 }

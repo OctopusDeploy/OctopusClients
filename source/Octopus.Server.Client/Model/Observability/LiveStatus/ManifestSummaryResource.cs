@@ -21,6 +21,19 @@ public class ManifestSummaryResource
 
 public class PodManifestSummaryResource : ManifestSummaryResource
 {
+    [Obsolete("Superseded by ContainerDetails. Retained for backwards compatibility.")]
     [Required]
     public IReadOnlyCollection<string> Containers { get; set; }
+
+    [Required]
+    public IReadOnlyCollection<PodContainerResource> ContainerDetails { get; set; }
+}
+
+public class PodContainerResource
+{
+    [Required]
+    public string Name { get; set; }
+
+    [Required]
+    public string Image { get; set; }
 }
