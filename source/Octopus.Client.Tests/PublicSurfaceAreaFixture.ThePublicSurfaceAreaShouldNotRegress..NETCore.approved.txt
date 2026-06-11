@@ -3200,6 +3200,12 @@ Octopus.Client.Model
     String EmailShowDatesInTimeZoneId { get; set; }
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
+    String SlackChannelId { get; set; }
+    String SlackChannelName { get; set; }
+    Octopus.Client.Model.SlackDigestFormat SlackDigestFormat { get; set; }
+    Nullable<DateTimeOffset> SlackDigestLastProcessed { get; set; }
+    Nullable<Int64> SlackDigestLastProcessedEventAutoId { get; set; }
+    TimeSpan SlackFrequencyPeriod { get; set; }
     String WebhookHeaderKey { get; set; }
     Octopus.Client.Model.PropertyValueResource WebhookHeaderValue { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
@@ -5735,6 +5741,11 @@ Octopus.Client.Model
   {
       None = 0
       SkipUnavailableMachines = 1
+  }
+  SlackDigestFormat
+  {
+      Summary = 0
+      Detailed = 1
   }
   class SnapshotGitReferenceResource
   {

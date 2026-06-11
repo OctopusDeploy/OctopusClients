@@ -39,6 +39,19 @@ namespace Octopus.Client.Model
         public DateTimeOffset? WebhookLastProcessed { get; set; }
 
         public long? WebhookLastProcessedEventAutoId { get; set; }
+
+
+        public string SlackChannelId { get; set; }
+
+        public string SlackChannelName { get; set; }
+
+        public TimeSpan SlackFrequencyPeriod { get; set; }
+
+        public SlackDigestFormat SlackDigestFormat { get; set; }
+
+        public DateTimeOffset? SlackDigestLastProcessed { get; set; }
+
+        public long? SlackDigestLastProcessedEventAutoId { get; set; }
     }
 
     public class EventNotificationSubscriptionFilter
