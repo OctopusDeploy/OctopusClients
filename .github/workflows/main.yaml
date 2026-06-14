@@ -209,7 +209,7 @@ jobs:
           service_account_id: 8b5a7f0f-c2c9-48de-a0f6-74d83669accf
 
       - name: Push to Octopus 🐙
-        uses: OctopusDeploy/push-package-action@88396edf7920c067a7506f82ea70dabbbaf4d77b # v4
+        uses: OctopusDeploy/push-package-action@c97226f7dc0e4fa3bd2fba9b5b30b2ac8a32048c # v4
         with:
           packages: |
             ./artifacts/Octopus.Client.${{ needs.build.outputs.octoversion_fullsemver }}.nupkg
