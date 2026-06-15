@@ -32,6 +32,8 @@ namespace Octopus.Client.Tests.Serialization
             {
                 VersionRange = (string)null,
                 Tag = subject.Tag,
+                VersioningStrategy = (string)null,
+                VersionTagRegex = (string)null,
                 ActionPackages = new object[]
                 {
                     new {DeploymentAction = "Action 1", PackageReference = ""},
@@ -42,7 +44,7 @@ namespace Octopus.Client.Tests.Serialization
                 Links = new { },
 
                 // This is the key part of this test: we are expecting the serialized object to contain an "Actions"
-                // collection.  This maintains compatibility with older server 
+                // collection.  This maintains compatibility with older server
                 Actions = new[] { "Action 1", "Action 1:Package 1", "Action 2", "Action 3:Package 1" }
             });
 

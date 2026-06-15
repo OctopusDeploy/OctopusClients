@@ -2463,6 +2463,14 @@ Octopus.Client.Model
     Octopus.Client.Model.ChannelResource SetAsDefaultChannel()
     Octopus.Client.Model.ChannelResource UsingLifecycle(Octopus.Client.Model.LifecycleResource)
   }
+  class ChannelVersioningStrategy
+    IComparable
+    Octopus.TinyTypes.CaseInsensitiveStringTinyType
+  {
+    static Octopus.Client.Model.ChannelVersioningStrategy MostRecentlyPublished
+    static Octopus.Client.Model.ChannelVersioningStrategy SemVer
+    .ctor(String)
+  }
   class ChannelVersionRuleResource
     Octopus.Client.Extensibility.IResource
     Octopus.Client.Model.IAuditedResource
@@ -2471,7 +2479,9 @@ Octopus.Client.Model
     .ctor()
     ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
     String Tag { get; set; }
+    Octopus.Client.Model.ChannelVersioningStrategy VersioningStrategy { get; set; }
     String VersionRange { get; set; }
+    String VersionTagRegex { get; set; }
   }
   class CommitResource
   {

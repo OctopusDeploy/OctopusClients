@@ -23,6 +23,15 @@ namespace Octopus.Client.Model
         [Trim]
         public string Tag { get; set; }
 
+#nullable enable
+        [Writeable]
+        public ChannelVersioningStrategy? VersioningStrategy { get; set; }
+
+        [Writeable]
+        [Trim]
+        public string? VersionTagRegex { get; set; }
+#nullable restore
+
         [Writeable]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Reuse)]
         public ICollection<DeploymentActionPackageResource> ActionPackages { get; set; }
