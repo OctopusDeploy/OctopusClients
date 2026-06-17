@@ -10,6 +10,8 @@ namespace Octopus.Client.Model
             this.Filter = new EventNotificationSubscriptionFilter();
             this.EmailTeams = new ReferenceCollection();
             this.WebhookTeams = new ReferenceCollection();
+            this.SlackChannelIds = new ReferenceCollection();
+            this.SlackChannelNames = new ReferenceCollection();
         }
 
         public EventNotificationSubscriptionFilter Filter { get; set; }
@@ -44,6 +46,10 @@ namespace Octopus.Client.Model
         public string SlackChannelId { get; set; }
 
         public string SlackChannelName { get; set; }
+
+        public ReferenceCollection SlackChannelIds { get; set; }
+
+        public ReferenceCollection SlackChannelNames { get; set; }
 
         public TimeSpan SlackFrequencyPeriod { get; set; }
 

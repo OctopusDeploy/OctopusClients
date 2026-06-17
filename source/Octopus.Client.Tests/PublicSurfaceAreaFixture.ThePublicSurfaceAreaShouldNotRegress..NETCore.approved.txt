@@ -3211,7 +3211,9 @@ Octopus.Client.Model
     Octopus.Client.Model.ReferenceCollection EmailTeams { get; set; }
     Octopus.Client.Model.EventNotificationSubscriptionFilter Filter { get; set; }
     String SlackChannelId { get; set; }
+    Octopus.Client.Model.ReferenceCollection SlackChannelIds { get; set; }
     String SlackChannelName { get; set; }
+    Octopus.Client.Model.ReferenceCollection SlackChannelNames { get; set; }
     Octopus.Client.Model.SlackDigestFormat SlackDigestFormat { get; set; }
     Nullable<DateTimeOffset> SlackDigestLastProcessed { get; set; }
     Nullable<Int64> SlackDigestLastProcessedEventAutoId { get; set; }
