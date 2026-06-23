@@ -154,6 +154,9 @@ namespace Octopus.Client.Model
         [Writeable]
         public string DefaultPowerShellEdition { get; set; }
 
+        [Writeable]
+        public bool IsBadgesEnabled { get; set; }
+
         public IconResource Icon { get; set; }
 
         /// <summary>
