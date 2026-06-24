@@ -5,9 +5,9 @@ namespace Octopus.Client.Model;
 public class GitPersistenceSerializationFormat(string value) : IEquatable<GitPersistenceSerializationFormat>
 {
     public static readonly GitPersistenceSerializationFormat Ocl = new("Ocl");
-        
+
     string Value { get; } = value;
-    
+
     public bool Equals(GitPersistenceSerializationFormat other)
     {
         if (other is null)
@@ -44,7 +44,7 @@ public class GitPersistenceSerializationFormat(string value) : IEquatable<GitPer
     }
 
     public override int GetHashCode() => (Value != null ? Value.GetHashCode() : 0);
-    
+
     public static bool operator ==(GitPersistenceSerializationFormat left, GitPersistenceSerializationFormat right)
         => object.Equals((object)left, (object)right);
 
