@@ -45,6 +45,7 @@ namespace Octopus.Client.Serialization
                     new GitCredentialDetailsConverter(),
                     new SpaceDefaultRetentionPolicyResourceConverter(),
                     new RecurringScheduleConverter(),
+                    new GitPersistenceSerializationFormatConverter()
                 }
             };
         }

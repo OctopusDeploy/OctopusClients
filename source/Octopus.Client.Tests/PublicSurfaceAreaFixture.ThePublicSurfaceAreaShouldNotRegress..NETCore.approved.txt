@@ -3488,6 +3488,16 @@ Octopus.Client.Model
     String Id { get; set; }
     Octopus.Client.Model.ProjectGitCredentialType Type { get; }
   }
+  class GitPersistenceSerializationFormat
+    IEquatable<GitPersistenceSerializationFormat>
+  {
+    static Octopus.Client.Model.GitPersistenceSerializationFormat Ocl
+    .ctor(String)
+    Boolean Equals(Octopus.Client.Model.GitPersistenceSerializationFormat)
+    Boolean Equals(Object)
+    Int32 GetHashCode()
+    String ToString()
+  }
   class GitPersistenceSettingsConversionStateResource
   {
     .ctor()
@@ -3504,6 +3514,7 @@ Octopus.Client.Model
     String DefaultBranch { get; set; }
     List<String> ProtectedBranchNamePatterns { get; set; }
     Boolean ProtectedDefaultBranch { get; set; }
+    Octopus.Client.Model.GitPersistenceSerializationFormat SerializationFormat { get; set; }
     Octopus.Client.Model.PersistenceSettingsType Type { get; }
     String Url { get; set; }
   }
@@ -11086,6 +11097,14 @@ Octopus.Client.Serialization
     Octopus.Client.Serialization.InheritedClassConverter<GitCredentialDetails, GitCredentialType>
   {
     .ctor()
+  }
+  class GitPersistenceSerializationFormatConverter
+    JsonConverter
+  {
+    .ctor()
+    Boolean CanConvert(Type)
+    Object ReadJson(JsonReader, Type, Object, JsonSerializer)
+    void WriteJson(JsonWriter, Object, JsonSerializer)
   }
   class GitSettingsConverter
     Octopus.Client.Serialization.InheritedClassConverter<ProjectGitCredentialResource, ProjectGitCredentialType>
