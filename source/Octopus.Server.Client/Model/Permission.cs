@@ -291,6 +291,8 @@ namespace Octopus.Client.Model
 
         [Description("View SSH Known Hosts")] public static readonly Permission SshKnownHostsView = new("SshKnownHostsView");
 
+        [Description("View AI agent transcripts")][SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission AiAgentTranscriptView = new("AiAgentTranscriptView");
+
         public Permission(string id)
         {
             Id = id;
