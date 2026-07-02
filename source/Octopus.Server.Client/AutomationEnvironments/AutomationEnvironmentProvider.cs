@@ -69,8 +69,6 @@ namespace Octopus.Client.AutomationEnvironments
                 envString = $"{environment}/{environmentVariableReader.GetVariableValue(KnownEnvironmentVariables[environment].First()).Split(' ').First()}";
             }
 
-            Logger.InfoFormat("Detected automation environment: {environment}", envString);
-
             return envString;
         }
     }
