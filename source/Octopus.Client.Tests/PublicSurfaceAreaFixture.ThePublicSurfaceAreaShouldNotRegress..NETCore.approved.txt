@@ -841,6 +841,13 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
   }
+  class GoogleCloudOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<GoogleCloudOidcAccountResource, GoogleCloudOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<GoogleCloudOidcAccountResource, GoogleCloudOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   interface IResourceBuilder
   {
   }
@@ -1210,6 +1217,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
     Octopus.Client.Editors.Async.AccountEditor<GenericOidcAccountResource, GenericOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class GoogleCloudOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<GoogleCloudOidcAccountResource, GoogleCloudOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<GoogleCloudOidcAccountResource, GoogleCloudOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -6548,6 +6562,7 @@ Octopus.Client.Model.Accounts
       GoogleCloudAccount = 8
       AzureOidc = 9
       GenericOidcAccount = 10
+      GoogleCloudOidcAccount = 11
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -6706,6 +6721,23 @@ Octopus.Client.Model.Accounts
     .ctor()
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     Octopus.Client.Model.SensitiveValue JsonKey { get; set; }
+  }
+  class GoogleCloudOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    String[] AccountTestSubjectKeys { get; set; }
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    String Audience { get; set; }
+    Dictionary<String, String> CustomClaims { get; set; }
+    String[] DeploymentSubjectKeys { get; set; }
+    String[] HealthCheckSubjectKeys { get; set; }
+    String TokenLifetimeSeconds { get; set; }
   }
   class ResourceGroup
   {

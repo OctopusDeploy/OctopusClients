@@ -17,7 +17,8 @@ namespace Octopus.Client.Serialization
                 {AccountType.AmazonWebServicesAccount, typeof(AmazonWebServicesAccountResource)},
                 {AccountType.Token, typeof(TokenAccountResource)},
                 {AccountType.GoogleCloudAccount, typeof(GoogleCloudAccountResource)},
-                {AccountType.GenericOidcAccount, typeof(GenericOidcAccountResource)}
+                {AccountType.GenericOidcAccount, typeof(GenericOidcAccountResource)},
+                {AccountType.GoogleCloudOidcAccount, typeof(GoogleCloudOidcAccountResource)}
             };
 
         protected override IDictionary<AccountType, Type> DerivedTypeMappings => AccountTypeMappings;
