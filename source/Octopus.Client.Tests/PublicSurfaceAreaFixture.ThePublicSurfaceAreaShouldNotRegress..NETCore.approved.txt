@@ -4050,6 +4050,7 @@ Octopus.Client.Model
     String MachinePolicyId { get; set; }
     String Name { get; set; }
     String OperatingSystem { get; set; }
+    String OperatingSystemVersion { get; set; }
     String ShellName { get; set; }
     String ShellVersion { get; set; }
     Boolean SkipInitialHealthCheck { get; set; }

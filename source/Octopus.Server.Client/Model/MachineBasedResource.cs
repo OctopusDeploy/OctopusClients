@@ -47,6 +47,7 @@ namespace Octopus.Client.Model
         public EndpointResource Endpoint { get; set; }
 
         public string OperatingSystem { get; set; }
+        public string OperatingSystemVersion { get; set; }
         public string ShellName { get; set; }
         public string ShellVersion { get; set; }
         public string Architecture { get; set; }
