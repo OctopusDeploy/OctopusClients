@@ -3325,6 +3325,7 @@ Octopus.Client.Model
     Boolean IsNavigationVisualUpliftEnabled { get; set; }
     Boolean IsProjectsPageOnboardingEnabled { get; set; }
     Boolean IsProjectsPageOptimizationEnabled { get; set; }
+    Boolean IsWebhookTriggerEnabled { get; set; }
   }
   class FeedResource
     Octopus.Client.Extensibility.IResource

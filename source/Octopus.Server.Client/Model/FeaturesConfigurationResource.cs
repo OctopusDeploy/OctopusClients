@@ -46,5 +46,8 @@ namespace Octopus.Client.Model
 
         [Writeable]
         public string DefaultPowerShellEdition { get; set; }
+
+        [Writeable]
+        public bool IsWebhookTriggerEnabled { get; set; }
     }
 }
