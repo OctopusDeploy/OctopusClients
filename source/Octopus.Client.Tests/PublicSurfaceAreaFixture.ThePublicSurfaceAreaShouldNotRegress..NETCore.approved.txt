@@ -272,6 +272,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.Async.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.Async.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
+    Octopus.Client.Repositories.Async.IRateLimitingPolicyRepository RateLimitingPolicies { get; }
     Octopus.Client.Repositories.Async.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.Async.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.Async.ISpaceRepository Spaces { get; }
@@ -296,6 +297,7 @@ Octopus.Client
     Octopus.Client.Repositories.IOctopusServerNodeRepository OctopusServerNodes { get; }
     Octopus.Client.Repositories.IPerformanceConfigurationRepository PerformanceConfiguration { get; }
     Octopus.Client.Repositories.IPlatformHubPolicyRepository PlatformHubPolicies { get; }
+    Octopus.Client.Repositories.IRateLimitingPolicyRepository RateLimitingPolicies { get; }
     Octopus.Client.Repositories.ISchedulerRepository Schedulers { get; }
     Octopus.Client.Repositories.IServerStatusRepository ServerStatus { get; }
     Octopus.Client.Repositories.ISpaceRepository Spaces { get; }
@@ -420,6 +422,7 @@ Octopus.Client
     Octopus.Client.Repositories.Async.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.Async.IProjectTriggerRepository ProjectTriggers { get; }
     Octopus.Client.Repositories.Async.IProxyRepository Proxies { get; }
+    Octopus.Client.Repositories.Async.IRateLimitingPolicyRepository RateLimitingPolicies { get; }
     Octopus.Client.Repositories.Async.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.Async.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.Async.IRunbookProcessRepository RunbookProcesses { get; }
@@ -565,6 +568,7 @@ Octopus.Client
     Octopus.Client.Repositories.IProjectRepository Projects { get; }
     Octopus.Client.Repositories.IProjectTriggerRepository ProjectTriggers { get; }
     Octopus.Client.Repositories.IProxyRepository Proxies { get; }
+    Octopus.Client.Repositories.IRateLimitingPolicyRepository RateLimitingPolicies { get; }
     Octopus.Client.Repositories.IReleaseRepository Releases { get; }
     Octopus.Client.Repositories.IRetentionPolicyRepository RetentionPolicies { get; }
     Octopus.Client.Repositories.IRunbookProcessRepository RunbookProcesses { get; }
@@ -8463,6 +8467,59 @@ Octopus.Client.Model.Observability.ResourceEvents
     String Type { get; set; }
   }
 }
+Octopus.Client.Model.RateLimiting
+{
+  class GetRateLimitingPolicyByIdRequest
+  {
+    .ctor()
+    String Id { get; set; }
+  }
+  class ListRateLimitingPoliciesRequest
+  {
+    .ctor()
+    Nullable<Int32> Skip { get; set; }
+    Nullable<Int32> Take { get; set; }
+  }
+  class ListRateLimitingPoliciesResponse
+  {
+    .ctor(String, Int32, Int32, Int32, Int32, Octopus.Client.Model.RateLimiting.RateLimitingPolicyResource[])
+    Octopus.Client.Model.RateLimiting.RateLimitingPolicyResource[] Items { get; }
+    Int32 ItemsPerPage { get; }
+    String ItemType { get; }
+    Int32 LastPageNumber { get; }
+    Int32 NumberOfPages { get; }
+    Int32 TotalResults { get; }
+  }
+  class ModifyRateLimitingPolicyCommand
+  {
+    .ctor()
+    Boolean AuditMode { get; set; }
+    Int32 BurstLimit { get; set; }
+    String Id { get; set; }
+    Boolean IsEnabled { get; set; }
+    String Name { get; set; }
+    Int32 RequestsPerHour { get; set; }
+    Octopus.Client.Model.RateLimiting.RateLimitingPolicyScopeType ScopeType { get; set; }
+  }
+  class RateLimitingPolicyResource
+  {
+    .ctor(String, Boolean, String, Boolean, Octopus.Client.Model.RateLimiting.RateLimitingPolicyScopeType, Int32, Int32, Boolean)
+    Boolean AuditMode { get; }
+    Int32 BurstLimit { get; }
+    String Id { get; }
+    Boolean IsBuiltIn { get; }
+    Boolean IsEnabled { get; }
+    String Name { get; }
+    Int32 RequestsPerHour { get; }
+    Octopus.Client.Model.RateLimiting.RateLimitingPolicyScopeType ScopeType { get; }
+  }
+  RateLimitingPolicyScopeType
+  {
+      Unauthenticated = 0
+      AuthenticatedHuman = 1
+      AuthenticatedAgent = 2
+  }
+}
 Octopus.Client.Model.SmtpConfiguration
 {
   class AzureSmtpConfigurationResource
@@ -9784,6 +9841,12 @@ Octopus.Client.Repositories
     Octopus.Client.Repositories.IPaginate<ProxyResource>
   {
   }
+  interface IRateLimitingPolicyRepository
+  {
+    Octopus.Client.Model.RateLimiting.RateLimitingPolicyResource Get(Octopus.Client.Model.RateLimiting.GetRateLimitingPolicyByIdRequest)
+    Octopus.Client.Model.RateLimiting.ListRateLimitingPoliciesResponse List(Octopus.Client.Model.RateLimiting.ListRateLimitingPoliciesRequest)
+    Octopus.Client.Model.RateLimiting.RateLimitingPolicyResource Modify(Octopus.Client.Model.RateLimiting.ModifyRateLimitingPolicyCommand)
+  }
   interface IReleaseRepository
     Octopus.Client.Repositories.IGet<ReleaseResource>
     Octopus.Client.Repositories.ICreate<ReleaseResource>
@@ -10694,6 +10757,12 @@ Octopus.Client.Repositories.Async
     Octopus.Client.Repositories.Async.IFindByName<ProxyResource>
     Octopus.Client.Repositories.Async.IPaginate<ProxyResource>
   {
+  }
+  interface IRateLimitingPolicyRepository
+  {
+    Task<RateLimitingPolicyResource> Get(Octopus.Client.Model.RateLimiting.GetRateLimitingPolicyByIdRequest, CancellationToken)
+    Task<ListRateLimitingPoliciesResponse> List(Octopus.Client.Model.RateLimiting.ListRateLimitingPoliciesRequest, CancellationToken)
+    Task<RateLimitingPolicyResource> Modify(Octopus.Client.Model.RateLimiting.ModifyRateLimitingPolicyCommand, CancellationToken)
   }
   interface IReleaseRepository
     Octopus.Client.Repositories.Async.IGet<ReleaseResource>
