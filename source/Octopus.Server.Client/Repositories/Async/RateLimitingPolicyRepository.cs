@@ -11,6 +11,15 @@ public interface IRateLimitingPolicyRepository
     Task<RateLimitingPolicyResource> Modify(ModifyRateLimitingPolicyCommand command, CancellationToken cancellationToken);
 }
 
+public static class RateLimitingPolicyExtensionMethods
+{
+    /// <summary>
+    /// Lists rate limiting policies; Convenience overload if you don't need to supply skip/take parameters.
+    /// </summary>
+    public static Task<ListRateLimitingPoliciesResponse> List(this IRateLimitingPolicyRepository repository, CancellationToken cancellationToken)
+        => repository.List(new ListRateLimitingPoliciesRequest(), cancellationToken);
+}
+
 internal class RateLimitingPolicyRepository : IRateLimitingPolicyRepository
 {
     private readonly IOctopusAsyncClient client;

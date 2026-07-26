@@ -11147,6 +11147,10 @@ Octopus.Client.Repositories.Async
     Task<GetResourceManifestResponse> GetLiveKubernetesResourceManifest(Octopus.Client.Model.Observability.LiveStatus.GetLiveKubernetesResourceManifestRequest, CancellationToken)
     Task<GetResourceEventsResponse> GetResourceEvents(Octopus.Client.Model.Observability.ResourceEvents.GetResourceEventsRequest, CancellationToken)
   }
+  abstract class RateLimitingPolicyExtensionMethods
+  {
+    static Task<ListRateLimitingPoliciesResponse> List(Octopus.Client.Repositories.Async.IRateLimitingPolicyRepository, CancellationToken)
+  }
   class SpaceDefaultRetentionPolicyRepository
     Octopus.Client.Repositories.Async.ISpaceDefaultRetentionPolicyRepository
   {
