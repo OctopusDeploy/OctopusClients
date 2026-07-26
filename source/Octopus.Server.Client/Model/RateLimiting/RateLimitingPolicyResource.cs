@@ -6,7 +6,7 @@ public class RateLimitingPolicyResource(
     string name,
     bool isEnabled,
     RateLimitingPolicyScopeType scopeType,
-    int requestsPerHour,
+    int requestsPerMinute,
     int burstLimit,
     bool auditMode)
 {
@@ -15,7 +15,7 @@ public class RateLimitingPolicyResource(
     public string Name { get; } = name;
     public bool IsEnabled { get; } = isEnabled;
     public RateLimitingPolicyScopeType ScopeType { get; } = scopeType;
-    public int RequestsPerHour { get; } = requestsPerHour;
+    public int RequestsPerMinute { get; } = requestsPerMinute;
     public int BurstLimit { get; } = burstLimit;
     public bool AuditMode { get; } = auditMode;
 }

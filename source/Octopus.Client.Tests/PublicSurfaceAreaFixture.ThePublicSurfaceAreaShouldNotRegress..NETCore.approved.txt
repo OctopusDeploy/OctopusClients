@@ -8498,7 +8498,7 @@ Octopus.Client.Model.RateLimiting
     String Id { get; set; }
     Boolean IsEnabled { get; set; }
     String Name { get; set; }
-    Int32 RequestsPerHour { get; set; }
+    Int32 RequestsPerMinute { get; set; }
     Octopus.Client.Model.RateLimiting.RateLimitingPolicyScopeType ScopeType { get; set; }
   }
   class RateLimitingPolicyResource
@@ -8510,7 +8510,7 @@ Octopus.Client.Model.RateLimiting
     Boolean IsBuiltIn { get; }
     Boolean IsEnabled { get; }
     String Name { get; }
-    Int32 RequestsPerHour { get; }
+    Int32 RequestsPerMinute { get; }
     Octopus.Client.Model.RateLimiting.RateLimitingPolicyScopeType ScopeType { get; }
   }
   RateLimitingPolicyScopeType

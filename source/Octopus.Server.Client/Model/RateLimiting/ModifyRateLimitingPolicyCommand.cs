@@ -8,7 +8,7 @@ public class ModifyRateLimitingPolicyCommand
     [Required] public string Name { get; set; }
     [Required] public bool IsEnabled { get; set; }
     [Required] public RateLimitingPolicyScopeType ScopeType { get; set; }
-    [Required] public int RequestsPerHour { get; set; }
+    [Required] public int RequestsPerMinute { get; set; }
     [Required] public int BurstLimit { get; set; }
     [Required] public bool AuditMode { get; set; }
 }
