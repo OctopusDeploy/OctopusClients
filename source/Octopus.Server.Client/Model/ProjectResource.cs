@@ -146,7 +146,7 @@ namespace Octopus.Client.Model
         public bool? AllowIgnoreChannelRules { get; set; }
 
         [Writeable]
-        public bool? ExecuteDeploymentsOnResilientPipeline { get; set; }
+        public bool? ExecuteDeploymentsOnEventBasedPipeline { get; set; }
 
         [Writeable]
         public bool? CombineHealthAndSyncStatusInDashboardLiveStatus { get; set; }
