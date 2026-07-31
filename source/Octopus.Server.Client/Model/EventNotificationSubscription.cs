@@ -43,9 +43,7 @@ namespace Octopus.Client.Model
         public long? WebhookLastProcessedEventAutoId { get; set; }
 
 
-        public string SlackChannelId { get; set; }
 
-        public string SlackChannelName { get; set; }
 
         public ReferenceCollection SlackChannelIds { get; set; }
 
