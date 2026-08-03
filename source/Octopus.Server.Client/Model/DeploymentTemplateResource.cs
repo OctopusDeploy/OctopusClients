@@ -21,6 +21,8 @@ namespace Octopus.Client.Model
 
         public bool IsLibraryVariableSetModified { get; set; }
 
+        public bool IsGitResourceModified { get; set; }
+
         public List<DeploymentPromotionTarget> PromoteTo { get; set; }
 
         public List<DeploymentPromomotionTenant> TenantPromotions { get; set; }

@@ -3060,6 +3060,7 @@ Octopus.Client.Model
     Octopus.Client.Model.Resource
   {
     .ctor()
+    Boolean IsGitResourceModified { get; set; }
     Boolean IsLibraryVariableSetModified { get; set; }
     Boolean IsVariableSetModified { get; set; }
     List<DeploymentPromotionTarget> PromoteTo { get; set; }
