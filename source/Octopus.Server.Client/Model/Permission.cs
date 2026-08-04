@@ -293,6 +293,8 @@ namespace Octopus.Client.Model
 
         [Description("View AI agent transcripts")][SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission AiAgentTranscriptView = new("AiAgentTranscriptView");
 
+        [Description("Administer deployed resources managed by Octopus")][SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission DeployedResourceAdminister = new("DeployedResourceAdminister");
+
         public Permission(string id)
         {
             Id = id;
