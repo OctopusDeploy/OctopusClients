@@ -81,7 +81,7 @@ namespace Octopus.Client.Operations
                 var machinePolicy = GetMachinePolicy(repository);
                 ValidateTenantTags(repository);
                 ApplyBaseChanges(machine, machinePolicy, proxy);
-                ApplyDeploymentTargetChanges(machine, GetEnvironments(repository), GetTenants(repository));
+                ApplyDeploymentTargetChanges(machine, GetEnvironmentIds(repository), GetTenants(repository));
             }
             else
             {
@@ -132,13 +132,13 @@ namespace Octopus.Client.Operations
                 throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
-        List<EnvironmentResource> GetEnvironments(IOctopusSpaceRepository repository)
+        List<string> GetEnvironmentIds(IOctopusSpaceRepository repository)
         {
-            List<EnvironmentResource> environments = new();
+            List<string> environmentIds = new();
             if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
                 var envsByName = repository.Environments.FindByNames(EnvironmentNames);
-                environments.AddRange(envsByName);
+                environmentIds.AddRange(envsByName.Select(e => e.Id));
 
                 //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
                 var missingByNameOnly = EnvironmentNames
@@ -151,14 +151,27 @@ namespace Octopus.Client.Operations
 
             if (Environments is not null && Environments.Any())
             {
-                var environmentsByNameIdOrSlug =
-                    repository.Environments.FindByNameIdOrSlugs<EnvironmentResource, IEnvironmentRepository>(
-                        Environments, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()));
-                environments.AddRange(environmentsByNameIdOrSlug);
+                environmentIds.AddRange(ResolveEnvironmentIdsV2(repository, Environments));
             }
 
-            return environments;
+            return environmentIds;
         }
+
+        List<string> ResolveEnvironmentIdsV2(IOctopusSpaceRepository repository, string[] identifiers)
+        {
+            try
+            {
+                return GetEnvironmentsV2.FindIds(repository, identifiers, CouldNotFindByMultipleMessage);
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                return repository.Environments
+                    .FindByNameIdOrSlugs<EnvironmentResource, IEnvironmentRepository>(
+                        identifiers, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
+                    .Select(e => e.Id).ToList();
+            }
+        }
+
 
         MachineResource GetMachine(IOctopusSpaceRepository repository)
         {
@@ -191,7 +204,7 @@ namespace Octopus.Client.Operations
                 var machinePolicy = GetMachinePolicy(repository).ConfigureAwait(false);
                 await ValidateTenantTags(repository).ConfigureAwait(false);
                 ApplyBaseChanges(machine, await machinePolicy, proxy);
-                var selectedEnvironments = await GetEnvironments(repository).ConfigureAwait(false);
+                var selectedEnvironments = await GetEnvironmentIds(repository).ConfigureAwait(false);
                 var tenants = await GetTenants(repository).ConfigureAwait(false);
                 ApplyDeploymentTargetChanges(machine, selectedEnvironments, tenants);
             }
@@ -245,13 +258,13 @@ namespace Octopus.Client.Operations
                 throw new InvalidRegistrationArgumentsException(CouldNotFindByNameMessage("tag", missingTags.ToArray()));
         }
 
-        async Task<List<EnvironmentResource>> GetEnvironments(IOctopusSpaceAsyncRepository repository)
+        async Task<List<string>> GetEnvironmentIds(IOctopusSpaceAsyncRepository repository)
         {
-            List<EnvironmentResource> environments = new();
+            List<string> environmentIds = new();
             if (EnvironmentNames is not null && EnvironmentNames.Any())
             {
                 var envsByName = await repository.Environments.FindByNames(EnvironmentNames).ConfigureAwait(false);
-                environments.AddRange(envsByName);
+                environmentIds.AddRange(envsByName.Select(e => e.Id));
 
                 //if there are any missing environment names only, then we want to throw an exception and not check the missing names against slugs or ids
                 var missingByNameOnly = EnvironmentNames
@@ -264,13 +277,26 @@ namespace Octopus.Client.Operations
 
             if (Environments is not null && Environments.Any())
             {
-                var environmentsByNameIdOrSlug =
-                    await repository.Environments.FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
-                        Environments, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()));
-                environments.AddRange(environmentsByNameIdOrSlug);
+                environmentIds.AddRange(await ResolveEnvironmentIdsV2Async(repository, Environments).ConfigureAwait(false));
             }
 
-            return environments;
+            return environmentIds;
+        }
+
+        static async Task<List<string>> ResolveEnvironmentIdsV2Async(IOctopusSpaceAsyncRepository repository, string[] identifiers)
+        {
+            try
+            {
+                return await GetEnvironmentsV2.FindIdsAsync(repository, identifiers, CouldNotFindByMultipleMessage).ConfigureAwait(false);
+            }
+            catch (OctopusResourceNotFoundException)
+            {
+                var fallback = await repository.Environments
+                    .FindByNameIdOrSlugs<EnvironmentResource, IAsyncEnvironmentRepository>(
+                        identifiers, missing => CouldNotFindByMultipleMessage("environment", missing.ToArray()))
+                    .ConfigureAwait(false);
+                return fallback.Select(e => e.Id).ToList();
+            }
         }
 
         async Task<MachineResource> GetMachine(IOctopusSpaceAsyncRepository repository)
@@ -288,14 +314,83 @@ namespace Octopus.Client.Operations
             return existing ?? new MachineResource();
         }
 
-        void ApplyDeploymentTargetChanges(MachineResource machine, IEnumerable<EnvironmentResource> environment,
+        void ApplyDeploymentTargetChanges(MachineResource machine, IEnumerable<string> environmentIds,
             IEnumerable<TenantResource> tenants)
         {
-            machine.EnvironmentIds = new ReferenceCollection(environment.Select(e => e.Id).ToArray());
+            machine.EnvironmentIds = new ReferenceCollection(environmentIds.ToArray());
             machine.TenantIds = new ReferenceCollection(tenants.Select(t => t.Id).ToArray());
             machine.TenantTags = new ReferenceCollection(TenantTags);
             machine.Roles = new ReferenceCollection(Roles);
             machine.TenantedDeploymentParticipation = TenantedDeploymentParticipation;
+        }
+
+        static class GetEnvironmentsV2
+        {
+            const string RouteTemplate = "~/api/{spaceId}/environments/v2{?type,skip,take}";
+
+            public static List<string> FindIds(IOctopusSpaceRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
+            {
+                var spaceId = ResolveSpaceId(repository.Scope);
+                var all = repository.Client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
+                    RouteTemplate,
+                    new
+                    {
+                        spaceId,
+                        skip = 0,
+                        take = int.MaxValue
+                    });
+
+                return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
+            }
+
+            public static async Task<List<string>> FindIdsAsync(IOctopusSpaceAsyncRepository repository, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
+            {
+                var spaceId = ResolveSpaceId(repository.Scope);
+                var all = await repository.Client.Get<PaginatedCollection<BaseEnvironmentV2Resource>>(
+                    RouteTemplate,
+                    new
+                    {
+                        spaceId,
+                        skip = 0,
+                        take = int.MaxValue
+                    });
+
+                return MatchEnvironmentIdentifiers(all.Items, identifiers, missingErrorGenerator);
+            }
+
+            static string ResolveSpaceId(RepositoryScope repositoryScope)
+            {
+                return repositoryScope.Apply(
+                    space => space.Id,
+                    () => throw new SpaceScopedOperationInSystemContextException(),
+                    () => throw new Exception("Could not resolve the v2 environments endpoint without an explicit space context. Use client.ForSpace(space) to select a space first."));
+            }
+
+            static List<string> MatchEnvironmentIdentifiers(IList<BaseEnvironmentV2Resource> all, string[] identifiers, Func<string, string[], string> missingErrorGenerator)
+            {
+                var remaining = new HashSet<string>(identifiers, StringComparer.OrdinalIgnoreCase);
+                var resolved = new List<string>();
+
+                MatchAndRemove(all, remaining, resolved, e => e.Name);
+                MatchAndRemove(all, remaining, resolved, e => e.Slug);
+                MatchAndRemove(all, remaining, resolved, e => e.Id);
+
+                if (remaining.Any())
+                    throw new InvalidRegistrationArgumentsException(
+                        missingErrorGenerator("environment", remaining.ToArray()));
+
+                return resolved;
+            }
+
+            static void MatchAndRemove(IList<BaseEnvironmentV2Resource> all, HashSet<string> remaining, List<string> resolved, Func<BaseEnvironmentV2Resource, string> selector)
+            {
+                foreach (var environment in all)
+                {
+                    var value = selector(environment);
+                    if (value is not null && remaining.Remove(value))
+                        resolved.Add(environment.Id);
+                }
+            }
         }
     }
 }

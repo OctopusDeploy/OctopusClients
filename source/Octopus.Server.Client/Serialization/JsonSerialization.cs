@@ -29,6 +29,7 @@ namespace Octopus.Client.Serialization
                         "dddd, dd MMMM yyyy h:mm tt zzz", "f" ),
                     new ControlConverter(),
                     new EndpointConverter(),
+                    new EnvironmentV2Converter(),
                     new TentacleConfigurationConverter(),
                     new AccountConverter(),
                     new FeedConverter(),
