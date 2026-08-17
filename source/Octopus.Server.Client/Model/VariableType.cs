@@ -9,6 +9,7 @@
         AzureAccount,
         WorkerPool,
         UsernamePasswordAccount,
-        GenericOidcAccount
+        GenericOidcAccount,
+        GoogleCloudAccount
     }
 }

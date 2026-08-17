@@ -16,5 +16,6 @@ namespace Octopus.Client.Model.Accounts
         AzureOidc,
         GenericOidcAccount,
         GoogleCloudOidcAccount,
+        AmazonWebServicesOidcAccount,
     }
 }

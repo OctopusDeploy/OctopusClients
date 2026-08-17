@@ -747,6 +747,13 @@ Octopus.Client.Editors
   {
     .ctor(Octopus.Client.Repositories.IAccountRepository)
   }
+  class AmazonWebServicesOidcAccountEditor
+    Octopus.Client.Editors.IResourceEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+    Octopus.Client.Editors.IResourceBuilder
+    Octopus.Client.Editors.AccountEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.IAccountRepository)
+  }
   class AzureOidcAccountEditor
     Octopus.Client.Editors.IResourceEditor<AzureOidcAccountResource, AzureOidcAccountEditor>
     Octopus.Client.Editors.IResourceBuilder
@@ -1119,6 +1126,13 @@ Octopus.Client.Editors.Async
     Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
     Octopus.Client.Editors.Async.IResourceBuilder
     Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesAccountResource, AmazonWebServicesAccountEditor>
+  {
+    .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
+  }
+  class AmazonWebServicesOidcAccountEditor
+    Octopus.Client.Editors.Async.IResourceEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
+    Octopus.Client.Editors.Async.IResourceBuilder
+    Octopus.Client.Editors.Async.AccountEditor<AmazonWebServicesOidcAccountResource, AmazonWebServicesOidcAccountEditor>
   {
     .ctor(Octopus.Client.Repositories.Async.IAccountRepository)
   }
@@ -6467,6 +6481,7 @@ Octopus.Client.Model
       WorkerPool = 5
       UsernamePasswordAccount = 6
       GenericOidcAccount = 7
+      GoogleCloudAccount = 8
   }
   class VersioningStrategyResource
   {
@@ -6569,6 +6584,7 @@ Octopus.Client.Model.Accounts
       AzureOidc = 9
       GenericOidcAccount = 10
       GoogleCloudOidcAccount = 11
+      AmazonWebServicesOidcAccount = 12
   }
   class AmazonWebServicesAccountResource
     Octopus.Client.Extensibility.IResource
@@ -6583,6 +6599,24 @@ Octopus.Client.Model.Accounts
     Octopus.Client.Model.Accounts.AccountType AccountType { get; }
     String Region { get; set; }
     Octopus.Client.Model.SensitiveValue SecretKey { get; set; }
+  }
+  class AmazonWebServicesOidcAccountResource
+    Octopus.Client.Extensibility.IResource
+    Octopus.Client.Model.IAuditedResource
+    Octopus.Client.Extensibility.INamedResource
+    Octopus.Client.Extensibility.IHaveSpaceResource
+    Octopus.Client.Model.IHaveSlugResource
+    Octopus.Client.Model.Accounts.AccountResource
+  {
+    .ctor()
+    String[] AccountTestSubjectKeys { get; set; }
+    Octopus.Client.Model.Accounts.AccountType AccountType { get; }
+    Dictionary<String, String> CustomClaims { get; set; }
+    String[] DeploymentSubjectKeys { get; set; }
+    String[] HealthCheckSubjectKeys { get; set; }
+    String Region { get; set; }
+    String RoleArn { get; set; }
+    String SessionDuration { get; set; }
   }
   class AzureOidcAccountResource
     Octopus.Client.Extensibility.IResource
