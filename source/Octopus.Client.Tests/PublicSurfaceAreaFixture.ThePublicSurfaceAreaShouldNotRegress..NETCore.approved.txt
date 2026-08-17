@@ -4700,6 +4700,7 @@ Octopus.Client.Model
     static Octopus.Client.Model.Permission RunbookRunCreate
     static Octopus.Client.Model.Permission RunbookRunDelete
     static Octopus.Client.Model.Permission RunbookRunView
+    static Octopus.Client.Model.Permission RunbookSnapshotCreate
     static Octopus.Client.Model.Permission RunbookView
     static Octopus.Client.Model.Permission SpaceCreate
     static Octopus.Client.Model.Permission SpaceDelete

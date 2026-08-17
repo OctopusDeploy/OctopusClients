@@ -249,6 +249,8 @@ namespace Octopus.Client.Model
 
         [Description("Edit runbooks")][SupportsRestriction(PermissionScope.Projects)] public static readonly Permission RunbookEdit = new Permission("RunbookEdit");
 
+        [Description("Create runbook snapshots")][SupportsRestriction(PermissionScope.Projects)] public static readonly Permission RunbookSnapshotCreate = new Permission("RunbookSnapshotCreate");
+
         [Description("View runbook runs")][SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission RunbookRunView = new Permission("RunbookRunView");
 
         [Description("Delete runbook runs")][SupportsRestriction(PermissionScope.Projects, PermissionScope.Environments, PermissionScope.Tenants, ExplicitTenantScopeRequired = true)] public static readonly Permission RunbookRunDelete = new Permission("RunbookRunDelete");
