@@ -6399,6 +6399,13 @@ Octopus.Client.Model
     String CanonicalName { get; }
     String Name { get; set; }
   }
+  class VariableIdentifier
+  {
+    .ctor()
+    .ctor(String, String)
+    String Name { get; set; }
+    String OwnerId { get; set; }
+  }
   class VariablePromptOptions
   {
     .ctor()
@@ -9897,6 +9904,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.LifecycleProgressionResource GetProgression(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.DeploymentTemplateResource GetTemplate(Octopus.Client.Model.ReleaseResource)
     Octopus.Client.Model.ReleaseResource SnapshotVariables(Octopus.Client.Model.ReleaseResource)
+    Octopus.Client.Model.ReleaseResource SnapshotVariablesByName(Octopus.Client.Model.ReleaseResource, Octopus.Client.Model.VariableIdentifier[])
   }
   interface IResourceRepository
   {
@@ -9963,6 +9971,7 @@ Octopus.Client.Repositories
     Octopus.Client.Model.ResourceCollection<RunbookRunResource> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
     Octopus.Client.Model.RunbookRunTemplateResource GetTemplate(Octopus.Client.Model.RunbookSnapshotResource)
     Octopus.Client.Model.RunbookSnapshotResource SnapshotVariables(Octopus.Client.Model.RunbookSnapshotResource)
+    Octopus.Client.Model.RunbookSnapshotResource SnapshotVariablesByName(Octopus.Client.Model.RunbookSnapshotResource, Octopus.Client.Model.VariableIdentifier[])
   }
   interface ISchedulerRepository
   {
@@ -10823,6 +10832,7 @@ Octopus.Client.Repositories.Async
     Task<DeploymentTemplateResource> GetTemplate(Octopus.Client.Model.ReleaseResource, CancellationToken)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource)
     Task<ReleaseResource> SnapshotVariables(Octopus.Client.Model.ReleaseResource, CancellationToken)
+    Task<ReleaseResource> SnapshotVariablesByName(Octopus.Client.Model.ReleaseResource, Octopus.Client.Model.VariableIdentifier[], CancellationToken)
   }
   interface IResourceRepository
   {
@@ -10889,6 +10899,7 @@ Octopus.Client.Repositories.Async
     Task<ResourceCollection<RunbookRunResource>> GetRunbookRuns(Octopus.Client.Model.RunbookSnapshotResource, Int32, Nullable<Int32>)
     Task<RunbookRunTemplateResource> GetTemplate(Octopus.Client.Model.RunbookSnapshotResource)
     Task<RunbookSnapshotResource> SnapshotVariables(Octopus.Client.Model.RunbookSnapshotResource)
+    Task<RunbookSnapshotResource> SnapshotVariablesByName(Octopus.Client.Model.RunbookSnapshotResource, Octopus.Client.Model.VariableIdentifier[], CancellationToken)
   }
   interface ISchedulerRepository
   {

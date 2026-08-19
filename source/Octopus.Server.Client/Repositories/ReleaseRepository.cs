@@ -24,6 +24,18 @@ namespace Octopus.Client.Repositories
         DeploymentTemplateResource GetTemplate(ReleaseResource release);
         DeploymentPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         ReleaseResource SnapshotVariables(ReleaseResource release);
+        /// <summary>
+        /// Updates only the named variables within the release's variable snapshot, leaving
+        /// all other snapshotted variables untouched.
+        /// <remarks>
+        /// This API is experimental and controlled by toggle `partial-updates-on-variables`
+        /// </remarks>
+        /// </summary>
+        /// <param name="release">release to have its snapshot updated</param>
+        /// <param name="variables">identifiers for Variables to be updated</param>
+        /// <returns>
+        /// </returns>
+        ReleaseResource SnapshotVariablesByName(ReleaseResource release, VariableIdentifier[] variables);
         ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false);
         LifecycleProgressionResource GetProgression(ReleaseResource release);
         GetMissingPackagesForReleaseResponse GetMissingPackagesForRelease(GetMissingPackagesForReleaseRequest request);
@@ -60,6 +72,15 @@ namespace Octopus.Client.Repositories
         {
             Client.Post(release.Link("SnapshotVariables"));
             return Get(release.Id);
+        }
+
+        public ReleaseResource SnapshotVariablesByName(ReleaseResource release, VariableIdentifier[] variables)
+        {
+            const string route = "~/api/{spaceId}/releases/{releaseId}/snapshot-variables-by-name";
+            return Client.Post<object, ReleaseResource>(
+                route,
+                new { Variables = variables },
+                new { spaceId = release.SpaceId, releaseId = release.Id });
         }
 
         public ReleaseResource Create(ReleaseResource release, bool ignoreChannelRules = false)

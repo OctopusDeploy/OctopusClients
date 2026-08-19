@@ -24,6 +24,17 @@ namespace Octopus.Client.Repositories
         RunbookRunTemplateResource GetTemplate(RunbookSnapshotResource runbookSnapshot);
         RunbookRunPreviewResource GetPreview(DeploymentPromotionTarget promotionTarget);
         RunbookSnapshotResource SnapshotVariables(RunbookSnapshotResource runbookSnapshot);
+        /// <summary>
+        /// Updates only the named variables within the runbook snapshot's variable snapshot,
+        /// leaving all other snapshotted variables untouched.
+        /// </summary>
+        /// <remarks>
+        /// This API is experimental and controlled by toggle `partial-updates-on-variables`
+        /// </remarks>
+        /// <param name="runbookSnapshot"></param>
+        /// <param name="variables"></param>
+        /// <returns></returns>
+        RunbookSnapshotResource SnapshotVariablesByName(RunbookSnapshotResource runbookSnapshot, VariableIdentifier[] variables);
         RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot);
     }
 
@@ -58,6 +69,16 @@ namespace Octopus.Client.Repositories
         {
             Client.Post(runbookSnapshot.Link("SnapshotVariables"));
             return Get(runbookSnapshot.Id);
+        }
+
+        public RunbookSnapshotResource SnapshotVariablesByName(RunbookSnapshotResource runbookSnapshot, VariableIdentifier[] variables)
+        {
+            const string route = "~/api/{spaceId}/runbookSnapshots/{runbookSnapshotId}/snapshot-variables-by-name";
+            return Client.Post<object, RunbookSnapshotResource>(
+                route,
+                new { Variables = variables },
+                new { spaceId = runbookSnapshot.SpaceId, runbookSnapshotId = runbookSnapshot.Id }
+                );       
         }
 
         public RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot)

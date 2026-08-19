@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 
@@ -25,6 +26,7 @@ namespace Octopus.Client.Repositories.Async
         Task<RunbookRunTemplateResource> GetTemplate(RunbookSnapshotResource runbookSnapshot);
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
         Task<RunbookSnapshotResource> SnapshotVariables(RunbookSnapshotResource runbookSnapshot);
+        Task<RunbookSnapshotResource> SnapshotVariablesByName(RunbookSnapshotResource runbookSnapshot, VariableIdentifier[] variables, CancellationToken cancellationToken);
         Task<RunbookSnapshotResource> Create(RunbookSnapshotResource runbookSnapshot);
     }
 
@@ -59,6 +61,17 @@ namespace Octopus.Client.Repositories.Async
         {
             await Client.Post(runbookSnapshot.Link("SnapshotVariables")).ConfigureAwait(false);
             return await Get(runbookSnapshot.Id).ConfigureAwait(false);
+        }
+
+        public async Task<RunbookSnapshotResource> SnapshotVariablesByName(RunbookSnapshotResource runbookSnapshot, VariableIdentifier[] variables, CancellationToken cancellationToken)
+        {
+            const string route = "~/api/{spaceId}/runbookSnapshots/{runbookSnapshotId}/snapshot-variables-by-name";
+            return await Client.Post<object, RunbookSnapshotResource>(
+                route,
+                new { Variables = variables },
+                new { spaceId = runbookSnapshot.SpaceId, runbookSnapshotId = runbookSnapshot.Id },
+                cancellationToken
+                ).ConfigureAwait(false);
         }
 
         public async Task<RunbookSnapshotResource> Create(RunbookSnapshotResource runbookSnapshot)
