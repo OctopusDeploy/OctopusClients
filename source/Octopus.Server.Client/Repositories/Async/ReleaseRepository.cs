@@ -51,8 +51,8 @@ namespace Octopus.Client.Repositories.Async
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release);
         Task<ReleaseResource> SnapshotVariables(ReleaseResource release, CancellationToken cancellationToken);
-        Task<ReleaseResource> SnapshotVariablesByName(ReleaseResource release, VariableIdentifier[] variables, CancellationToken cancellationToken);       
-        
+        Task<ReleaseResource> SnapshotVariablesByName(ReleaseResource release, VariableIdentifier[] variables, CancellationToken cancellationToken);
+
         [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules = false);
         Task<ReleaseResource> Create(ReleaseResource release, bool ignoreChannelRules, CancellationToken cancellationToken);
@@ -133,7 +133,7 @@ namespace Octopus.Client.Repositories.Async
         }
 
         public async Task<ReleaseResource> SnapshotVariablesByName(ReleaseResource release, VariableIdentifier[] variables, CancellationToken cancellationToken)
-        { 
+        {
             const string route = "~/api/{spaceId}/releases/{releaseId}/snapshot-variables-by-name";
             return await Client.Post<object, ReleaseResource>(
             route,

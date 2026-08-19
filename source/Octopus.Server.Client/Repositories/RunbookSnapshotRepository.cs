@@ -78,7 +78,7 @@ namespace Octopus.Client.Repositories
                 route,
                 new { Variables = variables },
                 new { spaceId = runbookSnapshot.SpaceId, runbookSnapshotId = runbookSnapshot.Id }
-                );       
+                );
         }
 
         public RunbookSnapshotResource Create(RunbookSnapshotResource runbookSnapshot)

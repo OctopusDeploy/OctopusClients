@@ -12,7 +12,7 @@ namespace Octopus.Client.Tests.Repositories
     {
         const string releaseRoute = "~/api/{spaceId}/releases/{releaseId}/snapshot-variables-by-name";
         const string runbookRoute = "~/api/{spaceId}/runbookSnapshots/{runbookSnapshotId}/snapshot-variables-by-name";
-        
+
         string urlUsed;
         object bodyUsed;
         object parametersUsed;
