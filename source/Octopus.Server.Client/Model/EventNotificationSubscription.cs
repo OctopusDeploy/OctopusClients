@@ -12,6 +12,7 @@ namespace Octopus.Client.Model
             this.WebhookTeams = new ReferenceCollection();
             this.SlackChannelIds = new ReferenceCollection();
             this.SlackChannelNames = new ReferenceCollection();
+            this.TeamsChannels = new List<TeamsChannelSubscriptionTarget>();
         }
 
         public EventNotificationSubscriptionFilter Filter { get; set; }
@@ -56,6 +57,27 @@ namespace Octopus.Client.Model
         public DateTimeOffset? SlackDigestLastProcessed { get; set; }
 
         public long? SlackDigestLastProcessedEventAutoId { get; set; }
+
+
+
+
+        public List<TeamsChannelSubscriptionTarget> TeamsChannels { get; set; }
+
+        public TimeSpan TeamsFrequencyPeriod { get; set; }
+
+        public DateTimeOffset? TeamsDigestLastProcessed { get; set; }
+
+        public long? TeamsDigestLastProcessedEventAutoId { get; set; }
+    }
+
+    public class TeamsChannelSubscriptionTarget
+    {
+        // Client-generated and stable: it identifies which stored WebhookUrl an unchanged HasValue refers to.
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        public PropertyValueResource WebhookUrl { get; set; }
     }
 
     public class EventNotificationSubscriptionFilter

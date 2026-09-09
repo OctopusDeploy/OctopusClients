@@ -3257,6 +3257,10 @@ Octopus.Client.Model
     Nullable<DateTimeOffset> SlackDigestLastProcessed { get; set; }
     Nullable<Int64> SlackDigestLastProcessedEventAutoId { get; set; }
     TimeSpan SlackFrequencyPeriod { get; set; }
+    List<TeamsChannelSubscriptionTarget> TeamsChannels { get; set; }
+    Nullable<DateTimeOffset> TeamsDigestLastProcessed { get; set; }
+    Nullable<Int64> TeamsDigestLastProcessedEventAutoId { get; set; }
+    TimeSpan TeamsFrequencyPeriod { get; set; }
     String WebhookHeaderKey { get; set; }
     Octopus.Client.Model.PropertyValueResource WebhookHeaderValue { get; set; }
     Nullable<DateTimeOffset> WebhookLastProcessed { get; set; }
@@ -6164,6 +6168,13 @@ Octopus.Client.Model
     String Name { get; set; }
     String Slug { get; set; }
     String SpaceId { get; set; }
+  }
+  class TeamsChannelSubscriptionTarget
+  {
+    .ctor()
+    String Id { get; set; }
+    String Name { get; set; }
+    Octopus.Client.Model.PropertyValueResource WebhookUrl { get; set; }
   }
   class TelemetryConfigurationResource
     Octopus.Client.Extensibility.IResource
