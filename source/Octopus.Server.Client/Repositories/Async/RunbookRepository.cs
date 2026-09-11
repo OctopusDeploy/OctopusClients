@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
@@ -10,13 +11,27 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IRunbookRepository : IFindByName<RunbookResource>, IGet<RunbookResource>, ICreate<RunbookResource>, IModify<RunbookResource>, IDelete<RunbookResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookResource> FindByName(ProjectResource project, string name);
+        Task<RunbookResource> FindByName(ProjectResource project, string name, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description);
+        Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook);
+        Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook);
+        Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget);
+        Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun);
+        Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters);
+        Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters, CancellationToken cancellationToken);
 
         // Config as Code methods
         /// <summary>
@@ -83,27 +98,52 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<RunbookResource> FindByName(ProjectResource project, string name)
         {
-            return FindByName(name, path: project.Link("Runbooks"));
+            return FindByName(project, name, CancellationToken.None);
+        }
+
+        public Task<RunbookResource> FindByName(ProjectResource project, string name, CancellationToken cancellationToken)
+        {
+            return FindByName(name, path: project.Link("Runbooks"), pathParameters: null, cancellationToken: cancellationToken);
         }
 
         public Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description)
+        {
+            return CreateOrModify(project, name, description, CancellationToken.None);
+        }
+
+        public Task<RunbookEditor> CreateOrModify(ProjectResource project, string name, string description, CancellationToken cancellationToken)
         {
             return new RunbookEditor(this, new RunbookProcessRepository(Repository)).CreateOrModify(project, name, description);
         }
 
         public Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook)
         {
-            return Client.Get<RunbookSnapshotTemplateResource>(runbook.Link("RunbookSnapshotTemplate"));
+            return GetRunbookSnapshotTemplate(runbook, CancellationToken.None);
+        }
+
+        public Task<RunbookSnapshotTemplateResource> GetRunbookSnapshotTemplate(RunbookResource runbook, CancellationToken cancellationToken)
+        {
+            return Client.Get<RunbookSnapshotTemplateResource>(runbook.Link("RunbookSnapshotTemplate"), cancellationToken);
         }
 
         public Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook)
         {
-            return Client.Get<RunbookRunTemplateResource>(runbook.Link("RunbookRunTemplate"));
+            return GetRunbookRunTemplate(runbook, CancellationToken.None);
+        }
+
+        public Task<RunbookRunTemplateResource> GetRunbookRunTemplate(RunbookResource runbook, CancellationToken cancellationToken)
+        {
+            return Client.Get<RunbookRunTemplateResource>(runbook.Link("RunbookRunTemplate"), cancellationToken);
         }
 
         public Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget)
         {
-            return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"));
+            return GetPreview(promotionTarget, CancellationToken.None);
+        }
+
+        public Task<RunbookRunPreviewResource> GetPreview(DeploymentPromotionTarget promotionTarget, CancellationToken cancellationToken)
+        {
+            return Client.Get<RunbookRunPreviewResource>(promotionTarget.Link("RunbookRunPreview"), cancellationToken);
         }
 
         private bool ServerSupportsRunbookRunParameters(string version)
@@ -118,25 +158,35 @@ namespace Octopus.Client.Repositories.Async
                    serverVersion == integrationTestVersion;
         }
 
-        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
+        public Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun)
         {
-            var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters((await Repository.LoadRootDocument()).Version);
-
-            return serverSupportsRunbookRunParameters
-                ? (await Run(runbook, RunbookRunParameters.MapFrom(runbookRun))).FirstOrDefault()
-                : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun);
+            return Run(runbook, runbookRun, CancellationToken.None);
         }
 
-        public async Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
+        public async Task<RunbookRunResource> Run(RunbookResource runbook, RunbookRunResource runbookRun, CancellationToken cancellationToken)
         {
-            var serverVersion = (await Repository.LoadRootDocument()).Version;
+            var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters((await Repository.LoadRootDocument(cancellationToken)).Version);
+
+            return serverSupportsRunbookRunParameters
+                ? (await Run(runbook, RunbookRunParameters.MapFrom(runbookRun), cancellationToken)).FirstOrDefault()
+                : await Client.Post<object, RunbookRunResource>(runbook.Link("CreateRunbookRun"), runbookRun, cancellationToken);
+        }
+
+        public Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters)
+        {
+            return Run(runbook, runbookRunParameters, CancellationToken.None);
+        }
+
+        public async Task<RunbookRunResource[]> Run(RunbookResource runbook, RunbookRunParameters runbookRunParameters, CancellationToken cancellationToken)
+        {
+            var serverVersion = (await Repository.LoadRootDocument(cancellationToken)).Version;
             var serverSupportsRunbookRunParameters = ServerSupportsRunbookRunParameters(serverVersion);
 
             if (serverSupportsRunbookRunParameters == false)
                 throw new UnsupportedApiVersionException($"This Octopus Deploy server is an older version ({serverVersion}) that does not yet support RunbookRunParameters. " +
                                                          $"Please update your Octopus Deploy server to 2020.3.* or newer to access this feature.");
 
-            return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters);
+            return await Client.Post<object, RunbookRunResource[]>(runbook.Link("CreateRunbookRun"), runbookRunParameters, cancellationToken);
         }
 
         // Config as Code

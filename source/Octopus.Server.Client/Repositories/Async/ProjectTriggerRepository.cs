@@ -10,10 +10,16 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IProjectTriggerRepository : ICreate<ProjectTriggerResource>, IModify<ProjectTriggerResource>, IGet<ProjectTriggerResource>, IDelete<ProjectTriggerResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProjectTriggerResource> FindByName(ProjectResource project, string name);
+        Task<ProjectTriggerResource> FindByName(ProjectResource project, string name, CancellationToken cancellationToken);
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action);
+        Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds);
+        Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(CancellationToken cancellationToken, params string[] runbookIds);
     }
 
     class ProjectTriggerRepository : BasicRepository<ProjectTriggerResource>, IProjectTriggerRepository
@@ -26,21 +32,36 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name)
         {
-            return FindByName(name, path: project.Link("Triggers"));
+            return FindByName(project, name, CancellationToken.None);
+        }
+
+        public Task<ProjectTriggerResource> FindByName(ProjectResource project, string name, CancellationToken cancellationToken)
+        {
+            return FindByName(name, path: project.Link("Triggers"), pathParameters: null, cancellationToken: cancellationToken);
         }
 
         public Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action)
         {
-            ThrowIfServerVersionIsNotCompatible(CancellationToken.None).ConfigureAwait(false);
-
-            return new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action);
+            return CreateOrModify(project, name, filter, action, CancellationToken.None);
         }
 
-        public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
+        public async Task<ProjectTriggerEditor> CreateOrModify(ProjectResource project, string name, TriggerFilterResource filter, TriggerActionResource action, CancellationToken cancellationToken)
         {
-            await ThrowIfServerVersionIsNotCompatible(CancellationToken.None);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken).ConfigureAwait(false);
 
-            return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds });
+            return await new ProjectTriggerEditor(this).CreateOrModify(project, name, filter, action).ConfigureAwait(false);
+        }
+
+        public Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(params string[] runbookIds)
+        {
+            return FindByRunbook(CancellationToken.None, runbookIds);
+        }
+
+        public async Task<ResourceCollection<ProjectTriggerResource>> FindByRunbook(CancellationToken cancellationToken, params string[] runbookIds)
+        {
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken);
+
+            return await Client.List<ProjectTriggerResource>(await Repository.Link("Triggers"), new { runbooks = runbookIds }, cancellationToken);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -23,7 +24,12 @@ namespace Octopus.Client.Tests.Repositories
         {
             var asyncClient = Substitute.For<IOctopusAsyncClient>();
             repository = new OctopusAsyncRepository(asyncClient);
-            asyncClient.Post<ConvertProjectVariablesToGitCommand, ConvertProjectVariablesToGitResponse>(Arg.Do<string>(x => urlUsed = x), Arg.Do<ConvertProjectVariablesToGitCommand>(x => commandUsed = x)).Returns(new ConvertProjectVariablesToGitResponse());
+            asyncClient
+                .Post<ConvertProjectVariablesToGitCommand, ConvertProjectVariablesToGitResponse>(
+                    Arg.Do<string>(x => urlUsed = x), 
+                    Arg.Do<ConvertProjectVariablesToGitCommand>(x => commandUsed = x),
+                    Arg.Any<CancellationToken>())
+                .Returns(new ConvertProjectVariablesToGitResponse());
         }
 
         [Test]

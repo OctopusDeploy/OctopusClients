@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Octopus.Client.Editors.Async;
 using Octopus.Client.Model;
 
@@ -11,7 +13,9 @@ namespace Octopus.Client.Repositories.Async
         IGet<SubscriptionResource>,
         IDelete<SubscriptionResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled);
+        Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, CancellationToken cancellationToken);
     }
 
     class SubscriptionRepository : BasicRepository<SubscriptionResource>, ISubscriptionRepository
@@ -20,7 +24,11 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled)
+            => CreateOrModify(name, eventNotificationSubscription, isDisabled, CancellationToken.None);
+
+        public Task<SubscriptionEditor> CreateOrModify(string name, EventNotificationSubscription eventNotificationSubscription, bool isDisabled, CancellationToken cancellationToken)
         {
             return new SubscriptionEditor(this).CreateOrModify(name, eventNotificationSubscription, isDisabled);
         }

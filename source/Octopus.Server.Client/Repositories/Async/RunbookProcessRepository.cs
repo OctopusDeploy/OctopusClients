@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Serialization;
@@ -7,7 +8,9 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IRunbookProcessRepository : IGet<RunbookProcessResource>, IModify<RunbookProcessResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookProcessResource runbookProcess);
+        Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookProcessResource runbookProcess, CancellationToken cancellationToken);
 
         // Config as Code methods
 
@@ -35,7 +38,12 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookProcessResource runbookProcess)
         {
-            return Client.Get<RunbookSnapshotTemplateResource>(runbookProcess.Link("RunbookSnapshotTemplate"));
+            return GetTemplate(runbookProcess, CancellationToken.None);
+        }
+
+        public Task<RunbookSnapshotTemplateResource> GetTemplate(RunbookProcessResource runbookProcess, CancellationToken cancellationToken)
+        {
+            return Client.Get<RunbookSnapshotTemplateResource>(runbookProcess.Link("RunbookSnapshotTemplate"), cancellationToken);
         }
 
         public async Task<RunbookProcessResource> Get(ProjectResource project, string gitRef, string slug, CancellationToken cancellationToken)

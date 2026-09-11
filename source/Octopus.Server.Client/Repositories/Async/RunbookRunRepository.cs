@@ -7,7 +7,9 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IRunbookRunRepository : IGet<RunbookRunResource>, ICreate<RunbookRunResource>, IPaginate<RunbookRunResource>, IDelete<RunbookRunResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<TaskResource> GetTask(RunbookRunResource resource);
+        Task<TaskResource> GetTask(RunbookRunResource resource, CancellationToken cancellationToken);
 
         /// <summary>
         /// 
@@ -18,9 +20,15 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="skip">Number of records to skip</param>
         /// <param name="take">Number of records to take (First supported in Server 3.14.15)</param>
         /// <returns></returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null);
+        Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, CancellationToken cancellationToken, int skip = 0, int? take = null);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
+        Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage);
+        Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage, CancellationToken cancellationToken);
 
         /// <summary>
         /// Retries a specific Runbook Run for a Config as Code Runbook
@@ -38,22 +46,42 @@ namespace Octopus.Client.Repositories.Async
 
         public Task<TaskResource> GetTask(RunbookRunResource resource)
         {
-            return Client.Get<TaskResource>(resource.Link("Task"));
+            return GetTask(resource, CancellationToken.None);
         }
 
-        public async Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null)
+        public Task<TaskResource> GetTask(RunbookRunResource resource, CancellationToken cancellationToken)
         {
-            return await Client.List<RunbookRunResource>(await Repository.Link("RunbookRuns").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0] }).ConfigureAwait(false);
+            return Client.Get<TaskResource>(resource.Link("Task"), cancellationToken);
+        }
+
+        public Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, int skip = 0, int? take = null)
+        {
+            return FindBy(projects, runbooks, environments, CancellationToken.None, skip, take);
+        }
+
+        public async Task<ResourceCollection<RunbookRunResource>> FindBy(string[] projects, string[] runbooks, string[] environments, CancellationToken cancellationToken, int skip = 0, int? take = null)
+        {
+            return await Client.List<RunbookRunResource>(await Repository.Link("RunbookRuns").ConfigureAwait(false), new { skip, take, projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0] }, cancellationToken).ConfigureAwait(false);
         }
 
         public Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
         {
-            return Paginate(projects, runbooks, environments, new string[0], getNextPage);
+            return Paginate(projects, runbooks, environments, getNextPage, CancellationToken.None);
         }
 
-        public async Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
+        public Task Paginate(string[] projects, string[] runbooks, string[] environments, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage, CancellationToken cancellationToken)
         {
-            await Client.Paginate(await Repository.Link("RunbookRuns").ConfigureAwait(false), new { projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage).ConfigureAwait(false);
+            return Paginate(projects, runbooks, environments, new string[0], getNextPage, cancellationToken);
+        }
+
+        public Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage)
+        {
+            return Paginate(projects, runbooks, environments, tenants, getNextPage, CancellationToken.None);
+        }
+
+        public async Task Paginate(string[] projects, string[] runbooks, string[] environments, string[] tenants, Func<ResourceCollection<RunbookRunResource>, bool> getNextPage, CancellationToken cancellationToken)
+        {
+            await Client.Paginate(await Repository.Link("RunbookRuns").ConfigureAwait(false), new { projects = projects ?? new string[0], runbooks = runbooks ?? new string[0], environments = environments ?? new string[0], tenants = tenants ?? new string[0] }, getNextPage, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<RunbookRunResource> Retry(RunbookRunResource run, CancellationToken cancellationToken)

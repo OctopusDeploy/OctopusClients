@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Octopus.Client.Repositories.Async
 {
     public interface IMachineRoleRepository
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<List<string>> GetAllRoleNames();
+        Task<List<string>> GetAllRoleNames(CancellationToken cancellationToken);
     }
 
     class MachineRoleRepository : IMachineRoleRepository
@@ -19,9 +22,13 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<List<string>> GetAllRoleNames()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<List<string>> GetAllRoleNames()
+            => GetAllRoleNames(CancellationToken.None);
+
+        public async Task<List<string>> GetAllRoleNames(CancellationToken cancellationToken)
         {
-            var result = await repository.Client.Get<string[]>(await repository.Link("MachineRoles").ConfigureAwait(false)).ConfigureAwait(false);
+            var result = await repository.Client.Get<string[]>(await repository.Link("MachineRoles").ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
             return result.ToList();
         }
     }

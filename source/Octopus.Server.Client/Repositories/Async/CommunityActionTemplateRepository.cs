@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
@@ -9,9 +10,15 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ICommunityActionTemplateRepository : IGet<CommunityActionTemplateResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource);
+        Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task Install(CommunityActionTemplateResource resource);
+        Task Install(CommunityActionTemplateResource resource, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task UpdateInstallation(CommunityActionTemplateResource resource);
+        Task UpdateInstallation(CommunityActionTemplateResource resource, CancellationToken cancellationToken);
     }
 
     class CommunityActionTemplateRepository : BasicRepository<CommunityActionTemplateResource>, ICommunityActionTemplateRepository
@@ -20,7 +27,11 @@ namespace Octopus.Client.Repositories.Async
         {
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task Install(CommunityActionTemplateResource resource)
+            => Install(resource, CancellationToken.None);
+
+        public Task Install(CommunityActionTemplateResource resource, CancellationToken cancellationToken)
         {
             var baseLink = resource.Links["Installation"];
             var spaceResource = Repository.Scope.Apply(space => space,
@@ -29,13 +40,17 @@ namespace Octopus.Client.Repositories.Async
 
             if (spaceResource == null)
             {
-                return Client.Post(baseLink.ToString());
+                return Client.Post(baseLink.ToString(), cancellationToken);
             }
 
-            return Client.Post<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
+            return Client.Post<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id }, cancellationToken);
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task UpdateInstallation(CommunityActionTemplateResource resource)
+            => UpdateInstallation(resource, CancellationToken.None);
+
+        public Task UpdateInstallation(CommunityActionTemplateResource resource, CancellationToken cancellationToken)
         {
             var baseLink = resource.Links["Installation"];
             var spaceResource = Repository.Scope.Apply(space => space,
@@ -44,13 +59,17 @@ namespace Octopus.Client.Repositories.Async
 
             if (spaceResource == null)
             {
-                return Client.Put(baseLink.ToString());
+                return Client.Put(baseLink.ToString(), cancellationToken);
             }
 
-            return Client.Put<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id });
+            return Client.Put<string>(baseLink.ToString(), null, new { spaceId = spaceResource.Id }, cancellationToken);
         }
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource)
+            => GetInstalledTemplate(resource, CancellationToken.None);
+
+        public Task<ActionTemplateResource> GetInstalledTemplate(CommunityActionTemplateResource resource, CancellationToken cancellationToken)
         {
             var baseLink = resource.Links["InstalledTemplate"];
             var spaceResource = Repository.Scope.Apply(space => space,
@@ -59,10 +78,10 @@ namespace Octopus.Client.Repositories.Async
 
             if (spaceResource == null)
             {
-                return Client.Get<ActionTemplateResource>(baseLink.ToString());
+                return Client.Get<ActionTemplateResource>(baseLink.ToString(), cancellationToken);
             }
 
-            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new { spaceId = spaceResource.Id });
+            return Client.Get<ActionTemplateResource>(baseLink.ToString(), new { spaceId = spaceResource.Id }, cancellationToken);
         }
     }
 }

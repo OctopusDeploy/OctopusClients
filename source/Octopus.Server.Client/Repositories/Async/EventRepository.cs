@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Model;
 using Octopus.Client.Util;
@@ -39,6 +40,7 @@ namespace Octopus.Client.Repositories.Async
         /// <param name="eventAgents"></param>
         /// <param name="projectGroups"></param>
         /// <returns></returns>
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<EventResource>> List(int skip = 0,
             int? take = null,
             string from = null,
@@ -59,11 +61,40 @@ namespace Octopus.Client.Repositories.Async
             string documentTypes = null,
             string eventAgents = null,
             string projectGroups = null);
+        Task<ResourceCollection<EventResource>> List(CancellationToken cancellationToken,
+            int skip = 0,
+            int? take = null,
+            string from = null,
+            string to = null,
+            string regarding = null,
+            string regardingAny = null,
+            bool includeInternalEvents = true,
+            string user = null,
+            string users = null,
+            string projects = null,
+            string environments = null,
+            string eventGroups = null,
+            string eventCategories = null,
+            string tenants = null,
+            string tags = null,
+            long? fromAutoId = null,
+            long? toAutoId = null,
+            string documentTypes = null,
+            string eventAgents = null,
+            string projectGroups = null);
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes();
+        Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes(CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<EventAgentResource>> GetAgents();
+        Task<IReadOnlyList<EventAgentResource>> GetAgents(CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<EventCategoryResource>> GetCategories();
+        Task<IReadOnlyList<EventCategoryResource>> GetCategories(CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<IReadOnlyList<EventGroupResource>> GetGroups();
+        Task<IReadOnlyList<EventGroupResource>> GetGroups(CancellationToken cancellationToken);
     }
 
     class EventRepository : MixedScopeBaseRepository<EventResource>, IEventRepository
@@ -93,7 +124,31 @@ namespace Octopus.Client.Repositories.Async
             })).ConfigureAwait(false);
         }
 
-        public async Task<ResourceCollection<EventResource>> List(int skip = 0,
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<ResourceCollection<EventResource>> List(int skip = 0,
+            int? take = null,
+            string from = null,
+            string to = null,
+            string regarding = null,
+            string regardingAny = null,
+            bool includeInternalEvents = true,
+            string user = null,
+            string users = null,
+            string projects = null,
+            string environments = null,
+            string eventGroups = null,
+            string eventCategories = null,
+            string tenants = null,
+            string tags = null,
+            long? fromAutoId = null,
+            long? toAutoId = null,
+            string documentTypes = null,
+            string eventAgents = null,
+            string projectGroups = null)
+            => List(CancellationToken.None, skip, take, from, to, regarding, regardingAny, includeInternalEvents, user, users, projects, environments, eventGroups, eventCategories, tenants, tags, fromAutoId, toAutoId, documentTypes, eventAgents, projectGroups);
+
+        public async Task<ResourceCollection<EventResource>> List(CancellationToken cancellationToken,
+            int skip = 0,
             int? take = null,
             string from = null,
             string to = null,
@@ -138,31 +193,53 @@ namespace Octopus.Client.Repositories.Async
                 projectGroups,
             });
 
-            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), parameters).ConfigureAwait(false);
+            return await Client.List<EventResource>(await Repository.Link("Events").ConfigureAwait(false), parameters, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes()
+            => GetDocumentTypes(CancellationToken.None);
+
+        public async Task<IReadOnlyList<DocumentTypeResource>> GetDocumentTypes(CancellationToken cancellationToken)
         {
             var link = await Repository.Link("EventDocumentTypes").ConfigureAwait(false);
-            return await Client.Get<List<DocumentTypeResource>>(link).ConfigureAwait(false);
+            return await Client.Get<List<DocumentTypeResource>>(link, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<EventAgentResource>> GetAgents()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<IReadOnlyList<EventAgentResource>> GetAgents()
+        {
+            return GetAgents(CancellationToken.None);
+        }
+
+        public async Task<IReadOnlyList<EventAgentResource>> GetAgents(CancellationToken cancellationToken)
         {
             var link = await Repository.Link("EventAgents").ConfigureAwait(false);
-            return await Client.Get<List<EventAgentResource>>(link).ConfigureAwait(false);
+            return await Client.Get<List<EventAgentResource>>(link, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<EventCategoryResource>> GetCategories()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<IReadOnlyList<EventCategoryResource>> GetCategories()
+        {
+            return GetCategories(CancellationToken.None);
+        }
+
+        public async Task<IReadOnlyList<EventCategoryResource>> GetCategories(CancellationToken cancellationToken)
         {
             var link = await Repository.Link("EventCategories").ConfigureAwait(false);
-            return await Client.Get<List<EventCategoryResource>>(link).ConfigureAwait(false);
+            return await Client.Get<List<EventCategoryResource>>(link, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<EventGroupResource>> GetGroups()
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<IReadOnlyList<EventGroupResource>> GetGroups()
+        {
+            return GetGroups(CancellationToken.None);
+        }
+
+        public async Task<IReadOnlyList<EventGroupResource>> GetGroups(CancellationToken cancellationToken)
         {
             var link = await Repository.Link("EventGroups").ConfigureAwait(false);
-            return await Client.Get<List<EventGroupResource>>(link).ConfigureAwait(false);
+            return await Client.Get<List<EventGroupResource>>(link, cancellationToken).ConfigureAwait(false);
         }
 
         public IEventRepository UsingContext(SpaceContext spaceContext)

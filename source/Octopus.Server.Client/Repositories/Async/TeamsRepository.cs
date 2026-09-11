@@ -15,7 +15,9 @@ namespace Octopus.Client.Repositories.Async
         IGet<TeamResource>,
         ICanExtendSpaceContext<ITeamsRepository>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team);
+        Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team, CancellationToken cancellationToken);
     }
 
     class TeamsRepository : MixedScopeBaseRepository<TeamResource>, ITeamsRepository
@@ -32,9 +34,13 @@ namespace Octopus.Client.Repositories.Async
             MinimumCompatibleVersion("2019.1.0");
         }
 
-        public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team)
+            => GetScopedUserRoles(team, CancellationToken.None);
+
+        public async Task<List<ScopedUserRoleResource>> GetScopedUserRoles(TeamResource team, CancellationToken cancellationToken)
         {
-            await ThrowIfServerVersionIsNotCompatible(CancellationToken.None);
+            await ThrowIfServerVersionIsNotCompatible(cancellationToken);
 
             if (team == null) throw new ArgumentNullException(nameof(team));
             var resources = new List<ScopedUserRoleResource>();
@@ -43,7 +49,7 @@ namespace Octopus.Client.Repositories.Async
             {
                 resources.AddRange(page.Items);
                 return true;
-            }).ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             return resources;
         }

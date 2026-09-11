@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Octopus.Client.Exceptions;
 using Octopus.Client.Features;
@@ -13,17 +14,35 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface IBuiltInPackageRepositoryRepository
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, CancellationToken cancellationToken, bool replaceExisting = false);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression);
+        Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression, CancellationToken cancellationToken);
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30);
+        Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, CancellationToken cancellationToken, int skip = 0, int take = 30);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30);
+        Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(CancellationToken cancellationToken, int skip = 0, int take = 30);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task DeletePackage(PackageResource package);
+        Task DeletePackage(PackageResource package, CancellationToken cancellationToken);
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task DeletePackages(IReadOnlyList<PackageResource> packages);
+        Task DeletePackages(IReadOnlyList<PackageResource> packages, CancellationToken cancellationToken);
 
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version);
+        Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version, CancellationToken cancellationToken);
     }
 
     class BuiltInPackageRepositoryRepository : IBuiltInPackageRepositoryRepository
@@ -36,22 +55,34 @@ namespace Octopus.Client.Repositories.Async
             this.repository = repository;
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode)
+        public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode)
+            => PushPackage(fileName, contents, overwriteMode, CancellationToken.None);
+
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, CancellationToken cancellationToken)
         {
-            return await PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true);
+            return await PushPackage(fileName, contents, overwriteMode, useDeltaCompression: true, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+        public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting = false)
+            => PushPackage(fileName, contents, CancellationToken.None, replaceExisting);
+
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, CancellationToken cancellationToken, bool replaceExisting = false)
         {
-            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true);
+            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression: true, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+        public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression)
+            => PushPackage(fileName, contents, replaceExisting, useDeltaCompression, CancellationToken.None);
+
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, bool replaceExisting, bool useDeltaCompression, CancellationToken cancellationToken)
         {
-            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression);
+            return await PushPackage(fileName, contents, replaceExisting ? OverwriteMode.OverwriteExisting : OverwriteMode.FailIfExists, useDeltaCompression, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
+        public Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression)
+            => PushPackage(fileName, contents, overwriteMode, useDeltaCompression, CancellationToken.None);
+
+        public async Task<PackageFromBuiltInFeedResource> PushPackage(string fileName, Stream contents, OverwriteMode overwriteMode, bool useDeltaCompression, CancellationToken cancellationToken)
         {
             if (useDeltaCompression)
             {
@@ -100,7 +131,8 @@ namespace Octopus.Client.Repositories.Async
                 return await repository.Client.Post<FileUpload, PackageFromBuiltInFeedResource>(
                     link,
                     new FileUpload() { Contents = contents, FileName = fileName },
-                    pathParameters).ConfigureAwait(false);
+                    pathParameters,
+                    cancellationToken).ConfigureAwait(false);
             }
             catch (TimeoutException)
             {
@@ -198,28 +230,43 @@ namespace Octopus.Client.Repositories.Async
             }
         }
 
-        public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
+        public Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, int skip = 0, int take = 30)
+            => ListPackages(packageId, CancellationToken.None, skip, take);
+
+        public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> ListPackages(string packageId, CancellationToken cancellationToken, int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }).ConfigureAwait(false);
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { nuGetPackageId = packageId, take, skip }, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version)
+        public Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version)
+            => GetPackage(packageId, version, CancellationToken.None);
+
+        public async Task<PackageFromBuiltInFeedResource> GetPackage(string packageId, string version, CancellationToken cancellationToken)
         {
-            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = $"{packageId}.{version}" }).ConfigureAwait(false);
+            return await repository.Client.Get<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { id = $"{packageId}.{version}" }, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
+        public Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(int skip = 0, int take = 30)
+            => LatestPackages(CancellationToken.None, skip, take);
+
+        public async Task<ResourceCollection<PackageFromBuiltInFeedResource>> LatestPackages(CancellationToken cancellationToken, int skip = 0, int take = 30)
         {
-            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { latest = true, take, skip }).ConfigureAwait(false);
+            return await repository.Client.List<PackageFromBuiltInFeedResource>(await repository.Link("Packages").ConfigureAwait(false), new { latest = true, take, skip }, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task DeletePackage(PackageResource package)
+        public Task DeletePackage(PackageResource package)
+            => DeletePackage(package, CancellationToken.None);
+
+        public async Task DeletePackage(PackageResource package, CancellationToken cancellationToken)
         {
-            await repository.Client.Delete(await repository.Link("Packages").ConfigureAwait(false), new { id = package.Id }).ConfigureAwait(false);
+            await repository.Client.Delete(await repository.Link("Packages").ConfigureAwait(false), new { id = package.Id }, null, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task DeletePackages(IReadOnlyList<PackageResource> packages)
-            => await repository.Client.Delete(await repository.Link("PackagesBulk").ConfigureAwait(false), new { ids = packages.Select(p => p.Id).ToArray() }).ConfigureAwait(false);
+        public Task DeletePackages(IReadOnlyList<PackageResource> packages)
+            => DeletePackages(packages, CancellationToken.None);
+
+        public async Task DeletePackages(IReadOnlyList<PackageResource> packages, CancellationToken cancellationToken)
+            => await repository.Client.Delete(await repository.Link("PackagesBulk").ConfigureAwait(false), new { ids = packages.Select(p => p.Id).ToArray() }, null, cancellationToken).ConfigureAwait(false);
 
     }
 }

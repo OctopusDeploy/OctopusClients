@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +9,9 @@ namespace Octopus.Client.Repositories.Async
 {
     public interface ITenantVariablesRepository : IGetAll<TenantVariableResource>
     {
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
         Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource);
+        Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource, CancellationToken cancellationToken);
 
         Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
             CancellationToken cancellationToken);
@@ -25,13 +28,17 @@ namespace Octopus.Client.Repositories.Async
 
     class TenantVariablesRepository : BasicRepository<TenantVariableResource>, ITenantVariablesRepository
     {
-        public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
+        [Obsolete("Please use the overload with cancellation token instead.", false)]
+        public Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource)
+            => GetAll(projectResource, CancellationToken.None);
+
+        public async Task<List<TenantVariableResource>> GetAll(ProjectResource projectResource, CancellationToken cancellationToken)
         {
             return await Client.Get<List<TenantVariableResource>>(
                 await Repository.Link("TenantVariables").ConfigureAwait(false), new
                 {
                     projectId = projectResource?.Id
-                }).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<GetCommonVariablesByTenantIdResponse> Get(GetCommonVariablesByTenantIdRequest request,
