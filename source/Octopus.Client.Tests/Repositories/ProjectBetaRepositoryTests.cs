@@ -26,7 +26,7 @@ namespace Octopus.Client.Tests.Repositories
             repository = new OctopusAsyncRepository(asyncClient);
             asyncClient
                 .Post<ConvertProjectVariablesToGitCommand, ConvertProjectVariablesToGitResponse>(
-                    Arg.Do<string>(x => urlUsed = x), 
+                    Arg.Do<string>(x => urlUsed = x),
                     Arg.Do<ConvertProjectVariablesToGitCommand>(x => commandUsed = x),
                     Arg.Any<CancellationToken>())
                 .Returns(new ConvertProjectVariablesToGitResponse());
