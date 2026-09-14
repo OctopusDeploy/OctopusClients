@@ -147,8 +147,8 @@ namespace Octopus.Client.Model
         /// True if the task is waiting for manual intervention.
         /// </summary>
         [JsonProperty(Order = 32)]
-        public bool HasPendingInterruptions {get;set;}
-        
+        public bool HasPendingInterruptions { get; set; }
+
         /// <summary>
         /// If true, then the task can be used as the basis for a
         /// new task with the same effect.
